@@ -1,32 +1,72 @@
-# PRG01d — activación y bloqueo encontrado en el canario
+# PRG01d — taller y Tala públicos; incidentes recuperados
 
-## Estado actual
+SQL023/024/026 están confirmados. Alpha.38/protocolo 46 quedó activa en la revisión
+`d9620558a93f6a6ed88614857b03d7d9822a4b1b`, imagen
+`sha256:f937c420dbe5555048f10c3087e9a5d237e80389c3aa880b6a54b3841cf6bc8c`.
+La [verificación independiente](timing-deployment-independent.json) confirma hashes del runtime
+contra Git, salud pública 200, Auth habilitado, una autoridad y temporizador activo. M5 tenía
+cero errores, operaciones pendientes y datos sin guardar, con taller/recursos/artesano ready.
+Es una captura fechada; se debe consultar salud antes de operar nuevamente.
 
-La mecánica se activó en la única autoridad VPS `f939152e24b51774faab3239a902c6cc76e01d3f`, alpha.36/protocolo 45. **La aceptación completa sigue pendiente: M5 quedó bloqueado al rechazar SQL024 la primera bodega de la cuenta QA.** El contenedor pasa a unhealthy y la entrada pública devuelve 503. No reiniciar para presentar el servicio como aceptado antes de corregir y verificar la base.
+Los dos incidentes están recuperados. SQL026 corrigió los IDs reales de balsa con `:`.
+Alpha.38 alinea el baseline económico antes de una palmera v3 mediante el escritor existente;
+no necesita otra migración. La [recuperación de Tala](timing-recovery.ndjson) conservó los hashes
+completos de perfil/mundo, versiones y tick. El [QA retenido](timing-retained-qa-cleanup.json)
+quedó eliminado después del drenaje. No repetir los scripts históricos de recuperación ni apagar
+`MN_STARTER_WORKSHOP` después de adoptar recursos v3. El mundo común suelo/perlas/muerte sigue
+sin adoptar ni activar; instalar SQL023 no lo adopta.
 
-El siguiente paso requiere aplicar [SQL026](../../../../server/migrations/026_workshop_raft_identifiers.sql) en Supabase, sin repetir SQL021 ni reescribir SQL024. El autor recibió la petición; aplicación todavía sin verificar. Después se debe ejecutar la recuperación guardada y repetir la aceptación completa, incluida Tala. El mundo común de suelo/perlas/muerte sigue sin adoptar ni activar; instalar SQL023 no lo adopta.
+## Evidencia pública y de imagen
 
-La [última comprobación](pending-sql026.json), a las 00:53–00:55 UTC del 2026-10-11, conserva readiness SQL026 ausente (`PGRST202`) y público 503, sin jugadores/conexiones. La recuperación todavía no se ejecutó.
+- [Construcción alpha.37](public-c542b02f-1315-439b-9020-f0a69aacb5a9.json): 33 comprobaciones pasaron
+  para entregas parciales, crédito único, primera bodega gratis, segunda por diez tablas, kit/caja,
+  denegaciones ocupado/revisión antigua, desguace, mochila, tabla 2:1 y reconexión. El recorrido
+  completo falló después al navegar a la palmera. Perfil/Auth QA eliminados; quince recibos conservados.
+  Los materiales se sembraron sólo en su perfil desechable desconectado.
+- [Tala alpha.38](public-d783c754-992a-4304-9e2a-25d3f4df4d9d.json): **6/6**, WSS público autenticado.
+  Calidad/desafío inventados rechazados sin mutar perfil/palmera; tres golpes reales entregaron tres
+  troncos y diez de práctica; replay histórico exacto y banco normal convirtió dos troncos en una
+  tabla. Se sembró sólo un hacha, sin carga. Perfil/Auth eliminados y cuatro recibos conservados.
+  No valida el extremo de seis troncos ni cooperación entre jugadores.
+- [Regresión en la imagen activa](timing-image-tests.json): **28/28**, hashes Git coincidentes,
+  runner sin red y una sola autoridad antes/después. Fixtures de taller, timing, recursos, fuego
+  y compañeros; no SQL/PGlite ni navegación pública.
+- [Regresión local final independiente](timing-final.tap): **20/20**, taller, SQL y baseline.
+  El [diagnóstico de lectura en Supabase](logging-baseline-diagnostic.json) confirmó el predicado
+  del fence. [Informe de causa y reproducción](../../prg01d-timing-baseline.md).
+  Los conteos se solapan y no se suman.
 
-## Evidencia comprobada
+La aceptación está dividida entre construcción alpha.37 y Tala alpha.38. Falta el canario combinado,
+navegador autenticado actualizado, SIGKILL propio, nueva medición offline, balance y teléfono físico.
+La [repetición combinada alpha.38](public-156e1731-9f05-4452-b1ff-3250670c2b87.json) pasó quince
+comprobaciones hasta fabricar el kit, pero agotó sus replanteos al caminar a la pasarela de la balsa.
+No es un pase completo. Perfil/Auth eliminados y seis recibos conservados; no registró otro fence.
+La selección amplia pasó 68/69: el caso legacy de storage en `ground-host-authority-sql` falla también
+en la revisión anterior sin este arreglo. [Captura anterior a la recuperación](logging-recovery-checkpoint.json);
+ese montaje común permanece desactivado.
 
-- [Despliegue anterior al canario](deployment.json): imagen `marea-negra:alpha-f939152e24b5`, una autoridad y temporizador activo, 109/109 comprobaciones de imagen.
-- [Transición de recursos](transition.json): v2→v3 conservó los 206 nodos, 96 palmeras, ledger v2, cooldowns, comunidad y semilla; agregó calidad inicial cero. El tick continuó desde el estado guardado. No es una nueva medición de pausa offline.
-- [Entrada invitada pública](public-entry.json): 14/14, con taller habilitado y ready antes del fallo.
-- [Navegador autenticado](browser/browser-1d99d56f-c32c-4ba3-887c-b7cecf42a86d.json): 8/8. Login normal, movimiento WASD al banco, entrega de tres tablas desde UI, recibo SQL y progreso restaurado al recargar. Panel ES 1280×720 y EN 390×844 inspeccionados; móvil emulado. Cuenta/perfil QA eliminados y recibo conservado.
-- [Canario de construcción incompleto](public-c59f3d35-41eb-4532-945e-f58e436b2b66.json): entregas 3+2+3+2, crédito único, kit de dos tablas y reintentos históricos aprobados antes de fallar la primera colocación. **No es un pase completo.** Su cuenta QA permanece identificada para recuperación; no borrarla mientras siga pendiente la autoridad.
-- [Diagnóstico de solo lectura](storage-diagnostic.json): ID real con dos puntos; candidato rechazado, control idéntico cambiando únicamente la sintaxis del ID aceptado. Recibo fallido ausente, crédito intacto y un kit intacto.
-- [Estado bloqueado](failure-status.json): cero jugadores/conexiones, una operación económica pendiente y cerco de guardado. No confirma pérdida de bienes ni construcción aplicada.
-- [Regresión SQL024/026](sql026.tap): 10/10. Reproduce el rechazo con un ID generado por `prepareRaftProfile`, usa condición real persistida, aplica/reaplica SQL026 y comprueba primera bodega, segunda pagada, kit, rechazo ocupado/revisión antigua sin mutación, recibos históricos y cerco del mundo adoptado.
+## Historia conservada
 
-## Corrección y reanudación
+- [Despliegue alpha.36](deployment.json): 109/109 del actualizador, una autoridad y timer activo.
+- [Transición v2→v3](transition.json): 206 nodos, 96 palmeras, ledger, cooldowns, comunidad y semilla
+  conservados; calidad inicial cero y tick continuado. No es una nueva medición offline.
+- [Entrada invitada](public-entry.json): 14/14 antes del primer fallo.
+- [Navegador autenticado ES/EN](browser/browser-1d99d56f-c32c-4ba3-887c-b7cecf42a86d.json): 8/8,
+  login, WASD al banco, entrega UI, recibo SQL y recarga; móvil emulado y capturas inspeccionadas.
+- [Primer canario de IDs](public-c59f3d35-41eb-4532-945e-f58e436b2b66.json): parcial; falló la primera
+  bodega. [Diagnóstico](storage-diagnostic.json), [bloqueo](failure-status.json),
+  [SQL026 10/10](sql026.tap), [recuperación](../../l03d-companion-control/prerequisite-recovery.ndjson)
+  y [limpieza con seis recibos conservados](../../l03d-companion-control/retained-qa-cleanup.json).
+- [Primer canario de Tala](public-7a949137-a098-4b6d-887d-a8600c11b303.json): parcial; sin ACK al
+  guardar la denegación de un token inventado. Es el incidente recuperado por alpha.38.
 
-SQL026 conserva el validador exacto de SQL024 y añade `:` al alfabeto de identidad que ya usa el host. Mantiene la tolerancia histórica de ID vacío y no cambia IDs existentes. También admite el `record` acotado de una respuesta de revisión antigua solo cuando `ok=false`, y permite recibos de rechazo cuya proyección de perfil permanece exactamente igual, después de verificar la preservación del mundo. Los éxitos conservan todas sus comprobaciones de costes, crédito, piezas y condición.
+Los registros de recuperación, limpieza, pruebas en imagen y canarios públicos nuevos proceden del
+operador único AREA17; este frente los copió sin modificar su fuente y revisó su alcance. La
+verificación VPS independiente, el diagnóstico SQL de lectura y `timing-final.tap` son de este frente.
+[verify-timing-deployment.py](verify-timing-deployment.py) consulta el VPS sin mutarlo.
+[diagnose-logging-baseline.mjs](diagnose-logging-baseline.mjs) no escribe en Supabase, pero guarda
+un resultado local. Es histórico y falla si no existe el QA exacto; busca sólo la primera página
+Auth y comprueba ausencia de su recibo de control, no todos los recibos de una cuenta.
 
-La recuperación debe comprobar readiness de SQL026, candidato válido, recibo fallido ausente y perfil QA confirmado; tomar exclusión del actualizador/contenido y exigir cero jugadores/conexiones. Detener y arrancar la misma única imagen validada recupera desde filas confirmadas; después verificar salud, capacidades ready, perfil/crédito y hashes del mundo antes de limpiar la cuenta QA. No apagar `MN_STARTER_WORKSHOP` tras adoptar recursos v3.
-
-`recover.py` fija revisión, contenedor e imagen y se ejecuta por SSH stdin bajo los locks existentes; aún no ejecutado. `cleanup-retained.mjs` requiere `MN_QA_ALLOW_CLEANUP=1`, SQL026 ready, mundo correcto sano/vacío y marcador/email/sentinel exactos antes de eliminar sólo perfil/Auth QA. Conserva y vuelve a consultar todos sus recibos económicos. Si el marcador Auth ya no existe, sale sin mutar y no afirma que un perfil huérfano esté ausente. Esta limpieza también sigue pendiente.
-
-Después, `tools/qa-workshop-public.mjs` recorre por WSS público caja, bodega gratuita/pagada, denegaciones normales, desguace, mochila y receta 2:1. `tools/qa-workshop-logging.mjs` prepara el recorrido palmera→tabla con desafíos reales del host. Esos recorridos completos aún no pasaron en vivo. Los materiales de construcción de la QA se siembran exclusivamente en su perfil desechable desconectado, con CAS y doble límite de carga; no representan materiales ganados jugando.
-
-No están aceptados aún SIGKILL de SQL024/026, nueva medición offline, balance/sensaciones ni rendimiento de teléfono físico. INV01–03 continúa como corte posterior separado.
+El [procedimiento de aceptación](../live-acceptance.md) conserva los recorridos restantes.
+INV01–03 (huecos/pilas, Carga con puntos y sobrepeso) continúa como corte posterior separado.

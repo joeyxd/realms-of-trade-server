@@ -1,0 +1,730 @@
+TAP version 13
+# Subtest: readCommerce returns bounded current list and quote projections without side effects
+ok 1 - readCommerce returns bounded current list and quote projections without side effects
+  ---
+  duration_ms: 380.2064
+  type: 'test'
+  ...
+# Subtest: readCommerce enforces exact bounded shape, physical town service, life, and naval lock
+ok 2 - readCommerce enforces exact bounded shape, physical town service, life, and naval lock
+  ---
+  duration_ms: 311.0343
+  type: 'test'
+  ...
+# Subtest: readCommerce preserves list and quote semantics of human commerce transport
+ok 3 - readCommerce preserves list and quote semantics of human commerce transport
+  ---
+  duration_ms: 289.9684
+  type: 'test'
+  ...
+# Subtest: commerce reads are private, current, non-mutating, and reject malformed payloads strictly
+ok 4 - commerce reads are private, current, non-mutating, and reject malformed payloads strictly
+  ---
+  duration_ms: 387.3235
+  type: 'test'
+  ...
+# Subtest: market buys and sells use the shared live quote, conserve pack/gold/stock, and deduplicate operation ids
+ok 5 - market buys and sells use the shared live quote, conserve pack/gold/stock, and deduplicate operation ids
+  ---
+  duration_ms: 301.7824
+  type: 'test'
+  ...
+# Subtest: market quantity, availability, calm, gold, and revision denials are atomic
+ok 6 - market quantity, availability, calm, gold, and revision denials are atomic
+  ---
+  duration_ms: 294.9169
+  type: 'test'
+  ...
+# Subtest: raft cargo transfer is owner-only, revisioned, lossless, idempotent, capacity-limited, and private
+ok 7 - raft cargo transfer is owner-only, revisioned, lossless, idempotent, capacity-limited, and private
+  ---
+  duration_ms: 231.1791
+  type: 'test'
+  ...
+# Subtest: HMAC guest save preflight protects both commerce and legacy market stock; repeated join restores trade revisions
+ok 8 - HMAC guest save preflight protects both commerce and legacy market stock; repeated join restores trade revisions
+  ---
+  duration_ms: 282.8645
+  type: 'test'
+  ...
+# Subtest: merchant NPCs stand inside their intended walkable town markets
+ok 9 - merchant NPCs stand inside their intended walkable town markets
+  ---
+  duration_ms: 247.8175
+  type: 'test'
+  ...
+# Subtest: cargo enforces alive, stationary, current-revision, weighted-capacity, and signed-save preflight boundaries
+ok 10 - cargo enforces alive, stationary, current-revision, weighted-capacity, and signed-save preflight boundaries
+  ---
+  duration_ms: 674.7678
+  type: 'test'
+  ...
+# Subtest: profile sanitization bounds trade revision and gold before market mutations
+ok 11 - profile sanitization bounds trade revision and gold before market mutations
+  ---
+  duration_ms: 0.806
+  type: 'test'
+  ...
+# Subtest: hand slot has one visual fuel slot and sends an immutable one-wood craft-and-light intent
+ok 12 - hand slot has one visual fuel slot and sends an immutable one-wood craft-and-light intent
+  ---
+  duration_ms: 4.0866
+  type: 'test'
+  ...
+# Subtest: confirmed fire state controls load and toggle buttons; only one pending command is allowed
+ok 13 - confirmed fire state controls load and toggle buttons; only one pending command is allowed
+  ---
+  duration_ms: 0.3744
+  type: 'test'
+  ...
+# Subtest: station uses pack plus raft hold as available stock and emits its stable composite key tuple
+ok 14 - station uses pack plus raft hold as available stock and emits its stable composite key tuple
+  ---
+  duration_ms: 0.2778
+  type: 'test'
+  ...
+# Subtest: retry sends the exact same request once and times out without changing confirmed fuel
+ok 15 - retry sends the exact same request once and times out without changing confirmed fuel
+  ---
+  duration_ms: 0.1846
+  type: 'test'
+  ...
+# Subtest: denials localize server recovery reasons and session changes reset the active request
+ok 16 - denials localize server recovery reasons and session changes reset the active request
+  ---
+  duration_ms: 0.841
+  type: 'test'
+  ...
+# Subtest: English labels, disabled-world guard, active-only Escape, and dispose lifecycle
+ok 17 - English labels, disabled-world guard, active-only Escape, and dispose lifecycle
+  ---
+  duration_ms: 0.2374
+  type: 'test'
+  ...
+# Subtest: hot locale refresh translates pending and acknowledged status without resending the command
+ok 18 - hot locale refresh translates pending and acknowledged status without resending the command
+  ---
+  duration_ms: 0.193
+  type: 'test'
+  ...
+# Subtest: unlit grill reports fuel and preserves recipe progress and ingredients
+ok 19 - unlit grill reports fuel and preserves recipe progress and ingredients
+  ---
+  duration_ms: 3.0266
+  type: 'test'
+  ...
+# Subtest: expired grill fuel stops production without losing partial work or consuming fish
+ok 20 - expired grill fuel stops production without losing partial work or consuming fish
+  ---
+  duration_ms: 0.4076
+  type: 'test'
+  ...
+# Subtest: a lit grill resumes saved work and production does not debit another fire unit
+ok 21 - a lit grill resumes saved work and production does not debit another fire unit
+  ---
+  duration_ms: 0.6255
+  type: 'test'
+  ...
+# Subtest: raft editor localizes common, repair and storage presentation while retaining pending intent
+ok 22 - raft editor localizes common, repair and storage presentation while retaining pending intent
+  ---
+  duration_ms: 25.7032
+  type: 'test'
+  ...
+# Subtest: raft editor translates a matched common denial and ignores a reply with another operation ID
+ok 23 - raft editor translates a matched common denial and ignores a reply with another operation ID
+  ---
+  duration_ms: 0.5774
+  type: 'test'
+  ...
+# Subtest: live system catalog keeps both locales and interpolation parameters aligned
+ok 24 - live system catalog keeps both locales and interpolation parameters aligned
+  ---
+  duration_ms: 2.094
+  type: 'test'
+  ...
+# Subtest: live system catalog covers the M5-facing localization surfaces
+ok 25 - live system catalog covers the M5-facing localization surfaces
+  ---
+  duration_ms: 0.1405
+  type: 'test'
+  ...
+# Subtest: ordinary game admits the fixed helm and an observer sees the same moving raft and pilot
+ok 26 - ordinary game admits the fixed helm and an observer sees the same moving raft and pilot
+  ---
+  duration_ms: 693.8241
+  type: 'test'
+  ...
+# Subtest: voyage owns its blueprint and cargo even through trusted economy helpers
+ok 27 - voyage owns its blueprint and cargo even through trusted economy helpers
+  ---
+  duration_ms: 453.3656
+  type: 'test'
+  ...
+# Subtest: storage holds reject new naval input and transitions without advancing ACK, pose or profile
+ok 28 - storage holds reject new naval input and transitions without advancing ACK, pose or profile
+  ---
+  duration_ms: 380.281
+  type: 'test'
+  ...
+# Subtest: pause cancels a queued helm command and reconnect restores one conserved ship at its berth
+ok 29 - pause cancels a queued helm command and reconnect restores one conserved ship at its berth
+  ---
+  duration_ms: 379.9325
+  type: 'test'
+  ...
+# Subtest: admitted voyage parks the same body ashore, resumes with a fresh epoch and conserves its cargo
+ok 30 - admitted voyage parks the same body ashore, resumes with a fresh epoch and conserves its cargo
+  ---
+  duration_ms: 1373.9592
+  type: 'test'
+  ...
+# Subtest: live helm is a fixed station; pause neutralizes axes; nearby docking restores the saved raft
+ok 31 - live helm is a fixed station; pause neutralizes axes; nearby docking restores the saved raft
+  ---
+  duration_ms: 19.6952
+  type: 'test'
+  ...
+# Subtest: walking away from helm blocks reacquisition until the owner returns to the fixed station
+ok 32 - walking away from helm blocks reacquisition until the owner returns to the fixed station
+  ---
+  duration_ms: 4.7045
+  type: 'test'
+  ...
+# Subtest: coastal landing keeps the boat live while ashore, then reboards and returns without changing profile custody
+ok 33 - coastal landing keeps the boat live while ashore, then reboards and returns without changing profile custody
+  ---
+  duration_ms: 9.706
+  type: 'test'
+  ...
+# Subtest: a full deck has no fixed helm station to seize
+ok 34 - a full deck has no fixed helm station to seize
+  ---
+  duration_ms: 2.4339
+  type: 'test'
+  ...
+# Subtest: death or source invalidation ashore ends only the transient voyage and never revives the owner
+ok 35 - death or source invalidation ashore ends only the transient voyage and never revives the owner
+  ---
+  duration_ms: 6.3706
+  type: 'test'
+  ...
+# Subtest: own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+ok 36 - own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+  ---
+  duration_ms: 21.6935
+  type: 'test'
+  ...
+# Subtest: water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+ok 37 - water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+  ---
+  duration_ms: 3.2195
+  type: 'test'
+  ...
+# Subtest: boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+ok 38 - boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+  ---
+  duration_ms: 3.1248
+  type: 'test'
+  ...
+# Subtest: water exit cannot reach an exposed edge more than 1.5 units from the owner
+ok 39 - water exit cannot reach an exposed edge more than 1.5 units from the owner
+  ---
+  duration_ms: 5.1677
+  type: 'test'
+  ...
+# Subtest: failed walker creation restores the swimmer and preserves drowning grace
+ok 40 - failed walker creation restores the swimmer and preserves drowning grace
+  ---
+  duration_ms: 4.676
+  type: 'test'
+  ...
+# Subtest: restored voyage rebinds its ship revision and blueprint before the owner can swim
+ok 41 - restored voyage rebinds its ship revision and blueprint before the owner can swim
+  ---
+  duration_ms: 25.5464
+  type: 'test'
+  ...
+# Subtest: LocalServer receives swim and reboard commands and snapshots the parked and walking states
+ok 42 - LocalServer receives swim and reboard commands and snapshots the parked and walking states
+  ---
+  duration_ms: 551.4574
+  type: 'test'
+  ...
+# Subtest: geometry rejects high-floor drops and edges blocked by railings
+ok 43 - geometry rejects high-floor drops and edges blocked by railings
+  ---
+  duration_ms: 4.314
+  type: 'test'
+  ...
+# Subtest: boarding geometry only returns exposed base-deck points in deep water
+ok 44 - boarding geometry only returns exposed base-deck points in deep water
+  ---
+  duration_ms: 5.1936
+  type: 'test'
+  ...
+# Subtest: LocalServer capacity is owner-private, detached, and refreshed by an authoritative cargo transfer
+ok 45 - LocalServer capacity is owner-private, detached, and refreshed by an authoritative cargo transfer
+  ---
+  duration_ms: 456.7948
+  type: 'test'
+  ...
+# Subtest: sailing capacity agrees with the authoritative live rig for heavy cargo after mount
+ok 46 - sailing capacity agrees with the authoritative live rig for heavy cargo after mount
+  ---
+  duration_ms: 370.5798
+  type: 'test'
+  ...
+# Subtest: legacy cargo above safe carrying limit remains saved and visible but blocks a new departure
+ok 47 - legacy cargo above safe carrying limit remains saved and visible but blocks a new departure
+  ---
+  duration_ms: 349.9443
+  type: 'test'
+  ...
+# Subtest: equal-volume goods retain distinct masses; storage capacity uses volume while ballast uses mass
+ok 48 - equal-volume goods retain distinct masses; storage capacity uses volume while ballast uses mass
+  ---
+  duration_ms: 0.9529
+  type: 'test'
+  ...
+# Subtest: crate raises volume capacity; upper structure adds dry mass without changing flotation
+ok 49 - crate raises volume capacity; upper structure adds dry mass without changing flotation
+  ---
+  duration_ms: 1.2938
+  type: 'test'
+  ...
+# Subtest: lethal foundation damage rebuilds flotation from live parts while preserving cargo
+ok 50 - lethal foundation damage rebuilds flotation from live parts while preserving cargo
+  ---
+  duration_ms: 2.801
+  type: 'test'
+  ...
+# Subtest: legacy over-cap cargo survives sanitize and dimensions are derived without save migration
+ok 51 - legacy over-cap cargo survives sanitize and dimensions are derived without save migration
+  ---
+  duration_ms: 2.532
+  type: 'test'
+  ...
+# Subtest: GameClient commits only accepted capacity snapshots, rejects old ticks, and clears an accepted null
+ok 52 - GameClient commits only accepted capacity snapshots, rejects old ticks, and clears an accepted null
+  ---
+  duration_ms: 2.9746
+  type: 'test'
+  ...
+# Subtest: confirmed owner HUD capacity follows raft/profile revisions and port, sailing, and reboard modes
+ok 53 - confirmed owner HUD capacity follows raft/profile revisions and port, sailing, and reboard modes
+  ---
+  duration_ms: 0.4243
+  type: 'test'
+  ...
+# Subtest: raft edit route rejects forged ownership, visitors, distance, dead players, mooring loss, and bad pieces atomically
+ok 54 - raft edit route rejects forged ownership, visitors, distance, dead players, mooring loss, and bad pieces atomically
+  ---
+  duration_ms: 403.3564
+  type: 'test'
+  ...
+# Subtest: anonymous signed saves restore a paid edit and refuse oversized subsequent saves before market settlement
+ok 55 - anonymous signed saves restore a paid edit and refuse oversized subsequent saves before market settlement
+  ---
+  duration_ms: 413.6899
+  type: 'test'
+  ...
+# Subtest: allowed foundation placement charges held wood before the owner pack, then deduplicates and fences stale operations
+ok 56 - allowed foundation placement charges held wood before the owner pack, then deduplicates and fences stale operations
+  ---
+  duration_ms: 347.6606
+  type: 'test'
+  ...
+# Subtest: read-only village quote and supply buy real goods once with actual price, shared capacity, and atomic failures
+ok 57 - read-only village quote and supply buy real goods once with actual price, shared capacity, and atomic failures
+  ---
+  duration_ms: 316.7882
+  type: 'test'
+  ...
+# Subtest: supply preflight rejects wood when neither fragmented hold can fit one weighted unit
+ok 58 - supply preflight rejects wood when neither fragmented hold can fit one weighted unit
+  ---
+  duration_ms: 274.9764
+  type: 'test'
+  ...
+# Subtest: placing a second crate grows authoritative capacity and persists that cap across reconnect
+ok 59 - placing a second crate grows authoritative capacity and persists that cap across reconnect
+  ---
+  duration_ms: 283.5334
+  type: 'test'
+  ...
+# Subtest: placing the last wall across a visitor’s only room exit is denied without moving or charging anyone
+ok 60 - placing the last wall across a visitor’s only room exit is denied without moving or charging anyone
+  ---
+  duration_ms: 315.0547
+  type: 'test'
+  ...
+# Subtest: occupied floors and stairs plus structural supports and body blockers are protected atomically
+ok 61 - occupied floors and stairs plus structural supports and body blockers are protected atomically
+  ---
+  duration_ms: 275.5768
+  type: 'test'
+  ...
+# Subtest: crate removal shrinks hold capacity by moving goods into the pack before adding its refund
+ok 62 - crate removal shrinks hold capacity by moving goods into the pack before adding its refund
+  ---
+  duration_ms: 246.9966
+  type: 'test'
+  ...
+# Subtest: crate removal chooses a lossless cargo transfer independent of goods insertion order
+ok 63 - crate removal chooses a lossless cargo transfer independent of goods insertion order
+  ---
+  duration_ms: 281.7395
+  type: 'test'
+  ...
+# Subtest: condition serialization retains stable piece identities, HP and a monotonic next ID across refits
+ok 64 - condition serialization retains stable piece identities, HP and a monotonic next ID across refits
+  ---
+  duration_ms: 2.4909
+  type: 'test'
+  ...
+# Subtest: legacy condition restores healthy generated IDs; present malformed condition fails damaged pieces closed
+ok 65 - legacy condition restores healthy generated IDs; present malformed condition fails damaged pieces closed
+  ---
+  duration_ms: 0.3425
+  type: 'test'
+  ...
+# Subtest: signed save restart restores away pose and condition without moving the player or activating a pilot body
+ok 66 - signed save restart restores away pose and condition without moving the player or activating a pilot body
+  ---
+  duration_ms: 985.1407
+  type: 'test'
+  ...
+# Subtest: wrong-seed, unsafe and colliding voyage poses fall back to the dock while retaining condition and cargo
+ok 67 - wrong-seed, unsafe and colliding voyage poses fall back to the dock while retaining condition and cargo
+  ---
+  duration_ms: 1415.0786
+  type: 'test'
+  ...
+# Subtest: profile sanitizer defaults legacy voyage/condition and ignores client attempts to set live HP or pose
+ok 68 - profile sanitizer defaults legacy voyage/condition and ignores client attempts to set live HP or pose
+  ---
+  duration_ms: 311.9737
+  type: 'test'
+  ...
+# Subtest: recovered raft recall rejects remote requests, then recalls at the dock and clears voyage without healing or losing cargo
+ok 69 - recovered raft recall rejects remote requests, then recalls at the dock and clears voyage without healing or losing cargo
+  ---
+  duration_ms: 655.5096
+  type: 'test'
+  ...
+# Subtest: recovered shore reboard starts a fresh stationary helm authority and rejects the inactive epoch
+ok 70 - recovered shore reboard starts a fresh stationary helm authority and rejects the inactive epoch
+  ---
+  duration_ms: 692.5528
+  type: 'test'
+  ...
+# Subtest: mounting a docked raft without movement and disconnecting stays docked without recovery
+ok 71 - mounting a docked raft without movement and disconnecting stays docked without recovery
+  ---
+  duration_ms: 627.0764
+  type: 'test'
+  ...
+# Subtest: a persisted zero-float wreck returns at its dock with zero HP and the same IDs, then can be repaired
+ok 72 - a persisted zero-float wreck returns at its dock with zero HP and the same IDs, then can be repaired
+  ---
+  duration_ms: 1042.7667
+  type: 'test'
+  ...
+# Subtest: a blocked simulation tick cannot save queued but uncommitted raft damage
+ok 73 - a blocked simulation tick cannot save queued but uncommitted raft damage
+  ---
+  duration_ms: 533.4522
+  type: 'test'
+  ...
+# Subtest: GameHost account close and restart restores the memory-store raft snapshot
+ok 74 - GameHost account close and restart restores the memory-store raft snapshot
+  ---
+  duration_ms: 873.171
+  type: 'test'
+  ...
+# Subtest: account memory store reopens the same persisted boat and rejects a stale profile CAS
+ok 75 - account memory store reopens the same persisted boat and rejects a stale profile CAS
+  ---
+  duration_ms: 4.4798
+  type: 'test'
+  ...
+# Subtest: LocalServer clock preserves fractional work, settles the net-to-grill chain, and revises once per lot tick
+ok 76 - LocalServer clock preserves fractional work, settles the net-to-grill chain, and revises once per lot tick
+  ---
+  duration_ms: 622.5697
+  type: 'test'
+  ...
+# Subtest: signed save restores fractional work without producing while the owner is offline
+ok 77 - signed save restores fractional work without producing while the owner is offline
+  ---
+  duration_ms: 440.5107
+  type: 'test'
+  ...
+# Subtest: full hold pauses both pieces without consuming or losing goods, then resumes when space returns
+ok 78 - full hold pauses both pieces without consuming or losing goods, then resumes when space returns
+  ---
+  duration_ms: 409.3443
+  type: 'test'
+  ...
+# Subtest: signed guest save preflight rejects an oversized lot atomically, then recovers
+ok 79 - signed guest save preflight rejects an oversized lot atomically, then recovers
+  ---
+  duration_ms: 373.0198
+  type: 'test'
+  ...
+# Subtest: save-store throws preserve the entire staged lot and a later healthy preflight recovers
+ok 80 - save-store throws preserve the entire staged lot and a later healthy preflight recovers
+  ---
+  duration_ms: 391.0376
+  type: 'test'
+  ...
+# Subtest: revision exhaustion blocks once without work, cargo, or revision changes
+ok 81 - revision exhaustion blocks once without work, cargo, or revision changes
+  ---
+  duration_ms: 954.0404
+  type: 'test'
+  ...
+# Subtest: editor edits preserve unrelated module work and removing a module clears only its own tuple key
+ok 82 - editor edits preserve unrelated module work and removing a module clears only its own tuple key
+  ---
+  duration_ms: 413.1539
+  type: 'test'
+  ...
+# Subtest: the selected chain produces fish and biscuits at the authored rates
+ok 83 - the selected chain produces fish and biscuits at the authored rates
+  ---
+  duration_ms: 3.6346
+  type: 'test'
+  ...
+# Subtest: identical modules keep independent tuple identities and reorder keeps their fractions
+ok 84 - identical modules keep independent tuple identities and reorder keeps their fractions
+  ---
+  duration_ms: 0.7868
+  type: 'test'
+  ...
+# Subtest: whole lots preflight post-input capacity and never consume ingredients on a blocked output
+ok 85 - whole lots preflight post-input capacity and never consume ingredients on a blocked output
+  ---
+  duration_ms: 2.0625
+  type: 'test'
+  ...
+# Subtest: missing inputs freeze fractional work and stopped rows have no time estimate
+ok 86 - missing inputs freeze fractional work and stopped rows have no time estimate
+  ---
+  duration_ms: 0.5481
+  type: 'test'
+  ...
+# Subtest: sanitization keeps only bounded fractions for extant net and grill tuple keys
+ok 87 - sanitization keeps only bounded fractions for extant net and grill tuple keys
+  ---
+  duration_ms: 0.6047
+  type: 'test'
+  ...
+# Subtest: production rows are detached views with rate, recipe, progress, and remaining time
+ok 88 - production rows are detached views with rate, recipe, progress, and remaining time
+  ---
+  duration_ms: 0.5791
+  type: 'test'
+  ...
+# Subtest: invalid and oversized time is guarded, capped, and deterministic
+ok 89 - invalid and oversized time is guarded, capped, and deterministic
+  ---
+  duration_ms: 0.6091
+  type: 'test'
+  ...
+# Subtest: nets can only be placed on the ground-level rim
+ok 90 - nets can only be placed on the ground-level rim
+  ---
+  duration_ms: 0.477
+  type: 'test'
+  ...
+# Subtest: LocalServer purifier placement debits hold before pack, deduplicates, and rejects unsupported or unfunded pieces atomically
+ok 91 - LocalServer purifier placement debits hold before pack, deduplicates, and rejects unsupported or unfunded pieces atomically
+  ---
+  duration_ms: 595.0836
+  type: 'test'
+  ...
+# Subtest: LocalServer produces purifier water on its economy clock, revises once, saves, and reports only to the owner
+ok 92 - LocalServer produces purifier water on its economy clock, revises once, saves, and reports only to the owner
+  ---
+  duration_ms: 535.5778
+  type: 'test'
+  ...
+# Subtest: full hold and signed-save preflight pause purifier output without consuming its earned fraction
+ok 93 - full hold and signed-save preflight pause purifier output without consuming its earned fraction
+  ---
+  duration_ms: 557.3731
+  type: 'test'
+  ...
+# Subtest: raft capacity preflight refuses a purifier lot when its added cargo would exceed the live structure
+ok 94 - raft capacity preflight refuses a purifier lot when its added cargo would exceed the live structure
+  ---
+  duration_ms: 467.9414
+  type: 'test'
+  ...
+# Subtest: destroyed purifier keeps its fraction and reports broken, then the real repair command resumes it
+ok 95 - destroyed purifier keeps its fraction and reports broken, then the real repair command resumes it
+  ---
+  duration_ms: 530.9017
+  type: 'test'
+  ...
+# Subtest: voyage lock pauses purifier work; local HMAC rejoin restores produced water and work without offline production
+ok 96 - voyage lock pauses purifier work; local HMAC rejoin restores produced water and work without offline production
+  ---
+  duration_ms: 461.9602
+  type: 'test'
+  ...
+# Subtest: purifier is available in the raft editor with an ES/EN label and passive production help
+ok 97 - purifier is available in the raft editor with an ES/EN label and passive production help
+  ---
+  duration_ms: 1.6502
+  type: 'test'
+  ...
+# Subtest: production tab shows purifier output at one water every 96 simulated seconds in both locales
+ok 98 - production tab shows purifier output at one water every 96 simulated seconds in both locales
+  ---
+  duration_ms: 19.0357
+  type: 'test'
+  ...
+# Subtest: production projection reports destroyed purifiers and voyage pauses without presenting them as working
+ok 99 - production projection reports destroyed purifiers and voyage pauses without presenting them as working
+  ---
+  duration_ms: 1.0996
+  type: 'test'
+  ...
+# Subtest: a current profile supplies newer fractional purifier progress and its matching ETA
+ok 100 - a current profile supplies newer fractional purifier progress and its matching ETA
+  ---
+  duration_ms: 0.5866
+  type: 'test'
+  ...
+# Subtest: an older profile preserves the authoritative production row and working ETA
+ok 101 - an older profile preserves the authoritative production row and working ETA
+  ---
+  duration_ms: 1.1833
+  type: 'test'
+  ...
+# Subtest: empty production panel points to the purifier and describes its no-fuel output
+ok 102 - empty production panel points to the purifier and describes its no-fuel output
+  ---
+  duration_ms: 0.2004
+  type: 'test'
+  ...
+# Subtest: purifier produces one water per 0.1 game day (96 simulation seconds)
+ok 103 - purifier produces one water per 0.1 game day (96 simulation seconds)
+  ---
+  duration_ms: 4.5699
+  type: 'test'
+  ...
+# Subtest: a full hold pauses at its saved fraction and resumes a whole water lot
+ok 104 - a full hold pauses at its saved fraction and resumes a whole water lot
+  ---
+  duration_ms: 1.1306
+  type: 'test'
+  ...
+# Subtest: purifier fractions follow tuple identity across reorder and removal; modules progress independently
+ok 105 - purifier fractions follow tuple identity across reorder and removal; modules progress independently
+  ---
+  duration_ms: 0.6772
+  type: 'test'
+  ...
+# Subtest: adding purifier production leaves net and grill rates, inputs, outputs, and lots unchanged
+ok 106 - adding purifier production leaves net and grill rates, inputs, outputs, and lots unchanged
+  ---
+  duration_ms: 1.6587
+  type: 'test'
+  ...
+# Subtest: rows expose broken and voyage stops without changing saved work or cargo
+ok 107 - rows expose broken and voyage stops without changing saved work or cargo
+  ---
+  duration_ms: 0.5348
+  type: 'test'
+  ...
+# Subtest: part repair cost and salvage scale with missing or surviving HP without changing the blueprint
+ok 108 - part repair cost and salvage scale with missing or surviving HP without changing the blueprint
+  ---
+  duration_ms: 3.2958
+  type: 'test'
+  ...
+# Subtest: damaged voyage condition survives docking and repair debits once while preserving part identity
+ok 109 - damaged voyage condition survives docking and repair debits once while preserving part identity
+  ---
+  duration_ms: 668.0663
+  type: 'test'
+  ...
+# Subtest: repair rejects forged HP, changed tuple, stale revision, extra fields, healthy parts and receipt aliases atomically
+ok 110 - repair rejects forged HP, changed tuple, stale revision, extra fields, healthy parts and receipt aliases atomically
+  ---
+  duration_ms: 571.5312
+  type: 'test'
+  ...
+# Subtest: save preflight and insufficient materials roll back repair, condition, inventory, revision, and receipt
+ok 111 - save preflight and insufficient materials roll back repair, condition, inventory, revision, and receipt
+  ---
+  duration_ms: 540.3578
+  type: 'test'
+  ...
+# Subtest: repair is restricted to the owner at the mooring/editor zone and pauses while busy or underway
+ok 112 - repair is restricted to the owner at the mooring/editor zone and pauses while busy or underway
+  ---
+  duration_ms: 468.3953
+  type: 'test'
+  ...
+# Subtest: one original-plan foundation can be repaired from the dock ramp after every live float is destroyed
+ok 113 - one original-plan foundation can be repaired from the dock ramp after every live float is destroyed
+  ---
+  duration_ms: 433.779
+  type: 'test'
+  ...
+# Subtest: destroyed cargo modules and floats preserve legacy stock; withdrawal stays possible and excess-increasing deposits stop
+ok 114 - destroyed cargo modules and floats preserve legacy stock; withdrawal stays possible and excess-increasing deposits stop
+  ---
+  duration_ms: 565.7806
+  type: 'test'
+  ...
+# Subtest: destroyed production modules stop while dormant work and other module progress are conserved through repair
+ok 115 - destroyed production modules stop while dormant work and other module progress are conserved through repair
+  ---
+  duration_ms: 626.1562
+  type: 'test'
+  ...
+# Subtest: reinforcement preserves the damaged fraction and removing a destroyed part refunds no materials
+ok 116 - reinforcement preserves the damaged fraction and removing a destroyed part refunds no materials
+  ---
+  duration_ms: 699.6215
+  type: 'test'
+  ...
+# Subtest: condition is captured before detach and reattachment preserves the damaged instance
+ok 117 - condition is captured before detach and reattachment preserves the damaged instance
+  ---
+  duration_ms: 797.1298
+  type: 'test'
+  ...
+# Subtest: refits preserve unrelated damage, reinforcement scales current HP, and removing a wreck yields no salvage
+ok 118 - refits preserve unrelated damage, reinforcement scales current HP, and removing a wreck yields no salvage
+  ---
+  duration_ms: 1.2054
+  type: 'test'
+  ...
+# Subtest: a v3 timing denial receipts cleanly when the live economy is ahead of the saved baseline
+ok 119 - a v3 timing denial receipts cleanly when the live economy is ahead of the saved baseline
+  ---
+  duration_ms: 7636.3368
+  type: 'test'
+  ...
+# Subtest: three valid v3 aim hits still award once and replay their exact receipt
+ok 120 - three valid v3 aim hits still award once and replay their exact receipt
+  ---
+  duration_ms: 7236.7212
+  type: 'test'
+  ...
+1..120
+# tests 120
+# suites 0
+# pass 120
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 33315.8921

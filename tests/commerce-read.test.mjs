@@ -41,7 +41,8 @@ test('readCommerce returns bounded current list and quote projections without si
   const list = readCommerce(world, entity, { op: 'list', town: 'aldea' });
   assert.equal(list.ok, true);
   assert.deepEqual(Object.keys(list.rows[0]).sort(), ['buy', 'g', 'illegal', 'sell', 'stock', 'trend']);
-  assert.deepEqual(list.pack, { cap: profile.eco.pack.cap, goods: { ...profile.eco.pack.goods } });
+  assert.deepEqual(list.pack, { cap: profile.eco.pack.cap, maxMass: profile.eco.pack.maxMass,
+    goods: { ...profile.eco.pack.goods } });
   assert.equal(list.gold, profile.gold);
   const quote = readCommerce(world, entity, { op: 'quote', town: 'aldea', g: 'fruta', n: 3, side: 'buy' });
   assert.equal(quote.ok, true);

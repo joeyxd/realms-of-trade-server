@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 46; // Durable owner control head/CAS and explicit resume; reload peers.
+export const PROTOCOL_VERSION = 47; // Purifier production palette and broken/voyage status projections; reload peers.
 
 export const MSG = {
   // client -> server
