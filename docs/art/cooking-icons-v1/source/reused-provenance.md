@@ -1,4 +1,4 @@
-﻿# Torch, resin, and coconut art references
+# Torch, resin, and coconut art references
 
 Generated with the built-in `image_gen` tool. The five source PNGs below are retained at full resolution; all five were visually inspected. Each has a real transparent alpha channel (alpha range 0–255).
 

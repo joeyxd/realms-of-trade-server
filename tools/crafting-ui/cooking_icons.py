@@ -111,7 +111,7 @@ def main():
                 'runtime': {'columns': COLS, 'rows': ROWS, 'ids': RUNTIME, 'assets': assets},
                 'externalAtlas': {'file': 'cooking-atlas-alpha.png', 'columns': 4, 'rows': 5, 'cell': 512, 'ids': all_ids},
                 'sources': sources, 'items': report}
-    (ART/'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+    (ART/'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
     # Pack only deliberate deliverables; no .scratch, secrets, or unrelated evidence.
     with zipfile.ZipFile(ART/'cooking-tripo-pack-v1.zip', 'w', compression=zipfile.ZIP_DEFLATED) as package:
         for name in ['README.md', 'manifest.json', 'prompts.json', 'source/reused-provenance.md', 'cooking-atlas-alpha.png', 'contact-sheet.jpg']:
