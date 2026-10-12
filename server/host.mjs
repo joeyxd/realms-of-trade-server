@@ -224,9 +224,10 @@ export class GameHost {
         this.pendingJoins || this.joins.size || s.clients.size || this.profiles.accounts.size ||
         this.profiles.clients.size || this.profiles.tasks.size || w.tick !== 0 || w.profiles.size ||
         w.drops.size || w.pearlLedger.size || countBots(w) !== 0 ||
-        s.beforeTick !== this.groundAuthority.boundary || w.isDeathDropManaged != null) throw new StoreError('configuration');
+        s.beforeTick !== this.groundAuthority.boundary || s.onPearlCommand !== null || w.isDeathDropManaged != null) throw new StoreError('configuration');
     this.#groundPearls = new GroundPearlLifecycle(this);
     w.isDeathDropManaged = managedDeathDrop;
+    s.onPearlCommand = this.#groundPearls.command;
     return this.#groundPearls;
   }
 
@@ -369,6 +370,8 @@ export class GameHost {
     this.#groundPearlMints?.pending || this.#groundPearlMints?.failed; }
 
   #assertPearlGroundOwner() {
+    try { this.#groundPearls?.assertOwner(); }
+    catch (error) { this.#stopPearls(); throw error; }
     if (this.#pearlGround && (this.server.world !== this.#pearlGround.world ||
         this.server.beforeTick !== this.#stagingBoundary || this.#pearlGround.failed)) {
       this.#pearlGround.fail(); this.#stopPearls(); throw new StoreError('effect');
@@ -1249,6 +1252,8 @@ export class GameHost {
     if (this.groundAuthority && !this.groundAuthority.canMutate()) return false;
     if (this.closing || this.economicAuthority?.busy || this.economicAuthority?.failed || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#groundBusy()) return false;
     try {
+      // Check the mounted command owner before LocalServer can select any immediate helper.
+      this.#assertPearlGroundOwner();
       const gate = pearlMutationGate(this.profiles), lanes = this.profileLanes(id, entity);
       if (plan.target !== null) {
         // The target is an entity selector, never an account identity. Resolve the current client

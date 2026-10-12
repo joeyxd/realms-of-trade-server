@@ -122,6 +122,7 @@ export class LocalServer {
     this.now = now;
     this.clients = new Map(); // clientId -> {entity, queue, ack}
     this.inputAccess = null; // Optional host-owned controller gate, checked at enqueue and consumption.
+    this.onPearlCommand = null; // Optional receipted owner; never fall through to an immediate mutation.
     this.chat = new ChatService({ config: chat, now, send, peers: () => {
       const ecs = this.world.ecs;
       return [...this.clients].filter(([, c]) => c.entity && ecs.alive[c.entity]).map(([clientId, c]) => ({
@@ -329,6 +330,8 @@ export class LocalServer {
       return false;
     }
     if (w.navalPilot?.aboard(e)) return false;
+    if (pearl && this.onPearlCommand !== null)
+      return profileDecision(this.onPearlCommand(this.clientOf(e), e, msg), 'pearl command');
     switch (msg.type) {
       case 'equip': equipItem(w, e, uid, typeof msg.slot === 'string' ? msg.slot : undefined); break;
       case 'unequip': unequipItem(w, e, String(msg.slot)); break;
