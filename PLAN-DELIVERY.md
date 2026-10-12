@@ -5,6 +5,16 @@
 Sigue [give gratuito de bolsa entre cuentas](docs/briefs/m5-ground-pearl-give.md); contrato preparado, implementación pendiente.
 La adopción pública exige componer recursos GM y compañeros/control con el piloto común, que continúa apagado.
 
+**ST01a, 2026-10-12 — laboratorio privado de Tromba, alpha.64/protocolo 59:**
+[Contrato](docs/briefs/skill-studio-vision.md), [entrega](docs/delivery/st01a/DELIVERY.md).
+Continúa el taller aprobado: ajustar efectos actuales con personaje real, reproducción/comparación,
+controles acotados, recuperación y exportación privada. No hay SQL ni publicación de variantes.
+Regresiones 29/29, Tromba anterior 25/25 y Chrome local 9/9; publicación pendiente de verificar el VPS.
+ST01 no se marca completo:
+la adaptación real de Niagara y el contrato compartido conservan sus propios criterios de aceptación.
+El [taller futuro de UI](docs/briefs/ui-workshop-vision.md) queda planificado, sin runtime nuevo:
+selección, mover/redimensionar con anclajes, cambiar arte y revisar estados/ES/EN/escritorio/móvil.
+
 **Bucanero — reacción original + retroceso, alpha.62/protocolo 59:**
 [Contrato](docs/briefs/buccaneer-combat-reaction.md), [entrega](docs/delivery/buccaneer-v1/combat-reaction/README.md).
 Golpe original adaptado al rig armado, sin desplazar raíz/piernas ni impedir correr/disparar;

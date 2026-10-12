@@ -6,6 +6,17 @@ Alpha.63 observado sano; los montajes comunes siguen nulos. La matriz separa est
 Sigue [give gratuito de bolsa entre cuentas](briefs/m5-ground-pearl-give.md), contrato preparado, implementación pendiente.
 Componer GM/compañeros/control y rutas activas antes de adoptar; conservar los guards actuales y los checkpoints fechados debajo.
 
+**ST01a — laboratorio privado de Tromba, alpha.64/protocolo 59:**
+[Contrato](briefs/skill-studio-vision.md) y [entrega](delivery/st01a/DELIVERY.md).
+Portada → Taller de habilidades con permiso GM; personaje real, reproducción y parámetros visuales,
+original/borrador con semilla/reloj/cámara comunes, undo/redo y borrador local por cuenta/servidor.
+Importar/exportar JSON acotado; no publica variantes ni ingresa un cuerpo o escribe progreso.
+Sin SQL nuevo. Regresiones 29/29 y comparación con Tromba anterior 25/25; Chrome local 9/9
+en ES/EN/escritorio/móvil, con recuperación, revocación y foco de teclado. Publicación pendiente de verificar el VPS.
+ST01 sigue activo: adaptación Niagara real y posterior contrato de variantes compartidas.
+El [taller de UI](briefs/ui-workshop-vision.md) queda diseñado para mover/redimensionar/cambiar arte,
+con anclajes, estados y pruebas responsive; implementación diferida por petición del autor.
+
 **Bucanero — reacción original y retroceso, alpha.62/protocolo 59:**
 [Contrato](briefs/buccaneer-combat-reaction.md) y [entrega](delivery/buccaneer-v1/combat-reaction/README.md).
 `hit_to_body_01` adaptado como capa aditiva al rig armado: torso/cabeza, brazos solo quieto;

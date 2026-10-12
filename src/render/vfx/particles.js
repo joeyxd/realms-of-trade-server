@@ -94,7 +94,9 @@ void main() {
 }`;
 
 export class ParticlePool {
-  constructor(capacity, { additive = false, name = 'particles' } = {}) {
+  constructor(capacity, { additive = false, name = 'particles', random = Math.random } = {}) {
+    if (typeof random !== 'function') throw new TypeError('ParticlePool random source must be a function');
+    this.random = random;
     this.cap = capacity;
     this.pos = new Float32Array(capacity * 3);
     this.vel = new Float32Array(capacity * 3);
@@ -151,7 +153,7 @@ export class ParticlePool {
   }
 
   spawn(x, y, z, vx, vy, vz, { life = 0.6, size = 0.5, size1, color = [1, 1, 1], alpha = 1, gravity = 0, drag = 1.5, shape = 0, turb = 0, heat = 0 } = {}) {
-    if (this.budget < 1 && Math.random() > this.budget) return;
+    if (this.budget < 1 && this.random() > this.budget) return;
     const i = this.cursor;
     this.cursor = (this.cursor + 1) % this.cap;
     this.alive[i] = 1;
@@ -162,7 +164,7 @@ export class ParticlePool {
     this.alpha0[i] = alpha;
     this.col[i * 4] = color[0]; this.col[i * 4 + 1] = color[1]; this.col[i * 4 + 2] = color[2]; this.col[i * 4 + 3] = alpha;
     this.grav[i] = gravity; this.drag[i] = drag; this.turb[i] = turb;
-    const seed = Math.random() * 0.98;
+    const seed = this.random() * 0.98;
     this.seed[i] = seed * 40;
     this.data[i * 4 + 2] = shape + seed;
     this.data[i * 4 + 3] = heat;

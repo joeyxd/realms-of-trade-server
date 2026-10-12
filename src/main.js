@@ -640,6 +640,7 @@ async function boot() {
   let accountReady;
   const initializeAccount = () => accountReady ??= accountAuth.bootstrap({ online: st.online });
   let gmEditor = null;
+  let skillStudio = null;
   let gmOwner = null;
   let gmCameraPose = null;
   let gmWorldUIHidden = false;
@@ -717,6 +718,41 @@ async function boot() {
       } finally { st.gmOpening = false; }
     },
   });
+  const skillEntry = new GmEntry({
+    parent: title.root.querySelector('.title-row'), auth: accountAuth, online: st.online,
+    httpBase: st.online ? httpUrlFor(transport.url) : location.href,
+    buttonId: 'btn-skill-studio', buttonLabel: () => getLocale() === 'en' ? 'Skill workshop' : 'Taller de habilidades',
+    available: () => st.mode === 'title' && !st.boarding && !st.gmOpening && !client.joined && !pause.open,
+    onRevoke: () => skillStudio?.close({ force: true }),
+    onOpen: async accountId => {
+      if (st.mode !== 'title' || st.boarding || client.joined) return;
+      st.gmOpening = true;
+      try {
+        const { SkillStudio } = await import('./editor/skillStudio.js');
+        skillStudio?.dispose();
+        skillStudio = new SkillStudio({ parent: $('#ui'), renderer: world.renderer,
+          scope: { accountId: accountId || 'local', serverId: st.online ? httpUrlFor(transport.url) : 'solo' }, skin: settings.skin,
+          onClose: () => {
+            st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();
+            worldUI.root.hidden = gmWorldUIHidden;
+            world.pipeline.markDirty(); world.renderer.shadowMap.needsUpdate = true;
+            skillEntry.closed(); gmEntry.render(); input.clearActions(); input.keys.clear();
+            canvas.focus({ preventScroll: true });
+          },
+        });
+        input.enabled = false; input.clearActions(); input.keys.clear(); aimCtl.reset();
+        gmWorldUIHidden = worldUI.root.hidden;
+        await skillStudio.open();
+        if (!skillStudio.active) throw new Error('Skill workshop could not open');
+        st.mode = 'skill-studio'; title.root.hidden = true; title.pulse?.pause(); worldUI.root.hidden = true;
+      } catch (error) {
+        skillStudio?.dispose(); st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();
+        title.message(getLocale() === 'en' ? 'The skill workshop could not open. Your draft is preserved.' : 'No se pudo abrir el taller de habilidades. Tu borrador se conserva.');
+        throw error;
+      } finally { st.gmOpening = false; }
+    },
+  });
+  onLocaleChange(() => skillEntry.render());
   bus.on('save', (m) => { if (m && typeof m.blob === 'string') storeSave(saveSlot(), m.blob); });
   addEventListener('pagehide', () => safe('save', () => {
     if (st.online || !client.joined || !client.profile) return;
@@ -741,6 +777,7 @@ async function boot() {
   function netLost(contentChanged = false) {
     companionsPanel?.close(); companions.disconnect(); companionConfig.disconnect(); inferenceConfig.disconnect(); companionCreation.disconnect(); companionPairing.disconnect();
     if (gmEditor?.active) void gmEditor.close({ force: true });
+    if (skillStudio?.active) skillStudio.close({ force: true });
     chatPanel.disconnected();
     chatBubbles.disconnected();
     artisan.close(); community.close(); firePanel.close(); freshwaterPanel.close();
@@ -1335,6 +1372,10 @@ async function boot() {
         hud.setParty(st.mode === 'playing' ? party : []);
       });
       const playing = st.mode === 'playing' && client.joined;
+      if (st.mode === 'skill-studio' && skillStudio?.active) {
+        safe('skillStudio', () => skillStudio.update(realDt));
+        return;
+      }
       if (st.mode === 'editor' && gmEditor?.active) {
         safe('gmEditor', () => {
           gmEditor.update(realDt);
@@ -1703,9 +1744,10 @@ async function boot() {
   title.ready();
   document.getElementById('bootstrap-locale').hidden = true;
   gmEntry.ready = true; gmEntry.render();
+  skillEntry.ready = true; skillEntry.render();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount().then(() => accountSetup?.consumeLink());
-  window.__mn = { world, client, settings, st, ps, map, gmContent, gmContentLayer, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, companions, get gmEditor() { return gmEditor; }, panels: { firePanel, freshwaterPanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
+  window.__mn = { world, client, settings, st, ps, map, gmContent, gmContentLayer, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, skillEntry, companions, get skillStudio() { return skillStudio; }, get gmEditor() { return gmEditor; }, panels: { firePanel, freshwaterPanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

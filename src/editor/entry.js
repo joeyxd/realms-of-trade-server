@@ -1,7 +1,7 @@
 // Admission to the editor is separate from admission to a gameplay body.
 export class GmEntry {
-  constructor({ parent, auth, online, httpBase, available, onOpen, onRevoke, fetchImpl = globalThis.fetch.bind(globalThis) }) {
-    Object.assign(this, { auth, online, httpBase, available, onOpen, onRevoke, fetchImpl });
+  constructor({ parent, auth, online, httpBase, available, onOpen, onRevoke, buttonId = 'btn-gm-editor', buttonLabel = null, fetchImpl = globalThis.fetch.bind(globalThis) }) {
+    Object.assign(this, { auth, online, httpBase, available, onOpen, onRevoke, fetchImpl, buttonLabel });
     this.ready = false;
     this.allowed = !online;
     this.accountId = '';
@@ -9,7 +9,7 @@ export class GmEntry {
     this.busy = false;
     this.active = false;
     this.button = document.createElement('button');
-    this.button.id = 'btn-gm-editor';
+    this.button.id = buttonId;
     this.button.className = 'btn secondary interactive';
     parent.append(this.button);
     this.button.addEventListener('click', () => void this.open());
@@ -26,7 +26,7 @@ export class GmEntry {
   render() {
     this.button.hidden = this.online && !this.auth.state.signedIn;
     this.button.disabled = !this.ready || !this.allowed || this.busy || !this.available();
-    this.button.textContent = this.busy ? 'Abriendo… / Opening…' : this.online ? 'Editor GM / GM editor' : 'Editor GM local / Local GM editor';
+    this.button.textContent = this.busy ? 'Abriendo… / Opening…' : this.buttonLabel?.() || (this.online ? 'Editor GM / GM editor' : 'Editor GM local / Local GM editor');
     this.button.title = this.allowed ? 'Borrador privado / Private draft' : 'Esta cuenta no tiene permiso GM / This account has no GM permission';
   }
 
