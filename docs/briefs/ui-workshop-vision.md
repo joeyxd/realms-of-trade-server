@@ -1,6 +1,6 @@
 # Taller futuro de interfaz
 
-**Estado: propuesta de diseño; no implementado ni desplegado.** Este brief prepara una futura herramienta de autoría de UI para MAREA NEGRA. No cambia el corte activo: el siguiente trabajo autorizado sigue siendo el Taller de habilidades (ST01), que ajusta primero habilidades actuales e incluye una adaptación real de Niagara. Este taller de UI es posterior y no debe desplazar ni mezclar su alcance.
+**Estado: propuesta de diseño; no implementado ni desplegado.** Este brief prepara una futura herramienta de autoría de UI para MAREA NEGRA. El trabajo activo sigue siendo el Taller de habilidades (ST01): ST01a entrega el laboratorio privado de Tromba; la adaptación real de Niagara y las variantes compartidas siguen pendientes. Este taller de UI es posterior y no debe desplazar ni mezclar su alcance.
 
 ## Objetivo
 

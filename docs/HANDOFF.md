@@ -12,7 +12,9 @@ Portada → Taller de habilidades con permiso GM; personaje real, reproducción 
 original/borrador con semilla/reloj/cámara comunes, undo/redo y borrador local por cuenta/servidor.
 Importar/exportar JSON acotado; no publica variantes ni ingresa un cuerpo o escribe progreso.
 Sin SQL nuevo. Regresiones 29/29 y comparación con Tromba anterior 25/25; Chrome local 9/9
-en ES/EN/escritorio/móvil, con recuperación, revocación y foco de teclado. Publicación pendiente de verificar el VPS.
+en ES/EN/escritorio/móvil, con recuperación, revocación y foco de teclado. Publicado en `1417975`:
+actualizador 194/194, imagen saludable, hashes 14/14 contenedor + 12/12 públicos, GM público 7/7
+y entrada WSS normal. Cero errores/guardados pendientes; contenido generación 8 conservado.
 ST01 sigue activo: adaptación Niagara real y posterior contrato de variantes compartidas.
 El [taller de UI](briefs/ui-workshop-vision.md) queda diseñado para mover/redimensionar/cambiar arte,
 con anclajes, estados y pruebas responsive; implementación diferida por petición del autor.

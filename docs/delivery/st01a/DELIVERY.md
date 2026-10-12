@@ -46,7 +46,25 @@ escrituras GM remotas y comandos de juego. Capturas inspeccionadas:
 [borrador](local/accepted-keyboard/tromba-draft-es-desktop.png),
 [móvil EN](local/accepted-keyboard/tromba-en-844x390.png) y
 [vertical rotado ES](local/accepted-keyboard/tromba-es-390x844.png).
-La publicación en el VPS habitual queda pendiente de comprobar revisión, salud y entrada real.
+La [aceptación pública autenticada](public/accepted/browser.json) pasa 7/7 en la misma imagen,
+con Bucanero nativo y cambio de pose comprobado durante el lanzamiento. Se inspeccionaron
+[lanzamiento](public/accepted/tromba-cast-es-desktop.png),
+[borrador EN](public/accepted/tromba-draft-en-desktop.png),
+[móvil EN](public/accepted/tromba-en-844x390.png) y
+[vertical rotado ES](public/accepted/tromba-es-390x844.png).
+La primera pasada midió el panel móvil antes de aplicar el CSS lazy; la repetición espera
+el grid, dimensiones válidas y primer render, con timeout. La apertura en frío puede mostrar
+brevemente el DOM sin estilos. No hubo un fallo persistente del diseño móvil ni un cambio de runtime.
+
+Publicado en alpha.64/protocolo 59: runtime enviado en `7b34381`, revisión activa comprobada
+`1417975` (integra después solo documentación). El [actualizador](updater.json) pasó 194/194
+en ambas revisiones; son repeticiones de la misma suite. [Imagen y fuentes](public-runtime.json):
+14/14 archivos del contenedor y 12/12 públicos iguales a Git, contenedor saludable.
+[Salud pública](deployment.json) HTTP 200, cero errores/guardados pendientes;
+[entrada WebSocket normal](public-entry.json) con bienvenida, perfil y snapshot.
+Contenido compartido conservado: generación 8, revisión base nula, ocho recibos y siete revisiones retenidas.
+No se aplicó SQL ni se publicaron variantes visuales. El acceso GM real y la entrada normal
+se verificaron por separado; recuperación, cuota/revocación y no-GM conservan sus pruebas locales.
 La emulación móvil comprueba distribución y límites de partículas (128 frente a 256 en escritorio),
 sin demostrar FPS, overdraw o rendimiento en un teléfono físico.
 

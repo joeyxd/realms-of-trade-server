@@ -9,7 +9,9 @@ La adopción pública exige componer recursos GM y compañeros/control con el pi
 [Contrato](docs/briefs/skill-studio-vision.md), [entrega](docs/delivery/st01a/DELIVERY.md).
 Continúa el taller aprobado: ajustar efectos actuales con personaje real, reproducción/comparación,
 controles acotados, recuperación y exportación privada. No hay SQL ni publicación de variantes.
-Regresiones 29/29, Tromba anterior 25/25 y Chrome local 9/9; publicación pendiente de verificar el VPS.
+Regresiones 29/29, Tromba anterior 25/25 y Chrome local 9/9. Publicado en `1417975`:
+actualizador 194/194, imagen saludable, hashes 14/14 contenedor + 12/12 públicos,
+GM público 7/7 y entrada WSS normal; cero errores/guardados pendientes y generación 8 conservada.
 ST01 no se marca completo:
 la adaptación real de Niagara y el contrato compartido conservan sus propios criterios de aceptación.
 El [taller futuro de UI](docs/briefs/ui-workshop-vision.md) queda planificado, sin runtime nuevo:
