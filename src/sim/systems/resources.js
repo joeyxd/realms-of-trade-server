@@ -2,6 +2,7 @@
 import { DT } from '../../data/tuning.js';
 import { HARVEST, RESOURCE_KINDS, CRAFT_RECIPES, sanitizeTools, resourceLayout } from '../../data/resources.js';
 import { GOODS } from '../../data/goods.js';
+import { harvestLoot } from '../../data/harvestLoot.js';
 import { TRADE } from './trade.js';
 import { holdUsed, load, unload } from '../economy/cargo.js';
 import { C } from '../ecs.js';
@@ -56,6 +57,7 @@ export function publicResources(w) {
   }
   nodes.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
   return { nodes, bench: r.bench ? { ...r.bench } : null,
+    ...(w.harvestLootEnabled === true ? { lootRules: 1 } : {}),
     ...(r.timing === undefined ? {} : { timing: r.timing }),
     ...(typeof r.logicalTick === 'function' ? { logicalTick: r.logicalTick() } : {}) };
 }
@@ -82,11 +84,13 @@ function exactSchema(msg) {
     : msg.op === 'craft' ? ['recipe', 'expectedRev', 'n'] : null;
   if (!fields) return false;
   const allowed = new Set(['type', 't', 'op', 'opId', ...fields,
-    ...(msg.op === 'gather' && owns(msg, 'challenge') ? ['challenge'] : [])]);
+    ...(msg.op === 'gather' && owns(msg, 'challenge') ? ['challenge'] : []),
+    ...(msg.op === 'gather' && owns(msg, 'lootRules') ? ['lootRules'] : [])]);
   return Object.keys(msg).every((k) => allowed.has(k))
     && owns(msg, 'opId') && typeof msg.opId === 'string' && OP_ID.test(msg.opId)
     && owns(msg, 'expectedRev') && Number.isSafeInteger(msg.expectedRev)
     && (!owns(msg, 'challenge') || (msg.op === 'gather' && typeof msg.challenge === 'string' && OP_ID.test(msg.challenge)))
+    && (!owns(msg, 'lootRules') || (msg.op === 'gather' && msg.lootRules === 1))
     && (msg.op !== 'gather' || (typeof msg.node === 'string' && msg.node.length > 0 && msg.node.length <= 40))
     && (msg.op !== 'craft' || (typeof msg.recipe === 'string' && owns(CRAFT_RECIPES, msg.recipe)
       && (!owns(msg, 'n') || (Number.isSafeInteger(msg.n) && msg.n >= 1 && msg.n <= CRAFT_RECIPES[msg.recipe].max))));
@@ -94,7 +98,7 @@ function exactSchema(msg) {
 
 function signature(msg) {
   return msg.op === 'gather'
-    ? JSON.stringify([msg.op, msg.node, msg.expectedRev, msg.challenge ?? null])
+    ? JSON.stringify([msg.op, msg.node, msg.expectedRev, msg.challenge ?? null, msg.lootRules ?? null])
     : JSON.stringify([msg.op, msg.recipe, msg.expectedRev, msg.n ?? 1]);
 }
 
@@ -191,6 +195,8 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
     if (w.navalPilot?.aboard?.(e)) return deny('land', tradeRev);
     const node = r.nodes.get(msg.node);
     if (!node) return deny('node', tradeRev);
+    if (node.kind === 'palm' && w.harvestLootEnabled === true && msg.lootRules !== 1) return deny('schema', node.rev);
+    if (owns(msg, 'lootRules') && (msg.lootRules !== 1 || node.kind !== 'palm' || w.harvestLootEnabled !== true)) return deny('schema', node.rev);
     if (msg.expectedRev !== node.rev) return deny('revision', node.rev);
     if (node.rev >= HARVEST.maxRev) return deny('revisionLimit', node.rev);
     if (node.readyTick > w.tick) return deny('depleted', node.rev,
@@ -226,12 +232,21 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
         && node.readyTick > 0 && node.readyTick <= w.tick);
       count = 3 + (legacyUncredited ? 0 : (ledger?.quality || 0) + timingQuality);
     }
-    const stagedCount = timingEnabled ? 6 : (kind.yield || 1);
+    // Before the final hit, reserve the largest possible timing yield. On the final hit,
+    // check only its resolved count so lower-quality hits fit when their actual bundle does.
+    const stagedCount = finalHit ? count : (timingEnabled ? 6 : (kind.yield || 1));
     const stagedPack = { ...pack, goods: { ...pack.goods } };
     if (!good || !load(stagedPack, good, stagedCount)) return deny('full', node.rev);
+    const loot = owns(msg, 'lootRules') && msg.lootRules === 1 && isPalm && finalHit
+      ? harvestLoot(node.kind, node.id, node.rev + 1) : {};
+    for (const [bonusGood, bonusCount] of Object.entries(loot))
+      if (!load(stagedPack, bonusGood, bonusCount)) return deny('full', node.rev);
     if (!finalHit && !fits(profile, stagedPack, tradeRev + 1, saveFits)) return deny('saveSize', node.rev);
     if (count > 0) {
-      if (!load(pack, good, count) || !commit(w, e, profile, pack, tradeRev + 1, saveFits)) return deny('saveSize', node.rev);
+      if (!load(pack, good, count)) return deny('saveSize', node.rev);
+      for (const [bonusGood, bonusCount] of Object.entries(loot))
+        if (!load(pack, bonusGood, bonusCount)) return deny('full', node.rev);
+      if (!commit(w, e, profile, pack, tradeRev + 1, saveFits)) return deny('saveSize', node.rev);
     }
     node.rev += 1;
     if (work) {
@@ -244,7 +259,7 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
       rev: node.rev, remaining: left, felled: isPalm && finalHit,
       ...(work && !isPalm ? { broken: finalHit, tool: kind.tool } : {}) });
     return remember(emit(w, e, msg, true, '', node.rev,
-      work ? { good, count, profileRev: profile.eco.tradeRev, remaining: left, ...(timing ? { timing } : {}), ...(isPalm ? { felled: finalHit } : { broken: finalHit }) }
+      work ? { good, count, profileRev: profile.eco.tradeRev, remaining: left, ...(timing ? { timing } : {}), ...(isPalm ? { felled: finalHit, ...(Object.keys(loot).length ? { loot } : {}) } : { broken: finalHit }) }
         : { good, count, profileRev: profile.eco.tradeRev }));
   }
 

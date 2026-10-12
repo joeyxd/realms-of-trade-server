@@ -123,3 +123,16 @@ test('copy is bilingual, source/range guards are clear, and no bucket creation s
   f.setLocale('es'); f.panel.update(); assert.equal(f.panel.craftButton.textContent, 'Fabricar cubeta · 2 maderas');
   assert.equal(f.panel.active, true);
 });
+
+test('coconut appears as an edible good and sends the normal eat command', () => {
+  const f = fixture();
+  f.client.profile.eco.pack.goods.coco = 1;
+  f.client.freshwaterStatus.needs = { sat: 60, hyd: 20 };
+  f.client.freshwaterStatus.canteenEnabled = true;
+  f.client.profile.eco.pack.vessels = [{ id: 'canteen', kind: 'canteen', water: 0 }];
+  f.panel.open();
+  assert.match(f.panel.foodsBox._html, /data-food="coco">Coco/);
+  assert.equal(f.panel.eat('coco'), true);
+  assert.equal(f.commands.at(-1).op, 'eat');
+  assert.equal(f.commands.at(-1).source, 'coco');
+});

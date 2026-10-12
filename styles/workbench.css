@@ -28,7 +28,7 @@
   border-image: var(--frame) 48 fill / calc(20 * var(--u)) round;
   filter: drop-shadow(0 calc(10 * var(--u)) calc(18 * var(--u)) #000a);
 }
-.cr-main { width: calc(822 * var(--u)); height: calc(716 * var(--u)); display: grid; grid-template-rows: auto auto minmax(0, 1fr); padding: calc(2 * var(--u)) calc(4 * var(--u)) calc(4 * var(--u)); }
+.cr-main { width: calc(822 * var(--u)); height: calc(716 * var(--u)); display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); padding: calc(2 * var(--u)) calc(4 * var(--u)) calc(4 * var(--u)); }
 
 /* Header */
 .wb-head { position: relative; display: flex; align-items: center; gap: calc(14 * var(--u)); padding: 0 calc(8 * var(--u)) calc(8 * var(--u)); }
@@ -95,7 +95,7 @@
 .is-glyph svg { width: 80%; height: 80%; }
 
 /* Detail */
-.cr-detail { position: relative; overflow: hidden; display: grid; grid-template-columns: calc(226 * var(--u)) calc(40 * var(--u)) minmax(0, 1fr);
+.cr-detail { position: relative; min-width: 0; overflow: hidden; display: grid; grid-template-columns: calc(226 * var(--u)) calc(40 * var(--u)) minmax(0, 1fr);
   grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: "info info info" "req arrow out" "foot stats stats" "act act act";
   column-gap: calc(8 * var(--u)); padding: calc(14 * var(--u)) calc(14 * var(--u)) calc(10 * var(--u)) calc(18 * var(--u)); }
 .cr-art { position: absolute; z-index: 0; right: calc(4 * var(--u)); top: calc(2 * var(--u)); width: calc(270 * var(--u)); height: calc(300 * var(--u));
@@ -274,7 +274,7 @@
   .cr-row { min-height: 38px; gap: 8px; }
   .cr-tile { width: 34px; height: 32px; }
   .cr-name { font-size: 13px; }
-  .cr-detail { overflow: auto; overscroll-behavior: contain; grid-template-columns: auto 30px minmax(0, 1fr); padding: 8px 10px 6px; }
+  .cr-detail { overflow: auto; overscroll-behavior: contain; grid-template-columns: auto 30px minmax(0, 1fr); grid-template-rows: auto auto auto auto; padding: 8px 10px 6px; }
   .cr-art { width: 120px; height: 150px; right: 8px; top: 4px; }
   .cr-info { min-height: 0; padding-bottom: 8px; max-width: calc(100% - 130px); }
   .cr-info h2 { font-size: 20px; }
@@ -283,14 +283,15 @@
   .cr-where { margin-top: 6px; font-size: 10px; }
   .cr-detail h3 { font-size: 13px; margin-bottom: 5px; }
   .cr-cards { gap: 6px; }
-  .cr-card { width: 74px; height: 92px; }
-  .cr-card-art { width: 54px; height: 46px; }
+  .cr-card { width: 74px; height: 74px; }
+  .cr-card-art { width: 48px; height: 34px; }
   .cr-card b { font-size: 11px; } .cr-card em { font-size: 15px; }
   .cr-arrow { width: 26px; height: 22px; margin-top: 18px; }
   .cr-out-card { width: 68px; height: 74px; }
   .cr-out-art { width: 58px; height: 62px; }
   .cr-out-name { padding: 6px 8px; } .cr-out-name b, .cr-out-name em { font-size: 13px; }
-  .cr-stats { margin-top: 6px; }
+  .cr-stats { margin-top: 4px; }
+  .cr-stats h3 { padding-bottom: 0; margin-bottom: 4px; }
   .cr-stats [data-stats] { grid-template-columns: 14px max-content minmax(30px, 1fr) max-content; gap: 4px 6px; }
   .cr-stat-ico { width: 13px; height: 13px; }
   .cr-stat-name, .cr-stat b { font-size: 11px; }
@@ -299,9 +300,15 @@
   .cr-qty > span, .cr-qty small { font-size: 11px; }
   .wb-amounts button, .wb-qty-input input { min-height: 30px; font-size: 13px; }
   .wb-feedback { min-height: 14px; font-size: 12px; }
-  .cr-action { position: sticky; bottom: -6px; margin: 0 -10px -6px; padding: 8px 0 6px; background: linear-gradient(#0b1a2900, #0b1a29f2 34%); }
-  .wb-confirm { width: min(320px, 90%); height: 42px; font-size: 20px !important; }
+  .cr-action { position: relative; margin: 0 -10px; padding: 4px 0; }
+  .wb-confirm { width: min(320px, 90%); height: 40px; font-size: 20px !important; }
   .wb-confirm::before { border-width: 0 70px; border-image-width: 0 70px; }
+}
+
+/* At common 720p landscape heights, the detail grid can compress its stats row beneath the action button. */
+@container stage (min-height: 521px) and (max-height: 760px) {
+  .cr-main { height: min(calc(780 * var(--u)), calc(100cqh - 32px)); }
+  .cr-detail { overflow: auto; overscroll-behavior: contain; grid-template-rows: auto auto auto auto; }
 }
 
 /* Portrait phones: one scrolling column; recipes become a strip; the backpack follows the detail. */

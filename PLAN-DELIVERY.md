@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**Antorcha de campo/resina/coco, 2026-10-12 — corte local preparado:**
+[Contrato](docs/briefs/torch-resin-coconut.md), [entrega](docs/delivery/torch-resin-coconut/DELIVERY.md).
+Receta elegida por el autor: 2 troncos + 1 resina sin banco; extras probabilísticos
+al completar tala y coco consumible para +25 hidratación. Arte con alfa entregado
+para Tripo3D; meshes a cargo del autor. UI revisada ES/EN, 720p y móvil, 4/4 navegador
+y 149/149 regresiones focales; SQL037 final 9/9. Aplicación SQL y activación pública pendientes; no marcar
+publicado ni sustituir la aceptación de Supabase por pruebas locales.
+
 **AREA15, 2026-10-12 — continuidad de las áreas concurrentes:**
 [Matriz por sistema](docs/CONTINUITY-MATRIX.md), [revisión/evidencia](docs/delivery/m5-continuity-review.md).
 Sigue [give gratuito de bolsa entre cuentas](docs/briefs/m5-ground-pearl-give.md); contrato preparado, implementación pendiente.

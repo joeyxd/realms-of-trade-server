@@ -58,7 +58,7 @@ export class InProcessTransport extends BaseTransport {
     super();
     this.kind = 'inprocess';
     this.inbox = [];
-    this.server = new LocalServer({ fire: true, freshwater: true, seed, bots, debug, send: (_id, m) => this.inbox.push(m) });
+    this.server = new LocalServer({ fire: true, freshwater: true, survival: true, harvestLoot: true, seed, bots, debug, send: (_id, m) => this.inbox.push(m) });
     this.server.connect(1);
     this.server.start();
     this.inbox.push({ t: MSG.READY });

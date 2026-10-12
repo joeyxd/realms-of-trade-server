@@ -24,7 +24,8 @@ export function fireStatus(w, e) {
   if (w.fireEnabled !== true) return { enabled: false, rev: 0, slots: [] };
   const profile = w.profiles.get(e);
   const state = readFire(profile?.fire);
-  return { enabled: w.fireEnabled === true, rev: state.rev, slots: fireRows(state, fireSeconds(w)) };
+  return { enabled: w.fireEnabled === true, rev: state.rev, slots: fireRows(state, fireSeconds(w)),
+    ...(w.harvestLootEnabled === true ? { torchRules: 2 } : {}) };
 }
 
 export function syncFireLight(w, e) {
@@ -69,6 +70,8 @@ export function localFireCmd(w, e, command, saveFits = () => true) {
     w.emit(ack); return ack;
   }
   let why = w.fireEnabled ? fireAccess(w, e, command) : 'disabled';
+  if (!why && w.harvestLootEnabled === true && command.kind === 'handTorch'
+      && command.op === 'load' && command.rules !== 2) why = 'command';
   let result;
   if (!why) {
     try { result = fireProfileDelta(w.profiles.get(e), payload, fireSeconds(w)); why = result.why; }

@@ -1,5 +1,6 @@
 // Profile-only fire mutations shared by the connected authority and local server.
 import { changeFireSlot, readFire } from '../economy/fire.js';
+import { fuelForKind } from '../../data/fire.js';
 
 const clone = structuredClone;
 const MAX_REV = 2147483646;
@@ -11,13 +12,16 @@ const keys = (v, wanted) => object(v) && Reflect.ownKeys(v).length === wanted.le
 const fail = why => ({ why });
 
 function checkedCommand(command) {
-  if (!keys(command, ['type', 'op', 'opId', 'ship', 'part', 'kind', 'expectedRev', 'lit']) ||
+  const baseKeys = ['type', 'op', 'opId', 'ship', 'part', 'kind', 'expectedRev', 'lit'];
+  const expectedKeys = object(command) && Object.hasOwn(command, 'rules') ? [...baseKeys, 'rules'] : baseKeys;
+  if (!keys(command, expectedKeys) ||
       command.type !== 'fire' || !['load', 'set'].includes(command.op) ||
       typeof command.opId !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(command.opId) ||
       typeof command.ship !== 'string' || command.ship.length > 120 ||
       typeof command.part !== 'string' || command.part.length > 100 || !KINDS.has(command.kind) ||
       !Number.isSafeInteger(command.expectedRev) || command.expectedRev < 0 || command.expectedRev > MAX_REV ||
       typeof command.lit !== 'boolean') return null;
+  if (Object.hasOwn(command, 'rules') && (command.rules !== 2 || command.op !== 'load' || command.kind !== 'handTorch')) return null;
   if (command.kind === 'handTorch' ? command.ship !== '' || command.part !== 'hand' :
       !command.ship || !command.part || command.part === 'hand') return null;
   return { ...command };
@@ -55,21 +59,29 @@ export function fireProfileDelta(before, commandRaw, nowSec) {
   if (command.op === 'load') {
     if (before.eco.tradeRev >= MAX_REV) return fail('revisionLimit');
     const stationIndex = selected.station ? next.eco.ships.findIndex(s => s.id === command.ship) : -1;
+    // Unversioned hand loads retain the original one-plank receipt contract.
+    const fuel = command.kind === 'handTorch' && command.rules !== 2
+      ? { madera: 1 } : fuelForKind(command.kind);
+    if (!fuel) return fail('kind');
     if (command.kind === 'handTorch') {
       const goods = next.eco.pack?.goods;
-      if (!object(goods) || !Number.isSafeInteger(goods.madera) || goods.madera < 1) return fail('goods');
-      goods.madera--;
-      if (goods.madera === 0) delete goods.madera;
+      if (!object(goods)) return fail('goods');
+      for (const [good, amount] of Object.entries(fuel))
+        if (!Number.isSafeInteger(goods[good]) || goods[good] < amount) return fail('goods');
+      for (const [good, amount] of Object.entries(fuel)) {
+        goods[good] -= amount;
+        if (goods[good] === 0) delete goods[good];
+      }
     } else {
       const holdGoods = next.eco.ships[stationIndex]?.hold?.goods;
       const packGoods = next.eco.pack?.goods;
-      if (object(holdGoods) && Number.isSafeInteger(holdGoods.madera) && holdGoods.madera > 0) {
-        holdGoods.madera--;
-        if (holdGoods.madera === 0) delete holdGoods.madera;
-      } else if (object(packGoods) && Number.isSafeInteger(packGoods.madera) && packGoods.madera > 0) {
-        packGoods.madera--;
-        if (packGoods.madera === 0) delete packGoods.madera;
-      } else return fail('goods');
+      for (const [good, amount] of Object.entries(fuel)) {
+        const source = object(holdGoods) && Number.isSafeInteger(holdGoods[good]) && holdGoods[good] >= amount
+          ? holdGoods : object(packGoods) && Number.isSafeInteger(packGoods[good]) && packGoods[good] >= amount ? packGoods : null;
+        if (!source) return fail('goods');
+        source[good] -= amount;
+        if (source[good] === 0) delete source[good];
+      }
     }
     next.eco.tradeRev++;
   }

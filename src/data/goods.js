@@ -16,6 +16,8 @@ export const GOODS = {
   cana: { name: 'Caña de azúcar', cat: 'material', base: 6, w: 2, volume: 2, mass: 2, perish: 0.02 },
   madera: { name: 'Tabla básica', cat: 'material', base: 9, w: 3, volume: 3, mass: 3 },
   tronco: { name: 'Tronco recogido', cat: 'material', base: 5, w: 3, volume: 3, mass: 3 },
+  resina: { name: 'Resina', cat: 'material', base: 3, w: 0.25, volume: 0.25, mass: 0.2 },
+  coco: { name: 'Coco', cat: 'food', base: 4, w: 1, volume: 1, mass: 0.5 },
   piedra: { name: 'Piedra', cat: 'material', base: 4, w: 2, volume: 2, mass: 4 },
   hierro: { name: 'Hierro', cat: 'material', base: 16, w: 3, volume: 3, mass: 6 },
   mineral_hierro: { name: 'Mineral de hierro', cat: 'material', base: 8, w: 3, volume: 3, mass: 6 }, // raw ore; no refining recipe or automatic town stock

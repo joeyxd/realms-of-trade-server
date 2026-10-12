@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Antorchas/resina/coco, 2026-10-12 — implementación local, protocolo 60:**
+[Contrato](briefs/torch-resin-coconut.md), [entrega y activación](delivery/torch-resin-coconut/DELIVERY.md).
+Antorcha a mano por 2 troncos + 1 resina; extras de tala de palmera 35 % resina/40 % coco,
+coco +25 hidratación, iconos 128/64 px y referencias PNG con alfa para Tripo3D.
+Corregidos idioma del fuego y solapamiento de estadísticas/botón de fabricación.
+Chrome local 4/4 EN/ES escritorio/móvil; regresión focal 149/149 y SQL037 final 9/9;
+Supabase y `MN_TORCH_RESIN_COCONUT_OPERATIONS=1` pendientes, sin publicación de este corte.
+La entrega distingue un test antiguo de ficha que falla también en HEAD limpio.
+
 **AREA15, 2026-10-12 — plan de continuidad reconciliado:**
 [Matriz de cobertura](CONTINUITY-MATRIX.md), [revisión y lectura VPS](delivery/m5-continuity-review.md).
 Alpha.63 observado sano; los montajes comunes siguen nulos. La matriz separa estado guardado, recibo probado y aceptación pública.

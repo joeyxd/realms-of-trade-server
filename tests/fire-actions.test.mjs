@@ -52,6 +52,10 @@ test('fire command retries exact request once, times out, and denial feedback is
   f.setTime(1000); f.actions.update(); assert.equal(f.sent[1], command);
   f.actions.acknowledge({ type: 'fire', op: 'set', opId: command.opId, ok: false, why: 'goods' });
   assert.equal(f.toasts.at(-1), 'You need 1 basic plank in your pack.');
+  f.client.fire.torchRules = 2;
+  f.actions.toggle();
+  f.actions.acknowledge({ type: 'fire', op: 'set', opId: f.sent.at(-1).opId, ok: false, why: 'goods' });
+  assert.equal(f.toasts.at(-1), 'You need 2 logs and 1 resin; resin may drop when you fell palms.');
   f.actions.toggle(); f.setTime(6000); f.actions.update();
   assert.equal(f.actions.pending, null);
   assert.equal(f.toasts.at(-1), 'The connection is taking longer. Fuel remains under server control.');
