@@ -1,0 +1,582 @@
+{
+  "schema": "marea.art.cooking-icons.v1",
+  "generation": "Built-in image_gen, actual alpha",
+  "sourceTreatment": "Crop, center, resize; original alpha preserved. No keying or repainting.",
+  "runtime": {
+    "columns": 4,
+    "rows": 4,
+    "ids": [
+      "pescado",
+      "fruta",
+      "harina",
+      "galleta",
+      "ron",
+      "agua",
+      "cana",
+      "especias",
+      "coco",
+      "resina",
+      "meal_roastFish",
+      "meal_grog",
+      "meal_heartyBiscuit"
+    ],
+    "assets": [
+      {
+        "file": "assets/ui/kit/foods-v1.webp",
+        "dimensions": [
+          512,
+          512
+        ],
+        "bytes": 81228,
+        "sha256": "a2da6ce226f44977b9d51f6824ea5ae7d416d90ecb14a7876bceb87697d3e960"
+      },
+      {
+        "file": "assets/ui/kit/foods-v1-mobile.webp",
+        "dimensions": [
+          256,
+          256
+        ],
+        "bytes": 26764,
+        "sha256": "c404f06b7c4c53ce1b8dbba7d0e903711aa00406fe00b7ae905f653daca06278"
+      }
+    ]
+  },
+  "externalAtlas": {
+    "file": "cooking-atlas-alpha.png",
+    "columns": 4,
+    "rows": 5,
+    "cell": 512,
+    "ids": [
+      "pescado",
+      "fruta",
+      "harina",
+      "galleta",
+      "ron",
+      "agua",
+      "meal_roastFish",
+      "meal_grog",
+      "meal_heartyBiscuit",
+      "sal_marina",
+      "lima",
+      "hierbas_aromaticas",
+      "cana",
+      "especias",
+      "coco",
+      "resina",
+      "antorcha"
+    ]
+  },
+  "sources": [
+    {
+      "file": "source/coconut-reused.png",
+      "sha256": "ee368816bb83193f24234bb38882b02d1d2406a14d8c2bc1dd5f4df8839ff333",
+      "dimensions": [
+        1321,
+        1191
+      ]
+    },
+    {
+      "file": "source/resin-reused.png",
+      "sha256": "8c672428a55ecedb39553f92b0cb894e8f5dd52196d0ed5f8f60a783ff307135",
+      "dimensions": [
+        1374,
+        1145
+      ]
+    },
+    {
+      "file": "source/sheet-a-basics.png",
+      "sha256": "cb8bcafc9f968f55f241913cbe8f950e3b99f87336d5abee1d5acd526740abcb",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "source/sheet-b-meals-concepts.png",
+      "sha256": "048460c3e6f630ae1ff710caf6f6d2a5378488c90ddfaa7146758f6fc4e74eb8",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "source/sheet-c-pantry.png",
+      "sha256": "26503f7528569937084ae4b328373554820a879e160f5dd18eb7c115ec610efc",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "source/torch-reused.png",
+      "sha256": "777beeb5d9c91434507b8825168cfeedbd299027a90fb002599dd7b2de09d0ea",
+      "dimensions": [
+        1254,
+        1254
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "pescado",
+      "label": "Pescado",
+      "status": "current",
+      "file": "singles/pescado.png",
+      "dimensions": [
+        642,
+        642
+      ],
+      "source": "source/sheet-a-basics.png",
+      "crop": [
+        0,
+        0,
+        615,
+        485
+      ],
+      "alphaBoundsInCrop": [
+        30,
+        117,
+        603,
+        444
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "f7c93f1f4ee288694d8dacbf599894481355a6f6d3b739f9a06b32fc683a79f6"
+    },
+    {
+      "id": "fruta",
+      "label": "Fruta tropical",
+      "status": "current",
+      "file": "singles/fruta.png",
+      "dimensions": [
+        433,
+        433
+      ],
+      "source": "source/sheet-a-basics.png",
+      "crop": [
+        615,
+        0,
+        1030,
+        485
+      ],
+      "alphaBoundsInCrop": [
+        13,
+        70,
+        396,
+        457
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "02fe1b7d0f638c769b2750cc8888ff7775f9bde4dd6730cf7c914133abf03a4a"
+    },
+    {
+      "id": "harina",
+      "label": "Harina",
+      "status": "current",
+      "file": "singles/harina.png",
+      "dimensions": [
+        510,
+        510
+      ],
+      "source": "source/sheet-a-basics.png",
+      "crop": [
+        1030,
+        0,
+        1536,
+        485
+      ],
+      "alphaBoundsInCrop": [
+        15,
+        63,
+        470,
+        474
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "4b4d9a7c73c2c7a9c52398ead7acb611212b7ea14f7790a972e0dd1040581657"
+    },
+    {
+      "id": "galleta",
+      "label": "Galleta de barco",
+      "status": "current",
+      "file": "singles/galleta.png",
+      "dimensions": [
+        479,
+        479
+      ],
+      "source": "source/sheet-a-basics.png",
+      "crop": [
+        0,
+        485,
+        512,
+        1024
+      ],
+      "alphaBoundsInCrop": [
+        45,
+        100,
+        473,
+        452
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "a830fcb39858cfe627671cf90c6402e0db60fe4975487beab21e832910d3720d"
+    },
+    {
+      "id": "ron",
+      "label": "Ron",
+      "status": "current",
+      "file": "singles/ron.png",
+      "dimensions": [
+        551,
+        551
+      ],
+      "source": "source/sheet-a-basics.png",
+      "crop": [
+        512,
+        485,
+        1024,
+        1024
+      ],
+      "alphaBoundsInCrop": [
+        85,
+        3,
+        432,
+        495
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "56c281715e03f0400f9351ac6a84ab2354945469da73cfdfa02c1b55a9da7a7f"
+    },
+    {
+      "id": "agua",
+      "label": "Agua dulce",
+      "status": "current",
+      "file": "singles/agua.png",
+      "dimensions": [
+        545,
+        545
+      ],
+      "source": "source/sheet-a-basics.png",
+      "crop": [
+        1024,
+        485,
+        1536,
+        1024
+      ],
+      "alphaBoundsInCrop": [
+        73,
+        13,
+        445,
+        500
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "6cfbb1e3c060cc718ad7f41bc48741ead19ffa45b678bfd128ba853f53480a2d"
+    },
+    {
+      "id": "meal_roastFish",
+      "label": "Pescado asado",
+      "status": "meal",
+      "file": "singles/meal_roastFish.png",
+      "dimensions": [
+        570,
+        570
+      ],
+      "source": "source/sheet-b-meals-concepts.png",
+      "crop": [
+        0,
+        0,
+        570,
+        512
+      ],
+      "alphaBoundsInCrop": [
+        37,
+        147,
+        546,
+        416
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "273a398d715b61b52a38b6b55a47df7f6503e559487e17486ccb1f6b792fc05f"
+    },
+    {
+      "id": "meal_grog",
+      "label": "Grog",
+      "status": "meal",
+      "file": "singles/meal_grog.png",
+      "dimensions": [
+        451,
+        451
+      ],
+      "source": "source/sheet-b-meals-concepts.png",
+      "crop": [
+        570,
+        0,
+        1030,
+        512
+      ],
+      "alphaBoundsInCrop": [
+        25,
+        75,
+        428,
+        475
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "fe4676698ca7b9b30be69488eab34bc66f0b602c66dccc5df5190d7c463e2e7f"
+    },
+    {
+      "id": "meal_heartyBiscuit",
+      "label": "Galleta reforzada",
+      "status": "meal",
+      "file": "singles/meal_heartyBiscuit.png",
+      "dimensions": [
+        467,
+        467
+      ],
+      "source": "source/sheet-b-meals-concepts.png",
+      "crop": [
+        1030,
+        0,
+        1536,
+        512
+      ],
+      "alphaBoundsInCrop": [
+        46,
+        118,
+        463,
+        444
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "1eb552267a6dba5741d3e9ad34209e6a46983fa5cafcf0f203891a1f249f6bd3"
+    },
+    {
+      "id": "sal_marina",
+      "label": "Sal marina (propuesta)",
+      "status": "proposal",
+      "file": "proposals/sal_marina.png",
+      "dimensions": [
+        402,
+        402
+      ],
+      "source": "source/sheet-b-meals-concepts.png",
+      "crop": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "alphaBoundsInCrop": [
+        79,
+        66,
+        434,
+        425
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "794c859f1d69211f0e417f1b09071c806e37be733e13dcded0c9d97d027b4a6c"
+    },
+    {
+      "id": "lima",
+      "label": "Lima (propuesta)",
+      "status": "proposal",
+      "file": "proposals/lima.png",
+      "dimensions": [
+        417,
+        417
+      ],
+      "source": "source/sheet-b-meals-concepts.png",
+      "crop": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "alphaBoundsInCrop": [
+        63,
+        82,
+        435,
+        409
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "7d628c0a3d48bbacc309e67d3cf481d2da5c0ec870d2820bf133b9f08014e0ae"
+    },
+    {
+      "id": "hierbas_aromaticas",
+      "label": "Hierbas (propuesta)",
+      "status": "proposal",
+      "file": "proposals/hierbas_aromaticas.png",
+      "dimensions": [
+        487,
+        487
+      ],
+      "source": "source/sheet-b-meals-concepts.png",
+      "crop": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "alphaBoundsInCrop": [
+        23,
+        23,
+        458,
+        449
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "a8b41cb2b8b2a2653c27998ca9daa1e639b555b044347f1f65e3fe8e89fe5108"
+    },
+    {
+      "id": "cana",
+      "label": "Caña de azúcar",
+      "status": "ingredient",
+      "file": "singles/cana.png",
+      "dimensions": [
+        884,
+        884
+      ],
+      "source": "source/sheet-c-pantry.png",
+      "crop": [
+        0,
+        0,
+        820,
+        1024
+      ],
+      "alphaBoundsInCrop": [
+        89,
+        117,
+        785,
+        906
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "e021c8e7362c6d29e7e1b8b544b5ca653d6d946e16a9a81dcc1ee141ab769954"
+    },
+    {
+      "id": "especias",
+      "label": "Especias",
+      "status": "ingredient",
+      "file": "singles/especias.png",
+      "dimensions": [
+        713,
+        713
+      ],
+      "source": "source/sheet-c-pantry.png",
+      "crop": [
+        820,
+        0,
+        1536,
+        1024
+      ],
+      "alphaBoundsInCrop": [
+        25,
+        225,
+        641,
+        862
+      ],
+      "alphaRange": [
+        0,
+        254
+      ],
+      "sha256": "a185737570d9333b39faa4e3bc4694d6f15dc2a54e155844c511c40e120b3322"
+    },
+    {
+      "id": "coco",
+      "label": "Coco",
+      "status": "sql037-art",
+      "file": "singles/coco.png",
+      "dimensions": [
+        1127,
+        1127
+      ],
+      "source": "source/coconut-reused.png",
+      "crop": null,
+      "alphaBoundsInCrop": [
+        173,
+        111,
+        1179,
+        1103
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "sha256": "b283766d064dc02023ff41b9cb80619afb2482fd795bc7d471bfb96f1787a9a1"
+    },
+    {
+      "id": "resina",
+      "label": "Resina (material)",
+      "status": "sql037-art",
+      "file": "singles/resina.png",
+      "dimensions": [
+        943,
+        943
+      ],
+      "source": "source/resin-reused.png",
+      "crop": null,
+      "alphaBoundsInCrop": [
+        270,
+        161,
+        1112,
+        942
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "sha256": "ff90eb9304b4427056cc690e9107b859cd6f2d72ee888a143dd365f25620e178"
+    },
+    {
+      "id": "antorcha",
+      "label": "Antorcha apagada (referencia)",
+      "status": "reference",
+      "file": "singles/antorcha.png",
+      "dimensions": [
+        1297,
+        1297
+      ],
+      "source": "source/torch-reused.png",
+      "crop": null,
+      "alphaBoundsInCrop": [
+        286,
+        54,
+        1071,
+        1212
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "sha256": "70a41e1c195d34ad5a6ca40467123fa43afee209aad3eb9663d337c50d05452b"
+    }
+  ]
+}

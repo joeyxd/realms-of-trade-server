@@ -1,0 +1,118 @@
+{
+  "schema": "st01a-runtime/v1",
+  "at": "2026-10-12T16:13:52.539Z",
+  "container": "374d7b0a71295933abcd96d2e50979b3e58e02f2abcef3447531cc33cbefcd9a",
+  "image": "sha256:3dc6ac07d175809b673d45f2600161064a252bb727de1c7f7ceccbd110a1fc74",
+  "revision": "1417975ed4e10cef34a03d39eb47f40765534a3f",
+  "health": "healthy",
+  "running": true,
+  "runtime": {
+    "version": "0.6.0-alpha.64",
+    "protocol": 59,
+    "hashes": {
+      "package.json": "01c1ca033f01d34038f2b18f868892331590305cb3cd913b0a8b1132f36728c4",
+      "src/data/meta.js": "d35c545f199d92c17aa1e251132d01e4df9dc4dd7ca9cf17c8181b291c154b85",
+      "src/editor/entry.js": "7d016146c681c09d8c16d7ae8a751d854e75a9f9655643f9e411a21fc04308b5",
+      "src/editor/skillDocument.js": "4bf75224eaa06903022397d2af0dd2fd7b9f56f31b08d1417e2c3cc38d26f988",
+      "src/editor/skillStudio.js": "948fea8d1b25e0f4e2c5a098570d673ea950dce0accedd28f9723975e6550e52",
+      "src/editor/skillStudio.css": "7dcf8b8b97ea676e92836f6e0e83e6d550370fef24855941eea4545bb0016b87",
+      "src/main.js": "3e3fc89c6c04fad155661b258986679d41010642b434ba25e47e4ff68e44407d",
+      "src/render/characters.js": "41f1b0c4665db878ba2ccee6c7bb733ac7e9e3444f399e8a49f90bde549513b2",
+      "src/render/vfx/particles.js": "f987e8b323cd5bde5e08891c99b65a9edc69802ce3e516b4d7e79e8a965f8c12",
+      "src/render/vfx/skillfx.js": "ad2828f40df54548fc9fecb096bf45ee39d8cfb6e106d17ad4cb9132ec9377a7",
+      "src/render/skillPreview.js": "b0de04c76b8ca01a5cddba011048b9d8ffa7cc078af12f413753558c6679b7b9",
+      "src/net/protocol.js": "1595accb85ea5f9c43cfa671932523006deb7fb7c2d09cfc84659ba0633cc860",
+      "src/data/weapons.js": "4dc0e01c228b03dc030734d9b3ee71373d150fa91dd748dc1c2290c4ce28dae9",
+      "server/host.mjs": "30a1b727c020b07959cef399b4e6b62f73ecb7996918c873b86fc078953142a1"
+    }
+  },
+  "sourceFileCount": 14,
+  "matchedFiles": 14,
+  "files": {
+    "package.json": {
+      "git": "01c1ca033f01d34038f2b18f868892331590305cb3cd913b0a8b1132f36728c4",
+      "container": "01c1ca033f01d34038f2b18f868892331590305cb3cd913b0a8b1132f36728c4",
+      "matches": true
+    },
+    "src/data/meta.js": {
+      "git": "d35c545f199d92c17aa1e251132d01e4df9dc4dd7ca9cf17c8181b291c154b85",
+      "container": "d35c545f199d92c17aa1e251132d01e4df9dc4dd7ca9cf17c8181b291c154b85",
+      "matches": true
+    },
+    "src/editor/entry.js": {
+      "git": "7d016146c681c09d8c16d7ae8a751d854e75a9f9655643f9e411a21fc04308b5",
+      "container": "7d016146c681c09d8c16d7ae8a751d854e75a9f9655643f9e411a21fc04308b5",
+      "matches": true
+    },
+    "src/editor/skillDocument.js": {
+      "git": "4bf75224eaa06903022397d2af0dd2fd7b9f56f31b08d1417e2c3cc38d26f988",
+      "container": "4bf75224eaa06903022397d2af0dd2fd7b9f56f31b08d1417e2c3cc38d26f988",
+      "matches": true
+    },
+    "src/editor/skillStudio.js": {
+      "git": "948fea8d1b25e0f4e2c5a098570d673ea950dce0accedd28f9723975e6550e52",
+      "container": "948fea8d1b25e0f4e2c5a098570d673ea950dce0accedd28f9723975e6550e52",
+      "matches": true
+    },
+    "src/editor/skillStudio.css": {
+      "git": "7dcf8b8b97ea676e92836f6e0e83e6d550370fef24855941eea4545bb0016b87",
+      "container": "7dcf8b8b97ea676e92836f6e0e83e6d550370fef24855941eea4545bb0016b87",
+      "matches": true
+    },
+    "src/main.js": {
+      "git": "3e3fc89c6c04fad155661b258986679d41010642b434ba25e47e4ff68e44407d",
+      "container": "3e3fc89c6c04fad155661b258986679d41010642b434ba25e47e4ff68e44407d",
+      "matches": true
+    },
+    "src/render/characters.js": {
+      "git": "41f1b0c4665db878ba2ccee6c7bb733ac7e9e3444f399e8a49f90bde549513b2",
+      "container": "41f1b0c4665db878ba2ccee6c7bb733ac7e9e3444f399e8a49f90bde549513b2",
+      "matches": true
+    },
+    "src/render/vfx/particles.js": {
+      "git": "f987e8b323cd5bde5e08891c99b65a9edc69802ce3e516b4d7e79e8a965f8c12",
+      "container": "f987e8b323cd5bde5e08891c99b65a9edc69802ce3e516b4d7e79e8a965f8c12",
+      "matches": true
+    },
+    "src/render/vfx/skillfx.js": {
+      "git": "ad2828f40df54548fc9fecb096bf45ee39d8cfb6e106d17ad4cb9132ec9377a7",
+      "container": "ad2828f40df54548fc9fecb096bf45ee39d8cfb6e106d17ad4cb9132ec9377a7",
+      "matches": true
+    },
+    "src/render/skillPreview.js": {
+      "git": "b0de04c76b8ca01a5cddba011048b9d8ffa7cc078af12f413753558c6679b7b9",
+      "container": "b0de04c76b8ca01a5cddba011048b9d8ffa7cc078af12f413753558c6679b7b9",
+      "matches": true
+    },
+    "src/net/protocol.js": {
+      "git": "1595accb85ea5f9c43cfa671932523006deb7fb7c2d09cfc84659ba0633cc860",
+      "container": "1595accb85ea5f9c43cfa671932523006deb7fb7c2d09cfc84659ba0633cc860",
+      "matches": true
+    },
+    "src/data/weapons.js": {
+      "git": "4dc0e01c228b03dc030734d9b3ee71373d150fa91dd748dc1c2290c4ce28dae9",
+      "container": "4dc0e01c228b03dc030734d9b3ee71373d150fa91dd748dc1c2290c4ce28dae9",
+      "matches": true
+    },
+    "server/host.mjs": {
+      "git": "30a1b727c020b07959cef399b4e6b62f73ecb7996918c873b86fc078953142a1",
+      "container": "30a1b727c020b07959cef399b4e6b62f73ecb7996918c873b86fc078953142a1",
+      "matches": true
+    }
+  },
+  "publicFileCount": 12,
+  "publicHashes": {
+    "src/data/meta.js": "d35c545f199d92c17aa1e251132d01e4df9dc4dd7ca9cf17c8181b291c154b85",
+    "src/editor/entry.js": "7d016146c681c09d8c16d7ae8a751d854e75a9f9655643f9e411a21fc04308b5",
+    "src/editor/skillDocument.js": "4bf75224eaa06903022397d2af0dd2fd7b9f56f31b08d1417e2c3cc38d26f988",
+    "src/editor/skillStudio.js": "948fea8d1b25e0f4e2c5a098570d673ea950dce0accedd28f9723975e6550e52",
+    "src/editor/skillStudio.css": "7dcf8b8b97ea676e92836f6e0e83e6d550370fef24855941eea4545bb0016b87",
+    "src/main.js": "3e3fc89c6c04fad155661b258986679d41010642b434ba25e47e4ff68e44407d",
+    "src/render/characters.js": "41f1b0c4665db878ba2ccee6c7bb733ac7e9e3444f399e8a49f90bde549513b2",
+    "src/render/vfx/particles.js": "f987e8b323cd5bde5e08891c99b65a9edc69802ce3e516b4d7e79e8a965f8c12",
+    "src/render/vfx/skillfx.js": "ad2828f40df54548fc9fecb096bf45ee39d8cfb6e106d17ad4cb9132ec9377a7",
+    "src/render/skillPreview.js": "b0de04c76b8ca01a5cddba011048b9d8ffa7cc078af12f413753558c6679b7b9",
+    "src/net/protocol.js": "1595accb85ea5f9c43cfa671932523006deb7fb7c2d09cfc84659ba0633cc860",
+    "src/data/weapons.js": "4dc0e01c228b03dc030734d9b3ee71373d150fa91dd748dc1c2290c4ce28dae9"
+  }
+}

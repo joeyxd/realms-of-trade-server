@@ -16,6 +16,7 @@
   --kit-items: url("../assets/ui/kit/items.webp");
   --kit-gear: url("../assets/ui/kit/gear.webp");
   --kit-misc: url("../assets/ui/kit/misc.webp");
+  --kit-foods: url("../assets/ui/kit/foods-v1.webp");
 }
 @media (pointer: coarse), (max-width: 760px) {
   :root {
@@ -25,6 +26,7 @@
     --kit-items: url("../assets/ui/kit/items-mobile.webp");
     --kit-gear: url("../assets/ui/kit/gear-mobile.webp");
     --kit-misc: url("../assets/ui/kit/misc-mobile.webp");
+    --kit-foods: url("../assets/ui/kit/foods-v1-mobile.webp");
   }
 }
 
@@ -34,6 +36,7 @@
 .kit-ico[data-atlas="items"] { --cols: 6; --rows: 4; background-image: var(--kit-items); }
 .kit-ico[data-atlas="gear"] { --cols: 5; --rows: 4; background-image: var(--kit-gear); }
 .kit-ico[data-atlas="misc"] { --cols: 4; --rows: 4; background-image: var(--kit-misc); }
+.kit-ico[data-atlas="foods"] { --cols: 4; --rows: 4; background-image: var(--kit-foods); }
 
 /* A worn navy plate (9-slice: rough edge, hairline, rivets). Set --kit-edge for the border thickness. */
 .kit-plate { position: relative; box-sizing: border-box; border: var(--kit-edge, 16px) solid transparent;

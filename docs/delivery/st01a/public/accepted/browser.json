@@ -1,0 +1,129 @@
+{
+  "schema": "skill-studio-browser/v1",
+  "at": "2026-10-12T16:15:20.695Z",
+  "version": "0.6.0-alpha.64",
+  "production": true,
+  "simulatedAuth": false,
+  "checks": [
+    "authorized_private_stage_real_character_and_shared_effect",
+    "bounded_parameters_undo_redo_and_equivalent_comparison",
+    "pause_seek_speed_and_mobile_particle_cap",
+    "invalid_import_preserves_draft_export_and_local_save_reopen",
+    "camera_orbit_and_closing_restore_world_renderer",
+    "mobile_landscape_and_portrait_readable_stage_and_controls",
+    "no_remote_draft_writes_gameplay_commands_or_render_errors"
+  ],
+  "screenshots": [
+    "tromba-cast-es-desktop.png",
+    "tromba-original-es-desktop.png",
+    "tromba-draft-es-desktop.png",
+    "tromba-draft-en-desktop.png",
+    "tromba-es-844x390.png",
+    "tromba-en-844x390.png",
+    "tromba-es-390x844.png",
+    "tromba-en-390x844.png"
+  ],
+  "errors": [],
+  "remoteWrites": [],
+  "gameplayCommands": [],
+  "runtime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.64",
+    "players": 0,
+    "max": 4,
+    "sockets": 1,
+    "tick": 7507,
+    "uptime": 140,
+    "stepMs": 1.123,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true,
+        "meals": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "companionPairing": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 4386,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 1.7,
+      "kbIn": 1.2,
+      "dropped": 0
+    }
+  },
+  "castPoseChanged": true,
+  "character": "char:buccaneer-v1",
+  "phase": "complete"
+}

@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-12T16:11:29.710Z",
+  "world": "marea-negra",
+  "source": "service-only SQL034/025/027 read RPCs",
+  "userReportedSqlExecuted": true,
+  "creationAbsent": true,
+  "configurationAbsent": true,
+  "controlAbsent": true,
+  "mutation": false,
+  "pass": true
+}
