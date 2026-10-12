@@ -1,0 +1,51 @@
+{
+  "schema": "mn.companion-pairing.public.v1",
+  "at": "2026-10-12T05:22:20.744Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "gameVersion": "0.6.0-alpha.60",
+  "sourceVersion": "0.6.0-alpha.60",
+  "protocolVersion": 59,
+  "world": "marea-negra",
+  "production": true,
+  "publicWss": true,
+  "localModelStub": true,
+  "realModelCalls": false,
+  "checks": [
+    {
+      "name": "public_alpha_auth_SQL034_SQL027_pairing_and_content_ready",
+      "pass": true
+    },
+    {
+      "name": "marked_verified_canary_account_starts_without_game_profile",
+      "pass": true
+    },
+    {
+      "name": "registry_absent_then_exact_canary_profiles_and_auth_deleted",
+      "pass": true
+    }
+  ],
+  "errors": [
+    "Unexpected server response: 403"
+  ],
+  "acceptancePass": false,
+  "cleanupPending": false,
+  "cleanupComplete": true,
+  "pass": false,
+  "canaryRetained": {
+    "account": true,
+    "ownerProfile": false,
+    "characterProfile": false,
+    "creationRecord": false,
+    "ownerSocketClosed": true,
+    "runnerStopped": false,
+    "canarySocketsClosed": true,
+    "profilesStable": true
+  },
+  "cleanup": {
+    "markerMatched": true,
+    "registryAbsentBeforeProfileDelete": true,
+    "ownerProfileDeleted": true,
+    "characterProfileDeleted": true,
+    "authDeleted": true
+  }
+}

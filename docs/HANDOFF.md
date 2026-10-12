@@ -24,15 +24,17 @@ Runtime VPS pendiente. Siguiente corte aprobado: [Taller de habilidades](briefs/
 ajustar las actuales primero e incluir una adaptación Niagara real. Intake acotado en
 [SKILL-STUDIO-INTAKE](research/unreal-assets/SKILL-STUDIO-INTAKE.md); fuentes Unreal intactas.
 
-**L03f — emparejamiento local implementado, alpha.60/protocolo 59:**
+**L03f — emparejamiento local integrado, alpha.63/protocolo 59:**
 [Contrato](briefs/l03f-local-pairing.md) y [uso/evidencia](delivery/l03f-local-pairing/README.md).
 Mis compañeros → Permitir conexión → Conectar en mi PC; código de un uso/cinco minutos,
 controlador WSS saliente y capacidad solo chat. Perfil M5 y plaza normal; máximo dos controladores.
 SQL025/027/034 existentes, sin SQL nuevo. Detener/revocar/salir/caducidad/reinicio invalidan el permiso.
 Documentos, journal y presupuesto permanecen en la PC, conservados al reemparejar; refresco manual r + Enter.
-82/82 integración, 15/15 red/controlador, navegador local 14/14 ES/EN; actualizador 194/194 (conteos solapados).
-Conversación y memoria verificadas con stub HTTP local. Qwen 127.0.0.1:8080 sigue inaccesible.
-Publicación, canario autenticado público y limpieza se registran aparte; no confundir el stub con modelo real.
+Canario público reanudado 6/6 en alpha.60: controlador real por WSS, respuesta de stub HTTP local,
+journal con ámbito y stop durable. Tres filas de registro del fixture siguen pendientes de aprobación de borrado.
+Origin HTTPS y tolerancia acotada de reloj corregidos; 42/42 focales, 68/68 integración y 11/11 mundo/GM
+tras el merge alpha.63. Navegador local previo 14/14 ES/EN; conteos solapados, suite general no repetida.
+La publicación del cliente corregido se verifica aparte. Qwen 127.0.0.1:8080 sigue inaccesible; el stub no prueba Qwen.
 
 **Bucanero a distancia y nado original — alpha.59/protocolo 58:**
 [Brief](briefs/buccaneer-ranged-swim.md) y [entrega](delivery/buccaneer-v1/ranged-swim/README.md).

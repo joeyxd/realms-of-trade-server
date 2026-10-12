@@ -1,8 +1,8 @@
 # L03f — conectar a Brisa desde la PC
 
-Implementación y validación local completas; publicación y aceptación pública se
-registran por separado. [Contrato](../../briefs/l03f-local-pairing.md) y
-[navegador local: 14/14](browser-acceptance.md).
+Contrato y recorrido en [el brief](../../briefs/l03f-local-pairing.md). La prueba
+de navegador local pasó 14/14; véase [su informe](browser-acceptance.md). La
+evidencia pública y la integración del último merge se registran por separado.
 
 El compañero preparado en SQL034 se conecta al mismo mundo por WSS con su propio
 perfil M5 y una plaza normal. SQL027 controla la detención y SQL025 sus documentos
@@ -58,11 +58,33 @@ creación habilitada y readiness durable SQL025/027/034. No se combina con el pi
 de transacciones de suelo. `/status.storage.companionPairing` informa disponibilidad,
 sin acreditar por sí solo conversación o memoria.
 
-[Integración: 82/82](integration.txt), [red y controlador: 15/15](focused.tap), [regresión del actualizador](updater.txt) y
-[navegador ES/EN](browser/browser.json) conservan sus alcances separados.
-Las pruebas con proveedor simulado no acreditan el modelo real del dueño.
+**Canary público, alpha.60 / `6b713d2`.** El recorrido reanudado pasó sus seis
+comprobaciones en [resume.json](public-recheck/resume.json): claim predeterminado
+y `AgentNetworkRunner` reales por WSS pública, respuesta desde un stub HTTP local,
+memoria local con ámbito de Brisa escrita tras confirmar la respuesta, y stop del
+dueño con revocación y SQL027 detenido. El JSON conserva `pass: false` porque la
+limpieza final sigue pendiente: se retienen tres filas del registro hasta tener
+aprobación del usuario. La consulta exacta y la captura de revisión permanecen
+en la PC del operador. No se borraron esas filas.
 
-Tras integrar el cambio concurrente `9ea14a0` de suelo, el [recheck serial](merge-recheck.tap)
-pasó 76/76, incluidos servidor, perfiles, pairing, mente y ruta de perlas. Los conteos se solapan.
-La recuperación previa de disponibilidad está en [availability-recheck.json](availability-recheck.json);
-se restableció el servicio, pero no quedó identificado el comando que provocó el fence anterior.
+Los intentos previos quedan registrados: el primer WSS devolvió 403 y la limpieza
+del canary sí terminó, según [acceptance.json](public/acceptance.json). El intento
+siguiente chocó con el límite estricto de expiración del código en
+[public-recheck/acceptance.json](public-recheck/acceptance.json). Se corrigieron
+el margen acotado de reloj de 30 segundos y el `Origin` derivado de HTTPS; después
+pasaron las seis comprobaciones de reanudación. La prueba no hizo llamadas a Qwen.
+El endpoint Qwen en `127.0.0.1:8080` continúa sin estar disponible.
+
+Tras esos arreglos, [public-fixes.tap](public-fixes.tap) pasó 42/42 y
+[cli-recheck.tap](cli-recheck.tap) pasó 8/8. El CLI valida opciones antes de pedir
+el secreto y usa mensajes de error seguros en español: la terminal privada es
+obligatoria, la cancelación no muestra detalles y los fallos inesperados solo
+informan que el controlador terminó con un error seguro.
+
+El merge upstream dejó el árbol en alpha.63/protocolo 59 y conservó los cambios GM
+y Bucanero. La integración pasó [68/68](alpha63-merge.tap), y las comprobaciones
+adicionales de mundo/GM pasaron [11/11](world-merge.tap), en ejecución serial.
+Los conteos anteriores se solapan; no se repitió la suite general.
+La publicación del cliente corregido se registra por separado. La evidencia del
+canario de arriba corresponde a alpha.60; no demuestra inferencia con Qwen ni
+aceptación del MMO completo.
