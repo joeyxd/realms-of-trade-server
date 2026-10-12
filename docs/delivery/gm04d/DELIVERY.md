@@ -28,7 +28,7 @@ agotamiento; duplicar crea una identidad nueva. Retirar conserva su fila inactiv
   El registro existente reconcilia un ACK perdido del puntero.
 - El piloto alternativo de autoridad de suelo no ofrece esta admisión; rechaza antes de escribir.
 - Documento v2–v4 y SQL033 conservados. No cambia el sobre de snapshots/`you`; GM04d
-  no a?ade campos. La integraci?n conserva el protocolo 59 de compa?eros; alpha.61 y la
+  no añade campos. La integración conserva el protocolo 59 de compañeros; alpha.61 y la
   identidad de contenido requieren recarga compatible.
 
 ## Verificación local
@@ -48,6 +48,9 @@ agotamiento; duplicar crea una identidad nueva. Retirar conserva su fila inactiv
 - [Readiness Supabase](sql-ready.json): **1**, después de ejecutar la última SQL036.
 - [Integración concurrente](concurrent-integration.json): **26/26**, rutas y autoridad de
   perlas del nuevo upstream `9ea14a0`, después de integrar el cambio en GameHost.
+- [Recheck de la integración final](merge-recheck.json): **70/70** en alpha.61/protocolo 59,
+  después de conservar el emparejamiento de compañeros concurrente. Recursos funcionales,
+  publicación/host y sus cuatro grupos de cliente, UI, red y controlador.
 
 Los conteos de grupos se solapan. La [primera regresión amplia](regression.json) quedó
 418/420: `resource-loop-server.test.mjs:143` espera fabricar con un tronco, mientras la

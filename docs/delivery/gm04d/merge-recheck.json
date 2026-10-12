@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-12T05:13:52.606Z",
+  "revision": "4265863",
+  "version": "0.6.0-alpha.61",
+  "protocol": 59,
+  "files": [
+    "tests/gm-functional-authority.test.mjs",
+    "tests/gm-functional-layout.test.mjs",
+    "tests/gm-functional-publication.test.mjs",
+    "tests/gm-functional-render.test.mjs",
+    "tests/gm-content-service.test.mjs",
+    "tests/store-host.test.mjs",
+    "tests/server.test.mjs",
+    "tests/companion-pairing-client.test.mjs",
+    "tests/companion-pairing-network.test.mjs",
+    "tests/companion-pairing-ui.test.mjs",
+    "tests/paired-companion.test.mjs"
+  ],
+  "tests": 70,
+  "pass": 70,
+  "fail": 0,
+  "exitCode": 0,
+  "error": null
+}
