@@ -43,15 +43,17 @@ Publicado por el actualizador habitual en `62490c8`, alpha.59: imagen validada y
 Cero errores o pendientes. Choque entre balas aceptado localmente; capturas públicas nocturnas limitan lectura del modelo.
 [Recibo](delivery/buccaneer-v1/ranged-swim/publication.json) y [aceptación pública](delivery/buccaneer-v1/ranged-swim/public/acceptance.json).
 
-**AREA03 SRV02, 2026-10-11 — implementado y probado; SQL035/activación pendientes:**
+**AREA03 SRV02, 2026-10-11 — SQL035 activo; grog aceptado en público, alpha.59/protocolo 58:**
 [Contrato](briefs/srv02-special-meals.md), [entrega](delivery/srv02-special-meals/README.md).
-Alpha.58/protocolo 57; tres comidas con un efecto durante 15 min conectados, pausa offline y
-limpieza al reaparecer. Recibo freshwater/M5; `MN_SPECIAL_MEAL_OPERATIONS=0` por defecto.
-194/194 grupo del actualizador, SQL 33/33; UI real local ES/EN 6/6, cliente simulado. Leer entrega para
-alcance SQL, fotos y límites de evidencia. INV02d ya está incluido en VPS cd5df25/alpha.57;
-un jugador, sin forzar relevo. Aplicar SQL035, verificar readiness, desplegar/activar cuando
-esté idle/durable y aceptar consumo/replay/reentrada en público. Después INV03/bolsas.
-Enviado en `12c7339`; actualizador difirió el relevo, SQL035 RPC aún ausente (20:35Z).
+Tres comidas con un efecto durante 15 min conectados, pausa offline y limpieza al reaparecer.
+Recibo freshwater/M5, SQL035 readiness 1 y flag activo. WSS público 11/11 en `e625a5c`:
+grog, coste, replay/colisión, pausa offline/reentrada y denegación caliente durable sin cambios.
+Navegador público 9/9 en `9ea14a0`: botón real, guardado/reentrada, ES/EN escritorio/móvil emulado;
+403 limitados al rechazo GM esperado para la cuenta temporal. Capturas y 20/13 hashes en la entrega.
+194/194 actualizador, SQL 33/33 y recheck M5 33/33, conteos solapados. Un primer rechazo SQL
+no tiene causa confirmada; conservar su evidencia. Consumo público con fuego propio aún pendiente.
+Después [INV03 sobre mochilas existentes](briefs/inv03-existing-backpacks.md): completar 30→42,
+coste, replay/reentrada y Carga conservada. No rehacer sobrepeso ni añadir bolsas equipables todavía.
 
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](delivery/l03e-companion-creation/README.md), [brief](briefs/l03e-companion-creation.md).

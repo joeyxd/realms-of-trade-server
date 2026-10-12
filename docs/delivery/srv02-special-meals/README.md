@@ -1,6 +1,6 @@
 # SRV02 — comidas especiales
 
-Implementado y probado localmente para alpha.58 / protocolo 57; enviado en `12c7339` a la rama del VPS. Código sobre `cd5df25`, conservando los cortes concurrentes. SQL035, activación y aceptación pública siguen pendientes; no hay activación automática. [Contrato](../../briefs/srv02-special-meals.md).
+Implementado originalmente para alpha.58 / protocolo 57 y publicado en alpha.59 / protocolo 58 con los cortes concurrentes. SQL035 está instalado y el flag está activo. El grog pasó el canario público autenticado; la aceptación de navegador se registra por separado abajo. [Contrato](../../briefs/srv02-special-meals.md).
 
 ## Comportamiento
 
@@ -23,13 +23,26 @@ Panel ES/EN: tres recetas, coste, duración, aviso de reemplazo y motivo de bloq
 - [SQL](sql-tests.log): 33/33 en cadena 001–035 PGlite, bajo rol `service_role`, validación estricta, recetas, ingredientes/necesidades/recipientes forjados, denegación sin cambio, replay y colisión, compatibilidad SQL030/032, migración repetida y recibo previo intacto. Incluye Tala cooperativa con comida en actor/colaborador y rechazo de editar el efecto del colaborador; el CHECK queda vinculado al validador nuevo.
 - [Navegador local](local/evidence-2026-10-11T20-25-37-952Z.json): 6/6 ES/EN desktop, móvil y móvil rotado con `stage.js` real; DOM/estilos reales, cliente simulado. Scroll, requisitos visibles, temporizador, reintento idéntico y ausencia de mutación optimista. Sin errores JS/consola ni solicitudes externas. Capturas inspeccionadas por el integrador. No acredita una partida pública ni teléfono físico.
 
-## Estado operativo y siguiente paso
+## Aceptación pública del 2026-10-11
 
-INV02d ya estaba implementado: la corrección legacy está incluida en el VPS `cd5df25`, alpha.57. Lectura de este corte: un jugador/un socket, cero errores y pendientes; no se fuerza su relevo. Esta entrega agrega únicamente SRV02 sobre esa base.
+[Activación](public/20261012T021031Z-activation/activation.ndjson) bajo bloqueos de actualización/contenido, sin jugadores, conservando la imagen y el resto del entorno. El [canario WSS](public/20261012T045934Z-wss/acceptance.json) pasó **11/11** sobre `e625a5c`, alpha.59/protocolo 58: rechazo anónimo, login normal con cuenta temporal marcada, coste exacto del grog, efecto/temporizador, replay, colisión de ID, pausa offline, reentrada y avance conectado. Una receta caliente sin cocina propia produjo un recibo durable de denegación sin cambios. Se conservaron dos recibos; se eliminaron la cuenta y el perfil temporales.
 
-[Lectura operativa a las 20:35Z](deployment.json): imagen activa `sha256:ea028cc249a3a6ee773479d1d7c314e04781ffeef779624e8b6ebce8f46b45cd`, alpha.57/cd5df25; salud pública 200. Se solicitó el actualizador normal y difirió el relevo por el jugador conectado. SQL035 todavía devuelve `PGRST202` (RPC ausente), así que no se activa el flag. El actualizador operativo quedó sincronizado con el grupo de 194 pruebas, hash comprobado y copia previa conservada; no se cambió el runtime ni la configuración del juego. **SRV02 no se declara desplegado o aceptado públicamente.**
+La [autoridad antes/después](public/20261012T045934Z-wss/authority.ndjson) comprueba 20 hashes de imagen y 13 fuentes públicas contra Git, una autoridad, cero jugadores/sockets/errores/pendientes al terminar y actualizador activo. La [regresión tras integrar M5](integration-m5.json) pasó 33/33; el conteo se solapa con las pruebas anteriores.
 
-1. Aplicar [SQL035](../../../server/migrations/035_special_meal_operations.sql) después de 001–034. Solo amplía funciones/validación; no reescribe perfiles ni recibos. El autor aplica SQL porque la sesión dispone de acceso de servicio, sin conexión administrativa SQL.
-2. Verificar readiness 1 y conservar `MN_SPECIAL_MEAL_OPERATIONS=0` hasta el relevo normal a un runtime compatible. Actualizador con una autoridad y mundo idle/durable; nunca desconectar al jugador para esta entrega.
-3. Activar el flag con la misma disciplina de relevo; verificar revisión, imagen, salud, fuentes públicas y flag. Hacer canario autenticado de consumo/replay/reentrada y separar los platos calientes (necesitan acceso real al fuego).
-4. Playtest de duración/recetas y sensación de carga. Sigue INV03: bolsas y progresión de volumen, sin rehacer el sobrepeso existente.
+El [navegador público](public/20261012T050919Z-browser/acceptance.json) pasó **9/9** en `9ea14a0`, alpha.59/protocolo 58: login normal, botón real de grog, coste/efecto/temporizador en recibo y perfil, recarga/reentrada y panel ES/EN en escritorio 1280×720 y móvil touch emulado 390×844. Dos envíos idénticos del panel correspondieron a un solo comando y un recibo. Diez capturas, sin errores JS; las siete respuestas HTTP403 fueron exclusivamente `/api/gm/session`, el rechazo esperado para una cuenta autenticada fuera del allowlist GM, conservado en el JSON. La vista vertical usa la rotación horizontal de `stage.js`, como el juego. La [comprobación de autoridad](public/20261012T050919Z-browser/authority.ndjson) terminó sin jugadores, errores ni pendientes; cuenta/perfil eliminados y recibo conservado.
+
+El [primer intento de navegador](public/20261012T050711Z-browser/acceptance.json) exigía incorrectamente un único envío y expiró ante el reintento normal del panel. La [conciliación de solo lectura](public/20261012T050711Z-browser/receipt-reconciliation.json) demuestra que el grog se confirmó una sola vez y que cuenta/perfil ya no existen. Su recibo permanece: el cero registrado originalmente por la limpieza era un error del contador, que solo anotaba el ID después de superar la espera. El harness ahora admite reintentos idénticos, registra intentos antes de esperar y enumera los recibos de esa cuenta al limpiar. Esto es distinto del rechazo SQL inicial descrito abajo.
+
+El [primer intento](public/20261012T021502Z-wss/acceptance.json) falló sin ACK y el host cerró con `world failed: operation`. La lectura posterior encontró la autoridad sana, mismo código/imagen y arranque a las 02:23:30Z; no establece quién inició ese arranque ni atribuye una causa al rechazo. La [comprobación posterior](public/20261012T045843Z-diagnosis.json) confirmó perfil de QA v3 intacto, ingredientes conservados, efecto ausente y cero recibos. Los validadores y la transición aceptaron una petición reconstruida; ocho llamadas al commit con versiones CAS imposibles devolvieron conflicto sin modificar el perfil. La hipótesis de funciones antiguas enlazadas en caché tampoco se reprodujo localmente. No se presenta como una reparación SQL demostrada. La [limpieza exacta del huérfano](public/20261012T045929Z-orphan-cleanup.json) verificó marcador, email, propiedad, versión y ausencia de recibos antes de eliminar solo esa cuenta/perfil.
+
+El canario exitoso acredita el flujo actual de grog y la denegación caliente. Pescado asado y galleta reforzada conservan pruebas locales de fuego propio real; su consumo público con fogata/parrilla encendida queda pendiente. Balance, sensación y rendimiento en teléfono físico siguen requiriendo playtest.
+
+## Historial de publicación y siguiente paso
+
+Al publicar el código de SRV02, INV02d ya estaba implementado y su corrección legacy estaba en el VPS `cd5df25`, alpha.57. Había un jugador/un socket, sin errores o pendientes; se respetó su sesión.
+
+[Lectura histórica a las 20:35Z](deployment.json): imagen activa `sha256:ea028cc249a3a6ee773479d1d7c314e04781ffeef779624e8b6ebce8f46b45cd`, alpha.57/cd5df25; salud pública 200. El actualizador difirió el relevo por ese jugador. SQL035 devolvía `PGRST202` y el flag permaneció apagado. El grupo operativo quedó sincronizado con 194 pruebas y copia previa conservada. Aquella lectura no acreditaba SRV02 desplegado; la evidencia actual está en la sección anterior.
+
+1. Completar el consumo público de platos calientes mediante una cocina propia encendida y cercana, sin fabricar pruebas de calor. Conservar el incidente inicial y capturar la fase/código si vuelve a ocurrir.
+2. [INV03](../../briefs/inv03-existing-backpacks.md): completar aceptación de las mejoras de mochila que ya existen, especialmente 30→42, replay/reentrada y Carga conservada. No rehacer el sobrepeso ni introducir bolsas equipables sin resolver su relación con las mejoras pagadas.
+3. Playtest de duración/recetas y sensación de carga.

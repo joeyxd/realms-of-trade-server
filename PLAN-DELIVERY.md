@@ -37,15 +37,17 @@ Publicado por el actualizador habitual en `62490c8`, alpha.59: imagen validada, 
 24 hashes públicos y entrada/gatillos/nado/regreso a tierra ES/EN 12/12 escritorio/móvil emulado.
 Cero errores o pendientes; choque aceptado localmente. Recibo y límites visuales nocturnos en la entrega.
 
-**AREA03 SRV02, 2026-10-11 — comidas especiales implementadas; SQL035/activación pública pendientes:**
+**AREA03 SRV02, 2026-10-11 — SQL035 activo; grog aceptado en público, alpha.59/protocolo 58:**
 [Contrato](docs/briefs/srv02-special-meals.md) y [entrega/evidencia](docs/delivery/srv02-special-meals/README.md).
-Alpha.58/protocolo 57: pescado asado +10 % HP máximo, grog +25 % recuperación de aguante,
+Pescado asado +10 % HP máximo, grog +25 % recuperación de aguante,
 galleta reforzada +10 unidades de carga cómoda; una activa por 15 min conectados, pausa offline,
-se pierde al reaparecer. Operación freshwater/M5, sin segunda autoridad. Flag nuevo apagado.
-194/194 grupo del actualizador, SQL 33/33 y UI local 6/6 ES/EN escritorio/móvil/rotado; conteos solapados.
-INV02d ya está incluido en VPS cd5df25/alpha.57; un jugador, sin forzar relevo. Sigue SQL035,
-readiness y aceptación autenticada. Después INV03/bolsas; no reimplementar sobrepeso.
-Enviado en `12c7339`; relevo normal diferido por jugador conectado, SQL035 RPC aún ausente.
+se pierde al reaparecer. Operación freshwater/M5, SQL035 readiness 1 y flag activo.
+WSS público 11/11 en `e625a5c`: grog, coste/replay/colisión, pausa offline/reentrada y denegación caliente.
+Navegador público 9/9 en `9ea14a0`: botón real y perfil guardado, ES/EN escritorio/móvil emulado.
+Cuenta/perfil temporales eliminados, recibos conservados y autoridad sana; 403 solo del acceso GM denegado.
+194/194 actualizador, SQL 33/33 y recheck M5 33/33, conteos solapados. Primer rechazo SQL sin causa
+confirmada; consumo público con cocina propia encendida pendiente. [INV03](docs/briefs/inv03-existing-backpacks.md)
+completará aceptación de las mochilas 18/30/42 ya existentes con Carga; no rehacer sobrepeso.
 
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](docs/delivery/l03e-companion-creation/README.md), [brief](docs/briefs/l03e-companion-creation.md).
