@@ -25,6 +25,19 @@ test('default pearl command still uses the existing immediate gameplay helper', 
   assert.equal([...world.drops.values()].filter(d => d.pearl?.uid === pearl.uid).length, 1);
 });
 
+test('without the common mount, give retains the existing bag-only gameplay route', () => {
+  const { server, client, world, pearl } = fixture();
+  server.connect(2);
+  server.receive(2, { t: MSG.HELLO, v: PROTOCOL_VERSION, name: 'Receiver' });
+  const receiver = server.clients.get(2), ecs = world.ecs;
+  ecs.x[receiver.entity] = ecs.x[client.entity]; ecs.z[receiver.entity] = ecs.z[client.entity];
+  ecs.regenT[receiver.entity] = PEARL.calm + 1; ecs.dashT[receiver.entity] = -1;
+  assert.equal(server.onPearlCommand, null);
+  assert.equal(server.playerCommand(client, { type: 'pearl', op: 'give', uid: pearl.uid, target: receiver.entity }), true);
+  assert.equal(world.profiles.get(client.entity).pearls.bag.length, 0);
+  assert.equal(world.profiles.get(receiver.entity).pearls.bag.filter(q => q.uid === pearl.uid).length, 1);
+});
+
 test('mounted false, true and async command decisions never fall through to a local pearl mutation', async () => {
   const { server, client, world, pearl } = fixture();
   const before = structuredClone(world.profiles.get(client.entity));

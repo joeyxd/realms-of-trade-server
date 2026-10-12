@@ -6,6 +6,7 @@ import { GroundCurrentHydration } from './groundCurrentHydration.mjs';
 import { prepareGroundPearlPickup } from './groundPearlPickup.mjs';
 import { prepareGroundPearlReturn } from './groundPearlReturn.mjs';
 import { prepareGroundPearlLeave } from './groundPearlLeave.mjs';
+import { prepareGroundPearlGive } from './groundPearlGive.mjs';
 import { snapshotDropData, assertDropContainers } from './deathDropApply.mjs';
 import { managedPearlDrop } from './pearlLifecycle.mjs';
 import { managedDeathDrop } from './deathDropLifecycle.mjs';
@@ -86,14 +87,22 @@ export class GroundPearlLifecycle {
     if (raw.op === 'spit') return deny('bound');
     if (raw.op === 'sell') return deny('notForSale');
     // Remaining mutations cannot use the immediate helper inside this incomplete pilot.
-    if (raw.op !== 'leave') return deny('disabled');
+    if (!['leave', 'give'].includes(raw.op)) return deny('disabled');
     try {
       const value = snapshotDropData(raw);
-      if (Object.keys(value).sort().join(',') !== 'op,t,type,uid' || typeof value.uid !== 'string') fail('operation');
-      this.leave({ source: { clientId, entity }, uid: value.uid }); return true;
+      const source = { clientId, entity };
+      if (value.op === 'give') {
+        if (Object.keys(value).sort().join(',') !== 'op,t,target,type,uid' || typeof value.uid !== 'string' ||
+            !Number.isSafeInteger(value.target) || value.target < 1) fail('operation');
+        this.give({ source, receiver: { clientId: this.#server.clientOf(value.target), entity: value.target }, uid: value.uid });
+      } else {
+        if (Object.keys(value).sort().join(',') !== 'op,t,type,uid' || typeof value.uid !== 'string') fail('operation');
+        this.leave({ source, uid: value.uid });
+      }
+      return true;
     } catch (error) {
       if (!(error instanceof StoreError)) throw error;
-      return deny(['combat', 'unknown', 'bound'].includes(error.code) ? error.code : 'storage');
+      return deny(['combat', 'unknown', 'bound', 'far', 'full'].includes(error.code) ? error.code : 'storage');
     }
   }
   // The socket only selects a UID. Generation and account are resolved under the common reservation.
@@ -157,6 +166,84 @@ export class GroundPearlLifecycle {
           this.#rows = rows;
           if (plan.apply(effect) !== true) fail('effect');
         } catch (error) { this.#rows = oldRows; throw error; }
+        this.#active = null; return true;
+      });
+      active.result.catch(() => { this.#failed = true; });
+      return Object.freeze({ operationId, result: active.result });
+    } catch (error) { this.#active = null; throw error; }
+  }
+  // Both participants and all captured UIDs share one reservation before any profile or ledger IO.
+  give(raw) {
+    this.#server.assertTickIdle(); this.#available();
+    const value = snapshotDropData(raw);
+    if (!value || Object.keys(value).sort().join(',') !== 'receiver,source,uid' || typeof value.uid !== 'string') fail('operation');
+    const w = this.#world, sessions = this.#host.profiles;
+    const sourceSession = sessions.clients.get(value.source?.clientId);
+    const pearl = w.profiles.get(value.source?.entity)?.pearls?.bag.find(q => q.uid === value.uid);
+    if (!pearl) fail('unknown');
+    const create = (row, preflight = false) => prepareGroundPearlGive({ host: this.#host, deadlineClock: this.#clock,
+      source: value.source, receiver: value.receiver, uid: value.uid, row, preflight });
+    let plan = create({ ...pearl, holder: sourceSession?.key, version: 1 }, true);
+    const preflight = plan, operationId = randomUUID();
+    const endpoints = [value.source, value.receiver].map(selector => {
+      const session = sessions.clients.get(selector.clientId), before = capturePearlProfile(w, selector.entity);
+      const initial = { version: session.version, confirmed: structuredClone(session.confirmed), last: session.last,
+        maxSettledWrites: session.running ? 2 : 1 };
+      const nextLast = JSON.stringify(before);
+      const possibleWrites = session.running ? 2 : initial.last !== nextLast ? 1 : 0;
+      if (initial.version + possibleWrites >= 2147483647) fail('conflict');
+      return { session, clientId: selector.clientId, before, initial, beforeText: canonicalText(before), nextLast, settled: false };
+    }).sort((a, b) => a.session.key < b.session.key ? -1 : a.session.key > b.session.key ? 1 : 0);
+    const completion = this.#server.afterTick, fatal = w.deferPlayerDeath, pendingDeath = w.isPlayerDeathPending,
+      mint = w.deferPearlMint, deaths = this.#host.groundDeaths, mints = this.#host.groundPearlMints;
+    const active = { operationId, result: null };
+    this.#active = active;
+    const assertCurrent = (settling = false) => {
+      this.#owner();
+      if (this.#active !== active || this.#failed || this.#stopping || this.#host.closing ||
+          endpoints.some(endpoint => endpoint.session.pearlBusy)) fail('cancelled');
+      if (this.#server.afterTick !== completion || w.deferPlayerDeath !== fatal || w.isPlayerDeathPending !== pendingDeath ||
+          w.deferPearlMint !== mint || this.#host.groundDeaths !== deaths || this.#host.groundPearlMints !== mints) fail('cancelled');
+      preflight.assertBaseline();
+      for (const { session, initial, before, beforeText, nextLast, settled: complete } of endpoints) {
+        const unchanged = session.version === initial.version && session.last === initial.last &&
+          canonicalText(session.confirmed) === canonicalText(initial.confirmed);
+        const settled = session.version > initial.version && session.version <= initial.version + initial.maxSettledWrites && session.last === nextLast &&
+          canonicalText(session.confirmed) === beforeText;
+        // An autosave already in flight can finish for the other account while this one settles.
+        // It may only advance the bounded save counter and retain exactly the captured UID set.
+        const priorSave = settling && !complete && session.version > initial.version &&
+          session.version <= initial.version + initial.maxSettledWrites && session.last === JSON.stringify(session.confirmed) &&
+          canonicalText(profilePearls(session.confirmed)) === canonicalText(profilePearls(before));
+        if (!unchanged && !settled && !priorSave) fail('conflict');
+      }
+    };
+    try {
+      active.result = this.#authority.stagePreparedFamily({ operationId, family: 'ground', lanes: {
+        accounts: endpoints.map(endpoint => endpoint.session.key),
+        uids: endpoints.flatMap(endpoint => profilePearls(endpoint.before).map(q => q.uid)), drops: [],
+      } }, async reservation => {
+        for (const endpoint of endpoints) {
+          await settleGroundProfile(sessions, endpoint, endpoint.before, reservation, () => assertCurrent(true));
+          endpoint.settled = true;
+        }
+        assertCurrent();
+        const reads = await Promise.allSettled([
+          this.#host.store.loadUnique(value.uid), this.#host.store.loadPearlLocation(value.uid),
+        ]);
+        assertCurrent();
+        for (const read of reads) if (read.status === 'rejected') throw read.reason;
+        const unique = snapshotDropData(reads[0].value), location = checkedLocation(reads[1].value);
+        if (!unique || Object.keys(unique).sort().join(',') !== 'holder,kind,version' ||
+            unique.holder !== sourceSession.key || unique.kind !== pearlKind(pearl.kind) ||
+            !Number.isSafeInteger(unique.version) || unique.version < 1 || unique.version >= 2147483647 ||
+            location && (location.world !== this.#host.worldState.id || location.ground !== null ||
+              location.version !== unique.version)) fail('ownership');
+        plan = create({ ...pearl, holder: unique.holder, version: unique.version });
+        return plan.operation;
+      }, effect => {
+        assertCurrent();
+        if (plan.apply(effect) !== true) fail('effect');
         this.#active = null; return true;
       });
       active.result.catch(() => { this.#failed = true; });
