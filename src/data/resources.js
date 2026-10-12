@@ -1,6 +1,7 @@
 // Session-local gathering. These limits describe content availability, not accepted economic balance.
 export const HARVEST = Object.freeze({ radius: 2.5, benchRadius: 3, respawnTicks: 3600,
-  actionTicks: 30, maxNodes: 206, maxPalms: 96, maxStones: 64, maxRocks: 24, maxOre: 6, palmHits: 3, palmYield: 2,
+  actionTicks: 30, maxNodes: 206, maxAuthoredNodes: 128, maxActiveNodes: 334, maxSavedNodes: 1024,
+  maxPalms: 96, maxStones: 64, maxRocks: 24, maxOre: 6, palmHits: 3, palmYield: 2,
   chopTicks: 54, craftMax: 10, maxRev: 2147483647 });
 export const RESOURCE_KINDS = Object.freeze({
   wood: Object.freeze({ name: 'Tronco', good: 'tronco', verb: 'Recoger tronco' }),
@@ -34,6 +35,12 @@ function hash(seed, n) {
 }
 
 export function resourceLayout(map) {
+  const layout = baseResourceLayout(map);
+  if (Array.isArray(map.gmResources)) layout.nodes.push(...map.gmResources.map(node => ({ ...node })));
+  return layout;
+}
+
+function baseResourceLayout(map) {
   // Terrain reshaping preserves the admitted resource identities, order and horizontal positions.
   if (map.terrainResources) {
     const result = { nodes: map.terrainResources.nodes.map(n => ({ ...n })),

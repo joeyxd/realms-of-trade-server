@@ -1,5 +1,25 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA01 GM04d, 2026-10-11 — recursos funcionales implementados, alpha.61/protocolo 59:**
+[Contrato](docs/briefs/gm04d-functional-resources.md), [entrega](docs/delivery/gm04d/DELIVERY.md).
+Palmera talable/piedra recogible en Recursos; borrador privado y publicación con admisión SQL036
+append-only. IDs existentes conservan ciclos, agotamiento y ledger al mover/retirar/republicar.
+SQL036 instalada y readiness real 1; 418/418 CPU y 8/8 SQL seriales, UI local 9/9 ES/EN escritorio/móvil.
+Suite amplia no verde: fallo de receta reproducido en upstream y OOM resuelto al repetir serial;
+ver evidencia y alcance en la entrega. Publicación del runtime VPS pendiente de verificación.
+El autor eligió [Taller de habilidades](docs/briefs/skill-studio-vision.md): ajustar las actuales
+primero e incluir la adaptación real de un efecto Niagara; intake realizado, implementación pendiente.
+
+**L03f — emparejamiento local implementado, alpha.60/protocolo 59:**
+[Contrato](docs/briefs/l03f-local-pairing.md) y [uso/evidencia](docs/delivery/l03f-local-pairing/README.md).
+Mis compañeros → Permitir conexión → Conectar en mi PC; código de un uso/cinco minutos,
+controlador WSS saliente y capacidad solo chat. Perfil M5 y plaza normal; máximo dos controladores.
+SQL025/027/034 existentes, sin SQL nuevo. Detener/revocar/salir/caducidad/reinicio invalidan el permiso.
+Documentos, journal y presupuesto permanecen en la PC, conservados al reemparejar; refresco manual r + Enter.
+82/82 integración, 15/15 red/controlador, navegador local 14/14 ES/EN; actualizador 194/194 (conteos solapados).
+Conversación y memoria verificadas con stub HTTP local. Qwen 127.0.0.1:8080 sigue inaccesible.
+Publicación, canario autenticado público y limpieza se registran aparte; no confundir el stub con modelo real.
+
 **Bucanero a distancia + swim, alpha.59/protocolo 58:**
 [Contrato](docs/briefs/buccaneer-ranged-swim.md) y [entrega](docs/delivery/buccaneer-v1/ranged-swim/README.md).
 Dos gatillos, armas/manos/recargas distintas, interceptación física 3D y nado original con rig nativo.

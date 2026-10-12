@@ -1,6 +1,7 @@
 import { validateDocument } from '../src/editor/document.js';
 import { gmEditableBaseProps } from '../src/editor/baseIdentity.js';
-import { validateTerrainForMap } from '../src/editor/terrainData.js';
+import { compileTerrainMap, validateTerrainForMap } from '../src/editor/terrainData.js';
+import { resourceDescriptor, sourceAssetId, validateAuthoredResources } from '../src/editor/resourceAdapters.js';
 
 const COAST_ROCK_ID = 'model:coast-rock-v1';
 
@@ -53,10 +54,13 @@ export function createGmDraftValidator({ map, baseRevision, manifest, editorCata
       try { validateTerrainForMap(map, checked.terrain); }
       catch (error) { throw new GmDraftValidationError(error?.code || 'terrain'); }
     }
+    const terrainMap = checked.terrain ? compileTerrainMap(map, checked.terrain) : map;
+    const resourceCheck = validateAuthoredResources(terrainMap, checked);
+    if (!resourceCheck.valid) throw new GmDraftValidationError(`resource_${resourceCheck.issues[0].code}`);
     for (const item of checked.objects) {
       if (item.assetId.startsWith('base:')) {
         if (!baseIds.has(item.assetId)) throw new GmDraftValidationError('base_reference');
-      } else if (!assets.has(item.assetId)) {
+      } else if (!assets.has(resourceDescriptor(item.assetId) ? sourceAssetId(item.assetId) : item.assetId)) {
         throw new GmDraftValidationError('asset_reference');
       }
     }

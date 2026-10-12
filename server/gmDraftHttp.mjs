@@ -217,7 +217,7 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
         const code = error?.code;
         const known = ['gm_content_busy', 'gm_content_conflict', 'gm_content_changed', 'gm_content_missing',
           'gm_content_incompatible', 'gm_content_candidate', 'gm_content_routes', 'gm_content_occupied',
-          'gm_content_operation', 'gm_content_limit'];
+          'gm_content_operation', 'gm_content_limit', 'gm_resource_unavailable', 'gm_resource_roster'];
         if (known.includes(code)) send(res, 409, { ok: false, code });
         else send(res, 503, registerRevision || activateRevision ? { ok: false, code: 'gm_content_unavailable' } : unavailable());
       } finally {

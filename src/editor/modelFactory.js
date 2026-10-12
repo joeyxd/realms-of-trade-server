@@ -6,6 +6,9 @@ import { loadedShrubGeometry, SHRUB_IDS } from '../render/shrubGeometry.js';
 import { palmMaterials } from '../render/palmMaterials.js';
 import { palmBaseMaterials } from '../render/palmBaseMaterials.js';
 import { shrubMaterials } from '../render/shrubMaterials.js';
+import { coastRockGeometry } from '../render/coastRockGeometry.js';
+import { naturalRockMaterial } from '../render/rockMaterials.js';
+import { resourceDescriptor, sourceAssetId } from './resourceAdapters.js';
 
 const PALM_SET = new Set(PALM_IDS);
 const PALM_BASE_SET = new Set(PALM_BASE_IDS);
@@ -51,6 +54,7 @@ export function createEditorModels(registry, { swayUniform = { value: 0.65 } } =
   const templates = new Map();
   const ownedGeometries = new Set();
   const ownedMaterials = new Set();
+  const resourceTemplates = new Map();
   let disposed = false;
 
   for (const id of [...PALM_IDS, ...PALM_BASE_IDS, ...SHRUB_IDS]) {
@@ -69,9 +73,39 @@ export function createEditorModels(registry, { swayUniform = { value: 0.65 } } =
     templates.set(id, { family: family.name, data, entry, parts });
   }
 
-  const hasPalmMaterials = [...templates.values()].some(({ family }) => family === 'palm' || family === 'palmBase');
-  const palmMats = hasPalmMaterials ? palmMaterials(registry, swayUniform) : null;
+  function loadResourceTemplate(id) {
+    const descriptor = resourceDescriptor(id), sourceId = sourceAssetId(id);
+    const data = descriptor && registry.data(sourceId);
+    if (!descriptor || !data) return null;
+    if (descriptor.kind === 'palm') {
+      const geometry = loadedPalmGeometry(data);
+      if (geometry) {
+        ownedGeometries.add(geometry.trunk); ownedGeometries.add(geometry.fronds);
+        const template = { family: 'resourcePalm', descriptor, sourceId, geometry };
+        resourceTemplates.set(id, template); return template;
+      }
+    } else if (descriptor.kind === 'stone') {
+      const source = data.parts?.[0]?.geo;
+      if (source) {
+        const geometry = coastRockGeometry(source, 0);
+        ownedGeometries.add(geometry);
+        const template = { family: 'resourceStone', descriptor, sourceId, geometry };
+        resourceTemplates.set(id, template); return template;
+      }
+    }
+    return null;
+  }
+  for (const id of ['prop:gm-resource-palm-v1', 'prop:gm-resource-stone-v1']) {
+    loadResourceTemplate(id);
+  }
+  const hasPalmMaterials = [...templates.values()].some(({ family }) => family === 'palm' || family === 'palmBase')
+    || [...resourceTemplates.values()].some(({ family }) => family === 'resourcePalm');
+  let palmMats = hasPalmMaterials ? palmMaterials(registry, swayUniform) : null;
   if (palmMats) trackMaterials(ownedMaterials, palmMats);
+  function ensurePalmMaterials() {
+    if (!palmMats) { palmMats = palmMaterials(registry, swayUniform); trackMaterials(ownedMaterials, palmMats); }
+    return palmMats;
+  }
   const baseMats = [...templates.values()].some(({ family }) => family === 'palmBase')
     ? palmBaseMaterials(registry, swayUniform, palmMats)
     : null;
@@ -90,6 +124,28 @@ export function createEditorModels(registry, { swayUniform = { value: 0.65 } } =
   return {
     model(id, target = null) {
       if (disposed) return null;
+      const resource = resourceTemplates.get(id) || loadResourceTemplate(id);
+      if (resource) {
+        const group = new THREE.Group(); group.name = id;
+        if (resource.family === 'resourcePalm') {
+          const mats = ensurePalmMaterials();
+          const inner = new THREE.Group(); inner.position.y = -0.1;
+          for (const [geometry, material, normal, depth] of [
+            [resource.geometry.trunk, mats.trunk, mats.trunkNm, mats.trunkDepth],
+            [resource.geometry.fronds, mats.fronds, mats.frondNm, mats.frondDepth],
+          ]) {
+            const mesh = new THREE.Mesh(geometry, material); mesh.userData.nm = normal;
+            mesh.customDepthMaterial = depth; mesh.castShadow = true; mesh.receiveShadow = true; inner.add(mesh);
+          }
+          group.add(inner);
+        } else {
+          const material = naturalRockMaterial('gm-resource-stone-preview'); ownedMaterials.add(material);
+          const mesh = new THREE.Mesh(resource.geometry, material); mesh.scale.setScalar(1.5);
+          mesh.castShadow = false; mesh.receiveShadow = true; group.add(mesh);
+        }
+        group.userData.gmFunctionalResource = { alias: id, kind: resource.descriptor.kind, sourceAssetId: resource.sourceId };
+        return group;
+      }
       const template = templates.get(id);
       if (!template) return registry.model(id, target);
       const { data, entry, family, parts } = template;

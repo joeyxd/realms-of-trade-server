@@ -1,0 +1,128 @@
+{
+  "schema": "l03f-local-pairing-browser/v1",
+  "version": "0.6.0-alpha.60",
+  "at": "2026-10-12T04:55:34.671Z",
+  "simulatedAuth": true,
+  "gameplay": "memory store; not durable",
+  "durableSQL": true,
+  "production": false,
+  "controllerStarted": false,
+  "modelCalled": false,
+  "codeWrittenToArtifact": false,
+  "codePersisted": false,
+  "storage": {
+    "migrations": [
+      "SQL001",
+      "SQL025",
+      "SQL027",
+      "SQL034"
+    ],
+    "database": "temporary local PGlite",
+    "creation": "SQL034 RPC",
+    "configuration": "SQL025 RPC adapter",
+    "control": "SQL027 RPC adapter",
+    "gameplay": "memory store"
+  },
+  "rendering": {
+    "browser": "Chrome headless",
+    "angle": "default"
+  },
+  "checks": [
+    "local_SQL001_025_027_034_and_pairing_prerequisites_ready",
+    "owner_created_Brisa_is_SQL034_prepared_and_stopped",
+    "visible_Conectar_en_mi_PC_opens_pairing_panel",
+    "pair_load_registers_created_owner_row_with_chat_only_and_SQL027_control",
+    "explicit_existing_panel_Allow_connection_commits_SQL027_before_pair_issue",
+    "issue_returns_private_64_hex_one_use_code_with_five_minute_bound",
+    "browser_storage_and_navigation_never_receive_pairing_code",
+    "explicit_revoke_removes_pending_code_and_clears_browser_memory",
+    "expired_code_is_removed_from_server_RAM_and_browser_state",
+    "English_mobile_390x844_pairing_view_fits_with_masked_secret",
+    "mobile_scroll_reaches_the_revoke_action",
+    "owner_logout_clears_browser_pairing_code_and_local_storage",
+    "no_controller_admission_or_model_call_occurred",
+    "browser_runtime_errors_empty_and_auth_is_fixture_only"
+  ],
+  "screenshots": [
+    "pairing-desktop-es-prepared.png",
+    "pairing-desktop-es-code-masked.png",
+    "pairing-mobile-en-code-masked.png",
+    "pairing-mobile-en-revoke-visible-code-masked.png"
+  ],
+  "errors": [],
+  "diagnostics": {
+    "pageErrors": [],
+    "consoleErrors": [],
+    "failedRequests": []
+  },
+  "limitations": [
+    "Supabase auth and account token are simulated; gameplay profiles are memory-backed.",
+    "No local controller process or model inference runs."
+  ],
+  "created": {
+    "characterKey": "91ec4f20-787a-47d0-830d-aa648542aa1d",
+    "name": "Brisa",
+    "role": "harvester",
+    "appearance": 1,
+    "controlStoppedInitially": true,
+    "configRevision": 1,
+    "controlRevision": 1
+  },
+  "layout": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "documentWidth": 390,
+    "panel": {
+      "left": 12,
+      "top": 12,
+      "right": 378,
+      "bottom": 832,
+      "width": 366,
+      "height": 820
+    },
+    "panelScrollWidth": 364,
+    "panelClientWidth": 364,
+    "editor": {
+      "left": 27,
+      "top": 71,
+      "right": 363,
+      "bottom": 885.015625,
+      "width": 336,
+      "height": 814.015625
+    },
+    "editorScrollWidth": 336,
+    "editorClientWidth": 336,
+    "controls": [
+      {
+        "left": 27,
+        "right": 363,
+        "top": 104.515625,
+        "bottom": 148.515625,
+        "height": 44
+      },
+      {
+        "left": 40,
+        "right": 350,
+        "top": 521.640625,
+        "bottom": 565.640625,
+        "height": 44
+      },
+      {
+        "left": 27,
+        "right": 363,
+        "top": 841.015625,
+        "bottom": 885.015625,
+        "height": 44
+      }
+    ]
+  },
+  "logout": {
+    "simulatedAuthEvent": true,
+    "browserCodeCleared": true,
+    "serverCodeClearedBeforeSocketClose": false,
+    "serverCodeClearedAfterOwnerSocketClose": true
+  },
+  "createdPairingSessionRevoked": true
+}

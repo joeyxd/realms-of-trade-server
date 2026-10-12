@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { validateDocument } from '../editor/document.js';
 import { createBaseDecorationLayer } from '../editor/baseDecoration.js';
 import { createEditorModels } from '../editor/modelFactory.js';
+import { resourceDescriptor, sourceAssetId } from '../editor/resourceAdapters.js';
 
 function sourceEntry(entry) {
   if (!entry || typeof entry.id !== 'string' || typeof entry.src !== 'string') throw new TypeError('Invalid prepared GM asset entry');
@@ -55,7 +56,10 @@ export function createGmContentLayer({ scene, map, assets, baseRevision = 'terra
     if (disposed) throw new Error('GM content layer is disposed');
     const next = rawDocument === null ? null : validateDocument(rawDocument);
     if (!Array.isArray(assetEntries)) throw new TypeError('Prepared GM assets must be an array');
-    const needed = new Set((next?.objects || []).filter((item) => !item.assetId.startsWith('base:')).map((item) => item.assetId));
+    // Functional resources are projected by ResourceNodes from the gameplay snapshot, never as decoration meshes.
+    const visualItems = (next?.objects || []).filter((item) => !resourceDescriptor(item.assetId));
+    const needed = new Set(visualItems.filter((item) => !item.assetId.startsWith('base:'))
+      .map((item) => sourceAssetId(item.assetId) || item.assetId));
     const supplied = new Map(assetEntries.map((entry) => [entry?.id, entry]));
     for (const id of needed) {
       if (assets.has?.(id)) continue;
@@ -76,7 +80,7 @@ export function createGmContentLayer({ scene, map, assets, baseRevision = 'terra
       for (const item of next?.objects || []) if (item.assetId.startsWith('base:') && !nextBaseLayer.get(item.assetId)) {
         throw new TypeError(`Unknown prepared GM base asset: ${item.assetId}`);
       }
-      for (const item of next?.objects || []) {
+      for (const item of visualItems) {
         const group = item.assetId.startsWith('base:') ? nextBaseLayer.model(item.assetId) : nextFactory.model(item.assetId);
         if (!group) throw new Error(`Prepared GM model unavailable: ${item.assetId}`);
         group.name = `gm:${item.id}`;
@@ -90,7 +94,7 @@ export function createGmContentLayer({ scene, map, assets, baseRevision = 'terra
       modelFactory = nextFactory;
       document = next;
       for (const group of nextGroups.values()) scene.add(group);
-      for (const item of document?.objects || []) authored.set(item.id, nextGroups.get(item.id));
+      for (const item of visualItems) authored.set(item.id, nextGroups.get(item.id));
       active = true;
       apply();
       return api;

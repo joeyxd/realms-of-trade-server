@@ -1,5 +1,6 @@
 import { MAX_OBJECTS, createDecoration, validateDocument } from './document.js';
 import { transformSelection } from './selection.js';
+import { resourceAdapter } from './resourceAdapters.js';
 
 export const TEMPLATE_SCHEMA = 'marea.gm.template';
 export const TEMPLATE_VERSION = 1;
@@ -26,6 +27,7 @@ function baseValue(raw) {
 }
 
 function localObject(raw) {
+  if (resourceAdapter(raw?.assetId)) fail('functional_resource');
   if (!exact(raw, ['id', 'assetId', 'transform', 'collider']) || !/^member-[1-9]\d{0,2}$/.test(raw.id) ||
       typeof raw.assetId !== 'string' || !ID.test(raw.assetId) || raw.assetId.length > 160 || !exact(raw.transform, ['position', 'rotation', 'scale'])) fail('member');
   const { position, rotation, scale } = raw.transform;

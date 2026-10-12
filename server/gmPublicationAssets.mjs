@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { lstat, readFile, readdir, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { normalizeManifest } from '../src/render/assets/manifest.js';
+import { sourceAssetId } from '../src/editor/resourceAdapters.js';
 
 const MAX_INDEX_BYTES = 8 * 1024 * 1024;
 const MAX_CONTENT_BYTES = 64 * 1024 * 1024;
@@ -164,7 +165,8 @@ export function createGmPublicationAssets({ root }) {
     try { serialized = JSON.stringify(document); } catch { fail('asset_reference'); }
     if (typeof serialized !== 'string' || Buffer.byteLength(serialized, 'utf8') > MAX_DOCUMENT_BYTES ||
         !document || !Array.isArray(document.objects) || !Array.isArray(extraAssetIds)) fail('asset_reference');
-    const ids = new Set([...document.objects.map((item) => item?.assetId), ...extraAssetIds]);
+    const ids = new Set([...document.objects.map((item) => typeof item?.assetId === 'string'
+      ? sourceAssetId(item.assetId) : item?.assetId), ...extraAssetIds]);
     for (const id of ids) {
       if (typeof id !== 'string' || (id.startsWith('base:') ? !BASE_ID.test(id) : !ID.test(id))) fail('asset_reference');
     }

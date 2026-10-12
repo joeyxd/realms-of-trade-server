@@ -102,7 +102,7 @@ export class GameScene {
     const props = createProps(map);
     this.props = props;
     this.scene.add(props.group);
-    this.resources = new ResourceNodes(this.scene, { palms: veg.palmResources, swayUniform: veg.swayU });
+    this.resources = new ResourceNodes(this.scene, { palms: veg.palmResources, swayUniform: veg.swayU, map });
     this.resources.onChange = () => this.pipeline.markDirty();
     this.rafts = new RaftLayer(this.scene, { dock: map.dock, surfaceSkin: raftSkin, sailingRig: true });
     this.effects = new Effects(this.scene, map);
