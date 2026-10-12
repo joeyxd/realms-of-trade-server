@@ -99,3 +99,22 @@ en 17 archivos seriales, incluidas las pruebas de host, SIGKILL y propiedad del 
 [TAP](m5-ground-pearl-leave/concurrent-integration.tap). Fuentes sin cambios durante la ejecución.
 El permiso del compañero admite solo chat; su montaje excluye el piloto común de suelo.
 Esta prueba local no sustituye la evidencia pública de `9ea14a0` ni acredita alpha.60 en VPS.
+
+El VPS se verificó después en `6b713d2`, alpha.60/protocolo 59: una autoridad sana,
+actualizador **194/194**, [16 hashes de imagen iguales a Git](m5-ground-pearl-leave/concurrent-image-check.json)
+y [entrada pública 6/6](m5-ground-pearl-leave/concurrent-public-smoke.json).
+[Estado](m5-ground-pearl-leave/concurrent-live-status.json) y
+[lectura del dominio](m5-ground-pearl-leave/concurrent-live-domain.json): montajes comunes nulos,
+sin reloj común, filas de suelo ni intenciones. Esta lectura no activa el piloto.
+
+La integración de GM036, upstream `e4fdaf5`, alpha.61/protocolo 59, pasa **83/83** en
+12 archivos seriales: [manifiesto](m5-ground-pearl-leave/gm-integration.json),
+[TAP](m5-ground-pearl-leave/gm-integration.tap). Incluye SQL036, restauración de recursos,
+publicación GM, adopción detenida y planner/comando/host de `leave`. Fuentes sin cambios.
+Los conteos se solapan con la aceptación anterior; este grupo no repite sus SIGKILL ni declara
+verde la suite completa. No acredita la publicación de alpha.61.
+
+GM036 admite recursos nuevos con CAS y conserva IDs retirados, pero rechaza el montaje
+con `GroundHostAuthority`; publicar contenido exige un mundo vacío y sin coordinadores pendientes.
+La composición de recursos GM activos con el piloto común queda pendiente de integración explícita
+antes de su adopción pública. No se ejecutaron migraciones ni admisiones en esta entrega AREA15.

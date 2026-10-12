@@ -69,8 +69,10 @@ Rollback y cerco ante deriva/cierre/desconexión, incluso callback nulo antes de
 Tres archivos con fallos de asignación/clonación repiten 49/49 sin cambios; quedan dos fallos heredados
 HTML localizado y Cometa/agua reproducidos en upstream limpio. Cohorte completa no verde. Dos SIGKILL nuevos
 con recuperación/recogida únicas y cero efectos históricos. Conteos solapados.
-VPS `9ea14a0` sano, alpha.59/protocolo 58: actualizador 194/194, imagen 96/96 y entrada pública 6/6.
-16 módulos iguales a Git; montajes comunes nulos, sin adopción ni SQL nuevo.
+Integración de compañeros alpha.60: 122/122 en 17 archivos seriales; GM036 alpha.61: 83/83 en 12 archivos.
+VPS verificado en `6b713d2`, alpha.60/protocolo 59: actualizador 194/194, entrada pública 6/6 y
+16 módulos iguales a Git; montajes comunes nulos, sin adopción ni SQL nuevo para `leave`.
+Los recursos GM activos aún excluyen el piloto común: esa composición queda pendiente.
 Sigue `give` transaccional, después `swallow` y sobre completo kill/cofre; luego transición/adopción y canario VPS.
 
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
