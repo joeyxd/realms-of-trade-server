@@ -66,6 +66,13 @@ después `swallow` y el sobre completo de kill/cofre: oro/equipo/XP/misiones, co
 cofre y RNG entre procesos. Después, adopción/transición detenida con exclusión del writer
 anterior/actualizador y canario autenticado en VPS. No se adopta el mundo público aquí.
 
+Aclaración del autor, 2026-10-11: regalar y vender entre jugadores solo se permite para
+una perla en el inventario del dueño; una perla tragada no se entrega ni vende y sigue ligada
+hasta morir. El siguiente `give` es entrega sin pago. La compraventa entre jugadores queda
+aprobada como dirección y pendiente de su contrato de precio/pago, interfaz y recibo que
+confirme perla y pago juntos. La venta a NPC sigue retirada. Esta aclaración es de diseño:
+no modifica ni activa el runtime de este corte.
+
 SIGKILL local no acredita pérdida eléctrica/disco, PostgreSQL concurrente entre backends
 ni lease entre procesos. Una caída anterior a la intención durable aún puede perder el
 comando sin confirmar. La entrada pública ordinaria verifica compatibilidad del deploy;

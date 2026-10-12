@@ -1,7 +1,7 @@
 # GM04d: palmeras talables y piedras recogibles
 
-2026-10-11. Implementado en alpha.61, protocolo 59. Publicación del runtime pendiente
-de la comprobación final del VPS; SQL036 instalada por el autor y readiness vivo 1.
+2026-10-11. Implementado e integrado en alpha.63, protocolo 59. Publicación del runtime pendiente
+de la comprobación final del VPS. SQL036 actualizada y contrato vivo comprobado, 4/4.
 [Contrato](../../briefs/gm04d-functional-resources.md).
 
 ## Uso
@@ -28,7 +28,7 @@ agotamiento; duplicar crea una identidad nueva. Retirar conserva su fila inactiv
   El registro existente reconcilia un ACK perdido del puntero.
 - El piloto alternativo de autoridad de suelo no ofrece esta admisión; rechaza antes de escribir.
 - Documento v2–v4 y SQL033 conservados. No cambia el sobre de snapshots/`you`; GM04d
-  no añade campos. La integración conserva el protocolo 59 de compañeros; alpha.61 y la
+  no añade campos. La integración conserva el protocolo 59 de compañeros; alpha.63 y la
   identidad de contenido requieren recarga compatible.
 
 ## Verificación local
@@ -45,12 +45,20 @@ agotamiento; duplicar crea una identidad nueva. Retirar conserva su fila inactiv
   ES/EN, escritorio y móvil emulado. Colocación por canvas, separación atómica, inspector,
   duplicar/borrar/undo/redo, movimiento con ID estable y guardado/reapertura local.
   Capturas inspeccionadas. El runner sustituye CDN Three/GSAP por la misma versión local.
-- [Readiness Supabase](sql-ready.json): **1**, después de ejecutar la última SQL036.
+- [Contrato Supabase](live-sql-contract.json): **4/4**, sin crear mundo/perfil ni escribir recursos.
+  La primera instalación daba readiness 1 con definiciones anteriores: [diagnóstico](live-sql-contract-before-reapply.json).
+  Se reaplicó el archivo probado desde la sesión autenticada y Supabase confirmó
+  [Success](sql036-success.jpg). La admisión rechaza ahora hits de piedra, IDs GM malformados y
+  overflow de versión; acepta el techo de 1024 antes del conflicto de mundo inexistente.
+  El store comprueba además la semántica inmutable del validador antes de admitir recursos.
 - [Integración concurrente](concurrent-integration.json): **26/26**, rutas y autoridad de
   perlas del nuevo upstream `9ea14a0`, después de integrar el cambio en GameHost.
 - [Recheck de la integración final](merge-recheck.json): **70/70** en alpha.61/protocolo 59,
   después de conservar el emparejamiento de compañeros concurrente. Recursos funcionales,
   publicación/host y sus cuatro grupos de cliente, UI, red y controlador.
+- [Cierre alpha.63](closure-tests.json): **137/137**, 23 archivos seriales después de integrar
+  Bucanero alpha.62, comida y segunda mejora de mochila. Incluye el guard contra SQL obsoleto,
+  recursos, store, publicación, compañeros, reacción/retroceso, comida y sobrecarga.
 
 Los conteos de grupos se solapan. La [primera regresión amplia](regression.json) quedó
 418/420: `resource-loop-server.test.mjs:143` espera fabricar con un tronco, mientras la

@@ -14,6 +14,8 @@ VPS verificado en `6b713d2`, alpha.60/protocolo 59: actualizador 194/194, entrad
 16 módulos iguales a Git; montajes comunes nulos, sin adopción ni SQL nuevo para `leave`.
 Los recursos GM activos aún excluyen el piloto común: esa composición queda pendiente.
 Sigue `give` transaccional, después `swallow` y sobre completo kill/cofre; luego transición/adopción y canario VPS.
+Regla del autor: `give` solo entrega sin pago un UID en la bolsa del dueño. Tragada no se entrega ni vende.
+Compraventa entre jugadores aprobada como dirección; requiere su propio corte y confirmar juntos perla y pago.
 
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-pearl-mint.md), [contrato](docs/briefs/m5-ground-pearl-mint.md).
@@ -125,6 +127,10 @@ Orden de ejecución y aceptación: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D07/D09
 sin compra ni venta a NPC. Queda retirado el siguiente corte de venta/oro durable anunciado en .37
 y en su informe histórico. La venta legacy de gameplay/UI queda retirada localmente en .38; después
 continuar la composición del lifecycle/startup y los gates de persistencia existentes.
+**Aclaración del autor, 2026-10-11:** se permite regalar o vender perlas entre jugadores solo
+desde el inventario del dueño, nunca mientras estén tragadas. `give` conserva su significado
+de entrega sin pago. La venta entre jugadores requiere definir precio/pago e interfaz y guardar
+perla y pago juntos; queda pendiente de su propio corte. No habilita la venta antigua a NPC.
 **Dirección marina aprobada, 2026-10-09:** descubrir restos/bancos marinos navegando y recuperar
 tesoros desde la balsa con una interacción corta de tensión; recompensas comunes útiles y perlas raras.
 Pesca manual y buceo después. [Dirección guardada](docs/briefs/m48-sea-salvage-direction.md): diseño
