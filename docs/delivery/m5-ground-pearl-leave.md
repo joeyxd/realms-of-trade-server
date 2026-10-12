@@ -118,3 +118,9 @@ GM036 admite recursos nuevos con CAS y conserva IDs retirados, pero rechaza el m
 con `GroundHostAuthority`; publicar contenido exige un mundo vacío y sin coordinadores pendientes.
 La composición de recursos GM activos con el piloto común queda pendiente de integración explícita
 antes de su adopción pública. No se ejecutaron migraciones ni admisiones en esta entrega AREA15.
+
+La integración final conserva también el trabajo concurrente de Bucanero/comidas hasta `b466ed9`,
+alpha.62/protocolo 59. Frente a `e4fdaf5` no cambia `server/**`, `src/sim/**`, `src/net/**`
+ni `deploy/**`; los cambios de package son de versión. Las pruebas anteriores conservan su base
+exacta y no se repiten por esos cambios de render/documentación. La aceptación visual de Bucanero
+y la activación pública de comidas tienen sus entregas propias.
