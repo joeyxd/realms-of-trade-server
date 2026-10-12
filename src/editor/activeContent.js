@@ -43,6 +43,16 @@ export async function loadGmWorldContent({ httpBase, map, baseMap, gameVersion, 
     const verifiedBase = { ...baseMap, props: structuredClone(baseline.props), colliders: structuredClone(baseline.colliders),
       terrainResources: structuredClone(baseline.resources) };
     const projected = projectGmContent(verifiedBase, document, 'terrain-s21-v1');
+    if (projected.gmResources.length) {
+      const metadata = content.resources;
+      if (!metadata || Object.keys(metadata).sort().join(',') !== 'count,sha256' ||
+          metadata.count !== projected.gmResources.length || !/^[a-f0-9]{64}$/.test(metadata.sha256) ||
+          metadata.sha256 !== await gmContentHash(projected.gmResources)) {
+        throw Object.assign(new Error('content_resources'), { code: 'content_resources' });
+      }
+    } else if (content.resources !== undefined) {
+      throw Object.assign(new Error('content_resources'), { code: 'content_resources' });
+    }
     if (document.terrain) {
       const metadata = content.terrain;
       const painted = document.terrain.version === 2;

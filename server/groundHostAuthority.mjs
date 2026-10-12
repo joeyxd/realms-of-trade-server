@@ -150,13 +150,13 @@ export class GroundHostAuthority {
     input.worldData = checked.request.worldData;
     return this.#reserveFamily(input, familyLanes(input.family, input.operationId, input.operation), apply);
   }
-  // Terminal death captures need to settle completed-tick progress and read UID generations
+  // Death captures and profile-to-ground commands settle progress and read UID generations
   // before constructing the DTO. The same owner reserves the entire captured role/source set
   // first; no second world writer or tick callback exists during that asynchronous preparation.
   stagePreparedFamily(raw, prepare, apply) {
     const value = snapshotDropData(raw);
     if (!value || Object.keys(value).sort().join(',') !== 'family,lanes,operationId' ||
-        !['death', 'drop'].includes(value.family) || !value.lanes ||
+        !['ground', 'death', 'drop'].includes(value.family) || !value.lanes ||
         Object.keys(value.lanes).sort().join(',') !== 'accounts,drops,uids' ||
         !['accounts', 'uids', 'drops'].every(key => Array.isArray(value.lanes[key])) ||
         typeof prepare !== 'function' || typeof apply !== 'function') fail('operation');

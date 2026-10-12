@@ -1,0 +1,70 @@
+{
+  "checkout": "C:\\DEV\\real of trade\\prg01c-artisan",
+  "observedHead": "e625a5c79cb8529b4f735ec4c1a40ee18a9a841b",
+  "requestedComparisonBase": "62490c819b7ac2cfd1559fcf23c0604f606c648d",
+  "trackedTreeClean": true,
+  "untrackedItemsPreserved": true,
+  "headCommit": "Accept public Buccaneer pistols and native swimming",
+  "headCommitScope": "documentation and delivery evidence only",
+  "comparedPathsUnchangedFromBase": true,
+  "nodeVersion": "v24.14.0",
+  "tests": [
+    {
+      "exitCode": 1,
+      "assertion": "expected raw legacy toast HTML; actual localization-wrapped span",
+      "command": "node --test --test-name-pattern='commandDenied reaches only' tests/pearl-command-access.test.mjs",
+      "result": "1 failed",
+      "classification": "stale assertion against current rich localization wrapper",
+      "tapSha256": "a707217c54a773e51fb9d3277cce7b855e1a8e6e6fb86945bc7415127f4e1011",
+      "tap": "upstream-check-command-access.tap"
+    },
+    {
+      "exitCode": 1,
+      "assertion": "Cometa deep-water/canStand endpoint assertion at tests/pearls.test.mjs:190",
+      "command": "node --test --test-name-pattern='Cometa cannot rush' tests/pearls.test.mjs",
+      "result": "1 failed",
+      "classification": "behavioral failure in source identical to requested base; pre-existing in compared upstream source, unrelated to pearl command hook",
+      "tapSha256": "eb8b3b5a486392c9b614ec0b8129afec717f5ca8899439f57f3a32b5b4ac7f9c",
+      "tap": "upstream-check-cometa.tap"
+    }
+  ],
+  "sourceSha256": [
+    {
+      "sha256": "1ce872fb683ba7a4acfcf63ab9ffd3923228b7ef5c1538c1cad4ceda884c14ad",
+      "path": "tests/pearl-command-access.test.mjs"
+    },
+    {
+      "sha256": "431636f7ac7828c9d0f56ac9baf305abd50aab13e0bf03cf243f94eeeaa5eabb",
+      "path": "tests/pearls.test.mjs"
+    },
+    {
+      "sha256": "0e4b763ee9574270b7e87ef67e1ebc225f693e5398450e38e5bd7bc92ac4e9f5",
+      "path": "src/net/localServer.js"
+    },
+    {
+      "sha256": "24dd515b2f58c4b685ccee6c01dde1c37905a5915a9c0c4df9ad08640870f819",
+      "path": "src/ui/rewards.js"
+    },
+    {
+      "sha256": "d65a26500b8e19c04f363a50a195f3112dd10203d90899924517d130bf20c078",
+      "path": "src/core/i18n.js"
+    },
+    {
+      "sha256": "ae9672fc9ae16b67685afec97e4bcc52e0c64dc1dac41fb10bc1d0069f977ff6",
+      "path": "src/i18n/adventure.js"
+    },
+    {
+      "sha256": "9959d5b6dfd036367ebb527a5ef95a995ea0e54a51663539aa726152121e9533",
+      "path": "src/sim/systems/movement.js"
+    },
+    {
+      "sha256": "63f75ee0682f32411a262af7d5d42631285f9fdd8590ecdaaaa6cfacef44579e",
+      "path": "src/sim/systems/skills.js"
+    },
+    {
+      "sha256": "f59b25e525ad7d7f64d92d53a4f9c2a20f2a5c6b37165c637e17d7145261344d",
+      "path": "src/sim/systems/pearls.js"
+    }
+  ],
+  "artifactFormatting": "UTF-8 LF, no BOM; trailing spaces on diagnostic blank lines removed. Test results unchanged."
+}

@@ -1,0 +1,37 @@
+✖ commandDenied reaches only the player as the fixed Rewards toast without profile or UID data (3.3388ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 489.8651
+
+✖ failing tests:
+
+test at tests\pearl-command-access.test.mjs:365:1
+✖ commandDenied reaches only the player as the fixed Rewards toast without profile or UID data (3.3388ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+      {
+  +     html: '<span data-l10n-html="reward.action_unavailable" data-l10n-params="{}"><b>Acción no disponible.</b> Espera un momento y vuelve a intentarlo.</span>',
+  -     html: '<b>Acción no disponible.</b> Espera un momento y vuelve a intentarlo.',
+        ms: 5000
+      }
+    ]
+
+      at TestContext.<anonymous> (file:///C:/DEV/real%20of%20trade/prg01c-artisan/tests/pearl-command-access.test.mjs:381:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { html: '<span data-l10n-html="reward.action_unavailable" data-l10n-params="{}"><b>Acción no disponible.</b> Espera un momento y vuelve a intentarlo.</span>', ms: 5000 } ],
+    expected: [ { html: '<b>Acción no disponible.</b> Espera un momento y vuelve a intentarlo.', ms: 5000 } ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

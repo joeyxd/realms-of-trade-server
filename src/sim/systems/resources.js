@@ -16,14 +16,14 @@ function cleanLayout(map) {
   const raw = resourceLayout(map);
   const ids = new Set();
   const nodes = [];
-  for (const n of (Array.isArray(raw?.nodes) ? raw.nodes : []).slice(0, HARVEST.maxNodes)) {
+  for (const n of (Array.isArray(raw?.nodes) ? raw.nodes : []).slice(0, HARVEST.maxActiveNodes)) {
     if (!n || typeof n.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(n.id) || ids.has(n.id)
         || !owns(RESOURCE_KINDS, n.kind) || ![n.x, n.y, n.z].every(Number.isFinite)) continue;
     ids.add(n.id);
     const node = { id: n.id, kind: n.kind, x: n.x, y: n.y, z: n.z, rev: 1, readyTick: 0 };
-    if (n.kind === 'palm' && Number.isSafeInteger(n.propIndex) && n.propIndex >= 0
-        && Number.isFinite(n.scale) && n.scale > 0) {
-      node.propIndex = n.propIndex; node.scale = n.scale; node.rot = Number.isFinite(n.rot) ? n.rot : 0;
+    if (n.kind === 'palm' && Number.isFinite(n.scale) && n.scale > 0) {
+      if (Number.isSafeInteger(n.propIndex) && n.propIndex >= 0) node.propIndex = n.propIndex;
+      node.scale = n.scale; node.rot = Number.isFinite(n.rot) ? n.rot : 0;
     }
     if (RESOURCE_KINDS[n.kind].hits) node.hits = 0;
     nodes.push(node);

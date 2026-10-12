@@ -58,7 +58,7 @@ export class CompanionCreationService {
     if (!this.ready || !h.worldState?.id) { reply('unavailable'); return; }
     if (this.busy.has(session.key) || this.busy.size >= 32 || !this.quota(session.key)) { reply('busy'); return; }
     // This first slot cannot duplicate a character already assigned by private host configuration.
-    if (h.agentControl?.listOwned(session.key).length) { reply('conflict'); return; }
+    if (h.agentControl?.listOwned(session.key).some(row => !h.agentControl.createdBinding(session.key, row.characterKey))) { reply('conflict'); return; }
     const scope = { world: h.worldState.id, owner: session.key };
     this.busy.add(session.key);
     let operation;
@@ -72,7 +72,8 @@ export class CompanionCreationService {
       const result = await this.bounded(operation);
       const raw = message.op === 'load' ? result : result?.record;
       const record = raw === null ? null : validateCompanionRecord(raw);
-      if (record && (record.characterKey === session.key || h.agentControl?.binding(record.characterKey))) throw new Error('collision');
+      if (record && (record.characterKey === session.key || h.agentControl?.binding(record.characterKey) &&
+          !h.agentControl.createdBinding(session.key, record.characterKey))) throw new Error('collision');
       if (message.op === 'load') { reply(null, record); return; }
       if (result?.ok === false && ['conflict', 'limit'].includes(result.why)) { reply(result.why, record); return; }
       if (result?.ok !== true || typeof result.replay !== 'boolean' || !record || record.creationId !== message.creationId

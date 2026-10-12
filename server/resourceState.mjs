@@ -19,9 +19,10 @@ const cmp = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 function validateBase(raw, version, strictLegacyHistory = false) {
   if (!exact(raw, version === 1 ? ['v', 'tick', 'nodes', 'cooldowns'] : ['v', 'tick', 'nodes', 'cooldowns', 'logging'])
       || raw.v !== version || !integer(raw.tick) || !Array.isArray(raw.nodes)
-      || raw.nodes.length < 1 || raw.nodes.length > HARVEST.maxNodes || !object(raw.cooldowns)
+      || raw.nodes.length < 1 || raw.nodes.length > HARVEST.maxSavedNodes || !object(raw.cooldowns)
       || Reflect.ownKeys(raw.cooldowns).length > 4096) fail();
   const ids = new Set();
+  let baseCount = 0;
   for (const n of raw.nodes) {
     if (!exact(n, ['id', 'kind', 'rev', 'hits', 'readyAt']) || typeof n.id !== 'string'
         || !/^[A-Za-z0-9_-]{1,40}$/.test(n.id) || ids.has(n.id) || !Object.hasOwn(RESOURCE_KINDS, n.kind)
@@ -29,6 +30,9 @@ function validateBase(raw, version, strictLegacyHistory = false) {
         || !integer(n.readyAt)) fail();
     if (strictLegacyHistory && version === 1 && n.kind === 'palm' && n.hits > 0
         && (n.rev < n.hits + 1 || (n.rev - 1) % HARVEST.palmHits !== n.hits % HARVEST.palmHits)) fail();
+    if (/^gm_[0-9a-f]{32}$/.test(n.id)) {
+      if (!['palm', 'stone'].includes(n.kind)) fail();
+    } else if (++baseCount > HARVEST.maxNodes || n.id.startsWith('gm_')) fail();
     ids.add(n.id);
   }
   for (const key of Reflect.ownKeys(raw.cooldowns)) {
@@ -147,10 +151,16 @@ export function newResourceState(world) {
 
 export function restoreResourceState(world, raw) {
   const data = checkedResourceState(raw), updates = [];
-  if (!integer(world.tick) || data.nodes.length !== world.resources.nodes.size) fail();
+  if (!integer(world.tick) || data.nodes.length < world.resources.nodes.size) fail();
+  const savedIds = new Set(data.nodes.map(n => n.id));
+  for (const id of world.resources.nodes.keys()) if (!savedIds.has(id)) fail();
   for (const saved of data.nodes) {
     const node = world.resources.nodes.get(saved.id);
-    if (!node || node.kind !== saved.kind) fail();
+    if (!node) {
+      if (!/^gm_[0-9a-f]{32}$/.test(saved.id)) fail();
+      continue;
+    }
+    if (node.kind !== saved.kind) fail();
     const remaining = Math.max(0, saved.readyAt - data.tick);
     if (!integer(world.tick + remaining)) fail();
     updates.push([node, { rev: saved.rev, readyTick: remaining ? world.tick + remaining : 0,

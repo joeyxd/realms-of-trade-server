@@ -3,6 +3,7 @@ import { gmEditableBaseProps } from './baseIdentity.js';
 import { resourceLayout } from '../data/resources.js';
 import { freshwaterSource } from '../data/freshwater.js';
 import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
+import { resourceDescriptor, validateAuthoredResources } from './resourceAdapters.js';
 
 const MAX_REPORTED_ISSUES = 200;
 const MAX_PUBLICATION_EDITS = 1000;
@@ -122,11 +123,14 @@ export function validateGmPublication({ map, document, baseRevision } = {}) {
       collider: entry.prop.r > 0 && colliderIndex(map, entry.prop) !== null
         ? { type: 'circle', radius: entry.prop.r / entry.prop.scale } : 'none', base: true });
   }
-  for (const item of doc.objects) changed.push({ ...item, base: false });
+  for (const item of doc.objects) if (!resourceDescriptor(item.assetId)) changed.push({ ...item, base: false });
 
   const editCount = doc.baseOverrides.length + doc.objects.length;
   if (editCount > MAX_PUBLICATION_EDITS) issue('error', 'edit_limit');
   const anchors = anchorList(map), resources = resourceLayout(map);
+  const authored = validateAuthoredResources(terrainMap, doc);
+  for (const problem of authored.issues) issue('error', `resource_${problem.code}`, problem.objectId);
+  resources.nodes.push(...authored.resources);
   let visualOnlyCount = 0, rotatedCircleCount = 0;
   const circles = [];
   for (const item of changed) {

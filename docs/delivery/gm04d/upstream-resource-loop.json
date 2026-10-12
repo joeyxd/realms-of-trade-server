@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-12T05:09:56.960Z",
+  "revision": "e625a5c79cb8529b4f735ec4c1a40ee18a9a841b",
+  "method": "isolated git archive of unchanged upstream, shared node_modules junction",
+  "command": "node --test --test-reporter=tap tests/resource-loop-server.test.mjs",
+  "exitCode": 1,
+  "knownFailure": "resource-loop-server.test.mjs:143 expects crafting madera with one tronco; current recipe requires two"
+}

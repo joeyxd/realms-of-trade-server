@@ -1,5 +1,25 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA01 GM04d, 2026-10-11 — recursos funcionales implementados, alpha.61/protocolo 59:**
+[Contrato](docs/briefs/gm04d-functional-resources.md), [entrega](docs/delivery/gm04d/DELIVERY.md).
+Palmera talable/piedra recogible en Recursos; borrador privado y publicación con admisión SQL036
+append-only. IDs existentes conservan ciclos, agotamiento y ledger al mover/retirar/republicar.
+SQL036 instalada y readiness real 1; 418/418 CPU y 8/8 SQL seriales, UI local 9/9 ES/EN escritorio/móvil.
+Suite amplia no verde: fallo de receta reproducido en upstream y OOM resuelto al repetir serial;
+ver evidencia y alcance en la entrega. Publicación del runtime VPS pendiente de verificación.
+El autor eligió [Taller de habilidades](docs/briefs/skill-studio-vision.md): ajustar las actuales
+primero e incluir la adaptación real de un efecto Niagara; intake realizado, implementación pendiente.
+
+**L03f — emparejamiento local implementado, alpha.60/protocolo 59:**
+[Contrato](docs/briefs/l03f-local-pairing.md) y [uso/evidencia](docs/delivery/l03f-local-pairing/README.md).
+Mis compañeros → Permitir conexión → Conectar en mi PC; código de un uso/cinco minutos,
+controlador WSS saliente y capacidad solo chat. Perfil M5 y plaza normal; máximo dos controladores.
+SQL025/027/034 existentes, sin SQL nuevo. Detener/revocar/salir/caducidad/reinicio invalidan el permiso.
+Documentos, journal y presupuesto permanecen en la PC, conservados al reemparejar; refresco manual r + Enter.
+82/82 integración, 15/15 red/controlador, navegador local 14/14 ES/EN; actualizador 194/194 (conteos solapados).
+Conversación y memoria verificadas con stub HTTP local. Qwen 127.0.0.1:8080 sigue inaccesible.
+Publicación, canario autenticado público y limpieza se registran aparte; no confundir el stub con modelo real.
+
 **Bucanero a distancia + swim, alpha.59/protocolo 58:**
 [Contrato](docs/briefs/buccaneer-ranged-swim.md) y [entrega](docs/delivery/buccaneer-v1/ranged-swim/README.md).
 Dos gatillos, armas/manos/recargas distintas, interceptación física 3D y nado original con rig nativo.
@@ -29,6 +49,18 @@ Aceptación autenticada pública 11/11 en 96af1aa, alpha.56: creación, document
 verificada de la cuenta temporal. Updater 176/176. Salud posterior comprobada en 66fcf82, alpha.57:
 una autoridad sana, diez módulos de imagen y seis públicos iguales a Git, cero errores/escrituras pendientes.
 Sin modelo/inferencia, spawn ni permisos concedidos; siguiente corte: emparejamiento local revocable y adaptador real de red.
+
+**AREA15, 2026-10-11 — soltar perlas con recibo; piloto común apagado:**
+[Entrega/evidencia](docs/delivery/m5-ground-pearl-leave.md), [contrato](docs/briefs/m5-ground-pearl-leave.md).
+`leave` autenticado reserva cuenta/UIDs antes de IO, conserva progreso ECS y resuelve generación durable;
+confirma perfil/ubicación/mundo/reloj antes de aplicar juntos sesión, suelo, ledger e índices.
+Rollback y cerco ante deriva/cierre/desconexión, incluso callback nulo antes del comando.
+28/28 nuevos; cohorte 625/636 en 73 archivos congelados, base e625a5c.
+Tres archivos con fallos de asignación/clonación repiten 49/49 sin cambios; quedan dos fallos heredados
+HTML localizado y Cometa/agua reproducidos en upstream limpio. Cohorte completa no verde. Dos SIGKILL nuevos
+con recuperación/recogida únicas y cero efectos históricos. Conteos solapados.
+Código aceptado localmente; publicación y verificación VPS todavía pendientes.
+Sigue `give` transaccional, después `swallow` y sobre completo kill/cofre; luego transición/adopción y canario VPS.
 
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-pearl-mint.md), [contrato](docs/briefs/m5-ground-pearl-mint.md).
