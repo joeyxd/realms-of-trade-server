@@ -8,8 +8,10 @@ Swim original en rig nativo de 65 huesos solo en agua, sin root motion; salida/m
 Perfiles guardados conservan equipo; sin SQL propio. 85/85 CPU, 27/27 recheck, assets19/19 y catálogo39/39,
 conteos solapados. Navegador local 20/20 escritorio/móvil; suite general no verde (ver entrega CPU).
 Integrado con SRV02: 49/49 focales seriales y repetición local 20/20. Enviado en `bd55589`.
-Actualizador difirió activación por un jugador: VPS sigue `cd5df25`/alpha.57 saludable, cero errores o pendientes.
-[Recibo](delivery/buccaneer-v1/ranged-swim/publication.json); aceptación pública del corte pendiente.
+Publicado por el actualizador habitual en `62490c8`, alpha.59: imagen validada y contenedor saludable,
+24 hashes públicos iguales a Git, entrada real y gatillos/nado/regreso a tierra ES/EN 12/12 escritorio/móvil emulado.
+Cero errores o pendientes. Choque entre balas aceptado localmente; capturas públicas nocturnas limitan lectura del modelo.
+[Recibo](delivery/buccaneer-v1/ranged-swim/publication.json) y [aceptación pública](delivery/buccaneer-v1/ranged-swim/public/acceptance.json).
 
 **AREA03 SRV02, 2026-10-11 — implementado y probado; SQL035/activación pendientes:**
 [Contrato](briefs/srv02-special-meals.md), [entrega](delivery/srv02-special-meals/README.md).

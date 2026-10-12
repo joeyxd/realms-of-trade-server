@@ -31,9 +31,13 @@ dispositivo, salida/muerte/reentrada/fallo nativo. Capturas inspeccionadas. Avis
 compañeros compactos evitan tapar el centro en horizontal. [Script](../../../../tools/qa-buccaneer-ranged-swim.mjs).
 Tras integrar SRV02 (`6fb3e20`), 49/49 focales seriales y repetición del navegador 20/20 pasan en alpha.59/protocolo 58.
 
-Código enviado en `bd55589` a la rama de continuidad, alpha.59/protocolo 58. El actualizador habitual
-difirió la activación por un jugador conectado. VPS sigue en `cd5df25`, alpha.57, imagen saludable,
-sin errores ni escrituras pendientes. [Recibo](publication.json). Aceptación pública del corte pendiente;
-el [script público](../../../../tools/qa-buccaneer-ranged-public.mjs) comprueba fuentes, gatillos y nado con movimiento ordinario.
+Publicado por el actualizador habitual en `62490c8`, alpha.59/protocolo 58, tras la espera inicial por
+un jugador conectado. Revisión activa, imagen validada y contenedor saludable coinciden; `/health` 200,
+cero errores y escrituras pendientes antes y después. [Recibo](publication.json).
+[Aceptación pública](public/acceptance.json): 24 archivos/modelos idénticos a Git y 12/12 comprobaciones
+en Chrome, escritorio y móvil emulado: entrada real, ambos gatillos, caminar al agua, loop nativo completo,
+variante 1024/512, regreso a tierra y controles ES/EN. Sin fixture ni teleport público. Capturas inspeccionadas;
+la noche limita la lectura del modelo, cuya animación/rig se comprueban también por estado. El choque entre
+balas conserva la aceptación local; no se forzó un encuentro público. [Script público](../../../../tools/qa-buccaneer-ranged-public.mjs).
 Sin SQL propio ni activaciones de persistencia. Balance y FPS en teléfono físico siguen pendientes;
 tampoco se ha perfilado el peor caso de pools de proyectiles llenos.
