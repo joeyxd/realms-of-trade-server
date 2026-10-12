@@ -61,3 +61,8 @@ sin acreditar por sí solo conversación o memoria.
 [Integración: 82/82](integration.txt), [red y controlador: 15/15](focused.tap), [regresión del actualizador](updater.txt) y
 [navegador ES/EN](browser/browser.json) conservan sus alcances separados.
 Las pruebas con proveedor simulado no acreditan el modelo real del dueño.
+
+Tras integrar el cambio concurrente `9ea14a0` de suelo, el [recheck serial](merge-recheck.tap)
+pasó 76/76, incluidos servidor, perfiles, pairing, mente y ruta de perlas. Los conteos se solapan.
+La recuperación previa de disponibilidad está en [availability-recheck.json](availability-recheck.json);
+se restableció el servicio, pero no quedó identificado el comando que provocó el fence anterior.
