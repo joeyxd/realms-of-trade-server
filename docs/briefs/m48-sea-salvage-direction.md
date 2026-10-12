@@ -6,8 +6,11 @@ Guarda la propuesta de recuperación desde la balsa; no acredita una mecánica i
 ## Experiencia acordada
 
 Las perlas se descubren como tesoros: botín, cofres y futuras fuentes marinas. Ningún NPC las compra
-ni las vende. Las perlas sin tragar todavía se pueden entregar a otro pirata; el mercado entre
-jugadores no se define aquí. Una perla tragada permanece hasta morir.
+ni las vende. Aclaración del autor, 2026-10-11: una perla solo puede regalarse o venderse a
+otro jugador mientras esté en el inventario del dueño. Una perla tragada no admite entrega
+ni venta y permanece ligada hasta morir. La compraventa entre jugadores está aprobada como
+dirección; precio/pago, interfaz e implementación durable siguen pendientes de un corte propio.
+La entrega sin pago (`give`) no implementa esa compraventa.
 
 El primer acceso al mar será **salvamento desde el barco que habitas**:
 

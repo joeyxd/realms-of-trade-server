@@ -25,6 +25,11 @@ destino: rara, poderosa, con un precio, y **fluye**: se te cae al morir.
   no hay nado/buceo. Probabilidades, costes, tiempos y dificultad siguen abiertos.
   Las referencias históricas a venta debajo quedan supersedidas por esta regla.
 - **Se cae al morir**, para que circulen y sean algo importante.
+- **Aclaración del autor, 2026-10-11:** solo una perla en el inventario del dueño puede
+  regalarse o venderse a otro jugador. Una perla tragada no se puede entregar ni vender;
+  sigue ligada hasta morir. La compraventa entre jugadores queda aprobada como dirección,
+  pendiente de su contrato de precio/pago, interfaz e implementación durable. `give` es entrega
+  sin pago; no implementa esa compraventa. Se conserva la prohibición de compra/venta a NPC.
 - **Regla vigente del autor, 2026-10-07:** una vez tragada no se puede escupir ni reemplazar;
   permanece hasta morir. La muerte pierde EXP del nivel actual y suelta la bolsa en cualquier zona.
   Implementación local en [D09f-2b.19](docs/delivery/d09f-pearl-bound-death.md): 10 % provisional y
