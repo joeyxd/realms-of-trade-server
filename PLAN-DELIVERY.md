@@ -8,11 +8,12 @@ Idle/nado conservados, +57 KB por GLB, texturas 1024/512; reglas de combate y SQ
 Tras integrar recursos GM/compañeros/perlas: 76/76 focales + 36/36 integración, Chrome local 16/16,
 seis capturas inspeccionadas. Suite general no repetida. Publicación/aceptación pública por separado.
 
-**AREA01 GM04d, 2026-10-11 — recursos funcionales implementados, alpha.61/protocolo 59:**
+**AREA01 GM04d, 2026-10-11 — recursos funcionales integrados, alpha.63/protocolo 59:**
 [Contrato](docs/briefs/gm04d-functional-resources.md), [entrega](docs/delivery/gm04d/DELIVERY.md).
 Palmera talable/piedra recogible en Recursos; borrador privado y publicación con admisión SQL036
 append-only. IDs existentes conservan ciclos, agotamiento y ledger al mover/retirar/republicar.
-SQL036 instalada y readiness real 1; 418/418 CPU y 8/8 SQL seriales, UI local 9/9 ES/EN escritorio/móvil.
+SQL036 reaplicada, contrato vivo 4/4 y guard de semántica en store: el readiness 1 anterior no bastaba.
+418/418 CPU y 8/8 SQL seriales, UI local 9/9 ES/EN escritorio/móvil.
 Suite amplia no verde: fallo de receta reproducido en upstream y OOM resuelto al repetir serial;
 ver evidencia y alcance en la entrega. Publicación del runtime VPS pendiente de verificación.
 El autor eligió [Taller de habilidades](docs/briefs/skill-studio-vision.md): ajustar las actuales
@@ -76,6 +77,8 @@ VPS verificado en `6b713d2`, alpha.60/protocolo 59: actualizador 194/194, entrad
 16 módulos iguales a Git; montajes comunes nulos, sin adopción ni SQL nuevo para `leave`.
 Los recursos GM activos aún excluyen el piloto común: esa composición queda pendiente.
 Sigue `give` transaccional, después `swallow` y sobre completo kill/cofre; luego transición/adopción y canario VPS.
+Regla del autor: `give` solo entrega sin pago un UID en la bolsa del dueño. Tragada no se entrega ni vende.
+Compraventa entre jugadores aprobada como dirección; requiere su propio corte y confirmar juntos perla y pago.
 
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-pearl-mint.md), [contrato](docs/briefs/m5-ground-pearl-mint.md).
