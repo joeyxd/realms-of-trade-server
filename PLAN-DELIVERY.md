@@ -48,8 +48,8 @@ Cuenta/perfil temporales eliminados, recibos conservados y autoridad sana; 403 s
 194/194 actualizador, SQL 33/33 y recheck M5 33/33, conteos solapados. Primer rechazo SQL sin causa
 confirmada; consumo público con cocina propia encendida pendiente. [INV03](docs/briefs/inv03-existing-backpacks.md)
 completará aceptación de las mochilas 18/30/42 ya existentes con Carga; no rehacer sobrepeso.
-Primer avance INV03: [SQL029 11/11](docs/delivery/inv03-existing-backpacks/README.md), segundo tier,
-coste/conservación/denegación/replay; cadena SQL completa y recorrido público pendientes.
+Primer avance INV03: [SQL001–036 11/11](docs/delivery/inv03-existing-backpacks/README.md), segundo tier,
+Carga/coste/conservación/denegación/replay; recorrido público pendiente.
 
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](docs/delivery/l03e-companion-creation/README.md), [brief](docs/briefs/l03e-companion-creation.md).

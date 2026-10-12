@@ -54,8 +54,8 @@ Navegador público 9/9 en `9ea14a0`: botón real, guardado/reentrada, ES/EN escr
 no tiene causa confirmada; conservar su evidencia. Consumo público con fuego propio aún pendiente.
 Después [INV03 sobre mochilas existentes](briefs/inv03-existing-backpacks.md): completar 30→42,
 coste, replay/reentrada y Carga conservada. No rehacer sobrepeso ni añadir bolsas equipables todavía.
-INV03 iniciado: [SQL029 11/11](delivery/inv03-existing-backpacks/README.md), incluido el segundo tier;
-no acredita todavía cadena SQL actual completa ni taller público.
+INV03 iniciado: [cadena SQL001–036 11/11](delivery/inv03-existing-backpacks/README.md), segundo tier
+con Carga/coste/conservación/denegación/replay; todavía no acredita taller público.
 
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](delivery/l03e-companion-creation/README.md), [brief](briefs/l03e-companion-creation.md).

@@ -17,9 +17,9 @@ Primero aceptar el flujo existente de mejora de mochila con el sistema actual: c
 
 La [aceptación pública PRG01d de alpha.39](../delivery/prg01d-starter-workshop/activation/public-4e926d4b-bc17-4c9b-b2a1-7924dac83d94.json) ya incluye una mejora pagada 18→30 dentro de su canario de 36 comprobaciones. El [harness](../../tools/qa-workshop-public.mjs) entrega solo 2 tablas y 3 lonas, comprueba su consumo, el aumento de tier y el recibo. No acredita 30→42, conservación de otra mercancía, replay/reentrada de esa mejora ni Carga adoptada. El navegador de aquella entrega muestra la oferta, sin completar una mejora pagada.
 
-Por tanto, INV03 debe completar esas lagunas sobre el taller existente: ambos tiers con Carga adoptada y mercancía ajena al pago, replay idéntico, denegación por materiales insuficientes, persistencia al volver y botones reales ES/EN en escritorio/móvil. La prueba SQL existente cubre el primer tier; ampliar esa comprobación al segundo antes del canario público. No hace falta diseñar otro sistema de mochilas para este corte.
+Por tanto, INV03 debe completar esas lagunas sobre el taller existente: ambos tiers con Carga adoptada y mercancía ajena al pago, replay idéntico, denegación por materiales insuficientes, persistencia al volver y botones reales ES/EN en escritorio/móvil. No hace falta diseñar otro sistema de mochilas para este corte.
 
-Primer avance local: [SQL029 11/11](../delivery/inv03-existing-backpacks/README.md), incluido el segundo tier con Carga conservada, coste exacto, otra mercancía, denegación y replay durable. La cadena SQL actual completa y la aceptación pública permanecen pendientes.
+Primer avance local: [cadena SQL001–036 11/11](../delivery/inv03-existing-backpacks/README.md), incluido el segundo tier con Carga conservada, coste exacto, otra mercancía, denegación y replay durable. La aceptación pública permanece pendiente.
 
 Una bolsa como objeto que se posee y equipa sería una ampliación distinta. Antes de implementarla hay que cerrar su relación con las mejoras ya pagadas, la ranura, el origen/receta, la capacidad y qué ocurre al quitarla con mercancías dentro. No introducir un segundo modificador de volumen ni reiniciar las mejoras existentes. Cinturones y nuevos tiers se coordinan con PRG04.
 

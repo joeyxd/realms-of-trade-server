@@ -28,10 +28,11 @@ const raftIdentifierSql = await migration('026_workshop_raft_identifiers');
 const worldData = () => ({ v: 1, seed, economy: new Economy(seed).serialize(), community: { v: 1, epoch: id(900),
   project: { id: 'salty-shore-carpentry', version: 1, requirements: { madera: 50, piedra: 20 }, contributed: { madera: 0, piedra: 0 } } },
   resources: upgradeTimingState({ v: 1, tick: 100, nodes: [{ id: 'palm-1', kind: 'palm', rev: 1, hits: 0, readyAt: 0 }], cooldowns: {} }) });
-async function fixture(t, { apply = true } = {}) {
+async function fixture(t, { apply = true, migrationsAfterWorkshop = [] } = {}) {
   const f = await database(); t.after(() => f.close());
   await f.db.exec('RESET ROLE'); for (const prior of priors) await f.db.exec(prior);
   if (apply) { await f.db.exec(sql); await f.db.exec(sql); }
+  for (const name of migrationsAfterWorkshop) await f.db.exec(await migration(name));
   f.p = newProfile(); f.p.eco.pack.goods = { madera: 5 }; f.w = worldData(); f.pv = f.wv = 1;
   await f.db.query('insert into public.mn_profiles(player_id,data,version) values($1::uuid,$2::jsonb,1)', [account, f.p]);
   await f.db.query('insert into public.mn_worlds(world,economy,version) values($1,$2::jsonb,1)', [world, f.w]);
@@ -93,9 +94,12 @@ test('SQL024 partial personal project, prepaid storage, paid later storage, kits
   assert.deepEqual((await f.db.query('select public.mn_starter_workshop_ready() as r')).rows[0].r, { version: 1 });
 });
 
-test('SQL029 commits the paid second backpack tier with Carga, conserved goods, denial and durable replay', async t => {
-  const f = await fixture(t), attributeSql = await migration('029_attribute_operations');
-  await f.db.exec('RESET ROLE'); await f.db.exec(attributeSql); await f.db.exec('SET ROLE service_role');
+test('SQL036 chain commits the paid second backpack tier with Carga, conserved goods, denial and durable replay', async t => {
+  const migrationTail = ['025_companion_config', '026_workshop_raft_identifiers', '027_companion_control',
+    '028_inference_config', '029_attribute_operations', '030_freshwater_operations', '031_gm_terrain_drafts',
+    '032_canteen_survival_operations', '033_gm_terrain_materials', '034_companion_creation',
+    '035_special_meal_operations', '036_gm_resource_roster'];
+  const f = await fixture(t, { migrationsAfterWorkshop: migrationTail });
 
   // Seed a valid, already-paid tier-1 pack with adopted Carga and unrelated cargo.
   const initial = clone(f.p);
