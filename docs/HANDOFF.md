@@ -7,7 +7,10 @@ correr/disparar conserva brazos procedurales. Reinicio por golpe, salida suave, 
 RMB visual ×1,45/0,42 s frente a LMB ×1/0,18 s, sin cambios de combate, perfil o SQL propios.
 Derivados +57 KB, texturas 1024/512 y geometría intactas; idle de ficha/nado original conservados.
 Integración concurrente conservada: 76/76 focales y 36/36 integración, Chrome local 16/16 escritorio/móvil.
-Suite general no repetida; publicación/aceptación pública y sus límites se registran por separado.
+Suite general no repetida. Enviado en `b466ed9`, publicado en `6f25a0f`: actualizador194/194,
+imagen validada/saludable y salud pública 200, cero errores/escrituras pendientes. Público14/14
+escritorio/móvil y 28 hashes iguales a Git. Golpe público: sonda cosmética; daño confirmado aceptado localmente.
+[Recibo](delivery/buccaneer-v1/combat-reaction/publication.json). Balance/FPS físico pendientes.
 
 **AREA01 GM04d — recursos funcionales implementados, alpha.61/protocolo 59:**
 [Contrato](briefs/gm04d-functional-resources.md) y [entrega](delivery/gm04d/DELIVERY.md).
