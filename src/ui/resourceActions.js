@@ -168,7 +168,8 @@ export class ResourceActions {
           : expectedYield === 1 ? 'tronco' : 'troncos';
       const compactProgress = working ? ` · ${hit}/${maxHits} · +${expectedYield} ${quantityLabel}` : '';
       return { html: `<span class="kbd">F</span> ${def.verb}${compactProgress}${space}`, verb: def.tool === 'pickaxe' ? 'Minar' : cutting ? 'Cortar' : 'Recoger', icon,
-        run: () => this.send({ t: 'cmd', type: 'resource', op: 'gather', node: node.id, expectedRev: node.rev }) };
+        run: () => this.send({ t: 'cmd', type: 'resource', op: 'gather', node: node.id, expectedRev: node.rev,
+          ...(node.kind === 'palm' && c.resources?.lootRules === 1 ? { lootRules: 1 } : {}) }) };
     }
     if (this.gathers.size && this.now() < this.gatherUntil) return {
       html: this.copy.collecting, verb: this.copy.collecting, icon: 'chest', run() {},
@@ -234,7 +235,8 @@ export class ResourceActions {
     const aimed = this.aim, c = this.client();
     if (!aimed || !c?.joined || c.t?.closed) return false;
     const sent = this.send({ t: 'cmd', type: 'resource', op: 'gather', node: aimed.node,
-      expectedRev: aimed.rev, challenge: aimed.challengeId });
+      expectedRev: aimed.rev, challenge: aimed.challengeId,
+      ...(c.resources?.lootRules === 1 ? { lootRules: 1 } : {}) });
     if (sent) { this.aim = null; this.timingPanel?.close(); this.onChange?.(); }
     return sent;
   }
@@ -308,7 +310,7 @@ export class ResourceActions {
       this.toast(event.why === 'tool'
         ? t('systems.resource.needToolToast', { tool: t(event.tool === 'pickaxe' ? 'systems.resource.pickaxe' : 'systems.resource.axe') })
         : event.why === 'full' && node?.kind === 'palm'
-        ? t('systems.resource.fullPalmYield', { count: HARVEST.palmYield })
+        ? this.copy.full
         : this.copy[event.why] || (REASONS[event.why] ? t(`systems.resource.reason.${event.why}`) : t('systems.resource.unknown')));
       return;
     }
@@ -322,6 +324,13 @@ export class ResourceActions {
       if (gather.timing) this.toast(this.locale() === 'en'
         ? `<b>+${event.count} logs</b> · ${event.timing?.quality ? 'perfect hit' : 'logging complete'}`
         : `<b>+${event.count} troncos</b> · ${event.timing?.quality ? 'golpe perfecto' : 'tala completada'}`);
+      if (!event.replay && !event.historical && event.loot && typeof event.loot === 'object') {
+        const bonus = Object.entries(event.loot).filter(([good, count]) => ['resina', 'coco'].includes(good) && Number.isSafeInteger(count) && count > 0);
+        if (bonus.length) this.toast(bonus.map(([good, count]) => {
+          const names = this.locale() === 'en' ? { resina: 'resin', coco: 'coconut' } : { resina: 'resina', coco: 'coco' };
+          return `<b>+${count} ${names[good]}${count === 1 ? '' : 's'}</b>`;
+        }).join(' · '));
+      }
       return;
     }
     this.sound?.();

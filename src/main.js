@@ -319,7 +319,7 @@ async function boot() {
   bus.on('you:welcome', () => raftDoors.reset());
   firePanel = new FirePanel({ parent: $('#ui'), client: () => client,
     locale: () => getLocale(), toast: text => hud.toast(text, 2400),
-    openCraft: () => workbench.open({ recipe: 'madera' }), // no planks: show the bench recipe (2 logs → 1 plank)
+    openCraft: kind => workbench.open({ recipe: kind === 'handTorch' && client?.fire?.torchRules === 2 ? 'antorcha' : 'madera' }),
     onOpen: () => {
       freshwaterPanel?.close();
       companionsPanel?.close();

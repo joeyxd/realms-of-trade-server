@@ -1,5 +1,6 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+<<<<<<< HEAD
 **AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-pearl-give.md), [contrato](docs/briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
 reserva de ambas cuentas/UIDs antes de IO, progreso/autosaves previos, dos CAS y generación durable.
@@ -8,6 +9,15 @@ Apply conjunto o rollback/cerco, reintento exacto y dos SIGKILL locales sin efec
 único fallo HTML localizado reproducido en upstream. Expectativa corregida; 27/27 repetidos en 2 archivos, sin cambios de runtime.
 Sin SQL/flag/protocolo nuevos. Montaje común apagado; venta con pago y perla tragada no entran en give.
 Siguen swallow/kill-cofre, composición GM/compañeros/control/bots, adopción detenida y canario VPS.
+=======
+**Antorcha de campo/resina/coco, 2026-10-12 — corte local preparado:**
+[Contrato](docs/briefs/torch-resin-coconut.md), [entrega](docs/delivery/torch-resin-coconut/DELIVERY.md).
+Receta elegida por el autor: 2 troncos + 1 resina sin banco; extras probabilísticos
+al completar tala y coco consumible para +25 hidratación. Arte con alfa entregado
+para Tripo3D; meshes a cargo del autor. UI revisada ES/EN, 720p y móvil, 4/4 navegador
+y 149/149 regresiones focales; SQL037 final 9/9. Aplicación SQL y activación pública pendientes; no marcar
+publicado ni sustituir la aceptación de Supabase por pruebas locales.
+>>>>>>> origin/claude/loving-lovelace-ptbif7
 
 **AREA03 — iconos de cocina y referencias Tripo, 2026-10-12:**
 [Entrega de arte](docs/art/cooking-icons-v1/README.md): 17 PNG con alfa y ZIP, ingredientes y

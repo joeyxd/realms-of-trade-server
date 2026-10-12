@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { newFirePanel } from '../src/ui/firePanel.js';
+import { getLocale, setLocale } from '../src/core/locale.js';
 
 class Element {
   constructor() { this.attrs = {}; this.listeners = {}; this.hidden = false; this.disabled = false; this.textContent = ''; this.children = new Map(); this.isConnected = true; }
@@ -28,29 +29,29 @@ class DocumentStub {
   key(code) { for (const fn of this.listeners.keydown || []) fn({ code, key: code, preventDefault() { this.prevented = true; }, stopPropagation() { this.stopped = true; } }); }
 }
 
-function fixture({ locale = 'es', wood = 1, holdWood = 0, enabled = true } = {}) {
+function fixture({ locale = 'es', wood = 1, holdWood = 0, logs = 2, resin = 1, torchRules = 2, enabled = true } = {}) {
   let clock = 0;
   let currentLocale = locale;
   const doc = new DocumentStub(), parent = new Element(); parent.ownerDocument = doc;
   const commands = [], toasts = [], opened = [];
-  const client = { joined: true, youServer: 7, fire: { enabled, rev: 4, slots: [] },
-    profile: { eco: { pack: { goods: { madera: wood } }, ships: [{ id: 'raft:1', hold: { goods: { madera: holdWood } } }] } },
+  const client = { joined: true, youServer: 7, fire: { enabled, rev: 4, ...(torchRules ? { torchRules } : {}), slots: [] },
+    profile: { eco: { pack: { goods: { madera: wood, tronco: logs, resina: resin } }, ships: [{ id: 'raft:1', hold: { goods: { madera: holdWood } } }] } },
     send(command) { commands.push(command); } };
-  const panel = newFirePanel({ parent, client: () => client, locale: () => currentLocale, toast: message => toasts.push(message),
+  const panel = newFirePanel({ parent, client: () => client, locale: () => typeof locale === 'function' ? locale() : currentLocale, toast: message => toasts.push(message),
     onOpen: target => opened.push(target), now: () => clock });
   return { panel, client, doc, parent, commands, toasts, opened, setTime(value) { clock = value; }, setLocale(value) { currentLocale = value; } };
 }
 
-test('hand slot has one visual fuel slot and sends an immutable one-wood craft-and-light intent', () => {
+test('new hand torch shows both inputs and sends an immutable versioned fuel intent', () => {
   const f = fixture();
   assert.equal(f.panel.open(), true);
   assert.equal(f.opened.length, 1);
   assert.equal(f.panel.load(), true);
   const command = f.commands[0];
-  assert.deepEqual(Object.keys(command).sort(), ['expectedRev', 'kind', 'lit', 'op', 'opId', 'part', 'ship', 't', 'type'].sort());
-  assert.deepEqual({ ...command, opId: 'id' }, { t: 'cmd', type: 'fire', op: 'load', opId: 'id', ship: '', part: 'hand', kind: 'handTorch', expectedRev: 4, lit: true });
+  assert.deepEqual(Object.keys(command).sort(), ['expectedRev', 'kind', 'lit', 'op', 'opId', 'part', 'rules', 'ship', 't', 'type'].sort());
+  assert.deepEqual({ ...command, opId: 'id' }, { t: 'cmd', type: 'fire', op: 'load', opId: 'id', ship: '', part: 'hand', kind: 'handTorch', expectedRev: 4, lit: true, rules: 2 });
   assert.equal(Object.isFrozen(command), true);
-  assert.equal(f.client.profile.eco.pack.goods.madera, 1, 'the UI waits for server confirmation instead of mutating inventory');
+  assert.equal(f.client.profile.eco.pack.goods.resina, 1, 'the UI waits for server confirmation instead of mutating inventory');
   assert.equal(f.panel.loadButton.disabled, true);
   assert.equal(f.panel.acknowledge({ type: 'fire', op: 'load', opId: 'wrong', ok: true }), false);
   assert.equal(f.panel.pending.command, command);
@@ -94,14 +95,14 @@ test('retry sends the exact same request once and times out without changing con
   f.setTime(5000); f.panel.update();
   assert.equal(f.panel.pending, null);
   assert.equal(f.panel.$('.fire-status').textContent, 'La conexión tarda. El servidor conserva el resultado de la solicitud.');
-  assert.equal(f.client.profile.eco.pack.goods.madera, 1);
+  assert.equal(f.client.profile.eco.pack.goods.resina, 1);
 });
 
 test('denials localize server recovery reasons and session changes reset the active request', () => {
   const f = fixture(); f.panel.open(); f.panel.load();
   const command = f.commands[0];
   assert.equal(f.panel.acknowledge({ type: 'fire', op: 'load', opId: command.opId, ok: false, why: 'goods' }), true);
-  assert.equal(f.panel.$('.fire-status').textContent, 'Necesitas 1 tabla básica en la mochila o bodega.');
+  assert.match(f.panel.$('.fire-status').textContent, /2 troncos y 1 resina/);
   f.panel.load(); f.client.youServer = 8; f.panel.update();
   assert.equal(f.panel.pending, null); assert.equal(f.panel.active, false); assert.equal(f.panel.root.hidden, true);
 });
@@ -110,7 +111,7 @@ test('English labels, disabled-world guard, active-only Escape, and dispose life
   const f = fixture({ locale: 'en', enabled: false });
   assert.equal(f.panel.open(), true);
   assert.equal(f.panel.load(), false);
-  assert.equal(f.panel.loadButton.textContent, 'Craft & light · 1 plank');
+  assert.equal(f.panel.loadButton.textContent, 'Craft & light · 2 logs + 1 resin');
   assert.equal(f.panel.loadButton.disabled, true);
   assert.equal((f.doc.listeners.keydown || []).length, 1);
   f.doc.key('Escape'); assert.equal(f.panel.active, false); assert.equal((f.doc.listeners.keydown || []).length, 0);
@@ -138,4 +139,26 @@ test('hot locale refresh translates pending and acknowledged status without rese
   assert.equal(f.panel.pending, null);
   assert.equal(f.commands.length, 1);
   assert.equal(f.commands[0], command);
+});
+
+test('an open fire panel redraws immediately on the global locale event and unsubscribes on dispose', () => {
+  const previous = getLocale();
+  const f = fixture({ locale: getLocale });
+  f.panel.open();
+  const expected = previous === 'en' ? 'Hand torch' : 'Antorcha de mano';
+  assert.equal(f.panel.$('.fire-title').textContent, expected);
+
+  setLocale(previous === 'en' ? 'es' : 'en');
+  assert.equal(f.panel.$('.fire-title').textContent, previous === 'en' ? 'Antorcha de mano' : 'Hand torch');
+  f.panel.dispose();
+  setLocale(previous);
+});
+
+test('unmarked historical worlds keep the one-plank hand torch UI and command contract', () => {
+  const f = fixture({ logs: 0, resin: 0, torchRules: 0 });
+  f.panel.open();
+  assert.equal(f.panel.$('.fire-card-madera').hidden, false);
+  assert.equal(f.panel.$('.fire-card-tronco').hidden, true);
+  assert.equal(f.panel.load(), true);
+  assert.equal(Object.hasOwn(f.commands[0], 'rules'), false);
 });

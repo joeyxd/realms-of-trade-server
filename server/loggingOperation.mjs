@@ -3,6 +3,7 @@ import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { readProgression, loggingShares, loggingStatus, planLoggingHit } from '../src/sim/systems/progression.js';
 import { LOGGING } from '../src/data/progression.js';
 import { HARVEST } from '../src/data/resources.js';
+import { harvestLoot } from '../src/data/harvestLoot.js';
 import { createLoggingChallenge, evaluateLoggingChallenge } from '../src/sim/systems/loggingTiming.js';
 
 const UUID = /^(?!00000000-0000-0000-0000-000000000000$)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -59,11 +60,17 @@ export function loggingParticipants(request) {
   const expectedActor = copy(actor.before), actualActor = copy(actor.profile);
   delete expectedActor.progression; delete actualActor.progression;
   const v3 = worldData.resources.v === 3;
+  if (Object.hasOwn(command, 'lootRules') && (command.lootRules !== 1 || !v3)) fail();
+  const loot = command.lootRules === 1 && request.ack.ok && node.hits === HARVEST.palmHits
+    ? harvestLoot(node.kind, node.id, node.rev) : {};
+  if (Object.keys(loot).length ? !same(request.ack.loot, loot) : Object.hasOwn(request.ack, 'loot')) fail();
   if (request.ack.ok && node.hits === 3) {
     const ledger = worldData.resources.logging[node.id];
     const expectedCount = v3 ? 3 + (ledger === null ? 0 : ledger.quality) : 2;
     if (request.ack.count !== expectedCount || request.ack.good !== 'tronco') fail();
     expectedActor.eco.pack.goods.tronco = (expectedActor.eco.pack.goods.tronco || 0) + expectedCount;
+    for (const [good, count] of Object.entries(loot))
+      expectedActor.eco.pack.goods[good] = (expectedActor.eco.pack.goods[good] || 0) + count;
     expectedActor.eco.tradeRev++;
   }
   if (!same(expectedActor, actualActor)) fail();

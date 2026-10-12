@@ -85,7 +85,7 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, agentTrade = false,
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, torchResinCoconutOperations = false, agentTrade = false,
     groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false,
     inferenceCatalog = [], inferenceConfigAllowMemory = false, companionCreation = false, companionCreationAllowMemory = false,
     companionPairing = false, companionPairingAllowMemory = false } = {}) {
@@ -114,6 +114,9 @@ export class GameHost {
     this.canteenOperations = canteenOperations;
     if (typeof specialMealOperations !== 'boolean' || specialMealOperations && !canteenOperations) throw new StoreError('configuration');
     this.specialMealOperations = specialMealOperations;
+    if (typeof torchResinCoconutOperations !== 'boolean' || torchResinCoconutOperations &&
+        (!workshopOperations || !fireOperations || !canteenOperations || groundTransactions !== null)) throw new StoreError('configuration');
+    this.torchResinCoconutOperations = torchResinCoconutOperations;
     if (typeof economicOperations !== 'boolean' || economicOperations && pearlJournal !== null ||
         !economicOperations && communityRequirements !== null) throw new StoreError('configuration');
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
@@ -170,6 +173,7 @@ export class GameHost {
     this.unsavedProfiles = new Map();
     this.stats = { bytesOut: 0, bytesIn: 0, msgsOut: 0, msgsIn: 0, dropped: 0, stepMs: 0, steps: 0 };
     this.server = new LocalServer({ fire: fireOperations, freshwater: freshwaterOperations, survival: canteenOperations, meals: specialMealOperations,
+      harvestLoot: torchResinCoconutOperations,
       seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true, chat, ...(saves ? { saves } : {}),
       send: (id, msg) => this.sendTo(id, msg),
       profileAccess: (id, entity) => this.profileAvailable(id, entity),
@@ -578,6 +582,8 @@ export class GameHost {
           (await this.store.checkSpecialMealOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.fireOperations && (typeof this.store.checkFireOperations !== 'function' ||
           (await this.store.checkFireOperations())?.version !== 1)) throw new StoreError('configuration');
+      if (this.torchResinCoconutOperations && (typeof this.store.checkTorchResinCoconutOperations !== 'function' ||
+          (await this.store.checkTorchResinCoconutOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.artisanOperations && (typeof this.store.checkArtisanOperations !== 'function' ||
           (await this.store.checkArtisanOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.workshopOperations && (typeof this.store.checkStarterWorkshop !== 'function' ||
@@ -742,7 +748,9 @@ export class GameHost {
         startup: this.#pearlStartup ? { state: this.#pearlStartup.state, ready: this.#pearlStartup.ready } : null,
         resources: { enabled: this.resourceOperations, ready: this.resourceOperations && !!this.worldState?.resources && this.worldState.ready,
           logging: this.loggingOperations },
-        fire: { enabled: this.fireOperations, ready: this.fireOperations && !!this.worldState?.ready },
+        fire: { enabled: this.fireOperations, ready: this.fireOperations && !!this.worldState?.ready,
+          torchRules: this.torchResinCoconutOperations ? 2 : 1 },
+        foraging: { enabled: this.torchResinCoconutOperations, ready: this.torchResinCoconutOperations && !!this.worldState?.ready },
         freshwater: { enabled: this.freshwaterOperations, ready: this.freshwaterOperations && !!this.worldState?.ready,
           canteen: this.canteenOperations, meals: this.specialMealOperations },
         artisan: { enabled: this.artisanOperations, ready: this.artisanOperations && !!this.worldState?.ready },

@@ -1,0 +1,270 @@
+{
+  "build": "0.6.0-alpha.65",
+  "at": "2026-10-12T17:07:57.928Z",
+  "viewports": [
+    {
+      "name": "desktop-es",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "locale": "es",
+      "checks": {
+        "antorcha": {
+          "statsBottom": 575.40625,
+          "actionTop": 584.75,
+          "buttonBottom": 642.171875,
+          "detailBottom": 660.71875,
+          "scrollHeight": 486,
+          "detailRight": 822.5625,
+          "mainRight": 841.84375,
+          "height": 486,
+          "confirmDisabled": false,
+          "needs": "Tronco2 / 2Resina1 / 1",
+          "title": "Antorcha"
+        },
+        "hacha_piedra": {
+          "statsBottom": 584,
+          "actionTop": 589.046875,
+          "buttonBottom": 646.46875,
+          "detailBottom": 660.71875,
+          "scrollHeight": 486,
+          "detailRight": 822.5625,
+          "mainRight": 841.84375,
+          "height": 486,
+          "confirmDisabled": false,
+          "needs": "Tronco3 / 3Piedra2 / 2",
+          "title": "Hacha de piedra"
+        },
+        "goodsAfterTorch": {
+          "tronco": 1,
+          "coco": 1,
+          "piedra": 2
+        },
+        "hydBefore": 19.84583333333321,
+        "hydAfter": 44.80444444444447,
+        "iconResponses": [
+          {
+            "url": "http://127.0.0.1:59261/assets/ui/kit/resina-v1.webp",
+            "status": 200
+          },
+          {
+            "url": "http://127.0.0.1:59261/assets/ui/kit/coco-v1.webp",
+            "status": 200
+          }
+        ],
+        "icons": [
+          "http://127.0.0.1:59261/assets/ui/kit/resina-v1.webp",
+          "http://127.0.0.1:59261/assets/ui/kit/coco-v1.webp"
+        ]
+      },
+      "screenshots": [
+        "desktop-es-craft-antorcha.png",
+        "desktop-es-craft-hacha_piedra.png",
+        "desktop-es-fire-empty.png",
+        "desktop-es-fire-burning.png",
+        "desktop-es-inventory-coconut.png",
+        "desktop-es-coconut-consumed.png"
+      ],
+      "errors": [],
+      "status": "passed"
+    },
+    {
+      "name": "desktop-en",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "locale": "en",
+      "checks": {
+        "antorcha": {
+          "statsBottom": 567.625,
+          "actionTop": 580.859375,
+          "buttonBottom": 638.28125,
+          "detailBottom": 660.71875,
+          "scrollHeight": 486,
+          "detailRight": 822.5625,
+          "mainRight": 841.84375,
+          "height": 486,
+          "confirmDisabled": false,
+          "needs": "Log2 / 2Resin1 / 1",
+          "title": "Torch"
+        },
+        "hacha_piedra": {
+          "statsBottom": 576.1875,
+          "actionTop": 585.140625,
+          "buttonBottom": 642.5625,
+          "detailBottom": 660.71875,
+          "scrollHeight": 486,
+          "detailRight": 822.5625,
+          "mainRight": 841.84375,
+          "height": 486,
+          "confirmDisabled": false,
+          "needs": "Log3 / 3Rough stone2 / 2",
+          "title": "Stone Axe"
+        },
+        "goodsAfterTorch": {
+          "tronco": 1,
+          "coco": 1,
+          "piedra": 2
+        },
+        "hydBefore": 19.81805555555541,
+        "hydAfter": 44.77097222222226,
+        "iconResponses": [
+          {
+            "url": "http://127.0.0.1:54933/assets/ui/kit/resina-v1.webp",
+            "status": 200
+          },
+          {
+            "url": "http://127.0.0.1:54933/assets/ui/kit/coco-v1.webp",
+            "status": 200
+          }
+        ],
+        "icons": [
+          "http://127.0.0.1:54933/assets/ui/kit/resina-v1.webp",
+          "http://127.0.0.1:54933/assets/ui/kit/coco-v1.webp"
+        ]
+      },
+      "screenshots": [
+        "desktop-en-craft-antorcha.png",
+        "desktop-en-craft-hacha_piedra.png",
+        "desktop-en-fire-empty.png",
+        "desktop-en-fire-burning.png",
+        "desktop-en-inventory-coconut.png",
+        "desktop-en-coconut-consumed.png"
+      ],
+      "errors": [],
+      "status": "passed"
+    },
+    {
+      "name": "phone-en",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "locale": "en",
+      "checks": {
+        "antorcha": {
+          "statsBottom": 316.375,
+          "actionTop": 316.6875,
+          "buttonBottom": 360.6875,
+          "detailBottom": 372,
+          "scrollHeight": 278,
+          "detailRight": 822,
+          "mainRight": 838,
+          "height": 278,
+          "confirmDisabled": false,
+          "needs": "Log2 / 2Resin1 / 1",
+          "title": "Torch"
+        },
+        "hacha_piedra": {
+          "statsBottom": 316.375,
+          "actionTop": 316.6875,
+          "buttonBottom": 360.6875,
+          "detailBottom": 372,
+          "scrollHeight": 278,
+          "detailRight": 822,
+          "mainRight": 838,
+          "height": 278,
+          "confirmDisabled": false,
+          "needs": "Log3 / 3Rough stone2 / 2",
+          "title": "Stone Axe"
+        },
+        "goodsAfterTorch": {
+          "tronco": 1,
+          "coco": 1,
+          "piedra": 2
+        },
+        "hydBefore": 19.82638888888875,
+        "hydAfter": 44.79513888888891,
+        "iconResponses": [
+          {
+            "url": "http://127.0.0.1:54633/assets/ui/kit/resina-v1-mobile.webp",
+            "status": 200
+          },
+          {
+            "url": "http://127.0.0.1:54633/assets/ui/kit/coco-v1-mobile.webp",
+            "status": 200
+          }
+        ],
+        "icons": [
+          "http://127.0.0.1:54633/assets/ui/kit/resina-v1-mobile.webp",
+          "http://127.0.0.1:54633/assets/ui/kit/coco-v1-mobile.webp"
+        ]
+      },
+      "screenshots": [
+        "phone-en-craft-antorcha.png",
+        "phone-en-craft-hacha_piedra.png",
+        "phone-en-fire-empty.png",
+        "phone-en-fire-burning.png",
+        "phone-en-inventory-coconut.png",
+        "phone-en-coconut-consumed.png"
+      ],
+      "errors": [],
+      "status": "passed"
+    },
+    {
+      "name": "portrait-es",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "locale": "es",
+      "checks": {
+        "antorcha": {
+          "statsBottom": 811,
+          "actionTop": 196.65625,
+          "buttonBottom": 668.828125,
+          "detailBottom": 822,
+          "scrollHeight": 278,
+          "detailRight": 298,
+          "mainRight": 386,
+          "height": 278,
+          "confirmDisabled": false,
+          "needs": "Tronco2 / 2Resina1 / 1",
+          "title": "Antorcha"
+        },
+        "hacha_piedra": {
+          "statsBottom": 811,
+          "actionTop": 196.65625,
+          "buttonBottom": 668.828125,
+          "detailBottom": 822,
+          "scrollHeight": 278,
+          "detailRight": 298,
+          "mainRight": 386,
+          "height": 278,
+          "confirmDisabled": false,
+          "needs": "Tronco3 / 3Piedra2 / 2",
+          "title": "Hacha de piedra"
+        },
+        "goodsAfterTorch": {
+          "tronco": 1,
+          "coco": 1,
+          "piedra": 2
+        },
+        "hydBefore": 19.854861111110996,
+        "hydAfter": 44.823055555555584,
+        "iconResponses": [
+          {
+            "url": "http://127.0.0.1:55490/assets/ui/kit/resina-v1-mobile.webp",
+            "status": 200
+          },
+          {
+            "url": "http://127.0.0.1:55490/assets/ui/kit/coco-v1-mobile.webp",
+            "status": 200
+          }
+        ],
+        "icons": [
+          "http://127.0.0.1:55490/assets/ui/kit/resina-v1-mobile.webp",
+          "http://127.0.0.1:55490/assets/ui/kit/coco-v1-mobile.webp"
+        ]
+      },
+      "screenshots": [
+        "portrait-es-craft-antorcha.png",
+        "portrait-es-craft-hacha_piedra.png",
+        "portrait-es-fire-empty.png",
+        "portrait-es-fire-burning.png",
+        "portrait-es-inventory-coconut.png",
+        "portrait-es-coconut-consumed.png"
+      ],
+      "errors": [],
+      "status": "passed"
+    }
+  ]
+}

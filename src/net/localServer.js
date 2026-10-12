@@ -64,7 +64,7 @@ export class LocalServer {
   #ownsTickPublication = false;
   #afterWorld = false; #holdingPublication = false;
 
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false, survival = false, meals = false }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false, survival = false, meals = false, harvestLoot = false }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -104,6 +104,7 @@ export class LocalServer {
     installRafts(this.world, namespace);
     installResources(this.world);
     this.world.fireEnabled = fire;
+    this.world.harvestLootEnabled = harvestLoot === true;
     this.world.freshwaterEnabled = freshwater;
     this.world.survivalEnabled = survival === true;
     this.world.mealsEnabled = meals === true;

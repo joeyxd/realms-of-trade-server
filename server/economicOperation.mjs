@@ -106,7 +106,8 @@ function checkedCommand(raw) {
     return jsonCopy(raw);
   }
   if (raw.type === 'fire') {
-    exact(raw, ['type', 'op', 'opId', 'ship', 'part', 'kind', 'expectedRev', 'lit']);
+    exact(raw, ['type', 'op', 'opId', 'ship', 'part', 'kind', 'expectedRev', 'lit', ...(Object.hasOwn(raw, 'rules') ? ['rules'] : [])]);
+    if (Object.hasOwn(raw, 'rules') && (raw.rules !== 2 || raw.kind !== 'handTorch' || raw.op !== 'load')) fail('input');
     if (!['load', 'set'].includes(raw.op) || !['handTorch', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'grill'].includes(raw.kind) || typeof raw.lit !== 'boolean') fail('input');
     integer(raw.expectedRev, 0, MAX_VERSION - 1);
     if (raw.kind === 'handTorch') { if (raw.ship !== '' || raw.part !== 'hand') fail('input'); }
@@ -168,12 +169,15 @@ function checkedCommand(raw) {
     return jsonCopy(raw);
   }
   if (raw.type === 'resource' && raw.op === 'gather') {
-    exact(raw, [...RESOURCE_GATHER_FIELDS, ...(Object.hasOwn(raw, 'challenge') ? ['challenge'] : [])]);
+    exact(raw, [...RESOURCE_GATHER_FIELDS, ...(Object.hasOwn(raw, 'challenge') ? ['challenge'] : []),
+      ...(Object.hasOwn(raw, 'lootRules') ? ['lootRules'] : [])]);
+    if (Object.hasOwn(raw, 'lootRules') && raw.lootRules !== 1) fail('input');
     if (Object.hasOwn(raw, 'challenge')) commandId(raw.challenge);
     if (typeof raw.node !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(raw.node)) fail('input');
     integer(raw.expectedRev, 1, MAX_VERSION - 1);
     return { type: 'resource', op: 'gather', opId: id, node: raw.node, expectedRev: raw.expectedRev,
-      ...(Object.hasOwn(raw, 'challenge') ? { challenge: raw.challenge } : {}) };
+      ...(Object.hasOwn(raw, 'challenge') ? { challenge: raw.challenge } : {}),
+      ...(Object.hasOwn(raw, 'lootRules') ? { lootRules: raw.lootRules } : {}) };
   }
   if (raw.type === 'resource' && raw.op === 'craft') {
     exact(raw, RESOURCE_CRAFT_FIELDS);
@@ -236,6 +240,9 @@ function checkedRequest(input) {
   const worldData = checkedWorldData(input.worldData);
   if (command.type === 'resource' && !Object.hasOwn(worldData, 'resources')) fail('input');
   const ack = checkedAck(input.ack, command);
+  if (Object.hasOwn(ack, 'loot') && command.lootRules !== 1) fail('input');
+  if (command.lootRules === 1 && (!Object.hasOwn(input, 'beneficiaries') || worldData.resources?.v !== 3 ||
+      worldData.resources.nodes.find(node => node.id === command.node)?.kind !== 'palm')) fail('input');
   const request = { world, account, command, expectedProfileVersion: input.expectedProfileVersion,
     expectedWorldVersion: input.expectedWorldVersion, profile, worldData, ack };
   if (artisanMutation(command) || fireMutation(command) || attributeMutation(command) || freshwaterMutation(command)) {

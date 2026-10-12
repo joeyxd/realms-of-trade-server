@@ -1,5 +1,6 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+<<<<<<< HEAD
 **AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
 [Entrega/evidencia](delivery/m5-ground-pearl-give.md), [contrato](briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
 reserva de ambas cuentas/UIDs antes de IO, progreso/autosaves previos, dos CAS y generación durable.
@@ -8,6 +9,16 @@ Apply conjunto o rollback/cerco, reintento exacto y dos SIGKILL locales sin efec
 único fallo HTML localizado reproducido en upstream. Expectativa corregida; 27/27 repetidos en 2 archivos, sin cambios de runtime.
 Sin SQL/flag/protocolo nuevos. Montaje común apagado; venta con pago y perla tragada no entran en give.
 Siguen swallow/kill-cofre, composición GM/compañeros/control/bots, adopción detenida y canario VPS.
+=======
+**Antorchas/resina/coco, 2026-10-12 — implementación local, protocolo 60:**
+[Contrato](briefs/torch-resin-coconut.md), [entrega y activación](delivery/torch-resin-coconut/DELIVERY.md).
+Antorcha a mano por 2 troncos + 1 resina; extras de tala de palmera 35 % resina/40 % coco,
+coco +25 hidratación, iconos 128/64 px y referencias PNG con alfa para Tripo3D.
+Corregidos idioma del fuego y solapamiento de estadísticas/botón de fabricación.
+Chrome local 4/4 EN/ES escritorio/móvil; regresión focal 149/149 y SQL037 final 9/9;
+Supabase y `MN_TORCH_RESIN_COCONUT_OPERATIONS=1` pendientes, sin publicación de este corte.
+La entrega distingue un test antiguo de ficha que falla también en HEAD limpio.
+>>>>>>> origin/claude/loving-lovelace-ptbif7
 
 **L03f — recorrido desde la cuenta real, 2026-10-12:**
 [Evidencia y límites](delivery/l03f-local-pairing/README.md#recorrido-en-cuenta-real-y-refresco-de-lista).

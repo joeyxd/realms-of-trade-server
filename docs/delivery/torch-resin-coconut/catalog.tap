@@ -1,0 +1,94 @@
+TAP version 13
+# Subtest: UI catalogs have complete Spanish/English pairs and matching placeholders
+ok 1 - UI catalogs have complete Spanish/English pairs and matching placeholders
+  ---
+  duration_ms: 10.5255
+  type: 'test'
+  ...
+# Subtest: each source catalog key is defined only once
+ok 2 - each source catalog key is defined only once
+  ---
+  duration_ms: 5.2903
+  type: 'test'
+  ...
+# Subtest: text and rich translations escape untrusted parameters while retaining app markup
+ok 3 - text and rich translations escape untrusted parameters while retaining app markup
+  ---
+  duration_ms: 1.5088
+  type: 'test'
+  ...
+# Subtest: locale selection accepts supported preferences and recovers from bad storage
+ok 4 - locale selection accepts supported preferences and recovers from bad storage
+  ---
+  duration_ms: 0.8101
+  type: 'test'
+  ...
+# Subtest: a bootstrap choice survives blocked storage when the module mounts
+ok 5 - a bootstrap choice survives blocked storage when the module mounts
+  ---
+  duration_ms: 3.4704
+  type: 'test'
+  ...
+# Subtest: display translation leaves stable good IDs untouched
+ok 6 - display translation leaves stable good IDs untouched
+  ---
+  duration_ms: 0.4491
+  type: 'test'
+  ...
+# Subtest: market categories follow the selected language while good and town identities stay stable
+ok 7 - market categories follow the selected language while good and town identities stay stable
+  ---
+  duration_ms: 0.7207
+  type: 'test'
+  ...
+# Subtest: authored data parameters translate again while human parameters stay literal
+ok 8 - authored data parameters translate again while human parameters stay literal
+  ---
+  duration_ms: 0.3932
+  type: 'test'
+  ...
+# Subtest: every generated gear base and affix has a display translation without changing the item
+ok 9 - every generated gear base and affix has a display translation without changing the item
+  ---
+  duration_ms: 2.4285
+  type: 'test'
+  ...
+# Subtest: literal i18n calls in UI, client navigation, and main have catalog entries
+ok 10 - literal i18n calls in UI, client navigation, and main have catalog entries
+  ---
+  duration_ms: 23.6167
+  type: 'test'
+  ...
+# Subtest: literal static data display strings have an English dictionary entry
+ok 11 - literal static data display strings have an English dictionary entry
+  ---
+  duration_ms: 25.5229
+  type: 'test'
+  ...
+# Subtest: source contains no invalid $5 i18n placeholder aliases
+ok 12 - source contains no invalid $5 i18n placeholder aliases
+  ---
+  duration_ms: 16.5837
+  type: 'test'
+  ...
+# Subtest: community, naval HUD, and cartography display the selected locale
+ok 13 - community, naval HUD, and cartography display the selected locale
+  ---
+  duration_ms: 1.8497
+  type: 'test'
+  ...
+# Subtest: generated village NPC roles translate while authored names and world data stay intact
+ok 14 - generated village NPC roles translate while authored names and world data stay intact
+  ---
+  duration_ms: 556.0161
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 970.1243

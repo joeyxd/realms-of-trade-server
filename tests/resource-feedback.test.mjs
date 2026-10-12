@@ -7,7 +7,7 @@ function fixture(kind = 'stone') {
   const sent = [], sounds = [], poses = [], toasts = [];
   const node = { id: 'resource-1', kind, rev: 1, ready: true, hits: 0, x: 0, y: 2, z: 0 };
   const profile = { eco: { tradeRev: 0, pack: { cap: 40, goods: {} } }, tools: { axe: 1, pickaxe: 1 } };
-  const client = { joined: true, youServer: 7, t: { closed: false }, profile, resources: { nodes: [node] },
+  const client = { joined: true, youServer: 7, t: { closed: false }, profile, resources: { nodes: [node], ...(kind === 'palm' ? { lootRules: 1 } : {}) },
     naval: {}, deck: {}, send: (message) => sent.push(structuredClone(message)) };
   const actions = new ResourceActions({ client: () => client, player: () => ({ x: 0, y: 2, z: 0 }), enabled: () => true,
     now: () => time, sound: () => sounds.push(time), toast: (html) => toasts.push(html), onGather: (event) => poses.push(event) });
@@ -151,4 +151,18 @@ test('a successful late acknowledgement restores its preview until canonical upd
   f.actions.update();
   assert.equal(f.actions.pending, null); assert.deepEqual(f.actions.backpack().pendingGoods, {});
   assert.equal(f.actions.backpack().pack.goods.piedra, 1);
+});
+
+test('enabled palm loot is versioned on gather and its acknowledged bonus toast appears once', () => {
+  const f = fixture('palm'); f.node.hits = 2;
+  const action = f.actions.interaction();
+  assert.equal(action.run(), true);
+  const sent = f.sent[0];
+  assert.equal(sent.lootRules, 1);
+  const result = ack(sent.opId, { good: 'tronco', count: 2, remaining: 0, loot: { resina: 1, coco: 1 } });
+  f.actions.onResult(result);
+  assert.match(f.toasts.at(-1), /\+1 resin/);
+  assert.match(f.toasts.at(-1), /\+1 coco/);
+  f.actions.onResult(result);
+  assert.equal(f.toasts.filter(message => /resina/.test(message)).length, 1, 'duplicate receipt cannot repeat the bonus toast');
 });

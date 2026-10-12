@@ -47,6 +47,12 @@ test('supports English labels and a projected pack without changing saved invent
   assert.deepEqual(profile, before);
 });
 
+test('English inventory has names for the new resin and coconut goods', () => {
+  const html = packInventoryHtml({ eco: { pack: { cap: 10, goods: { resina: 1, coco: 1 } } } }, {}, 'en');
+  assert.match(html, /Resin/);
+  assert.match(html, /Coconut/);
+});
+
 test('carry metadata supplies mass limit and strength; each item exposes both dimensions', () => {
   const html = packInventoryHtml({ carry: { v: 1, backpack: 1 }, lvl: 3,
     eco: { pack: { cap: 30, maxMass: 22, goods: { madera: 2 } } } }, {}, 'en');

@@ -31,7 +31,7 @@ const COPY = {
     canteen: 'Cantimplora', canteenCraft: 'Fabricar · 2 lona + 1 madera', canteenNeed: 'Necesitas 2 lonas y 1 madera.',
     canteenFill: 'Llenar del manantial', canteenChannel: 'Llenando en el manantial', canteenDrink: 'Beber 1 dosis',
     canteenBucket: 'Desde la cubeta', canteenProvisions: 'Desde provisiones', canteenBarrel: 'Desde el barril',
-    hunger: 'Hambre', thirst: 'Sed', eat: 'Comer', fish: 'Pescado', biscuit: 'Galleta', fruit: 'Fruta', waterGood: 'Agua', rum: 'Ron', flour: 'Harina',
+    hunger: 'Hambre', thirst: 'Sed', eat: 'Comer', fish: 'Pescado', biscuit: 'Galleta', fruit: 'Fruta', waterGood: 'Agua', rum: 'Ron', coconut: 'Coco', flour: 'Harina',
     canteenCrafted: 'Cantimplora fabricada.', canteenFilled: 'Cantimplora rellenada.', drank: 'Has bebido una dosis.', ate: 'Has comido.',
     meals: 'Comidas especiales', mealFish: 'Pescado asado', mealGrog: 'Grog', mealBiscuit: 'Galleta reforzada',
     mealFishCost: '1 pescado', mealGrogCost: '1 ron + 1 agua', mealBiscuitCost: '1 galleta + 1 harina',
@@ -64,7 +64,7 @@ const COPY = {
     canteen: 'Canteen', canteenCraft: 'Craft · 2 canvas + 1 wood', canteenNeed: 'You need 2 canvas and 1 wood.',
     canteenFill: 'Fill at spring', canteenChannel: 'Filling at spring', canteenDrink: 'Drink 1 dose',
     canteenBucket: 'From bucket', canteenProvisions: 'From provisions', canteenBarrel: 'From barrel',
-    hunger: 'Hunger', thirst: 'Thirst', eat: 'Eat', fish: 'Fish', biscuit: 'Biscuit', fruit: 'Fruit', waterGood: 'Water', rum: 'Rum', flour: 'Flour',
+    hunger: 'Hunger', thirst: 'Thirst', eat: 'Eat', fish: 'Fish', biscuit: 'Biscuit', fruit: 'Fruit', waterGood: 'Water', rum: 'Rum', coconut: 'Coconut', flour: 'Flour',
     canteenCrafted: 'Canteen crafted.', canteenFilled: 'Canteen refilled.', drank: 'You drank one dose.', ate: 'You ate.',
     meals: 'Special meals', mealFish: 'Roast fish', mealGrog: 'Grog', mealBiscuit: 'Reinforced biscuit',
     mealFishCost: '1 fish', mealGrogCost: '1 rum + 1 water', mealBiscuitCost: '1 biscuit + 1 flour',
@@ -245,7 +245,7 @@ export class FreshwaterPanel {
   }
   eat(good) {
     const needs = this.needs(), food = FOODS[good];
-    if (!['pescado', 'galleta', 'fruta', 'agua', 'ron'].includes(good) || !this.canteenEnabled()
+    if (!['pescado', 'galleta', 'fruta', 'agua', 'ron', 'coco'].includes(good) || !this.canteenEnabled()
       || finite(this.pack()?.goods?.[good]) < 1 || !needs || !food
       || ((food.sat <= 0 || needs.sat >= 100) && (food.hyd <= 0 || needs.hyd >= 100))) return false;
     return this.send('eat', { source: good, n: 1 });
@@ -390,7 +390,7 @@ export class FreshwaterPanel {
       this.canteenDrinkButton.disabled = !!(lock || canteenWater < 1 || needs?.hyd >= 100);
       const needNode = this.$('.fresh-canteen-needs');
       needNode.textContent = needs ? `${c.hunger} ${Math.ceil(needs.sat)} · ${c.thirst} ${Math.ceil(needs.hyd)}` : '';
-      const labels = { pescado: c.fish, galleta: c.biscuit, fruta: c.fruit, agua: c.waterGood, ron: c.rum };
+      const labels = { pescado: c.fish, galleta: c.biscuit, fruta: c.fruit, agua: c.waterGood, ron: c.rum, coco: c.coconut };
       const availableFoods = Object.entries(labels).filter(([id]) => finite(goods[id]) > 0);
       const foodSignature = JSON.stringify([this.lang(), availableFoods.map(([id]) => [id, Math.floor(finite(goods[id]))])]);
       if (foodSignature !== this.foodSignature) {

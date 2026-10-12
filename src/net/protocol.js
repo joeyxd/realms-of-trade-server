@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 59; // Private, one-use local companion pairing; reload peers.
+export const PROTOCOL_VERSION = 60; // Versioned palm loot and hand-torch fuel capabilities; reload peers.
 
 export const MSG = {
   // client -> server
