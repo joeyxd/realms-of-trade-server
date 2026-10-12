@@ -93,6 +93,51 @@ test('SQL024 partial personal project, prepaid storage, paid later storage, kits
   assert.deepEqual((await f.db.query('select public.mn_starter_workshop_ready() as r')).rows[0].r, { version: 1 });
 });
 
+test('SQL029 commits the paid second backpack tier with Carga, conserved goods, denial and durable replay', async t => {
+  const f = await fixture(t), attributeSql = await migration('029_attribute_operations');
+  await f.db.exec('RESET ROLE'); await f.db.exec(attributeSql); await f.db.exec('SET ROLE service_role');
+
+  // Seed a valid, already-paid tier-1 pack with adopted Carga and unrelated cargo.
+  const initial = clone(f.p);
+  initial.lvl = 5; initial.attr = { v: 1, carga: 4, re: 1 };
+  initial.carry = { v: 1, backpack: 1 };
+  initial.eco.pack = { cap: 30, maxMass: 70, goods: { madera: 3, lona: 5, piedra: 1 } };
+  await stage(f, initial);
+
+  // A short payment is a durable no-op denial; it must leave profile content intact.
+  const deniedCommand = { type: 'artisan', op: 'upgradePack', opId: 'pack-tier-2-short', expectedRev: f.p.eco.tradeRev };
+  const denied = { world, account, command: deniedCommand, expectedProfileVersion: f.pv, expectedWorldVersion: f.wv,
+    before: clone(f.p), profile: clone(f.p), worldData: clone(f.w),
+    ack: { type: 'artisan', op: 'upgradePack', opId: deniedCommand.opId, ok: false, why: 'goods',
+      rev: f.p.eco.tradeRev, workshop: null, carry: null } };
+  await accept(f, id(1201), denied);
+  assert.deepEqual(f.p, initial, 'insufficient materials changed the profile');
+
+  const funded = clone(f.p); funded.eco.pack.goods.madera = 4; await stage(f, funded);
+  const request = proposal(f, 'upgradePack', 'pack-tier-2-paid');
+  const result = await accept(f, id(1202), request);
+  assert.deepEqual(f.p.carry, { v: 1, backpack: 2 });
+  assert.equal(f.p.eco.pack.cap, 42);
+  assert.equal(f.p.eco.pack.maxMass, 70, 'backpack volume upgrade changed Carga mass ceiling');
+  assert.deepEqual(f.p.attr, initial.attr, 'backpack upgrade changed allocated attributes');
+  assert.deepEqual(f.p.eco.pack.goods, { piedra: 1 }, 'upgrade failed exact debit or unrelated goods conservation');
+  assert.deepEqual(request.before.eco.pack.goods, { madera: 4, lona: 5, piedra: 1 });
+
+  const durable = (await f.db.query('select data,version from public.mn_profiles where player_id=$1::uuid', [account])).rows[0];
+  assert.deepEqual(durable.data, f.p, 'reloaded profile differs from accepted upgrade');
+  assert.equal(durable.data.eco.pack.cap, 42);
+  assert.equal(durable.data.eco.pack.maxMass, 70);
+  const receipt = (await f.db.query('select request,result from public.mn_economic_operations where operation_id=$1::uuid', [id(1202)])).rows[0];
+  assert.deepEqual(receipt.request, request);
+  assert.deepEqual(receipt.result, result);
+
+  const replay = await commit(f, id(1202), request);
+  assert.deepEqual(replay, { ...result, replay: true });
+  const afterReplay = (await f.db.query('select data,version from public.mn_profiles where player_id=$1::uuid', [account])).rows[0];
+  assert.deepEqual(afterReplay, durable, 'identical replay changed the durable profile or version');
+  assert.deepEqual((await f.db.query('select request,result from public.mn_economic_operations where operation_id=$1::uuid', [id(1202)])).rows[0], receipt);
+});
+
 test('SQL026 accepts real host raft IDs and persisted condition without rewriting SQL024 receipts', async t => {
   const f = await fixture(t);
   // Reproduce the actual host identity and condition instead of an unassigned starter DTO.

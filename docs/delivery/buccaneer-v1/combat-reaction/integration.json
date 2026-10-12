@@ -1,0 +1,68 @@
+{
+  "generatedAt": "2026-10-12T05:18:04Z",
+  "revision": "c836f77e3c8a7e43cda873738d495e620388eca8",
+  "build": {
+    "version": "0.6.0-alpha.62",
+    "protocol": 59
+  },
+  "runner": "Node.js node:test, serial execution via --test-concurrency=1",
+  "cohorts": [
+    {
+      "name": "buccaneer-character-combat",
+      "command": "node --test --test-concurrency=1 tests/assets.test.mjs tests/characters.test.mjs tests/character-reaction.test.mjs tests/character-swim.test.mjs tests/character-figure.test.mjs tests/buccaneer-character.test.mjs tests/pistol-recoil.test.mjs tests/combat.test.mjs tests/pistolas.test.mjs tests/projectile-clash.test.mjs tests/shots-3d.test.mjs tests/swimming.test.mjs",
+      "files": [
+        "tests/assets.test.mjs",
+        "tests/characters.test.mjs",
+        "tests/character-reaction.test.mjs",
+        "tests/character-swim.test.mjs",
+        "tests/character-figure.test.mjs",
+        "tests/buccaneer-character.test.mjs",
+        "tests/pistol-recoil.test.mjs",
+        "tests/combat.test.mjs",
+        "tests/pistolas.test.mjs",
+        "tests/projectile-clash.test.mjs",
+        "tests/shots-3d.test.mjs",
+        "tests/swimming.test.mjs"
+      ],
+      "tests": 76,
+      "passed": 76,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "durationMs": 8628.2653
+    },
+    {
+      "name": "companion-gm-resource-pearl-integration",
+      "command": "node --test --test-concurrency=1 tests/companion-pairing-client.test.mjs tests/companion-pairing-network.test.mjs tests/companion-pairing-ui.test.mjs tests/paired-companion.test.mjs tests/gm-functional-render.test.mjs tests/gm-functional-layout.test.mjs tests/ground-pearl-command-route.test.mjs",
+      "files": [
+        "tests/companion-pairing-client.test.mjs",
+        "tests/companion-pairing-network.test.mjs",
+        "tests/companion-pairing-ui.test.mjs",
+        "tests/paired-companion.test.mjs",
+        "tests/gm-functional-render.test.mjs",
+        "tests/gm-functional-layout.test.mjs",
+        "tests/ground-pearl-command-route.test.mjs"
+      ],
+      "tests": 36,
+      "passed": 36,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "durationMs": 12625.3167
+    }
+  ],
+  "totals": {
+    "tests": 112,
+    "passed": 112,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "notes": [
+    "Counts are from two serial targeted cohorts; they cover only the listed tests.",
+    "The broad test suite and SQL suites were not run as part of this receipt.",
+    "Browser/GPU acceptance is separate and is not represented by these CPU test results."
+  ]
+}

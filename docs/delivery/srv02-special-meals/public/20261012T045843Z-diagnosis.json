@@ -1,0 +1,189 @@
+{
+  "revision": "e625a5c79cb8529b4f735ec4c1a40ee18a9a841b",
+  "imageId": "sha256:64f6661be98f7560765a75566ec54aca52f8230c8992ab913f577eb5d31f554e",
+  "containerId": "5d08e7babc7bf5a7abc4094c2f5a10ff8d33448e7ba6fddb3eae4a3d48cc7fe6",
+  "status": {
+    "version": "0.6.0-alpha.59",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0
+  },
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0,
+    "unsaved": 0,
+    "profileWrites": 0,
+    "worldWriting": false,
+    "economic": {
+      "enabled": true,
+      "pending": 0,
+      "failed": false,
+      "completed": 0,
+      "replays": 0
+    },
+    "groundTransactions": null,
+    "groundPearls": null,
+    "groundDeaths": null,
+    "groundPearlMints": null,
+    "tickBlocked": false,
+    "staging": null,
+    "deathStaging": null,
+    "deathDrops": null,
+    "pearlGround": null,
+    "combatDeaths": null,
+    "startup": null,
+    "resources": {
+      "enabled": true,
+      "ready": true,
+      "logging": true
+    },
+    "fire": {
+      "enabled": true,
+      "ready": true
+    },
+    "freshwater": {
+      "enabled": true,
+      "ready": true,
+      "canteen": true,
+      "meals": true
+    },
+    "artisan": {
+      "enabled": true,
+      "ready": true
+    },
+    "workshop": {
+      "enabled": true,
+      "ready": true
+    },
+    "attributes": {
+      "enabled": true,
+      "ready": true
+    },
+    "companionCreation": {
+      "enabled": true,
+      "ready": true,
+      "pending": 0
+    },
+    "world": {
+      "id": "marea-negra",
+      "ready": true,
+      "failed": false,
+      "version": 3697,
+      "errors": 0
+    }
+  },
+  "checks": {
+    "jsRequest": true,
+    "mn_valid_economic_request": {
+      "value": true,
+      "code": null
+    },
+    "mn_valid_economic_request_034": {
+      "value": true,
+      "code": null
+    },
+    "mn_freshwater_request": {
+      "value": true,
+      "code": null
+    },
+    "mn_freshwater_request_032": {
+      "value": false,
+      "code": null
+    },
+    "mn_survival_profile_valid": {
+      "value": true,
+      "code": null
+    },
+    "mn_freshwater_valid_profile": {
+      "value": true,
+      "code": null
+    },
+    "mn_meal_profile_valid": {
+      "value": true,
+      "code": null
+    },
+    "mn_freshwater_profile_transition": {
+      "value": true,
+      "code": null
+    },
+    "mn_freshwater_profile_transition_032": {
+      "value": false,
+      "code": null
+    },
+    "mn_freshwater_transition": {
+      "value": true,
+      "code": null
+    },
+    "impossibleCas": [
+      {
+        "value": {
+          "ok": false,
+          "why": "conflict"
+        },
+        "code": null
+      },
+      {
+        "value": {
+          "ok": false,
+          "why": "conflict"
+        },
+        "code": null
+      },
+      {
+        "value": {
+          "ok": false,
+          "why": "conflict"
+        },
+        "code": null
+      },
+      {
+        "value": {
+          "ok": false,
+          "why": "conflict"
+        },
+        "code": null
+      },
+      {
+        "value": {
+          "ok": false,
+          "why": "conflict"
+        },
+        "code": null
+      },
+      {
+        "value": {
+          "ok": false,
+          "why": "conflict"
+        },
+        "code": null
+      },
+      {
+        "value": {
+          "ok": false,
+          "why": "conflict"
+        },
+        "code": null
+      },
+      {
+        "value": {
+          "ok": false,
+          "why": "conflict"
+        },
+        "code": null
+      }
+    ]
+  },
+  "profileVersion": 3,
+  "profileHash": "1a7eabc455968a8c44fc7cdf719347c2bf088fd4bf018b2c674c17b3ccd6d2bc",
+  "worldVersion": 3696,
+  "worldHash": "127c55d92ad8da54c296657f5534ac6f108e021c59a79d32921c577b3e70e262",
+  "receiptAbsent": true,
+  "qaReceiptCount": 0,
+  "meal": null,
+  "goods": {
+    "ron": 1,
+    "agua": 1
+  }
+}

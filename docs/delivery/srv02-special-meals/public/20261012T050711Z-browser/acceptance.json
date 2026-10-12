@@ -1,0 +1,57 @@
+{
+  "schema": "mn.special-meals.browser-public.v1",
+  "startedAt": "2026-10-12T05:07:15.630Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "gameVersion": "0.6.0-alpha.59",
+  "protocolVersion": 58,
+  "identity": "random disposable Supabase user; credentials redacted",
+  "checks": [
+    {
+      "name": "public_build_protocol_sql035_meals_readiness_and_idle_gate",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.59",
+      "protocolVersion": 58,
+      "worldId": "marea-negra"
+    },
+    {
+      "name": "marked_disposable_level_three_profile_seeded_with_bounded_recipe_ingredients",
+      "pass": true
+    },
+    {
+      "name": "real_panel_localized_desktop_es_recipe_and_visible_heat_block",
+      "pass": true,
+      "bounds": {
+        "x": 804,
+        "y": 20,
+        "right": 1244,
+        "bottom": 700,
+        "width": 440,
+        "height": 680,
+        "viewportWidth": 1280,
+        "viewportHeight": 720,
+        "documentWidth": 1280,
+        "scrollHeight": 1215,
+        "clientHeight": 678,
+        "scrollTop": 390
+      }
+    }
+  ],
+  "screenshots": [
+    "desktop-es-heat-block.png",
+    "desktop-es-grog-recipe.png"
+  ],
+  "errors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 403 ()",
+    "Failed to load resource: the server responded with a status of 403 ()"
+  ],
+  "pass": false,
+  "scope": "authenticated public water/provisions UI, one durable grog operation, localized desktop/mobile views, heat-block presentation, reload and reentry; no live heat or cooker proof",
+  "failure": "bounded browser wait expired: accepted grog and authoritative UI state",
+  "cleanup": {
+    "markedAuthAndExactProfileRemoved": true,
+    "retainedEconomicReceipts": 0,
+    "receiptPolicy": "immutable economic receipts retained"
+  },
+  "completedAt": "2026-10-12T05:08:14.824Z"
+}

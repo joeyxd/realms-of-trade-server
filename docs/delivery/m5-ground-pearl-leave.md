@@ -74,3 +74,53 @@ no acredita gameplay durable de `leave` activado en producción.
 Se comprobó físicamente `BP_JigServerSave.uasset` (580554 B) en ActionRPG bajo `C:\Unreal`.
 Es Blueprint y no ejecuta el contrato Node/Postgres; se reutilizan el helper JS y los
 coordinadores existentes. Fuentes Unreal intactas, sin arte nuevo ni cambios visuales.
+
+## Publicación del código inerte
+
+El actualizador instaló `9ea14a052ea34bed683959c2a9fcd36a1f186aea` con una autoridad sana y timer activo:
+[estado](m5-ground-pearl-leave/final-status.json). La imagen exacta pasó
+**194/194** comprobaciones del actualizador y **96/96** adicionales
+sin red ni credenciales: [validación](m5-ground-pearl-leave/updater-validation.json),
+[imagen](m5-ground-pearl-leave/exact-image-tests.json). Los 16 módulos coinciden por
+SHA256 con Git y las fuentes locales normalizadas a LF: [fuentes](m5-ground-pearl-leave/published-source-check.json).
+La entrada pública ordinaria pasó **6/6**, alpha.59/protocolo 58:
+[smoke](m5-ground-pearl-leave/public-smoke.json).
+
+La [lectura final](m5-ground-pearl-leave/final-domain.json) conserva los montajes
+comunes nulos, sin reloj común ni filas/intenciones de suelo. No se ejecutó SQL,
+adopción ni gameplay durable de QA en el VPS. Los tests de imagen usan memoria;
+la durabilidad corresponde a los tests SQL/SIGKILL locales. Conteos solapados.
+
+## Integración concurrente
+
+La integración con compañeros de `6b713d2`, alpha.60/protocolo 59, pasa **122/122**
+en 17 archivos seriales, incluidas las pruebas de host, SIGKILL y propiedad del comando:
+[manifiesto](m5-ground-pearl-leave/concurrent-integration.json),
+[TAP](m5-ground-pearl-leave/concurrent-integration.tap). Fuentes sin cambios durante la ejecución.
+El permiso del compañero admite solo chat; su montaje excluye el piloto común de suelo.
+Esta prueba local no sustituye la evidencia pública de `9ea14a0` ni acredita alpha.60 en VPS.
+
+El VPS se verificó después en `6b713d2`, alpha.60/protocolo 59: una autoridad sana,
+actualizador **194/194**, [16 hashes de imagen iguales a Git](m5-ground-pearl-leave/concurrent-image-check.json)
+y [entrada pública 6/6](m5-ground-pearl-leave/concurrent-public-smoke.json).
+[Estado](m5-ground-pearl-leave/concurrent-live-status.json) y
+[lectura del dominio](m5-ground-pearl-leave/concurrent-live-domain.json): montajes comunes nulos,
+sin reloj común, filas de suelo ni intenciones. Esta lectura no activa el piloto.
+
+La integración de GM036, upstream `e4fdaf5`, alpha.61/protocolo 59, pasa **83/83** en
+12 archivos seriales: [manifiesto](m5-ground-pearl-leave/gm-integration.json),
+[TAP](m5-ground-pearl-leave/gm-integration.tap). Incluye SQL036, restauración de recursos,
+publicación GM, adopción detenida y planner/comando/host de `leave`. Fuentes sin cambios.
+Los conteos se solapan con la aceptación anterior; este grupo no repite sus SIGKILL ni declara
+verde la suite completa. No acredita la publicación de alpha.61.
+
+GM036 admite recursos nuevos con CAS y conserva IDs retirados, pero rechaza el montaje
+con `GroundHostAuthority`; publicar contenido exige un mundo vacío y sin coordinadores pendientes.
+La composición de recursos GM activos con el piloto común queda pendiente de integración explícita
+antes de su adopción pública. No se ejecutaron migraciones ni admisiones en esta entrega AREA15.
+
+La integración final conserva también el trabajo concurrente de Bucanero/comidas hasta `b466ed9`,
+alpha.62/protocolo 59. Frente a `e4fdaf5` no cambia `server/**`, `src/sim/**`, `src/net/**`
+ni `deploy/**`; los cambios de package son de versión. Las pruebas anteriores conservan su base
+exacta y no se repiten por esos cambios de render/documentación. La aceptación visual de Bucanero
+y la activación pública de comidas tienen sus entregas propias.

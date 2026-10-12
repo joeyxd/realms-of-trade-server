@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Bucanero — reacción original y retroceso, alpha.62/protocolo 59:**
+[Contrato](briefs/buccaneer-combat-reaction.md) y [entrega](delivery/buccaneer-v1/combat-reaction/README.md).
+`hit_to_body_01` adaptado como capa aditiva al rig armado: torso/cabeza, brazos solo quieto;
+correr/disparar conserva brazos procedurales. Reinicio por golpe, salida suave, cancelación en dash/nado/muerte.
+RMB visual ×1,45/0,42 s frente a LMB ×1/0,18 s, sin cambios de combate, perfil o SQL propios.
+Derivados +57 KB, texturas 1024/512 y geometría intactas; idle de ficha/nado original conservados.
+Integración concurrente conservada: 76/76 focales y 36/36 integración, Chrome local 16/16 escritorio/móvil.
+Suite general no repetida; publicación/aceptación pública y sus límites se registran por separado.
+
 **AREA01 GM04d — recursos funcionales implementados, alpha.61/protocolo 59:**
 [Contrato](briefs/gm04d-functional-resources.md) y [entrega](delivery/gm04d/DELIVERY.md).
 Editor → Recursos: palmera talable/piedra recogible, colocar/mover/duplicar/retirar y undo.
@@ -34,15 +43,19 @@ Publicado por el actualizador habitual en `62490c8`, alpha.59: imagen validada y
 Cero errores o pendientes. Choque entre balas aceptado localmente; capturas públicas nocturnas limitan lectura del modelo.
 [Recibo](delivery/buccaneer-v1/ranged-swim/publication.json) y [aceptación pública](delivery/buccaneer-v1/ranged-swim/public/acceptance.json).
 
-**AREA03 SRV02, 2026-10-11 — implementado y probado; SQL035/activación pendientes:**
+**AREA03 SRV02, 2026-10-11 — SQL035 activo; grog aceptado en público, alpha.59/protocolo 58:**
 [Contrato](briefs/srv02-special-meals.md), [entrega](delivery/srv02-special-meals/README.md).
-Alpha.58/protocolo 57; tres comidas con un efecto durante 15 min conectados, pausa offline y
-limpieza al reaparecer. Recibo freshwater/M5; `MN_SPECIAL_MEAL_OPERATIONS=0` por defecto.
-194/194 grupo del actualizador, SQL 33/33; UI real local ES/EN 6/6, cliente simulado. Leer entrega para
-alcance SQL, fotos y límites de evidencia. INV02d ya está incluido en VPS cd5df25/alpha.57;
-un jugador, sin forzar relevo. Aplicar SQL035, verificar readiness, desplegar/activar cuando
-esté idle/durable y aceptar consumo/replay/reentrada en público. Después INV03/bolsas.
-Enviado en `12c7339`; actualizador difirió el relevo, SQL035 RPC aún ausente (20:35Z).
+Tres comidas con un efecto durante 15 min conectados, pausa offline y limpieza al reaparecer.
+Recibo freshwater/M5, SQL035 readiness 1 y flag activo. WSS público 11/11 en `e625a5c`:
+grog, coste, replay/colisión, pausa offline/reentrada y denegación caliente durable sin cambios.
+Navegador público 9/9 en `9ea14a0`: botón real, guardado/reentrada, ES/EN escritorio/móvil emulado;
+403 limitados al rechazo GM esperado para la cuenta temporal. Capturas y 20/13 hashes en la entrega.
+194/194 actualizador, SQL 33/33 y recheck M5 33/33, conteos solapados. Un primer rechazo SQL
+no tiene causa confirmada; conservar su evidencia. Consumo público con fuego propio aún pendiente.
+Después [INV03 sobre mochilas existentes](briefs/inv03-existing-backpacks.md): completar 30→42,
+coste, replay/reentrada y Carga conservada. No rehacer sobrepeso ni añadir bolsas equipables todavía.
+INV03 iniciado: [SQL029 11/11](delivery/inv03-existing-backpacks/README.md), incluido el segundo tier;
+no acredita todavía cadena SQL actual completa ni taller público.
 
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](delivery/l03e-companion-creation/README.md), [brief](briefs/l03e-companion-creation.md).
@@ -64,7 +77,10 @@ Rollback y cerco ante deriva/cierre/desconexión, incluso callback nulo antes de
 Tres archivos con fallos de asignación/clonación repiten 49/49 sin cambios; quedan dos fallos heredados
 HTML localizado y Cometa/agua reproducidos en upstream limpio. Cohorte completa no verde. Dos SIGKILL nuevos
 con recuperación/recogida únicas y cero efectos históricos. Conteos solapados.
-Código aceptado localmente; publicación y verificación VPS todavía pendientes.
+Integración de compañeros alpha.60: 122/122 en 17 archivos seriales; GM036 alpha.61: 83/83 en 12 archivos.
+VPS verificado en `6b713d2`, alpha.60/protocolo 59: actualizador 194/194, entrada pública 6/6 y
+16 módulos iguales a Git; montajes comunes nulos, sin adopción ni SQL nuevo para `leave`.
+Los recursos GM activos aún excluyen el piloto común: esa composición queda pendiente.
 Sigue `give` transaccional, después `swallow` y sobre completo kill/cofre; luego transición/adopción y canario VPS.
 
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**

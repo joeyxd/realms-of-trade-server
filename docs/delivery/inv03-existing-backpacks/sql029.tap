@@ -1,0 +1,19 @@
+✔ SQL024 partial personal project, prepaid storage, paid later storage, kits and pack use exact immutable receipts (1544.3971ms)
+✔ SQL029 commits the paid second backpack tier with Carga, conserved goods, denial and durable replay (1126.6422ms)
+✔ SQL026 accepts real host raft IDs and persisted condition without rewriting SQL024 receipts (2099.1942ms)
+✔ SQL024 adopts a legacy pack only in its exact paid workshop receipt (1875.4484ms)
+✔ SQL024 v3 worlds still craft, gather ordinary resources and load paid fire while freezing unrelated carry and ledgers (1940.0231ms)
+✔ SQL024 world saves adopt v2 exactly once and subsequently advance only the paused resource clock (2010.3737ms)
+✔ SQL024 rejects invented credit, changed rewards, missing payment, cargo loss and forged capacity without a receipt (2020.9487ms)
+✔ SQL024 rejects malformed workshop envelopes and raft command aliases before any mutation (1890.6291ms)
+✔ SQL024 timed palm receipt conserves practice and exact three-to-six yield; forged proof and extra logs reject (1895.7368ms)
+✔ SQL024 and SQL026 leave a SQL021 receipt unchanged and replay its original envelope (1803.9468ms)
+✔ SQL024 preserves adopted-world fences and commits workshop and legacy receipts only through the common authority (2184.4732ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21019.5179

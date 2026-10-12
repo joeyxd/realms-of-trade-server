@@ -12,8 +12,11 @@ export function captureCharacterFigure(gltf, entry) {
   const swimClip = entry.swimAnimation
     ? gltf.animations?.find((c) => c.name === entry.swimAnimation && c.duration > 0)
     : null;
-  if (!clip && !swimClip) return null;
-  return { scene: clone(gltf.scene), clip: clip || null, swimClip: swimClip || null };
+  const reactionClip = entry.reactionAnimation
+    ? gltf.animations?.find((c) => c.name === entry.reactionAnimation && c.duration > 0)
+    : null;
+  if (!clip && !swimClip && !reactionClip) return null;
+  return { scene: clone(gltf.scene), clip: clip || null, swimClip: swimClip || null, reactionClip: reactionClip || null };
 }
 
 export function createCharacterFigure(source, bake, entry, look, height) {

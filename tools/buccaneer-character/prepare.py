@@ -152,7 +152,7 @@ def compact_glb(
     source_doc: dict[str, Any], source_binary: bytes, basecolor_jpeg: bytes, basecolor_name: str
 ) -> bytes:
     doc = json.loads(json.dumps(source_doc))
-    retained_names = ("idle", "swim")
+    retained_names = ("idle", "swim", "hit_to_body_01")
     source_animations = doc.get("animations", [])
     retained_clips = []
     for name in retained_names:
@@ -163,7 +163,7 @@ def compact_glb(
     doc["animations"] = retained_clips
     image_index = basecolor_image_index(doc)
 
-    # Preserve mesh, skin, inverse-bind, and the retained idle/swim animation accessors.
+    # Preserve mesh, skin, inverse-bind, and the retained idle/swim/hit animation accessors.
     needed_accessors: set[int] = set()
     for mesh in doc.get("meshes", []):
         for primitive in mesh.get("primitives", []):
@@ -482,7 +482,7 @@ def run(source_dir: Path) -> dict[str, Any]:
     if skin_joint_counts != [EXPECTED_SKIN_JOINTS]:
         raise ValueError(f"source skin invariant failed: expected one {EXPECTED_SKIN_JOINTS}-joint skin, got {skin_joint_counts}")
     source_clip_names = [clip.get("name") for clip in source_doc.get("animations", [])]
-    for animation_name in ("idle", "swim"):
+    for animation_name in ("idle", "swim", "hit_to_body_01"):
         if source_clip_names.count(animation_name) != 1:
             raise ValueError(f"expected exactly one source {animation_name} clip")
 
@@ -514,12 +514,12 @@ def run(source_dir: Path) -> dict[str, Any]:
             summary = glb_summary(data)
             derived_doc, derived_binary = parse_glb(data)
             assert_geometry_skin_preserved(source_doc, source_binary, derived_doc, derived_binary)
-            for animation_name in ("idle", "swim"):
+            for animation_name in ("idle", "swim", "hit_to_body_01"):
                 assert_animation_preserved(source_doc, source_binary, derived_doc, derived_binary, animation_name)
             if summary["triangles"] != EXPECTED_TRIANGLES or summary["skin_joints"] != [EXPECTED_SKIN_JOINTS]:
                 raise ValueError(f"derived geometry/skin invariant failed: {relative}")
-            if summary["animations"] != ["idle", "swim"] or summary["has_normal_map"] or summary["has_metallic_roughness_map"]:
-                raise ValueError(f"runtime GLB is missing idle/swim or retained unused PBR bindings: {relative}")
+            if summary["animations"] != ["idle", "swim", "hit_to_body_01"] or summary["has_normal_map"] or summary["has_metallic_roughness_map"]:
+                raise ValueError(f"runtime GLB is missing idle/swim/hit or retained unused PBR bindings: {relative}")
         else:
             from io import BytesIO
 
@@ -572,7 +572,7 @@ def run(source_dir: Path) -> dict[str, Any]:
             "jpeg_codec": getattr(Image.core, "jpeglib_version", "unknown"),
         },
         "transformations": {
-            "glb": "preserve nodes, mesh, positions, indices, normals, UVs, skin weights, joints and inverse bind matrices; retain source idle and swim animations with original accessors and key bytes; remove run/hit clips, normal map and metallic-roughness map; embed resized basecolor only",
+            "glb": "preserve nodes, mesh, positions, indices, normals, UVs, skin weights, joints and inverse bind matrices; retain source idle, swim and hit_to_body_01 animations with original accessors and key bytes; remove run, normal map and metallic-roughness map; embed resized basecolor only",
             "basecolor": {"desktop_px": 1024, "mobile_px": 512, "format": "JPEG", "quality": 94, "subsampling": 0, "resize": "Pillow LANCZOS"},
             "portrait": {"desktop_px": 512, "mobile_px": 256, "format": "WebP", "lossless": True, "mode": "RGBA", "resize": "Pillow LANCZOS", "crop": False, "magenta_removed": False},
         },
@@ -581,8 +581,8 @@ def run(source_dir: Path) -> dict[str, Any]:
             "skins": 1,
             "skin_joints": EXPECTED_SKIN_JOINTS,
             "source_animations_preserved_in_original": True,
-            "runtime_animations": 2,
-            "runtime_animation_names": ["idle", "swim"],
+            "runtime_animations": 3,
+            "runtime_animation_names": ["idle", "swim", "hit_to_body_01"],
             "runtime_normal_map": False,
             "runtime_metallic_roughness_map": False,
         },

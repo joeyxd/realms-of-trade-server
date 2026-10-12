@@ -1,0 +1,479 @@
+{
+  "generatedAt": "2026-10-12T05:17:35.876Z",
+  "sessions": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900,
+      "touch": false,
+      "quality": "medium",
+      "errors": [],
+      "modelRequests": [
+        "http://127.0.0.1:55764/assets/models/buccaneer-v1-desktop.glb"
+      ],
+      "checks": [
+        "server hurt reaches Feedback and activates the original clip while armed mesh stays intact",
+        "repeat hurt restarts once; full source clip returns to base pose",
+        "source reaction bends torso while preserving procedural arms for run/fire",
+        "real mouse/CDP touch primary and secondary fire with 1.0/1.45 per-hand recoil",
+        "real movement/fire continues during the network-confirmed moving hurt",
+        "dash/death cancel active reaction and do not defer it",
+        "server-positioned real swim cancels hit reaction; shore return does not replay it",
+        "injected clip-apply failure recovers to procedural flinch"
+      ],
+      "baseline": {
+        "geometry": "2e656db3-d4c8-471c-b363-6cc18d1c9e38",
+        "bones": 15,
+        "renderMeshes": 1,
+        "visible": true,
+        "weapon": 1
+      },
+      "idleHurt": {
+        "active": true,
+        "time": 0.19590000000000146,
+        "duration": 1.2916666269302368,
+        "weight": 1,
+        "fallback": false,
+        "hitK": 0.020499999999992774,
+        "geometry": "2e656db3-d4c8-471c-b363-6cc18d1c9e38",
+        "bones": 15,
+        "renderMeshes": 1,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 0,
+        "act": 0,
+        "swimState": 0,
+        "hp": 98,
+        "day": "day"
+      },
+      "repeatReset": {
+        "active": true,
+        "time": 0.0625,
+        "duration": 1.2916666269302368,
+        "weight": 0.87738037109375,
+        "fallback": false,
+        "hitK": 0.6875000000000001,
+        "geometry": "2e656db3-d4c8-471c-b363-6cc18d1c9e38",
+        "bones": 15,
+        "renderMeshes": 1,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 0,
+        "act": 0,
+        "swimState": 0,
+        "hp": 96,
+        "day": "day"
+      },
+      "recovered": {
+        "active": false,
+        "time": 0,
+        "duration": 1.2916666269302368,
+        "weight": 0,
+        "fallback": false,
+        "hitK": 0,
+        "geometry": "2e656db3-d4c8-471c-b363-6cc18d1c9e38",
+        "bones": 15,
+        "renderMeshes": 1,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 0,
+        "act": 0,
+        "swimState": 0,
+        "hp": 96,
+        "day": "day"
+      },
+      "armPreservation": {
+        "moving": {
+          "left": true,
+          "right": true,
+          "torsoChanged": true,
+          "active": true,
+          "weight": 0.5
+        },
+        "firing": {
+          "left": true,
+          "right": true,
+          "torsoChanged": true,
+          "active": true,
+          "weight": 0.5
+        }
+      },
+      "triggers": [
+        {
+          "hand": 1,
+          "secondary": false,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1,
+          "speed": 0,
+          "act": 0
+        },
+        {
+          "hand": 1,
+          "secondary": false,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1,
+          "speed": 0,
+          "act": 17
+        },
+        {
+          "hand": 1,
+          "secondary": false,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1,
+          "speed": 0,
+          "act": 17
+        },
+        {
+          "hand": -1,
+          "secondary": true,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1.45,
+          "speed": 0,
+          "act": 0
+        },
+        {
+          "hand": -1,
+          "secondary": true,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1.45,
+          "speed": 0,
+          "act": 17
+        },
+        {
+          "hand": -1,
+          "secondary": true,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1.45,
+          "speed": 0,
+          "act": 17
+        }
+      ],
+      "movingHurt": {
+        "active": true,
+        "time": 0.05009999999999855,
+        "duration": 1.2916666269302368,
+        "weight": 0.6853503867187246,
+        "fallback": false,
+        "hitK": 0.7495000000000072,
+        "geometry": "2e656db3-d4c8-471c-b363-6cc18d1c9e38",
+        "bones": 15,
+        "renderMeshes": 1,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 5.525,
+        "act": 17,
+        "swimState": 0,
+        "hp": 94,
+        "day": "day"
+      },
+      "movingFire": [
+        {
+          "hand": -1,
+          "secondary": true,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1.45,
+          "speed": 0,
+          "act": 17
+        },
+        {
+          "hand": 1,
+          "secondary": false,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1,
+          "speed": 6.5,
+          "act": 0
+        },
+        {
+          "hand": 1,
+          "secondary": false,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1,
+          "speed": 5.525,
+          "act": 17
+        }
+      ],
+      "dashCancel": {
+        "cancelled": true,
+        "noDeferred": true
+      },
+      "deathCancel": {
+        "cancelled": true,
+        "noDeferred": true
+      },
+      "waterTarget": {
+        "x": 118.2230477585011,
+        "z": 97.16664705006887
+      },
+      "swimCancel": {
+        "active": false,
+        "time": 0,
+        "duration": 1.2916666269302368,
+        "weight": 0,
+        "fallback": false,
+        "hitK": 0,
+        "geometry": "2e656db3-d4c8-471c-b363-6cc18d1c9e38",
+        "bones": 15,
+        "renderMeshes": 2,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 0,
+        "act": 0,
+        "swimState": 0,
+        "hp": 88,
+        "day": "day"
+      },
+      "fallback": {
+        "active": false,
+        "time": 0,
+        "duration": 0,
+        "weight": 0,
+        "fallback": true,
+        "hitK": 0.6875,
+        "geometry": "2e656db3-d4c8-471c-b363-6cc18d1c9e38",
+        "bones": 15,
+        "renderMeshes": 2,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 0,
+        "act": 0,
+        "swimState": 0,
+        "hp": 86,
+        "day": "day"
+      },
+      "passed": true
+    },
+    {
+      "name": "mobile",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "quality": "low",
+      "errors": [],
+      "modelRequests": [
+        "http://127.0.0.1:55764/assets/models/buccaneer-v1-mobile.glb"
+      ],
+      "checks": [
+        "server hurt reaches Feedback and activates the original clip while armed mesh stays intact",
+        "repeat hurt restarts once; full source clip returns to base pose",
+        "source reaction bends torso while preserving procedural arms for run/fire",
+        "real mouse/CDP touch primary and secondary fire with 1.0/1.45 per-hand recoil",
+        "real movement/fire continues during the network-confirmed moving hurt",
+        "dash/death cancel active reaction and do not defer it",
+        "server-positioned real swim cancels hit reaction; shore return does not replay it",
+        "injected clip-apply failure recovers to procedural flinch"
+      ],
+      "baseline": {
+        "geometry": "0bcfd2d8-8654-441c-93fd-517d9a839f14",
+        "bones": 15,
+        "renderMeshes": 1,
+        "visible": true,
+        "weapon": 1
+      },
+      "idleHurt": {
+        "active": true,
+        "time": 0.19170000000000076,
+        "duration": 1.2916666269302368,
+        "weight": 1,
+        "fallback": false,
+        "hitK": 0.04149999999999627,
+        "geometry": "0bcfd2d8-8654-441c-93fd-517d9a839f14",
+        "bones": 15,
+        "renderMeshes": 1,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 0,
+        "act": 0,
+        "swimState": 0,
+        "hp": 98,
+        "day": "day"
+      },
+      "repeatReset": {
+        "active": true,
+        "time": 0.057999999999999996,
+        "duration": 1.2916666269302368,
+        "weight": 0.81471875,
+        "fallback": false,
+        "hitK": 0.71,
+        "geometry": "0bcfd2d8-8654-441c-93fd-517d9a839f14",
+        "bones": 15,
+        "renderMeshes": 1,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 0,
+        "act": 0,
+        "swimState": 0,
+        "hp": 96,
+        "day": "day"
+      },
+      "recovered": {
+        "active": false,
+        "time": 0,
+        "duration": 1.2916666269302368,
+        "weight": 0,
+        "fallback": false,
+        "hitK": 0,
+        "geometry": "0bcfd2d8-8654-441c-93fd-517d9a839f14",
+        "bones": 15,
+        "renderMeshes": 1,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 0,
+        "act": 0,
+        "swimState": 0,
+        "hp": 96,
+        "day": "day"
+      },
+      "armPreservation": {
+        "moving": {
+          "left": true,
+          "right": true,
+          "torsoChanged": true,
+          "active": true,
+          "weight": 0.5
+        },
+        "firing": {
+          "left": true,
+          "right": true,
+          "torsoChanged": true,
+          "active": true,
+          "weight": 0.5
+        }
+      },
+      "triggers": [
+        {
+          "hand": 1,
+          "secondary": false,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1,
+          "speed": 0,
+          "act": 0
+        },
+        {
+          "hand": 1,
+          "secondary": false,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1,
+          "speed": 0,
+          "act": 17
+        },
+        {
+          "hand": 1,
+          "secondary": false,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1,
+          "speed": 0,
+          "act": 17
+        },
+        {
+          "hand": -1,
+          "secondary": true,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1.45,
+          "speed": 0,
+          "act": 0
+        },
+        {
+          "hand": -1,
+          "secondary": true,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1.45,
+          "speed": 0,
+          "act": 17
+        }
+      ],
+      "movingHurt": {
+        "active": true,
+        "time": 0.05409999999999855,
+        "duration": 1.2916666269302368,
+        "weight": 0.7534249179687262,
+        "fallback": false,
+        "hitK": 0.7295000000000073,
+        "geometry": "0bcfd2d8-8654-441c-93fd-517d9a839f14",
+        "bones": 15,
+        "renderMeshes": 1,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 6.5,
+        "act": 0,
+        "swimState": 0,
+        "hp": 94,
+        "day": "day"
+      },
+      "movingFire": [
+        {
+          "hand": -1,
+          "secondary": true,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1.45,
+          "speed": 0,
+          "act": 17
+        },
+        {
+          "hand": 1,
+          "secondary": false,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1,
+          "speed": 6.5,
+          "act": 0
+        },
+        {
+          "hand": 1,
+          "secondary": false,
+          "recoilLAmp": 1,
+          "recoilRAmp": 1,
+          "speed": 5.525,
+          "act": 17
+        }
+      ],
+      "dashCancel": {
+        "cancelled": true,
+        "noDeferred": true
+      },
+      "deathCancel": {
+        "cancelled": true,
+        "noDeferred": true
+      },
+      "waterTarget": {
+        "x": 118.2230477585011,
+        "z": 97.16664705006887
+      },
+      "swimCancel": {
+        "active": false,
+        "time": 0,
+        "duration": 1.2916666269302368,
+        "weight": 0,
+        "fallback": false,
+        "hitK": 0,
+        "geometry": "0bcfd2d8-8654-441c-93fd-517d9a839f14",
+        "bones": 15,
+        "renderMeshes": 2,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 0,
+        "act": 0,
+        "swimState": 0,
+        "hp": 88,
+        "day": "day"
+      },
+      "fallback": {
+        "active": false,
+        "time": 0,
+        "duration": 0,
+        "weight": 0,
+        "fallback": true,
+        "hitK": 0.7285000000000036,
+        "geometry": "0bcfd2d8-8654-441c-93fd-517d9a839f14",
+        "bones": 15,
+        "renderMeshes": 2,
+        "bodyVisible": true,
+        "swimVisible": false,
+        "speed": 0,
+        "act": 0,
+        "swimState": 0,
+        "hp": 86,
+        "day": "day"
+      },
+      "passed": true
+    }
+  ]
+}
