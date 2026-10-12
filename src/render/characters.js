@@ -15,6 +15,8 @@ import { assets } from './assets/registry.js';
 import { charToon } from './assets/toonmat.js';
 import { stepHarvestPose } from './harvestPose.js';
 import { applySwimPose } from './swimPose.js';
+import { reactionEligible } from './assets/characterReaction.js';
+import { createPistolRecoil, kickPistolRecoil, stepPistolRecoil } from './pistolRecoil.js';
 import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
 import { ACT } from '../sim/ecs.js';
@@ -175,7 +177,7 @@ export class CharacterView {
     this.dorm = pose === 'dormant' ? 1 : 0;
     this.downW = 0;
     this.weaponKind = 'sable';
-    this.recoilL = 0; this.recoilR = 0; this.shootW = 0;
+    Object.assign(this, createPistolRecoil()); this.shootW = 0;
   }
 
   // An imported model's materials, one per geometry group: its own (toon-converted), then the procedural weapon's
@@ -195,7 +197,7 @@ export class CharacterView {
     this.mesh.geometry = (this.ext && assets.charLook(this.skin, w) || buildLook(this.skin, w)).geo;
   }
   // A pistol shot kicks its own arm up (hand +1 = fast left, -1 = powerful right).
-  recoil(hand) { if (hand > 0) this.recoilL = 1; else this.recoilR = 1; }
+  recoil(hand, secondary = false) { Object.assign(this, kickPistolRecoil(this, hand, secondary)); }
 
   setPosition(x, y, z) { this.root.position.set(x, y, z); }
 
@@ -217,7 +219,22 @@ export class CharacterView {
   // Short white (or tinted) flash: hits taken, perfect parries.
   flash(color = 0xffffff, amount = 1) { this.flashCol.set(color); this.flashA = Math.max(this.flashA, amount); }
   // Flinch away from a hit (dir: +1 hit from the front).
-  hit(k = 1, dir = 1) { this.hitK = Math.max(this.hitK, k); this.hitDir = dir; }
+  hit(k = 1, dir = 1) {
+    this.hitK = Math.max(this.hitK, k); this.hitDir = dir;
+    if (this.reactionUnavailable) return;
+    try {
+      this.reaction ||= assets.characterReaction(this.skin);
+      if (this.reaction) this.reaction.restart(k);
+      else this.reactionUnavailable = true;
+    } catch (error) { this.failReaction(error); }
+  }
+
+  failReaction(error) {
+    this.reaction?.dispose(); this.reaction = null; this.reactionUnavailable = true;
+    console.warn('[character] source hit reaction unavailable', error);
+  }
+
+  disposeReaction() { this.reaction?.dispose(); this.reaction = null; }
 
   // Native swimming is an independent rig, created only when this view first enters water.
   // The parent follows simulation; the copied clip has no forward root motion.
@@ -264,6 +281,7 @@ export class CharacterView {
 
   // s: {x, y, z, f, vx, vz, st (1 = dash, 2 = swim), wade, act, actT, dead}
   update(dt, s) {
+    this.reaction?.restore(); // Remove last frame's additive layer before rebuilding/damping the base pose.
     dt = Math.min(dt, 0.1);
     this.t += dt;
     if (this.look.hover) this.mesh.position.y = 0.32 + Math.sin(this.t * 2.6 + this.seed) * 0.08;
@@ -382,6 +400,7 @@ export class CharacterView {
     this.flashA = Math.max(0, this.flashA - dt * 6);
     this.flashU.set(this.flashCol.r, this.flashCol.g, this.flashCol.b, Math.min(1, this.flashA) * 0.85);
     this.stepNativeSwim(dt, swimming && !s.dead && act !== ACT.DEAD);
+    try { this.reaction?.apply(this, dt, s); } catch (error) { this.failReaction(error); }
   }
 
   // ---- Combat layer --------------------------------------------------------------------------------------
@@ -478,11 +497,11 @@ export class CharacterView {
     const pist = this.weaponKind === 'pistolas';
     // Pistols firing: both arms out to the front, each kicking up on its own shot.
     this.shootW = damp(this.shootW, act === ACT.SHOOT ? 1 : 0, act === ACT.SHOOT ? 30 : 7, dt);
-    this.recoilL = Math.max(0, this.recoilL - dt * 7); this.recoilR = Math.max(0, this.recoilR - dt * 7);
+    Object.assign(this, stepPistolRecoil(this, dt));
     const sw = this.shootW * (1 - w);
     if (sw > 0.01) {
       w = Math.max(w, sw);
-      const rl = easeOutCubic(this.recoilL), rr = easeOutCubic(this.recoilR);
+      const rl = easeOutCubic(this.recoilL) * this.recoilLAmp, rr = easeOutCubic(this.recoilR) * this.recoilRAmp;
       T.cx += -0.03 * sw; T.cy += 0.05 * (rr - rl) * sw;
       set('armR', -1.52 - 0.42 * rr, 0.14); set('foreR', -0.06 - 0.35 * rr);
       set('armL', -1.52 - 0.42 * rl, -0.14); set('foreL', -0.06 - 0.35 * rl);
@@ -567,7 +586,8 @@ export class CharacterView {
 
     // Flinch (hit impulse) on top of everything.
     this.hitK = Math.max(0, this.hitK - dt * 5);
-    const hk = Math.sin(Math.min(1, this.hitK) * Math.PI * 0.5) * this.hitDir;
+    const hk = this.reaction?.active && reactionEligible(s, !!this.harvestPose) ? 0
+      : Math.sin(Math.min(1, this.hitK) * Math.PI * 0.5) * this.hitDir;
     if (hk) {
       this.spine.rotation.x -= 0.22 * hk; this.chest.rotation.x -= 0.15 * hk; this.head.rotation.x -= 0.2 * hk;
       this.armL.rotation.z += 0.25 * Math.abs(hk); this.armR.rotation.z -= 0.25 * Math.abs(hk);

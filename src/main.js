@@ -1115,7 +1115,11 @@ async function boot() {
     const sh = st.sheet, n = sh.views.length, c = sh.center;
     sh.views.forEach((v, i) => {
       if (sh.weapon) v.setWeapon(sh.weapon);
-      if (sh.fire && v.weaponKind === 'pistolas') { v.fireT = (v.fireT || 0) - dt; if (v.fireT <= 0) { v.fireT = 0.2; v.hand = -(v.hand || 1); v.recoil(v.hand); } }
+      if (sh.fire && v.weaponKind === 'pistolas') {
+        v.fireT = (v.fireT || 0) - dt; v.altFireT = (v.altFireT || 0) - dt;
+        if (v.fireT <= 0) { v.fireT = SKILLS.pistol.every; v.recoil(1, false); }
+        if (v.altFireT <= 0) { v.altFireT = SKILLS.pistolSecondary.every; v.recoil(-1, true); }
+      }
       if (sh.loop && sh.act) sh.actT = ((sh.actT || 0) + dt / n) % sh.loop;
       const x = c.x + (i - (n - 1) / 2) * sh.gap, z = c.z;
       const sp = sh.run ? 6.5 : 0, mv = sh.yaw + (sh.move || 0);

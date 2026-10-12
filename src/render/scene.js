@@ -222,6 +222,7 @@ export class GameScene {
   removeCharacter(id) {
     const view = this.views.get(id);
     if (!view) return;
+    view.disposeReaction();
     this.scene.remove(view.root);
     this.views.delete(id);
     this.footprints.forget(id);

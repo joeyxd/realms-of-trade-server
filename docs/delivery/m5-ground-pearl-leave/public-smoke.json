@@ -1,0 +1,102 @@
+{
+  "recordedAt": "2026-10-12T05:07:09.836Z",
+  "version": "0.6.0-alpha.59",
+  "protocol": 58,
+  "checks": [
+    "health_200",
+    "M5_economy_resources_healthy",
+    "published_protocol",
+    "ordinary_public_WSS_entry",
+    "world_snapshot",
+    "ordinary_profile"
+  ],
+  "count": 6,
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.59",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 1010,
+    "uptime": 30,
+    "stepMs": 1.278,
+    "bots": 3,
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true,
+        "meals": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 3711,
+        "errors": 0
+      }
+    }
+  },
+  "content": {
+    "generation": 8,
+    "revisionId": null
+  },
+  "scope": "Public read-only health, current content identity and ordinary guest entry; no durable gameplay action, GM activation or common GameHost/pearl/death/mint activation."
+}

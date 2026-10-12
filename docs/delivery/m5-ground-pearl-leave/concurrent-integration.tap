@@ -1,0 +1,745 @@
+TAP version 13
+# Subtest: durable mode defaults stopped, isolates owners and requires explicit CAS permission to connect
+ok 1 - durable mode defaults stopped, isolates owners and requires explicit CAS permission to connect
+  ---
+  duration_ms: 613.7114
+  type: 'test'
+  ...
+# Subtest: stop clears work immediately before storage confirms; old grants and legacy resume cannot bypass it
+ok 2 - stop clears work immediately before storage confirms; old grants and legacy resume cannot bypass it
+  ---
+  duration_ms: 616.5104
+  type: 'test'
+  ...
+# Subtest: confirmed stop hydrates on a new host and permission survives reentry without restoring old grants
+ok 3 - confirmed stop hydrates on a new host and permission survives reentry without restoring old grants
+  ---
+  duration_ms: 1173.2054
+  type: 'test'
+  ...
+# Subtest: readiness failure keeps agent admission closed while ordinary gameplay and private projection stay healthy
+ok 4 - readiness failure keeps agent admission closed while ordinary gameplay and private projection stay healthy
+  ---
+  duration_ms: 563.41
+  type: 'test'
+  ...
+# Subtest: an uncertain resume holds its slot, never enables late, and read recovery needs explicit owner resume
+ok 5 - an uncertain resume holds its slot, never enables late, and read recovery needs explicit owner resume
+  ---
+  duration_ms: 701.4931
+  type: 'test'
+  ...
+# Subtest: storage CAS conflict adopts evidence conservatively; routine reads do not pause a permitted agent
+ok 6 - storage CAS conflict adopts evidence conservatively; routine reads do not pause a permitted agent
+  ---
+  duration_ms: 675.9733
+  type: 'test'
+  ...
+# Subtest: owner disconnect while a resume saves cannot enable the character or receive a late private reply
+ok 7 - owner disconnect while a resume saves cannot enable the character or receive a late private reply
+  ---
+  duration_ms: 806.3293
+  type: 'test'
+  ...
+# Subtest: creation derives owner/world, survives reconnect, stays private and grants no profile or controller
+ok 8 - creation derives owner/world, survives reconnect, stays private and grants no profile or controller
+  ---
+  duration_ms: 644.163
+  type: 'test'
+  ...
+# Subtest: missing readiness and opt-in keep creation unavailable without breaking gameplay
+ok 9 - missing readiness and opt-in keep creation unavailable without breaking gameplay
+  ---
+  duration_ms: 658.3784
+  type: 'test'
+  ...
+# Subtest: invalid creation cannot pass a model URL, spoofed owner, extra fields or unsafe preset
+ok 10 - invalid creation cannot pass a model URL, spoofed owner, extra fields or unsafe preset
+  ---
+  duration_ms: 368.7495
+  type: 'test'
+  ...
+# Subtest: uncertain create stays bounded; late commit is recovered after the original session closes
+ok 11 - uncertain create stays bounded; late commit is recovered after the original session closes
+  ---
+  duration_ms: 423.6722
+  type: 'test'
+  ...
+# Subtest: load, issue, and revoke use the authenticated pairing contract and private one-use code
+ok 12 - load, issue, and revoke use the authenticated pairing contract and private one-use code
+  ---
+  duration_ms: 3.4224
+  type: 'test'
+  ...
+# Subtest: malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+ok 13 - malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+  ---
+  duration_ms: 0.5595
+  type: 'test'
+  ...
+# Subtest: failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+ok 14 - failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+  ---
+  duration_ms: 0.6742
+  type: 'test'
+  ...
+# Subtest: account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+ok 15 - account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+  ---
+  duration_ms: 28.2092
+  type: 'test'
+  ...
+# Subtest: stale correlation is ignored and unsafe controller URLs are not retained
+ok 16 - stale correlation is ignored and unsafe controller URLs are not retained
+  ---
+  duration_ms: 0.3859
+  type: 'test'
+  ...
+# Subtest: pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+ok 17 - pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+  ---
+  duration_ms: 668.5749
+  type: 'test'
+  ...
+# Subtest: new code rotates pending code and active controller; owner disconnect invalidates pending code
+ok 18 - new code rotates pending code and active controller; owner disconnect invalidates pending code
+  ---
+  duration_ms: 557.7245
+  type: 'test'
+  ...
+# Subtest: expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+ok 19 - expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+  ---
+  duration_ms: 1038.2714
+  type: 'test'
+  ...
+# Subtest: durable owner stop invalidates a pending code and active paired session immediately
+ok 20 - durable owner stop invalidates a pending code and active paired session immediately
+  ---
+  duration_ms: 576.5126
+  type: 'test'
+  ...
+# Subtest: owner disconnect during paired profile I/O prevents late admission and welcome
+ok 21 - owner disconnect during paired profile I/O prevents late admission and welcome
+  ---
+  duration_ms: 578.3496
+  type: 'test'
+  ...
+# Subtest: missing durable prerequisites keep pairing unavailable without blocking creation
+ok 22 - missing durable prerequisites keep pairing unavailable without blocking creation
+  ---
+  duration_ms: 510.5801
+  type: 'test'
+  ...
+# Subtest: issue reports a missing creation and content changes invalidate claims and admitted sessions
+ok 23 - issue reports a missing creation and content changes invalidate claims and admitted sessions
+  ---
+  duration_ms: 712.6857
+  type: 'test'
+  ...
+# Subtest: opens by loading pairing state and explains allow-first, one-use privacy, and the local CLI guide
+ok 24 - opens by loading pairing state and explains allow-first, one-use privacy, and the local CLI guide
+  ---
+  duration_ms: 1.539
+  type: 'test'
+  ...
+# Subtest: only explicit user actions issue or revoke and code has copy plus visible expiry controls
+ok 25 - only explicit user actions issue or revoke and code has copy plus visible expiry controls
+  ---
+  duration_ms: 39.9811
+  type: 'test'
+  ...
+# Subtest: revoke stays available for an enabled connection without a local code and reload recovers uncertain state
+ok 26 - revoke stays available for an enabled connection without a local code and reload recovers uncertain state
+  ---
+  duration_ms: 0.3565
+  type: 'test'
+  ...
+# Subtest: language switching, disconnect reset, and back preserve parent-owned close flow
+ok 27 - language switching, disconnect reset, and back preserve parent-owned close flow
+  ---
+  duration_ms: 1.0176
+  type: 'test'
+  ...
+# Subtest: recovery decision accepts only the fully idle durable failed-world state
+ok 28 - recovery decision accepts only the fully idle durable failed-world state
+  ---
+  duration_ms: 0.917
+  type: 'test'
+  ...
+# Subtest: recovery stays closed around economic operations and pending profile or world writes
+ok 29 - recovery stays closed around economic operations and pending profile or world writes
+  ---
+  duration_ms: 0.2309
+  type: 'test'
+  ...
+# Subtest: HTTP probe accepts only a 200 JSON status contract
+ok 30 - HTTP probe accepts only a 200 JSON status contract
+  ---
+  duration_ms: 25.9101
+  type: 'test'
+  ...
+# Subtest: four persistent eligible probes request one graceful recovery and exit nonzero
+ok 31 - four persistent eligible probes request one graceful recovery and exit nonzero
+  ---
+  duration_ms: 1.1423
+  type: 'test'
+  ...
+# Subtest: a healthy or unrecognized probe resets the consecutive failure count
+ok 32 - a healthy or unrecognized probe resets the consecutive failure count
+  ---
+  duration_ms: 0.2618
+  type: 'test'
+  ...
+# Subtest: pending profiles, enabled staging, hung probes, and unknown state do not trigger recovery
+ok 33 - pending profiles, enabled staging, hung probes, and unknown state do not trigger recovery
+  ---
+  duration_ms: 0.2117
+  type: 'test'
+  ...
+# Subtest: a probe that never resolves cannot advance or fire the failure guard
+ok 34 - a probe that never resolves cannot advance or fire the failure guard
+  ---
+  duration_ms: 0.1737
+  type: 'test'
+  ...
+# Subtest: external shutdown closes polling, forwards termination, escalates, and preserves child exit code
+ok 35 - external shutdown closes polling, forwards termination, escalates, and preserves child exit code
+  ---
+  duration_ms: 0.2036
+  type: 'test'
+  ...
+# Subtest: a child that exits on its own keeps its exit status
+ok 36 - a child that exits on its own keeps its exit status
+  ---
+  duration_ms: 0.1672
+  type: 'test'
+  ...
+# Subtest: child launch error settles once with a nonzero code
+ok 37 - child launch error settles once with a nonzero code
+  ---
+  duration_ms: 0.1746
+  type: 'test'
+  ...
+# Subtest: a real child completes its SIGTERM drain before recovery exits nonzero
+ok 38 - a real child completes its SIGTERM drain before recovery exits nonzero
+  ---
+  duration_ms: 70.5185
+  type: 'test'
+  ...
+# Subtest: legacy host keeps death persistence and common family composition unmounted by default
+ok 39 - legacy host keeps death persistence and common family composition unmounted by default
+  ---
+  duration_ms: 308.4577
+  type: 'test'
+  ...
+# Subtest: GM content switching excludes a ready host with common death authorities mounted
+ok 40 - GM content switching excludes a ready host with common death authorities mounted
+  ---
+  duration_ms: 4599.2225
+  type: 'test'
+  ...
+# Subtest: Cala fatal commits the whole captured death, but applies and publishes only on the next host boundary
+ok 41 - Cala fatal commits the whole captured death, but applies and publishes only on the next host boundary
+  ---
+  duration_ms: 8165.8654
+  type: 'test'
+  ...
+# Subtest: exterior zero-pearl fatal keeps the safe-zone death result without generating loot
+ok 42 - exterior zero-pearl fatal keeps the safe-zone death result without generating loot
+  ---
+  duration_ms: 6188.0925
+  type: 'test'
+  ...
+# Subtest: death current rows hydrate after restart; an ordinary drop can be picked and another expired under the same owner
+ok 43 - death current rows hydrate after restart; an ordinary drop can be picked and another expired under the same owner
+  ---
+  duration_ms: 9801.5582
+  type: 'test'
+  ...
+# Subtest: fatal input inside a real server step neutralizes the remainder of its queued commands
+ok 44 - fatal input inside a real server step neutralizes the remainder of its queued commands
+  ---
+  duration_ms: 7324.8776
+  type: 'test'
+  ...
+# Subtest: fatal deaths from one terminal tick serialize profile and PK versions
+ok 45 - fatal deaths from one terminal tick serialize profile and PK versions
+  ---
+  duration_ms: 7391.4718
+  type: 'test'
+  ...
+# Subtest: a killer who dies later in the same terminal tick transfers the killer role serially
+ok 46 - a killer who dies later in the same terminal tick transfers the killer role serially
+  ---
+  duration_ms: 6649.1913
+  type: 'test'
+  ...
+# Subtest: disconnect after SQL commit but before beforeTick fences death without local apply
+ok 47 - disconnect after SQL commit but before beforeTick fences death without local apply
+  ---
+  duration_ms: 6270.5458
+  type: 'test'
+  ...
+# Subtest: close after SQL commit but before apply preserves the local pre-death snapshot
+ok 48 - close after SQL commit but before apply preserves the local pre-death snapshot
+  ---
+  duration_ms: 6402.2736
+  type: 'test'
+  ...
+# Subtest: apply failure after SQL commit restores the local death projection and fences the host
+ok 49 - apply failure after SQL commit restores the local death projection and fences the host
+  ---
+  duration_ms: 5975.1949
+  type: 'test'
+  ...
+# Subtest: the opt-in composes one ready ground owner while defaults keep the legacy host
+ok 50 - the opt-in composes one ready ground owner while defaults keep the legacy host
+  ---
+  duration_ms: 726.8163
+  type: 'test'
+  ...
+# Subtest: opt-in fails closed for an absent clock or a resource tick outside that clock
+ok 51 - opt-in fails closed for an absent clock or a resource tick outside that clock
+  ---
+  duration_ms: 481.7311
+  type: 'test'
+  ...
+# Subtest: a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+ok 52 - a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+  ---
+  duration_ms: 288.1316
+  type: 'test'
+  ...
+# Subtest: coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+ok 53 - coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+  ---
+  duration_ms: 339.9722
+  type: 'test'
+  ...
+# Subtest: shutdown settles and drains a pending checkpoint before the final world flush
+ok 54 - shutdown settles and drains a pending checkpoint before the final world flush
+  ---
+  duration_ms: 312.4968
+  type: 'test'
+  ...
+# Subtest: the trusted opt-in rejects accessors and the separate agent-trade lane
+ok 55 - the trusted opt-in rejects accessors and the separate agent-trade lane
+  ---
+  duration_ms: 0.5698
+  type: 'test'
+  ...
+# Subtest: accounts-only ground hosts reject guest admission
+ok 56 - accounts-only ground hosts reject guest admission
+  ---
+  duration_ms: 258.3065
+  type: 'test'
+  ...
+# Subtest: replacing the installed beforeTick owner fences the world
+ok 57 - replacing the installed beforeTick owner fences the world
+  ---
+  duration_ms: 254.1582
+  type: 'test'
+  ...
+# Subtest: default pearl command still uses the existing immediate gameplay helper
+ok 58 - default pearl command still uses the existing immediate gameplay helper
+  ---
+  duration_ms: 406.8098
+  type: 'test'
+  ...
+# Subtest: mounted false, true and async command decisions never fall through to a local pearl mutation
+ok 59 - mounted false, true and async command decisions never fall through to a local pearl mutation
+  ---
+  duration_ms: 304.3583
+  type: 'test'
+  ...
+# Subtest: command access rejection precedes the receipted dispatch hook
+ok 60 - command access rejection precedes the receipted dispatch hook
+  ---
+  duration_ms: 287.6544
+  type: 'test'
+  ...
+# Subtest: selector leave reserves and persists an owned pearl, then applies only at the common tick boundary
+ok 61 - selector leave reserves and persists an owned pearl, then applies only at the common tick boundary
+  ---
+  duration_ms: 6268.7771
+  type: 'test'
+  ...
+# Subtest: real CMD pearl leave is routed only when mounted; give, swallow, combat, unknown, spit and sell fail closed
+ok 62 - real CMD pearl leave is routed only when mounted; give, swallow, combat, unknown, spit and sell fail closed
+  ---
+  duration_ms: 8298.0875
+  type: 'test'
+  ...
+# Subtest: shutdown fences a SQL committed leave until recovery
+ok 63 - shutdown fences a SQL committed leave until recovery
+  ---
+  duration_ms: 7431.6623
+  type: 'test'
+  ...
+# Subtest: a normally applied leave hydrates as one source after restart and can be picked up once
+ok 64 - a normally applied leave hydrates as one source after restart and can be picked up once
+  ---
+  duration_ms: 10202.4504
+  type: 'test'
+  ...
+# Subtest: disconnect and shutdown fence a retained leave receipt before gameplay apply
+ok 65 - disconnect and shutdown fence a retained leave receipt before gameplay apply
+  ---
+  duration_ms: 7053.7766
+  type: 'test'
+  ...
+# Subtest: taking over the common completion callback prevents a retained leave from applying
+ok 66 - taking over the common completion callback prevents a retained leave from applying
+  ---
+  duration_ms: 7324.093
+  type: 'test'
+  ...
+# Subtest: mounted leave command fences a null pearl hook before legacy mutation
+ok 67 - mounted leave command fences a null pearl hook before legacy mutation
+  ---
+  duration_ms: 6606.1633
+  type: 'test'
+  ...
+# Subtest: mounted leave command fences a replacement pearl hook before legacy mutation
+ok 68 - mounted leave command fences a replacement pearl hook before legacy mutation
+  ---
+  duration_ms: 6823.5657
+  type: 'test'
+  ...
+# Subtest: owned pearl leave recovers exactly once after SIGKILL after-journal-prepare
+ok 69 - owned pearl leave recovers exactly once after SIGKILL after-journal-prepare
+  ---
+  duration_ms: 8707.1017
+  type: 'test'
+  ...
+# SIGKILL after after-journal-prepare; reopened SQL018/019 without migrations, recovered one ground source, and picked it up once.
+# Subtest: owned pearl leave recovers exactly once after SIGKILL after-sql-commit
+ok 70 - owned pearl leave recovers exactly once after SIGKILL after-sql-commit
+  ---
+  duration_ms: 8734.6788
+  type: 'test'
+  ...
+# SIGKILL after after-sql-commit; reopened SQL018/019 without migrations, recovered one ground source, and picked it up once.
+# Subtest: planner prepares detached helper delta and atomically applies the exact durable receipt
+ok 71 - planner prepares detached helper delta and atomically applies the exact durable receipt
+  ---
+  duration_ms: 63.4469
+  type: 'test'
+  ...
+# Subtest: planner rejects holder, generation, profile and duplicate UID drift without mutation
+    # Subtest: holder
+    ok 1 - holder
+      ---
+      duration_ms: 14.1043
+      type: 'test'
+      ...
+    # Subtest: version
+    ok 2 - version
+      ---
+      duration_ms: 12.3858
+      type: 'test'
+      ...
+    # Subtest: profile
+    ok 3 - profile
+      ---
+      duration_ms: 13.0448
+      type: 'test'
+      ...
+    # Subtest: ledger
+    ok 4 - ledger
+      ---
+      duration_ms: 13.0313
+      type: 'test'
+      ...
+    # Subtest: duplicate profile
+    ok 5 - duplicate profile
+      ---
+      duration_ms: 11.1756
+      type: 'test'
+      ...
+    # Subtest: duplicate drop
+    ok 6 - duplicate drop
+      ---
+      duration_ms: 14.3006
+      type: 'test'
+      ...
+    # Subtest: row shape
+    ok 7 - row shape
+      ---
+      duration_ms: 11.7191
+      type: 'test'
+      ...
+    1..7
+ok 72 - planner rejects holder, generation, profile and duplicate UID drift without mutation
+  ---
+  duration_ms: 91.0529
+  type: 'test'
+  ...
+# Subtest: durable row accessors are rejected without invocation
+ok 73 - durable row accessors are rejected without invocation
+  ---
+  duration_ms: 4.5075
+  type: 'test'
+  ...
+# Subtest: assertBaseline allows settlement session counters while assertCurrent fences them
+ok 74 - assertBaseline allows settlement session counters while assertCurrent fences them
+  ---
+  duration_ms: 37.7676
+  type: 'test'
+  ...
+# Subtest: captured ECS progress is carried into the profile and RNG replacement fences a plan
+ok 75 - captured ECS progress is carried into the profile and RNG replacement fences a plan
+  ---
+  duration_ms: 18.151
+  type: 'test'
+  ...
+# Subtest: in-place target geometry drift and allocator descriptor drift fence the plan
+ok 76 - in-place target geometry drift and allocator descriptor drift fence the plan
+  ---
+  duration_ms: 57.024
+  type: 'test'
+  ...
+# Subtest: wrong receipt and publication callback failure leave all state untouched
+ok 77 - wrong receipt and publication callback failure leave all state untouched
+  ---
+  duration_ms: 38.2528
+  type: 'test'
+  ...
+# Subtest: synchronous apply failure restores profile, receipt fields, drop order, ledger and dirty state
+ok 78 - synchronous apply failure restores profile, receipt fields, drop order, ledger and dirty state
+  ---
+  duration_ms: 30.0875
+  type: 'test'
+  ...
+# Subtest: unmounted lootOnKill and openChest still insert rolled pearls immediately
+ok 79 - unmounted lootOnKill and openChest still insert rolled pearls immediately
+  ---
+  duration_ms: 341.0904
+  type: 'test'
+  ...
+# Subtest: real sentinel loot captures synchronously, retains its tick, commits SQL, then drains after same-tick death
+ok 80 - real sentinel loot captures synchronously, retains its tick, commits SQL, then drains after same-tick death
+  ---
+  duration_ms: 5800.7251
+  type: 'test'
+  ...
+# Subtest: two real mint routes in one tick publish only after both SQL receipts drain
+ok 81 - two real mint routes in one tick publish only after both SQL receipts drain
+  ---
+  duration_ms: 6786.4447
+  type: 'test'
+  ...
+# Subtest: closing with a captured mint before its first drain rejects flush without durable or local effects
+ok 82 - closing with a captured mint before its first drain rejects flush without durable or local effects
+  ---
+  duration_ms: 5551.5471
+  type: 'test'
+  ...
+# Subtest: closing after mint SQL commit fences the delayed apply and retains its current receipt
+ok 83 - closing after mint SQL commit fences the delayed apply and retains its current receipt
+  ---
+  duration_ms: 5580.2255
+  type: 'test'
+  ...
+# Subtest: replacing afterTick while a mint receipt is retained rejects late application
+ok 84 - replacing afterTick while a mint receipt is retained rejects late application
+  ---
+  duration_ms: 5559.648
+  type: 'test'
+  ...
+# Subtest: mint ownership is explicit and closing or hook takeover prevents late authority use
+ok 85 - mint ownership is explicit and closing or hook takeover prevents late authority use
+  ---
+  duration_ms: 5099.1375
+  type: 'test'
+  ...
+# Subtest: three recipes commit with one replacing effect; replay cannot renew time, heal or spend twice
+ok 86 - three recipes commit with one replacing effect; replay cannot renew time, heal or spend twice
+  ---
+  duration_ms: 432.8411
+  type: 'test'
+  ...
+# Subtest: hot meals require real owned, living, near and lit cooker; voyage permits only dry-shore grog
+ok 87 - hot meals require real owned, living, near and lit cooker; voyage permits only dry-shore grog
+  ---
+  duration_ms: 289.2557
+  type: 'test'
+  ...
+# Subtest: held commit freezes meal time and inventory; disconnect and host restart retain remaining ticks
+ok 88 - held commit freezes meal time and inventory; disconnect and host restart retain remaining ticks
+  ---
+  duration_ms: 480.3255
+  type: 'test'
+  ...
+# Subtest: special meal flag and SQL readiness fail closed without changing old canteen flow
+ok 89 - special meal flag and SQL readiness fail closed without changing old canteen flow
+  ---
+  duration_ms: 469.4451
+  type: 'test'
+  ...
+# Subtest: ordinary commerce without before preserves the database meal exactly and replays
+ok 90 - ordinary commerce without before preserves the database meal exactly and replays
+  ---
+  duration_ms: 7.6677
+  type: 'test'
+  ...
+# Subtest: own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+ok 91 - own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+  ---
+  duration_ms: 15.7521
+  type: 'test'
+  ...
+# Subtest: water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+ok 92 - water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+  ---
+  duration_ms: 2.6651
+  type: 'test'
+  ...
+# Subtest: boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+ok 93 - boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+  ---
+  duration_ms: 2.3724
+  type: 'test'
+  ...
+# Subtest: water exit cannot reach an exposed edge more than 1.5 units from the owner
+ok 94 - water exit cannot reach an exposed edge more than 1.5 units from the owner
+  ---
+  duration_ms: 3.1732
+  type: 'test'
+  ...
+# Subtest: failed walker creation restores the swimmer and preserves drowning grace
+ok 95 - failed walker creation restores the swimmer and preserves drowning grace
+  ---
+  duration_ms: 2.9343
+  type: 'test'
+  ...
+# Subtest: restored voyage rebinds its ship revision and blueprint before the owner can swim
+ok 96 - restored voyage rebinds its ship revision and blueprint before the owner can swim
+  ---
+  duration_ms: 13.8808
+  type: 'test'
+  ...
+# Subtest: LocalServer receives swim and reboard commands and snapshots the parked and walking states
+ok 97 - LocalServer receives swim and reboard commands and snapshots the parked and walking states
+  ---
+  duration_ms: 315.8335
+  type: 'test'
+  ...
+# Subtest: geometry rejects high-floor drops and edges blocked by railings
+ok 98 - geometry rejects high-floor drops and edges blocked by railings
+  ---
+  duration_ms: 2.1822
+  type: 'test'
+  ...
+# Subtest: boarding geometry only returns exposed base-deck points in deep water
+ok 99 - boarding geometry only returns exposed base-deck points in deep water
+  ---
+  duration_ms: 1.9179
+  type: 'test'
+  ...
+# Subtest: pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+ok 100 - pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+  ---
+  duration_ms: 60.3307
+  type: 'test'
+  ...
+# Subtest: remote stop settles the runner and permits the same controller to pair again
+ok 101 - remote stop settles the runner and permits the same controller to pair again
+  ---
+  duration_ms: 33.8044
+  type: 'test'
+  ...
+# Subtest: stop during asynchronous document loading cancels setup before runner connect
+ok 102 - stop during asynchronous document loading cancels setup before runner connect
+  ---
+  duration_ms: 23.2463
+  type: 'test'
+  ...
+# Subtest: pairing fails closed for reused companion files with a different model policy
+ok 103 - pairing fails closed for reused companion files with a different model policy
+  ---
+  duration_ms: 24.8514
+  type: 'test'
+  ...
+# Subtest: claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+ok 104 - claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+  ---
+  duration_ms: 3.1477
+  type: 'test'
+  ...
+# Subtest: live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+ok 105 - live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+  ---
+  duration_ms: 1329.879
+  type: 'test'
+  ...
+# Subtest: stop during a local model request fences its late response and does not capture an exchange
+ok 106 - stop during a local model request fences its late response and does not capture an exchange
+  ---
+  duration_ms: 794.9757
+  type: 'test'
+  ...
+# Subtest: the CLI validates options before prompting and accepts a pasted multi-character hex code
+ok 107 - the CLI validates options before prompting and accepts a pasted multi-character hex code
+  ---
+  duration_ms: 0.8877
+  type: 'test'
+  ...
+# Subtest: HTTP listener and simulation wait for initial world load and creation CAS
+ok 108 - HTTP listener and simulation wait for initial world load and creation CAS
+  ---
+  duration_ms: 352.3371
+  type: 'test'
+  ...
+# Subtest: world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+ok 109 - world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+  ---
+  duration_ms: 364.0682
+  type: 'test'
+  ...
+# Subtest: ambiguous save failure fences the host and preserves the last confirmed world generation
+ok 110 - ambiguous save failure fences the host and preserves the last confirmed world generation
+  ---
+  duration_ms: 232.3578
+  type: 'test'
+  ...
+# Subtest: autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+ok 111 - autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+  ---
+  duration_ms: 317.9098
+  type: 'test'
+  ...
+# Subtest: load failure never opens the HTTP listener or manufactures a replacement world
+ok 112 - load failure never opens the HTTP listener or manufactures a replacement world
+  ---
+  duration_ms: 234.8577
+  type: 'test'
+  ...
+# Subtest: shutdown aborts a stuck startup load and late null result cannot write a world
+ok 113 - shutdown aborts a stuck startup load and late null result cannot write a world
+  ---
+  duration_ms: 221.1792
+  type: 'test'
+  ...
+# Subtest: createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+ok 114 - createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+  ---
+  duration_ms: 239.4362
+  type: 'test'
+  ...
+# Subtest: createGameServer can close cleanly before listen begins
+ok 115 - createGameServer can close cleanly before listen begins
+  ---
+  duration_ms: 212.1903
+  type: 'test'
+  ...
+1..115
+# tests 122
+# suites 0
+# pass 122
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 211866.1321

@@ -14,6 +14,7 @@ import { normalizeManifest, fitBox, selectTextureSource } from './manifest.js';
 import { bakeCharacter, sizedCharacter } from './rebind.js';
 import { captureCharacterFigure, createCharacterFigure } from './characterFigure.js';
 import { createCharacterSwim } from './characterSwim.js';
+import { createCharacterReaction } from './characterReaction.js';
 import { worldToon } from './toonmat.js';
 import { LOOKS, buildLook, buildWeaponOnly } from '../charlooks.js';
 
@@ -194,6 +195,12 @@ export class Assets {
   hasCharacterSwim(lookIdx) {
     const id = this.man.byLook.get(LOOKS[lookIdx]?.name);
     return !!this.data(id)?.figure?.swimClip;
+  }
+
+  characterReaction(lookIdx) {
+    const id = this.man.byLook.get(LOOKS[lookIdx]?.name), data = this.data(id);
+    if (!data?.figure?.reactionClip) return null;
+    return createCharacterReaction(data.figure, data.bake, this.entry(id));
   }
 
   characterSwim(lookIdx, shared) {

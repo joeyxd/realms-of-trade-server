@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Bucanero — reacción original y retroceso, alpha.62/protocolo 59:**
+[Contrato](briefs/buccaneer-combat-reaction.md) y [entrega](delivery/buccaneer-v1/combat-reaction/README.md).
+`hit_to_body_01` adaptado como capa aditiva al rig armado: torso/cabeza, brazos solo quieto;
+correr/disparar conserva brazos procedurales. Reinicio por golpe, salida suave, cancelación en dash/nado/muerte.
+RMB visual ×1,45/0,42 s frente a LMB ×1/0,18 s, sin cambios de combate, perfil o SQL propios.
+Derivados +57 KB, texturas 1024/512 y geometría intactas; idle de ficha/nado original conservados.
+Integración concurrente conservada: 76/76 focales y 36/36 integración, Chrome local 16/16 escritorio/móvil.
+Suite general no repetida; publicación/aceptación pública y sus límites se registran por separado.
+
 **AREA01 GM04d — recursos funcionales implementados, alpha.61/protocolo 59:**
 [Contrato](briefs/gm04d-functional-resources.md) y [entrega](delivery/gm04d/DELIVERY.md).
 Editor → Recursos: palmera talable/piedra recogible, colocar/mover/duplicar/retirar y undo.
@@ -68,7 +77,10 @@ Rollback y cerco ante deriva/cierre/desconexión, incluso callback nulo antes de
 Tres archivos con fallos de asignación/clonación repiten 49/49 sin cambios; quedan dos fallos heredados
 HTML localizado y Cometa/agua reproducidos en upstream limpio. Cohorte completa no verde. Dos SIGKILL nuevos
 con recuperación/recogida únicas y cero efectos históricos. Conteos solapados.
-Código aceptado localmente; publicación y verificación VPS todavía pendientes.
+Integración de compañeros alpha.60: 122/122 en 17 archivos seriales; GM036 alpha.61: 83/83 en 12 archivos.
+VPS verificado en `6b713d2`, alpha.60/protocolo 59: actualizador 194/194, entrada pública 6/6 y
+16 módulos iguales a Git; montajes comunes nulos, sin adopción ni SQL nuevo para `leave`.
+Los recursos GM activos aún excluyen el piloto común: esa composición queda pendiente.
 Sigue `give` transaccional, después `swallow` y sobre completo kill/cofre; luego transición/adopción y canario VPS.
 
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
