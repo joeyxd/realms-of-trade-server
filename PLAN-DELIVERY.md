@@ -6,7 +6,10 @@ Golpe original adaptado al rig armado, sin desplazar raíz/piernas ni impedir co
 cancelación al hacer dash/nadar/morir. RMB más fuerte/lento visualmente, con manos independientes.
 Idle/nado conservados, +57 KB por GLB, texturas 1024/512; reglas de combate y SQL propios intactos.
 Tras integrar recursos GM/compañeros/perlas: 76/76 focales + 36/36 integración, Chrome local 16/16,
-seis capturas inspeccionadas. Suite general no repetida. Publicación/aceptación pública por separado.
+seis capturas inspeccionadas. Suite general no repetida. Enviado en `b466ed9`, publicado en `6f25a0f`:
+actualizador194/194, imagen validada/saludable, público14/14 y 28 hashes iguales a Git; cero errores/pendientes.
+Golpe público es sonda cosmética, daño confirmado aceptado localmente; balance/FPS físico pendientes.
+[Recibo](docs/delivery/buccaneer-v1/combat-reaction/publication.json).
 
 **AREA01 GM04d, 2026-10-11 — recursos funcionales integrados, alpha.63/protocolo 59:**
 [Contrato](docs/briefs/gm04d-functional-resources.md), [entrega](docs/delivery/gm04d/DELIVERY.md).

@@ -1,0 +1,78 @@
+{
+  "activeRevision": "6f25a0f7bd5d980f81695e0dfd5b11171e54e1f5",
+  "containerId": "e5e53f82a6c9",
+  "activeImageId": "sha256:d07b652fbd3c6c622aca2f51bc9e13403a4065fe40dc2b3c14d9f497ec79db72",
+  "containerHealth": "healthy",
+  "validatedImage": {
+    "revision": "6f25a0f7bd5d980f81695e0dfd5b11171e54e1f5",
+    "image_id": "sha256:d07b652fbd3c6c622aca2f51bc9e13403a4065fe40dc2b3c14d9f497ec79db72",
+    "tests_passed": true
+  },
+  "normalUpdaterTimer": "active",
+  "normalUpdaterService": "activating",
+  "checkedAt": "2026-10-12T05:35:44.169449+00:00",
+  "candidateRevision": "b466ed9e505549e5b303a3d12bb6665ec8ab8d18",
+  "candidateVersion": "0.6.0-alpha.62",
+  "candidateProtocol": 59,
+  "branch": "claude/loving-lovelace-ptbif7",
+  "pushed": true,
+  "deploymentDeferred": false,
+  "reason": "normal updater activated a descendant containing the Buccaneer release after the open connection ended",
+  "publicAcceptance": "passed 14/14 desktop and mobile emulation",
+  "publicSourceComparisonRevision": "efd05a765405506aad0bcc0cc5883c354c66d9a4",
+  "version": "0.6.0-alpha.62",
+  "players": 0,
+  "sockets": 0,
+  "errors": 0,
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "errors": 0,
+    "unsaved": 0,
+    "tickBlocked": false,
+    "worldReady": true,
+    "economicPending": 0
+  },
+  "publicHealth": {
+    "status": 200,
+    "body": "ok"
+  },
+  "localChecks": {
+    "focal": 76,
+    "integration": 36,
+    "browser": 16,
+    "catalog": 39
+  },
+  "updaterTests": {
+    "tests": 194,
+    "pass": 194,
+    "fail": 0,
+    "logRevision": "6f25a0f7bd5d980f81695e0dfd5b11171e54e1f5"
+  },
+  "publicChecks": {
+    "sourcesEqualGit": 28,
+    "browserPassed": 14,
+    "devices": [
+      "desktop",
+      "mobile emulation"
+    ],
+    "errors": 0,
+    "ordinaryMovement": true,
+    "nativeSwimBones": 65,
+    "modelTextureWidths": [
+      1024,
+      512
+    ],
+    "hitReaction": "client-only cosmetic probe; authoritative hurt accepted in isolated local Chrome fixture",
+    "shotEvents": "real inputs and observed recoil; events may be predicted, not separate proof of server damage acknowledgement",
+    "acceptance": "public/acceptance.json",
+    "visualLimit": "daylight visible; default public camera makes fine pose details small on mobile, complemented by closer local captures",
+    "physicalPhoneFpsAndBalanceAccepted": false
+  },
+  "ownSqlChanges": false,
+  "ownOptionalActivationChanges": false,
+  "initialDeferral": {
+    "reason": "world busy; open connection preserved",
+    "forcedHandoff": false
+  }
+}
