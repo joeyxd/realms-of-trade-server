@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-12T05:22:41.605935+00:00",
+  "baseRevision": "e678ea9f4cdc64ee15d132f89caa9f1ba092b631",
+  "command": "node --test tests/starter-workshop-sql.test.mjs",
+  "exitCode": 0,
+  "summary": [
+    "\u2139 tests 11",
+    "\u2139 suites 0",
+    "\u2139 pass 11",
+    "\u2139 fail 0",
+    "\u2139 cancelled 0",
+    "\u2139 skipped 0",
+    "\u2139 todo 0",
+    "\u2139 duration_ms 21019.5179"
+  ],
+  "scope": "SQL024 baseline with actual SQL029 wrapper; valid seeded Carga; second tier cost, unrelated goods, denial, durable reload and replay; no public or full SQL035/036 acceptance"
+}
