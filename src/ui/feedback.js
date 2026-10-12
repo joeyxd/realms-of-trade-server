@@ -283,7 +283,7 @@ export class Feedback {
       // ---- weapon skills (M3.5) ----
       case 'fire': {
         const v = me ? this.me() : this.viewOf(ev.e);
-        if (v) v.recoil(ev.hand);
+        if (v) v.recoil(ev.hand, !!ev.secondary);
         const y = (v ? v.root.position.y : this.y(ev.x, ev.z)) + 1.2;
         W.weaponFx.muzzle(ev.x, y, ev.z, ev.dx, ev.dz, !!ev.secondary, ev.elem);
         W.lights?.flash(ev.x + ev.dx * 0.8, y, ev.z + ev.dz * 0.8, elementVisual(ev.elem)?.accent ?? 0xffc46a, 6, 3.2, 0.12);

@@ -10,9 +10,10 @@
       "height": 2.12,
       "figureAnimation": "idle",
       "swimAnimation": "swim",
+      "reactionAnimation": "hit_to_body_01",
       "armsDown": true,
       "weapon": "proc",
-      "notes": "Author-supplied provisional Bucanero, Mixamo rebind in world; native idle in character sheet and native swim in water. Albedo 1024 desktop / 512 mobile. All source clips preserved in original. See docs/delivery/buccaneer-v1/README.md."
+      "notes": "Author-supplied provisional Bucanero, Mixamo rebind in world; native sheet idle, native swim and additive source hit reaction on gameplay rig. Albedo 1024 desktop / 512 mobile. All source clips preserved in original. See docs/delivery/buccaneer-v1/README.md."
     },
     {
       "id": "tex:portrait-buccaneer-v1",

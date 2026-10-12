@@ -192,7 +192,7 @@ test('Bucanero manifest binds only look 2 and selects one desktop/mobile charact
   }
 });
 
-test('source and runtime GLBs retain idle and swim with exact Mixamo animation data and no unused PBR maps', async () => {
+test('source and runtime GLBs retain idle, swim, and hit with exact Mixamo animation data and no unused PBR maps', async () => {
   const source = readGlb(await bytes(sourceGlbPath));
   const sourceSummary = summarize(source);
   assert.equal(sourceSummary.tris, 9164);
@@ -209,20 +209,21 @@ test('source and runtime GLBs retain idle and swim with exact Mixamo animation d
     assert.equal(summary.skins.length, 1, `${path}: skin count changed`);
     assert.equal(summary.skins[0].joints.length, 65, `${path}: joint count changed`);
     assert.deepEqual(mapBones(summary.skins[0].joints, summary.skins[0].parents).missing, [], `${path}: Mixamo bone map incomplete`);
-    assert.deepEqual(summary.animations, ['idle', 'swim'], `${path}: runtime GLB must retain idle and swim`);
-    assert.equal(evidence.derived[path].animation_channels, 390, `${path}: evidence retained channel count changed`);
-    assert.equal(evidence.derived[path].animation_samplers, 390, `${path}: evidence retained sampler count changed`);
+    assert.deepEqual(summary.animations, ['idle', 'swim', 'hit_to_body_01'], `${path}: runtime GLB must retain idle, swim, and hit`);
+    assert.equal(evidence.derived[path].animation_channels, 585, `${path}: evidence retained channel count changed`);
+    assert.equal(evidence.derived[path].animation_samplers, 585, `${path}: evidence retained sampler count changed`);
     assert.ok(evidence.derived[path].animation_buffer_bytes > 0, `${path}: evidence omitted retained animation bytes`);
     assertAnimationPreserved(source, glb, path, 'idle');
     assertAnimationPreserved(source, glb, path, 'swim');
+    assertAnimationPreserved(source, glb, path, 'hit_to_body_01');
     for (const material of glb.json.materials || []) {
       assert.equal(material.normalTexture, undefined, `${path}: runtime material retained normal map`);
       assert.equal(material.pbrMetallicRoughness?.metallicRoughnessTexture, undefined, `${path}: runtime material retained metallic/roughness map`);
     }
     assertGeometryAndSkinPreserved(source, glb, path);
   }
-  assert.equal(evidence.invariants.runtime_animations, 2);
-  assert.deepEqual(evidence.invariants.runtime_animation_names, ['idle', 'swim']);
+  assert.equal(evidence.invariants.runtime_animations, 3);
+  assert.deepEqual(evidence.invariants.runtime_animation_names, ['idle', 'swim', 'hit_to_body_01']);
 });
 
 test('preserved originals and generated runtime files match their SHA-256 evidence', async () => {

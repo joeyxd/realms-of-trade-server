@@ -35,7 +35,8 @@
 //        armR, foreR), weapon: "proc" (the look's procedural weapon in the right hand, default) | "none",
 //        armsDown (default true: T / A poses are lowered to the rig's arms-down rest), bone (rigid chars: the bone it
 //        rides, default "body"). mobileSrc optionally selects a smaller character GLB on coarse-pointer devices.
-//        figureAnimation names a native sheet clip; swimAnimation names an in-place water clip.
+//        figureAnimation names a native sheet clip; swimAnimation names an in-place water clip;
+//        reactionAnimation supplies additive hit motion on the gameplay rig.
 // prop   props: [kinds] (required), fit: "proc" (default: the procedural prop's size) | "height" | "size" | "none",
 //        size (u: the largest horizontal extent, with fit "size"), height (u, with fit "height").
 // model  fit: "size" (default when size is given) | "height" (default when only height is) | "proc" (otherwise: the size of
@@ -99,6 +100,7 @@ export function normalizeManifest(json, { looks = null } = {}) {
       e.height = num(raw.height, 0); // 0: the look's own height
       e.figureAnimation = typeof raw.figureAnimation === 'string' ? raw.figureAnimation : '';
       e.swimAnimation = typeof raw.swimAnimation === 'string' ? raw.swimAnimation : '';
+      e.reactionAnimation = typeof raw.reactionAnimation === 'string' ? raw.reactionAnimation : '';
       e.swimOffsetY = Number.isFinite(raw.swimOffsetY) ? raw.swimOffsetY : 0;
       e.bones = {};
       if (raw.bones && typeof raw.bones === 'object') {
