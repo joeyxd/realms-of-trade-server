@@ -15,6 +15,7 @@ import { toon, normalMatFor } from '../toon.js';
 import { DT } from '../../data/tuning.js';
 import { SKILLS } from '../../data/weapons.js';
 import { elementVisual } from '../../data/elements.js';
+import { DEFAULT_SKILL_DOCUMENT, validateSkillDocument } from '../../editor/skillDocument.js';
 
 const NORMAL = {
   transparent: true, depthWrite: false, blending: THREE.CustomBlending,
@@ -45,7 +46,7 @@ void main() {
 }`;
 const SPOUT_FRAG = /* glsl */ `
 ${GLSL_FX_DEPTH}
-uniform float uTime, uFade;
+uniform float uTime, uFade, uBrightness;
 uniform vec3 uDeep, uFoam;
 varying vec2 vUv;
 varying float vFres, vY;
@@ -54,7 +55,7 @@ void main() {
   float streak = smoothstep(0.86, 0.97, fract(vUv.x * 7.0 - vUv.y * 0.6 + uTime * 1.3));
   float rim = smoothstep(0.6, 1.0, vFres);
   float foam = clamp(bands * 0.6 + streak * 0.4 + rim * 0.45 + smoothstep(0.75, 1.0, vY) * 0.3, 0.0, 1.0);
-  vec3 c = mix(uDeep * (0.75 + 0.35 * vY), uFoam, foam) * uFxLight;
+  vec3 c = mix(uDeep * (0.75 + 0.35 * vY), uFoam, foam) * uFxLight * uBrightness;
   float a = (0.3 + 0.38 * vFres + bands * 0.22) * uFade;
   a *= smoothstep(0.0, 0.06, vY) * (1.0 - smoothstep(0.86, 1.0, vY));
   a *= fxDepthFade(0.4);
@@ -164,25 +165,47 @@ function wheelGeometry() {
 }
 
 const DEEP = new THREE.Color(0x1f86c0), FOAM = new THREE.Color(0xdff7ff);
+const DEFAULT_TROMBA_PARAMETERS = DEFAULT_SKILL_DOCUMENT.parameters;
+
+function checkedTrombaParameters(value) {
+  if (value === undefined || value === null) return null;
+  const checked = validateSkillDocument({
+    schema: DEFAULT_SKILL_DOCUMENT.schema, version: DEFAULT_SKILL_DOCUMENT.version,
+    skill: DEFAULT_SKILL_DOCUMENT.skill, effect: DEFAULT_SKILL_DOCUMENT.effect, parameters: value,
+  });
+  if (!checked.ok) throw new TypeError('Invalid Tromba presentation parameters');
+  return { ...value };
+}
+
+function tintColor(value, tint, reference, brightness) {
+  const color = Array.isArray(value) ? value : [1, 1, 1];
+  const rgb = (hex) => [1, 3, 5].map((index) => Number.parseInt(hex.slice(index, index + 2), 16) / 255);
+  const tintRgb = rgb(tint), refRgb = rgb(reference);
+  return color.map((channel, index) => Math.min(1, channel * (tintRgb[index] / refRgb[index]) * brightness));
+}
 
 export class SkillFx {
   // viewOf(e) → the CharacterView of entity e (yours too), or null.
-  constructor(scene, effects, combatFx, after, map, viewOf) {
+  constructor(scene, effects, combatFx, after, map, viewOf, { random = Math.random } = {}) {
+    if (typeof random !== 'function') throw new TypeError('SkillFx random source must be a function');
     Object.assign(this, { effects, combatFx, after, map, viewOf });
+    this.random = random;
     this.time = 0;
+    this.trombaTime = 0;
     this.tmp = new THREE.Vector3();
     const spoutGeo = new THREE.CylinderGeometry(1, 1, 1, 24, 10, true);
     spoutGeo.translate(0, 0.5, 0);
+    this.spoutGeometry = spoutGeo;
     this.spouts = [];
     for (let i = 0; i < 5; i++) {
       const mat = new THREE.ShaderMaterial({
-        uniforms: { ...FXU, uTime: { value: 0 }, uGrow: { value: 0 }, uSpin: { value: 0 }, uFlare: { value: 0 }, uFade: { value: 1 }, uDeep: { value: DEEP.clone() }, uFoam: { value: FOAM.clone() } },
+        uniforms: { ...FXU, uTime: { value: 0 }, uGrow: { value: 0 }, uSpin: { value: 0 }, uFlare: { value: 0 }, uFade: { value: 1 }, uBrightness: { value: 1 }, uDeep: { value: DEEP.clone() }, uFoam: { value: FOAM.clone() } },
         vertexShader: SPOUT_VERT, fragmentShader: SPOUT_FRAG, side: THREE.DoubleSide, ...NORMAL,
       });
       const m = new THREE.Mesh(spoutGeo, mat);
       m.layers.set(LAYER.FX); m.frustumCulled = false; m.visible = false; m.renderOrder = 26;
       scene.add(m);
-      this.spouts.push({ m, mat, t: -1, life: 0.65, r: 1, h: 4, x: 0, z: 0, drops: 0 });
+      this.spouts.push({ m, mat, t: -1, life: 0.65, r: 1, h: 4, x: 0, z: 0, drops: 0, parameters: null, animTime: 0 });
     }
     const mkDisk = (kind) => {
       const geo = polarGeometry();
@@ -199,6 +222,7 @@ export class SkillFx {
     this.shadows = [mkDisk(1), mkDisk(1), mkDisk(1), mkDisk(1)];
     // Wheels: toon + ink (an object, not light).
     const wg = wheelGeometry(), wnm = normalMatFor({});
+    this.wheelGeometry = wg; this.wheelNormalMaterial = wnm;
     this.wheels = [];
     for (let i = 0; i < 6; i++) {
       // Use the factory: Material.clone() does not preserve the toon shader hooks.
@@ -223,28 +247,62 @@ export class SkillFx {
 
   // ---- Tromba ----------------------------------------------------------------------------------------------
   // A column lands at (x, z) of radius r. twin: the Gemelas' second (a little thinner).
-  spout(x, z, r, twin = false, elem = 0) {
+  spout(x, z, r, twin = false, elem = 0, presentation) {
+    const parameters = checkedTrombaParameters(presentation) || DEFAULT_TROMBA_PARAMETERS;
     const visual = elementVisual(elem);
     const s = this.spouts.find((q) => q.t < 0) || this.spouts.reduce((a, b) => (a.t > b.t ? a : b));
-    Object.assign(s, { t: 0, r: r * (twin ? 0.46 : 0.55), h: 4.2 + r * 0.4, x, z, drops: 0, visual });
+    Object.assign(s, {
+      t: 0, r: r * (twin ? 0.46 : 0.55) * parameters.scale,
+      h: (4.2 + r * 0.4) * parameters.height, life: 0.65 * parameters.duration,
+      x, z, drops: 0, visual, parameters, hasPresentation: presentation != null,
+      animTime: this.trombaTime,
+    });
     s.m.position.set(x, this.map.groundAt(x, z) - 0.05, z);
     s.m.visible = true;
-    s.mat.uniforms.uDeep.value.set(visual ? visual.deep : DEEP);
-    s.mat.uniforms.uFoam.value.set(visual ? visual.bright : FOAM);
+    s.mat.uniforms.uDeep.value.set(presentation ? parameters.deep : (visual ? visual.deep : DEEP));
+    s.mat.uniforms.uFoam.value.set(presentation ? parameters.foam : (visual ? visual.bright : FOAM));
+    s.mat.uniforms.uBrightness.value = parameters.brightness;
     const E = this.effects, y = this.map.groundAt(x, z);
     // The foot: foam ring, splash ring, droplets thrown out, a burst of spray.
     this.combatFx.ring(x, y + 0.1, z, r * 1.1, visual ? visual.accent : 0xbff6ff, 0.45, 0.18, 0.9);
     this.combatFx.ring(x, y + 0.12, z, r * 0.55, visual ? visual.bright : 0xffffff, 0.3, 0.1, 0.8);
-    for (let i = 0; i < 26; i++) {
-      const a = Math.random() * Math.PI * 2, s2 = 2 + Math.random() * 4.5;
-      E.alpha.spawn(x + Math.cos(a) * r * 0.5, y + 0.3, z + Math.sin(a) * r * 0.5, Math.cos(a) * s2, 3 + Math.random() * 4, Math.sin(a) * s2,
-        { life: 0.55 + Math.random() * 0.3, size: 0.16, size1: 0.07, color: visual ? visual.c0 : [0.9, 1, 1], alpha: 0.95, gravity: 14, drag: 0.6 });
+    for (let i = 0; i < Math.round(26 * parameters.density); i++) {
+      const a = this.random() * Math.PI * 2, s2 = (2 + this.random() * 4.5) * parameters.speed * parameters.spread;
+      const base = visual ? visual.c0 : [0.9, 1, 1];
+      const color = presentation ? tintColor(base, parameters.deep, '#1f86c0', parameters.brightness) : base;
+      E.alpha.spawn(x + Math.cos(a) * r * 0.5 * parameters.spread, y + 0.3, z + Math.sin(a) * r * 0.5 * parameters.spread, Math.cos(a) * s2, (3 + this.random() * 4) * parameters.speed, Math.sin(a) * s2,
+        { life: 0.55 + this.random() * 0.3, size: 0.16, size1: 0.07, color, alpha: 0.95, gravity: 14, drag: 0.6 });
     }
-    for (let i = 0; i < 8; i++) {
-      const a = Math.random() * Math.PI * 2;
-      E.alpha.spawn(x + Math.cos(a) * r * 0.7, y + 0.25, z + Math.sin(a) * r * 0.7, Math.cos(a) * 1.4, 0.8 + Math.random(), Math.sin(a) * 1.4,
-        { life: 0.8 + Math.random() * 0.3, size: 0.5, size1: 1.4, color: visual ? visual.c1 : [0.85, 0.95, 1], alpha: 0.45, gravity: -0.2, drag: 2.5 });
+    for (let i = 0; i < Math.round(8 * parameters.density); i++) {
+      const a = this.random() * Math.PI * 2;
+      const base = visual ? visual.c1 : [0.85, 0.95, 1];
+      const color = presentation ? tintColor(base, parameters.foam, '#dff7ff', parameters.brightness) : base;
+      E.alpha.spawn(x + Math.cos(a) * r * 0.7 * parameters.spread, y + 0.25, z + Math.sin(a) * r * 0.7 * parameters.spread, Math.cos(a) * 1.4 * parameters.speed, (0.8 + this.random()) * parameters.speed, Math.sin(a) * 1.4 * parameters.speed,
+        { life: 0.8 + this.random() * 0.3, size: 0.5, size1: 1.4, color, alpha: 0.45, gravity: -0.2, drag: 2.5 });
     }
+  }
+
+  /** Clear only Tromba's pooled columns and reset its private animation clock. */
+  resetTromba() {
+    this.trombaTime = 0;
+    for (const s of this.spouts) {
+      s.t = -1; s.drops = 0; s.animTime = 0; s.parameters = null; s.m.visible = false;
+      s.mat.uniforms.uTime.value = 0; s.mat.uniforms.uGrow.value = 0; s.mat.uniforms.uSpin.value = 0;
+      s.mat.uniforms.uFlare.value = 0; s.mat.uniforms.uFade.value = 1; s.mat.uniforms.uBrightness.value = 1;
+      s.mat.uniforms.uDeep.value.copy(DEEP); s.mat.uniforms.uFoam.value.copy(FOAM);
+    }
+  }
+
+  /** Release meshes and resources owned by this SkillFx instance. */
+  dispose() {
+    if (this.disposed) return;
+    this.disposed = true;
+    for (const item of [...this.spouts, ...this.vortices, ...this.shadows, ...this.wheels]) {
+      item.m.removeFromParent();
+      item.mat.dispose();
+    }
+    this.spoutGeometry.dispose(); this.wheelGeometry.dispose(); this.wheelNormalMaterial.dispose();
+    for (const item of [...this.vortices, ...this.shadows]) item.geo.dispose();
   }
 
   // «Ojo de tormenta»: the whirlpool at (x, z) until vortexEnd (or `life` s).
@@ -353,26 +411,31 @@ export class SkillFx {
   update(dt, tick) {
     if (this.freeze) { dt = 0; tick = this.frozenTick ??= tick; } else this.frozenTick = undefined;
     this.time += dt;
+    this.trombaTime += dt;
     const E = this.effects, map = this.map;
     for (const s of this.spouts) {
       if (s.t < 0) continue;
+      const p = s.parameters || DEFAULT_TROMBA_PARAMETERS;
       s.t += dt;
       const u = s.t / s.life, U = s.mat.uniforms;
       if (u >= 1) { s.t = -1; s.m.visible = false; continue; }
       // Slams down (0–15 %), spins full (to 55 %), then thins out and falls apart.
       const grow = u < 0.15 ? 1 - Math.pow(1 - u / 0.15, 3) : 1 - Math.max(0, (u - 0.7) / 0.3) * 0.35;
-      U.uGrow.value = grow; U.uTime.value = this.time; U.uSpin.value = s.t * 9;
+      s.animTime += dt * p.speed;
+      U.uGrow.value = grow; U.uTime.value = s.animTime; U.uSpin.value = s.t * 9 * p.speed;
       U.uFlare.value = Math.max(0, (u - 0.5) / 0.5) * 0.6;
       U.uFade.value = u < 0.55 ? 1 : 1 - (u - 0.55) / 0.45;
       s.m.scale.set(s.r, s.h, s.r);
       // Spray off the crown and the waist while it stands.
-      s.drops += dt * 60;
+      s.drops += dt * 60 * p.density;
       while (s.drops >= 1 && u < 0.7) {
         s.drops -= 1;
-        const a = Math.random() * Math.PI * 2, hy = Math.random() * s.h * grow, y = map.groundAt(s.x, s.z) + hy;
-        const rr = s.r * (hy / s.h > 0.6 ? 1.4 : 0.6), sp = 1.5 + Math.random() * 2.5;
-        E.alpha.spawn(s.x + Math.cos(a) * rr, y, s.z + Math.sin(a) * rr, Math.cos(a + 1.2) * sp, 0.5 + Math.random() * 2, Math.sin(a + 1.2) * sp,
-          { life: 0.4 + Math.random() * 0.3, size: 0.12, size1: 0.05, color: s.visual ? s.visual.c0 : [0.92, 1, 1], alpha: 0.9, gravity: 12, drag: 0.8 });
+        const a = this.random() * Math.PI * 2, hy = this.random() * s.h * grow, y = map.groundAt(s.x, s.z) + hy;
+        const rr = s.r * (hy / s.h > 0.6 ? 1.4 : 0.6) * p.spread, sp = (1.5 + this.random() * 2.5) * p.speed;
+        const color = s.visual ? s.visual.c0 : [0.92, 1, 1];
+        E.alpha.spawn(s.x + Math.cos(a) * rr, y, s.z + Math.sin(a) * rr, Math.cos(a + 1.2) * sp, (0.5 + this.random() * 2) * p.speed, Math.sin(a + 1.2) * sp,
+          { life: 0.4 + this.random() * 0.3, size: 0.12, size1: 0.05,
+            color: s.hasPresentation ? tintColor(color, p.deep, '#1f86c0', p.brightness) : color, alpha: 0.9, gravity: 12, drag: 0.8 });
       }
     }
     for (const v of this.vortices) {

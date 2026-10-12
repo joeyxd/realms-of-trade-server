@@ -1,0 +1,186 @@
+{
+  "schema": "st01-niagara-intake-evidence-v1",
+  "inspected_at_utc": "2026-10-12T15:36:45Z",
+  "engine": {
+    "version": "5.8.0",
+    "changelist": 55116800,
+    "executable": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe"
+  },
+  "scratch_project": {
+    "path": ".scratch/st01-unreal/ST01_SplineVFX.uproject",
+    "source_root": "C:\\Unreal\\MyProject",
+    "copied_content_files": 113,
+    "copied_content_bytes": 77634831,
+    "source_hash_entries": 113,
+    "source_hash_mismatches_after_runs": 0,
+    "scratch_config": "reset to startup map setting only"
+  },
+  "target": {
+    "asset": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+    "class": "NiagaraSystem",
+    "loaded": true,
+    "warmup_time": 0,
+    "warmup_tick_count": 0,
+    "fixed_tick_delta": false
+  },
+  "project_dependency_closure": [
+    {
+      "package": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+      "class": "NiagaraSystem",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Material/MF/MF_RotateVectorWithAngle",
+      "class": "MaterialFunction",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_Basic_stuff_splash_03",
+      "class": "MaterialInstanceConstant",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_DecalMark_Dot",
+      "class": "MaterialInstanceConstant",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_DecalMark_Pondle_Z_only",
+      "class": "MaterialInstanceConstant",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_WaterSplash_77_mask",
+      "class": "MaterialInstanceConstant",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+      "class": "MaterialInstanceConstant",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Material/M_Vfx_Basic",
+      "class": "Material",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Material/M_Vfx_DecalMark",
+      "class": "Material",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Material/M_Vfx_ParticleSubUV",
+      "class": "Material",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Material/M_Vfx_ParticleSubUV_FresnelFade",
+      "class": "Material",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_BasicDot",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_CircleDot",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Circle_Stick",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Dots01",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Noise_3Distort",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_WaterSplash_77",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stuff_splash_03",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog4_88",
+      "class": "Texture2D",
+      "loaded": true
+    }
+  ],
+  "blueprint": {
+    "asset": "/Game/_SplineVFX/_GenericSource/BP/BP_SplineVFX_WaterSplash",
+    "class": "Blueprint",
+    "demo_map": "/Game/_SplineVFX/Demo/OverView_DemoScene_Spline",
+    "placed_actor_found": true,
+    "actor_class": "BP_SplineVFX_WaterSplash_C",
+    "graph_names": [
+      "UserConstructionScript",
+      "EventGraph"
+    ],
+    "graph_nodes_readable_from_python": false,
+    "node_readback_limit": "EdGraph.Nodes is protected in Python wrapper"
+  },
+  "texture_exports": [
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stuff_splash_03",
+      "exported": true,
+      "format": "TGA",
+      "bytes": 65554,
+      "derivative_only": true
+    },
+    {
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_WaterSplash_77",
+      "exported": true,
+      "format": "TGA",
+      "bytes": 12582930,
+      "derivative_only": true
+    }
+  ],
+  "emitter_introspection": {
+    "system_emitter_handles_exposed": false,
+    "user_parameters_verified": false,
+    "renderer_configuration_verified": false,
+    "niagara_ext_types_present": true,
+    "extraction_api_found": false
+  },
+  "visual_capture": {
+    "process": "UnrealEditor-Cmd.exe, hidden, -RenderOffscreen, PythonScriptCommandlet, no -nullrhi",
+    "latest_exit_code": 0,
+    "requested_times_seconds": [
+      0.1,
+      0.4,
+      0.8
+    ],
+    "exported_png_count": 0,
+    "status": "failed",
+    "blocker": "ExportRenderTarget reported render target has been released; no PNGs exist",
+    "prepared_correction": "call TextureRenderTarget2D.update_resource_immediate(True), verify each output file before recording frame",
+    "correction_executed": false
+  },
+  "graph_commandlet": {
+    "python_report_written": true,
+    "python_script_logged_success": true,
+    "process_exit_code": 3,
+    "shutdown_error": "EXCEPTION_ACCESS_VIOLATION in python311.dll after successful script execution",
+    "retried": false
+  },
+  "source_assets_modified": false
+}

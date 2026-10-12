@@ -37,7 +37,9 @@ adaptadores propios; disponer de su idle/nado no demuestra retargeting de cualqu
 Fuentes Unreal de solo lectura: inventario en `docs/research/unreal-assets/`. Hay familias
 NiagaraExamples, BigNiagaraBundle y _SplineVFX; los candidatos documentados incluyen impacto
 de madera, humo y salpicadura. Las rutas/miniaturas no aceptan su animación, calidad ni coste.
-No se ha seleccionado ni convertido un efecto nuevo para este taller.
+Se seleccionó `NS_Spline_WaterSplash` para una inspección acotada en Unreal 5.8;
+el [informe de intake](../research/unreal-assets/st01-niagara-intake.md) registra las cargas,
+dependencias y el intento fallido de captura. Todavía no hay una conversión aceptada.
 
 Niagara ejecuta sistemas, emisores, scripts y renderers de Unreal. Nuestro runtime Three.js
 necesita una adaptación: seleccionar un sistema concreto y revisar su comportamiento en
@@ -96,6 +98,28 @@ publicación y SQL se decide al cerrar el contrato; este diseño no instala tabl
 - Guardado y rollback, autenticación GM, validación servidor y rechazo de parámetros/refs
   inválidos. Sin ganancias persistidas durante la prueba.
 
-El autor eligió **ajustar las habilidades actuales primero**, 2026-10-11. ST01 es el siguiente
-corte después de cerrar GM04d; la elección de su primera habilidad sigue abierta.
-El taller todavía no está implementado ni desplegado.
+El autor eligió **ajustar las habilidades actuales primero**, 2026-10-11. El 2026-10-12
+autorizó continuar y pidió dejar un [taller de UI](ui-workshop-vision.md) planeado para después.
+ST01 permanece activo. Se toma Tromba como primera habilidad por su efecto existente de agua.
+
+### ST01a — laboratorio privado de Tromba
+
+Primer corte concreto: entrada desde portada con el permiso GM existente; escenario aislado
+con el personaje real y su pose de lanzamiento compatible. El mismo `SkillFx.spout` usado
+por `trombaHit` consume un descriptor de presentación acotado. Original/borrador conservan
+cámara, semilla y reloj de pasos fijos; play/pausa/repetición/velocidad y desplazamiento temporal.
+Escala, altura, duración, densidad, dispersión, velocidad, brillo y dos colores. Daño, radio
+real (2,4), cooldown (9 s) y tiempo de impacto no son controles de presentación.
+
+Borrador local separado por servidor/cuenta, undo/redo, restaurar, importar/exportar JSON
+validado de hasta 16 KiB. No usa el documento de mapa ni su publicación. Abrir/cerrar,
+reproducir y guardar no ingresa un cuerpo, emite comandos ni escribe progreso. Este corte
+no aplica variantes a otros jugadores ni promete guardado remoto. Una revisión compartida
+de presentación requerirá el contrato de publicación de ST01b.
+
+La adaptación Niagara sigue dentro de ST01: primero inspección del sistema acuático elegido
+en una copia aislada del proyecto Unreal; después referencia animada, dependencias útiles,
+recreación seleccionable y comparación. Una tarjeta pendiente no acepta la conversión.
+No se marca ST01 completo hasta cerrar esa adaptación y comprobar su calidad/presupuesto.
+El laboratorio está implementado; su aceptación y publicación se registran en
+[la entrega ST01a](../delivery/st01a/DELIVERY.md). No se presenta como ST01 completo.

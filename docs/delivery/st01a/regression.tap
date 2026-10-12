@@ -1,0 +1,184 @@
+TAP version 13
+# Subtest: Bucanero manifest binds only look 2 and selects one desktop/mobile character and portrait variant
+ok 1 - Bucanero manifest binds only look 2 and selects one desktop/mobile character and portrait variant
+  ---
+  duration_ms: 18.3187
+  type: 'test'
+  ...
+# Subtest: source and runtime GLBs retain idle, swim, and hit with exact Mixamo animation data and no unused PBR maps
+ok 2 - source and runtime GLBs retain idle, swim, and hit with exact Mixamo animation data and no unused PBR maps
+  ---
+  duration_ms: 36.3904
+  type: 'test'
+  ...
+# Subtest: preserved originals and generated runtime files match their SHA-256 evidence
+ok 3 - preserved originals and generated runtime files match their SHA-256 evidence
+  ---
+  duration_ms: 31.3798
+  type: 'test'
+  ...
+# Subtest: local delta conjugates through a rotated parent rest frame
+ok 4 - local delta conjugates through a rotated parent rest frame
+  ---
+  duration_ms: 2.435
+  type: 'test'
+  ...
+# Subtest: reaction eligibility and envelope exclude invalid states and fade at clip boundaries
+ok 5 - reaction eligibility and envelope exclude invalid states and fade at clip boundaries
+  ---
+  duration_ms: 0.3924
+  type: 'test'
+  ...
+# Subtest: real Bucanero hit clip retargets additively without moving legs/root or mutating captured source
+ok 6 - real Bucanero hit clip retargets additively without moving legs/root or mutating captured source
+  ---
+  duration_ms: 161.3998
+  type: 'test'
+  ...
+# Subtest: missing reaction asset leaves CharacterView on the procedural hit fallback
+ok 7 - missing reaction asset leaves CharacterView on the procedural hit fallback
+  ---
+  duration_ms: 0.7828
+  type: 'test'
+  ...
+# Subtest: native swim captures both source clips and strips only runtime Hips Z root motion
+ok 8 - native swim captures both source clips and strips only runtime Hips Z root motion
+  ---
+  duration_ms: 163.6197
+  type: 'test'
+  ...
+# Subtest: native swim requires an actual source clip and shared character uniforms
+ok 9 - native swim requires an actual source clip and shared character uniforms
+  ---
+  duration_ms: 100.7922
+  type: 'test'
+  ...
+# Subtest: every look builds valid skinned geometry within budget
+ok 10 - every look builds valid skinned geometry within budget
+  ---
+  duration_ms: 598.4903
+  type: 'test'
+  ...
+# Subtest: player looks are adult-proportioned (head ≤ 1/6 of the body, hats aside)
+ok 11 - player looks are adult-proportioned (head ≤ 1/6 of the body, hats aside)
+  ---
+  duration_ms: 0.4684
+  type: 'test'
+  ...
+# Subtest: allowlisted session opens through bearer check without storing the token
+ok 12 - allowlisted session opens through bearer check without storing the token
+  ---
+  duration_ms: 6.5281
+  type: 'test'
+  ...
+# Subtest: guest and authenticated denied account cannot reach onOpen
+ok 13 - guest and authenticated denied account cannot reach onOpen
+  ---
+  duration_ms: 1.0548
+  type: 'test'
+  ...
+# Subtest: sign-out during lazy editor open closes the editor after onOpen resolves
+ok 14 - sign-out during lazy editor open closes the editor after onOpen resolves
+  ---
+  duration_ms: 2.6776
+  type: 'test'
+  ...
+# Subtest: periodic revalidation revokes an active editor when capability disappears
+ok 15 - periodic revalidation revokes an active editor when capability disappears
+  ---
+  duration_ms: 11.2601
+  type: 'test'
+  ...
+# Subtest: a gameplay transition while the online permission check is pending cannot open the editor
+ok 16 - a gameplay transition while the online permission check is pending cannot open the editor
+  ---
+  duration_ms: 14.8973
+  type: 'test'
+  ...
+# Subtest: editor controls stay out of the outline pass and remain raycastable on NO_OUTLINE
+ok 17 - editor controls stay out of the outline pass and remain raycastable on NO_OUTLINE
+  ---
+  duration_ms: 35.9504
+  type: 'test'
+  ...
+# Subtest: normal-pass failures restore world materials so the next frame can render
+ok 18 - normal-pass failures restore world materials so the next frame can render
+  ---
+  duration_ms: 15.2391
+  type: 'test'
+  ...
+# Subtest: skill presentation document is immutable by default and round-trips through strict JSON
+ok 19 - skill presentation document is immutable by default and round-trips through strict JSON
+  ---
+  duration_ms: 3.1107
+  type: 'test'
+  ...
+# Subtest: skill document rejects unknown fields, invalid identities, ranges, non-finite values, and non-lowercase colors
+ok 20 - skill document rejects unknown fields, invalid identities, ranges, non-finite values, and non-lowercase colors
+  ---
+  duration_ms: 3.2749
+  type: 'test'
+  ...
+# Subtest: legacy spout keeps its default dimensions, lifetime, colors, rings, and 34 initial particles
+ok 21 - legacy spout keeps its default dimensions, lifetime, colors, rings, and 34 initial particles
+  ---
+  duration_ms: 29.1361
+  type: 'test'
+  ...
+# Subtest: presentation parameters stay bounded and affect only the column and visual emission budget
+ok 22 - presentation parameters stay bounded and affect only the column and visual emission budget
+  ---
+  duration_ms: 9.8841
+  type: 'test'
+  ...
+# Subtest: density zero emits no Tromba particles and preview randomness repeats from the same seed
+ok 23 - density zero emits no Tromba particles and preview randomness repeats from the same seed
+  ---
+  duration_ms: 19.2011
+  type: 'test'
+  ...
+# Subtest: Tromba reset is isolated and dispose releases only this SkillFx instance resources
+ok 24 - Tromba reset is isolated and dispose releases only this SkillFx instance resources
+  ---
+  duration_ms: 3.0625
+  type: 'test'
+  ...
+# Subtest: particle pools use the injected RNG for budget rejection and sprite seeding
+ok 25 - particle pools use the injected RNG for budget rejection and sprite seeding
+  ---
+  duration_ms: 0.895
+  type: 'test'
+  ...
+# Subtest: private playback pauses all effect clocks, seeks reproducibly and keeps the actual combat radius
+ok 26 - private playback pauses all effect clocks, seeks reproducibly and keeps the actual combat radius
+  ---
+  duration_ms: 90.4761
+  type: 'test'
+  ...
+# Subtest: speed, loop and mobile budget stay bounded without changing the gameplay skill
+ok 27 - speed, loop and mobile budget stay bounded without changing the gameplay skill
+  ---
+  duration_ms: 22.3282
+  type: 'test'
+  ...
+# Subtest: private particle playback does not consume the global visual RNG
+ok 28 - private particle playback does not consume the global visual RNG
+  ---
+  duration_ms: 12.9553
+  type: 'test'
+  ...
+# Subtest: private stage restores renderer and shared uniforms even on a render failure and releases owned resources
+ok 29 - private stage restores renderer and shared uniforms even on a render failure and releases owned resources
+  ---
+  duration_ms: 11.6303
+  type: 'test'
+  ...
+1..29
+# tests 29
+# suites 0
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2759.5986

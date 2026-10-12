@@ -98,7 +98,7 @@ function createPersonalLantern() {
 }
 
 export class CharacterView {
-  constructor(skinIdx = 0, { sword = true, pose = null } = {}) {
+  constructor(skinIdx = 0, { sword = true, pose = null, seed = null } = {}) {
     const L = LOOKS[skinIdx] || LOOKS[0];
     this.look = L;
     this.skin = skinIdx;
@@ -152,7 +152,7 @@ export class CharacterView {
     this.root.add(this.blob);
 
     // Animation state.
-    this.seed = Math.random() * 10;
+    this.seed = Number.isFinite(seed) ? seed : Math.random() * 10;
     this.t = this.seed;
     this.stride = 2.5 * (built.height / 1.88);
     this.phase = 0;
