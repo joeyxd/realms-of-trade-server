@@ -1,0 +1,32 @@
+{
+  "schema": "st01a-updater/v1",
+  "at": "2026-10-12T16:15:54.913Z",
+  "runs": [
+    {
+      "revision": "7b34381dc8318ad83dcd5b48acfcfa68b5736931",
+      "imageId": "sha256:595563817513e2ba731bd8db4c80fe125619e40ab49131a2265d2bf06ec0952a",
+      "testsPassed": true,
+      "counts": {
+        "tests": 194,
+        "pass": 194,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "durationMs": 317909.616733
+    },
+    {
+      "revision": "1417975ed4e10cef34a03d39eb47f40765534a3f",
+      "imageId": "sha256:3dc6ac07d175809b673d45f2600161064a252bb727de1c7f7ceccbd110a1fc74",
+      "testsPassed": true,
+      "counts": {
+        "tests": 194,
+        "pass": 194,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "durationMs": 328554.78224
+    }
+  ]
+}
