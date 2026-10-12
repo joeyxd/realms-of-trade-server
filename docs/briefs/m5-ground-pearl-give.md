@@ -2,7 +2,8 @@
 
 Contrato previo a implementación, 2026-10-12. Siguiente corte de
 [M5](../../PLAN-M5.md) y de [leave](m5-ground-pearl-leave.md).
-Estado: **planificado; give todavía se rechaza dentro del piloto común**.
+Estado: **implementado bajo montaje común explícito; piloto público apagado**.
+[Entrega y evidencia](../delivery/m5-ground-pearl-give.md). El contrato siguiente conserva los criterios del corte.
 
 ## Procedencia y resultado
 

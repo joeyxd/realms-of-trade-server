@@ -1,9 +1,18 @@
 # PLAN M5 — «Mundo persistente»
 
+**AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
+[Entrega/evidencia](docs/delivery/m5-ground-pearl-give.md), [contrato](docs/briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
+reserva de ambas cuentas/UIDs antes de IO, progreso/autosaves previos, dos CAS y generación durable.
+Apply conjunto o rollback/cerco, reintento exacto y dos SIGKILL locales sin efectos históricos.
+38/38 aceptación en 4 archivos. Cohorte pertinente 400/401 en 51 archivos congelados;
+único fallo HTML localizado reproducido en upstream. Expectativa corregida; 27/27 repetidos en 2 archivos, sin cambios de runtime.
+Sin SQL/flag/protocolo nuevos. Montaje común apagado; venta con pago y perla tragada no entran en give.
+Siguen swallow/kill-cofre, composición GM/compañeros/control/bots, adopción detenida y canario VPS.
+
 **AREA15, 2026-10-12 — cobertura derivada de los planes:**
 [Matriz por sistema](docs/CONTINUITY-MATRIX.md), [revisión y lectura VPS](docs/delivery/m5-continuity-review.md).
 Alpha.63 observado sano; piloto común todavía apagado. Los checkpoints siguientes conservan sus bases históricas.
-Sigue [give gratuito de bolsa entre dos cuentas](docs/briefs/m5-ground-pearl-give.md), contrato preparado, sin implementar este corte.
+El contrato give preparado en esta revisión tiene aceptación posterior en la entrega enlazada arriba; sigue swallow/kill-cofre.
 Antes de adoptar: componer recursos GM, compañeros/control y rutas activas con el dueño común; no quitar sus exclusiones.
 
 **AREA15, 2026-10-11 — soltar perlas con recibo; piloto común apagado:**

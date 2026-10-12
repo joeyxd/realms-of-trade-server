@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
+[Entrega/evidencia](delivery/m5-ground-pearl-give.md), [contrato](briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
+reserva de ambas cuentas/UIDs antes de IO, progreso/autosaves previos, dos CAS y generación durable.
+Apply conjunto o rollback/cerco, reintento exacto y dos SIGKILL locales sin efectos históricos.
+38/38 aceptación en 4 archivos. Cohorte pertinente 400/401 en 51 archivos congelados;
+único fallo HTML localizado reproducido en upstream. Expectativa corregida; 27/27 repetidos en 2 archivos, sin cambios de runtime.
+Sin SQL/flag/protocolo nuevos. Montaje común apagado; venta con pago y perla tragada no entran en give.
+Siguen swallow/kill-cofre, composición GM/compañeros/control/bots, adopción detenida y canario VPS.
+
 **AREA03 — arte de cocina y paquete Tripo, 2026-10-12:**
 [Atlas, PNG individuales y ZIP](art/cooking-icons-v1/README.md). 17 referencias transparentes:
 básicos, tres comidas especiales, coco/resina/antorcha reutilizados y sal/lima/hierbas propuestas.
@@ -10,7 +19,7 @@ y resultado propio en el panel existente. Atlas de UI 81/27 KB, una variante por
 **AREA15, 2026-10-12 — plan de continuidad reconciliado:**
 [Matriz de cobertura](CONTINUITY-MATRIX.md), [revisión y lectura VPS](delivery/m5-continuity-review.md).
 Alpha.63 observado sano; los montajes comunes siguen nulos. La matriz separa estado guardado, recibo probado y aceptación pública.
-Sigue [give gratuito de bolsa entre cuentas](briefs/m5-ground-pearl-give.md), contrato preparado, implementación pendiente.
+El contrato give preparado en esta revisión tiene aceptación posterior en la entrega enlazada arriba; sigue swallow/kill-cofre.
 Componer GM/compañeros/control y rutas activas antes de adoptar; conservar los guards actuales y los checkpoints fechados debajo.
 
 **ST01a — laboratorio privado de Tromba, alpha.64/protocolo 59:**
