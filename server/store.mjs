@@ -678,6 +678,7 @@ export function createSupabaseStore(client) {
     async checkGmResourceRoster() {
       const ready = await rpc('mn_gm_resource_roster_ready', {});
       if (ready?.version !== 1) return { version: 0 };
+      // Older SQL036 revisions also reported version 1; verify their immutable contract.
       const state = nodes => ({ v: 1, tick: 0, nodes, cooldowns: {} });
       const probes = [
         [state([{ id: `gm_${'a'.repeat(32)}`, kind: 'stone', rev: 2, hits: 1, readyAt: 0 }]), false],

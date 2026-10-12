@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-12T05:17:37.344Z",
+  "scope": "Service RPC validation against verified absent random world; no world/profile/resource rows written",
+  "checks": [
+    {
+      "name": "stone_hits_rejected",
+      "expected": "invalid",
+      "ok": false,
+      "why": "conflict",
+      "errorCode": null
+    },
+    {
+      "name": "malformed_prefix_rejected",
+      "expected": "invalid",
+      "ok": false,
+      "why": "conflict",
+      "errorCode": null
+    },
+    {
+      "name": "full_1024_roster_valid_before_missing_world",
+      "expected": "conflict",
+      "ok": false,
+      "why": "invalid",
+      "errorCode": null
+    },
+    {
+      "name": "version_overflow_rejected",
+      "expected": "invalid",
+      "ok": false,
+      "why": "conflict",
+      "errorCode": null
+    }
+  ],
+  "noWorldCreated": true
+}

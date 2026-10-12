@@ -9,12 +9,13 @@ Derivados +57 KB, texturas 1024/512 y geometría intactas; idle de ficha/nado or
 Integración concurrente conservada: 76/76 focales y 36/36 integración, Chrome local 16/16 escritorio/móvil.
 Suite general no repetida; publicación/aceptación pública y sus límites se registran por separado.
 
-**AREA01 GM04d — recursos funcionales implementados, alpha.61/protocolo 59:**
+**AREA01 GM04d — recursos funcionales integrados, alpha.63/protocolo 59:**
 [Contrato](briefs/gm04d-functional-resources.md) y [entrega](delivery/gm04d/DELIVERY.md).
 Editor → Recursos: palmera talable/piedra recogible, colocar/mover/duplicar/retirar y undo.
 Guardar es privado; publicar admite IDs nuevos mediante SQL036 bajo exclusión de mundo vacío.
 Tala/recogida normales; agotamiento y ledger conservados por ID, también en retiro/rollback/reinicio.
-SQL036 instalada por el autor/readiness vivo 1. 418/418 CPU y 8/8 SQL final seriales; local UI 9/9.
+SQL036 reaplicada y contrato vivo 4/4: se detectó y corrigió un readiness 1 de definiciones anteriores.
+El store verifica también semántica antes de admitir. 418/418 CPU y 8/8 SQL seriales; local UI 9/9.
 Suite amplia con fallo de fabricación reproducido en upstream; detalles y límites en la entrega.
 Runtime VPS pendiente. Siguiente corte aprobado: [Taller de habilidades](briefs/skill-studio-vision.md),
 ajustar las actuales primero e incluir una adaptación Niagara real. Intake acotado en

@@ -1,10 +1,11 @@
 # Modo GM para construir el mundo
 
-**AREA01 GM04d, 2026-10-11 — recursos funcionales implementados, alpha.61/protocolo 59:**
+**AREA01 GM04d, 2026-10-11 — recursos funcionales integrados, alpha.63/protocolo 59:**
 [Contrato](docs/briefs/gm04d-functional-resources.md) y [entrega](docs/delivery/gm04d/DELIVERY.md).
 Recursos ofrece palmera talable y piedra recogible; ID estable, colocar/mover/duplicar/retirar,
 undo y borrador privado. Publicación admite IDs nuevos bajo exclusión de mundo vacío;
-agotamiento/ledger sobreviven rollback, retiro y reinicio. SQL036 instalada/readiness real 1.
+agotamiento/ledger sobreviven rollback, retiro y reinicio. SQL036 reaplicada y contrato vivo 4/4;
+el store verifica también semántica, porque definiciones anteriores devolvían readiness 1.
 418/418 CPU final seriales y 8/8 SQL; UI local ES/EN escritorio/móvil 9/9. Suite amplia conserva
 un fallo de fabricación reproducido en upstream; ver límites en la entrega. Publicación VPS pendiente.
 Siguiente corte elegido por el autor: [Taller de habilidades](docs/briefs/skill-studio-vision.md),
