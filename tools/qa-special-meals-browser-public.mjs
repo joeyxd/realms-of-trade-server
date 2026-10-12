@@ -351,7 +351,7 @@ try {
       unwrap(await admin.auth.admin.deleteUser(accountId));
       ensure(await store.loadProfile(accountId) === null, 'disposable profile remains after cleanup');
       const afterDelete = await admin.auth.admin.getUserById(accountId);
-      ensure(afterDelete.error, 'disposable Auth account remains after cleanup');
+      ensure(afterDelete.error?.status === 404, 'disposable Auth account absence was not confirmed');
       // Inventory the exact disposable account, including receipts from a failed
       // browser wait. A dispatched attempt may legitimately have no durable row.
       const receipts = [];
@@ -366,8 +366,12 @@ try {
       for (const row of receipts) ensure(row.request.account === accountId && row.request.world === worldId
         && observedIds.has(row.operation_id), 'unaccounted disposable economic receipt');
       for (const id of verifiedReceiptIds) ensure(retainedIds.has(id), 'verified economic meal receipt missing after disposable cleanup');
+      const unverifiedReceipts = receipts.filter(row => !verifiedReceiptIds.has(row.operation_id)).length;
+      if (evidence.pass) ensure(receipts.length === 1 && unverifiedReceipts === 0,
+        'successful canary retained an unexpected or unverified durable side effect');
       evidence.cleanup = { markedAuthAndExactProfileRemoved: true, retainedEconomicReceipts: receipts.length,
         dispatchedUniqueCommands: operationIds.size, verifiedReceipts: verifiedReceiptIds.size,
+        unverifiedRetainedReceipts: unverifiedReceipts,
         uncommittedDispatches: [...observedIds].filter(id => !retainedIds.has(id)).length,
         receiptPolicy: 'immutable economic receipts retained' };
     } catch (error) { evidence.pass = false; evidence.cleanupFailure = redact(error?.message || 'disposable cleanup failed'); process.exitCode = 1; }

@@ -1,0 +1,44 @@
+✔ GM roster readiness probes the deployed validator semantics and exact resource shapes (3.93ms)
+✔ stale readiness cannot hide invalid validator behavior, while unavailable roster skips probes (1.4169ms)
+✔ roster readiness continues to redact and propagate validator RPC failures (1.3854ms)
+✔ meal field is optional, strict, and preserves a valid active meal through profile sanitization (5.7773ms)
+✔ meal duration restores on reconnect, pauses while disabled, counts connected ticks, and persists each second (376.613ms)
+✔ meal modifiers affect max HP without healing and expiry clamps HP back to the unbuffed maximum (381.3614ms)
+✔ respawn clears meal state and persisted buff while the ordinary needs reset remains intact (264.4137ms)
+✔ meal effects and comfort default to the active saved meal without changing carry ceilings (0.7964ms)
+✔ authority snapshots and prediction stay bit-identical through hearty-biscuit expiry and load tier change (11.3654ms)
+✔ guard regeneration applies grog after hunger and remains zero at empty needs (975.9205ms)
+✔ replacing roast fish with grog uses one bonus, preserves HP, and clamps to the new maximum (511.6303ms)
+✔ three recipes commit with one replacing effect; replay cannot renew time, heal or spend twice (583.9594ms)
+✔ hot meals require real owned, living, near and lit cooker; voyage permits only dry-shore grog (412.5338ms)
+✔ held commit freezes meal time and inventory; disconnect and host restart retain remaining ticks (577.8741ms)
+✔ special meal flag and SQL readiness fail closed without changing old canteen flow (534.7441ms)
+✔ ordinary commerce without before preserves the database meal exactly and replays (8.378ms)
+✔ special meals are feature gated and prepare exact commands with eligible cooker identity (7.833ms)
+✔ hot recipes explain heat and goods blocks; grog needs no cooker and meal replacement shows a timer (1.9457ms)
+✔ English cards show explicit action, cost, effect and duration (0.3979ms)
+✔ reinforced biscuit reports comfortable load as 10 units in both locales (0.6706ms)
+✔ meal retry reuses the exact request and server ingredient errors stay meal specific (0.6816ms)
+✔ authority snapshots carry each adopted load tier into bit-identical predicted movement replay (30.6742ms)
+✔ load boundaries use exact comfort/ceiling values, including level 10 Carga 9 (0.9003ms)
+✔ the next authority command reflects profile and cargo changes, including water vessel mass (5.827ms)
+✔ swimming applies its own saturated cargo slowdown without stacking the land tier multiplier (8.704ms)
+✔ gather capacity rejects over-ceiling cargo commands without consuming the node and accepts an exact-ceiling result (18.6591ms)
+✔ commerce capacity rejects a buy cargo command above the ceiling without changing pack, gold, or market stock (389.2004ms)
+✔ the comfortable load is 80 % of the ceiling only with Carga adopted (3.4171ms)
+✔ a heavy pack walks at 70 % without dash; above the ceiling at 40 %; the client predicts the server tier (41.7124ms)
+✔ an unadopted legacy pack above its ceiling keeps its goods, normal walking and dash (6.1382ms)
+✔ rest and active foot/swim/aboard commands drain at the approved rates (508.8692ms)
+✔ death and disabled survival freeze meters; offline has no stepping path (764.1394ms)
+✔ profile field is strict and sanitizer rejects malformed present fields (1.4895ms)
+✔ meter restore updates maxima without healing and preserves an explicit full field (293.3917ms)
+✔ respawn sets both meters to 50 and profile capture agrees with live meters (277.2258ms)
+✔ client HUD reports the same penalized stamina maximum as combat (258.749ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3268.3978

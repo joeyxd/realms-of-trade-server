@@ -1,6 +1,6 @@
 # SRV02 — comidas especiales
 
-Implementado originalmente para alpha.58 / protocolo 57 y publicado en alpha.59 / protocolo 58 con los cortes concurrentes. SQL035 está instalado y el flag está activo. El grog pasó el canario público autenticado; la aceptación de navegador se registra por separado abajo. [Contrato](../../briefs/srv02-special-meals.md).
+Implementado originalmente para alpha.58 / protocolo 57 y aceptado actualmente en navegador público sobre alpha.62 / protocolo 59 con los cortes concurrentes. SQL035 está instalado y el flag está activo. El grog pasó los canarios públicos autenticados; los platos calientes conservan el límite descrito abajo. [Contrato](../../briefs/srv02-special-meals.md).
 
 ## Comportamiento
 
@@ -25,11 +25,15 @@ Panel ES/EN: tres recetas, coste, duración, aviso de reemplazo y motivo de bloq
 
 ## Aceptación pública del 2026-10-11
 
+La [repetición de navegador en alpha.62](public/20261012T053251Z-browser/acceptance.json) pasó **12/12** sobre `6f25a0f`, protocolo 59: botón real, coste/efecto/temporizador durable, recarga/reentrada, ES/EN escritorio, móvil vertical rotado por el juego y móvil horizontal. Catorce capturas; vistas de escritorio y horizontales inspeccionadas. Sin errores JS; las siete respuestas HTTP403 corresponden exclusivamente a la comprobación GM denegada, como se esperaba. La limpieza enumeró exactamente un comando y un recibo verificado, cero efectos durables sin verificar, perfil ausente y Auth404. La [autoridad antes/después](public/20261012T053251Z-browser/authority.ndjson) comprueba 20 hashes de imagen y 13 fuentes públicas contra Git, misma revisión/imagen durante la prueba, cero jugadores/sockets/errores/pendientes al cerrar y timer de actualización activo. Los siguientes párrafos conservan los checkpoints previos.
+
 [Activación](public/20261012T021031Z-activation/activation.ndjson) bajo bloqueos de actualización/contenido, sin jugadores, conservando la imagen y el resto del entorno. El [canario WSS](public/20261012T045934Z-wss/acceptance.json) pasó **11/11** sobre `e625a5c`, alpha.59/protocolo 58: rechazo anónimo, login normal con cuenta temporal marcada, coste exacto del grog, efecto/temporizador, replay, colisión de ID, pausa offline, reentrada y avance conectado. Una receta caliente sin cocina propia produjo un recibo durable de denegación sin cambios. Se conservaron dos recibos; se eliminaron la cuenta y el perfil temporales.
 
 La [autoridad antes/después](public/20261012T045934Z-wss/authority.ndjson) comprueba 20 hashes de imagen y 13 fuentes públicas contra Git, una autoridad, cero jugadores/sockets/errores/pendientes al terminar y actualizador activo. La [regresión tras integrar M5](integration-m5.json) pasó 33/33; el conteo se solapa con las pruebas anteriores.
 
 La [integración posterior de recursos GM y emparejamiento](integration-gm-companion.json), alpha.61/protocolo 59, repitió 33/33 sobre `8121e4b`. El [recheck con reacción y retroceso del Bucanero](integration-alpha62.json), alpha.62/protocolo 59, también pasó 33/33 sobre `9adde68`. El código de comidas no cambió. Esas regresiones locales se distinguen de los canarios públicos ligados a sus revisiones anteriores.
+
+La [integración del guard semántico SQL036](integration-alpha63.json), alpha.63/protocolo 59, pasó **36/36** sobre `1200bbb`: comidas, supervivencia, sobrepeso/movimiento y las tres comprobaciones nuevas de readiness GM. Los conteos se solapan con los anteriores. Esta regresión es local; la aceptación pública de grog permanece ligada a alpha.62/`6f25a0f`.
 
 El [navegador público](public/20261012T050919Z-browser/acceptance.json) pasó **9/9** en `9ea14a0`, alpha.59/protocolo 58: login normal, botón real de grog, coste/efecto/temporizador en recibo y perfil, recarga/reentrada y panel ES/EN en escritorio 1280×720 y móvil touch emulado 390×844. Dos envíos idénticos del panel correspondieron a un solo comando y un recibo. Diez capturas, sin errores JS; las siete respuestas HTTP403 fueron exclusivamente `/api/gm/session`, el rechazo esperado para una cuenta autenticada fuera del allowlist GM, conservado en el JSON. La vista vertical usa la rotación horizontal de `stage.js`, como el juego. La [comprobación de autoridad](public/20261012T050919Z-browser/authority.ndjson) terminó sin jugadores, errores ni pendientes; cuenta/perfil eliminados y recibo conservado.
 

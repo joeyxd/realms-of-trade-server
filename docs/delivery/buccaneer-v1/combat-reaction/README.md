@@ -41,7 +41,18 @@ Se inspeccionaron las seis capturas: silueta, piernas y pistolas conservadas, si
 La cámara cercana y los avisos de arena/HUD cubren parcialmente cabeza/brazos en algunas capturas móviles;
 las sondas de rig complementan esa limitación, sin acreditar sensación ni FPS en un teléfono físico.
 
-Publicación y aceptación pública se registrarán por separado; [script público](../../../../tools/qa-buccaneer-reaction-public.mjs).
+Enviado en `b466ed9`; publicado por el actualizador normal en su descendiente `6f25a0f`, alpha.62/protocolo 59.
+Las 194/194 comprobaciones de la imagen pasaron; revisión activa, imagen validada y contenedor saludable
+coinciden. `/health` 200, Supabase durable/world ready, cero errores y escrituras pendientes al terminar.
+El relevo inicial esperó a que se cerrara una conexión; no se forzó. [Recibo de publicación](publication.json).
+
+Aceptación pública: 14/14, siete por dispositivo, 28 hashes iguales a Git `efd05a7`, sin diferencias de runtime
+respecto al árbol probado. Entrada guest real, mouse/touch para ambos gatillos, recoil ×1/×1,45, sonda visual
+del golpe conservando rig15/malla/armas, recuperación, movimiento normal hasta agua y vuelta a tierra,
+loop de nado65 con texturas 1024/512 y controles ES/EN. Cero errores del navegador o de la autoridad.
+[Recibo/capturas públicas](public/acceptance.json), [script](../../../../tools/qa-buccaneer-reaction-public.mjs).
+Se inspeccionaron las capturas de golpe, loop y tierra de ambos dispositivos, de día; el modelo pequeño
+en la cámara pública móvil limita leer detalles finos de pose, complementados por las vistas locales cercanas.
 El probe público de reacción es solamente visual del cliente; daño confirmado se comprueba en la
 autoridad local aislada. Los eventos observados al disparar pueden ser predichos: acreditan input y recoil,
 no un acuse de daño autoritativo. No se fuerza un encuentro público. Balance y FPS en teléfono físico pendientes.

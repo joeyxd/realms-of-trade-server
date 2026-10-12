@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-12T05:40:11.167250+00:00",
+  "revision": "1200bbbf2c508f147bcab63712ff65372a362008",
+  "command": "node --test tests/meals-core.test.mjs tests/meals-host.test.mjs tests/meals-panel.test.mjs tests/survival-core.test.mjs tests/overload.test.mjs tests/overload-integration.test.mjs tests/gm-resource-readiness.test.mjs",
+  "exitCode": 0,
+  "summary": [
+    "ℹ tests 36",
+    "ℹ suites 0",
+    "ℹ pass 36",
+    "ℹ fail 0",
+    "ℹ cancelled 0",
+    "ℹ skipped 0",
+    "ℹ todo 0",
+    "ℹ duration_ms 3268.3978"
+  ],
+  "codeChanges": "concurrent alpha.63 GM resource SQL semantic-readiness probes; meals and Carry gameplay unchanged",
+  "countsOverlapEarlier": true,
+  "publicAcceptanceRevision": "6f25a0f7bd5d980f81695e0dfd5b11171e54e1f5",
+  "publicAcceptanceVersion": "0.6.0-alpha.62",
+  "scope": "local integration regression; does not establish public alpha.63 acceptance"
+}

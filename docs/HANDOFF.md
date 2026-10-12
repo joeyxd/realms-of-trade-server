@@ -7,7 +7,10 @@ correr/disparar conserva brazos procedurales. Reinicio por golpe, salida suave, 
 RMB visual ×1,45/0,42 s frente a LMB ×1/0,18 s, sin cambios de combate, perfil o SQL propios.
 Derivados +57 KB, texturas 1024/512 y geometría intactas; idle de ficha/nado original conservados.
 Integración concurrente conservada: 76/76 focales y 36/36 integración, Chrome local 16/16 escritorio/móvil.
-Suite general no repetida; publicación/aceptación pública y sus límites se registran por separado.
+Suite general no repetida. Enviado en `b466ed9`, publicado en `6f25a0f`: actualizador194/194,
+imagen validada/saludable y salud pública 200, cero errores/escrituras pendientes. Público14/14
+escritorio/móvil y 28 hashes iguales a Git. Golpe público: sonda cosmética; daño confirmado aceptado localmente.
+[Recibo](delivery/buccaneer-v1/combat-reaction/publication.json). Balance/FPS físico pendientes.
 
 **AREA01 GM04d — recursos funcionales integrados, alpha.63/protocolo 59:**
 [Contrato](briefs/gm04d-functional-resources.md) y [entrega](delivery/gm04d/DELIVERY.md).
@@ -44,19 +47,19 @@ Publicado por el actualizador habitual en `62490c8`, alpha.59: imagen validada y
 Cero errores o pendientes. Choque entre balas aceptado localmente; capturas públicas nocturnas limitan lectura del modelo.
 [Recibo](delivery/buccaneer-v1/ranged-swim/publication.json) y [aceptación pública](delivery/buccaneer-v1/ranged-swim/public/acceptance.json).
 
-**AREA03 SRV02, 2026-10-11 — SQL035 activo; grog aceptado en público, alpha.59/protocolo 58:**
+**AREA03 SRV02, 2026-10-11 — SQL035 activo; grog aceptado en público, alpha.62/protocolo 59:**
 [Contrato](briefs/srv02-special-meals.md), [entrega](delivery/srv02-special-meals/README.md).
 Tres comidas con un efecto durante 15 min conectados, pausa offline y limpieza al reaparecer.
 Recibo freshwater/M5, SQL035 readiness 1 y flag activo. WSS público 11/11 en `e625a5c`:
 grog, coste, replay/colisión, pausa offline/reentrada y denegación caliente durable sin cambios.
-Navegador público 9/9 en `9ea14a0`: botón real, guardado/reentrada, ES/EN escritorio/móvil emulado;
+Navegador público 12/12 en `6f25a0f`: botón real, guardado/reentrada, ES/EN escritorio/móvil vertical y horizontal emulados;
 403 limitados al rechazo GM esperado para la cuenta temporal. Capturas y 20/13 hashes en la entrega.
-194/194 actualizador, SQL 33/33 y recheck M5 33/33, conteos solapados. Un primer rechazo SQL
+194/194 actualizador previo, SQL 33/33 y recheck alpha.62 33/33, conteos solapados. Un primer rechazo SQL
 no tiene causa confirmada; conservar su evidencia. Consumo público con fuego propio aún pendiente.
 Después [INV03 sobre mochilas existentes](briefs/inv03-existing-backpacks.md): completar 30→42,
 coste, replay/reentrada y Carga conservada. No rehacer sobrepeso ni añadir bolsas equipables todavía.
-INV03 iniciado: [SQL029 11/11](delivery/inv03-existing-backpacks/README.md), incluido el segundo tier;
-no acredita todavía cadena SQL actual completa ni taller público.
+INV03 iniciado: [cadena SQL001–036 11/11](delivery/inv03-existing-backpacks/README.md), segundo tier
+con Carga/coste/conservación/denegación/replay; todavía no acredita taller público.
 
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](delivery/l03e-companion-creation/README.md), [brief](briefs/l03e-companion-creation.md).
