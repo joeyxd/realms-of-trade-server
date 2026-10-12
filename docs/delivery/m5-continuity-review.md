@@ -4,6 +4,14 @@
 Continúa la petición del autor de mantener AREA15 derivada de los planes mientras
 otras áreas añaden features. No implementa give ni cambia gameplay/SQL/configuración.
 
+Integra después el cambio concurrente `7b34381` sin alterar su runtime: ST01a añade
+el laboratorio privado de Tromba, con guardado local por cuenta/servidor y JSON.
+Su [entrega](st01a/DELIVERY.md) conserva aceptación local/publicación pendiente y
+variantes compartidas sin implementar. La matriz lo añade al dominio de edición;
+el taller UI futuro permanece diferido. Ese delta tampoco cambia `server/**`,
+`src/sim/**`, `src/net/**`, `deploy/**` o migraciones. Su renderer/editor y versión
+alpha.64 se conservan; no se atribuyen a AREA15 ni a la lectura VPS alpha.63 anterior.
+
 ## Resultado
 
 - [Matriz de continuidad](../CONTINUITY-MATRIX.md): relaciona los planes de producto
@@ -53,7 +61,7 @@ como prueba de adopción. El readiness informa disponibilidad, no aceptación de
 un flujo. Esta observación no hace transferencia, QA autenticado, reinicio,
 admisión GM, adopción, migración ni activación.
 
-Verificación de este corte: revisión independiente de fuentes, [62 enlaces locales
+Verificación de este corte: revisión independiente de fuentes, [enlaces locales
 válidos y HTTP público health/status 200](m5-continuity-review/review.json),
 codificación UTF-8/LF y `git diff --check`. Runtime sin cambios. No se
 añaden tests de runtime a un cambio documental. Las aceptaciones de recursos,

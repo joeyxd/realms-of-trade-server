@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-10-12T15:52:16.025766+00:00",
+  "recordedAt": "2026-10-12T15:56:10.263253+00:00",
   "baseline": "8fa8f58478310d9c39fa06e39bbabaf81a6ed9d3",
   "scope": "Document reconciliation and read-only live observation; no runtime tests, SQL writes, restarts, activation or adoption",
   "deltaFrom": "63d2231",
@@ -23,9 +23,9 @@
     "PLAN-EXTRA-LLM.md": "f02639f7b232a8ad67ed31cc8acd68a75ccd17343513e385cf9d165ea9204d90",
     "PLAN-WEB3.md": "09009bd9ebbadb2c728ff4115177ab59801c9ec803b95ed6d8f80075bfbf38d3"
   },
-  "localLinksChecked": 62,
+  "localLinksChecked": 67,
   "localLinkErrors": [],
-  "trackedRuntimePathsInspected": 1610,
+  "trackedRuntimePathsInspected": 1617,
   "runtimeDiff": [],
   "publicReadOnly": {
     "health": {
@@ -52,6 +52,26 @@
         "groundPearlMints": null
       }
     }
+  },
+  "concurrentIntegration": {
+    "revision": "7b34381dc8318ad83dcd5b48acfcfa68b5736931",
+    "runtimeComparedAgainst": "7b34381dc8318ad83dcd5b48acfcfa68b5736931",
+    "deltaRuntimeFiles": [
+      "src/data/meta.js",
+      "src/editor/entry.js",
+      "src/editor/skillDocument.js",
+      "src/editor/skillStudio.css",
+      "src/editor/skillStudio.js",
+      "src/main.js",
+      "src/render/characters.js",
+      "src/render/skillPreview.js",
+      "src/render/vfx/particles.js",
+      "src/render/vfx/skillfx.js",
+      "tools/qa-skill-studio.mjs"
+    ],
+    "protectedAuthorityDelta": [],
+    "acceptanceSource": "docs/delivery/st01a/DELIVERY.md",
+    "newRuntimeTestsRunByArea15": false
   },
   "sharedGuideSourceSha256BeforeReconciliation": {
     "PLAN-MASTER.md": "0b59ff399b1d445edae2307b94531feda73100ed381f9b1607a37e58fc5d2704",
