@@ -1,0 +1,374 @@
+TAP version 13
+# Subtest: default pearl command still uses the existing immediate gameplay helper
+ok 1 - default pearl command still uses the existing immediate gameplay helper
+  ---
+  duration_ms: 3053.5626
+  type: 'test'
+  ...
+# Subtest: without the common mount, give retains the existing bag-only gameplay route
+ok 2 - without the common mount, give retains the existing bag-only gameplay route
+  ---
+  duration_ms: 2400.8151
+  type: 'test'
+  ...
+# Subtest: mounted false, true and async command decisions never fall through to a local pearl mutation
+ok 3 - mounted false, true and async command decisions never fall through to a local pearl mutation
+  ---
+  duration_ms: 1770.8811
+  type: 'test'
+  ...
+# Subtest: command access rejection precedes the receipted dispatch hook
+ok 4 - command access rejection precedes the receipted dispatch hook
+  ---
+  duration_ms: 1706.2565
+  type: 'test'
+  ...
+# Subtest: give reserves both accounts before IO and applies the two-profile receipt only at drain
+ok 5 - give reserves both accounts before IO and applies the two-profile receipt only at drain
+  ---
+  duration_ms: 20961.6946
+  type: 'test'
+  ...
+# Subtest: real give command validates selectors and never accepts client authority fields
+ok 6 - real give command validates selectors and never accepts client authority fields
+  ---
+  duration_ms: 5292.6581
+  type: 'test'
+  ...
+# Subtest: prior autosaves for both accounts settle under the give reservation
+ok 7 - prior autosaves for both accounts settle under the give reservation
+  ---
+  duration_ms: 5611.4873
+  type: 'test'
+  ...
+# Subtest: a near-limit running profile is rejected before reserving or starting settlement IO
+ok 8 - a near-limit running profile is rejected before reserving or starting settlement IO
+  ---
+  duration_ms: 4251.1202
+  type: 'test'
+  ...
+# Subtest: lost SQL response and missing receipt read retry the same request without duplicating a gift
+ok 9 - lost SQL response and missing receipt read retry the same request without duplicating a gift
+  ---
+  duration_ms: 4776.0324
+  type: 'test'
+  ...
+# Subtest: receiver disconnect fences a committed give before local apply
+ok 10 - receiver disconnect fences a committed give before local apply
+  ---
+  duration_ms: 4558.3728
+  type: 'test'
+  ...
+# Subtest: receiver death fences a committed give before local apply
+ok 11 - receiver death fences a committed give before local apply
+  ---
+  duration_ms: 4261.008
+  type: 'test'
+  ...
+# Subtest: receiver recycle fences a committed give before local apply
+ok 12 - receiver recycle fences a committed give before local apply
+  ---
+  duration_ms: 6385.0275
+  type: 'test'
+  ...
+# Subtest: close fences a committed give before local apply
+ok 13 - close fences a committed give before local apply
+  ---
+  duration_ms: 5467.817
+  type: 'test'
+  ...
+# Subtest: completion replaced fences a committed give before local apply
+ok 14 - completion replaced fences a committed give before local apply
+  ---
+  duration_ms: 5404.5868
+  type: 'test'
+  ...
+# Subtest: command null fences a committed give before local apply
+ok 15 - command null fences a committed give before local apply
+  ---
+  duration_ms: 5080.8195
+  type: 'test'
+  ...
+# Subtest: give fences a null command hook before reaching legacy transfer
+ok 16 - give fences a null command hook before reaching legacy transfer
+  ---
+  duration_ms: 5976.7465
+  type: 'test'
+  ...
+# Subtest: give fences a replacement command hook before reaching legacy transfer
+ok 17 - give fences a replacement command hook before reaching legacy transfer
+  ---
+  duration_ms: 5651.2004
+  type: 'test'
+  ...
+# Subtest: second session apply failure rolls back both live bags and fences the committed host
+ok 18 - second session apply failure rolls back both live bags and fences the committed host
+  ---
+  duration_ms: 6155.535
+  type: 'test'
+  ...
+# Subtest: partial events apply failure rolls back both live bags and fences the committed host
+ok 19 - partial events apply failure rolls back both live bags and fences the committed host
+  ---
+  duration_ms: 5291.2803
+  type: 'test'
+  ...
+# Subtest: authenticated pearl give recovers exact ownership after SIGKILL after-journal-prepare
+ok 20 - authenticated pearl give recovers exact ownership after SIGKILL after-journal-prepare
+  ---
+  duration_ms: 11110.7269
+  type: 'test'
+  ...
+# SIGKILL after-journal-prepare; reopened SQL018/019/023 without migrations, reconciled the exact give UUID, then verified one later give at generation 2 → 3.
+# Subtest: authenticated pearl give recovers exact ownership after SIGKILL after-sql-commit
+ok 21 - authenticated pearl give recovers exact ownership after SIGKILL after-sql-commit
+  ---
+  duration_ms: 10920.2254
+  type: 'test'
+  ...
+# SIGKILL after-sql-commit; reopened SQL018/019/023 without migrations, reconciled the exact give UUID, then verified one later give at generation 2 → 3.
+# Subtest: give prepares a detached two-profile CAS operation and applies both profiles and events
+ok 22 - give prepares a detached two-profile CAS operation and applies both profiles and events
+  ---
+  duration_ms: 49.5704
+  type: 'test'
+  ...
+# Subtest: give rejects swallowed, distant, combat, full, wrong-holder and self transfers without mutation
+    # Subtest: swallowed
+    ok 1 - swallowed
+      ---
+      duration_ms: 15.4906
+      type: 'test'
+      ...
+    # Subtest: far
+    ok 2 - far
+      ---
+      duration_ms: 21.4616
+      type: 'test'
+      ...
+    # Subtest: combat
+    ok 3 - combat
+      ---
+      duration_ms: 21.1441
+      type: 'test'
+      ...
+    # Subtest: full
+    ok 4 - full
+      ---
+      duration_ms: 19.1661
+      type: 'test'
+      ...
+    # Subtest: holder
+    ok 5 - holder
+      ---
+      duration_ms: 14.449
+      type: 'test'
+      ...
+    # Subtest: self
+    ok 6 - self
+      ---
+      duration_ms: 13.503
+      type: 'test'
+      ...
+    1..6
+ok 23 - give rejects swallowed, distant, combat, full, wrong-holder and self transfers without mutation
+  ---
+  duration_ms: 106.7461
+  type: 'test'
+  ...
+# Subtest: baseline allows settlement counters but catches either endpoint or shared ledger drift
+ok 24 - baseline allows settlement counters but catches either endpoint or shared ledger drift
+  ---
+  duration_ms: 24.3423
+  type: 'test'
+  ...
+# Subtest: preflight accepts autosave activity for both accounts, snapshots read-only and cannot apply
+ok 25 - preflight accepts autosave activity for both accounts, snapshots read-only and cannot apply
+  ---
+  duration_ms: 26.4817
+  type: 'test'
+  ...
+# Subtest: current endpoint loss, death and guest identity cancel or reject a plan
+    # Subtest: recycled
+    ok 1 - recycled
+      ---
+      duration_ms: 16.3046
+      type: 'test'
+      ...
+    # Subtest: dead
+    ok 2 - dead
+      ---
+      duration_ms: 16.2589
+      type: 'test'
+      ...
+    # Subtest: guest
+    ok 3 - guest
+      ---
+      duration_ms: 4.9561
+      type: 'test'
+      ...
+    1..3
+ok 26 - current endpoint loss, death and guest identity cancel or reject a plan
+  ---
+  duration_ms: 38.1638
+  type: 'test'
+  ...
+# Subtest: failure while marking the second profile dirty rolls back both sessions and the first profile
+ok 27 - failure while marking the second profile dirty rolls back both sessions and the first profile
+  ---
+  duration_ms: 29.7776
+  type: 'test'
+  ...
+# Subtest: one-shot failure writing the second session confirmed value restores both sessions and projections
+ok 28 - one-shot failure writing the second session confirmed value restores both sessions and projections
+  ---
+  duration_ms: 34.6613
+  type: 'test'
+  ...
+# Subtest: partial event append failure truncates publication and restores the full give projection
+ok 29 - partial event append failure truncates publication and restores the full give projection
+  ---
+  duration_ms: 37.1931
+  type: 'test'
+  ...
+# Subtest: capability snapshot advertises versioned rules and enabled host rejects unversioned commands
+ok 30 - capability snapshot advertises versioned rules and enabled host rejects unversioned commands
+  ---
+  duration_ms: 602.7853
+  type: 'test'
+  ...
+# Subtest: torch capability fails closed when its SQL readiness check is unavailable
+ok 31 - torch capability fails closed when its SQL readiness check is unavailable
+  ---
+  duration_ms: 410.7931
+  type: 'test'
+  ...
+# Subtest: marked final palm receipt grants exact drops once and versioned torch spends two logs plus resin
+ok 32 - marked final palm receipt grants exact drops once and versioned torch spends two logs plus resin
+  ---
+  duration_ms: 795.2981
+  type: 'test'
+  ...
+# Subtest: coconut hydration is capped, durable across restart, and receipt replay consumes only once
+ok 33 - coconut hydration is capped, durable across restart, and receipt replay consumes only once
+  ---
+  duration_ms: 754.7371
+  type: 'test'
+  ...
+# Subtest: disabled capability retains unversioned one-plank hand torch and no palm drops
+ok 34 - disabled capability retains unversioned one-plank hand torch and no palm drops
+  ---
+  duration_ms: 812.5541
+  type: 'test'
+  ...
+# Subtest: SQL037 is rerunnable, reports readiness only to service_role, and preserves old migration capabilities
+ok 35 - SQL037 is rerunnable, reports readiness only to service_role, and preserves old migration capabilities
+  ---
+  duration_ms: 2524.2307
+  type: 'test'
+  ...
+# Subtest: SQL037 derives final palm loot, strips only verified awards, and preserves pre-existing goods and beneficiaries
+ok 36 - SQL037 derives final palm loot, strips only verified awards, and preserves pre-existing goods and beneficiaries
+  ---
+  duration_ms: 1897.782
+  type: 'test'
+  ...
+# Subtest: SQL037 commits marked final palm loot atomically, replays exactly, and preserves historical unmarked receipts
+ok 37 - SQL037 commits marked final palm loot atomically, replays exactly, and preserves historical unmarked receipts
+  ---
+  duration_ms: 3338.3432
+  type: 'test'
+  ...
+# Subtest: SQL037 rejects deterministic palm loot on a nonfinal marked hit through the composed RPC
+ok 38 - SQL037 rejects deterministic palm loot on a nonfinal marked hit through the composed RPC
+  ---
+  duration_ms: 1388.208
+  type: 'test'
+  ...
+# Subtest: coconut eating consumes exactly one unit and restores 25 hydration through the existing survival receipt
+ok 39 - coconut eating consumes exactly one unit and restores 25 hydration through the existing survival receipt
+  ---
+  duration_ms: 2564.3595
+  type: 'test'
+  ...
+# Subtest: versioned hand torch costs two logs and resin while historic torch and raft fuel keep the plank rule
+ok 40 - versioned hand torch costs two logs and resin while historic torch and raft fuel keep the plank rule
+  ---
+  duration_ms: 1270.0633
+  type: 'test'
+  ...
+# Subtest: ordinary commerce and raft transfers retain pre-existing resin and coconut through durable profile writes
+ok 41 - ordinary commerce and raft transfers retain pre-existing resin and coconut through durable profile writes
+  ---
+  duration_ms: 2699.4161
+  type: 'test'
+  ...
+# Subtest: resin and coconut transfer to and from raft holds, while market sales remain persisted denials
+ok 42 - resin and coconut transfer to and from raft holds, while market sales remain persisted denials
+  ---
+  duration_ms: 12439.7043
+  type: 'test'
+  ...
+# Subtest: attribute allocation and freshwater vessel-aware hold validation retain exact new goods
+ok 43 - attribute allocation and freshwater vessel-aware hold validation retain exact new goods
+  ---
+  duration_ms: 1491.636
+  type: 'test'
+  ...
+# Subtest: stable ASCII rolls use strict chance thresholds and stay near authored rates across node IDs
+ok 44 - stable ASCII rolls use strict chance thresholds and stay near authored rates across node IDs
+  ---
+  duration_ms: 7.1031
+  type: 'test'
+  ...
+# Subtest: only a successful final palm hit grants and receipts the independently rolled bonus goods
+ok 45 - only a successful final palm hit grants and receipts the independently rolled bonus goods
+  ---
+  duration_ms: 2.4053
+  type: 'test'
+  ...
+# Subtest: bonus capacity denial on the final hit leaves the node, pack, revision, and dirty set untouched
+ok 46 - bonus capacity denial on the final hit leaves the node, pack, revision, and dirty set untouched
+  ---
+  duration_ms: 0.5871
+  type: 'test'
+  ...
+# Subtest: harvest bonus calculation does not consume world RNG state
+ok 47 - harvest bonus calculation does not consume world RNG state
+  ---
+  duration_ms: 0.4277
+  type: 'test'
+  ...
+# Subtest: hand torch spends two logs and one resin for 20 minutes while raft fires keep one plank fuel
+ok 48 - hand torch spends two logs and one resin for 20 minutes while raft fires keep one plank fuel
+  ---
+  duration_ms: 1.5528
+  type: 'test'
+  ...
+# Subtest: local fire authority gates new solo worlds but still replays historical one-plank receipts
+ok 49 - local fire authority gates new solo worlds but still replays historical one-plank receipts
+  ---
+  duration_ms: 1.2701
+  type: 'test'
+  ...
+# Subtest: local resource authority requires lootRules only on enabled palms and preserves stored legacy receipts
+ok 50 - local resource authority requires lootRules only on enabled palms and preserves stored legacy receipts
+  ---
+  duration_ms: 0.6132
+  type: 'test'
+  ...
+# Subtest: coco has the requested trade dimensions and restores 25 hydration through the normal food path
+ok 51 - coco has the requested trade dimensions and restores 25 hydration through the normal food path
+  ---
+  duration_ms: 1.4641
+  type: 'test'
+  ...
+1..51
+# tests 60
+# suites 0
+# pass 60
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 170244.5935

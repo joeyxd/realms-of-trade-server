@@ -1,6 +1,5 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
-<<<<<<< HEAD
 **AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
 [Entrega/evidencia](delivery/m5-ground-pearl-give.md), [contrato](briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
 reserva de ambas cuentas/UIDs antes de IO, progreso/autosaves previos, dos CAS y generación durable.
@@ -8,8 +7,10 @@ Apply conjunto o rollback/cerco, reintento exacto y dos SIGKILL locales sin efec
 38/38 aceptación en 4 archivos. Cohorte pertinente 400/401 en 51 archivos congelados;
 único fallo HTML localizado reproducido en upstream. Expectativa corregida; 27/27 repetidos en 2 archivos, sin cambios de runtime.
 Sin SQL/flag/protocolo nuevos. Montaje común apagado; venta con pago y perla tragada no entran en give.
-Siguen swallow/kill-cofre, composición GM/compañeros/control/bots, adopción detenida y canario VPS.
-=======
+Integración posterior de antorchas/resina/coco: 60/60 en siete archivos, fuentes congeladas; conserva su exclusión con el montaje común.
+Código publicado en `e237768`, alpha.65/protocolo 60: actualizador 197/197, imagen 74/74 y 23 hashes; entrada pública 6/6, cero errores/pendientes. Montajes comunes y flag nuevo de antorchas apagados.
+Siguen swallow/kill-cofre, composición GM/compañeros/control/bots/antorchas, adopción detenida y canario VPS.
+
 **Antorchas/resina/coco, 2026-10-12 — implementación local, protocolo 60:**
 [Contrato](briefs/torch-resin-coconut.md), [entrega y activación](delivery/torch-resin-coconut/DELIVERY.md).
 Antorcha a mano por 2 troncos + 1 resina; extras de tala de palmera 35 % resina/40 % coco,
@@ -18,7 +19,6 @@ Corregidos idioma del fuego y solapamiento de estadísticas/botón de fabricaci�
 Chrome local 4/4 EN/ES escritorio/móvil; regresión focal 149/149 y SQL037 final 9/9;
 Supabase y `MN_TORCH_RESIN_COCONUT_OPERATIONS=1` pendientes, sin publicación de este corte.
 La entrega distingue un test antiguo de ficha que falla también en HEAD limpio.
->>>>>>> origin/claude/loving-lovelace-ptbif7
 
 **L03f — recorrido desde la cuenta real, 2026-10-12:**
 [Evidencia y límites](delivery/l03f-local-pairing/README.md#recorrido-en-cuenta-real-y-refresco-de-lista).

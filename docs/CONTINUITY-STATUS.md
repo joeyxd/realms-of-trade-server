@@ -7,7 +7,9 @@ Apply conjunto o rollback/cerco, reintento exacto y dos SIGKILL locales sin efec
 38/38 aceptación en 4 archivos. Cohorte pertinente 400/401 en 51 archivos congelados;
 único fallo HTML localizado reproducido en upstream. Expectativa corregida; 27/27 repetidos en 2 archivos, sin cambios de runtime.
 Sin SQL/flag/protocolo nuevos. Montaje común apagado; venta con pago y perla tragada no entran en give.
-Siguen swallow/kill-cofre, composición GM/compañeros/control/bots, adopción detenida y canario VPS.
+Integración posterior de antorchas/resina/coco: 60/60 en siete archivos, fuentes congeladas; conserva su exclusión con el montaje común.
+Código publicado en `e237768`, alpha.65/protocolo 60: actualizador 197/197, imagen 74/74 y 23 hashes; entrada pública 6/6, cero errores/pendientes. Montajes comunes y flag nuevo de antorchas apagados.
+Siguen swallow/kill-cofre, composición GM/compañeros/control/bots/antorchas, adopción detenida y canario VPS.
 
 **AREA15, 2026-10-12 — cobertura y cola vigentes:**
 [Matriz por sistema](CONTINUITY-MATRIX.md), [revisión/evidencia](delivery/m5-continuity-review.md).

@@ -15,9 +15,10 @@ operación aceptada en el mundo público. Un estado no acredita automáticamente
 Los checkpoints antiguos conservan su fecha/base; para el estado actual prevalecen las
 entregas más recientes del mismo sistema. No se suman sus conteos solapados.
 
-La [lectura previa a publicar give](delivery/m5-ground-pearl-give/initial-status.json)
-observa alpha.64, con Supabase y las operaciones
-económicas actuales activas. **El piloto común de reloj/perlas/muerte/botín sigue apagado.**
+La [lectura tras publicar el código give](delivery/m5-ground-pearl-give/final-status.json)
+observa `e237768`, alpha.65/protocolo 60, con Supabase y las operaciones económicas
+actuales activas. El código de antorchas está integrado y su flag continúa apagado.
+**El piloto común de reloj/perlas/muerte/botín sigue apagado.**
 P4/P6 de [M5](../PLAN-M5.md) siguen parciales; no se acepta todavía «todo sobrevive a cualquier caída».
 
 ## Mapa derivado de los planes
@@ -48,8 +49,11 @@ La matriz no copia sus parámetros para evitar balances divergentes.
 2. **Swallow** sin reemplazo ni expulsión voluntaria, y **candidato completo kill/cofre**:
    recompensa, XP/misión aplicable y RNG, incluido el intervalo anterior a la intención durable.
 3. **Composición con features activas**, antes de adoptar el mundo público. Resolver recursos GM,
-   emparejamiento/control/presupuesto de agentes y rutas autónomas que sigan excluidas. Mantener
-   los guards mientras falte aceptación; activar el piloto no debe apagar features silenciosamente.
+   emparejamiento/control/presupuesto de agentes y rutas autónomas que sigan excluidas. El corte
+   [antorchas/resina/coco](briefs/torch-resin-coconut.md), integrado desde `5338538`, añade SQL037
+   y también rechaza `torchResinCoconutOperations` junto con `groundTransactions`. Componer sus
+   costes, extras de tala y consumo antes de quitar ese guard; publicar código no activa su flag.
+   Mantener los guards mientras falte aceptación; activar el piloto no debe apagar features silenciosamente.
    El piloto actual es accounts-only/cero bots y el VPS observado tiene tres bots: la transición
    necesita política explícita de admisión y configuración, no copiar los flags de una fixture.
 4. **Transición detenida/adopción y canario autenticado VPS**, con exclusión del writer anterior y

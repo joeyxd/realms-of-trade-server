@@ -11,8 +11,8 @@ Continúa [el staging de entrega](m5-pearl-game-staging.md), la
 [selección gestionada](m5-pearl-managed-request.md), el
 [acceso a comandos](m5-pearl-command-access.md) y el sobre
 [SQL018](m5-ground-transactions.md)/[diario SQL019](m5-ground-transaction-journal.md).
-El staging aislado ya tiene give; falta componerlo con el dueño común, no crear
-un segundo coordinador activo en el mismo host.
+El staging aislado ya tenía give. Este corte lo compone con el dueño común,
+sin crear un segundo coordinador activo en el mismo host.
 
 Regla del autor registrada en M5/M4.8: regalar solo una perla del inventario
 `pearls.bag` del dueño. **Give es gratuito**. La perla tragada queda ligada hasta
@@ -81,7 +81,7 @@ no restaura perfiles antiguos ni reemite la entrega.
    Carga/necesidades/comidas y gates GM/compañeros. Registrar fuentes/conteos sin sumar solapamientos.
 
 El corte entrega código probado con montaje común apagado. La composición GM/
-compañeros, adopción y canario de reinicio/caída pública son puertas posteriores
+compañeros, antorchas/resina/coco, adopción y canario de reinicio/caída pública son puertas posteriores
 de la [matriz](../CONTINUITY-MATRIX.md); no se eliminan exclusiones para aceptar give.
 
 Reutilización: `transferPearl`, PearlStaging como referencia, GroundPearlLeave,
