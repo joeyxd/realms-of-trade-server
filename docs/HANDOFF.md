@@ -43,14 +43,14 @@ Publicado por el actualizador habitual en `62490c8`, alpha.59: imagen validada y
 Cero errores o pendientes. Choque entre balas aceptado localmente; capturas públicas nocturnas limitan lectura del modelo.
 [Recibo](delivery/buccaneer-v1/ranged-swim/publication.json) y [aceptación pública](delivery/buccaneer-v1/ranged-swim/public/acceptance.json).
 
-**AREA03 SRV02, 2026-10-11 — SQL035 activo; grog aceptado en público, alpha.59/protocolo 58:**
+**AREA03 SRV02, 2026-10-11 — SQL035 activo; grog aceptado en público, alpha.62/protocolo 59:**
 [Contrato](briefs/srv02-special-meals.md), [entrega](delivery/srv02-special-meals/README.md).
 Tres comidas con un efecto durante 15 min conectados, pausa offline y limpieza al reaparecer.
 Recibo freshwater/M5, SQL035 readiness 1 y flag activo. WSS público 11/11 en `e625a5c`:
 grog, coste, replay/colisión, pausa offline/reentrada y denegación caliente durable sin cambios.
-Navegador público 9/9 en `9ea14a0`: botón real, guardado/reentrada, ES/EN escritorio/móvil emulado;
+Navegador público 12/12 en `6f25a0f`: botón real, guardado/reentrada, ES/EN escritorio/móvil vertical y horizontal emulados;
 403 limitados al rechazo GM esperado para la cuenta temporal. Capturas y 20/13 hashes en la entrega.
-194/194 actualizador, SQL 33/33 y recheck M5 33/33, conteos solapados. Un primer rechazo SQL
+194/194 actualizador previo, SQL 33/33 y recheck alpha.62 33/33, conteos solapados. Un primer rechazo SQL
 no tiene causa confirmada; conservar su evidencia. Consumo público con fuego propio aún pendiente.
 Después [INV03 sobre mochilas existentes](briefs/inv03-existing-backpacks.md): completar 30→42,
 coste, replay/reentrada y Carga conservada. No rehacer sobrepeso ni añadir bolsas equipables todavía.

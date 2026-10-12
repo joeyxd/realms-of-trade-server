@@ -1,6 +1,6 @@
 # SRV02 — comidas especiales
 
-Implementado originalmente para alpha.58 / protocolo 57 y publicado en alpha.59 / protocolo 58 con los cortes concurrentes. SQL035 está instalado y el flag está activo. El grog pasó el canario público autenticado; la aceptación de navegador se registra por separado abajo. [Contrato](../../briefs/srv02-special-meals.md).
+Implementado originalmente para alpha.58 / protocolo 57 y aceptado actualmente en navegador público sobre alpha.62 / protocolo 59 con los cortes concurrentes. SQL035 está instalado y el flag está activo. El grog pasó los canarios públicos autenticados; los platos calientes conservan el límite descrito abajo. [Contrato](../../briefs/srv02-special-meals.md).
 
 ## Comportamiento
 
@@ -24,6 +24,8 @@ Panel ES/EN: tres recetas, coste, duración, aviso de reemplazo y motivo de bloq
 - [Navegador local](local/evidence-2026-10-11T20-25-37-952Z.json): 6/6 ES/EN desktop, móvil y móvil rotado con `stage.js` real; DOM/estilos reales, cliente simulado. Scroll, requisitos visibles, temporizador, reintento idéntico y ausencia de mutación optimista. Sin errores JS/consola ni solicitudes externas. Capturas inspeccionadas por el integrador. No acredita una partida pública ni teléfono físico.
 
 ## Aceptación pública del 2026-10-11
+
+La [repetición de navegador en alpha.62](public/20261012T053251Z-browser/acceptance.json) pasó **12/12** sobre `6f25a0f`, protocolo 59: botón real, coste/efecto/temporizador durable, recarga/reentrada, ES/EN escritorio, móvil vertical rotado por el juego y móvil horizontal. Catorce capturas; vistas de escritorio y horizontales inspeccionadas. Sin errores JS; las siete respuestas HTTP403 corresponden exclusivamente a la comprobación GM denegada, como se esperaba. La limpieza enumeró exactamente un comando y un recibo verificado, cero efectos durables sin verificar, perfil ausente y Auth404. La [autoridad antes/después](public/20261012T053251Z-browser/authority.ndjson) comprueba 20 hashes de imagen y 13 fuentes públicas contra Git, misma revisión/imagen durante la prueba, cero jugadores/sockets/errores/pendientes al cerrar y timer de actualización activo. Los siguientes párrafos conservan los checkpoints previos.
 
 [Activación](public/20261012T021031Z-activation/activation.ndjson) bajo bloqueos de actualización/contenido, sin jugadores, conservando la imagen y el resto del entorno. El [canario WSS](public/20261012T045934Z-wss/acceptance.json) pasó **11/11** sobre `e625a5c`, alpha.59/protocolo 58: rechazo anónimo, login normal con cuenta temporal marcada, coste exacto del grog, efecto/temporizador, replay, colisión de ID, pausa offline, reentrada y avance conectado. Una receta caliente sin cocina propia produjo un recibo durable de denegación sin cambios. Se conservaron dos recibos; se eliminaron la cuenta y el perfil temporales.
 

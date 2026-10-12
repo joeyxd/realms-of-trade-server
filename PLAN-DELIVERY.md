@@ -37,15 +37,15 @@ Publicado por el actualizador habitual en `62490c8`, alpha.59: imagen validada, 
 24 hashes públicos y entrada/gatillos/nado/regreso a tierra ES/EN 12/12 escritorio/móvil emulado.
 Cero errores o pendientes; choque aceptado localmente. Recibo y límites visuales nocturnos en la entrega.
 
-**AREA03 SRV02, 2026-10-11 — SQL035 activo; grog aceptado en público, alpha.59/protocolo 58:**
+**AREA03 SRV02, 2026-10-11 — SQL035 activo; grog aceptado en público, alpha.62/protocolo 59:**
 [Contrato](docs/briefs/srv02-special-meals.md) y [entrega/evidencia](docs/delivery/srv02-special-meals/README.md).
 Pescado asado +10 % HP máximo, grog +25 % recuperación de aguante,
 galleta reforzada +10 unidades de carga cómoda; una activa por 15 min conectados, pausa offline,
 se pierde al reaparecer. Operación freshwater/M5, SQL035 readiness 1 y flag activo.
 WSS público 11/11 en `e625a5c`: grog, coste/replay/colisión, pausa offline/reentrada y denegación caliente.
-Navegador público 9/9 en `9ea14a0`: botón real y perfil guardado, ES/EN escritorio/móvil emulado.
+Navegador público 12/12 en `6f25a0f`: botón real y perfil guardado, ES/EN escritorio/móvil vertical y horizontal emulados.
 Cuenta/perfil temporales eliminados, recibos conservados y autoridad sana; 403 solo del acceso GM denegado.
-194/194 actualizador, SQL 33/33 y recheck M5 33/33, conteos solapados. Primer rechazo SQL sin causa
+194/194 actualizador previo, SQL 33/33 y recheck alpha.62 33/33, conteos solapados. Primer rechazo SQL sin causa
 confirmada; consumo público con cocina propia encendida pendiente. [INV03](docs/briefs/inv03-existing-backpacks.md)
 completará aceptación de las mochilas 18/30/42 ya existentes con Carga; no rehacer sobrepeso.
 Primer avance INV03: [SQL001–036 11/11](docs/delivery/inv03-existing-backpacks/README.md), segundo tier,
