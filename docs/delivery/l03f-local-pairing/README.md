@@ -10,8 +10,9 @@ iniciales. La primera capacidad es solamente `chat`. No necesita otro SQL.
 
 ## Uso
 
-Requiere Node 22 o posterior, las dependencias del repositorio (`npm ci`) y un
-modelo OpenAI compatible disponible en loopback. Desde la carpeta del repositorio:
+Requiere Node 22 o posterior y las dependencias del repositorio (`npm ci`). Para
+conversar necesita un modelo OpenAI compatible disponible en loopback; conectar
+el cuerpo y probar la detención no llama al modelo. Desde la carpeta del repositorio:
 
 ```powershell
 node tools/agent/pair-companion.mjs --url wss://marea.62.171.136.148.sslip.io/ws --directory "C:\DEV\companions\Brisa" --base-url http://127.0.0.1:8080/v1 --model qwen3.8-flash-next-coder-iq1_m --max-calls 8 --max-tokens 262144
@@ -62,10 +63,16 @@ sin acreditar por sí solo conversación o memoria.
 comprobaciones en [resume.json](public-recheck/resume.json): claim predeterminado
 y `AgentNetworkRunner` reales por WSS pública, respuesta desde un stub HTTP local,
 memoria local con ámbito de Brisa escrita tras confirmar la respuesta, y stop del
-dueño con revocación y SQL027 detenido. El JSON conserva `pass: false` porque la
-limpieza final sigue pendiente: se retienen tres filas del registro hasta tener
-aprobación del usuario. La consulta exacta y la captura de revisión permanecen
-en la PC del operador. No se borraron esas filas.
+dueño con revocación y SQL027 detenido. `resume.json` conserva el estado histórico
+de limpieza pendiente al capturarlo. **Limpieza completada el 2026-10-12:** el autor
+ejecutó la consulta acotada; las lecturas RPC confirmaron ausencia de creación,
+configuración y control, según [sql-cleanup-verification.json](public-recheck/sql-cleanup-verification.json).
+Después el helper comprobó el marcador QA, sockets cerrados y perfiles estables,
+retiró únicamente los dos perfiles y la cuenta temporal, y verificó perfiles nulos
+y auth 404. El resultado final en [acceptance.json](public-recheck/acceptance.json)
+es `pass: true`, `cleanupComplete: true`, `cleanupPending: false`. Su campo
+`canaryRetained` y error de expiración conservan el intento inicial; no describen
+retención actual ni un fallo nuevo. No queda un manifiesto de limpieza pendiente.
 
 Los intentos previos quedan registrados: el primer WSS devolvió 403 y la limpieza
 del canary sí terminó, según [acceptance.json](public/acceptance.json). El intento
@@ -73,7 +80,7 @@ siguiente chocó con el límite estricto de expiración del código en
 [public-recheck/acceptance.json](public-recheck/acceptance.json). Se corrigieron
 el margen acotado de reloj de 30 segundos y el `Origin` derivado de HTTPS; después
 pasaron las seis comprobaciones de reanudación. La prueba no hizo llamadas a Qwen.
-El endpoint Qwen en `127.0.0.1:8080` continúa sin estar disponible.
+El autor confirmó Qwen apagado el 2026-10-12; no se volvió a sondear ni consumir.
 
 Tras esos arreglos, [public-fixes.tap](public-fixes.tap) pasó 42/42 y
 [cli-recheck.tap](cli-recheck.tap) pasó 8/8. El CLI valida opciones antes de pedir
@@ -94,3 +101,19 @@ La [portada pública](public-entry-alpha63.png) cargó en Chrome y la pestaña t
 se cerró después. No se repitió el canario autenticado en esta revisión: sus seis
 comprobaciones corresponden a alpha.60 con el controlador local ya corregido.
 La prueba no demuestra inferencia con Qwen ni aceptación del MMO completo.
+
+**Revisión posterior, alpha.64 / `7b34381`, 2026-10-12.** Lectura del VPS y salud
+pública: contenedor sano, mundo listo, pairing/creation disponibles, cero errores
+y escrituras pendientes en esa captura. La revisión concurrente no cambió servidor,
+protocolo ni módulos de compañero; el helper se fijó a alpha.64 para terminar la
+limpieza existente. No se repitió el canario ni la inferencia.
+
+## Presencia: comportamiento actual y propuesta
+
+La UI prepara la ficha y permite emparejar, pero todavía necesita el controlador
+Node local para ingresar el cuerpo. No existe invocación solo desde la UI, seguir,
+esperar ni despedir con reglas propias. **Detener** revoca y cierra el socket del
+controlador; el host desconecta y retira el cuerpo. La entrada normal restaura vida
+y checkpoint, por lo que no debe reutilizarse como sistema de retirada en combate.
+El siguiente [contrato de presencia](../../briefs/l03g-companion-presence.md) es una
+propuesta para separar cuerpo, mente y retiro seguro; no está aprobado ni implementado.
