@@ -42,6 +42,57 @@ test('load, issue, and revoke use the authenticated pairing contract and private
   f.client.destroy();
 });
 
+test('creation refresh waits for the in-flight read, then ignores its stale receipt', () => {
+  const f = fixture();
+  f.client.load(); const initial = f.sent.at(-1);
+  assert.equal(f.client.load(), true);
+  assert.equal(f.sent.length, 1, 'ordinary loads coalesce');
+  assert.equal(f.client.load({ refresh: true }), true);
+  assert.equal(f.client.load({ refresh: true }), true);
+  assert.equal(f.sent.length, 1, 'refresh queues only one read and does not overlap host work');
+  f.reply(initial);
+  assert.equal(f.sent.length, 2);
+  const fresh = f.sent.at(-1);
+  assert.equal(fresh.op, 'load');
+  assert.equal(f.client.snapshot().status, 'loading', 'the earlier read does not report the new creation ready');
+  f.reply(initial);
+  assert.equal(f.client.snapshot().status, 'loading');
+  f.reply(fresh);
+  assert.equal(f.client.snapshot().status, 'ready');
+  assert.equal(f.client.snapshot().code, null);
+  f.client.issue(); const issue = f.sent.at(-1);
+  assert.equal(f.client.load({ refresh: true }), false, 'refresh cannot replace a code mutation');
+  f.reply(issue, { code: CODE, expiresAtMs: Date.now() + 60_000 });
+  assert.equal(f.client.snapshot().code, CODE);
+  f.client.revoke(); const revoke = f.sent.at(-1);
+  assert.equal(f.client.load({ refresh: true }), false, 'refresh cannot replace revocation');
+  f.reply(revoke);
+  f.client.destroy();
+});
+
+test('queued creation refresh retries one timed-out read and is discarded on disconnect or sign-out', t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const f = fixture();
+  f.client.load(); f.client.load({ refresh: true });
+  t.mock.timers.tick(40);
+  assert.equal(f.sent.length, 2);
+  assert.equal(f.client.snapshot().status, 'loading');
+  t.mock.timers.tick(40);
+  assert.equal(f.sent.length, 2, 'there is no retry loop');
+  assert.equal(f.client.snapshot().status, 'error');
+
+  f.client.load(); const old = f.sent.at(-1); f.client.load({ refresh: true });
+  f.close(); f.reply(old); t.mock.timers.tick(40);
+  assert.equal(f.sent.length, 3);
+  assert.equal(f.client.snapshot().status, 'offline');
+  f.client.setSession(ACCOUNT); f.client.load(); const signedOut = f.sent.at(-1);
+  f.client.load({ refresh: true }); f.authListener({ signedIn: false, accountId: '' });
+  f.reply(signedOut); t.mock.timers.tick(40);
+  assert.equal(f.sent.length, 4);
+  assert.equal(f.client.snapshot().status, 'signed_out');
+  f.client.destroy();
+});
+
 test('malformed, overlong, or wrong-operation codes are rejected without ending the pending request', () => {
   const now = 1000;
   const f = fixture({ now: () => now }); f.client.load(); f.reply(f.sent.at(-1)); f.client.issue(); const issue = f.sent.at(-1);
