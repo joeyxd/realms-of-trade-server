@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-12T04:57:44.017733+00:00",
+  "baseCommit": "e625a5c79cb8529b4f735ec4c1a40ee18a9a841b",
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=1",
+    "tests/pearl-input-boundary.test.mjs",
+    "tests/pearl-leave-clock-sql.test.mjs",
+    "tests/pearl-leave-clock.test.mjs"
+  ],
+  "counts": {
+    "tests": 49,
+    "pass": 49,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "sourcesMatchFrozenCohort": true,
+  "scope": "Serial retry of the three files with allocation/cloning failures in the 73-file cohort; no source edits. The precise transient allocation cause is not established."
+}

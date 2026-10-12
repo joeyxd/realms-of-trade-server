@@ -5,27 +5,31 @@ import { StoreError } from './store.mjs';
 import { GroundCurrentHydration } from './groundCurrentHydration.mjs';
 import { prepareGroundPearlPickup } from './groundPearlPickup.mjs';
 import { prepareGroundPearlReturn } from './groundPearlReturn.mjs';
+import { prepareGroundPearlLeave } from './groundPearlLeave.mjs';
 import { snapshotDropData, assertDropContainers } from './deathDropApply.mjs';
 import { managedPearlDrop } from './pearlLifecycle.mjs';
 import { managedDeathDrop } from './deathDropLifecycle.mjs';
-import { groundOperation, checkedGroundResult } from './pearlGround.mjs';
+import { groundOperation, checkedGroundResult, checkedLocation } from './pearlGround.mjs';
 import { DROPS } from '../src/data/loot.js';
 import { PEARL } from '../src/data/pearls.js';
 import { prepareGroundDeathDrop } from './groundDeathDrop.mjs';
 import { settleGroundProfile } from './groundProfileBaseline.mjs';
 import { capturePearlProfile } from './pearlProfileSnapshot.mjs';
-import { canonicalText, profilePearls } from './pearlOperations.mjs';
+import { canonicalText, profilePearls, pearlKind } from './pearlOperations.mjs';
 import { deathDropOperation, checkedCurrentDeathDrop } from './deathDropOperation.mjs';
 
 const fail = code => { throw new StoreError(code); };
 export class GroundPearlLifecycle {
   #host; #server; #world; #authority; #hydration = null; #clock = null; #rows = new Map();
   #task = null; #active = null; #failed = false; #stopping = false; #notified = new Map();
-  #dropRows = new Map();
+  #dropRows = new Map(); #command;
   constructor(host) {
     this.#host = host; this.#server = host.server; this.#world = host.server.world;
     this.#authority = host.groundAuthority;
+    this.#command = (clientId, entity, msg) => this.#handleCommand(clientId, entity, msg);
   }
+  get command() { return this.#command; }
+  assertOwner() { this.#owner(); }
   get ready() { return !this.#failed && this.#hydration?.status().state === 'applied'; }
   get pending() { return this.#active !== null; }
   status() { return { enabled: true, ready: this.ready, pending: this.pending ? 1 : 0,
@@ -34,7 +38,7 @@ export class GroundPearlLifecycle {
     const h = this.#host, w = this.#world;
     if (h.groundPearls !== this || h.server !== this.#server || this.#server.world !== w ||
         h.groundAuthority !== this.#authority || this.#server.beforeTick !== this.#authority.boundary ||
-        w.isDeathDropManaged !== managedDeathDrop) fail('configuration');
+        w.isDeathDropManaged !== managedDeathDrop || this.#server.onPearlCommand !== this.#command) fail('configuration');
   }
   prepare() {
     if (this.#task) return this.#task;
@@ -71,6 +75,93 @@ export class GroundPearlLifecycle {
     const row = this.#rows.get(dropId);
     if (!row) fail('ownership');
     return structuredClone(row);
+  }
+  #handleCommand(clientId, entity, raw) {
+    this.#owner();
+    if (this.#server.clients.get(clientId)?.paused || this.#server.tickBlocked) return false;
+    const deny = why => {
+      this.#world.emit({ type: 'pearlDenied', to: entity, e: entity, why });
+      this.#server.flushEvents(); return false;
+    };
+    if (raw.op === 'spit') return deny('bound');
+    if (raw.op === 'sell') return deny('notForSale');
+    // Remaining mutations cannot use the immediate helper inside this incomplete pilot.
+    if (raw.op !== 'leave') return deny('disabled');
+    try {
+      const value = snapshotDropData(raw);
+      if (Object.keys(value).sort().join(',') !== 'op,t,type,uid' || typeof value.uid !== 'string') fail('operation');
+      this.leave({ source: { clientId, entity }, uid: value.uid }); return true;
+    } catch (error) {
+      if (!(error instanceof StoreError)) throw error;
+      return deny(['combat', 'unknown', 'bound'].includes(error.code) ? error.code : 'storage');
+    }
+  }
+  // The socket only selects a UID. Generation and account are resolved under the common reservation.
+  leave(raw) {
+    this.#server.assertTickIdle(); this.#available();
+    const value = snapshotDropData(raw);
+    if (!value || Object.keys(value).sort().join(',') !== 'source,uid' || typeof value.uid !== 'string') fail('operation');
+    const w = this.#world, session = this.#host.profiles.clients.get(value.source?.clientId);
+    const pearl = w.profiles.get(value.source?.entity)?.pearls?.bag.find(q => q.uid === value.uid);
+    if (!pearl) fail('unknown');
+    const create = row => prepareGroundPearlLeave({ host: this.#host, deadlineClock: this.#clock,
+      source: value.source, uid: value.uid, row });
+    let plan = create({ ...pearl, holder: session?.key, version: 1 });
+    const preflight = plan, before = capturePearlProfile(w, value.source.entity),
+      endpoint = { session, clientId: value.source.clientId }, operationId = randomUUID();
+    const initial = { version: session.version, confirmed: structuredClone(session.confirmed), last: session.last };
+    const beforeText = canonicalText(before), nextLast = JSON.stringify(before);
+    if (initial.version >= 2147483647 || initial.version === 2147483646 && initial.last !== nextLast) fail('conflict');
+    const completion = this.#server.afterTick, fatal = w.deferPlayerDeath, pendingDeath = w.isPlayerDeathPending,
+      mint = w.deferPearlMint, deaths = this.#host.groundDeaths, mints = this.#host.groundPearlMints;
+    const active = { operationId, result: null };
+    this.#active = active;
+    const assertCurrent = () => {
+      this.#owner();
+      if (this.#active !== active || this.#failed || this.#stopping || this.#host.closing || session.pearlBusy) fail('cancelled');
+      if (this.#server.afterTick !== completion || w.deferPlayerDeath !== fatal || w.isPlayerDeathPending !== pendingDeath ||
+          w.deferPearlMint !== mint || this.#host.groundDeaths !== deaths || this.#host.groundPearlMints !== mints) fail('cancelled');
+      preflight.assertBaseline();
+      const unchanged = session.version === initial.version && session.last === initial.last &&
+        canonicalText(session.confirmed) === canonicalText(initial.confirmed);
+      const settled = session.version === initial.version + 1 && session.last === nextLast &&
+        canonicalText(session.confirmed) === beforeText;
+      if (!unchanged && !settled) fail('conflict');
+    };
+    try {
+      active.result = this.#authority.stagePreparedFamily({ operationId, family: 'ground', lanes: {
+        accounts: [session.key], uids: profilePearls(before).map(q => q.uid), drops: [],
+      } }, async reservation => {
+        await settleGroundProfile(this.#host.profiles, endpoint, before, reservation, assertCurrent);
+        assertCurrent();
+        const reads = await Promise.allSettled([
+          this.#host.store.loadUnique(value.uid), this.#host.store.loadPearlLocation(value.uid),
+        ]);
+        assertCurrent();
+        for (const read of reads) if (read.status === 'rejected') throw read.reason;
+        const unique = snapshotDropData(reads[0].value), location = checkedLocation(reads[1].value);
+        if (!unique || Object.keys(unique).sort().join(',') !== 'holder,kind,version' ||
+            unique.holder !== session.key || unique.kind !== pearlKind(pearl.kind) ||
+            !Number.isSafeInteger(unique.version) || unique.version < 1 || unique.version >= 2147483647 ||
+            location && (location.world !== this.#host.worldState.id || location.ground !== null ||
+              location.version !== unique.version)) fail('ownership');
+        plan = create({ ...pearl, holder: unique.holder, version: unique.version });
+        return plan.operation;
+      }, effect => {
+        assertCurrent();
+        const oldRows = this.#rows, rows = new Map(oldRows), drop = plan.targetDrop;
+        const checked = checkedGroundResult(effect, plan.operation);
+        if (!checked.ok || checked.replay || rows.has(drop.id) || this.#dropRows.has(drop.id)) fail('response');
+        rows.set(drop.id, { ...pearl, ...structuredClone(checked.location) });
+        try {
+          this.#rows = rows;
+          if (plan.apply(effect) !== true) fail('effect');
+        } catch (error) { this.#rows = oldRows; throw error; }
+        this.#active = null; return true;
+      });
+      active.result.catch(() => { this.#failed = true; });
+      return Object.freeze({ operationId, result: active.result });
+    } catch (error) { this.#active = null; throw error; }
   }
   pickup(raw) {
     this.#server.assertTickIdle();

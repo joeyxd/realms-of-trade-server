@@ -44,6 +44,18 @@ verificada de la cuenta temporal. Updater 176/176. Salud posterior comprobada en
 una autoridad sana, diez módulos de imagen y seis públicos iguales a Git, cero errores/escrituras pendientes.
 Sin modelo/inferencia, spawn ni permisos concedidos; siguiente corte: emparejamiento local revocable y adaptador real de red.
 
+**AREA15, 2026-10-11 — soltar perlas con recibo; piloto común apagado:**
+[Entrega/evidencia](delivery/m5-ground-pearl-leave.md), [contrato](briefs/m5-ground-pearl-leave.md).
+`leave` autenticado reserva cuenta/UIDs antes de IO, conserva progreso ECS y resuelve generación durable;
+confirma perfil/ubicación/mundo/reloj antes de aplicar juntos sesión, suelo, ledger e índices.
+Rollback y cerco ante deriva/cierre/desconexión, incluso callback nulo antes del comando.
+28/28 nuevos; cohorte 625/636 en 73 archivos congelados, base e625a5c.
+Tres archivos con fallos de asignación/clonación repiten 49/49 sin cambios; quedan dos fallos heredados
+HTML localizado y Cometa/agua reproducidos en upstream limpio. Cohorte completa no verde. Dos SIGKILL nuevos
+con recuperación/recogida únicas y cero efectos históricos. Conteos solapados.
+Código aceptado localmente; publicación y verificación VPS todavía pendientes.
+Sigue `give` transaccional, después `swallow` y sobre completo kill/cofre; luego transición/adopción y canario VPS.
+
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
 [Entrega/evidencia](delivery/m5-ground-pearl-mint.md), [contrato](briefs/m5-ground-pearl-mint.md).
 Captura antes del suelo/evento, UID `mint:<UUID>` y recibo SQL004/018/019 bajo el mismo dueño;
