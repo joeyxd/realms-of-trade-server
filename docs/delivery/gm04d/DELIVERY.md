@@ -1,6 +1,6 @@
 # GM04d: palmeras talables y piedras recogibles
 
-2026-10-11. Implementado en alpha.60, protocolo 58. Publicación del runtime pendiente
+2026-10-11. Implementado en alpha.61, protocolo 59. Publicación del runtime pendiente
 de la comprobación final del VPS; SQL036 instalada por el autor y readiness vivo 1.
 [Contrato](../../briefs/gm04d-functional-resources.md).
 
@@ -27,8 +27,9 @@ agotamiento; duplicar crea una identidad nueva. Retirar conserva su fila inactiv
   posterior al SQL deja filas inactivas; un ACK SQL incierto detiene la autoridad hasta reinicio.
   El registro existente reconcilia un ACK perdido del puntero.
 - El piloto alternativo de autoridad de suelo no ofrece esta admisión; rechaza antes de escribir.
-- Documento v2–v4 y SQL033 conservados. No cambia el sobre de snapshots/`you`; protocolo 58
-  permanece. La identidad de contenido y alpha.60 fuerzan la recarga compatible.
+- Documento v2–v4 y SQL033 conservados. No cambia el sobre de snapshots/`you`; GM04d
+  no a?ade campos. La integraci?n conserva el protocolo 59 de compa?eros; alpha.61 y la
+  identidad de contenido requieren recarga compatible.
 
 ## Verificación local
 

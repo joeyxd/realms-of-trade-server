@@ -75,6 +75,7 @@ export class AgentControl {
   #now;
   #sessionId;
   #bindings = new Map();
+  #created = new Set();
   #clients = new Map();
   #characters = new Map();
   #revision = 0;
@@ -117,6 +118,28 @@ export class AgentControl {
   binding(identity) {
     const binding = this.#bindings.get(identity);
     return !!binding;
+  }
+
+  // Only the host's verified SQL034 provisioning path calls this. Created companions have
+  // a fixed chat-only policy; callers cannot turn their role template into capabilities.
+  registerCreated(binding) {
+    if (!exact(binding, ['ownerId', 'characterId', 'capabilities']) ||
+        !canonicalUuid(binding.ownerId) || !canonicalUuid(binding.characterId) ||
+        binding.ownerId === binding.characterId ||
+        [binding.ownerId, binding.characterId].includes('00000000-0000-0000-0000-000000000000') ||
+        !Array.isArray(binding.capabilities) || binding.capabilities.length !== 1 || binding.capabilities[0] !== 'chat') return null;
+    const existing = this.#bindings.get(binding.characterId);
+    if (existing) return this.#created.has(binding.characterId) && existing.ownerId === binding.ownerId
+      ? this.ownedBinding(binding.ownerId, binding.characterId) : null;
+    if (this.#bindings.size >= 64 || this.#bindings.has(binding.ownerId) ||
+        [...this.#bindings.values()].some(row => row.ownerId === binding.characterId)) return null;
+    this.#bindings.set(binding.characterId, { ...copy(binding), disabled: true });
+    this.#created.add(binding.characterId);
+    return this.ownedBinding(binding.ownerId, binding.characterId);
+  }
+
+  createdBinding(ownerId, characterId) {
+    return this.#created.has(characterId) && this.#bindings.get(characterId)?.ownerId === ownerId;
   }
 
   // Private host configuration only; this is never a client projection or provisioning API.

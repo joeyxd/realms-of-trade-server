@@ -1,6 +1,6 @@
 # Modo GM para construir el mundo
 
-**AREA01 GM04d, 2026-10-11 — recursos funcionales implementados, alpha.60/protocolo 58:**
+**AREA01 GM04d, 2026-10-11 — recursos funcionales implementados, alpha.61/protocolo 59:**
 [Contrato](docs/briefs/gm04d-functional-resources.md) y [entrega](docs/delivery/gm04d/DELIVERY.md).
 Recursos ofrece palmera talable y piedra recogible; ID estable, colocar/mover/duplicar/retirar,
 undo y borrador privado. Publicación admite IDs nuevos bajo exclusión de mundo vacío;
