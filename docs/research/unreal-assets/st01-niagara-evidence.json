@@ -163,17 +163,21 @@
   },
   "visual_capture": {
     "process": "UnrealEditor-Cmd.exe, hidden, -RenderOffscreen, PythonScriptCommandlet, no -nullrhi",
-    "latest_exit_code": 0,
     "requested_times_seconds": [
       0.1,
       0.4,
       0.8
     ],
+    "prior_export_attempts_reached": true,
+    "prior_export_png_count": 0,
+    "prior_export_blocker": "ExportRenderTarget reported render target has been released; no PNGs exist",
+    "correction_retry_elapsed_seconds": 23,
+    "correction_retry_export_calls": 0,
+    "correction_retry_blocker": "TextureRenderTarget2D Python wrapper has no update_resource_immediate attribute",
     "exported_png_count": 0,
-    "status": "failed",
-    "blocker": "ExportRenderTarget reported render target has been released; no PNGs exist",
-    "prepared_correction": "call TextureRenderTarget2D.update_resource_immediate(True), verify each output file before recording frame",
-    "correction_executed": false
+    "status": "failed_before_capture",
+    "source_hash_entries": 113,
+    "source_hash_mismatches": 0
   },
   "graph_commandlet": {
     "python_report_written": true,

@@ -44,6 +44,12 @@ async function enter() {
   await page.waitForFunction(() => getComputedStyle(document.getElementById('fade')).display === 'none');
   await page.locator('#btn-skill-studio').click();
   await page.waitForFunction(() => __mn.st.mode === 'skill-studio' && __mn.skillStudio?.active);
+  // The first lazy stylesheet request can outlive open() over HTTPS.
+  await page.waitForFunction(() => {
+    const studio = __mn.skillStudio, box = studio.viewport?.getBoundingClientRect();
+    return getComputedStyle(studio.root).display === 'grid' && box?.width > 100 && box.height > 100
+      && studio.preview?.metrics.drawCalls > 0;
+  }, null, { timeout: 30000 });
 }
 async function input(key, value) {
   await page.locator(`[data-parameter="${key}"]`).evaluate((el, value) => {
@@ -84,6 +90,12 @@ try {
     assert.equal(result.joined, false); assert.ok(result.visible); assert.ok(result.metrics.particles > 0);
     assert.ok(result.ext, 'Preview must use the loaded native character');
     assert.ok(result.metrics.drawCalls > 0, 'The stage reports the renderer draw count');
+    if (production) {
+      const idleArm = await page.evaluate(() => __mn.skillStudio.preview.character.armR.quaternion.toArray());
+      await freeze(0.12);
+      assert.notDeepEqual(await page.evaluate(() => __mn.skillStudio.preview.character.armR.quaternion.toArray()), idleArm);
+      await shot('tromba-cast-es-desktop'); await freeze(); evidence.castPoseChanged = true;
+    }
     evidence.character = result.ext; await shot('tromba-original-es-desktop');
   });
   await check('bounded_parameters_undo_redo_and_equivalent_comparison', async () => {
