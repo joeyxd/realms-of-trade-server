@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-12T05:50:01.069Z",
+  "scope": "Deployed createSupabaseStore readiness and three immutable live validator RPC probes; no gameplay writes",
+  "version": "0.6.0-alpha.63",
+  "ready": {
+    "version": 1
+  },
+  "elapsedMs": 3269
+}

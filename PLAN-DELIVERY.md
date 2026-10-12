@@ -11,14 +11,17 @@ actualizador194/194, imagen validada/saludable, público14/14 y 28 hashes iguale
 Golpe público es sonda cosmética, daño confirmado aceptado localmente; balance/FPS físico pendientes.
 [Recibo](docs/delivery/buccaneer-v1/combat-reaction/publication.json).
 
-**AREA01 GM04d, 2026-10-11 — recursos funcionales integrados, alpha.63/protocolo 59:**
+**AREA01 GM04d, 2026-10-11 — recursos funcionales publicados, alpha.63/protocolo 59:**
 [Contrato](docs/briefs/gm04d-functional-resources.md), [entrega](docs/delivery/gm04d/DELIVERY.md).
 Palmera talable/piedra recogible en Recursos; borrador privado y publicación con admisión SQL036
 append-only. IDs existentes conservan ciclos, agotamiento y ledger al mover/retirar/republicar.
 SQL036 reaplicada, contrato vivo 4/4 y guard de semántica en store: el readiness 1 anterior no bastaba.
 418/418 CPU y 8/8 SQL seriales, UI local 9/9 ES/EN escritorio/móvil.
 Suite amplia no verde: fallo de receta reproducido en upstream y OOM resuelto al repetir serial;
-ver evidencia y alcance en la entrega. Publicación del runtime VPS pendiente de verificación.
+ver evidencia y alcance en la entrega. VPS `c146b08` sano: 194/194 del actualizador,
+29/29 fuentes de contenedor + 20/20 públicas, entrada WSS y GM autenticado 9/9.
+Cierre integrado 137/137 y compañeros 27/27, conteos solapados. Borrador privado;
+base generación 8 conservada, sin canario de recursos compartidos.
 El autor eligió [Taller de habilidades](docs/briefs/skill-studio-vision.md): ajustar las actuales
 primero e incluir la adaptación real de un efecto Niagara; intake realizado, implementación pendiente.
 

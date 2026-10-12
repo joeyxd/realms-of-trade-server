@@ -184,10 +184,16 @@ try {
     await setup(mobile);const desktop=page;page=await mobile.newPage();watch(page);
     await page.goto(origin+'/?q=low&tod=day',{waitUntil:'domcontentloaded'});await enter(page);
     await page.locator('[data-action="tab-resources"]').click();
+    if ((await page.locator('[data-role="language"]').innerText()).trim() === 'ES') {
+      await page.locator('[data-role="language"]').click();
+    }
+    assert.match(await page.locator('.gm-resource-panel').innerText(),/Piedra recogible/);
     await page.locator('[data-resource-asset="prop:gm-resource-stone-v1"]').scrollIntoViewIfNeeded();
     await shot('resources-es-mobile');await page.locator('[data-resource-asset="prop:gm-resource-stone-v1"]').tap();
     await page.waitForFunction(()=>__mn.gmEditor.pendingEntry?.id==='prop:gm-resource-stone-v1');
-    await page.locator('[data-role="language"]').click();await shot('resources-en-mobile');
+    await page.locator('[data-role="language"]').click();
+    assert.match(await page.locator('.gm-resource-panel').innerText(),/Collectible stone/);
+    await shot('resources-en-mobile');
     await mobile.close();page=desktop;
   });
   await page.locator('[data-action="close"]').click();

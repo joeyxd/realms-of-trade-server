@@ -1,13 +1,16 @@
 # Modo GM para construir el mundo
 
-**AREA01 GM04d, 2026-10-11 — recursos funcionales integrados, alpha.63/protocolo 59:**
+**AREA01 GM04d, 2026-10-11 — recursos funcionales publicados, alpha.63/protocolo 59:**
 [Contrato](docs/briefs/gm04d-functional-resources.md) y [entrega](docs/delivery/gm04d/DELIVERY.md).
 Recursos ofrece palmera talable y piedra recogible; ID estable, colocar/mover/duplicar/retirar,
 undo y borrador privado. Publicación admite IDs nuevos bajo exclusión de mundo vacío;
 agotamiento/ledger sobreviven rollback, retiro y reinicio. SQL036 reaplicada y contrato vivo 4/4;
 el store verifica también semántica, porque definiciones anteriores devolvían readiness 1.
 418/418 CPU final seriales y 8/8 SQL; UI local ES/EN escritorio/móvil 9/9. Suite amplia conserva
-un fallo de fabricación reproducido en upstream; ver límites en la entrega. Publicación VPS pendiente.
+un fallo de fabricación reproducido en upstream; ver límites en la entrega. VPS `c146b08` sano:
+194/194 actualizador, 29/29 fuentes + 20/20 públicas, WSS real y GM autenticado 9/9.
+Cierre integrado 137/137 y compañeros 27/27, solapados. Base generación 8 conservada;
+prueba pública privada, sin canario de publicación ni recogida compartida.
 Siguiente corte elegido por el autor: [Taller de habilidades](docs/briefs/skill-studio-vision.md),
 ajustar las actuales primero e incluir una adaptación Niagara real. No implementado todavía.
 

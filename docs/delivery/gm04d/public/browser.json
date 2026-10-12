@@ -1,0 +1,182 @@
+{
+  "schema": "gm04d-browser/v1",
+  "at": "2026-10-12T05:49:51.102Z",
+  "version": "0.6.0-alpha.63",
+  "production": true,
+  "simulatedAuth": false,
+  "checks": [
+    "functional_palette_and_native_models",
+    "place_palm_through_canvas",
+    "place_stone_through_canvas",
+    "invalid_spacing_is_atomic",
+    "resource_duplicate_delete_undo_redo_and_inspector",
+    "resource_move_preserves_identity_and_grounding",
+    "private_save_and_reopen_preserve_resources",
+    "mobile_resource_controls_and_native_preview",
+    "no_remote_writes_or_render_errors"
+  ],
+  "screenshots": [
+    "palette-es-desktop.png",
+    "placed-palm-es.png",
+    "placed-stone-es.png",
+    "resources-es-desktop.png",
+    "resources-en-desktop.png",
+    "resources-es-mobile.png",
+    "resources-en-mobile.png"
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "networkFailures": [
+    {
+      "path": "/api/gm/revisions",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "remoteWrites": [],
+  "runtime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.63",
+    "players": 0,
+    "max": 4,
+    "sockets": 1,
+    "tick": 1834,
+    "uptime": 42,
+    "stepMs": 1.172,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true,
+        "meals": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "companionPairing": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 3760,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0.2,
+      "kbIn": 0.1,
+      "dropped": 0
+    }
+  },
+  "checkoutVersion": "0.6.0-alpha.63",
+  "sourceHashes": {
+    "src/editor/editor.js": "b07de092f36d1d7f2087f6d886ee9c4dc1edf1326e1b51fe5fa5f89c5a777be5",
+    "src/editor/editor.css": "24b15c3d474552171230ef88e47f968d4058c5ed4db126e9f6fb4d32f04fff7e",
+    "src/editor/resourcePanel.js": "daf1ad846c88192367dc0246b9c9e8ff33c5827881fac01b715b8ec6f4d9e237",
+    "src/editor/resourceAdapters.js": "a102fa7de01c4ecf0bf70b6cd0483b3ce5f50b3e32817d370d6b97a1e3b58379",
+    "src/editor/modelFactory.js": "1208bae58302a232b8b339ef83e3b6b4be9a5cd6b804b6a20c596b647aa9e543",
+    "src/editor/contentProjection.js": "65863d11fe7699fcd3808bd6bf3e7dac75e0a576bf409a56028bc01b3244442b",
+    "src/editor/activeContent.js": "176e5ab6c88a7fec0cfd883a77b56032c38b3e6d52cec2727eb695d1ebafdf11",
+    "src/editor/remotePanel.js": "cfa4cdbf074c87964b2f9e92e414fc75e624d0986105940b25dfd10f041d86d0",
+    "src/editor/document.js": "cb47efb3b9d987e25ca352cc9cc22799db8dbc14ce522cfbded9a880d7e74a0f"
+  },
+  "palm": {
+    "id": "gm-e81c0798-20a6-49ab-84fa-f327014800f7",
+    "assetId": "prop:gm-resource-palm-v1",
+    "transform": {
+      "position": {
+        "x": -140,
+        "y": 1.1344672441482544,
+        "z": -150
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": 1
+    },
+    "collider": "none"
+  },
+  "stone": {
+    "id": "gm-1326a19f-4e04-420f-8c8c-37c1a5f2a379",
+    "assetId": "prop:gm-resource-stone-v1",
+    "transform": {
+      "position": {
+        "x": -120,
+        "y": 2.1013872623443604,
+        "z": -150
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": 1
+    },
+    "collider": "none"
+  },
+  "phase": "complete"
+}

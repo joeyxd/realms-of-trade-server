@@ -40,3 +40,17 @@ La animación nativa existente es limitada y específica: `src/render/assets/cha
 ## Alcance de esta revisión
 
 Lectura de fichas existentes y comprobación puntual de existencia/tamaño de los archivos mencionados bajo `C:\Unreal\MyProject`. No se hizo barrido del inventario, inspección en Unreal, exportación, captura de runtime, modificación de fuentes ni prueba visual/GPU. La animación, parámetros y dependencias siguen pendientes de inspección del sistema en Unreal.
+
+## Preparación del entorno para ST01
+
+Comprobados el ejecutable `C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe`
+y `Engine\Build\Build.version`: Unreal 5.8.0, changelist 55116800. El candidato pertenece a
+`C:\Unreal\MyProject\MyProject.uproject`. Su `EngineAssociation` es un GUID y el descriptor
+habilita plugins de herramientas; abrirlo satisfactoriamente con esa instalación aún no está probado.
+
+La inspección visual se hará sobre una copia de trabajo fuera de `C:\Unreal`, conservando
+Content/Config/Plugins y el descriptor. Cachés regenerables no son necesarias para preparar
+esa copia. Resolver asociación de motor y dependencias exclusivamente allí; después observar
+el sistema y su actor de spline, capturar referencia y decidir qué derivados exportar.
+No se lanzó Unreal ni se creó todavía esa copia. Esta comprobación de disponibilidad no acepta
+el efecto ni demuestra que sus módulos sean portables al navegador.

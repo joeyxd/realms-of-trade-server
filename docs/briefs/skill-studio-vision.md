@@ -1,7 +1,7 @@
 # Taller visual de habilidades y perlas
 
 Dirección del autor, 2026-10-11. Diseño previo a implementación. El corte de recursos
-GM04d sigue en curso; este documento conserva la nueva visión y propone su siguiente fase.
+GM04d está publicado en alpha.63; este documento conserva la visión y fija la siguiente fase.
 
 ## Experiencia deseada
 

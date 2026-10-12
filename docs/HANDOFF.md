@@ -12,7 +12,7 @@ imagen validada/saludable y salud pública 200, cero errores/escrituras pendient
 escritorio/móvil y 28 hashes iguales a Git. Golpe público: sonda cosmética; daño confirmado aceptado localmente.
 [Recibo](delivery/buccaneer-v1/combat-reaction/publication.json). Balance/FPS físico pendientes.
 
-**AREA01 GM04d — recursos funcionales integrados, alpha.63/protocolo 59:**
+**AREA01 GM04d — recursos funcionales publicados, alpha.63/protocolo 59:**
 [Contrato](briefs/gm04d-functional-resources.md) y [entrega](delivery/gm04d/DELIVERY.md).
 Editor → Recursos: palmera talable/piedra recogible, colocar/mover/duplicar/retirar y undo.
 Guardar es privado; publicar admite IDs nuevos mediante SQL036 bajo exclusión de mundo vacío.
@@ -20,7 +20,10 @@ Tala/recogida normales; agotamiento y ledger conservados por ID, también en ret
 SQL036 reaplicada y contrato vivo 4/4: se detectó y corrigió un readiness 1 de definiciones anteriores.
 El store verifica también semántica antes de admitir. 418/418 CPU y 8/8 SQL seriales; local UI 9/9.
 Suite amplia con fallo de fabricación reproducido en upstream; detalles y límites en la entrega.
-Runtime VPS pendiente. Siguiente corte aprobado: [Taller de habilidades](briefs/skill-studio-vision.md),
+VPS `c146b08` sano, actualizador 194/194, fuentes 29/29 + 20/20 públicas y entrada real.
+GM público autenticado 9/9 ES/EN escritorio/móvil; borrador privado, base generación 8 conservada.
+Cierre integrado 137/137 y compañeros 27/27; conteos solapados. Siguiente corte aprobado:
+[Taller de habilidades](briefs/skill-studio-vision.md),
 ajustar las actuales primero e incluir una adaptación Niagara real. Intake acotado en
 [SKILL-STUDIO-INTAKE](research/unreal-assets/SKILL-STUDIO-INTAKE.md); fuentes Unreal intactas.
 

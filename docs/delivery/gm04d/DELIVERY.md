@@ -1,7 +1,7 @@
 # GM04d: palmeras talables y piedras recogibles
 
-2026-10-11. Implementado e integrado en alpha.63, protocolo 59. Publicación del runtime pendiente
-de la comprobación final del VPS. SQL036 actualizada y contrato vivo comprobado, 4/4.
+2026-10-11. Publicado y verificado en alpha.63, protocolo 59. SQL036 actualizada y
+contrato vivo comprobado, 4/4. Paleta pública con sesión GM real, 9/9.
 [Contrato](../../briefs/gm04d-functional-resources.md).
 
 ## Uso
@@ -59,6 +59,8 @@ agotamiento; duplicar crea una identidad nueva. Retirar conserva su fila inactiv
 - [Cierre alpha.63](closure-tests.json): **137/137**, 23 archivos seriales después de integrar
   Bucanero alpha.62, comida y segunda mejora de mochila. Incluye el guard contra SQL obsoleto,
   recursos, store, publicación, compañeros, reacción/retroceso, comida y sobrecarga.
+- [Correcciones públicas concurrentes](concurrent-public-fixes.json): **27/27** en cinco
+  archivos de compañeros/controlador después de integrar `c146b08`; no cambia recursos GM.
 
 Los conteos de grupos se solapan. La [primera regresión amplia](regression.json) quedó
 418/420: `resource-loop-server.test.mjs:143` espera fabricar con un tronco, mientras la
@@ -66,6 +68,31 @@ receta actual pide dos. [Reproducido en upstream intacto](upstream-resource-loop
 4/5 en `e625a5c`; fuera del grupo final, sin alterar esa receta ni prueba ajenas.
 El otro fallo fue OOM de PGlite al ejecutar el baseline del taller concurrentemente;
 su repetición serial pasó 2/2 y está incluida en SQL final. No se declara la suite completa verde.
+
+## Verificación pública
+
+- [Revisión e imagen](deployment.json): `c146b08675d56870ddc9e579861cd9902c48c999`,
+  alpha.63/protocolo 59, contenedor saludable y HTTP 200. [Actualizador](updater-validation.json):
+  **194/194**, imagen candidata exacta con red deshabilitada, una CPU y 1 GiB.
+- [Fuentes publicadas](public-runtime.json): **29/29** archivos coinciden entre Git y contenedor;
+  **20/20** públicos coinciden por hash. [Entrada real](public-entry.json): WSS invitado,
+  welcome/snapshot/profile, Supabase durable y sin errores/bloqueo de guardado.
+- [Store Supabase desplegado](supabase-store-readiness.json): readiness 1 y las tres sondas
+  semánticas inmutables correctas desde el código instalado. [Reaplicación SQL](sql036-reapply.json)
+  registra el archivo exacto, resultado y captura; no reescribe recursos ni recibos.
+- [Navegador GM autenticado](public/browser.json): **9/9**, ES/EN escritorio y controles táctiles
+  844×390. Figuras nativas, colocación de palma/piedra por canvas, rechazo atómico por separación,
+  mover con ID estable, duplicar/borrar/undo/redo/inspector y guardar/reabrir el borrador local.
+  Capturas inspeccionadas; cero errores de página/consola y cero escrituras GM remotas.
+  El registro conserva un GET `/api/gm/revisions` cancelado (`net::ERR_ABORTED`);
+  esta prueba no usa esa lectura para acreditar la disponibilidad de la lista de revisiones.
+  El idioma móvil se fija y comprueba explícitamente antes de cada captura.
+
+La prueba pública usa únicamente el borrador privado de un navegador desechable; mantiene
+la base activa en generación **8**, sin canario de publicación ni recogida compartida. La tala,
+botín, práctica y persistencia se verificaron en autoridad/SQL locales según el alcance anterior.
+El autor elige la distribución y la activa desde Online. El runner sustituye los CDN Three/GSAP
+por las mismas versiones locales; esta prueba no mide disponibilidad de esos CDN ni FPS físico.
 
 ## Arte y presupuesto
 
