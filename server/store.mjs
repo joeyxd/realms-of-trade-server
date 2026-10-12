@@ -29,6 +29,7 @@ import { createMemoryCompanionConfigMethods, createSupabaseCompanionConfigMethod
 import { createMemoryCompanionControlMethods, createSupabaseCompanionControlMethods } from './companionControlStore.mjs';
 import { createMemoryInferenceConfigMethods, createSupabaseInferenceConfigMethods } from './inferenceConfigStore.mjs';
 import { createMemoryCompanionCreationMethods, createSupabaseCompanionCreationMethods } from './companionCreationStore.mjs';
+import { createMemoryPlayerCharacterMethods, createSupabasePlayerCharacterMethods } from './playerCharacterStore.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LEGACY_KEY = /^[0-9a-f]{64}$/;
@@ -581,6 +582,9 @@ export function createMemoryStore() {
   const clockNamespace = { has: id => clockReceipts.has(id) || economicReceipts.has(id) };
   registerMemoryPearlStore(store, { pearl: pearlReceipts, ground: groundReceipts, batch: batchReceipts,
     death: deathReceipts, drop: dropReceipts, clock: clockNamespace }, intents);
+  Object.assign(store, createMemoryPlayerCharacterMethods({
+    loadProfile: id => store.loadProfile(id), initializeProfile: (...args) => store.initializeProfile(...args),
+  }));
   return store;
 }
 
@@ -617,6 +621,7 @@ export function createSupabaseStore(client) {
     throw new StoreError('response');
   }
   return {
+    ...createSupabasePlayerCharacterMethods(client),
     ...gmDraftMethods, ...companionConfigMethods, ...companionControlMethods, ...inferenceConfigMethods, ...companionCreationMethods,
     kind: 'supabase', durable: true,
     async checkGroundTransactions() {

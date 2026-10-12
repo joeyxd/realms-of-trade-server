@@ -15,6 +15,8 @@ import { LagLink } from '../src/net/lagLink.js';
 import { C, KIND } from '../src/sim/ecs.js';
 import { createMemoryStore, StoreError } from './store.mjs';
 import { ProfileSessions } from './profileSessions.mjs';
+import { PlayerCharacterService } from './playerCharacters.mjs';
+import { PlayerCharacterStoreError } from './playerCharacterStore.mjs';
 import { legacyKey } from './legacy.mjs';
 import { WorldState } from './worldState.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
@@ -165,6 +167,7 @@ export class GameHost {
       const sock = this.sockets.get(id);
       if (sock) { try { sock.ws.close(1011, 'storage'); } catch { /* gone */ } this.onClose(sock); }
     }, { journal: pearlJournal, starter: workshopOperations });
+    this.playerCharacters = new PlayerCharacterService(this);
     // A blocked final snapshot is evidence of an incomplete shutdown, never a retryable save blob.
     // Keep its detached data private for explicit reconciliation; it may contain pre-commit UIDs.
     this.unsavedProfiles = new Map();
@@ -719,6 +722,7 @@ export class GameHost {
       bots: countBots(s.world), names: playerNames(s), errors: this.errors,
       ...(this.contentIdentity ? { content: { ...this.contentIdentity, switching: !!this.contentSwitching } } : {}),
       storage: { kind: this.store.kind, durable: this.store.durable === true, accounts: !!this.resolvePlayer,
+        playerCharacters: { ready: this.playerCharacters.ready, limit: 3 },
         errors: this.profiles.errors + (this.worldState?.errors || 0), unsaved: this.unsavedProfiles.size,
         profileWrites: this.profiles.tasks.size, worldWriting: !!this.worldState?.running,
         economic: this.economicAuthority?.status() ?? null,
@@ -1039,14 +1043,15 @@ export class GameHost {
       reply('invalid_request'); return;
     }
     if (!this.agentControl) { reply(msg.op === 'list' ? null : 'disabled'); return; }
-    const projection = () => this.agentOwnerProjection(s.key);
+    const owner = s.ownerKey ?? s.key;
+    const projection = () => this.agentOwnerProjection(owner);
     if (msg.op === 'list') { reply(null, projection(), true); return; }
-    const row = this.agentControl.listOwned(s.key).find((entry) => entry.characterKey === msg.characterKey);
+    const row = this.agentControl.listOwned(owner).find((entry) => entry.characterKey === msg.characterKey);
     if (!row) { reply('forbidden'); return; }
     // A stale tab cannot stop a newly admitted/resumed session, including an offline-to-online race.
     if (row.epoch !== msg.epoch) { reply('stale_control', projection(), true); return; }
     if (!row.stopped) {
-      const state = this.agentControl.revoke(s.key, msg.characterKey, 'stop');
+      const state = this.agentControl.revoke(owner, msg.characterKey, 'stop');
       this.publishAgentState({ ok: true, state }, null, true);
     }
     reply(null, projection(), true);
@@ -1075,23 +1080,24 @@ export class GameHost {
       if (!exact(['direct', 'cancel'].includes(msg.op) ? ['t', 'op', 'characterId', 'task'] : ['t', 'op', 'characterId']) ||
           !['stop', 'revoke', 'resume', 'direct', 'cancel'].includes(msg.op)) { fail('invalid_control'); return; }
       // The legacy owner API cannot bypass the durable CAS latch. Session-only lab mode remains compatible.
+      const owner = s.ownerKey ?? s.key;
       if (this.companionControl.managed && ['stop', 'revoke', 'resume'].includes(msg.op)) {
         fail('durable_control_required'); return;
       }
       if (msg.op === 'resume') {
-        if (!this.agentControl.resume(s.key, msg.characterId)) { fail('forbidden'); return; }
+        if (!this.agentControl.resume(owner, msg.characterId)) { fail('forbidden'); return; }
         this.sendTo(sock.id, { t: MSG.AGENT_STATE, ok: true, state: this.agentControl.byCharacter(msg.characterId), resumed: true }); return;
       }
       if (['direct', 'cancel'].includes(msg.op)) {
         const targetSocket = [...this.sockets.values()].find((candidate) => candidate.agentIdentity === msg.characterId);
-        if (msg.op === 'direct' && this.agentControl.byCharacter(msg.characterId)?.grant.scope.ownerId === s.key &&
+        if (msg.op === 'direct' && this.agentControl.byCharacter(msg.characterId)?.grant.scope.ownerId === owner &&
             !this.agentTargetAllowed(targetSocket?.id, msg.task)) { fail('target_unavailable'); return; }
-        const result = msg.op === 'direct' ? this.agentControl.direct(s.key, msg.characterId, msg.task) :
-          this.agentControl.cancelOwner(s.key, msg.characterId, msg.task);
+        const result = msg.op === 'direct' ? this.agentControl.direct(owner, msg.characterId, msg.task) :
+          this.agentControl.cancelOwner(owner, msg.characterId, msg.task);
         if (!result.ok) { fail(result.why); return; }
         this.publishAgentState(result, sock.id, true); return;
       }
-      const state = this.agentControl.revoke(s.key, msg.characterId, msg.op === 'stop' ? 'stop' : 'revoked');
+      const state = this.agentControl.revoke(owner, msg.characterId, msg.op === 'stop' ? 'stop' : 'revoked');
       if (!state) { fail('forbidden'); return; }
       this.publishAgentState({ ok: true, state }, sock.id, true); return;
     }
@@ -1186,6 +1192,7 @@ export class GameHost {
         msg = { ...msg, name: paired.record.preset.name, skin: paired.record.preset.skin, weapon: 0 };
       } else identity = await untilAbort(Promise.resolve().then(() => this.resolvePlayer(sock.req, msg, { signal })), signal);
       if (!this.sockets.has(sock.id) || signal.aborted) return;
+      if (identity === null && Object.hasOwn(msg, 'characterId')) throw new StoreError('auth');
       if (msg.agent === true) {
         if (!this.companionControl.allowed(identity)) throw new StoreError('auth');
         // Reserve synchronously before profile I/O; concurrent joins count toward the pilot ceiling.
@@ -1205,8 +1212,25 @@ export class GameHost {
       if ((this.#requiresPearlStartup || this.groundAuthority) && msg.importSave === true) throw new StoreError('legacy');
       let profile;
       if (identity !== null) {
+        const ownerKey = identity;
+        let selectedCharacter = null;
+        if (Object.hasOwn(msg, 'characterId')) {
+          if (msg.agent === true || sock.pairedCompanion || msg.importSave === true || msg.save) throw new StoreError('auth');
+          if (this.profiles.owners.has(ownerKey)) throw new StoreError('session');
+          const character = await untilAbort(this.playerCharacters.resolve(ownerKey, msg.characterId), signal);
+          if (!this.sockets.has(sock.id) || signal.aborted) return;
+          if (this.agentControl?.binding(character.id)) throw new StoreError('auth');
+          identity = character.id;
+          selectedCharacter = character;
+          msg = { ...msg, name: character.name, skin: character.skin, weapon: character.weapon };
+        } else if (msg.agent !== true && this.playerCharacters.ready) {
+          const roster = await untilAbort(this.store.listPlayerCharacters(ownerKey), signal);
+          if (roster.characters.length) throw new StoreError('characters_required');
+        }
+        if (this.playerCharacters.creating.has(ownerKey)) throw new StoreError('session');
         const initialize = this.initializeAccounts ? (key, fresh) => this.initializeProfile(sock, msg, key, fresh) : null;
-        profile = await untilAbort(this.profiles.open(sock.id, identity, msg.weapon === 1 ? 1 : 0, initialize), signal);
+        profile = await untilAbort(this.profiles.open(sock.id, identity, msg.weapon === 1 ? 1 : 0, initialize, ownerKey), signal);
+        if (selectedCharacter) await untilAbort(this.playerCharacters.select(ownerKey, selectedCharacter.id), signal);
       } else if (this.initializeAccounts && msg.save) {
         // A converted legacy character may no longer continue through the guest route.
         const saved = this.server.saves.load(msg.save);
@@ -1239,8 +1263,8 @@ export class GameHost {
       }
       this.profiles.close(sock.id);
       if (this.sockets.has(sock.id)) {
-        const allowed = ['session', 'auth', 'legacy', 'legacy_used', 'legacy_active'];
-        const code = err instanceof StoreError && allowed.includes(err.code) ? err.code : 'storage';
+        const allowed = ['session', 'auth', 'legacy', 'legacy_used', 'legacy_active', 'forbidden', 'characters_unavailable', 'characters_required'];
+        const code = (err instanceof StoreError || err instanceof PlayerCharacterStoreError) && allowed.includes(err.code) ? err.code : 'storage';
         this.sendTo(sock.id, { t: MSG.ERROR, code });
         // Resolver/provider errors may contain tokens: only a fixed code enters the log.
         this.log(`[store] #${sock.id} join failed: ${code}`);

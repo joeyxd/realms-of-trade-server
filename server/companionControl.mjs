@@ -3,6 +3,7 @@ import { MSG } from '../src/net/protocol.js';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const MAX_REVISION = 2147483647;
 const baseline = () => ({ revision: 0, stopped: true, savedAt: null });
+const sessionOwner = session => session.ownerKey ?? session.key;
 function head(value) {
   if (!value || Object.keys(value).length !== 3 || !['revision', 'stopped', 'savedAt'].every(k => Object.hasOwn(value, k)) ||
       !Number.isSafeInteger(value.revision) || value.revision < 0 || value.revision > MAX_REVISION ||
@@ -166,7 +167,7 @@ export class CompanionControlService {
     const reply = why => {
       if (h.sockets.get(sock.id) !== sock || sock.ws.readyState !== 1 || (session && this.principal(sock) !== session)) return;
       h.sendTo(sock.id, { t: MSG.AGENT_OWNER_RESULT, requestId, ok: why === null, why,
-        enabled: !!session, companions: session ? h.agentOwnerProjection(session.key) : [] });
+        enabled: !!session, companions: session ? h.agentOwnerProjection(sessionOwner(session)) : [] });
     };
     if (!session) { reply('forbidden'); return; }
     const keys = message.op === 'list' ? ['t', 'requestId', 'op'] : ['t', 'requestId', 'op', 'characterKey', 'epoch', 'expectedRevision'];
@@ -178,11 +179,11 @@ export class CompanionControlService {
       reply('invalid_request'); return;
     }
     const entry = this.entries.get(message.characterKey);
-    if (message.op !== 'list' && entry?.binding.ownerId !== session.key) { reply('forbidden'); return; }
-    if (this.busy.has(sock) || this.busy.size >= 32 || !this.quota(session.key)) { reply('busy'); return; }
+    if (message.op !== 'list' && entry?.binding.ownerId !== sessionOwner(session)) { reply('forbidden'); return; }
+    if (this.busy.has(sock) || this.busy.size >= 32 || !this.quota(sessionOwner(session))) { reply('busy'); return; }
     this.busy.add(sock);
     try {
-      const why = message.op === 'list' ? await this.refresh(session.key)
+      const why = message.op === 'list' ? await this.refresh(sessionOwner(session))
         : await this.mutate(entry, message, () => this.principal(sock) === session);
       reply(why);
     } catch { reply('unavailable'); }

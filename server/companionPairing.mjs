@@ -16,11 +16,12 @@ const MAX_REQUESTS_PER_MINUTE = 30;
 const MAX_IN_FLIGHT = 32;
 const CAPABILITIES = Object.freeze(['chat']);
 const copy = value => structuredClone(value);
+const sessionOwner = session => session.ownerKey ?? session.key;
 const ownerKey = owner => owner;
 const pairKey = (owner, character) => `${owner}:${character}`;
 
 function validSession(session, host) {
-  return !!session && UUID.test(session.key) && !session.closed && !session.failed &&
+  return !!session && UUID.test(sessionOwner(session)) && !session.closed && !session.failed &&
     host.profiles.accounts.get(session.key) === session;
 }
 
@@ -107,18 +108,18 @@ export class CompanionPairingService {
 
   async loadOwned(session, sock, current = () => true) {
     const h = this.host;
-    const raw = await h.store.loadCompanionCreation({ world: h.worldState.id, owner: session.key });
+    const raw = await h.store.loadCompanionCreation({ world: h.worldState.id, owner: sessionOwner(session) });
     if (!current() || this.principal(sock) !== session || !validSession(session, h)) throw new Error('session');
     if (raw === null) return null;
     const record = validateCompanionRecord(raw);
-    if (record.characterKey === session.key ||
-        (h.agentControl.binding(record.characterKey) && !this.owns(session.key, record.characterKey))) throw new Error('collision');
-    const key = ownerKey(session.key), prior = this.owners.get(key);
+    if (record.characterKey === sessionOwner(session) ||
+        (h.agentControl.binding(record.characterKey) && !this.owns(sessionOwner(session), record.characterKey))) throw new Error('collision');
+    const key = ownerKey(sessionOwner(session)), prior = this.owners.get(key);
     if (prior && prior.record.characterKey !== record.characterKey) throw new Error('collision');
     if (!prior && this.owners.size >= MAX_OWNERS) throw new Error('limit');
-    const binding = h.agentControl.registerCreated({ ownerId: session.key, characterId: record.characterKey,
+    const binding = h.agentControl.registerCreated({ ownerId: sessionOwner(session), characterId: record.characterKey,
       capabilities: [...CAPABILITIES] });
-    if (!binding || binding.ownerId !== session.key || binding.characterId !== record.characterKey ||
+    if (!binding || binding.ownerId !== sessionOwner(session) || binding.characterId !== record.characterKey ||
         !Array.isArray(binding.capabilities) || binding.capabilities.length !== 1 || binding.capabilities[0] !== 'chat' ||
         !h.companionControl.registerCreated(binding, record.control)) throw new Error('registration');
     const owner = prior ?? { binding, record, ownerSession: session, ownerSock: sock };
@@ -137,7 +138,7 @@ export class CompanionPairingService {
       reply('invalid_request'); return;
     }
     if (!this.ready) { reply('unavailable'); return; }
-    if (this.busy.has(sock) || this.busy.size >= MAX_IN_FLIGHT || !this.quota(session.key)) { reply('busy'); return; }
+    if (this.busy.has(sock) || this.busy.size >= MAX_IN_FLIGHT || !this.quota(sessionOwner(session))) { reply('busy'); return; }
     this.busy.add(sock);
     let operation, abandoned = false;
     try {
@@ -148,16 +149,16 @@ export class CompanionPairingService {
         if (!owner) return { why: message.op === 'issue' ? 'not_created' : null };
         if (message.op === 'load') return { why: null };
         if (message.op === 'revoke') {
-          this.revokeOwner(session.key, 'revoked');
+          this.revokeOwner(sessionOwner(session), 'revoked');
           return { why: null };
         }
         if (!h.companionControl.allowed(owner.record.characterKey)) return { why: 'stopped' };
         // Replacing a code also invalidates any earlier admission and active socket.
-        this.revokeOwner(session.key, 'repaired');
+        this.revokeOwner(sessionOwner(session), 'repaired');
         if (!h.companionControl.allowed(owner.record.characterKey) ||
-            !h.agentControl.resume(session.key, owner.record.characterKey)) return { why: 'stopped' };
+            !h.agentControl.resume(sessionOwner(session), owner.record.characterKey)) return { why: 'stopped' };
         const refreshed = validateCompanionRecord(await h.store.loadCompanionCreation({
-          world: h.worldState.id, owner: session.key,
+          world: h.worldState.id, owner: sessionOwner(session),
         }));
         if (!refreshed || refreshed.characterKey !== owner.record.characterKey ||
             this.principal(sock) !== session || !validSession(session, h) || abandoned ||
@@ -166,8 +167,8 @@ export class CompanionPairingService {
         const ownerPeer = h.server.chat?.sessions?.get(owner.ownerSock.id)?.id;
         if (typeof ownerPeer !== 'string' || !UUID.test(ownerPeer)) return { why: 'unavailable' };
         const now = this.time(), code = randomBytes(32).toString('hex');
-        for (const [oldCode, pending] of this.codes) if (pending.ownerId === session.key) this.codes.delete(oldCode);
-        this.codes.set(code, { ownerId: session.key, characterId: refreshed.characterKey, worldId: h.worldState.id,
+        for (const [oldCode, pending] of this.codes) if (pending.ownerId === sessionOwner(session)) this.codes.delete(oldCode);
+        this.codes.set(code, { ownerId: sessionOwner(session), characterId: refreshed.characterKey, worldId: h.worldState.id,
           ownerSession: session, ownerSock: sock, record: refreshed, content: copy(h.contentIdentity ?? { generation: 0, revisionId: null }),
           ownerPeer, expiresAtMs: now + CODE_TTL_MS });
         return { why: null, code, expiresAtMs: now + CODE_TTL_MS };

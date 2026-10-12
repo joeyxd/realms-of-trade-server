@@ -1,6 +1,7 @@
 import { MSG } from '../src/net/protocol.js';
 import { companionId } from '../src/net/companionConfig.js';
 import { exactCreationKeys, validateCompanionPreset, companionCreationConfig, validateCompanionRecord } from '../src/net/companionCreation.js';
+const sessionOwner = session => session.ownerKey ?? session.key;
 
 // The existing M5 store owns creation; no profile, controller, or provider is activated here.
 export class CompanionCreationService {
@@ -56,11 +57,11 @@ export class CompanionCreationService {
       } catch { reply('invalid_request'); return; }
     }
     if (!this.ready || !h.worldState?.id) { reply('unavailable'); return; }
-    if (this.busy.has(session.key) || this.busy.size >= 32 || !this.quota(session.key)) { reply('busy'); return; }
+    if (this.busy.has(sessionOwner(session)) || this.busy.size >= 32 || !this.quota(sessionOwner(session))) { reply('busy'); return; }
     // This first slot cannot duplicate a character already assigned by private host configuration.
-    if (h.agentControl?.listOwned(session.key).some(row => !h.agentControl.createdBinding(session.key, row.characterKey))) { reply('conflict'); return; }
-    const scope = { world: h.worldState.id, owner: session.key };
-    this.busy.add(session.key);
+    if (h.agentControl?.listOwned(sessionOwner(session)).some(row => !h.agentControl.createdBinding(sessionOwner(session), row.characterKey))) { reply('conflict'); return; }
+    const scope = { world: h.worldState.id, owner: sessionOwner(session) };
+    this.busy.add(sessionOwner(session));
     let operation;
     try {
       operation = Promise.resolve().then(() => {
@@ -68,18 +69,18 @@ export class CompanionCreationService {
         return message.op === 'load' ? h.store.loadCompanionCreation(scope)
           : h.store.createCompanion({ ...scope, creationId: message.creationId, preset, config });
       });
-      operation.finally(() => this.busy.delete(session.key)).catch(() => {});
+      operation.finally(() => this.busy.delete(sessionOwner(session))).catch(() => {});
       const result = await this.bounded(operation);
       const raw = message.op === 'load' ? result : result?.record;
       const record = raw === null ? null : validateCompanionRecord(raw);
-      if (record && (record.characterKey === session.key || h.agentControl?.binding(record.characterKey) &&
-          !h.agentControl.createdBinding(session.key, record.characterKey))) throw new Error('collision');
+      if (record && (record.characterKey === sessionOwner(session) || h.agentControl?.binding(record.characterKey) &&
+          !h.agentControl.createdBinding(sessionOwner(session), record.characterKey))) throw new Error('collision');
       if (message.op === 'load') { reply(null, record); return; }
       if (result?.ok === false && ['conflict', 'limit'].includes(result.why)) { reply(result.why, record); return; }
       if (result?.ok !== true || typeof result.replay !== 'boolean' || !record || record.creationId !== message.creationId
         || JSON.stringify(record.preset) !== JSON.stringify(preset)) throw new Error('response');
       reply(null, record);
     } catch { reply('unavailable'); }
-    finally { if (!operation) this.busy.delete(session.key); }
+    finally { if (!operation) this.busy.delete(sessionOwner(session)); }
   }
 }

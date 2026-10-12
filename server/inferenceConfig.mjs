@@ -1,6 +1,7 @@
 import { MSG } from '../src/net/protocol.js';
 import { companionId, MAX_CONFIG_REVISION } from '../src/net/companionConfig.js';
 import { inferenceExact, validateInferenceConfig, validateInferenceHead, validateInferenceCatalog } from '../src/net/inferenceConfig.js';
+const sessionOwner = session => session.ownerKey ?? session.key;
 
 // Only safe metadata enters this catalog. Endpoints, credentials and provider calls have no API here.
 export function inferenceCatalogFromEnv(env) {
@@ -58,34 +59,34 @@ export class InferenceConfigService {
       if (h.sockets.get(sock.id) !== sock || sock.ws.readyState !== 1 || h.closing || session && this.principal(sock) !== session) return;
       h.sendTo(sock.id, { t: MSG.INFERENCE_CONFIG_RESULT, requestId, ok: why === null, why,
         durable: h.store.durable === true, head,
-        catalog: session ? this.catalog(session.key) : [],
-        characters: session ? this.owned(session.key).map(r => r.characterKey).sort().slice(0, 16) : [] });
+        catalog: session ? this.catalog(sessionOwner(session)) : [],
+        characters: session ? this.owned(sessionOwner(session)).map(r => r.characterKey).sort().slice(0, 16) : [] });
     };
     if (!session) { reply('forbidden'); return; }
     if (!requestId || !['load', 'save'].includes(message.op) || !inferenceExact(message,
       ['t', 'requestId', 'op', ...(message.op === 'save' ? ['expectedRevision', 'config'] : [])])) { reply('invalid_request'); return; }
-    if (!this.ready || !h.worldState?.id || this.owned(session.key).length > 16) { reply('unavailable'); return; }
+    if (!this.ready || !h.worldState?.id || this.owned(sessionOwner(session)).length > 16) { reply('unavailable'); return; }
     let config;
     if (message.op === 'save') {
       try {
         if (!Number.isSafeInteger(message.expectedRevision) || message.expectedRevision < 0 || message.expectedRevision >= MAX_CONFIG_REVISION) throw new Error('revision');
         config = validateInferenceConfig(message.config);
       } catch { reply('invalid_request'); return; }
-      if (!this.eligible(config, session.key)) { reply('ineligible'); return; }
-      if (this.owned(session.key).some(r => !r.stopped || r.active)) { reply('must_stop'); return; }
+      if (!this.eligible(config, sessionOwner(session))) { reply('ineligible'); return; }
+      if (this.owned(sessionOwner(session)).some(r => !r.stopped || r.active)) { reply('must_stop'); return; }
     }
-    if (this.busy.has(session.key) || this.busy.size >= 32 || !this.quota(session.key)) { reply('busy'); return; }
-    this.busy.add(session.key);
+    if (this.busy.has(sessionOwner(session)) || this.busy.size >= 32 || !this.quota(sessionOwner(session))) { reply('busy'); return; }
+    this.busy.add(sessionOwner(session));
     let operation;
     try {
       operation = Promise.resolve().then(() => {
         if (this.principal(sock) !== session) throw new Error('session');
-        if (message.op === 'save' && (!this.eligible(config, session.key) || this.owned(session.key).some(r => !r.stopped || r.active))) throw new Error('eligibility');
-        const scope = { world: h.worldState.id, owner: session.key };
+        if (message.op === 'save' && (!this.eligible(config, sessionOwner(session)) || this.owned(sessionOwner(session)).some(r => !r.stopped || r.active))) throw new Error('eligibility');
+        const scope = { world: h.worldState.id, owner: sessionOwner(session) };
         return message.op === 'load' ? h.store.loadInferenceConfig(scope)
           : h.store.saveInferenceConfig({ ...scope, expectedRevision: message.expectedRevision, config });
       });
-      operation.finally(() => this.busy.delete(session.key)).catch(() => {});
+      operation.finally(() => this.busy.delete(sessionOwner(session))).catch(() => {});
       const result = await this.bounded(operation);
       if (message.op === 'load') { reply(null, validateInferenceHead(result)); return; }
       if (result?.ok === false && result.why === 'conflict') { reply('conflict', validateInferenceHead(result.head)); return; }
@@ -94,6 +95,6 @@ export class InferenceConfigService {
       if (head.revision !== message.expectedRevision + 1 || JSON.stringify(head.config) !== JSON.stringify(config)) throw new Error('response');
       reply(null, head);
     } catch { reply('unavailable'); }
-    finally { if (!operation) this.busy.delete(session.key); }
+    finally { if (!operation) this.busy.delete(sessionOwner(session)); }
   }
 }

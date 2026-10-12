@@ -81,6 +81,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   const server = http.createServer((req, res) => {
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
+    if (p === '/api/characters') { void game.playerCharacters.handle(req, res); return; }
     if (p === '/api/gm/session') { void gmSession(req, res); return; }
     if (p === '/api/world/content') {
       if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
@@ -152,6 +153,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
         if (game.closing) throw new Error('Server is closing');
         if (gmContent) { await publication.prepare(); await gmContent.prepare(); }
         await game.prepare();
+        await game.playerCharacters.prepare();
         if (game.agentControl) { await game.companionControl.prepare(); await game.companionConfig.prepare(); }
         await game.inferenceConfig.prepare();
         await game.companionCreation.prepare();

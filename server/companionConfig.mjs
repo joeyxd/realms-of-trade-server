@@ -1,5 +1,6 @@
 import { MSG } from '../src/net/protocol.js';
 import { companionId, validateCompanionConfig, validateCompanionConfigHead, MAX_CONFIG_REVISION } from '../src/net/companionConfig.js';
+const sessionOwner = session => session.ownerKey ?? session.key;
 
 // Async private metadata lives outside the simulation. No stored field activates a controller.
 export class CompanionConfigService {
@@ -51,7 +52,7 @@ export class CompanionConfigService {
     const keys = ['t', 'requestId', 'op', 'characterKey', ...(message.op === 'save' ? ['expectedRevision', 'config'] : [])];
     if (!requestId || !characterKey || !['load', 'save'].includes(message.op) || Object.keys(message).length !== keys.length
         || keys.some(k => !Object.hasOwn(message, k))) { reply('invalid_request'); return; }
-    if (!this.owned(session.key, characterKey)) { reply('forbidden'); return; }
+    if (!this.owned(sessionOwner(session), characterKey)) { reply('forbidden'); return; }
     if (!this.ready || !h.worldState?.id) { reply('unavailable'); return; }
     let config;
     if (message.op === 'save') {
@@ -60,20 +61,20 @@ export class CompanionConfigService {
         config = validateCompanionConfig(message.config);
       } catch { reply('invalid_request'); return; }
     }
-    if (this.busy.has(sock) || this.busy.size >= 32 || !this.quota(session.key)) { reply('busy'); return; }
-    const scope = { world: h.worldState.id, owner: session.key, character: characterKey };
+    if (this.busy.has(sock) || this.busy.size >= 32 || !this.quota(sessionOwner(session))) { reply('busy'); return; }
+    const scope = { world: h.worldState.id, owner: sessionOwner(session), character: characterKey };
     this.busy.add(sock);
     let operation;
     try {
       // Keep actual work bounded even if the response times out. Never retry a write here.
       operation = Promise.resolve().then(() => {
-        if (this.principal(sock) !== session || !this.owned(session.key, characterKey)) throw new Error('session');
+        if (this.principal(sock) !== session || !this.owned(sessionOwner(session), characterKey)) throw new Error('session');
         return message.op === 'load' ? h.store.loadCompanionConfig(scope)
           : h.store.saveCompanionConfig({ ...scope, expectedRevision: message.expectedRevision, config });
       });
       operation.finally(() => this.busy.delete(sock)).catch(() => {});
       const result = await this.bounded(operation);
-      if (!this.owned(session.key, characterKey)) return;
+      if (!this.owned(sessionOwner(session), characterKey)) return;
       if (message.op === 'load') { reply(null, validateCompanionConfigHead(result)); return; }
       if (result?.ok === false && result.why === 'conflict') { reply('conflict', validateCompanionConfigHead(result.head)); return; }
       if (result?.ok !== true || typeof result.replay !== 'boolean') throw new Error('response');

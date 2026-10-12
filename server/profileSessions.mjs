@@ -12,19 +12,22 @@ export class ProfileSessions {
     this.onFailure = onFailure;
     this.starter = starter === true;
     this.accounts = new Map();
+    this.owners = new Map();
     this.clients = new Map();
     this.tasks = new Set();
     this.errors = 0;
     this.pearls = new PearlQueue(this, journal);
   }
 
-  async open(id, key, weapon = 0, initialize = null) {
+  async open(id, key, weapon = 0, initialize = null, ownerKey = key) {
     key = playerKey(key);
-    if (this.accounts.has(key)) throw new StoreError('session');
+    ownerKey = playerKey(ownerKey);
+    if (this.accounts.has(key) || this.owners.has(ownerKey)) throw new StoreError('session');
     pearlMutationGate(this).assertAvailable({ accounts: [key] });
-    const s = { id, key, version: 0, confirmed: null, pending: null, running: null, pearlBusy: null,
+    const s = { id, key, ownerKey, version: 0, confirmed: null, pending: null, running: null, pearlBusy: null,
       last: null, failed: false, closed: false };
     this.accounts.set(key, s); this.clients.set(id, s);
+    this.owners.set(ownerKey, s);
     try {
       let row = await this.store.loadProfile(key);
       if (s.closed) throw new StoreError('cancelled');
@@ -141,6 +144,7 @@ export class ProfileSessions {
       this.accounts.delete(s.key);
     }
     if (this.clients.get(s.id) === s) this.clients.delete(s.id);
+    if (this.owners.get(s.ownerKey) === s) this.owners.delete(s.ownerKey);
   }
 
   async flush() {

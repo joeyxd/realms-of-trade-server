@@ -94,7 +94,8 @@ export class GameClient {
   join(name, skin, weapon = 0, save = '', account = null) {
     this.t.send({ t: MSG.HELLO, v: PROTOCOL_VERSION, name, skin, weapon, save,
       ...(this.map?.gmContentIdentity ? { content: { ...this.map.gmContentIdentity } } : {}),
-      ...(account ? { token: account.token, importSave: account.importSave === true } : {}) });
+      ...(account ? { token: account.token, importSave: account.importSave === true,
+        ...(account.characterId ? { characterId: account.characterId } : {}) } : {}) });
   }
 
   send(msg) { this.t.send(msg); }

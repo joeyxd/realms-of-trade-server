@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { GAME } from './data/meta.js';
 import { tuning, DT } from './data/tuning.js';
-import { loadSettings, saveSettings, resetSave, settings, loadSave, storeSave, setSaveAside } from './core/settings.js';
+import { loadSettings, saveSettings, settings, loadSave } from './core/settings.js';
 import { Input } from './core/input.js';
 import { stage } from './ui/stage.js';
 import { Loop } from './core/loop.js';
@@ -26,6 +26,8 @@ import { GameClient } from './client/gameClient.js';
 import { AccountAuth } from './client/accountAuth.js';
 import { WalletLink } from './client/walletLink.js';
 import { AccountPanel } from './ui/account.js';
+import { PlayerCharacters } from './client/playerCharacters.js';
+import { PlayerCharactersPanel } from './ui/playerCharacters.js';
 import { CompanionsClient } from './client/companions.js';
 import { CompanionsUI } from './ui/companions.js';
 import { CompanionConfigClient } from './client/companionConfig.js';
@@ -450,7 +452,7 @@ async function boot() {
       if (key === 'haptics') touch.setHaptics(settings.haptics);
     },
     onResume: () => closePause(),
-    onNewGame: () => { resetSave(); location.reload(); },
+    onNewGame: () => { location.reload(); },
     gpu: () => st.gpu,
   });
   const chatPanel = new ChatPanel($('#chat'), {
@@ -566,6 +568,21 @@ async function boot() {
   // progress changes; solo also keeps one when the page goes away (it trusts its own saves).
   const saveSlot = () => (st.online ? 'online.' + (() => { try { return new URL(transport.url).host; } catch { return 'server'; } })() : 'solo');
   const accountAuth = new AccountAuth({ httpBase: st.online ? httpUrlFor(transport.url) : null });
+  const playerCharacters = new PlayerCharacters({ baseUrl: st.online ? httpUrlFor(transport.url) : null,
+    savePrefix: GAME.saveKey + '.save.', getIdentity: () => st.online && accountAuth.state.signedIn && !accountAuth.state.guestChoice
+      ? accountAuth.sessionIdentity() : null });
+  let characterRoster = null;
+  const charactersPanel = new PlayerCharactersPanel({ parent: $('#ui'),
+    looks: SKINS.slice(0, 5).map((look, id) => ({ id, name: look.name, color: '#' + look.swatch[0].toString(16).padStart(6, '0') })),
+    onSelect: id => playerCharacters.select(id),
+    onCreate: async request => {
+      await playerCharacters.create(request);
+      characterRoster = await playerCharacters.load({ guestKey: saveSlot(), legacySave: playerCharacters.localSave(saveSlot(), loadSave(saveSlot())),
+        current: { name: settings.name, skin: settings.skin, weapon: weaponIndex(settings.weapon) } });
+      charactersPanel.setRoster(characterRoster);
+    },
+    onContinue: character => startPlaying(character),
+  });
   let joiningCompanionAccount = null;
   const companions = new CompanionsClient({ transport, auth: accountAuth,
     joined: () => st.online && st.mode === 'playing' && client.joined && !transport.closed });
@@ -627,7 +644,7 @@ async function boot() {
   const walletLink = st.online ? new WalletLink({ auth: accountAuth, httpBase: httpUrlFor(transport.url) }) : null;
   const accountPanel = st.online ? new AccountPanel($('#title'), accountAuth, {
     wallet: walletLink,
-    hasLegacySave: () => !!loadSave(saveSlot()),
+    hasLegacySave: () => false, // Explicit one-time imports live in the character roster.
     looks: SKINS.slice(0, 5).map((look, id) => ({ id, name: look.name, color: '#' + look.swatch[0].toString(16).padStart(6, '0') })),
     getCharacter: () => ({ name: settings.name, skin: settings.skin }),
     onCharacterChange: ({ name, skin }) => {
@@ -753,10 +770,10 @@ async function boot() {
     },
   });
   onLocaleChange(() => skillEntry.render());
-  bus.on('save', (m) => { if (m && typeof m.blob === 'string') storeSave(saveSlot(), m.blob); });
+  bus.on('save', (m) => { if (m && typeof m.blob === 'string') playerCharacters.save(m.blob); });
   addEventListener('pagehide', () => safe('save', () => {
     if (st.online || !client.joined || !client.profile) return;
-    storeSave(saveSlot(), JSON.stringify({ ...client.profile, lvl: ps.level, xp: Math.round(ps.xp * 100) / 100, pot: ps.potions ?? client.profile.pot }));
+    playerCharacters.save(JSON.stringify({ ...client.profile, lvl: ps.level, xp: Math.round(ps.xp * 100) / 100, pot: ps.potions ?? client.profile.pot }));
   }));
   // The mode pill: how many pirates are aboard (refreshed while on the title), or solo with a way back online.
   if (st.online) {
@@ -833,7 +850,7 @@ async function boot() {
     if (ev.type === 'skillDenied' && ev.me) charPanel.denyTattoo();
     if (ev.type === 'death' && ev.by) killFeed(ev);
     if (ev.type === 'note' && ev.code === 'save' && ev.me) {
-      setSaveAside(saveSlot());
+      playerCharacters.backupSelectedSave?.();
       hud.toast(rich('runtime.saveInvalid'), 6000);
     }
   }));
@@ -1056,13 +1073,24 @@ async function boot() {
   const vendorAt = map.npcs.find((n) => n.id === 'vendor');
 
   // ---- Play ------------------------------------------------------------------------------------
-  async function startPlaying() {
+  async function startPlaying(selectedCharacter = null) {
     if (st.boarding || st.gmOpening || st.mode !== 'title' || accountAuth.state.busy) return;
     st.boarding = true;
     title.boarding(true);
     accountPanel?.setBoarding(true);
     title.message(null);
     try {
+      await initializeAccount();
+      if (!selectedCharacter) {
+        characterRoster = await playerCharacters.load({ guestKey: saveSlot(), legacySave: playerCharacters.localSave(saveSlot(), loadSave(saveSlot())),
+          current: { name: settings.name, skin: settings.skin, weapon: weaponIndex(settings.weapon) } });
+        accountPanel?.hide(); charactersPanel.open(characterRoster); return;
+      }
+      const selected = playerCharacters.selected();
+      if (!selected || selected.id !== selectedCharacter.id) throw new Error('character_selection');
+      settings.name = selected.name; title.name.value = selected.name;
+      title.selectSkin(selected.skin); settings.weapon = selected.weapon === 1 ? 'pistolas' : 'sable';
+      charactersPanel.close(true);
       audio.unlock();
       // On a phone: fullscreen + landscape lock while the tap is still a user gesture. iOS and iframes refuse it
       // (the CSS rotation then does the job); once the lock works the window turns landscape and the stage un-rotates.
@@ -1077,11 +1105,11 @@ async function boot() {
       music.start();
       sfx.play();
       saveSettings();
-      await initializeAccount();
-      const identity = st.online && !accountAuth.state.guestChoice ? await accountAuth.sessionIdentity() : null;
-      const account = identity ? { token: identity.token, importSave: accountPanel?.importRequested() } : null;
+      const identity = st.online && accountAuth.state.signedIn && !accountAuth.state.guestChoice ? await accountAuth.sessionIdentity() : null;
+      if (identity && characterRoster?.mode !== 'account' || !identity && characterRoster?.mode === 'account') throw new Error('character_scope');
+      const account = identity ? { token: identity.token, characterId: selected.id } : null;
       joiningCompanionAccount = identity?.accountId ?? null;
-      const saved = account && !account.importSave ? '' : loadSave(saveSlot());
+      const saved = account ? '' : playerCharacters.selectedSave();
       if (st.online) {
         // Wait for the server's answer: a place aboard, or why not.
         const r = await new Promise((resolve) => {
@@ -1100,6 +1128,8 @@ async function boot() {
             auth: rich('join.auth'),
             auth_disabled: rich('join.disabled'),
             session: rich('join.session'),
+            forbidden: 'Este personaje no pertenece a tu cuenta. Abre de nuevo tus personajes.',
+            characters_unavailable: 'Los personajes guardados no están disponibles. Vuelve a intentarlo.',
             storage: rich('join.storage'),
             legacy: rich('join.legacy'),
             legacy_used: rich('join.used'),
@@ -1738,6 +1768,7 @@ async function boot() {
   await world.prewarm().catch((e) => console.warn('prewarm', e));
   safe('portraits', () => title.setPortraits(portrait));
   safe('account portraits', () => accountPanel?.setPortraits(portrait));
+  safe('character slot portraits', () => charactersPanel.setPortraits(portrait));
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
   gsap.to('#fade', { opacity: 0, duration: reduced() ? 0.3 : 1.2, ease: 'power2.out', onComplete: () => { $('#fade').style.display = 'none'; } });
   title.show(reduced());

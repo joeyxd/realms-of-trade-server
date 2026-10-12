@@ -185,9 +185,14 @@ export class AccountPanel {
     this.status.textContent = signed ? state.email : state.guestChoice ? t('account.statusGuest') : state.errorKey ? t(state.errorKey) : state.error || t(state.enabled ? 'account.statusReady' : 'account.statusUnavailable');
     this.feedback.textContent = this.notice ? t(this.notice) : state.errorKey ? t(state.errorKey) : state.error || ''; this.feedback.hidden = !this.feedback.textContent; this.feedback.dataset.tone = this.notice ? this.noticeTone : 'error';
     this.renderCharacter(); this.setControlsDisabled(this.boarding || state.busy);
+    // Appearance belongs to a saved character; account login opens the roster next.
+    this.overlay.querySelector('.account-character-preview').hidden = true;
+    this.characterName.closest('label').hidden = true;
+    this.overlay.querySelector('.account-crew-grid').hidden = true;
+    this.overlay.querySelector('.account-ready').textContent = 'Elegir personaje →';
     if (!localeChange && signed && !state.busy && !this.wasSignedIn && !this.overlay.hidden) this.refreshWallet();
     if (!localeChange && state.busy && !this.overlay.hidden) this.dialog.focus({ preventScroll: true });
-    if (!localeChange && signed && !state.busy && !this.wasSignedIn && !this.overlay.hidden) this.characterName.focus({ preventScroll: true });
+    if (!localeChange && signed && !state.busy && !this.wasSignedIn && !this.overlay.hidden) this.overlay.querySelector('.account-ready').focus({ preventScroll: true });
     if (!state.busy) this.wasSignedIn = signed;
   }
 
@@ -210,7 +215,7 @@ export class AccountPanel {
   }
   open() {
     if (this.boarding || this.auth.state.busy) return; this.notice = ''; this.noticeTone = ''; this.overlay.hidden = false; this.render(this.auth.state);
-    const focus = this.auth.state.signedIn ? this.characterName : this.confirmationEmail || !this.auth.state.enabled ? this.dialog : this.form.elements.email; focus.focus({ preventScroll: true });
+    const focus = this.auth.state.signedIn ? this.overlay.querySelector('.account-ready') : this.confirmationEmail || !this.auth.state.enabled ? this.dialog : this.form.elements.email; focus.focus({ preventScroll: true });
     this.refreshWallet();
   }
   refreshWallet() {
