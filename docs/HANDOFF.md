@@ -1,5 +1,12 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA03 — arte de cocina y paquete Tripo, 2026-10-12:**
+[Atlas, PNG individuales y ZIP](art/cooking-icons-v1/README.md). 17 referencias transparentes:
+básicos, tres comidas especiales, coco/resina/antorcha reutilizados y sal/lima/hierbas propuestas.
+Propuestas fuera del catálogo; resultados siguen consumiéndose al preparar. Ingredientes con cantidades
+y resultado propio en el panel existente. Atlas de UI 81/27 KB, una variante por dispositivo;
+10/10 tests focales y seis configuraciones locales ES/EN/escritorio/móvil. Publicación y mallas pendientes.
+
 **AREA15, 2026-10-12 — plan de continuidad reconciliado:**
 [Matriz de cobertura](CONTINUITY-MATRIX.md), [revisión y lectura VPS](delivery/m5-continuity-review.md).
 Alpha.63 observado sano; los montajes comunes siguen nulos. La matriz separa estado guardado, recibo probado y aceptación pública.

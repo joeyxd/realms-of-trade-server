@@ -1,5 +1,6 @@
 import { FOODS } from '../data/survival.js';
 import { MEALS, MEAL_TICKS } from '../data/meals.js';
+import { atlasIcon } from './kit.js';
 import { shoreBarrelNotice, shoreVoyageActive } from './shoreStopState.js';
 
 const RETRY_MS = 1000;
@@ -30,7 +31,7 @@ const COPY = {
     canteen: 'Cantimplora', canteenCraft: 'Fabricar · 2 lona + 1 madera', canteenNeed: 'Necesitas 2 lonas y 1 madera.',
     canteenFill: 'Llenar del manantial', canteenChannel: 'Llenando en el manantial', canteenDrink: 'Beber 1 dosis',
     canteenBucket: 'Desde la cubeta', canteenProvisions: 'Desde provisiones', canteenBarrel: 'Desde el barril',
-    hunger: 'Hambre', thirst: 'Sed', eat: 'Comer', fish: 'Pescado', biscuit: 'Galleta', fruit: 'Fruta', waterGood: 'Agua', rum: 'Ron',
+    hunger: 'Hambre', thirst: 'Sed', eat: 'Comer', fish: 'Pescado', biscuit: 'Galleta', fruit: 'Fruta', waterGood: 'Agua', rum: 'Ron', flour: 'Harina',
     canteenCrafted: 'Cantimplora fabricada.', canteenFilled: 'Cantimplora rellenada.', drank: 'Has bebido una dosis.', ate: 'Has comido.',
     meals: 'Comidas especiales', mealFish: 'Pescado asado', mealGrog: 'Grog', mealBiscuit: 'Galleta reforzada',
     mealFishCost: '1 pescado', mealGrogCost: '1 ron + 1 agua', mealBiscuitCost: '1 galleta + 1 harina',
@@ -63,7 +64,7 @@ const COPY = {
     canteen: 'Canteen', canteenCraft: 'Craft · 2 canvas + 1 wood', canteenNeed: 'You need 2 canvas and 1 wood.',
     canteenFill: 'Fill at spring', canteenChannel: 'Filling at spring', canteenDrink: 'Drink 1 dose',
     canteenBucket: 'From bucket', canteenProvisions: 'From provisions', canteenBarrel: 'From barrel',
-    hunger: 'Hunger', thirst: 'Thirst', eat: 'Eat', fish: 'Fish', biscuit: 'Biscuit', fruit: 'Fruit', waterGood: 'Water', rum: 'Rum',
+    hunger: 'Hunger', thirst: 'Thirst', eat: 'Eat', fish: 'Fish', biscuit: 'Biscuit', fruit: 'Fruit', waterGood: 'Water', rum: 'Rum', flour: 'Flour',
     canteenCrafted: 'Canteen crafted.', canteenFilled: 'Canteen refilled.', drank: 'You drank one dose.', ate: 'You ate.',
     meals: 'Special meals', mealFish: 'Roast fish', mealGrog: 'Grog', mealBiscuit: 'Reinforced biscuit',
     mealFishCost: '1 fish', mealGrogCost: '1 rum + 1 water', mealBiscuitCost: '1 biscuit + 1 flour',
@@ -96,9 +97,9 @@ export class FreshwaterPanel {
         <div class="fresh-canteen-actions"><button type="button" class="fresh-canteen-spring"></button><button type="button" class="fresh-canteen-bucket"></button><button type="button" class="fresh-canteen-provisions"></button><button type="button" class="fresh-canteen-drink"></button></div>
         <div class="fresh-canteen-needs" aria-live="polite"></div><div class="fresh-foods" role="group"></div></section>
       <section class="fresh-meals" hidden><h3 class="fresh-meals-title"></h3><p class="fresh-meal-active" aria-live="polite"></p><div class="fresh-meal-cards">
-        <article class="fresh-meal-card" data-meal-card="roastFish"><b class="fresh-meal-name"></b><p class="fresh-meal-cost"></p><p class="fresh-meal-effect"></p><span class="fresh-meal-duration"></span><p class="fresh-meal-hint" aria-live="polite"></p><button type="button" data-meal="roastFish"></button></article>
-        <article class="fresh-meal-card" data-meal-card="grog"><b class="fresh-meal-name"></b><p class="fresh-meal-cost"></p><p class="fresh-meal-effect"></p><span class="fresh-meal-duration"></span><p class="fresh-meal-hint" aria-live="polite"></p><button type="button" data-meal="grog"></button></article>
-        <article class="fresh-meal-card" data-meal-card="heartyBiscuit"><b class="fresh-meal-name"></b><p class="fresh-meal-cost"></p><p class="fresh-meal-effect"></p><span class="fresh-meal-duration"></span><p class="fresh-meal-hint" aria-live="polite"></p><button type="button" data-meal="heartyBiscuit"></button></article>
+        <article class="fresh-meal-card" data-meal-card="roastFish"><div class="fresh-meal-heading">${atlasIcon('meal_roastFish', 'fresh-meal-outcome-icon')}<b class="fresh-meal-name"></b></div><p class="fresh-meal-cost" aria-hidden="true"></p><div class="fresh-meal-recipe"></div><p class="fresh-meal-effect"></p><span class="fresh-meal-duration"></span><p class="fresh-meal-hint" aria-live="polite"></p><button type="button" data-meal="roastFish"></button></article>
+        <article class="fresh-meal-card" data-meal-card="grog"><div class="fresh-meal-heading">${atlasIcon('meal_grog', 'fresh-meal-outcome-icon')}<b class="fresh-meal-name"></b></div><p class="fresh-meal-cost" aria-hidden="true"></p><div class="fresh-meal-recipe"></div><p class="fresh-meal-effect"></p><span class="fresh-meal-duration"></span><p class="fresh-meal-hint" aria-live="polite"></p><button type="button" data-meal="grog"></button></article>
+        <article class="fresh-meal-card" data-meal-card="heartyBiscuit"><div class="fresh-meal-heading">${atlasIcon('meal_heartyBiscuit', 'fresh-meal-outcome-icon')}<b class="fresh-meal-name"></b></div><p class="fresh-meal-cost" aria-hidden="true"></p><div class="fresh-meal-recipe"></div><p class="fresh-meal-effect"></p><span class="fresh-meal-duration"></span><p class="fresh-meal-hint" aria-live="polite"></p><button type="button" data-meal="heartyBiscuit"></button></article>
       </div></section>
       <p class="fresh-note"></p><p class="fresh-shore-note" role="status" hidden></p><p class="fresh-status" aria-live="polite"></p>`;
     parent.appendChild(this.root); this.$ = selector => this.root.querySelector(selector);
@@ -312,6 +313,7 @@ export class FreshwaterPanel {
     const names = { roastFish: c.mealFish, grog: c.mealGrog, heartyBiscuit: c.mealBiscuit };
     const costs = { roastFish: c.mealFishCost, grog: c.mealGrogCost, heartyBiscuit: c.mealBiscuitCost };
     const effects = { roastFish: c.mealFishEffect, grog: c.mealGrogEffect, heartyBiscuit: c.mealBiscuitEffect };
+    const ingredientLabels = { pescado: c.fish, ron: c.rum, agua: c.waterGood, galleta: c.biscuit, harina: c.flour };
     this.$('.fresh-meals-title').textContent = c.meals;
     const activeMeal = status?.meal && MEALS[status.meal.kind] && Number.isFinite(status.meal.ticks) && status.meal.ticks > 0 ? status.meal : null;
     const activeNode = this.$('.fresh-meal-active');
@@ -325,6 +327,13 @@ export class FreshwaterPanel {
       if (!card || !button) continue;
       card.querySelector('.fresh-meal-name').textContent = names[kind];
       card.querySelector('.fresh-meal-cost').textContent = costs[kind];
+      const ingredients = Object.entries(recipe.cost);
+      const recipeNode = card.querySelector('.fresh-meal-recipe');
+      if (recipeNode && recipeNode.dataset.recipeLang !== this.lang()) {
+        recipeNode.innerHTML = ingredients.map(([good, amount], index) =>
+          `${index ? '<span class="fresh-meal-plus" aria-hidden="true">+</span>' : ''}<span class="fresh-meal-ingredient">${atlasIcon(good, 'fresh-meal-ingredient-icon')}<span>${amount} ${ingredientLabels[good] || good}</span></span>`).join('');
+        recipeNode.dataset.recipeLang = this.lang();
+      }
       card.querySelector('.fresh-meal-effect').textContent = effects[kind];
       card.querySelector('.fresh-meal-duration').textContent = c.mealDuration;
       button.textContent = c.prepareEat;
@@ -386,7 +395,7 @@ export class FreshwaterPanel {
       const foodSignature = JSON.stringify([this.lang(), availableFoods.map(([id]) => [id, Math.floor(finite(goods[id]))])]);
       if (foodSignature !== this.foodSignature) {
         this.foodSignature = foodSignature;
-        this.foodsBox.innerHTML = availableFoods.map(([id, label]) => `<button type="button" data-food="${id}">${label} ×${Math.floor(finite(goods[id]))}</button>`).join('');
+        this.foodsBox.innerHTML = availableFoods.map(([id, label]) => `<button type="button" data-food="${id}">${atlasIcon(id, 'fresh-food-icon')}<span>${label} ×${Math.floor(finite(goods[id]))}</span></button>`).join('');
       }
       this.foodsBox.setAttribute('aria-label', c.eat);
       for (const button of this.foodsBox.querySelectorAll('button')) {

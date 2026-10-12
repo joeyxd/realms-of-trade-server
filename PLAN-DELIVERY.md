@@ -1,5 +1,11 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA03 — iconos de cocina y referencias Tripo, 2026-10-12:**
+[Entrega de arte](docs/art/cooking-icons-v1/README.md): 17 PNG con alfa y ZIP, ingredientes y
+tres platos con identidad propia; sal/lima/hierbas son propuestas visuales. Atlas 81/27 KB,
+panel de provisiones/cocina conectado, 10/10 focales y seis configuraciones locales ES/EN.
+Conservar costes/autoridad actuales. Publicación y mallas Tripo se verifican aparte.
+
 **AREA15, 2026-10-12 — continuidad de las áreas concurrentes:**
 [Matriz por sistema](docs/CONTINUITY-MATRIX.md), [revisión/evidencia](docs/delivery/m5-continuity-review.md).
 Sigue [give gratuito de bolsa entre cuentas](docs/briefs/m5-ground-pearl-give.md); contrato preparado, implementación pendiente.

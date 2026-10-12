@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "individualPngs": 17,
+  "runtimeIds": 13,
+  "conceptsExcludedFromRuntime": 3,
+  "transparentCorners": true,
+  "runtimeManifestMatchesUi": true,
+  "zipIntegrity": "passed",
+  "zipBytes": 11786161,
+  "runtimeAssets": [
+    {
+      "file": "assets/ui/kit/foods-v1.webp",
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 81228,
+      "sha256": "a2da6ce226f44977b9d51f6824ea5ae7d416d90ecb14a7876bceb87697d3e960"
+    },
+    {
+      "file": "assets/ui/kit/foods-v1-mobile.webp",
+      "dimensions": [
+        256,
+        256
+      ],
+      "bytes": 26764,
+      "sha256": "c404f06b7c4c53ce1b8dbba7d0e903711aa00406fe00b7ae905f653daca06278"
+    }
+  ],
+  "review": "All 17 silhouettes inspected in contact-sheet.jpg; desktop ES/EN and mobile captures inspected. Local fixture only, no production or mesh acceptance."
+}
