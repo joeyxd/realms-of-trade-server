@@ -1,5 +1,11 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA15, 2026-10-12 — plan de continuidad reconciliado:**
+[Matriz de cobertura](CONTINUITY-MATRIX.md), [revisión y lectura VPS](delivery/m5-continuity-review.md).
+Alpha.63 observado sano; los montajes comunes siguen nulos. La matriz separa estado guardado, recibo probado y aceptación pública.
+Sigue [give gratuito de bolsa entre cuentas](briefs/m5-ground-pearl-give.md), contrato preparado, implementación pendiente.
+Componer GM/compañeros/control y rutas activas antes de adoptar; conservar los guards actuales y los checkpoints fechados debajo.
+
 **Bucanero — reacción original y retroceso, alpha.62/protocolo 59:**
 [Contrato](briefs/buccaneer-combat-reaction.md) y [entrega](delivery/buccaneer-v1/combat-reaction/README.md).
 `hit_to_body_01` adaptado como capa aditiva al rig armado: torso/cabeza, brazos solo quieto;

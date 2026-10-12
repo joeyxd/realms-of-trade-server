@@ -1,5 +1,11 @@
 # PLAN M5 — «Mundo persistente»
 
+**AREA15, 2026-10-12 — cobertura derivada de los planes:**
+[Matriz por sistema](docs/CONTINUITY-MATRIX.md), [revisión y lectura VPS](docs/delivery/m5-continuity-review.md).
+Alpha.63 observado sano; piloto común todavía apagado. Los checkpoints siguientes conservan sus bases históricas.
+Sigue [give gratuito de bolsa entre dos cuentas](docs/briefs/m5-ground-pearl-give.md), contrato preparado, sin implementar este corte.
+Antes de adoptar: componer recursos GM, compañeros/control y rutas activas con el dueño común; no quitar sus exclusiones.
+
 **AREA15, 2026-10-11 — soltar perlas con recibo; piloto común apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-pearl-leave.md), [contrato](docs/briefs/m5-ground-pearl-leave.md).
 `leave` autenticado reserva cuenta/UIDs antes de IO, conserva progreso ECS y resuelve generación durable;

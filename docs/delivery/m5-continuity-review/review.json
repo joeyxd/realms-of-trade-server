@@ -1,0 +1,60 @@
+{
+  "recordedAt": "2026-10-12T15:52:16.025766+00:00",
+  "baseline": "8fa8f58478310d9c39fa06e39bbabaf81a6ed9d3",
+  "scope": "Document reconciliation and read-only live observation; no runtime tests, SQL writes, restarts, activation or adoption",
+  "deltaFrom": "63d2231",
+  "deltaRuntimeFiles": [
+    "src/client/companionPairing.js",
+    "tools/agent/network-client.mjs",
+    "tools/agent/pair-companion.mjs",
+    "tools/agent/paired-companion.mjs",
+    "tools/qa-companion-pairing-public.mjs",
+    "tools/qa-gm04d.mjs",
+    "tools/qa-special-meals-browser-public.mjs"
+  ],
+  "baselinePlanSha256": {
+    "AGENTS.md": "110f963522d28f1d5c8c2ae5ea1361833f1a053739e37d4452ba5b46f7c5b690",
+    "PLAN-M5.md": "5d18389bb0c9b73d5576fbe394e4f8e250c38dfb7cfdd7e919bfa4139070c1dd",
+    "PLAN-DELIVERY.md": "6124610fac4dfbf56099492450b521dccca40aeac643ea9d6736d41c06072b5d",
+    "DESIGN.md": "aebfa4cb803918652404ee2c77881665e25f4b60d6449c3c63cbe0bc044b9d1c",
+    "PLAN-M4.8.md": "9c414dd3b3cb38ad870f37ba43163cddc30067263b8301a1d9b05d7f617ae200",
+    "PLAN-M6.md": "7adee04aaf996e9aecf4c14adfc2c23a3de865dcd7a9cb9ec19a93b356b9777a",
+    "PLAN-GM-EDITOR.md": "1de71f8fc95ca51f4a5d376b70770eece1b39c96baf006f735e4f9fe6157c20f",
+    "PLAN-EXTRA-LLM.md": "f02639f7b232a8ad67ed31cc8acd68a75ccd17343513e385cf9d165ea9204d90",
+    "PLAN-WEB3.md": "09009bd9ebbadb2c728ff4115177ab59801c9ec803b95ed6d8f80075bfbf38d3"
+  },
+  "localLinksChecked": 62,
+  "localLinkErrors": [],
+  "trackedRuntimePathsInspected": 1610,
+  "runtimeDiff": [],
+  "publicReadOnly": {
+    "health": {
+      "http": 200,
+      "contentType": "text/plain",
+      "body": "ok"
+    },
+    "status": {
+      "http": 200,
+      "contentType": "application/json",
+      "version": "0.6.0-alpha.63",
+      "players": 0,
+      "sockets": 0,
+      "errors": 0,
+      "storage": {
+        "kind": "supabase",
+        "durable": true,
+        "accounts": true,
+        "errors": 0,
+        "unsaved": 0,
+        "groundTransactions": null,
+        "groundPearls": null,
+        "groundDeaths": null,
+        "groundPearlMints": null
+      }
+    }
+  },
+  "sharedGuideSourceSha256BeforeReconciliation": {
+    "PLAN-MASTER.md": "0b59ff399b1d445edae2307b94531feda73100ed381f9b1607a37e58fc5d2704",
+    "PLAN-PROGRESSION.md": "a5d1d982514609fd4d20ca306c8869a0404778630ca061fecc10ef022993c0ea"
+  }
+}

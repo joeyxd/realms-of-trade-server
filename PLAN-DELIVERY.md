@@ -1,5 +1,10 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA15, 2026-10-12 — continuidad de las áreas concurrentes:**
+[Matriz por sistema](docs/CONTINUITY-MATRIX.md), [revisión/evidencia](docs/delivery/m5-continuity-review.md).
+Sigue [give gratuito de bolsa entre cuentas](docs/briefs/m5-ground-pearl-give.md); contrato preparado, implementación pendiente.
+La adopción pública exige componer recursos GM y compañeros/control con el piloto común, que continúa apagado.
+
 **Bucanero — reacción original + retroceso, alpha.62/protocolo 59:**
 [Contrato](docs/briefs/buccaneer-combat-reaction.md), [entrega](docs/delivery/buccaneer-v1/combat-reaction/README.md).
 Golpe original adaptado al rig armado, sin desplazar raíz/piernas ni impedir correr/disparar;

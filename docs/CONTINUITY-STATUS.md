@@ -1,5 +1,11 @@
 # Continuidad de servidor — AREA15
 
+**AREA15, 2026-10-12 — cobertura y cola vigentes:**
+[Matriz por sistema](CONTINUITY-MATRIX.md), [revisión/evidencia](delivery/m5-continuity-review.md).
+Alpha.63 observado sano; piloto común apagado, sin reloj adoptado. Los checkpoints siguientes conservan sus bases históricas.
+Sigue [give gratuito de bolsa entre dos cuentas](briefs/m5-ground-pearl-give.md), contrato preparado, implementación pendiente.
+Después swallow/kill-cofre, composición de GM/compañeros/control, transición detenida/adopción y canario VPS.
+
 **AREA15, 2026-10-11 — soltar perlas con recibo; piloto común apagado:**
 [Entrega/evidencia](delivery/m5-ground-pearl-leave.md), [contrato](briefs/m5-ground-pearl-leave.md).
 `leave` autenticado reserva cuenta/UIDs antes de IO, conserva progreso ECS y resuelve generación durable;
