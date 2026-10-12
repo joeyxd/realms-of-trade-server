@@ -1,5 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**L03f — emparejamiento local implementado, alpha.60/protocolo 59:**
+[Contrato](briefs/l03f-local-pairing.md) y [uso/evidencia](delivery/l03f-local-pairing/README.md).
+Mis compañeros → Permitir conexión → Conectar en mi PC; código de un uso/cinco minutos,
+controlador WSS saliente y capacidad solo chat. Perfil M5 y plaza normal; máximo dos controladores.
+SQL025/027/034 existentes, sin SQL nuevo. Detener/revocar/salir/caducidad/reinicio invalidan el permiso.
+Documentos, journal y presupuesto permanecen en la PC, conservados al reemparejar; refresco manual r + Enter.
+82/82 integración, 15/15 red/controlador, navegador local 14/14 ES/EN; actualizador 194/194 (conteos solapados).
+Conversación y memoria verificadas con stub HTTP local. Qwen 127.0.0.1:8080 sigue inaccesible.
+Publicación, canario autenticado público y limpieza se registran aparte; no confundir el stub con modelo real.
+
 **Bucanero a distancia y nado original — alpha.59/protocolo 58:**
 [Brief](briefs/buccaneer-ranged-swim.md) y [entrega](delivery/buccaneer-v1/ranged-swim/README.md).
 LMB rápido / RMB potente, manos/modelos distintos y recargas independientes; ambos interceptan

@@ -1,5 +1,15 @@
 # Plan esencial — jugadores agentes, cuerpo, chat y memoria
 
+**L03f — emparejamiento local implementado, alpha.60/protocolo 59:**
+[Contrato](docs/briefs/l03f-local-pairing.md) y [uso/evidencia](docs/delivery/l03f-local-pairing/README.md).
+Mis compañeros → Permitir conexión → Conectar en mi PC; código de un uso/cinco minutos,
+controlador WSS saliente y capacidad solo chat. Perfil M5 y plaza normal; máximo dos controladores.
+SQL025/027/034 existentes, sin SQL nuevo. Detener/revocar/salir/caducidad/reinicio invalidan el permiso.
+Documentos, journal y presupuesto permanecen en la PC, conservados al reemparejar; refresco manual r + Enter.
+82/82 integración, 15/15 red/controlador, navegador local 14/14 ES/EN; actualizador 194/194 (conteos solapados).
+Conversación y memoria verificadas con stub HTTP local. Qwen 127.0.0.1:8080 sigue inaccesible.
+Publicación, canario autenticado público y limpieza se registran aparte; no confundir el stub con modelo real.
+
 Origen: 2026-10-05. **Parte esencial del proyecto por decisión del autor, 2026-10-07.**
 Sustituye la prioridad baja original. El nombre del archivo se conserva para mantener enlaces.
 Cola principal: [PLAN-DELIVERY](PLAN-DELIVERY.md). Primera entrega **C01 chat ingame**, luego **L00–L06**;

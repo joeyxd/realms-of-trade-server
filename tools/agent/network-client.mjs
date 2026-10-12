@@ -32,13 +32,17 @@ export class AgentNetworkClient {
   #authorization; #authority = null; #controlAwaiting = null; #directPending = null;
   constructor({ url, grant, name = 'Brisa [IA]', skin = 0, weapon = 0, now = clock,
     onFeedback = () => {}, limits = {}, chatTimeoutMs = 6000, inventoryTimeoutMs = 3000, marketTimeoutMs = 3000,
-    tradeTimeoutMs = 5000, tradeOperations = new Map(), authorization = null, transportFactory = (address) => new WsTransport(address) }) {
+    tradeTimeoutMs = 5000, tradeOperations = new Map(), authorization = null, content = null, transportFactory = (address) => new WsTransport(address) }) {
     const address = new URL(url);
     if (!['ws:', 'wss:'].includes(address.protocol) || address.username || address.password || address.search || address.hash) throw new TypeError('invalid game URL');
     if (!validGrant(grant) || typeof now !== 'function' || typeof onFeedback !== 'function') throw new TypeError('invalid agent configuration');
     if (authorization !== null && (!authorization || Object.keys(authorization).length !== 1 ||
         typeof authorization.token !== 'string' || !authorization.token || authorization.token.length > 8192 || /\s/.test(authorization.token))) throw new TypeError('invalid authorization');
     this.#authorization = authorization === null ? null : { token: authorization.token };
+    if (content !== null && (!content || Object.keys(content).length !== 2 ||
+        !Number.isSafeInteger(content.generation) || content.generation < 0 ||
+        !(content.revisionId === null || typeof content.revisionId === 'string' && /^[a-f0-9]{64}$/.test(content.revisionId)))) throw new TypeError('invalid content revision');
+    const contentIdentity = content === null ? null : copy(content);
     if (typeof name !== 'string' || name.length > 32 || !integer(skin) || skin > 4 || weapon !== 0) throw new TypeError('invalid character configuration');
     this.#limits = labLimits(limits); this.#now = now; this.#feedback = onFeedback;
     this.#name = name; this.#skin = skin; this.#weapon = weapon;
@@ -72,7 +76,8 @@ export class AgentNetworkClient {
       onMessage: (cb) => messages.push(cb), onSnapshot: (cb) => snapshots.push(cb), start() {},
       send: (message) => {
         if (this.#state !== 'connecting' || message.t !== MSG.HELLO) throw new TypeError('unsupported agent message');
-        this.#t.send(this.#authorization ? { ...message, agent: true, token: this.#authorization.token } : message);
+        const hello = contentIdentity === null ? message : { ...message, content: contentIdentity };
+        this.#t.send(this.#authorization ? { ...hello, agent: true, token: this.#authorization.token } : hello);
       },
       sendInput: (tick, command) => this.#t.sendInput(tick, command),
       messages, snapshots,

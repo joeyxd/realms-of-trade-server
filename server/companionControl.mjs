@@ -64,6 +64,17 @@ export class CompanionControlService {
     // Mutations revoke locally before I/O; a resume still has a stopped head until commit.
     return this.ready && entry && entry.status !== 'unavailable' && entry.head.stopped === false;
   }
+  registerCreated(binding, value) {
+    if (!this.managed || !this.ready || !this.host.agentControl.createdBinding(binding.ownerId, binding.characterId)) return false;
+    const existing = this.entries.get(binding.characterId);
+    if (existing) return existing.binding.ownerId === binding.ownerId;
+    let loaded;
+    try { loaded = head(value); } catch { return false; }
+    if (loaded.revision < 1) return false;
+    this.entries.set(binding.characterId, { binding, head: loaded, status: 'ready', operation: null });
+    if (!loaded.stopped) this.host.agentControl.resume(binding.ownerId, binding.characterId);
+    return true;
+  }
   projection(character) {
     if (!this.managed) return {};
     const entry = this.entries.get(character);
@@ -113,7 +124,10 @@ export class CompanionControlService {
     if (entry.operation) return 'busy';
     if (row.epoch !== message.epoch) return 'stale_control';
     if (message.expectedRevision !== entry.head.revision) return 'conflict';
-    if (stopped) this.stopLocal(entry.binding);
+    if (stopped) {
+      this.host.companionPairing?.revokeOwner(entry.binding.ownerId, 'stop');
+      this.stopLocal(entry.binding);
+    }
     if (!this.ready || entry.status !== 'ready') return 'unavailable';
     // Resume permits a fresh authenticated connection only. It cannot renew an old grant.
     if (!stopped && !row.stopped) return 'stale_control';

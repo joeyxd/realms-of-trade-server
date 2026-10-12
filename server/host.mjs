@@ -6,6 +6,7 @@ import { WebSocketServer } from 'ws';
 import { LoggingAim } from './loggingAim.mjs';
 import { CompanionConfigService } from './companionConfig.mjs';
 import { CompanionCreationService } from './companionCreation.mjs';
+import { CompanionPairingService } from './companionPairing.mjs';
 import { CompanionControlService } from './companionControl.mjs';
 import { InferenceConfigService } from './inferenceConfig.mjs';
 import { LocalServer } from '../src/net/localServer.js';
@@ -84,7 +85,8 @@ export class GameHost {
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
     economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, agentTrade = false,
     groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false,
-    inferenceCatalog = [], inferenceConfigAllowMemory = false, companionCreation = false, companionCreationAllowMemory = false } = {}) {
+    inferenceCatalog = [], inferenceConfigAllowMemory = false, companionCreation = false, companionCreationAllowMemory = false,
+    companionPairing = false, companionPairingAllowMemory = false } = {}) {
     if (groundTransactions !== null) {
       groundTransactions = assemblyOptions(groundTransactions, ['journal']);
       if (Object.keys(groundTransactions).length !== 1 || !groundTransactions.journal || !economicOperations ||
@@ -115,7 +117,10 @@ export class GameHost {
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
     if (agentControl !== null && !resolvePlayer) throw new StoreError('configuration');
     if (agentControl !== null && worldId !== null && agentControl.worldId !== worldId) throw new StoreError('configuration');
-    this.agentControl = agentControl === null ? null : new AgentControl(agentControl);
+    if (typeof companionPairing !== 'boolean' || companionPairing &&
+        (!companionCreation || !resolvePlayer || !worldId || groundTransactions !== null)) throw new StoreError('configuration');
+    this.agentControl = agentControl === null ? (companionPairing ? new AgentControl({ worldId, bindings: [], ttlMs: 3600000 }) : null)
+      : new AgentControl(agentControl);
     this.agentPilot = null;
     if (agentPilot !== null) {
       const pilot = assemblyOptions(agentPilot, ['maxAgents']);
@@ -202,6 +207,7 @@ export class GameHost {
     else if (this.economicAuthority) this.server.beforeTick = () => this.economicAuthority.drain();
     this.started = performance.now();
     this.companionControl = new CompanionControlService(this, { allowMemory: companionControlAllowMemory });
+    this.companionPairing = new CompanionPairingService(this, { enabled: companionPairing, allowMemory: companionPairingAllowMemory });
     this.inferenceConfig = new InferenceConfigService(this, { catalog: inferenceCatalog, allowMemory: inferenceConfigAllowMemory });
   }
 
@@ -693,6 +699,7 @@ export class GameHost {
         attributes: { enabled: this.attributeOperations, ready: this.attributeOperations && !!this.worldState?.ready },
         companionCreation: { enabled: this.companionCreation.enabled, ready: this.companionCreation.ready,
           pending: this.companionCreation.busy.size },
+        companionPairing: { enabled: this.companionPairing.enabled, ready: this.companionPairing.ready },
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
@@ -724,6 +731,7 @@ export class GameHost {
   receive(sock, msg) {
     if (this.closing || sock.economicClosing || !this.sockets.has(sock.id)) return;
     this.sweepAgentControl();
+    if (this.companionPairing.handle(sock, msg)) return;
     if (msg.t === MSG.AGENT_INVENTORY) { this.agentInventoryMessage(sock, msg); return; }
     if (msg.t === MSG.AGENT_MARKET) { this.agentMarketMessage(sock, msg); return; }
     if (msg.t === MSG.AGENT_TRADE) { agentTradeMessage(this, sock, msg); return; }
@@ -941,6 +949,7 @@ export class GameHost {
   }
 
   sweepAgentControl() {
+    this.companionPairing?.sweep();
     if (!this.agentControl) return;
     for (const state of this.agentControl.sweep()) this.publishAgentState({ ok: true, state }, null, true);
     for (const sock of this.sockets.values()) {
@@ -1116,18 +1125,28 @@ export class GameHost {
   async join(sock, msg, signal) {
     try {
       if (this.contentSwitching || this.contentIdentity && !sameContentIdentity(msg.content, this.contentIdentity)) throw new StoreError('content_revision');
-      const identity = await untilAbort(Promise.resolve().then(() => this.resolvePlayer(sock.req, msg, { signal })), signal);
+      let identity;
+      if (this.companionPairing.isCredential(msg.token)) {
+        if (msg.agent !== true || msg.importSave === true || msg.save) throw new StoreError('auth');
+        const paired = this.companionPairing.resolveAuthorization(msg.token, sock);
+        if (!paired) throw new StoreError('auth');
+        identity = paired.identity;
+        sock.pairedCompanion = paired;
+        msg = { ...msg, name: paired.record.preset.name, skin: paired.record.preset.skin, weapon: 0 };
+      } else identity = await untilAbort(Promise.resolve().then(() => this.resolvePlayer(sock.req, msg, { signal })), signal);
       if (!this.sockets.has(sock.id) || signal.aborted) return;
       if (msg.agent === true) {
         if (!this.companionControl.allowed(identity)) throw new StoreError('auth');
         // Reserve synchronously before profile I/O; concurrent joins count toward the pilot ceiling.
         if (this.agentPilot && [...this.sockets.values()].filter((s) => s.agentIdentity).length >= this.agentPilot.maxAgents)
           throw new StoreError('auth');
+        if (sock.pairedCompanion && [...this.sockets.values()].filter(s => s !== sock && s.pairedCompanion).length >= 2)
+          throw new StoreError('auth');
         const admitted = this.agentControl?.admit(identity, sock.id, 0);
         if (!admitted?.ok) throw new StoreError('auth');
         sock.agentIdentity = identity;
         sock.agentSessionId = admitted.state.grant.scope.sessionId;
-        if (this.agentPilot) sock.agentView = new AgentPerception();
+        if (this.agentPilot || sock.pairedCompanion) sock.agentView = new AgentPerception();
         this.server.clients.get(sock.id).agentManaged = true;
       } else if (this.agentControl?.binding(identity)) throw new StoreError('auth');
       // This explicitly mounted recovery pilot has no guest/backfill authority.
@@ -1148,9 +1167,10 @@ export class GameHost {
         }
       }
       if (!this.sockets.has(sock.id) || signal.aborted) { this.profiles.close(sock.id); return; }
+      if (sock.pairedCompanion && !this.companionPairing.admissionCurrent(sock)) throw new StoreError('auth');
       if (sock.agentIdentity && !this.agentControl.authorize(sock.id, this.agentControl.byClient(sock.id)?.grant.controlRevision)) throw new StoreError('auth');
       if (this.closing || this.groundAuthority && !this.groundAuthority.canMutate() || this.economicAuthority?.busy || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) throw new StoreError('busy');
-      const admittedMessage = this.agentPilot && sock.agentIdentity ?
+      const admittedMessage = (this.agentPilot || sock.pairedCompanion) && sock.agentIdentity ?
         { ...msg, name: `${String(msg.name ?? 'Brisa').replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069<>]/g, '').replace(/\[IA\]/gi, '').trim().slice(0, 11)} [IA]` } : msg;
       this.server.receive(sock.id, admittedMessage, profile);
       if (!this.server.clients.get(sock.id)?.entity) {
@@ -1356,6 +1376,7 @@ export class GameHost {
 
   onClose(sock, force = false) {
     if (!this.sockets.has(sock.id)) return;
+    this.companionPairing?.onClose(sock);
     if (!force && this.economicAuthority?.busy && !this.economicAuthority.failed) {
       // Keep the exact actor/profile alive until a confirmed operation is applied or fenced.
       sock.economicClosing = true; sock.in.close(); sock.out.close();
@@ -1384,13 +1405,13 @@ export class GameHost {
         attributes: { enabled: this.attributeOperations && this.worldState?.ready === true &&
           !this.worldState.failed && c?.serverProfile === true && !!s && !s.closed && !s.failed && !sock.agentIdentity } };
     }
-    if (this.agentPilot) {
+    if (this.agentPilot || this.companionPairing?.enabled) {
       const inventoryDenial = (msg.t === MSG.AGENT_INVENTORY_RESULT && msg.ok === false && msg.inventory === null) ||
         (msg.t === MSG.AGENT_MARKET_RESULT && msg.ok === false && msg.market === null) ||
         (msg.t === MSG.AGENT_TRADE_RESULT && msg.ok === false && msg.receipt === null) ||
         (msg.t === MSG.AGENT_GOODS_BUDGET_RESULT && msg.ok === false && msg.budget === null);
       // Identity is unresolved before HELLO/profile admission: no spectator lane may leak the world.
-      if (!sock.worldAdmitted && !inventoryDenial && ![MSG.WELCOME, MSG.ERROR, MSG.FULL, MSG.PONG, MSG.AGENT_STATE].includes(msg.t) &&
+      if (!sock.worldAdmitted && !inventoryDenial && ![MSG.WELCOME, MSG.ERROR, MSG.FULL, MSG.PONG, MSG.AGENT_STATE, MSG.AGENT_COMPANION_PAIR_RESULT].includes(msg.t) &&
           !(msg.t === MSG.SPAWN && msg.e?.id === this.server.clients.get(id)?.entity)) return;
       if (msg.t === MSG.WELCOME) {
         sock.worldAdmitted = true;
@@ -1407,10 +1428,10 @@ export class GameHost {
           !this.agentControl.authorize(id, this.agentControl.byClient(id)?.grant.controlRevision)) return;
     }
     if (msg.t === MSG.WELCOME && sock.agentIdentity) msg = { ...msg, control: this.agentControl.byClient(id),
-      ...(this.agentPilot ? { perception: AGENT_PILOT_POLICY } : {}) };
+      ...(this.agentPilot || sock.pairedCompanion ? { perception: AGENT_PILOT_POLICY } : {}) };
     const messages = sock.agentView ? sock.agentView.project(msg, this.server.world, this.server.clients.get(id)?.entity) : [msg];
     for (let message of messages) {
-      if (this.agentPilot && message.t === MSG.SPAWN) {
+      if ((this.agentPilot || this.companionPairing?.enabled) && message.t === MSG.SPAWN) {
         const clientId = this.server.world.ecs.clientId[message.e.id];
         if (this.sockets.get(clientId)?.agentIdentity) message = { ...message, e: { ...message.e, controller: 'agent' } };
       }
