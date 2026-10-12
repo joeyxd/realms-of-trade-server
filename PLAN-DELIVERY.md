@@ -63,6 +63,9 @@ Publicado en c146b08: imagen sana, actualizador 194/194, 14 hashes de imagen y 8
 portada Chrome verificada. Revisión posterior: alpha.64/7b34381 sana, pairing disponible y sin pendientes.
 Qwen apagado por el autor; sin llamadas nuevas. [L03g presencia](docs/briefs/l03g-companion-presence.md)
 es propuesta sin implementar: ingreso/retiro seguro separados de mente y emparejamiento; hoy solo chat.
+Recorrido en cuenta real del 2026-10-12: Brisa creada por UI, documentos y detención guardados;
+centro sin conexiones disponibles, sin código ni controlador. Refresco de lista tras creación
+corregido y validado 33/33 local; aceptación pública del ajuste pendiente del actualizador.
 
 **Bucanero a distancia + swim, alpha.59/protocolo 58:**
 [Contrato](docs/briefs/buccaneer-ranged-swim.md) y [entrega](docs/delivery/buccaneer-v1/ranged-swim/README.md).

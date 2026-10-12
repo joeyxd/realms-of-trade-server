@@ -15,7 +15,8 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 let serial = 0;
 
 async function until(predicate) {
-  const end = Date.now() + 5000;
+  // Bounded network observations allow for concurrent world initialization on shared CPUs.
+  const end = Date.now() + 15000;
   while (Date.now() < end) { const result = predicate(); if (result) return result; await pause(5); }
   throw new Error('condition timeout');
 }
@@ -125,6 +126,35 @@ async function resumeOwner(client, characterKey) {
 
 async function claim(client, code) { return request(client, 'claim', { code }); }
 
+test('pairing status exposes a newly created stopped companion without admitting a controller', async t => {
+  const { app, store, connect } = await room(t);
+  const owner = await connect('owner'), character = await ownerOf(app, owner, false);
+  const scope = { world: WORLD, owner: OWNER, character };
+  const initialControl = await store.loadCompanionControl(scope);
+  assert.deepEqual((await controlList(owner)).companions, []);
+
+  const loaded = await request(owner, 'load');
+  assert.equal(loaded.ok, true);
+  assert.equal(loaded.code, null);
+  const listed = await controlList(owner);
+  assert.equal(listed.companions.length, 1);
+  const row = listed.companions[0];
+  assert.equal(row.characterKey, character);
+  assert.equal(row.online, false);
+  assert.equal(row.active, false);
+  assert.equal(row.stopped, true);
+  assert.equal(row.control.status, 'ready');
+  assert.equal(row.control.stopped, true);
+  assert.equal(row.control.revision, initialControl.revision);
+  assert.deepEqual(row.capabilities, ['chat']);
+  assert.deepEqual(await store.loadCompanionControl(scope), initialControl);
+  assert.equal(app.game.companionPairing.codes.size, 0);
+
+  assert.equal((await request(owner, 'load')).ok, true);
+  assert.equal((await controlList(owner)).companions.length, 1);
+  assert.deepEqual(await store.loadCompanionControl(scope), initialControl);
+});
+
 test('pairing is account scoped, requires durable resume, and consumes code and bootstrap token once', async t => {
   const { app, connect } = await room(t);
   const owner = await connect('owner'), other = await connect('other'), guest = await connect(null);
@@ -177,6 +207,7 @@ test('new code rotates pending code and active controller; owner disconnect inva
   assert.equal(paired.admission.t, MSG.WELCOME);
 
   const third = await request(owner, 'issue');
+  await until(() => paired.ws.readyState === WebSocket.CLOSED || paired.ws.readyState === WebSocket.CLOSING);
   assert.equal(paired.ws.readyState === WebSocket.CLOSED || paired.ws.readyState === WebSocket.CLOSING, true);
   assert.equal(app.game.agentControl.byCharacter(character).state, 'revoked');
   const ownerSock = app.game.companionPairing.owners.get(OWNER).ownerSock;
@@ -244,6 +275,7 @@ test('durable owner stop invalidates a pending code and active paired session im
   assert.equal(stopped.ok, true);
   await until(() => app.game.agentControl.byCharacter(character)?.state === 'revoked');
   assert.equal(app.game.agentControl.byCharacter(character).task, null);
+  await until(() => paired.ws.readyState === WebSocket.CLOSED || paired.ws.readyState === WebSocket.CLOSING);
   assert.equal(paired.ws.readyState === WebSocket.CLOSED || paired.ws.readyState === WebSocket.CLOSING, true);
 });
 

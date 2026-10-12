@@ -628,8 +628,19 @@ async function boot() {
   const companionPairingEditor = new CompanionPairingUI(companionsPanel.panel, { client: companionPairing,
     lang: getLocale(), onClose: () => companionsPanel.closePairing() });
   companionsPanel.setPairingEditor(companionPairingEditor);
-  companionPairing.subscribe(state => { companionsPanel.render(); if (state.status === 'ready') companions.refresh(); });
-  companionCreation.subscribe(() => companionsPanel.render());
+  let listedCreationKey = null;
+  companionPairing.subscribe(state => {
+    companionsPanel.render();
+    if (state.status === 'error' || state.status === 'uncertain') listedCreationKey = null;
+    if (state.status === 'ready') companions.refresh();
+  });
+  companionCreation.subscribe(state => {
+    companionsPanel.render();
+    if (state.status === 'signed_out' || state.status === 'offline') listedCreationKey = null;
+    const key = state.status === 'ready' && state.record?.characterKey;
+    // Hydrate the owner list after creation; status loading never issues a code or resumes control.
+    if (key && key !== listedCreationKey && companionPairing.load({ refresh: true })) listedCreationKey = key;
+  });
   companions.subscribe((state) => companionsPanel.setState(state));
   onLocaleChange(() => { companionsPanel.setLanguage(getLocale()); companionConfigEditor.setLanguage(getLocale()); inferenceConfigEditor.setLanguage(getLocale()); companionCreationEditor.setLanguage(getLocale()); companionPairingEditor.setLanguage(getLocale()); });
   document.addEventListener('pointerdown', (event) => {
