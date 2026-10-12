@@ -9,6 +9,14 @@ Apply conjunto o rollback/cerco, reintento exacto y dos SIGKILL locales sin efec
 Sin SQL/flag/protocolo nuevos. Montaje común apagado; venta con pago y perla tragada no entran en give.
 Siguen swallow/kill-cofre, composición GM/compañeros/control/bots, adopción detenida y canario VPS.
 
+**L03f — recorrido desde la cuenta real, 2026-10-12:**
+[Evidencia y límites](delivery/l03f-local-pairing/README.md#recorrido-en-cuenta-real-y-refresco-de-lista).
+Brisa creada desde el wizard del alfa.64, con documentos guardados y detenida.
+Centro de inferencia carga sin conexiones disponibles; no se generó código, inició
+controlador ni consultó Qwen. Lista tras creación corregida con lectura serial de
+estado; 33/33 pruebas focales locales. Refresco automático público pendiente del
+relevo habitual. L03g sigue como propuesta sin aprobación ni implementación.
+
 **AREA03 — arte de cocina y paquete Tripo, 2026-10-12:**
 [Atlas, PNG individuales y ZIP](art/cooking-icons-v1/README.md). 17 referencias transparentes:
 básicos, tres comidas especiales, coco/resina/antorcha reutilizados y sal/lima/hierbas propuestas.

@@ -1,0 +1,226 @@
+TAP version 13
+# Subtest: wizard loads durable availability, previews documents, and requires explicit confirmation
+ok 1 - wizard loads durable availability, previews documents, and requires explicit confirmation
+  ---
+  duration_ms: 7.6569
+  type: 'test'
+  ...
+# Subtest: saved owner row is read-only and shows identity, stopped status, and stored documents
+ok 2 - saved owner row is read-only and shows identity, stopped status, and stored documents
+  ---
+  duration_ms: 1.997
+  type: 'test'
+  ...
+# Subtest: unavailable backend leaves reload and back usable and never enables creation
+ok 3 - unavailable backend leaves reload and back usable and never enables creation
+  ---
+  duration_ms: 0.6223
+  type: 'test'
+  ...
+# Subtest: randomize, language switch, and mobile layout preserve a single scroll area
+ok 4 - randomize, language switch, and mobile layout preserve a single scroll area
+  ---
+  duration_ms: 4.5328
+  type: 'test'
+  ...
+# Subtest: trait changes preserve keyboard focus and sign-out clears every saved private field without changing offline state
+ok 5 - trait changes preserve keyboard focus and sign-out clears every saved private field without changing offline state
+  ---
+  duration_ms: 1.2861
+  type: 'test'
+  ...
+# Subtest: load, issue, and revoke use the authenticated pairing contract and private one-use code
+ok 6 - load, issue, and revoke use the authenticated pairing contract and private one-use code
+  ---
+  duration_ms: 3.9606
+  type: 'test'
+  ...
+# Subtest: creation refresh waits for the in-flight read, then ignores its stale receipt
+ok 7 - creation refresh waits for the in-flight read, then ignores its stale receipt
+  ---
+  duration_ms: 0.618
+  type: 'test'
+  ...
+# Subtest: queued creation refresh retries one timed-out read and is discarded on disconnect or sign-out
+ok 8 - queued creation refresh retries one timed-out read and is discarded on disconnect or sign-out
+  ---
+  duration_ms: 1.0744
+  type: 'test'
+  ...
+# Subtest: malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+ok 9 - malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+  ---
+  duration_ms: 0.5039
+  type: 'test'
+  ...
+# Subtest: a small server clock lead accepts the code without displaying it beyond five minutes
+ok 10 - a small server clock lead accepts the code without displaying it beyond five minutes
+  ---
+  duration_ms: 0.3701
+  type: 'test'
+  ...
+# Subtest: failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+ok 11 - failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+  ---
+  duration_ms: 0.4654
+  type: 'test'
+  ...
+# Subtest: account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+ok 12 - account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+  ---
+  duration_ms: 31.4661
+  type: 'test'
+  ...
+# Subtest: stale correlation is ignored and unsafe controller URLs are not retained
+ok 13 - stale correlation is ignored and unsafe controller URLs are not retained
+  ---
+  duration_ms: 0.5206
+  type: 'test'
+  ...
+# Subtest: pairing status exposes a newly created stopped companion without admitting a controller
+ok 14 - pairing status exposes a newly created stopped companion without admitting a controller
+  ---
+  duration_ms: 718.2003
+  type: 'test'
+  ...
+# Subtest: pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+ok 15 - pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+  ---
+  duration_ms: 778.4163
+  type: 'test'
+  ...
+# Subtest: new code rotates pending code and active controller; owner disconnect invalidates pending code
+ok 16 - new code rotates pending code and active controller; owner disconnect invalidates pending code
+  ---
+  duration_ms: 559.3048
+  type: 'test'
+  ...
+# Subtest: expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+ok 17 - expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+  ---
+  duration_ms: 30812.0346
+  type: 'test'
+  ...
+# Subtest: durable owner stop invalidates a pending code and active paired session immediately
+not ok 18 - durable owner stop invalidates a pending code and active paired session immediately
+  ---
+  duration_ms: 6437.2077
+  type: 'test'
+  location: 'tests\\companion-pairing-network.test.mjs:257:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    false !== true
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (tests/companion-pairing-network.test.mjs:278:10)
+    runNextTicks (node:internal/process/task_queues:65:5)
+    process.processTimers (node:internal/timers:538:9)
+    async Test.run (node:internal/test_runner/test:1125:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+  ...
+# Subtest: owner disconnect during paired profile I/O prevents late admission and welcome
+ok 19 - owner disconnect during paired profile I/O prevents late admission and welcome
+  ---
+  duration_ms: 11375.3613
+  type: 'test'
+  ...
+# Subtest: missing durable prerequisites keep pairing unavailable without blocking creation
+ok 20 - missing durable prerequisites keep pairing unavailable without blocking creation
+  ---
+  duration_ms: 18286.9962
+  type: 'test'
+  ...
+# Subtest: issue reports a missing creation and content changes invalidate claims and admitted sessions
+ok 21 - issue reports a missing creation and content changes invalidate claims and admitted sessions
+  ---
+  duration_ms: 7230.1437
+  type: 'test'
+  ...
+# Subtest: signed-out and offline snapshots discard companion rows and language changes update labels
+ok 22 - signed-out and offline snapshots discard companion rows and language changes update labels
+  ---
+  duration_ms: 2.9427
+  type: 'test'
+  ...
+# Subtest: stop is single-flight, keeps rows visible while pending, and never renders callback errors
+ok 23 - stop is single-flight, keeps rows visible while pending, and never renders callback errors
+  ---
+  duration_ms: 2.3003
+  type: 'test'
+  ...
+# Subtest: unconfigured or inactive rows have no stop action and refresh errors use fixed copy
+ok 24 - unconfigured or inactive rows have no stop action and refresh errors use fixed copy
+  ---
+  duration_ms: 0.9394
+  type: 'test'
+  ...
+# Subtest: panel visibility callback fires only on transitions and stopped is distinct from offline
+ok 25 - panel visibility callback fires only on transitions and stopped is distinct from offline
+  ---
+  duration_ms: 0.7449
+  type: 'test'
+  ...
+# Subtest: ready has a truthful label, setup note persists, and known error codes use fixed localized copy
+ok 26 - ready has a truthful label, setup note persists, and known error codes use fixed localized copy
+  ---
+  duration_ms: 0.8404
+  type: 'test'
+  ...
+# Subtest: modal keyboard flow traps Tab at both ends while native traversal and Escape remain available
+ok 27 - modal keyboard flow traps Tab at both ends while native traversal and Escape remain available
+  ---
+  duration_ms: 2.3112
+  type: 'test'
+  ...
+# Subtest: dialog portals to the stage UI and the HUD toggle opens and closes it
+ok 28 - dialog portals to the stage UI and the HUD toggle opens and closes it
+  ---
+  duration_ms: 0.5774
+  type: 'test'
+  ...
+# Subtest: refresh focus moves to close before the refresh button becomes disabled
+ok 29 - refresh focus moves to close before the refresh button becomes disabled
+  ---
+  duration_ms: 0.5779
+  type: 'test'
+  ...
+# Subtest: durable stop is distinguished from the local latch and owner resume keeps focus and explains reconnection
+ok 30 - durable stop is distinguished from the local latch and owner resume keeps focus and explains reconnection
+  ---
+  duration_ms: 3.563
+  type: 'test'
+  ...
+# Subtest: pending, unavailable, and malformed durable control never show stop or resume actions
+ok 31 - pending, unavailable, and malformed durable control never show stop or resume actions
+  ---
+  duration_ms: 0.9151
+  type: 'test'
+  ...
+# Subtest: an unconfirmed local stop offers separate confirm-stop and allow-connection actions; revision zero is only the default
+ok 32 - an unconfirmed local stop offers separate confirm-stop and allow-connection actions; revision zero is only the default
+  ---
+  duration_ms: 1.0064
+  type: 'test'
+  ...
+# Subtest: UI normalization preserves pending operation and character for durable controls
+ok 33 - UI normalization preserves pending operation and character for durable controls
+  ---
+  duration_ms: 0.4555
+  type: 'test'
+  ...
+1..33
+# tests 33
+# suites 0
+# pass 32
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 78398.992

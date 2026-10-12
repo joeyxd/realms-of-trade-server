@@ -108,6 +108,37 @@ y escrituras pendientes en esa captura. La revisión concurrente no cambió serv
 protocolo ni módulos de compañero; el helper se fijó a alpha.64 para terminar la
 limpieza existente. No se repitió el canario ni la inferencia.
 
+## Recorrido en cuenta real y refresco de lista
+
+**Recorrido desde la cuenta real, 2026-10-12, alpha.64.** Chrome autenticado en
+la partida existente: Mis compañeros → Crear compañero → revisar documentos →
+confirmar creación. Brisa quedó preparada y detenida, como recolectora cálida,
+curiosa, prudente y bondadosa, con aspecto Explorer. La ficha muestra personalidad
+y objetivos guardados. El Centro de inferencia carga y avisa que esta cuenta aún
+no tiene conexiones; no se indicó gasto, proveedor ni URL. Se abrió Conectar en
+mi PC para consultar estado, sin generar código, permitir conexión ni iniciar
+controlador. No hubo llamadas al modelo ni aceptación nueva de conversación o memoria.
+Las capturas de la cuenta permanecen privadas en `.scratch`, fuera de esta entrega.
+
+El recorrido detectó una lista vacía al terminar el wizard: la fila aparecía al
+cargar después el estado de emparejamiento. El cliente ahora solicita esa lectura
+tras recibir una creación guardada y refresca la lista al confirmarla. Si otra
+lectura empezó antes de la creación, encola una sola lectura posterior; no solapa
+operaciones ni reemplaza generación/revocación. Cuenta, sesión y timeout conservan
+sus límites. Un fallo posterior permite reintentar al cargar de nuevo el panel,
+sin bucle automático. La prueba de red confirma una sola fila, sin código, cuerpo
+conectado ni cambio de revisión o detención durable.
+
+La validación local y sus intentos quedan en [owner-ui-fix.tap](owner-ui-fix.tap)
+y [owner-ui-fix-recheck.tap](owner-ui-fix-recheck.tap). El primer registro dio 32/33:
+una comprobación existente observaba el socket remoto antes de recibir el cierre.
+Ahora las dos comprobaciones de cierre esperan ese evento con límite; el helper
+de red permite hasta 15 segundos ante inicialización concurrente del mundo.
+La repetición final pasó **33/33**, con archivos seriales, sin repetir la suite general.
+Esto no cambia tiempos del servidor ni acredita rendimiento. La aceptación pública
+del refresco automático queda pendiente del relevo habitual del actualizador;
+el recorrido público anterior verificó la creación y su estado detenido.
+
 ## Presencia: comportamiento actual y propuesta
 
 La UI prepara la ficha y permite emparejar, pero todavía necesita el controlador
