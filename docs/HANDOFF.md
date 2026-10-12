@@ -1,5 +1,13 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**CH01, 2026-10-12 ? personajes independientes, candidato alpha.65/protocolo 60:**
+[Contrato](briefs/CH01-character-slots.md), [entrega](delivery/character-slots/README.md).
+Tres slots por cuenta; perfil hist?rico conservado con el mismo UUID, Bucanero nuevo con pistolas.
+Auth owner separado del perfil; compa?eros/GM/wallet mantienen permisos de cuenta.
+SQL+memoria 10/10, slots 17/17, cuentas/perlas 75/75 y regresiones de servicios 21/21.
+Chrome local invitado y cuenta: 77 ? 0 ? 77 monedas, pistolas nuevas, seis capturas inspeccionadas.
+**SQL038 e instalaci?n alpha pendientes**: no hay acceso SQL desde esta sesi?n; no publicar antes de verificar readiness.
+
 **L03f — recorrido desde la cuenta real, 2026-10-12:**
 [Evidencia y límites](delivery/l03f-local-pairing/README.md#recorrido-en-cuenta-real-y-refresco-de-lista).
 Brisa creada desde el wizard del alfa.64, con documentos guardados y detenida.

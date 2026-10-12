@@ -60,8 +60,11 @@ try {
     await page.goto(`${base}/?q=low&debug`, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForFunction(() => window.__mn && !document.querySelector('#btn-play').disabled, null, { timeout: 180000 });
     await page.waitForFunction(() => window.__mn.st.mode === 'title' && document.querySelector('#fade').style.display === 'none');
+    // Freeze only WebGL rendering during form checks; real HTTP, WSS and server simulation continue.
+    await page.evaluate(() => { window.__mn.loop.running = false; });
     await page.locator('#btn-play').click({ force: true });
     await page.locator('.player-characters-overlay:not([hidden])').waitFor({ timeout: 25000 });
+    assert.ok((await page.locator('.player-characters-intro').innerText()).includes(accountMode ? 'Guardados en tu cuenta' : 'solo en este navegador'));
     console.log('Character lobby ready');
   };
   const play = async () => {
@@ -69,6 +72,7 @@ try {
     await page.waitForFunction(() => window.__mn.st.mode === 'playing', null, { timeout: 25000 });
     await page.waitForFunction(() => window.__mn.client.profile, null, { timeout: 10000 });
     assert.equal(await page.locator('.player-characters-overlay').isVisible(), false);
+    if (accountMode) assert.deepEqual([...server.game.profiles.clients.values()].map(session => session.ownerKey), [owner]);
     return page.evaluate(() => ({ gold: window.__mn.client.profile.gold, weapon: window.__mn.client.profile.eq.weapon.b, skin: window.__mn.settings.skin }));
   };
   await boot();

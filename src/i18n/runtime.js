@@ -232,6 +232,18 @@ export default {
     "No se pudo cargar o guardar el personaje. Prueba de nuevo en un rato.",
     "Your character could not be loaded or saved. Try again in a moment."
   ],
+  "join.characterForbidden": [
+    "Este personaje no pertenece a tu cuenta. Abre de nuevo tus personajes.",
+    "This character does not belong to your account. Open your characters again."
+  ],
+  "join.charactersUnavailable": [
+    "Los personajes guardados no están disponibles. Vuelve a intentarlo.",
+    "Saved characters are unavailable. Please try again."
+  ],
+  "join.charactersRequired": [
+    "Elige uno de tus personajes guardados para continuar.",
+    "Choose one of your saved characters to continue."
+  ],
   "join.legacy": [
     "Esta partida no se puede importar: necesita una firma válida y una identidad de pirata.",
     "This save cannot be imported: it needs a valid signature and a pirate identity."

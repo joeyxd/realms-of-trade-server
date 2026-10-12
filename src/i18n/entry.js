@@ -62,7 +62,7 @@ export default {
   'account.characterName': ['Nombre del pirata', 'Pirate name'],
   'account.import': ['Traer mi partida anterior', 'Import my previous save'],
   'account.importNote': ['Solo al crear el primer personaje. Si ya tienes partida, continuarás con ella.', 'Only when creating your first character. If you already have a save, you will continue with it.'],
-  'account.ready': ['¡ZARPAR!', 'SET SAIL!'],
+  'account.ready': ['Elegir personaje →', 'Choose character →'],
   'account.logout': ['Cambiar cuenta', 'Switch account'],
   'account.guest': ['Seguir como invitado', 'Continue as guest'],
   'account.guestNote': ['También puedes explorar sin una cuenta.', 'You can also explore without an account.'],

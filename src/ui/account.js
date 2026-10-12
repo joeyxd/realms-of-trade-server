@@ -189,7 +189,7 @@ export class AccountPanel {
     this.overlay.querySelector('.account-character-preview').hidden = true;
     this.characterName.closest('label').hidden = true;
     this.overlay.querySelector('.account-crew-grid').hidden = true;
-    this.overlay.querySelector('.account-ready').textContent = 'Elegir personaje →';
+    this.overlay.querySelector('.account-ready').textContent = t('account.ready');
     if (!localeChange && signed && !state.busy && !this.wasSignedIn && !this.overlay.hidden) this.refreshWallet();
     if (!localeChange && state.busy && !this.overlay.hidden) this.dialog.focus({ preventScroll: true });
     if (!localeChange && signed && !state.busy && !this.wasSignedIn && !this.overlay.hidden) this.overlay.querySelector('.account-ready').focus({ preventScroll: true });

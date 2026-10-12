@@ -569,7 +569,7 @@ async function boot() {
   const saveSlot = () => (st.online ? 'online.' + (() => { try { return new URL(transport.url).host; } catch { return 'server'; } })() : 'solo');
   const accountAuth = new AccountAuth({ httpBase: st.online ? httpUrlFor(transport.url) : null });
   const playerCharacters = new PlayerCharacters({ baseUrl: st.online ? httpUrlFor(transport.url) : null,
-    savePrefix: GAME.saveKey + '.save.', getIdentity: () => st.online && accountAuth.state.signedIn && !accountAuth.state.guestChoice
+    savePrefix: GAME.saveKey + '.save.', getIdentity: () => st.online && !accountAuth.state.guestChoice
       ? accountAuth.sessionIdentity() : null });
   let characterRoster = null;
   const charactersPanel = new PlayerCharactersPanel({ parent: $('#ui'),
@@ -1116,7 +1116,7 @@ async function boot() {
       music.start();
       sfx.play();
       saveSettings();
-      const identity = st.online && accountAuth.state.signedIn && !accountAuth.state.guestChoice ? await accountAuth.sessionIdentity() : null;
+      const identity = st.online && !accountAuth.state.guestChoice ? await accountAuth.sessionIdentity() : null;
       if (identity && characterRoster?.mode !== 'account' || !identity && characterRoster?.mode === 'account') throw new Error('character_scope');
       const account = identity ? { token: identity.token, characterId: selected.id } : null;
       joiningCompanionAccount = identity?.accountId ?? null;
@@ -1139,8 +1139,9 @@ async function boot() {
             auth: rich('join.auth'),
             auth_disabled: rich('join.disabled'),
             session: rich('join.session'),
-            forbidden: 'Este personaje no pertenece a tu cuenta. Abre de nuevo tus personajes.',
-            characters_unavailable: 'Los personajes guardados no están disponibles. Vuelve a intentarlo.',
+            forbidden: rich('join.characterForbidden'),
+            characters_unavailable: rich('join.charactersUnavailable'),
+            characters_required: rich('join.charactersRequired'),
             storage: rich('join.storage'),
             legacy: rich('join.legacy'),
             legacy_used: rich('join.used'),

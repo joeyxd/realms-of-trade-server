@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**CH01, 2026-10-12 ? personajes independientes, candidato alpha.65/protocolo 60:**
+[Contrato](docs/briefs/CH01-character-slots.md), [entrega](docs/delivery/character-slots/README.md).
+Tres slots por cuenta; perfil hist?rico conservado con el mismo UUID, Bucanero nuevo con pistolas.
+Auth owner separado del perfil; compa?eros/GM/wallet mantienen permisos de cuenta.
+SQL+memoria 10/10, slots 17/17, cuentas/perlas 75/75 y regresiones de servicios 21/21.
+Chrome local invitado y cuenta: 77 ? 0 ? 77 monedas, pistolas nuevas, seis capturas inspeccionadas.
+**SQL038 e instalaci?n alpha pendientes**: no hay acceso SQL desde esta sesi?n; no publicar antes de verificar readiness.
+
 **AREA03 — iconos de cocina y referencias Tripo, 2026-10-12:**
 [Entrega de arte](docs/art/cooking-icons-v1/README.md): 17 PNG con alfa y ZIP, ingredientes y
 tres platos con identidad propia; sal/lima/hierbas son propuestas visuales. Atlas 81/27 KB,
