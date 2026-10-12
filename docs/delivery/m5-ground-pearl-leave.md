@@ -74,3 +74,19 @@ no acredita gameplay durable de `leave` activado en producción.
 Se comprobó físicamente `BP_JigServerSave.uasset` (580554 B) en ActionRPG bajo `C:\Unreal`.
 Es Blueprint y no ejecuta el contrato Node/Postgres; se reutilizan el helper JS y los
 coordinadores existentes. Fuentes Unreal intactas, sin arte nuevo ni cambios visuales.
+
+## Publicación del código inerte
+
+El actualizador instaló `9ea14a052ea34bed683959c2a9fcd36a1f186aea` con una autoridad sana y timer activo:
+[estado](m5-ground-pearl-leave/final-status.json). La imagen exacta pasó
+**194/194** comprobaciones del actualizador y **96/96** adicionales
+sin red ni credenciales: [validación](m5-ground-pearl-leave/updater-validation.json),
+[imagen](m5-ground-pearl-leave/exact-image-tests.json). Los 16 módulos coinciden por
+SHA256 con Git y las fuentes locales normalizadas a LF: [fuentes](m5-ground-pearl-leave/published-source-check.json).
+La entrada pública ordinaria pasó **6/6**, alpha.59/protocolo 58:
+[smoke](m5-ground-pearl-leave/public-smoke.json).
+
+La [lectura final](m5-ground-pearl-leave/final-domain.json) conserva los montajes
+comunes nulos, sin reloj común ni filas/intenciones de suelo. No se ejecutó SQL,
+adopción ni gameplay durable de QA en el VPS. Los tests de imagen usan memoria;
+la durabilidad corresponde a los tests SQL/SIGKILL locales. Conteos solapados.
