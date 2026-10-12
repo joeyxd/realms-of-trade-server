@@ -27,7 +27,7 @@ export async function privateLine(input, output) {
   return await new Promise((resolve, reject) => {
     let value = '';
     const finish = (error = null) => {
-      input.off('keypress', onKey); input.setRawMode(false); output.write('\n');
+      input.off('keypress', onKey); input.setRawMode(false); input.pause?.(); output.write('\n');
       if (error) reject(error); else resolve(value);
     };
     const onKey = (text, key = {}) => {
@@ -78,6 +78,7 @@ async function main() {
   process.once('SIGINT', stop); process.once('SIGTERM', stop);
   await stopped;
   if (process.stdin.isTTY && typeof process.stdin.setRawMode === 'function') process.stdin.setRawMode(false);
+  process.stdin.pause();
   process.stdin.off('keypress', onCommand);
   process.removeListener('SIGINT', stop); process.removeListener('SIGTERM', stop);
 }
