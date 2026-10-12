@@ -1,0 +1,128 @@
+{
+  "at": "2026-10-12T17:04:54.665Z",
+  "scope": "Read-only deployed status and service-role readiness RPCs",
+  "checks": {
+    "mn_torch_resin_coconut_ready": {
+      "data": null,
+      "error": {
+        "code": "PGRST202",
+        "message": "Could not find the function public.mn_torch_resin_coconut_ready without parameters in the schema cache"
+      }
+    },
+    "mn_fire_operations_ready": {
+      "data": {
+        "version": 1
+      },
+      "error": null
+    },
+    "mn_canteen_operations_ready": {
+      "data": {
+        "version": 1
+      },
+      "error": null
+    }
+  },
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.64",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 181014,
+    "uptime": 3113,
+    "stepMs": 1.363,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true,
+        "meals": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "companionPairing": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 4435,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 41606,
+      "late": 14138,
+      "trimmed": 1412,
+      "clamped": 5055,
+      "kbOut": 2004436.5,
+      "kbIn": 13915.8,
+      "dropped": 0
+    }
+  },
+  "flags": {
+    "MN_STARTER_WORKSHOP": "1",
+    "MN_FIRE_OPERATIONS": "1",
+    "MN_CANTEEN_OPERATIONS": "1",
+    "MN_TORCH_RESIN_COCONUT_OPERATIONS": null
+  }
+}

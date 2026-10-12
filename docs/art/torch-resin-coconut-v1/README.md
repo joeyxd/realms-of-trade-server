@@ -80,4 +80,3 @@ Composition/framing: centered three-quarter view from slightly above, full objec
 Lighting/mood: soft even neutral studio illumination; no cast shadow.
 Constraints: exactly one coconut, no cut half, no exposed white flesh, no leaves, no basket, no other objects, no ground plane, no frame, no text, no watermark, transparent background.
 ```
-

@@ -22,7 +22,7 @@ const PRIVATE = path.join(ROOT, '.scratch', 'qa-companion-pairing');
 const MANIFEST_PATH = path.join(PRIVATE, 'cleanup-pending.json');
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const REQUIRED_MANIFEST_KEYS = ['ownerId', 'characterId', 'creationId', 'marker'];
-const EXPECTED_VERSION = '0.6.0-alpha.63';
+const EXPECTED_VERSION = '0.6.0-alpha.64';
 const STUB_REPLY = 'Brisa te responde.';
 const CHAT_TEXT = 'Brisa, comparte una palabra sobre el mar.';
 const PAIRED_NAME = 'Brisa [IA]';
@@ -51,7 +51,7 @@ assert.equal(GAME.version, EXPECTED_VERSION, 'review the public pairing canary a
 assert.equal(PROTOCOL_VERSION, 59, 'review the public pairing canary after protocol changes');
 const expectedVersion = process.env.MN_QA_EXPECTED_VERSION || EXPECTED_VERSION;
 assert.ok(expectedVersion === EXPECTED_VERSION || cleanupPath &&
-  ['0.6.0-alpha.60', '0.6.0-alpha.62'].includes(expectedVersion),
+  ['0.6.0-alpha.60', '0.6.0-alpha.62', '0.6.0-alpha.63'].includes(expectedVersion),
   'reviewed release required; earlier reviewed versions are retained only for cleanup of the existing canary');
 assert.ok(!(cleanupPath && resumePath), 'cleanup and resume modes are mutually exclusive');
 if (cleanupPath || resumePath) assert.ok(out && fs.existsSync(out) && fs.statSync(out).isDirectory(), 'existing evidence directory required');

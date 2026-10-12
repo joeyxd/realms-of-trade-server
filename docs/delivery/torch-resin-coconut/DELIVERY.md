@@ -3,6 +3,21 @@
 2026-10-12. Implementación sobre `codex/gm-editor-first`, protocolo 60.
 [Contrato y balance inicial](../../briefs/torch-resin-coconut.md).
 
+## Continuación de publicación — alpha.65
+
+El autor indicó que ejecutó SQL037 y pidió continuar. La primera comprobación
+desde el contenedor real, usando `service_role`, obtuvo `PGRST202` para
+`mn_torch_resin_coconut_ready()`; fuego y supervivencia existentes devolvieron
+versión 1. El servidor permanecía sano en alpha.64, sin jugadores ni errores.
+La activación espera confirmar que la migración completa está visible en ese
+proyecto. [Sonda de solo lectura](supabase-before-release.json).
+
+Integrados los cambios concurrentes de cocina y compañeros hasta `9349d7c`;
+se conservan los iconos individuales de coco/resina y el atlas de cocina.
+[Regresión combinada 100/100](release-integration/tests.json) y
+[navegador combinado 4/4](release-integration/browser/evidence.json).
+Capturas de fabricación y consumo inspeccionadas; son comprobaciones locales.
+
 ## Resultado jugable
 
 - Fabricación a mano de antorcha: **2 troncos + 1 resina**, sin banco; 20 minutos
@@ -40,8 +55,9 @@ modelos del autor; los iconos ya están conectados al inventario y fabricación.
 
 ## Activación pendiente en Supabase y servidor
 
-No se ha aplicado SQL037 a Supabase, cambiado la configuración pública ni
-publicado este corte. La instalación vigente mantiene sus reglas hasta activar
+La ejecución de SQL037 está reportada por el autor; su readiness público sigue
+pendiente. No se ha cambiado la configuración pública ni publicado este corte.
+La instalación vigente mantiene sus reglas hasta activar
 la nueva capacidad; los recibos históricos conservan su coste original.
 
 1. Aplicar [037_torch_resin_coconut.sql](../../../server/migrations/037_torch_resin_coconut.sql)

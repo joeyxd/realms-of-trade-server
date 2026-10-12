@@ -18,6 +18,10 @@ export const kitAsset = (path) => { try { return new URL(`assets/ui/${path}`, do
 
 // Painted atlases in assets/ui/kit (cut by tools/crafting-ui/icons.py; keep the id order in sync with its ATLASES).
 export const ICON_ATLASES = {
+  // Food art comes first so existing goods resolve to the refreshed silhouettes.
+  // Order matches tools/crafting-ui/cooking_icons.py. Meal IDs are presentation only.
+  foods: { cols: 4, rows: 4, ids: ['pescado', 'fruta', 'harina', 'galleta', 'ron', 'agua', 'cana', 'especias',
+    'coco', 'resina', 'meal_roastFish', 'meal_grog', 'meal_heartyBiscuit'] },
   items: { cols: 6, rows: 4, ids: ['hacha_piedra', 'pico_piedra', 'madera', 'tronco', 'piedra', 'mineral_hierro', 'hierro',
     'pescado', 'fruta', 'harina', 'galleta', 'ron', 'agua', 'cana', 'azufre', 'lona', 'polvora', 'balas', 'tabaco', 'especias',
     'seda', 'coral', 'perlas'] },

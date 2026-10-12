@@ -33,16 +33,16 @@ const evidence = { schema: 'mn.srv02.special-meals.local.v1', generatedAt: new D
   scope: 'Serial Chromium only; no game server, account, network service, or persistent player writes. Browser checks are visual/layout and client transport fixture evidence, not server authority acceptance.',
   viewports: [], failures: [], screenshots: [] };
 const mime = { '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8' };
-const pageHtml = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>SRV02 meals local QA</title><link rel="stylesheet" href="/styles/vars.css"><link rel="stylesheet" href="/styles/freshwater.css"><style>html,body{margin:0;min-height:100%;background:#102327;color:#f2f7f6}body{font:14px system-ui,sans-serif}#stage{position:fixed;left:0;top:0;width:100vw;height:100dvh;overflow:hidden;container-type:size;container-name:stage}#fixture-title{padding:12px 16px;color:#91cec2}</style></head><body><div id="stage"><div id="fixture-title">Disposable local UI fixture</div><main id="mount"></main></div><script type="module">
+const pageHtml = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>SRV02 meals local QA</title><link rel="stylesheet" href="/styles/vars.css"><link rel="stylesheet" href="/styles/kit.css"><link rel="stylesheet" href="/styles/freshwater.css"><style>html,body{margin:0;min-height:100%;background:#102327;color:#f2f7f6}body{font:14px system-ui,sans-serif}#stage{position:fixed;left:0;top:0;width:100vw;height:100dvh;overflow:hidden;container-type:size;container-name:stage}#fixture-title{padding:12px 16px;color:#91cec2}</style></head><body><div id="stage"><div id="fixture-title">Disposable local UI fixture</div><main id="mount"></main></div><script type="module">
 import { FreshwaterPanel } from '/src/ui/freshwaterPanel.js';
 import { stage } from '/src/ui/stage.js';
 let clock = 0;
 const rotateStage = new URLSearchParams(location.search).has('rotated');
 stage.configure({ enabled: () => rotateStage }); stage.update();
 const client = { joined: true, youServer: 42, actionBusy: false, freshwaterStatus: {
-  enabled: true, canteenEnabled: false, mealsEnabled: true, source: { id: 'spring-local', name: 'Manantial local', near: false },
+  enabled: true, canteenEnabled: true, mealsEnabled: true, source: { id: 'spring-local', name: 'Manantial local', near: false },
   barrels: [], gathering: 0, meal: null, cookers: [],
-}, profile: { eco: { tradeRev: 17, pack: { goods: { pescado: 1, ron: 1, agua: 1, galleta: 1, harina: 1 }, vessels: [] } }, surv: { sat: 100, hyd: 100 } }, sent: [],
+}, profile: { eco: { tradeRev: 17, pack: { goods: { pescado: 1, fruta: 1, ron: 1, agua: 1, galleta: 1, harina: 1 }, vessels: [] } }, surv: { sat: 100, hyd: 100 } }, sent: [],
   send(command) { this.sent.push(command); } };
 const panel = new FreshwaterPanel({ parent: document.querySelector('#mount'), client: () => client, locale: () => document.documentElement.lang, now: () => clock });
 panel.open();
@@ -71,12 +71,15 @@ const browser = await chromium.launch({ ...(process.env.MN_BROWSER ? { executabl
   headless: true, args: ['--use-gl=angle', '--use-angle=default', '--enable-webgl', '--ignore-gpu-blocklist'] });
 
 async function run(spec) {
-  const result = { ...spec, status: 'running', errors: [], consoleErrors: [], externalRequests: [], assertions: {}, screenshots: [] };
+  const result = { ...spec, status: 'running', errors: [], consoleErrors: [], externalRequests: [], foodAtlasRequests: [], assertions: {}, screenshots: [] };
   evidence.viewports.push(result);
   const context = await browser.newContext({ viewport: { width: spec.width, height: spec.height }, deviceScaleFactor: 1, isMobile: spec.mobile, hasTouch: spec.mobile });
   const page = await context.newPage();
   page.on('pageerror', error => result.errors.push(String(error?.stack || error)));
   page.on('console', message => { if (message.type() === 'error') result.consoleErrors.push(message.text()); });
+  page.on('response', response => {
+    if (/\/foods-v1(?:-mobile)?\.webp$/.test(response.url())) result.foodAtlasRequests.push({ path: new URL(response.url()).pathname, status: response.status() });
+  });
   await page.route('**/*', route => {
     const url = new URL(route.request().url());
     if (url.hostname === '127.0.0.1' && Number(url.port) === port) return route.continue();
@@ -107,6 +110,26 @@ async function run(spec) {
     }
     result.assertions.panelBounds = bounds;
     result.assertions.allThreeLocalizedRecipesAndDurations = true;
+    const iconEvidence = await page.evaluate(async () => {
+      const nodes = [...document.querySelectorAll('.fresh-meal-outcome-icon, .fresh-meal-ingredient-icon, .fresh-food-icon')];
+      const urls = [...new Set(nodes.map(node => getComputedStyle(node).backgroundImage))];
+      const image = new Image();
+      image.src = urls[0].slice(5, -2); await image.decode();
+      return { icons: nodes.length, urls, dimensions: [image.naturalWidth, image.naturalHeight],
+        outcomes: document.querySelectorAll('.fresh-meal-outcome-icon[data-atlas="foods"]').length,
+        ingredients: document.querySelectorAll('.fresh-meal-ingredient-icon[data-atlas="foods"]').length,
+        foodButtons: document.querySelectorAll('.fresh-food-icon[data-atlas="foods"]').length };
+    });
+    assert.equal(iconEvidence.outcomes, 3); assert.equal(iconEvidence.ingredients, 5); assert.equal(iconEvidence.foodButtons, 5);
+    assert.equal(iconEvidence.urls.length, 1);
+    const expectedAtlas = `/assets/ui/kit/foods-v1${spec.mobile ? '-mobile' : ''}.webp`;
+    assert(iconEvidence.urls[0].includes(expectedAtlas));
+    assert.deepEqual(iconEvidence.dimensions, spec.mobile ? [256, 256] : [512, 512]);
+    assert(result.foodAtlasRequests.length > 0 && result.foodAtlasRequests.every(row => row.path === expectedAtlas && row.status === 200));
+    result.assertions.foodArt = iconEvidence;
+    await page.locator('[data-meal-card="roastFish"]').scrollIntoViewIfNeeded();
+    const recipeShot = `${spec.name}-${runTag}-recipes.png`;
+    await panel.screenshot({ path: resolve(out, recipeShot), animations: 'disabled' }); result.screenshots.push(recipeShot);
     const shotStart = `${spec.name}-${runTag}-top.png`;
     await panel.screenshot({ path: resolve(out, shotStart), animations: 'disabled' }); result.screenshots.push(shotStart);
 
@@ -123,10 +146,10 @@ async function run(spec) {
     ]));
     assert.equal(await fishButton.isEnabled(), true, 'hot fish should enable for eligible cooker');
     assert.match(await page.locator('[data-meal-card="roastFish"] .fresh-meal-hint').innerText(), spec.locale === 'es' ? /Fogata o parrilla encendida/ : /Lit campfire or grill required/);
-    await page.evaluate(() => window.qa.setGoods({ pescado: 0, ron: 1, agua: 1, galleta: 1, harina: 1 }));
+    await page.evaluate(() => window.qa.setGoods({ pescado: 0, fruta: 1, ron: 1, agua: 1, galleta: 1, harina: 1 }));
     assert.equal(await fishButton.isDisabled(), true, 'missing fish should disable recipe');
     assert.match(await fishButton.getAttribute('title'), spec.locale === 'es' ? /ingredientes/ : /missing ingredients/);
-    await page.evaluate(() => window.qa.setGoods({ pescado: 1, ron: 1, agua: 1, galleta: 1, harina: 1 }));
+    await page.evaluate(() => window.qa.setGoods({ pescado: 1, fruta: 1, ron: 1, agua: 1, galleta: 1, harina: 1 }));
     assert.equal(await fishButton.isEnabled(), true);
     result.assertions.heatAndGoodsDisabledThenEligibleEnabled = true;
     result.assertions.visibleHeatRequirement = true;

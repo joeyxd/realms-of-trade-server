@@ -8,6 +8,12 @@ para Tripo3D; meshes a cargo del autor. UI revisada ES/EN, 720p y móvil, 4/4 na
 y 149/149 regresiones focales; SQL037 final 9/9. Aplicación SQL y activación pública pendientes; no marcar
 publicado ni sustituir la aceptación de Supabase por pruebas locales.
 
+**AREA03 — iconos de cocina y referencias Tripo, 2026-10-12:**
+[Entrega de arte](docs/art/cooking-icons-v1/README.md): 17 PNG con alfa y ZIP, ingredientes y
+tres platos con identidad propia; sal/lima/hierbas son propuestas visuales. Atlas 81/27 KB,
+panel de provisiones/cocina conectado, 10/10 focales y seis configuraciones locales ES/EN.
+Conservar costes/autoridad actuales. Publicación y mallas Tripo se verifican aparte.
+
 **AREA15, 2026-10-12 — continuidad de las áreas concurrentes:**
 [Matriz por sistema](docs/CONTINUITY-MATRIX.md), [revisión/evidencia](docs/delivery/m5-continuity-review.md).
 Sigue [give gratuito de bolsa entre cuentas](docs/briefs/m5-ground-pearl-give.md); contrato preparado, implementación pendiente.
@@ -57,11 +63,17 @@ controlador WSS saliente y capacidad solo chat. Perfil M5 y plaza normal; máxim
 SQL025/027/034 existentes, sin SQL nuevo. Detener/revocar/salir/caducidad/reinicio invalidan el permiso.
 Documentos, journal y presupuesto permanecen en la PC, conservados al reemparejar; refresco manual r + Enter.
 Canario público reanudado 6/6 en alpha.60: controlador real por WSS, respuesta de stub HTTP local,
-journal con ámbito y stop durable. Tres filas de registro del fixture siguen pendientes de aprobación de borrado.
+journal con ámbito y stop durable. Limpieza completada el 2026-10-12: tres registros ausentes por RPC,
+dos perfiles nulos y auth QA 404; acceptance final verde, sin manifiesto pendiente (evidencia en la entrega).
 Origin HTTPS y tolerancia acotada de reloj corregidos; 42/42 focales, 68/68 integración y 11/11 mundo/GM
 tras el merge alpha.63. Navegador local previo 14/14 ES/EN; conteos solapados, suite general no repetida.
 Publicado en c146b08: imagen sana, actualizador 194/194, 14 hashes de imagen y 8 públicos contrastados;
-portada Chrome verificada. Qwen 127.0.0.1:8080 sigue inaccesible; el stub no prueba Qwen.
+portada Chrome verificada. Revisión posterior: alpha.64/7b34381 sana, pairing disponible y sin pendientes.
+Qwen apagado por el autor; sin llamadas nuevas. [L03g presencia](docs/briefs/l03g-companion-presence.md)
+es propuesta sin implementar: ingreso/retiro seguro separados de mente y emparejamiento; hoy solo chat.
+Recorrido en cuenta real del 2026-10-12: Brisa creada por UI, documentos y detención guardados;
+centro sin conexiones disponibles, sin código ni controlador. Refresco de lista tras creación
+corregido y validado 33/33 local; aceptación pública del ajuste pendiente del actualizador.
 
 **Bucanero a distancia + swim, alpha.59/protocolo 58:**
 [Contrato](docs/briefs/buccaneer-ranged-swim.md) y [entrega](docs/delivery/buccaneer-v1/ranged-swim/README.md).

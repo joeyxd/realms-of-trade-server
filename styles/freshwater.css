@@ -27,7 +27,8 @@
 .fresh-canteen-actions button, .fresh-foods button { min-width: 0; min-height: 38px; padding: 6px 8px; font-size: 12px; overflow-wrap: anywhere; }
 .fresh-canteen-needs { min-height: 1.5em; margin: 7px 2px 2px; color: #c5ded9; font-size: 12px; font-variant-numeric: tabular-nums; }
 .fresh-foods { display: flex; flex-wrap: wrap; gap: 6px; }
-.fresh-foods button { flex: 1 1 calc(33% - 6px); }
+.fresh-foods button { flex: 1 1 calc(33% - 6px); display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.fresh-food-icon { flex: 0 0 24px; width: 24px; height: 24px; }
 .fresh-meals { margin: 12px 0; }
 .fresh-meals[hidden] { display: none; }
 .fresh-meals-title { margin: 0 2px 8px; color: #d9eee9; font-size: 16px; line-height: 1.2; }
@@ -35,8 +36,15 @@
 .fresh-meal-active:empty { display: none; }
 .fresh-meal-cards { display: grid; gap: 8px; }
 .fresh-meal-card { min-width: 0; padding: 9px 10px; border: 1px solid #31524e; border-radius: 10px; background: linear-gradient(145deg, #183332, #142829); }
+.fresh-meal-heading { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.fresh-meal-outcome-icon { flex: 0 0 56px; width: 56px; height: 56px; border: 1px solid #7db4a544; border-radius: 10px; background-color: #102627; }
 .fresh-meal-name { display: block; color: #f2f7f6; font-weight: 800; }
-.fresh-meal-cost, .fresh-meal-effect { margin: 3px 0 0; color: #bfd5d0; font-size: 12px; line-height: 1.35; }
+.fresh-meal-cost { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.fresh-meal-recipe { display: flex; align-items: center; flex-wrap: wrap; gap: 5px 8px; min-height: 32px; margin-top: 6px; color: #d8e8e3; font-size: 12px; line-height: 1.25; }
+.fresh-meal-ingredient { display: inline-flex; align-items: center; gap: 5px; }
+.fresh-meal-ingredient-icon { flex: 0 0 28px; width: 28px; height: 28px; }
+.fresh-meal-plus { color: #e4c77c; font-weight: 800; }
+.fresh-meal-effect { margin: 3px 0 0; color: #bfd5d0; font-size: 12px; line-height: 1.35; }
 .fresh-meal-duration { display: inline-block; margin-top: 5px; color: #91cec2; font-size: 11px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .fresh-meal-hint { min-height: 1.3em; margin: 3px 0 0; color: #f1d387; font-size: 11px; line-height: 1.3; }
 .fresh-meal-hint:empty { display: none; }

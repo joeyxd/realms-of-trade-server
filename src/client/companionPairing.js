@@ -74,10 +74,15 @@ export class CompanionPairingClient {
     return !this.destroyed && generation === this.generation && account === this.authAccount
       && session === this.sessionAccount && this.online();
   }
-  load() {
+  load({ refresh = false } = {}) {
     if (!this.authAccount) { this.clearPrivate(); this.publish(empty('signed_out')); return false; }
     if (!this.online()) { this.invalidate(); this.clearPrivate(); this.publish(empty('offline')); return false; }
-    if (this.pending?.op === 'load' && this.current(this.pending.generation, this.pending.account, this.pending.session)) return true;
+    if (this.pending?.op === 'load' && this.current(this.pending.generation, this.pending.account, this.pending.session)) {
+      // Creation may finish after the in-flight read took its snapshot. Queue one fresh
+      // read after that receipt instead of overlapping the host's per-socket operation.
+      if (refresh) this.pending.refreshAfter = true;
+      return true;
+    }
     if (this.pending?.op === 'load') this.invalidate(); else if (this.pending) return false;
     this.clearPrivate(); this.publish({ ...this.state });
     return this.request('load');
@@ -103,6 +108,7 @@ export class CompanionPairingClient {
       if (this.pending !== pending) return;
       if (!this.current(generation, account, session)) { this.disconnect(); return; }
       this.pending = null; this.clearPrivate();
+      if (pending.refreshAfter) { this.request('load'); return; }
       this.publish({ ...empty(op === 'load' ? 'error' : 'uncertain', op === 'load' ? 'timeout' : 'uncertain'), enabled: this.state.enabled });
     }, this.timeoutMs);
     this.pending = pending;
@@ -134,6 +140,7 @@ export class CompanionPairingClient {
         || (pending.op === 'issue' && message.ok && (!hasCode || !message.enabled))
         || (pending.op !== 'issue' && hasCode)) return;
     clearTimeout(pending.timer); this.pending = null;
+    if (pending.refreshAfter) { this.request('load'); return; }
     if (message.ok) {
       this.publish({ status: 'ready', enabled: message.enabled, code: message.code,
         expiresAtMs: message.expiresAtMs, message: '' });

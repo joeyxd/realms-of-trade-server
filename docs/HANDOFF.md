@@ -9,6 +9,21 @@ Chrome local 4/4 EN/ES escritorio/móvil; regresión focal 149/149 y SQL037 fina
 Supabase y `MN_TORCH_RESIN_COCONUT_OPERATIONS=1` pendientes, sin publicación de este corte.
 La entrega distingue un test antiguo de ficha que falla también en HEAD limpio.
 
+**L03f — recorrido desde la cuenta real, 2026-10-12:**
+[Evidencia y límites](delivery/l03f-local-pairing/README.md#recorrido-en-cuenta-real-y-refresco-de-lista).
+Brisa creada desde el wizard del alfa.64, con documentos guardados y detenida.
+Centro de inferencia carga sin conexiones disponibles; no se generó código, inició
+controlador ni consultó Qwen. Lista tras creación corregida con lectura serial de
+estado; 33/33 pruebas focales locales. Refresco automático público pendiente del
+relevo habitual. L03g sigue como propuesta sin aprobación ni implementación.
+
+**AREA03 — arte de cocina y paquete Tripo, 2026-10-12:**
+[Atlas, PNG individuales y ZIP](art/cooking-icons-v1/README.md). 17 referencias transparentes:
+básicos, tres comidas especiales, coco/resina/antorcha reutilizados y sal/lima/hierbas propuestas.
+Propuestas fuera del catálogo; resultados siguen consumiéndose al preparar. Ingredientes con cantidades
+y resultado propio en el panel existente. Atlas de UI 81/27 KB, una variante por dispositivo;
+10/10 tests focales y seis configuraciones locales ES/EN/escritorio/móvil. Publicación y mallas pendientes.
+
 **AREA15, 2026-10-12 — plan de continuidad reconciliado:**
 [Matriz de cobertura](CONTINUITY-MATRIX.md), [revisión y lectura VPS](delivery/m5-continuity-review.md).
 Alpha.63 observado sano; los montajes comunes siguen nulos. La matriz separa estado guardado, recibo probado y aceptación pública.
@@ -62,11 +77,14 @@ controlador WSS saliente y capacidad solo chat. Perfil M5 y plaza normal; máxim
 SQL025/027/034 existentes, sin SQL nuevo. Detener/revocar/salir/caducidad/reinicio invalidan el permiso.
 Documentos, journal y presupuesto permanecen en la PC, conservados al reemparejar; refresco manual r + Enter.
 Canario público reanudado 6/6 en alpha.60: controlador real por WSS, respuesta de stub HTTP local,
-journal con ámbito y stop durable. Tres filas de registro del fixture siguen pendientes de aprobación de borrado.
+journal con ámbito y stop durable. Limpieza completada el 2026-10-12: tres registros ausentes por RPC,
+dos perfiles nulos y auth QA 404; acceptance final verde, sin manifiesto pendiente (evidencia en la entrega).
 Origin HTTPS y tolerancia acotada de reloj corregidos; 42/42 focales, 68/68 integración y 11/11 mundo/GM
 tras el merge alpha.63. Navegador local previo 14/14 ES/EN; conteos solapados, suite general no repetida.
 Publicado en c146b08: imagen sana, actualizador 194/194, 14 hashes de imagen y 8 públicos contrastados;
-portada Chrome verificada. Qwen 127.0.0.1:8080 sigue inaccesible; el stub no prueba Qwen.
+portada Chrome verificada. Revisión posterior: alpha.64/7b34381 sana, pairing disponible y sin pendientes.
+Qwen apagado por el autor; sin llamadas nuevas. [L03g presencia](briefs/l03g-companion-presence.md)
+es propuesta sin implementar: ingreso/retiro seguro separados de mente y emparejamiento; hoy solo chat.
 
 **Bucanero a distancia y nado original — alpha.59/protocolo 58:**
 [Brief](briefs/buccaneer-ranged-swim.md) y [entrega](delivery/buccaneer-v1/ranged-swim/README.md).

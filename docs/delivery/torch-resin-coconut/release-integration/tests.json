@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-12T17:08:48.109Z",
+  "code": 0,
+  "files": [
+    "tests/torch-resin-coconut.test.mjs",
+    "tests/torch-resin-coconut-host.test.mjs",
+    "tests/fire-panel.test.mjs",
+    "tests/fire-actions.test.mjs",
+    "tests/torch-light.test.mjs",
+    "tests/freshwater-panel.test.mjs",
+    "tests/pack-inventory.test.mjs",
+    "tests/resource-feedback.test.mjs",
+    "tests/workbench-batch.test.mjs",
+    "tests/canteen-panel.test.mjs",
+    "tests/meals-panel.test.mjs",
+    "tests/companion-pairing-client.test.mjs",
+    "tests/companion-pairing-network.test.mjs",
+    "tests/gm-resource-readiness.test.mjs",
+    "tests/i18n04b-data.test.mjs"
+  ],
+  "summary": [
+    "# tests 100",
+    "# pass 100",
+    "# fail 0",
+    "# duration_ms 23712.6046"
+  ]
+}

@@ -131,7 +131,8 @@ test('coconut appears as an edible good and sends the normal eat command', () =>
   f.client.freshwaterStatus.canteenEnabled = true;
   f.client.profile.eco.pack.vessels = [{ id: 'canteen', kind: 'canteen', water: 0 }];
   f.panel.open();
-  assert.match(f.panel.foodsBox._html, /data-food="coco">Coco/);
+  assert.match(f.panel.foodsBox._html, /data-food="coco"/);
+  assert.match(f.panel.foodsBox._html.replace(/<[^>]+>/g, ''), /Coco/);
   assert.equal(f.panel.eat('coco'), true);
   assert.equal(f.commands.at(-1).op, 'eat');
   assert.equal(f.commands.at(-1).source, 'coco');
