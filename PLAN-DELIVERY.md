@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**Bucanero — reacción original + retroceso, alpha.62/protocolo 59:**
+[Contrato](docs/briefs/buccaneer-combat-reaction.md), [entrega](docs/delivery/buccaneer-v1/combat-reaction/README.md).
+Golpe original adaptado al rig armado, sin desplazar raíz/piernas ni impedir correr/disparar;
+cancelación al hacer dash/nadar/morir. RMB más fuerte/lento visualmente, con manos independientes.
+Idle/nado conservados, +57 KB por GLB, texturas 1024/512; reglas de combate y SQL propios intactos.
+Tras integrar recursos GM/compañeros/perlas: 76/76 focales + 36/36 integración, Chrome local 16/16,
+seis capturas inspeccionadas. Suite general no repetida. Publicación/aceptación pública por separado.
+
 **AREA01 GM04d, 2026-10-11 — recursos funcionales implementados, alpha.61/protocolo 59:**
 [Contrato](docs/briefs/gm04d-functional-resources.md), [entrega](docs/delivery/gm04d/DELIVERY.md).
 Palmera talable/piedra recogible en Recursos; borrador privado y publicación con admisión SQL036

@@ -27,7 +27,21 @@ Se probaron referencia inmutable, orientación rest no identidad, finitud, resta
 reinicio, máscaras de brazos, cancelación y fallback. La suite general no se volvió a ejecutar;
 sus fallos heredados están documentados en [el corte anterior](../ranged-swim/CPU.md).
 
-Aceptación Chrome local en curso: [harness](../../../../tools/qa-buccaneer-reaction.mjs).
+Integrado con los cambios concurrentes de compañeros, recursos GM y perlas en `c836f77`,
+alpha.62/protocolo 59: 76/76 Bucanero/combate y 36/36 comprobaciones de integración, seriales;
+[comandos y recibo](integration.json). Sin cambios de protocolo propios.
+
+Chrome local integrado: 16/16, escritorio y móvil emulado, cero errores;
+[harness](../../../../tools/qa-buccaneer-reaction.mjs) y [recibo/capturas](qa/acceptance.json).
+Daño real de la autoridad aislada llega a Feedback y reinicia el clip; recuperación completa,
+brazos preservados al correr/disparar, ambos gatillos reales, cancelación dash/agua/muerte,
+fallback inyectado y regreso desde el nado original. Las sondas numéricas de máscaras/cancelación
+son directas del cliente y se distinguen del daño confirmado por red. Una sola variante GLB por dispositivo.
+Se inspeccionaron las seis capturas: silueta, piernas y pistolas conservadas, sin segunda malla visible.
+La cámara cercana y los avisos de arena/HUD cubren parcialmente cabeza/brazos en algunas capturas móviles;
+las sondas de rig complementan esa limitación, sin acreditar sensación ni FPS en un teléfono físico.
+
 Publicación y aceptación pública se registrarán por separado; [script público](../../../../tools/qa-buccaneer-reaction-public.mjs).
 El probe público de reacción es solamente visual del cliente; daño confirmado se comprueba en la
-autoridad local aislada. No se fuerza un encuentro público. Balance y FPS en teléfono físico pendientes.
+autoridad local aislada. Los eventos observados al disparar pueden ser predichos: acreditan input y recoil,
+no un acuse de daño autoritativo. No se fuerza un encuentro público. Balance y FPS en teléfono físico pendientes.
