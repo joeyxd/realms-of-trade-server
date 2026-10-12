@@ -1,5 +1,6 @@
 import { GameClient } from '../../src/client/gameClient.js';
 import { randomUUID } from 'node:crypto';
+import WebSocket from 'ws';
 import { WsTransport } from '../../src/net/wsTransport.js';
 import { ENT, MSG, PROTOCOL_VERSION } from '../../src/net/protocol.js';
 import { PLAYER_FIELDS, KIND } from '../../src/sim/ecs.js';
@@ -18,6 +19,12 @@ const neutral = () => ({ mx: 0, mz: 0, ax: 0, az: 0, btn: 0, prs: 0, w: 0 });
 const kinds = { [KIND.PLAYER]: 'player', [KIND.NPC]: 'npc', [KIND.ENEMY]: 'enemy' };
 const copy = (v) => structuredClone(v);
 const clock = () => Math.floor(performance.timeOrigin + performance.now());
+const networkTransport = (address, { origin } = {}) => {
+  const WebSocketImpl = origin ? class OriginWebSocket extends WebSocket {
+    constructor(url) { super(url, { origin }); }
+  } : WebSocket;
+  return new WsTransport(address, { WebSocketImpl });
+};
 
 // Ordinary inputs only. An optional authenticated policy supplies the server controller grant.
 export class AgentNetworkClient {
@@ -32,7 +39,7 @@ export class AgentNetworkClient {
   #authorization; #authority = null; #controlAwaiting = null; #directPending = null;
   constructor({ url, grant, name = 'Brisa [IA]', skin = 0, weapon = 0, now = clock,
     onFeedback = () => {}, limits = {}, chatTimeoutMs = 6000, inventoryTimeoutMs = 3000, marketTimeoutMs = 3000,
-    tradeTimeoutMs = 5000, tradeOperations = new Map(), authorization = null, content = null, transportFactory = (address) => new WsTransport(address) }) {
+    tradeTimeoutMs = 5000, tradeOperations = new Map(), authorization = null, content = null, transportFactory = networkTransport }) {
     const address = new URL(url);
     if (!['ws:', 'wss:'].includes(address.protocol) || address.username || address.password || address.search || address.hash) throw new TypeError('invalid game URL');
     if (!validGrant(grant) || typeof now !== 'function' || typeof onFeedback !== 'function') throw new TypeError('invalid agent configuration');
@@ -52,7 +59,8 @@ export class AgentNetworkClient {
         if (this.#state !== 'ready' || this.#t.closed || this.#t.ws.readyState !== 1) throw new Error('transport_closed');
         this.#t.send(this.#authority ? { ...message, control: { epoch: this.grant.controlRevision } } : message);
       } });
-    this.#t = transportFactory(address.href);
+    const origin = address.protocol === 'wss:' ? `https://${address.host}` : null;
+    this.#t = transportFactory(address.href, { origin });
     this.#inventory = new AgentInventory({ now, limits: this.#limits, timeoutMs: inventoryTimeoutMs,
       onFeedback: (type, data) => this.#emit(type, data),
       send: (message) => {

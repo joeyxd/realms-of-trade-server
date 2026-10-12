@@ -13,7 +13,7 @@ import { companionPreset, companionCreationConfig } from '../src/net/companionCr
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { AgentNetworkRunner } from '../tools/agent/network-runner.mjs';
 import { claimPairCode, PairedCompanion } from '../tools/agent/paired-companion.mjs';
-import { argumentsOf, privateLine } from '../tools/agent/pair-companion.mjs';
+import { argumentsOf, privateLine, statusMessage } from '../tools/agent/pair-companion.mjs';
 
 const OWNER = '22222222-2222-4222-8222-222222222222';
 const CHARACTER = '33333333-3333-4333-8333-333333333333';
@@ -71,7 +71,7 @@ class Wire {
   close() { if (this.ws.readyState < WebSocket.CLOSING) this.ws.close(); }
 }
 
-async function livePairFixture(t, { holdModel = false } = {}) {
+async function livePairFixture(t, { holdModel = false, httpFailure = false } = {}) {
   const parent = await mkdtemp(join(tmpdir(), 'paired-live-'));
   t.after(() => rm(parent, { recursive: true, force: true }));
   let releaseModel;
@@ -83,6 +83,11 @@ async function livePairFixture(t, { holdModel = false } = {}) {
     modelCalls++; seenModel = body.model;
     if (holdModel) await modelPending;
     if (!response.destroyed) {
+      if (httpFailure) {
+        response.writeHead(503, { 'content-type': 'application/json' });
+        response.end(JSON.stringify({ error: { message: 'PRIVATE_PROVIDER_SECRET_DO_NOT_ECHO' } }));
+        return;
+      }
       response.writeHead(200, { 'content-type': 'application/json' });
       response.end(JSON.stringify({ id: `reply-${modelCalls}`, object: 'chat.completion', created: 1, model: body.model,
         choices: [{ index: 0, message: { role: 'assistant', content: JSON.stringify({ v: 1, decision: { type: 'reply', args: { text: 'Brisa te responde.' } } }) }, finish_reason: 'stop' }],
@@ -99,16 +104,18 @@ async function livePairFixture(t, { holdModel = false } = {}) {
   t.after(() => host.close());
   const owner = new Wire(url, 'Owner'); await owner.connect(); t.after(() => owner.close());
   const other = new Wire(url, 'Other'); await other.connect(); t.after(() => other.close());
+  const statuses = [];
   const pair = new PairedCompanion({ directory: join(parent, 'companion'), url: 'wss://paired.example/ws',
     baseUrl: `http://127.0.0.1:${model.address().port}/v1`, maxCalls: 4, maxTokens: 64000,
     claim: async () => bootstrap({ ownerPeer: owner.self }),
+    onStatus: status => statuses.push(status),
     // The pairing protocol/token is covered by the claim test; this fixture isolates C01/model behavior.
     runnerFactory: options => new AgentNetworkRunner({ ...options, url, authorization: null }),
   });
   t.after(() => pair.close());
   const connected = await pair.start(CODE);
   assert.equal(connected.ok, true, JSON.stringify(connected));
-  return { owner, other, pair, parent, model: { get calls() { return modelCalls; }, get modelId() { return seenModel; }, release: () => releaseModel() } };
+  return { owner, other, pair, parent, statuses, model: { get calls() { return modelCalls; }, get modelId() { return seenModel; }, release: () => releaseModel() } };
 }
 
 class FakeRunner {
@@ -200,7 +207,11 @@ test('pairing fails closed for reused companion files with a different model pol
 
 test('claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials', async () => {
   class Socket extends EventEmitter {
-    constructor() { super(); this.close = () => {}; setImmediate(() => this.emit('open')); }
+    constructor(url, options) {
+      super(); assert.equal(url, 'wss://world.example:9443/ws');
+      assert.deepEqual(options, { origin: 'https://world.example:9443' });
+      this.close = () => {}; setImmediate(() => this.emit('open'));
+    }
     send(raw) {
       const request = JSON.parse(raw);
       assert.deepEqual(Object.keys(request).sort(), ['code', 'op', 'requestId', 't']);
@@ -210,8 +221,24 @@ test('claim transport sends only the pairing envelope and rejects malformed boot
         ok: true, why: null, enabled: true, code: null, expiresAtMs: null, bootstrap: body }))));
     }
   }
-  const result = await claimPairCode({ url: 'wss://world.example/ws', code: CODE, WebSocketClass: Socket });
+  const result = await claimPairCode({ url: 'wss://world.example:9443/ws', code: CODE, WebSocketClass: Socket });
   assert.equal(result.record.preset.name, 'Brisa');
+  const fixedNow = 1_900_000_000_000;
+  const expirySocket = expiresAtMs => class extends Socket {
+    send(raw) {
+      const request = JSON.parse(raw);
+      setImmediate(() => this.emit('message', Buffer.from(JSON.stringify({ t: 'agent_companion_pair_result', requestId: request.requestId,
+        ok: true, why: null, enabled: true, code: null, expiresAtMs: null, bootstrap: bootstrap({ expiresAtMs }) }))));
+    }
+  };
+  const skewedExpiry = fixedNow + 60 * 60_000 + 10_000;
+  const skewed = await claimPairCode({ url: 'wss://world.example:9443/ws', code: CODE, now: () => fixedNow,
+    WebSocketClass: expirySocket(skewedExpiry) });
+  assert.equal(skewed.expiresAtMs, skewedExpiry, 'accepted server expiry must not be extended');
+  await assert.rejects(claimPairCode({ url: 'wss://world.example:9443/ws', code: CODE, now: () => fixedNow,
+    WebSocketClass: expirySocket(fixedNow + 60 * 60_000 + 30_001) }), /pair_unavailable/);
+  await assert.rejects(claimPairCode({ url: 'wss://world.example:9443/ws', code: CODE, now: () => fixedNow,
+    WebSocketClass: expirySocket(fixedNow) }), /pair_unavailable/);
   class UnpublishedContentSocket extends Socket {
     send(raw) {
       const request = JSON.parse(raw);
@@ -220,7 +247,7 @@ test('claim transport sends only the pairing envelope and rejects malformed boot
         bootstrap: { ...bootstrap(), content: { generation: 0, revisionId: null } } }))));
     }
   }
-  assert.equal((await claimPairCode({ url: 'wss://world.example/ws', code: CODE, WebSocketClass: UnpublishedContentSocket })).content.revisionId, null);
+  assert.equal((await claimPairCode({ url: 'wss://world.example:9443/ws', code: CODE, WebSocketClass: UnpublishedContentSocket })).content.revisionId, null);
   class InvalidSocket extends Socket {
     send(raw) {
       const request = JSON.parse(raw);
@@ -229,7 +256,7 @@ test('claim transport sends only the pairing envelope and rejects malformed boot
         bootstrap: { ...bootstrap(), token: 'credential-must-not-escape' } }))));
     }
   }
-  await assert.rejects(claimPairCode({ url: 'wss://world.example/ws', code: CODE, WebSocketClass: InvalidSocket }), /pair_unavailable/);
+  await assert.rejects(claimPairCode({ url: 'wss://world.example:9443/ws', code: CODE, WebSocketClass: InvalidSocket }), /pair_unavailable/);
   class InvalidOwnerSocket extends Socket {
     send(raw) {
       const request = JSON.parse(raw);
@@ -238,7 +265,7 @@ test('claim transport sends only the pairing envelope and rejects malformed boot
         bootstrap: { ...bootstrap(), scope: { ...bootstrap().scope, ownerId: 'C01-owner' } } }))));
     }
   }
-  await assert.rejects(claimPairCode({ url: 'wss://world.example/ws', code: CODE, WebSocketClass: InvalidOwnerSocket }), /pair_unavailable/);
+  await assert.rejects(claimPairCode({ url: 'wss://world.example:9443/ws', code: CODE, WebSocketClass: InvalidOwnerSocket }), /pair_unavailable/);
 });
 
 test('live owner C01 delivery gets one local-model reply and a durable scoped memory episode', { timeout: 30000 }, async t => {
@@ -280,6 +307,22 @@ test('live owner C01 delivery gets one local-model reply and a durable scoped me
   assert.equal(model.calls, 1);
 });
 
+test('local model HTTP failure reports only a safe diagnostic and saves no reply or journal entry', { timeout: 30000 }, async t => {
+  const { owner, pair, parent, model, statuses } = await livePairFixture(t, { httpFailure: true });
+  owner.sendChat('owner-model-failure', 'Este mensaje es privado y no debe salir en diagnósticos.');
+  await owner.waitFor(message => message.t === MSG.CHAT_RESULT && message.requestId === 'owner-model-failure');
+  await until(() => statuses.length === 1, 'safe model failure diagnostic');
+
+  assert.equal(model.calls, 1);
+  assert.deepEqual(statuses, [{ phase: 'inference', result: 'failed' }]);
+  const diagnostic = statusMessage(statuses[0]);
+  assert.equal(diagnostic, 'No pude responder: falló el modelo local. Comprueba que esté disponible.');
+  assert.equal(diagnostic.includes('PRIVATE_PROVIDER_SECRET_DO_NOT_ECHO'), false);
+  assert.equal(JSON.stringify(statuses).includes('PRIVATE_PROVIDER_SECRET_DO_NOT_ECHO'), false);
+  assert.equal(owner.messages.some(message => message.t === MSG.CHAT_MESSAGE && message.sender.name === 'Brisa'), false);
+  assert.equal(await readFile(join(parent, 'companion', 'memory.jsonl'), 'utf8'), '');
+});
+
 test('stop during a local model request fences its late response and does not capture an exchange', { timeout: 30000 }, async t => {
   const { owner, pair, parent, model } = await livePairFixture(t, { holdModel: true });
   owner.sendChat('owner-stop-inference', 'Brisa, responde cuando puedas.');
@@ -295,6 +338,7 @@ test('stop during a local model request fences its late response and does not ca
 
 test('the CLI validates options before prompting and accepts a pasted multi-character hex code', async () => {
   assert.throws(() => new PairedCompanion(argumentsOf(['--url', 'http://world.example/ws', '--directory', 'companion'])), /invalid_paired_companion_options/);
+  assert.throws(() => new PairedCompanion({ directory: 'C:\\companion', url: 'wss://world.example/ws', onStatus: 'log everything' }), /invalid_paired_companion_options/);
   assert.throws(() => argumentsOf(['--url', 'wss://world.example/ws', '--directory', 'companion', '--max-calls', '9']), /invalid_arguments/);
   const input = new EventEmitter();
   input.isTTY = true;

@@ -25,14 +25,22 @@ const REQUIRED_MANIFEST_KEYS = ['ownerId', 'characterId', 'creationId', 'marker'
 const EXPECTED_VERSION = '0.6.0-alpha.60';
 const STUB_REPLY = 'Brisa te responde.';
 const CHAT_TEXT = 'Brisa, comparte una palabra sobre el mar.';
-let envFile, out, cleanupPath;
+const PAIRED_NAME = 'Brisa [IA]';
+const PAIR_CODE_MAX_TTL_MS = 5 * 60 * 1000;
+const PAIR_CODE_CLOCK_SKEW_MS = 30 * 1000;
+class PublicOriginWebSocket extends WebSocket {
+  constructor(url) { super(url, { headers: { Origin: target.origin } }); }
+}
+let envFile, out, cleanupPath, resumePath;
 for (let i = 2; i < process.argv.length; i++) {
   if (process.argv[i] === '--env-file') envFile = process.argv[++i];
   else if (process.argv[i] === '--out') out = path.resolve(process.argv[++i]);
   else if (process.argv[i] === '--cleanup') cleanupPath = path.resolve(process.argv[++i]);
+  else if (process.argv[i] === '--resume') resumePath = path.resolve(process.argv[++i]);
   else if (process.argv[i] === '--help') {
     console.log('Create:  node tools/qa-companion-pairing-public.mjs --env-file PATH --out NEW_DIRECTORY');
     console.log('Cleanup: node tools/qa-companion-pairing-public.mjs --env-file PATH --out EXISTING_DIRECTORY --cleanup MANIFEST');
+    console.log('Resume:  node tools/qa-companion-pairing-public.mjs --env-file PATH --out EXISTING_DIRECTORY --resume MANIFEST');
     process.exit(0);
   } else throw new Error('unknown argument');
 }
@@ -43,7 +51,8 @@ assert.equal(GAME.version, EXPECTED_VERSION, 'review the public pairing canary a
 assert.equal(PROTOCOL_VERSION, 59, 'review the public pairing canary after protocol changes');
 const expectedVersion = process.env.MN_QA_EXPECTED_VERSION || EXPECTED_VERSION;
 assert.equal(expectedVersion, EXPECTED_VERSION, 'explicit alpha.60 release version required');
-if (cleanupPath) assert.ok(out && fs.existsSync(out), 'existing evidence directory required for cleanup mode');
+assert.ok(!(cleanupPath && resumePath), 'cleanup and resume modes are mutually exclusive');
+if (cleanupPath || resumePath) assert.ok(out && fs.existsSync(out) && fs.statSync(out).isDirectory(), 'existing evidence directory required');
 else assert.ok(out && !fs.existsSync(out), 'new evidence directory required');
 for (const key of ['SUPABASE_URL', 'SUPABASE_PUBLIC_KEY', 'SUPABASE_SERVICE_KEY']) {
   assert.ok(process.env[key], 'private QA configuration unavailable');
@@ -124,6 +133,21 @@ async function verifyMarkedAccount(id, expectedMarker) {
   assert.equal(current.user.user_metadata?.mn_qa_marker, expectedMarker, 'temporary account marker mismatch');
   return current.user;
 }
+async function authenticateMarkedAccount(id, expectedMarker) {
+  const user = await verifyMarkedAccount(id, expectedMarker);
+  assert.ok(typeof user.email === 'string' && user.email.includes('@'), 'marked canary account email unavailable');
+  const link = unwrap(await bounded(admin.auth.admin.generateLink({ type: 'magiclink', email: user.email }),
+    'generate private canary magic link'));
+  assert.equal(link.user?.id, id, 'magic link resolved to a different account');
+  assert.equal(link.user?.user_metadata?.mn_qa_marker, expectedMarker, 'magic link account marker mismatch');
+  const tokenHash = link.properties?.hashed_token;
+  assert.ok(typeof tokenHash === 'string' && tokenHash.length >= 20, 'private canary magic link token unavailable');
+  const verified = unwrap(await bounded(pub.auth.verifyOtp({ token_hash: tokenHash, type: 'magiclink' }),
+    'verify private canary magic link'));
+  const token = verified.session?.access_token;
+  assert.ok(typeof token === 'string' && token.length > 20, 'private canary session token unavailable');
+  return token;
+}
 async function settleProfile(id, socketClosed) {
   let previous = null, stable = 0, profile = null, storage = {};
   for (let attempt = 0; attempt < 60; attempt++) {
@@ -140,12 +164,15 @@ async function settleProfile(id, socketClosed) {
   throw new Error('canary profiles did not settle');
 }
 const canaryOwnerName = id => `QA-${id.slice(0, 8)}`;
-async function waitCanarySocketsClosed(id) {
+const namedSessionCount = (names, name) => Array.isArray(names) ? names.filter(value => value === name).length : null;
+async function waitCanarySocketsClosed(id, pairedNameBaselineCount = null) {
   for (let attempt = 0; attempt < 60; attempt++) {
     const { body } = await fetchJson(new URL('/status', target), 'verify canary sockets closed');
     const names = body.names;
     assert.ok(Array.isArray(names), 'public socket names unavailable for cleanup fence');
-    if (!names.includes(canaryOwnerName(id)) && !names.includes('Brisa [IA]')) return true;
+    const pairedCount = namedSessionCount(names, PAIRED_NAME);
+    if (!names.includes(canaryOwnerName(id)) &&
+        (pairedNameBaselineCount === null || pairedCount <= pairedNameBaselineCount)) return true;
     await new Promise(resolve => setTimeout(resolve, 500));
   }
   throw new Error('canary WSS sessions remain active');
@@ -161,7 +188,7 @@ async function waitForClose(ws, label) {
 
 class Wire {
   constructor(url) {
-    this.ws = new WebSocket(url); this.messages = []; this.waiters = [];
+    this.ws = new PublicOriginWebSocket(url); this.messages = []; this.waiters = [];
     this.opened = new Promise((resolve, reject) => { this.ws.once('open', resolve); this.ws.once('error', reject); });
     this.ws.on('message', raw => {
       let message; try { message = JSON.parse(raw.toString()); } catch { return; }
@@ -298,7 +325,18 @@ async function runCleanup() {
     await checkPublicReadiness(); await verifyMarkedAccount(manifest.ownerId, manifest.marker);
     const registered = await bounded(store.loadCompanionCreation({ world: WORLD, owner: manifest.ownerId }), 'verify SQL034 cleanup');
     assert.equal(registered, null, 'refusing profile deletion while the SQL034 creation registry row exists');
-    await waitCanarySocketsClosed(manifest.ownerId);
+    const resumeEvidencePath = path.join(out, 'resume.json');
+    if (fs.existsSync(resumeEvidencePath)) {
+      const resumed = JSON.parse(fs.readFileSync(resumeEvidencePath, 'utf8'));
+      assert.equal(resumed.schema, 'mn.companion-pairing.public-resume.v1');
+      assert.equal(resumed.target, target.origin); assert.equal(resumed.world, WORLD);
+      evidence.resume = { acceptancePass: resumed.acceptancePass === true, at: resumed.at };
+      evidence.acceptancePass = evidence.acceptancePass === true || resumed.acceptancePass === true;
+    }
+    const pairedNameBaselineCount = manifest.characterId ? evidence.pairedNameBaselineCount : null;
+    if (manifest.characterId) assert.ok(Number.isSafeInteger(pairedNameBaselineCount) && pairedNameBaselineCount >= 0,
+      'refusing character cleanup without its pre-canary paired-name baseline');
+    await waitCanarySocketsClosed(manifest.ownerId, pairedNameBaselineCount);
     const settled = await Promise.all([settleProfile(manifest.ownerId, true),
       ...(manifest.characterId ? [settleProfile(manifest.characterId, true)] : [])]);
     let ownerProfileDeleted = settled[0].profile === null;
@@ -335,14 +373,189 @@ async function runCleanup() {
   }
 }
 
+async function runResume() {
+  assert.ok(resumePath && out && fs.existsSync(out), 'resume evidence directory unavailable');
+  assert.equal(resumePath, MANIFEST_PATH, 'resume may only use the pending public pairing canary manifest');
+  const manifest = JSON.parse(fs.readFileSync(resumePath, 'utf8'));
+  assert.deepEqual(Object.keys(manifest).sort(), [...REQUIRED_MANIFEST_KEYS].sort(), 'resume manifest schema mismatch');
+  assert.match(manifest.ownerId, UUID); assert.match(manifest.characterId, UUID); assert.match(manifest.creationId, UUID);
+  assert.match(manifest.marker, /^mnQaCompanionPairing:[0-9a-f-]{36}$/i);
+  assert.notEqual(manifest.ownerId, manifest.characterId);
+  const acceptancePath = path.join(out, 'acceptance.json');
+  const previous = JSON.parse(fs.readFileSync(acceptancePath, 'utf8'));
+  assert.equal(previous.schema, 'mn.companion-pairing.public.v1');
+  assert.equal(previous.target, target.origin); assert.equal(previous.world, WORLD);
+  assert.equal(previous.cleanupPending, true); assert.equal(previous.cleanupComplete, false);
+  assert.equal(previous.created?.characterId, manifest.characterId, 'resume character identity differs from prior evidence');
+  assert.equal(previous.created?.creationId, manifest.creationId, 'resume creation identity differs from prior evidence');
+  assert.equal(previous.created?.name, 'Brisa');
+  assert.equal(previous.created?.controlStoppedInitially, true);
+  assert.ok(previous.checks?.some(item => item.name === 'pair_load_registered_chat_only_owner_and_SQL027_resume_committed'),
+    'resume requires prior evidence of SQL027 resume');
+  const pairedNameBaselineCount = previous.pairedNameBaselineCount;
+  assert.ok(Number.isSafeInteger(pairedNameBaselineCount) && pairedNameBaselineCount >= 0,
+    'resume requires the original paired-name baseline');
+
+  ownerId = manifest.ownerId; marker = manifest.marker;
+  record = await bounded(store.loadCompanionCreation({ world: WORLD, owner: ownerId }), 'verify exact SQL034 resume record');
+  assert.ok(record && record.characterKey === manifest.characterId && record.creationId === manifest.creationId &&
+    record.preset?.name === 'Brisa', 'refusing resume because the exact SQL034 canary record is absent or changed');
+  const priorControl = await bounded(store.loadCompanionControl({ world: WORLD, owner: ownerId,
+    character: manifest.characterId }), 'verify SQL027 resume state');
+  assert.equal(priorControl?.stopped, false, 'refusing resume because SQL027 is not resumed');
+
+  evidence = { schema: 'mn.companion-pairing.public-resume.v1', at: new Date().toISOString(),
+    target: target.origin, world: WORLD, sourceAcceptanceAt: previous.at, sourceAcceptancePass: previous.acceptancePass === true,
+    pairedNameBaselineCount, production: true, publicWss: true, localModelStub: true, realModelCalls: false,
+    resumedExistingAccount: true, createdAccount: false, createdCompanion: false,
+    checks: [], errors: [], acceptancePass: false, cleanupPending: true, cleanupComplete: false, pass: false };
+  const resumeEvidencePath = path.join(out, 'resume.json');
+  let ownerWire = null, pair = null, stub = null, runnerRoot = null;
+  let ownerSocketClosed = false, runnerStopped = false, canarySocketsClosed = false;
+  try {
+    const { content } = await checkPublicReadiness();
+    await verifyMarkedAccount(ownerId, marker);
+    accessToken = await authenticateMarkedAccount(ownerId, marker);
+    const ownerProfile = await bounded(store.loadProfile(ownerId), 'verify resumed owner profile');
+    assert.equal(ownerProfile?.data?.pirateId, `account:${ownerId}`, 'resumed owner profile identity mismatch');
+    check('exact_marked_account_magiclink_reauthenticated_without_creating_an_account');
+
+    const wsUrl = new URL('/ws', target); wsUrl.protocol = 'wss:';
+    ownerWire = new Wire(wsUrl.href);
+    await ownerWire.join(accessToken, content);
+    const joinedProfile = await bounded(store.loadProfile(ownerId), 'verify resumed public WSS owner profile');
+    assert.equal(joinedProfile?.data?.pirateId, `account:${ownerId}`, 'resumed owner WSS admission changed profile identity');
+    check('existing_owner_rejoined_public_WSS_with_current_content');
+
+    const loaded = await ownerOperation(ownerWire, MSG.AGENT_COMPANION_PAIR, 'load');
+    assert.equal(loaded.enabled, true);
+    const row = await controlRow(ownerWire, manifest.characterId);
+    assert.deepEqual(row.capabilities, ['chat']);
+    assert.equal(row.control?.stopped, false, 'SQL027 owner grant is not active');
+    const currentControl = await bounded(store.loadCompanionControl({ world: WORLD, owner: ownerId,
+      character: manifest.characterId }), 'verify durable SQL027 resume state');
+    assert.equal(currentControl?.stopped, false);
+    check('exact_SQL034_record_loaded_and_existing_SQL027_chat_grant_verified');
+
+    const issued = await ownerOperation(ownerWire, MSG.AGENT_COMPANION_PAIR, 'issue');
+    pairCode = issued.code;
+    assert.match(pairCode, /^[0-9a-f]{64}$/);
+    assert.ok(Number.isSafeInteger(issued.expiresAtMs) && issued.expiresAtMs > Date.now() &&
+      issued.expiresAtMs <= Date.now() + PAIR_CODE_MAX_TTL_MS + PAIR_CODE_CLOCK_SKEW_MS,
+      'pairing code expiry exceeds the bounded TTL and clock skew');
+    stub = await runLocalModelStub();
+    runnerRoot = await fsp.mkdtemp(path.join(os.tmpdir(), 'mn-pairing-public-'));
+    await fsp.chmod(runnerRoot, 0o700);
+    pair = new PairedCompanion({ directory: path.join(runnerRoot, 'Brisa'), url: wsUrl.href,
+      baseUrl: stub.url, modelId: 'qwen3.8-flash-next-coder-iq1_m', thinkingMode: 'disabled', maxCalls: 2, maxTokens: 262144,
+      claim: async options => { const bootstrap = await claimPairCode(options);
+        bootstrapToken = bootstrap.token; return bootstrap; } });
+    const started = await pair.start(pairCode);
+    assert.equal(started.ok, true, 'resumed paired controller did not claim and join the public WSS');
+    const chatState = await ownerWire.wait(message => message.t === MSG.CHAT_STATE &&
+      message.peers?.some(peer => peer.name === PAIRED_NAME), 'resumed paired companion peer presence');
+    const pairedPeer = chatState.peers.find(peer => peer.name === PAIRED_NAME);
+    assert.equal(typeof pairedPeer?.id, 'string');
+    check('resumed_real_local_controller_claimed_new_one_use_code_over_public_WSS');
+
+    const chatId = randomUUID();
+    await ownerWire.send({ t: MSG.CHAT_SEND, id: chatId, channel: 'world', text: CHAT_TEXT });
+    const sent = await ownerWire.wait(message => message.t === MSG.CHAT_RESULT && message.requestId === chatId, 'resumed owner chat result');
+    assert.equal(sent.ok, true, 'resumed owner chat was not accepted');
+    const reply = await ownerWire.wait(message => message.t === MSG.CHAT_MESSAGE && message.sender?.id === pairedPeer.id &&
+      message.sender?.name === PAIRED_NAME && message.text === STUB_REPLY, 'resumed Brisa local model reply', 20000);
+    assert.equal(reply.channel, 'world'); assert.equal(stub.calls, 1);
+    const memoryPath = path.join(runnerRoot, 'Brisa', 'memory.jsonl');
+    let memoryText = '';
+    for (let attempt = 0; attempt < 80 && !memoryText.trim(); attempt++) {
+      try { memoryText = await fsp.readFile(memoryPath, 'utf8'); } catch { /* pending episode write */ }
+      if (!memoryText.trim()) await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    assert.ok(memoryText.trim(), 'resumed chat episode was not persisted locally');
+    const episodes = memoryText.trim().split(/\r?\n/).map(line => JSON.parse(line));
+    assert.ok(episodes.some(episode => episode.scope?.ownerId === ownerId &&
+      episode.scope?.characterId === manifest.characterId &&
+      episode.payload?.chat?.some(message => message.text === CHAT_TEXT) &&
+      episode.payload?.chat?.some(message => message.text === STUB_REPLY)), 'resumed memory episode scope or exchange mismatch');
+    await assertNoCredentialFiles(runnerRoot, [pairCode, bootstrapToken]);
+    check('resumed_chat_received_local_stub_reply_and_scoped_memory_persisted_without_credentials');
+
+    const waitingForStop = pair.waitForStop();
+    const currentRow = await controlRow(ownerWire, manifest.characterId);
+    await controlOperation(ownerWire, 'stop', currentRow);
+    await bounded(waitingForStop, 'resumed paired runner stop after owner revoke', 15000);
+    runnerStopped = pair.state === 'stopped';
+    assert.equal(runnerStopped, true);
+    const stoppedHead = await bounded(store.loadCompanionControl({ world: WORLD, owner: ownerId,
+      character: manifest.characterId }), 'verify resumed durable stop');
+    assert.equal(stoppedHead?.stopped, true);
+    let postStop;
+    for (let attempt = 0; attempt < 30; attempt++) {
+      postStop = (await fetchJson(new URL('/status', target), 'resumed post-stop public status')).body;
+      if (Array.isArray(postStop.names) && namedSessionCount(postStop.names, PAIRED_NAME) <= pairedNameBaselineCount) break;
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    assert.ok(Array.isArray(postStop.names) && postStop.names.includes(canaryOwnerName(ownerId)) &&
+      namedSessionCount(postStop.names, PAIRED_NAME) <= pairedNameBaselineCount,
+      'resumed owner stop did not retain the owner session and return paired-name sessions to baseline');
+    check('resumed_owner_stop_revoked_runner_and_SQL027_is_stopped');
+    evidence.acceptancePass = true;
+  } catch (error) {
+    evidence.acceptancePass = false; evidence.errors.push(redact(error?.message));
+    console.error(redact(error?.message));
+  } finally {
+    if (ownerWire && record?.characterKey) {
+      try {
+        const current = await bounded(store.loadCompanionControl({ world: WORLD, owner: ownerId,
+          character: record.characterKey }), 'settle resumed SQL027 stop');
+        if (current && !current.stopped && ownerWire.ws.readyState === WebSocket.OPEN) {
+          const waitingForStop = pair?.waitForStop();
+          const currentRow = await controlRow(ownerWire, record.characterKey);
+          await controlOperation(ownerWire, 'stop', currentRow);
+          if (pair) await bounded(waitingForStop, 'settle resumed runner revoke', 15000);
+        }
+      } catch (error) { evidence.errors.push(`stop settlement: ${redact(error?.message)}`); }
+    }
+    await settlePair(pair, ownerWire, stub, runnerRoot);
+    if (ownerWire) {
+      try { await waitForClose(ownerWire.ws, 'resumed owner socket settled'); ownerSocketClosed = true; } catch {}
+    }
+    try { canarySocketsClosed = await waitCanarySocketsClosed(ownerId, pairedNameBaselineCount); }
+    catch (error) { evidence.errors.push(`socket settlement: ${redact(error?.message)}`); }
+    try {
+      await verifyMarkedAccount(ownerId, marker);
+      const durableRecord = await bounded(store.loadCompanionCreation({ world: WORLD, owner: ownerId }), 'retain exact SQL034 resume record');
+      assert.ok(durableRecord?.characterKey === manifest.characterId && durableRecord?.creationId === manifest.creationId,
+        'exact resumed SQL034 creation record changed');
+      const profiles = await Promise.all([settleProfile(ownerId, ownerSocketClosed), settleProfile(manifest.characterId, true)]);
+      evidence.canaryRetained = { account: true, ownerProfile: profiles[0].profile !== null,
+        characterProfile: profiles[1].profile !== null, creationRecord: true, ownerSocketClosed,
+        runnerStopped: runnerStopped || pair?.state === 'stopped', canarySocketsClosed,
+        profilesStable: profiles.every(item => item.stableReads >= 3 && item.storage.unsaved === 0 &&
+          item.storage.profileWrites === 0 && item.storage.economic?.pending === 0) };
+      evidence.cleanup = { required: true, completed: false,
+        manifest: path.relative(ROOT, MANIFEST_PATH).replaceAll(path.sep, '/') };
+    } catch (error) { evidence.errors.push(`retention settlement: ${redact(error?.message)}`); }
+    pairCode = null; bootstrapToken = null; accessToken = null;
+    evidence.pass = false;
+    try { fs.writeFileSync(resumeEvidencePath, JSON.stringify(evidence, null, 2) + '\n'); }
+    catch (error) { evidence.acceptancePass = false; console.error(`resume evidence write failed: ${redact(error?.message)}`); }
+  }
+  console.log(MANIFEST_PATH);
+  process.exitCode = evidence.pass ? 0 : 1;
+}
+
 async function runAcceptance() {
   let ownerWire = null, pair = null, stub = null, runnerRoot = null, wsUrl = null;
-  let ownerSocketClosed = false, runnerStopped = false, canarySocketsClosed = false;
+  let ownerSocketClosed = false, runnerStopped = false, canarySocketsClosed = false, pairedNameBaselineCount = null;
   const manifestExists = () => fs.existsSync(MANIFEST_PATH);
   try {
     fs.mkdirSync(out, { recursive: false });
     assert.equal(manifestExists(), false, 'an earlier pairing canary cleanup manifest is pending');
-    const { content } = await checkPublicReadiness();
+    const { content, status } = await checkPublicReadiness();
+    pairedNameBaselineCount = namedSessionCount(status.names, PAIRED_NAME);
+    assert.ok(Number.isSafeInteger(pairedNameBaselineCount), 'public paired-session name baseline unavailable');
+    evidence.pairedNameBaselineCount = pairedNameBaselineCount;
     wsUrl = new URL('/ws', target); wsUrl.protocol = 'wss:';
     check('public_alpha_auth_SQL034_SQL027_pairing_and_content_ready');
 
@@ -398,13 +611,14 @@ async function runAcceptance() {
     pairCode = issued.code;
     assert.match(pairCode, /^[0-9a-f]{64}$/);
     assert.ok(Number.isSafeInteger(issued.expiresAtMs) && issued.expiresAtMs > Date.now() &&
-      issued.expiresAtMs <= Date.now() + 5 * 60 * 1000);
+      issued.expiresAtMs <= Date.now() + PAIR_CODE_MAX_TTL_MS + PAIR_CODE_CLOCK_SKEW_MS);
     stub = await runLocalModelStub();
     runnerRoot = await fsp.mkdtemp(path.join(os.tmpdir(), 'mn-pairing-public-'));
     await fsp.chmod(runnerRoot, 0o700);
     pair = new PairedCompanion({ directory: path.join(runnerRoot, 'Brisa'), url: wsUrl.href,
       baseUrl: stub.url, modelId: 'qwen3.8-flash-next-coder-iq1_m', thinkingMode: 'disabled', maxCalls: 2, maxTokens: 262144,
-      claim: async options => { const bootstrap = await claimPairCode(options); bootstrapToken = bootstrap.token; return bootstrap; } });
+      claim: async options => { const bootstrap = await claimPairCode(options);
+        bootstrapToken = bootstrap.token; return bootstrap; } });
     const started = await pair.start(pairCode);
     assert.equal(started.ok, true, 'paired controller did not claim and join the public WSS');
     const chatState = await ownerWire.wait(message => message.t === MSG.CHAT_STATE &&
@@ -447,9 +661,15 @@ async function runAcceptance() {
     const stoppedHead = await bounded(store.loadCompanionControl({ world: WORLD, owner: ownerId,
       character: record.characterKey }), 'verify durable stop');
     assert.equal(stoppedHead.stopped, true);
-    const postStop = (await fetchJson(new URL('/status', target), 'post-stop public status')).body;
+    let postStop;
+    for (let attempt = 0; attempt < 30; attempt++) {
+      postStop = (await fetchJson(new URL('/status', target), 'post-stop public status')).body;
+      if (Array.isArray(postStop.names) && namedSessionCount(postStop.names, PAIRED_NAME) <= pairedNameBaselineCount) break;
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
     assert.ok(Array.isArray(postStop.names) && postStop.names.includes(canaryOwnerName(ownerId)) &&
-      !postStop.names.includes('Brisa [IA]'), 'owner stop did not retain the owner session and remove the paired session');
+      namedSessionCount(postStop.names, PAIRED_NAME) <= pairedNameBaselineCount,
+      'owner stop did not retain the owner session and return paired-name sessions to baseline');
     check('owner_stop_revoked_runner_and_SQL027_is_stopped');
     evidence.acceptancePass = true;
   } catch (error) {
@@ -462,7 +682,7 @@ async function runAcceptance() {
       try { await waitForClose(ownerWire.ws, 'owner socket settled'); ownerSocketClosed = true; } catch {}
     }
     if (ownerId) {
-      try { canarySocketsClosed = await waitCanarySocketsClosed(ownerId); } catch (error) {
+      try { canarySocketsClosed = await waitCanarySocketsClosed(ownerId, pairedNameBaselineCount); } catch (error) {
         evidence.acceptancePass = false; evidence.errors.push(`socket settlement: ${redact(error?.message)}`);
       }
     }
@@ -504,4 +724,5 @@ async function runAcceptance() {
 }
 
 if (cleanupPath) await runCleanup();
+else if (resumePath) await runResume();
 else await runAcceptance();

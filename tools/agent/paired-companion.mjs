@@ -19,7 +19,11 @@ const exact = (value, keys) => value && typeof value === 'object' && !Array.isAr
   Object.getPrototypeOf(value) === Object.prototype && Reflect.ownKeys(value).length === keys.length &&
   keys.every(key => Object.hasOwn(value, key) && Object.hasOwn(Object.getOwnPropertyDescriptor(value, key), 'value'));
 const MAX_MINUTES = 120;
+const MAX_CLOCK_SKEW_MS = 30_000;
+const MAX_TOKEN_TTL_MS = 60 * 60_000 + MAX_CLOCK_SKEW_MS;
 const DEFAULTS = Object.freeze({ baseUrl: 'http://127.0.0.1:8080/v1', modelId: 'qwen3.8-flash-next-coder-iq1_m', thinkingMode: 'server_default' });
+const BUDGET_FAILURES = new Set(['max_calls', 'max_tokens', 'max_cost_units', 'local_resource_budget_expired',
+  'local_resource_outcome_unresolved', 'budget_overrun', 'provider_limit_overrun', 'response_over_budget']);
 const hash = value => createHash('sha256').update(value).digest('hex');
 const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value) &&
   value.toLowerCase() !== '00000000-0000-0000-0000-000000000000';
@@ -39,7 +43,7 @@ function validPairResponse(message, requestId, now = Date.now()) {
       !(content.revisionId === null || (typeof content.revisionId === 'string' && /^[a-f0-9]{64}$/.test(content.revisionId))) ||
       typeof ownerPeer !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(ownerPeer) ||
       record.characterKey !== scope.characterId || !/^mncp_[a-f0-9]{64}$/.test(token) ||
-      !Number.isSafeInteger(expiresAtMs) || expiresAtMs <= now || expiresAtMs > now + MAX_MINUTES * 60_000) return null;
+      !Number.isSafeInteger(expiresAtMs) || expiresAtMs <= now || expiresAtMs > now + MAX_TOKEN_TTL_MS) return null;
   return { scope: structuredClone(scope), record, token, expiresAtMs, content: structuredClone(content), ownerPeer };
 }
 
@@ -49,7 +53,7 @@ export async function claimPairCode({ url, code, timeoutMs = 10000, WebSocketCla
   try { endpoint = new URL(url); } catch { throw new Error('pair_unavailable'); }
   if (endpoint.protocol !== 'wss:' || endpoint.username || endpoint.password || endpoint.search || endpoint.hash ||
       !/^[a-f0-9]{64}$/.test(code ?? '') || !Number.isSafeInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > 30000) throw new Error('pair_unavailable');
-  const socket = new WebSocketClass(endpoint.href);
+  const socket = new WebSocketClass(endpoint.href, { origin: `https://${endpoint.host}` });
   const requestId = randomUUID();
   return await new Promise((resolve, reject) => {
     let settled = false;
@@ -96,16 +100,18 @@ async function readManifest(file) {
 /** Local controller for an existing public companion. It never creates a GameHost. */
 export class PairedCompanion {
   #directory; #url; #policy; #limits; #claim; #runnerFactory; #adapterFactory;
+  #onStatus;
   #runner = null; #mind = null; #budget = null; #scope = null; #record = null; #ownerPeer = null; #latestFiles = null; #contextRevision = 0; #state = 'stopped';
   #closed = false; #generation = 0; #queue = Promise.resolve(); #prepareTail = Promise.resolve(); #seen = new Set(); #waiters = new Set();
   #stopWaiters = new Set();
   constructor({ directory, url, baseUrl = DEFAULTS.baseUrl, modelId = DEFAULTS.modelId, thinkingMode = DEFAULTS.thinkingMode,
     maxCalls = 8, maxTokens = 1_000_000, claim = claimPairCode, runnerFactory = options => new AgentNetworkRunner(options),
-    adapterFactory = createLocalOpenAIMind } = {}) {
+    adapterFactory = createLocalOpenAIMind, onStatus = () => {} } = {}) {
     if (typeof directory !== 'string' || !path.isAbsolute(directory) || typeof url !== 'string' ||
         !/^wss:\/\//i.test(url) || !Number.isInteger(maxCalls) || maxCalls < 1 || maxCalls > 8 ||
         !Number.isSafeInteger(maxTokens) || maxTokens < 32768 || maxTokens > 1_000_000 ||
-        typeof claim !== 'function' || typeof runnerFactory !== 'function' || typeof adapterFactory !== 'function') throw new TypeError('invalid_paired_companion_options');
+        typeof claim !== 'function' || typeof runnerFactory !== 'function' || typeof adapterFactory !== 'function' ||
+        typeof onStatus !== 'function') throw new TypeError('invalid_paired_companion_options');
     let endpoint;
     try { endpoint = new URL(url); } catch { throw new TypeError('invalid_paired_companion_options'); }
     if (endpoint.protocol !== 'wss:' || endpoint.username || endpoint.password || endpoint.search || endpoint.hash || !endpoint.hostname)
@@ -114,6 +120,7 @@ export class PairedCompanion {
     const draft = validateCompanionDraft({ ...DEFAULT_COMPANION_DRAFT, modelId, baseUrl, thinkingMode });
     this.#directory = path.resolve(directory); this.#url = url; this.#policy = { baseUrl: draft.baseUrl, modelId: draft.modelId, thinkingMode: draft.thinkingMode };
     this.#limits = { maxCalls, maxTokens }; this.#claim = claim; this.#runnerFactory = runnerFactory; this.#adapterFactory = adapterFactory;
+    this.#onStatus = onStatus;
   }
   get state() { return this.#state; }
   get scope() { return this.#scope && structuredClone(this.#scope); }
@@ -122,6 +129,9 @@ export class PairedCompanion {
     mind: this.#mind?.state ?? null, budget: this.budget }; }
   waitForStop() { return this.#state !== 'ready' ? Promise.resolve() : new Promise(resolve => this.#stopWaiters.add(resolve)); }
   #notifyStopped() { for (const resolve of this.#stopWaiters) resolve(); this.#stopWaiters.clear(); }
+  #status(phase, result) {
+    try { this.#onStatus(Object.freeze({ phase, result })); } catch {}
+  }
   #isCurrentPairing(generation) { return generation === this.#generation && !this.#closed && this.#state === 'pairing'; }
   #isCurrentSession(generation, runner) { return generation === this.#generation && !this.#closed &&
     ['pairing', 'ready'].includes(this.#state) && this.#runner === runner; }
@@ -155,7 +165,7 @@ export class PairedCompanion {
       budget = await LocalResourceBudget.open({ directory: path.join(dir, 'resource-budget'), scope,
         expiresAtMs: existing.budgetExpiresAtMs, ...this.#policy });
     } else {
-      if (bootstrap.expiresAtMs > Date.now() + MAX_MINUTES * 60_000) throw new Error('pair_expiry_invalid');
+      if (bootstrap.expiresAtMs > Date.now() + MAX_TOKEN_TTL_MS) throw new Error('pair_expiry_invalid');
       await createCompanionFiles({ directory: dir, draft, scope });
       // New directory only: seed the latest owner-authored SQL configuration, preserving the empty journal.
       await writeFile(path.join(dir, 'personality.md'), docs.personality, { mode: 0o600 });
@@ -299,12 +309,20 @@ export class PairedCompanion {
     if (this.#state !== 'ready' || generation !== this.#generation) return;
     if (!await this.#waitForObservedMessage(message.id, generation) || generation !== this.#generation) return;
     const result = await this.#mind.converse({ messageId: message.id });
-    if (generation !== this.#generation || !result?.ok) return;
+    if (generation !== this.#generation || this.#state !== 'ready') return;
+    if (!result?.ok) {
+      this.#status('inference', BUDGET_FAILURES.has(result?.why) ? 'budget_exhausted' : 'failed');
+      return;
+    }
     const requestId = result?.action?.request?.order?.actionId ?? result?.action?.order?.actionId;
     const delivered = requestId ? await this.#waitForReply(requestId, generation) : false;
-    if (!delivered) return;
+    if (generation !== this.#generation || this.#state !== 'ready') return;
+    if (!delivered) { this.#status('delivery', 'unconfirmed'); return; }
     if (generation === this.#generation && this.#state === 'ready') {
-      await this.#mind.remember();
+      try {
+        const remembered = await this.#mind.remember();
+        if (!remembered?.ok) this.#status('memory', 'failed');
+      } catch { this.#status('memory', 'failed'); }
     }
   }
   #snapshot(runner = this.#runner, files = this.#latestFiles) {

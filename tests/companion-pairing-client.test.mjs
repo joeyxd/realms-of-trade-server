@@ -43,15 +43,31 @@ test('load, issue, and revoke use the authenticated pairing contract and private
 });
 
 test('malformed, overlong, or wrong-operation codes are rejected without ending the pending request', () => {
-  const f = fixture(); f.client.load(); f.reply(f.sent.at(-1)); f.client.issue(); const issue = f.sent.at(-1);
+  const now = 1000;
+  const f = fixture({ now: () => now }); f.client.load(); f.reply(f.sent.at(-1)); f.client.issue(); const issue = f.sent.at(-1);
   f.reply(issue, { code: 'unsafe', expiresAtMs: Date.now() + 10_000 });
   assert.equal(f.client.snapshot().status, 'loading');
-  f.reply(issue, { code: CODE, expiresAtMs: Date.now() + 5 * 60_000 + 1 });
+  f.reply(issue, { code: CODE, expiresAtMs: now + 5 * 60_000 + 30_001 });
   assert.equal(f.client.snapshot().code, null);
+  f.reply(issue, { code: CODE, expiresAtMs: now });
+  assert.equal(f.client.snapshot().code, null, 'an expired code is still rejected');
   f.reply(issue, { code: CODE, expiresAtMs: Date.now() + 60_000, bootstrap: { grant: 'must-not-arrive' } });
   assert.equal(f.client.snapshot().code, null);
-  f.reply(issue, { code: CODE, expiresAtMs: Date.now() + 60_000 });
+  f.reply(issue, { code: CODE, expiresAtMs: now + 60_000 });
   assert.equal(f.client.snapshot().code, CODE);
+  f.client.destroy();
+});
+
+test('a small server clock lead accepts the code without displaying it beyond five minutes', t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const now = 1000;
+  const f = fixture({ now: () => now }); f.client.load(); f.reply(f.sent.at(-1)); f.client.issue();
+  f.reply(f.sent.at(-1), { code: CODE, expiresAtMs: now + 5 * 60_000 + 10_000 });
+  assert.equal(f.client.snapshot().code, CODE);
+  t.mock.timers.tick(5 * 60_000 - 1);
+  assert.equal(f.client.snapshot().code, CODE);
+  t.mock.timers.tick(1);
+  assert.equal(f.client.snapshot().code, null);
   f.client.destroy();
 });
 

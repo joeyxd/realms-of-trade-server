@@ -42,12 +42,27 @@ export async function privateLine(input, output) {
   });
 }
 
+export function statusMessage(status) {
+  if (!status || typeof status !== 'object' || Array.isArray(status) || Object.getPrototypeOf(status) !== Object.prototype ||
+      Reflect.ownKeys(status).length !== 2 || !Object.hasOwn(status, 'phase') || !Object.hasOwn(status, 'result')) return null;
+  const phase = Object.getOwnPropertyDescriptor(status, 'phase'), result = Object.getOwnPropertyDescriptor(status, 'result');
+  if (!phase || !result || !Object.hasOwn(phase, 'value') || !Object.hasOwn(result, 'value')) return null;
+  if (phase.value === 'inference' && result.value === 'budget_exhausted') return 'No pude responder: se agotó el presupuesto local.';
+  if (phase.value === 'inference' && result.value === 'failed') return 'No pude responder: falló el modelo local. Comprueba que esté disponible.';
+  if (phase.value === 'delivery' && result.value === 'unconfirmed') return 'No se confirmó la entrega de la respuesta; no se guardó memoria.';
+  if (phase.value === 'memory' && result.value === 'failed') return 'La respuesta se entregó, pero no se pudo guardar el recuerdo local.';
+  return null;
+}
+
 async function main() {
   let options;
   try { options = argumentsOf(process.argv.slice(2)); }
   catch { process.stderr.write('Uso: node tools/agent/pair-companion.mjs --url wss://.../ws --directory <carpeta> [--base-url http://127.0.0.1:8080/v1] [--model <id>] [--max-calls 8] [--max-tokens 1000000]\n'); process.exitCode = 2; return; }
   let companion;
-  try { companion = new PairedCompanion(options); }
+  try { companion = new PairedCompanion({ ...options, onStatus: status => {
+    const message = statusMessage(status);
+    if (message) process.stdout.write(`${message}\n`);
+  } }); }
   catch { process.stderr.write('Opciones de emparejamiento inválidas. Revisa la URL segura, el modelo y la dirección local.\n'); process.exitCode = 2; return; }
   let code;
   try { code = await privateLine(process.stdin, process.stdout); }

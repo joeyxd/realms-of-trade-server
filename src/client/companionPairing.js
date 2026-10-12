@@ -5,6 +5,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const WHY = new Set(['forbidden', 'invalid_request', 'unavailable', 'busy', 'stopped', 'not_created']);
 const CODE = /^[0-9a-f]{64}$/i;
 const MAX_TTL_MS = 5 * 60 * 1000;
+const MAX_CLOCK_SKEW_MS = 30_000;
 const empty = (status = 'offline', message = '') => ({ status, enabled: false, code: null, expiresAtMs: null, message });
 const exactKeys = (value, keys) => value && typeof value === 'object' && !Array.isArray(value)
   && Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value, key));
@@ -123,8 +124,10 @@ export class CompanionPairingClient {
         || typeof message.ok !== 'boolean' || typeof message.enabled !== 'boolean'
         || message.bootstrap !== null || !(message.why === null || WHY.has(message.why))) return;
     const hasCode = message.code !== null;
-    const validExpiry = Number.isSafeInteger(message.expiresAtMs) && message.expiresAtMs > this.now()
-      && message.expiresAtMs <= this.now() + MAX_TTL_MS;
+    const now = this.now();
+    // The host owns expiry. Small wall-clock skew must not reject a newly issued code.
+    const validExpiry = Number.isSafeInteger(message.expiresAtMs) && message.expiresAtMs > now
+      && message.expiresAtMs <= now + MAX_TTL_MS + MAX_CLOCK_SKEW_MS;
     if ((hasCode && (!CODE.test(message.code) || !validExpiry))
         || (!hasCode && message.expiresAtMs !== null)
         || (message.ok && message.why !== null) || (!message.ok && message.why === null)
@@ -143,7 +146,7 @@ export class CompanionPairingClient {
   }
   scheduleExpiry(expiresAtMs) {
     this.clearExpiry();
-    const delay = expiresAtMs - this.now();
+    const delay = Math.min(MAX_TTL_MS, Math.max(0, expiresAtMs - this.now()));
     this.expiryTimer = setTimeout(() => {
       if (this.state.code && this.state.expiresAtMs === expiresAtMs) this.publish({ ...this.state, code: null, expiresAtMs: null });
       this.expiryTimer = null;
