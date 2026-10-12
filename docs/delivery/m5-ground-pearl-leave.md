@@ -90,3 +90,12 @@ La [lectura final](m5-ground-pearl-leave/final-domain.json) conserva los montaje
 comunes nulos, sin reloj común ni filas/intenciones de suelo. No se ejecutó SQL,
 adopción ni gameplay durable de QA en el VPS. Los tests de imagen usan memoria;
 la durabilidad corresponde a los tests SQL/SIGKILL locales. Conteos solapados.
+
+## Integración concurrente
+
+La integración con compañeros de `6b713d2`, alpha.60/protocolo 59, pasa **122/122**
+en 17 archivos seriales, incluidas las pruebas de host, SIGKILL y propiedad del comando:
+[manifiesto](m5-ground-pearl-leave/concurrent-integration.json),
+[TAP](m5-ground-pearl-leave/concurrent-integration.tap). Fuentes sin cambios durante la ejecución.
+El permiso del compañero admite solo chat; su montaje excluye el piloto común de suelo.
+Esta prueba local no sustituye la evidencia pública de `9ea14a0` ni acredita alpha.60 en VPS.
