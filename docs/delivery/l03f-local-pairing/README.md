@@ -85,6 +85,12 @@ El merge upstream dejó el árbol en alpha.63/protocolo 59 y conservó los cambi
 y Bucanero. La integración pasó [68/68](alpha63-merge.tap), y las comprobaciones
 adicionales de mundo/GM pasaron [11/11](world-merge.tap), en ejecución serial.
 Los conteos anteriores se solapan; no se repitió la suite general.
-La publicación del cliente corregido se registra por separado. La evidencia del
-canario de arriba corresponde a alpha.60; no demuestra inferencia con Qwen ni
-aceptación del MMO completo.
+**Publicado en `c146b08`, alpha.63.** [publication.json](publication.json) verifica
+el contenedor sano y su imagen `sha256:b0e1b7818ce1…`, 194/194 pruebas del
+actualizador, 14 hashes de imagen y 8 archivos públicos coincidentes con Git,
+incluido `src/client/companionPairing.js`. Readiness de emparejamiento activo;
+mundo listo, cero errores y cero escrituras pendientes en esa captura.
+La [portada pública](public-entry-alpha63.png) cargó en Chrome y la pestaña temporal
+se cerró después. No se repitió el canario autenticado en esta revisión: sus seis
+comprobaciones corresponden a alpha.60 con el controlador local ya corregido.
+La prueba no demuestra inferencia con Qwen ni aceptación del MMO completo.

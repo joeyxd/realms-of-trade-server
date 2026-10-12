@@ -1,0 +1,148 @@
+{
+  "at": "2026-10-12T05:49:50.183510+00:00",
+  "container": "marea-negra-alpha-marea-negra-alpha-1",
+  "revision": "c146b08675d56870ddc9e579861cd9902c48c999",
+  "version": "0.6.0-alpha.63",
+  "image": "marea-negra:alpha-c146b08675d5",
+  "imageId": "sha256:b0e1b7818ce139657f3f722e1e90430cdaf94bcd5a1380e03702b8dc7f7013e4",
+  "containerId": "7d1982979d92a6b69ab2ef9bda891c1d5b64c1571f4ecbd43c9154e40335e672",
+  "running": true,
+  "health": "healthy",
+  "startedAt": "2026-10-12T05:48:59.610141211Z",
+  "oomKilled": false,
+  "currentRelease": "/opt/marea-negra/releases/c146b08675d56870ddc9e579861cd9902c48c999",
+  "updateState": {},
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "validated": {
+    "revision": "c146b08675d56870ddc9e579861cd9902c48c999",
+    "image_id": "sha256:b0e1b7818ce139657f3f722e1e90430cdaf94bcd5a1380e03702b8dc7f7013e4",
+    "tests_passed": true,
+    "tests": 194,
+    "pass": 194,
+    "fail": 0,
+    "skipped": 0
+  },
+  "imageHashes": {
+    "server/host.mjs": "30a1b727c020b07959cef399b4e6b62f73ecb7996918c873b86fc078953142a1",
+    "server/index.mjs": "ff1372ede96dbb2ffbd309b2c004ee013774f11c27f93a1ea31b0e496552c3b8",
+    "server/agentControl.mjs": "02594c3cb8625cc9559a8f8277709a5e6e0515827436a3c2d13a5e7ac81a38a1",
+    "server/companionControl.mjs": "5c1699f18d165610ca3edfc8dd146dd27ce9dedcb7e3e8b902f0b6919abd151f",
+    "server/companionCreation.mjs": "bda54aa23ffe612981fb8b074da8efad74d7acba572809b5bddc9caaab605aea",
+    "server/companionPairing.mjs": "667604e483d548b8ab8c0c6225d4f0c64a6c924a84f466fa45309dd9bec0ab4b",
+    "src/data/meta.js": "283e6557445506f22506edff829094e263265854ff3aa39ed880440f64a07983",
+    "src/net/protocol.js": "1595accb85ea5f9c43cfa671932523006deb7fb7c2d09cfc84659ba0633cc860",
+    "src/main.js": "0f4f5d9f5b80d9ec89bf237a56acb1c01b20da629cefc8baf3f491cecb2508ee",
+    "src/ui/companions.js": "7600bd07111c852c897ca448761d777a96612c49a2e37c926fd9de114973599e",
+    "src/ui/companionPairing.js": "33c92e9fbf245a299d7a7bc93f1077fe9d062af572b8e805ae8754e0139cf735",
+    "src/client/companionPairing.js": "eea23e10fab503a61c2faa68df40f519448a7a23795650b9e4531e8f9fe6d587",
+    "src/ui/companionCreation.js": "8b1fa06d28749dd080ebe182a17f385705b90480e948a482232081c000b618ea",
+    "src/net/companionCreation.js": "b0f8b80a42842b921c27cafd985885195e61bb74af48306f30c3858b0ed83c8d"
+  },
+  "publicHashes": {
+    "src/data/meta.js": "283e6557445506f22506edff829094e263265854ff3aa39ed880440f64a07983",
+    "src/net/protocol.js": "1595accb85ea5f9c43cfa671932523006deb7fb7c2d09cfc84659ba0633cc860",
+    "src/main.js": "0f4f5d9f5b80d9ec89bf237a56acb1c01b20da629cefc8baf3f491cecb2508ee",
+    "src/ui/companions.js": "7600bd07111c852c897ca448761d777a96612c49a2e37c926fd9de114973599e",
+    "src/ui/companionPairing.js": "33c92e9fbf245a299d7a7bc93f1077fe9d062af572b8e805ae8754e0139cf735",
+    "src/client/companionPairing.js": "eea23e10fab503a61c2faa68df40f519448a7a23795650b9e4531e8f9fe6d587",
+    "src/ui/companionCreation.js": "8b1fa06d28749dd080ebe182a17f385705b90480e948a482232081c000b618ea",
+    "src/net/companionCreation.js": "b0f8b80a42842b921c27cafd985885195e61bb74af48306f30c3858b0ed83c8d"
+  },
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.63",
+    "players": 0,
+    "max": 4,
+    "sockets": 1,
+    "tick": 2232,
+    "uptime": 49,
+    "stepMs": 1.428,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true,
+        "meals": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "companionPairing": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 3760,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 11,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 298.4,
+      "kbIn": 0.3,
+      "dropped": 0
+    }
+  }
+}
