@@ -1,6 +1,7 @@
 import { compileGmColliders } from './publicationValidation.js';
 import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
 import { resourceLayout } from '../data/resources.js';
+import { compileAuthoredResources } from './resourceAdapters.js';
 
 const CELL = 4;
 const baseMaps = new WeakMap();
@@ -61,7 +62,8 @@ export function projectGmContent(baseMap, document = null, baseRevision = 'terra
   }
   const colliders = document === null ? baseMap.colliders.map((c) => structuredClone(c))
     : compileGmColliders(baseMap, document, baseRevision);
-  return { ...terrainMap, colliders, queryColliders: colliderQuery(colliders), terrainMap };
+  const gmResources = document ? compileAuthoredResources(terrainMap, document) : [];
+  return { ...terrainMap, gmResources, colliders, queryColliders: colliderQuery(colliders), terrainMap };
 }
 
 /** Replace the terrain sampling surface and collision list on a caller-owned active map. */
@@ -82,6 +84,7 @@ export function installGmContent(map, baseMap, document = null, baseRevision = '
   map.fullsegments = projected.fullsegments;
   if (projected.terrainResources !== undefined) map.terrainResources = projected.terrainResources;
   else delete map.terrainResources;
+  map.gmResources = projected.gmResources;
   map.colliders = projected.colliders;
   map.queryColliders = projected.queryColliders;
   map.gmTerrainMap = projected.terrainMap;

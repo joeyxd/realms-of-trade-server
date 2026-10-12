@@ -11,6 +11,8 @@ const FORMS = [
 ];
 
 export function palmVariant(prop) {
+  // Authored functional palms use the fixed tall gameplay silhouette, independent of placement order.
+  if (typeof prop?.id === 'string' && prop.id.startsWith('gm_')) return 0;
   // Coordinates survive filtering/reordering of the prop list; no index or world RNG is involved.
   let h = Math.imul(Math.round(prop.x * 100), 73856093) ^ Math.imul(Math.round(prop.z * 100), 19349663);
   h = Math.imul(h ^ (h >>> 16), 0x45d9f3b); h ^= h >>> 16;

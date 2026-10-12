@@ -1,5 +1,15 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA01 GM04d, 2026-10-11 — recursos funcionales implementados, alpha.60/protocolo 58:**
+[Contrato](docs/briefs/gm04d-functional-resources.md), [entrega](docs/delivery/gm04d/DELIVERY.md).
+Palmera talable/piedra recogible en Recursos; borrador privado y publicación con admisión SQL036
+append-only. IDs existentes conservan ciclos, agotamiento y ledger al mover/retirar/republicar.
+SQL036 instalada y readiness real 1; 418/418 CPU y 8/8 SQL seriales, UI local 9/9 ES/EN escritorio/móvil.
+Suite amplia no verde: fallo de receta reproducido en upstream y OOM resuelto al repetir serial;
+ver evidencia y alcance en la entrega. Publicación del runtime VPS pendiente de verificación.
+El autor eligió [Taller de habilidades](docs/briefs/skill-studio-vision.md): ajustar las actuales
+primero e incluir la adaptación real de un efecto Niagara; intake realizado, implementación pendiente.
+
 **Bucanero a distancia + swim, alpha.59/protocolo 58:**
 [Contrato](docs/briefs/buccaneer-ranged-swim.md) y [entrega](docs/delivery/buccaneer-v1/ranged-swim/README.md).
 Dos gatillos, armas/manos/recargas distintas, interceptación física 3D y nado original con rig nativo.

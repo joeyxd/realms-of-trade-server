@@ -1,5 +1,15 @@
 # Modo GM para construir el mundo
 
+**AREA01 GM04d, 2026-10-11 — recursos funcionales implementados, alpha.60/protocolo 58:**
+[Contrato](docs/briefs/gm04d-functional-resources.md) y [entrega](docs/delivery/gm04d/DELIVERY.md).
+Recursos ofrece palmera talable y piedra recogible; ID estable, colocar/mover/duplicar/retirar,
+undo y borrador privado. Publicación admite IDs nuevos bajo exclusión de mundo vacío;
+agotamiento/ledger sobreviven rollback, retiro y reinicio. SQL036 instalada/readiness real 1.
+418/418 CPU final seriales y 8/8 SQL; UI local ES/EN escritorio/móvil 9/9. Suite amplia conserva
+un fallo de fabricación reproducido en upstream; ver límites en la entrega. Publicación VPS pendiente.
+Siguiente corte elegido por el autor: [Taller de habilidades](docs/briefs/skill-studio-vision.md),
+ajustar las actuales primero e incluir una adaptación Niagara real. No implementado todavía.
+
 **AREA01 GM04c, 2026-10-11 — dispersión decorativa publicada, alpha.57/protocolo 56:**
 [Contrato](docs/briefs/gm04c-decoration-brush.md) y [entrega](docs/delivery/gm04c/DELIVERY.md).
 Pincel circular/cuadrado/elíptico con densidad, separación, semilla, giro y rango de escala;
