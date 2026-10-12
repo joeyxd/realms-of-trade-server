@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-10-12T05:20:45.343818+00:00",
+  "revision": "6b713d244631d1712884a3f5a5af1d62677830a2",
+  "imageId": "sha256:e4c5fc418da36f06f459f17d22ba38b463fb072d65eb814966f619ce725afb07",
+  "runtimeSha256": {
+    "server/groundPearlLeave.mjs": "1951ee7cd1948c7fbfd96d2574f7d3fbc8264fe220d538c419d23379f3e3c755",
+    "src/net/localServer.js": "37fb9ef8ee126f49b193aef49a5a6330711f66469fe25b48b25b1df9c07b98fc",
+    "server/groundPearlMint.mjs": "7c8ed45b2770ba2b766a86a97a863e8b74a3b41bf7287fc7f5701eb14982d8df",
+    "server/groundPearlMints.mjs": "816ba35f0ca256310e72fa79893f856f75b7e74b5407d541dd221f2c164485e1",
+    "src/sim/systems/inventory.js": "721a2bc857dc03f93ee250ce1646e34a4fa543a0d220f2c865b3290c904c9245",
+    "src/sim/systems/pearls.js": "8bc6623804f23fd966a95437fbaf9716cc5bda15d050442a3a15fa776aa2b49f",
+    "server/groundHostAuthority.mjs": "b32b7d0ab0147988cc6c513f9116601c49ca1bfefa75bb62a032b5ebd76c3971",
+    "server/groundCurrentHydration.mjs": "f7fa1d9952dd660f02649b12e8eb037f8eccc8223fc787d3cd33fe5d7b76b201",
+    "server/groundPearlLifecycle.mjs": "2b62541e111910f084be8ec08b0023ff9992149e9e9a68727108d085fd7682ab",
+    "server/groundPearlPickup.mjs": "8e2e3e51f16140dfa9c068133835e1dc44c94f71f5605f41c660aa672179cda1",
+    "server/groundPearlReturn.mjs": "60197ca8bb1ff42832509d8a0a806afb23315f6837601b6561593e3812fd293d",
+    "server/pearlGroundHydration.mjs": "8aa015070ecaafbe2dce772bab2b822aa854b06fe13f708c93bb1c0debb0440b",
+    "server/host.mjs": "acb5e653081863a145e2fbb5314459738731260d8c5ede6a4e7cef54e23abde8",
+    "server/groundDeathCapture.mjs": "14306d5ff27b6fcb1486c0c21d76aa5fbcdddddd5c3fca8662b560ff244ee8df",
+    "server/groundDeathDrop.mjs": "d1d408e8246922763807031a178fc590cd381aefb11deca5e1513b6fb6fa0aa8",
+    "server/groundProfileBaseline.mjs": "d49782812ed2ce35e60ee137c192a773cc9a21f1e222e145482fd70e31961176"
+  },
+  "counts": {
+    "tests": 194,
+    "pass": 194,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "scope": "Read-only active image source hashes compared to exact Git commit and installed updater offline checks. No additional test container and no live gameplay action."
+}

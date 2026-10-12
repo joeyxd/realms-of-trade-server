@@ -6,6 +6,8 @@ const pairs = {
   asset: { en: 'The model could not be loaded. Try again or choose another model.', es: 'No se pudo cargar el modelo. Vuelve a intentar o elige otro modelo.' },
   assetPreparing: { en: 'Preparing model…', es: 'Preparando modelo…' },
   assetReady: { en: 'Ready to place.', es: 'Listo para colocar.' },
+  resource: { en: 'This resource needs clear, dry ground, space from other resources and protected places, and its allowed scale and rotation.',
+    es: 'El recurso necesita suelo seco y despejado, separación de otros recursos y zonas protegidas, y su escala y giro permitidos.' },
   walk: { en: 'The walk test stopped unexpectedly. Return to the editor and try again.', es: 'La prueba de recorrido se detuvo. Vuelve al editor e inténtalo de nuevo.' },
   unknown: { en: 'Something went wrong. Please try again.', es: 'Se produjo un error. Vuelve a intentar.' },
 };
@@ -51,6 +53,8 @@ export function renderEditorMessage(message, locale = 'es') {
 }
 
 export function editorErrorMessage(error, locale = 'es', context = 'unknown') {
+  if (error?.name === 'GmResourceValidationError') return error.code === 'limit'
+    ? editorMessage('This revision already has 128 added resources.', 'Esta revisión ya tiene 128 recursos añadidos.') : pairs.resource;
   const code = typeof error?.code === 'string' ? error.code : '';
   const key = error?.name === 'SyntaxError' && context === 'import' ? 'importJson'
     : error?.name === 'DraftConflictError' ? 'draftConflict'

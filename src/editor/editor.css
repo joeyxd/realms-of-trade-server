@@ -204,3 +204,11 @@
 .gm-scatter-panel p { margin: 0; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
 .gm-scatter-panel [data-scatter-cost] { border-left: 3px solid #80d8bc; padding: 6px 9px; background: #11252c; }
 .gm-scatter-panel [data-kind="error"] { color: #ff9e8c; }
+.gm-sidebar > [data-role="resource-panel"] { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.gm-resource-panel { padding: 12px; display: grid; gap: 12px; color: #c5dad8; }
+.gm-resource-panel h3 { margin: 0; font-size: 14px; color: #92e6cb; }
+.gm-resource-panel p { margin: 0; font-size: 11px; line-height: 1.5; }
+.gm-resource-card { padding: 12px; display: grid; gap: 8px; background: #11252c; border: 1px solid #355b58; border-radius: 8px; }
+.gm-resource-card b { color: #e6f7ef; }
+.gm-resource-card small { display: block; margin-top: 4px; color: #acc7c0; font-size: 11px; }
+.gm-resource-card button { border-color: #5bbaa5; color: #c9ffef; }

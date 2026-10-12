@@ -1,0 +1,60 @@
+TAP version 13
+# Subtest: resource snapshots expose the same public node catalogue without profile cargo or gold
+ok 1 - resource snapshots expose the same public node catalogue without profile cargo or gold
+  ---
+  duration_ms: 399.1364
+  type: 'test'
+  ...
+# Subtest: two players contesting one actual node get one gather and one revision denial
+ok 2 - two players contesting one actual node get one gather and one revision denial
+  ---
+  duration_ms: 329.9345
+  type: 'test'
+  ...
+# Subtest: command access denial leaves node, pack, cooldown, revision, and save schedule untouched
+ok 3 - command access denial leaves node, pack, cooldown, revision, and save schedule untouched
+  ---
+  duration_ms: 297.9337
+  type: 'test'
+  ...
+# Subtest: gather, craft, and raft construction persist through a signed save and reload
+not ok 4 - gather, craft, and raft construction persist through a signed save and reload
+  ---
+  duration_ms: 246.9466
+  type: 'test'
+  location: 'C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\gm04d-baseline\\tests\\resource-loop-server.test.mjs:122:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    false !== true
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/DEV/real%20of%20trade/gm-editor-first/.scratch/gm04d-baseline/tests/resource-loop-server.test.mjs:143:10)
+    Test.runInAsyncScope (node:async_hooks:228:14)
+    Test.run (node:internal/test_runner/test:1118:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+    Test.postRun (node:internal/test_runner/test:1247:19)
+    Test.run (node:internal/test_runner/test:1175:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+  ...
+# Subtest: parked coastal voyage permits real shore gathering, blocks crafting, then reboards with refreshed cargo mass
+ok 5 - parked coastal voyage permits real shore gathering, blocks crafting, then reboards with refreshed cargo mass
+  ---
+  duration_ms: 950.8636
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 4
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2428.0036

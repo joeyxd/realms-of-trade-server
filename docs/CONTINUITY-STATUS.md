@@ -9,8 +9,13 @@ Rollback y cerco ante deriva/cierre/desconexión, incluso callback nulo antes de
 Tres archivos con fallos de asignación/clonación repiten 49/49 sin cambios; quedan dos fallos heredados
 HTML localizado y Cometa/agua reproducidos en upstream limpio. Cohorte completa no verde. Dos SIGKILL nuevos
 con recuperación/recogida únicas y cero efectos históricos. Conteos solapados.
-Código aceptado localmente; publicación y verificación VPS todavía pendientes.
+Integración de compañeros alpha.60: 122/122 en 17 archivos seriales; GM036 alpha.61: 83/83 en 12 archivos.
+VPS verificado en `6b713d2`, alpha.60/protocolo 59: actualizador 194/194, entrada pública 6/6 y
+16 módulos iguales a Git; montajes comunes nulos, sin adopción ni SQL nuevo para `leave`.
+Los recursos GM activos aún excluyen el piloto común: esa composición queda pendiente.
 Sigue `give` transaccional, después `swallow` y sobre completo kill/cofre; luego transición/adopción y canario VPS.
+Regla del autor: `give` solo entrega sin pago un UID en la bolsa del dueño. Tragada no se entrega ni vende.
+Compraventa entre jugadores aprobada como dirección; requiere su propio corte y confirmar juntos perla y pago.
 
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
 [Entrega/evidencia](delivery/m5-ground-pearl-mint.md), [contrato](briefs/m5-ground-pearl-mint.md).

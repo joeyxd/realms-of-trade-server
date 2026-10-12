@@ -116,6 +116,11 @@ function makePalmParticlePool(group) {
 export class ResourceNodes {
   constructor(scene, { palms = null, swayUniform = null, map = null } = {}) {
     this.scene = scene; this.map = map;
+    const authoredRows = Array.isArray(map?.gmResources) ? map.gmResources
+      : Array.isArray(map?.gmResources?.nodes) ? map.gmResources.nodes : [];
+    this.authoredPalmCount = Math.min(128, authoredRows.filter((row) => row?.kind === 'palm').length);
+    this.maxPalms = HARVEST.maxPalms + this.authoredPalmCount;
+    this.palmCapacities = [this.maxPalms, HARVEST.maxPalms, HARVEST.maxPalms];
     this.group = new THREE.Group(); this.group.name = 'coastal-resources'; scene.add(this.group);
     this.onChange = null;
     const rockData = assets.data(COAST_ROCK_ID), importedRock = rockData?.parts?.[0]?.geo;
@@ -155,10 +160,10 @@ export class ResourceNodes {
     this.markerGroup = new THREE.Group(); this.markerGroup.name = 'nearby-resource-markers'; this.group.add(this.markerGroup);
     this.particlePool = makePalmParticlePool(this.group);
     this._initPalmInstances();
-    this.group.userData.resources = { maxNodes: HARVEST.maxNodes, maxPalms: HARVEST.maxPalms,
+    this.group.userData.resources = { maxNodes: HARVEST.maxActiveNodes || HARVEST.maxNodes, maxPalms: this.maxPalms,
       textures: [], gameplay: true, loaded: [...(importedRock ? [COAST_ROCK_ID] : []), ...(wood ? [DEBRIS_IDS[1]] : []), ...(planks ? [DEBRIS_IDS[2]] : [])] };
-    this.group.userData.palmResources = { maxPalms: HARVEST.maxPalms, loaded: [], textures: [],
-      maxNodes: HARVEST.maxNodes, drawCalls: 6 + 2 + 2, visiblePalms: 0, damagedPalms: 0,
+    this.group.userData.palmResources = { maxPalms: this.maxPalms, loaded: [], textures: [],
+      maxNodes: HARVEST.maxActiveNodes || HARVEST.maxNodes, drawCalls: 6 + 2 + 2, visiblePalms: 0, damagedPalms: 0,
       stumps: 0, particles: 0, lastHit: null, geometryTriangles: 0 };
     this.group.userData.miningResources = { nodes: 0, ironOre: 0, drawCalls: 0, geometryTriangles: 0,
       source: COAST_ROCK_ID, texturesAdded: 0, instanceScale: MINING_SCALE, depletedScale: MINING_DEPLETED_SCALE,
@@ -180,8 +185,9 @@ export class ResourceNodes {
     for (let variant = 0; variant < 3; variant++) {
       const part = geometry[variant];
       if (!part?.trunk || !part?.fronds) continue;
-      const trunk = new THREE.InstancedMesh(part.trunk, mats.trunk, HARVEST.maxPalms);
-      const fronds = new THREE.InstancedMesh(part.fronds, mats.fronds, HARVEST.maxPalms);
+      const capacity = this.palmCapacities[variant];
+      const trunk = new THREE.InstancedMesh(part.trunk, mats.trunk, capacity);
+      const fronds = new THREE.InstancedMesh(part.fronds, mats.fronds, capacity);
       for (const mesh of [trunk, fronds]) {
         mesh.frustumCulled = false; mesh.castShadow = true; mesh.receiveShadow = true;
       }
@@ -189,18 +195,18 @@ export class ResourceNodes {
       fronds.userData.nm = mats.frondNm; fronds.customDepthMaterial = mats.frondDepth;
       this.group.add(trunk, fronds);
       this.palmMeshes[variant] = { trunk, fronds, geometry: part };
-      for (let i = 0; i < HARVEST.maxPalms; i++) {
+      for (let i = 0; i < capacity; i++) {
         invisibleMatrix(trunk, i); invisibleMatrix(fronds, i);
       }
     }
     this.stumpMeshes = {
-      body: new THREE.InstancedMesh(this.palmStumpBody, this.stumpPaint, HARVEST.maxPalms),
-      top: new THREE.InstancedMesh(this.palmStumpTop, this.stumpPaint, HARVEST.maxPalms),
+      body: new THREE.InstancedMesh(this.palmStumpBody, this.stumpPaint, this.maxPalms),
+      top: new THREE.InstancedMesh(this.palmStumpTop, this.stumpPaint, this.maxPalms),
     };
     for (const mesh of Object.values(this.stumpMeshes)) {
       mesh.frustumCulled = false; mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData.nm = this.stumpNm;
       this.group.add(mesh);
-      for (let i = 0; i < HARVEST.maxPalms; i++) invisibleMatrix(mesh, i);
+      for (let i = 0; i < this.maxPalms; i++) invisibleMatrix(mesh, i);
     }
   }
 
@@ -209,7 +215,7 @@ export class ResourceNodes {
     if (record) { record.node = node; return record; }
     const variant = palmVariant(node);
     const slot = this.palmSlots[variant].length;
-    if (slot >= HARVEST.maxPalms) return null;
+    if (slot >= (this.palmCapacities[variant] || HARVEST.maxPalms)) return null;
     record = { node, variant, slot, stumpSlot: this.palmRecords.size, group: null, marker: null, gem: null, notches: [], felled: (node.hits || 0) >= HARVEST.palmHits };
     this.palmSlots[variant].push(record); this.palmRecords.set(node.id, record);
     return record;
@@ -421,7 +427,7 @@ export class ResourceNodes {
         if (stone) mesh.userData.nm = this.stumpNm;
         mesh.castShadow = false; mesh.receiveShadow = true;
         mesh.scale.setScalar(mining ? MINING_SCALE : stone ? 1.5 : 1.25);
-        mesh.rotation.y = Number(node.id.split('-')[1]) * 2.4;
+        mesh.rotation.y = node.id.startsWith('gm_') ? 0 : (Number(node.id.split('-')[1]) || 0) * 2.4;
         const marker = new THREE.Mesh(this.ring, this.gold); marker.rotation.x = -Math.PI / 2; marker.position.y = .035;
         const gem = new THREE.Mesh(this.diamond, this.gold); gem.position.y = .9;
         group.add(mesh, marker, gem); this.group.add(group);

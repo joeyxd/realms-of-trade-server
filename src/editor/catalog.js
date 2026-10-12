@@ -1,4 +1,5 @@
 import { EditorStatus, editorErrorMessage, editorMessage } from './messages.js';
+import { resourceDescriptor, sourceAssetId } from './resourceAdapters.js';
 
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
@@ -76,8 +77,8 @@ export class EditorCatalog {
     this.entries = entries || this.assets.editorCatalog || null;
     const source = this.entries || [...(this.assets.man?.entries?.values?.() || [])];
     const merged = new Map(source.filter((entry) => entry && ['model', 'prop'].includes(entry.kind) &&
-      typeof entry.id === 'string').map((entry) => [entry.id, entry]));
-    for (const entry of this.preparedEntries || []) merged.set(entry.id, entry);
+      typeof entry.id === 'string' && !resourceDescriptor(entry.id)).map((entry) => [entry.id, entry]));
+    for (const entry of this.preparedEntries || []) if (!resourceDescriptor(entry.id)) merged.set(entry.id, entry);
     this.items = [...merged.values()].map((entry) => {
       const metadata = this.metadata?.[entry.id] || {};
       const item = { ...entry, thumbnail: metadata.thumbnail || entry.thumbnail,
@@ -145,9 +146,11 @@ export class EditorCatalog {
     this.busy.add(id); this.renderList();
     this.setStatus(editorMessage('Preparing model…', 'Preparando modelo…'));
     try {
-      const state = this.assets.list?.().find((record) => record.id === id)?.state;
+      const physicalId = sourceAssetId(id) || id;
+      const loadEntry = resourceDescriptor(id) ? this.assets.entry?.(physicalId) || item : item;
+      const state = this.assets.list?.().find((record) => record.id === physicalId)?.state;
       if (state !== 'ok' && this.assets.ensureModel) {
-        const ready = await this.assets.ensureModel(item, { base: item.base || 'assets/' });
+        const ready = await this.assets.ensureModel(loadEntry, { base: loadEntry.base || 'assets/' });
         if (!ready) throw new Error(this.t('Model could not be loaded.', 'No se pudo cargar el modelo.'));
       }
       const object = this.assets.model(id);

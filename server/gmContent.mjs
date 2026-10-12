@@ -21,6 +21,7 @@ export function createGmContentService({ directory, root, worldId, baseMap, base
   }
   function install(state, revision) {
     installGmContent(game.server.world.map, baseMap, revision?.content.document ?? null, baseRevision);
+    game.installContentResources?.();
     active = { generation: state.generation, revisionId: state.revisionId, revision };
     game.contentIdentity = { generation: state.generation, revisionId: state.revisionId };
   }
@@ -59,6 +60,9 @@ export function createGmContentService({ directory, root, worldId, baseMap, base
           if (routes === false || routes?.valid === false) throw error('gm_content_routes');
           await validateGmContentObstacles({ store: game.store, map: baseMap, currentMap: game.server.world.map,
             targetMap: target, worldId });
+          if (game.closing || !game.healthy()) throw error('gm_content_unavailable');
+          if (target.gmResources?.length && typeof game.prepareContentResources !== 'function') throw error('gm_resource_unavailable');
+          await game.prepareContentResources?.(target);
           if (game.closing || !game.healthy()) throw error('gm_content_unavailable');
           attempted = true;
           const result = await registry.switch(input);

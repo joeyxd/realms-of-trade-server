@@ -1,0 +1,835 @@
+TAP version 13
+# Subtest: Bucanero manifest binds only look 2 and selects one desktop/mobile character and portrait variant
+ok 1 - Bucanero manifest binds only look 2 and selects one desktop/mobile character and portrait variant
+  ---
+  duration_ms: 10.9483
+  type: 'test'
+  ...
+# Subtest: source and runtime GLBs retain idle, swim, and hit with exact Mixamo animation data and no unused PBR maps
+ok 2 - source and runtime GLBs retain idle, swim, and hit with exact Mixamo animation data and no unused PBR maps
+  ---
+  duration_ms: 29.7309
+  type: 'test'
+  ...
+# Subtest: preserved originals and generated runtime files match their SHA-256 evidence
+ok 3 - preserved originals and generated runtime files match their SHA-256 evidence
+  ---
+  duration_ms: 25.1536
+  type: 'test'
+  ...
+# Subtest: local delta conjugates through a rotated parent rest frame
+ok 4 - local delta conjugates through a rotated parent rest frame
+  ---
+  duration_ms: 1.0528
+  type: 'test'
+  ...
+# Subtest: reaction eligibility and envelope exclude invalid states and fade at clip boundaries
+ok 5 - reaction eligibility and envelope exclude invalid states and fade at clip boundaries
+  ---
+  duration_ms: 0.3369
+  type: 'test'
+  ...
+# Subtest: real Bucanero hit clip retargets additively without moving legs/root or mutating captured source
+ok 6 - real Bucanero hit clip retargets additively without moving legs/root or mutating captured source
+  ---
+  duration_ms: 106.7526
+  type: 'test'
+  ...
+# Subtest: missing reaction asset leaves CharacterView on the procedural hit fallback
+ok 7 - missing reaction asset leaves CharacterView on the procedural hit fallback
+  ---
+  duration_ms: 0.4224
+  type: 'test'
+  ...
+# Subtest: load, issue, and revoke use the authenticated pairing contract and private one-use code
+ok 8 - load, issue, and revoke use the authenticated pairing contract and private one-use code
+  ---
+  duration_ms: 3.8547
+  type: 'test'
+  ...
+# Subtest: malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+ok 9 - malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+  ---
+  duration_ms: 0.4413
+  type: 'test'
+  ...
+# Subtest: failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+ok 10 - failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+  ---
+  duration_ms: 0.5321
+  type: 'test'
+  ...
+# Subtest: account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+ok 11 - account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+  ---
+  duration_ms: 34.8199
+  type: 'test'
+  ...
+# Subtest: stale correlation is ignored and unsafe controller URLs are not retained
+ok 12 - stale correlation is ignored and unsafe controller URLs are not retained
+  ---
+  duration_ms: 0.4111
+  type: 'test'
+  ...
+# Subtest: pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+ok 13 - pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+  ---
+  duration_ms: 643.4286
+  type: 'test'
+  ...
+# Subtest: new code rotates pending code and active controller; owner disconnect invalidates pending code
+ok 14 - new code rotates pending code and active controller; owner disconnect invalidates pending code
+  ---
+  duration_ms: 559.6992
+  type: 'test'
+  ...
+# Subtest: expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+ok 15 - expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+  ---
+  duration_ms: 1027.4061
+  type: 'test'
+  ...
+# Subtest: durable owner stop invalidates a pending code and active paired session immediately
+ok 16 - durable owner stop invalidates a pending code and active paired session immediately
+  ---
+  duration_ms: 510.4674
+  type: 'test'
+  ...
+# Subtest: owner disconnect during paired profile I/O prevents late admission and welcome
+ok 17 - owner disconnect during paired profile I/O prevents late admission and welcome
+  ---
+  duration_ms: 594.3404
+  type: 'test'
+  ...
+# Subtest: missing durable prerequisites keep pairing unavailable without blocking creation
+ok 18 - missing durable prerequisites keep pairing unavailable without blocking creation
+  ---
+  duration_ms: 469.3427
+  type: 'test'
+  ...
+# Subtest: issue reports a missing creation and content changes invalidate claims and admitted sessions
+ok 19 - issue reports a missing creation and content changes invalidate claims and admitted sessions
+  ---
+  duration_ms: 587.307
+  type: 'test'
+  ...
+# Subtest: opens by loading pairing state and explains allow-first, one-use privacy, and the local CLI guide
+ok 20 - opens by loading pairing state and explains allow-first, one-use privacy, and the local CLI guide
+  ---
+  duration_ms: 1.4228
+  type: 'test'
+  ...
+# Subtest: only explicit user actions issue or revoke and code has copy plus visible expiry controls
+ok 21 - only explicit user actions issue or revoke and code has copy plus visible expiry controls
+  ---
+  duration_ms: 15.9613
+  type: 'test'
+  ...
+# Subtest: revoke stays available for an enabled connection without a local code and reload recovers uncertain state
+ok 22 - revoke stays available for an enabled connection without a local code and reload recovers uncertain state
+  ---
+  duration_ms: 0.3632
+  type: 'test'
+  ...
+# Subtest: language switching, disconnect reset, and back preserve parent-owned close flow
+ok 23 - language switching, disconnect reset, and back preserve parent-owned close flow
+  ---
+  duration_ms: 0.9707
+  type: 'test'
+  ...
+# Subtest: v3 economic receipts preserve workshop metadata and derived pack limits outside paid workshop edits
+ok 24 - v3 economic receipts preserve workshop metadata and derived pack limits outside paid workshop edits
+  ---
+  duration_ms: 12.1639
+  type: 'test'
+  ...
+# Subtest: memory economic operation commits profile, world and immutable receipt together; exact replay is historical
+ok 25 - memory economic operation commits profile, world and immutable receipt together; exact replay is historical
+  ---
+  duration_ms: 7.5986
+  type: 'test'
+  ...
+# Subtest: client operation IDs remain opaque strings and receipt UUID reuse requires the exact command
+ok 26 - client operation IDs remain opaque strings and receipt UUID reuse requires the exact command
+  ---
+  duration_ms: 5.0688
+  type: 'test'
+  ...
+# Subtest: terminal gameplay denial receives a durable receipt without changing candidate snapshots
+ok 27 - terminal gameplay denial receives a durable receipt without changing candidate snapshots
+  ---
+  duration_ms: 6.6421
+  type: 'test'
+  ...
+# Subtest: community contribution uses the same profile, world and receipt authority
+ok 28 - community contribution uses the same profile, world and receipt authority
+  ---
+  duration_ms: 2.8566
+  type: 'test'
+  ...
+# Subtest: ordinary world saves preserve committed community metadata while allowing unchanged snapshots
+ok 29 - ordinary world saves preserve committed community metadata while allowing unchanged snapshots
+  ---
+  duration_ms: 3.4576
+  type: 'test'
+  ...
+# Subtest: simultaneous economic commits using one profile and world baseline admit one winner
+ok 30 - simultaneous economic commits using one profile and world baseline admit one winner
+  ---
+  duration_ms: 3.5324
+  type: 'test'
+  ...
+# Subtest: stale profile or world CAS changes neither row and creates no receipt
+ok 31 - stale profile or world CAS changes neither row and creates no receipt
+  ---
+  duration_ms: 2.5684
+  type: 'test'
+  ...
+# Subtest: economic UUIDs share memory receipt and pending-intent namespaces with other M5 families
+ok 32 - economic UUIDs share memory receipt and pending-intent namespaces with other M5 families
+  ---
+  duration_ms: 6.5364
+  type: 'test'
+  ...
+# Subtest: economic snapshots cannot rewrite managed pearl ownership
+ok 33 - economic snapshots cannot rewrite managed pearl ownership
+  ---
+  duration_ms: 2.478
+  type: 'test'
+  ...
+# Subtest: contract rejects open commands, foreign ACK routing, noncanonical profiles and oversized snapshots
+ok 34 - contract rejects open commands, foreign ACK routing, noncanonical profiles and oversized snapshots
+  ---
+  duration_ms: 11.9369
+  type: 'test'
+  ...
+# Subtest: contract enforces the host contribution ceiling and exact client operation ID ACK
+ok 35 - contract enforces the host contribution ceiling and exact client operation ID ACK
+  ---
+  duration_ms: 1.0243
+  type: 'test'
+  ...
+# Subtest: real durable registry activates, replays exactly, reloads active state after restart, then rolls back to base
+ok 36 - real durable registry activates, replays exactly, reloads active state after restart, then rolls back to base
+  ---
+  duration_ms: 494.0887
+  type: 'test'
+  ...
+# Subtest: activation rejects lock busy before beginning world exclusion and leaves durable state unchanged
+ok 37 - activation rejects lock busy before beginning world exclusion and leaves durable state unchanged
+  ---
+  duration_ms: 318.654
+  type: 'test'
+  ...
+# Subtest: activation refuses an occupied durable item and a busy game before pointer commit
+ok 38 - activation refuses an occupied durable item and a busy game before pointer commit
+  ---
+  duration_ms: 548.4605
+  type: 'test'
+  ...
+# occupied preflight left the registry head and M5 state unchanged
+# Subtest: lost state rename acknowledgment reconciles durable activation and restart replays the same pointer
+ok 39 - lost state rename acknowledgment reconciles durable activation and restart replays the same pointer
+  ---
+  duration_ms: 340.555
+  type: 'test'
+  ...
+# Subtest: strict publication fingerprint mismatch fails before installation or durable pointer change
+ok 40 - strict publication fingerprint mismatch fails before installation or durable pointer change
+  ---
+  duration_ms: 250.9579
+  type: 'test'
+  ...
+# Subtest: content identity requires the exact server generation and revision pair
+ok 41 - content identity requires the exact server generation and revision pair
+  ---
+  duration_ms: 0.2077
+  type: 'test'
+  ...
+# Subtest: authored resource admission is gated, appended by CAS, installed from map.gmResources, and gathered through normal authority
+ok 42 - authored resource admission is gated, appended by CAS, installed from map.gmResources, and gathered through normal authority
+  ---
+  duration_ms: 385.5058
+  type: 'test'
+  ...
+# Subtest: authored palms enforce tool and range checks, then award v2 logging once on the third hit
+ok 43 - authored palms enforce tool and range checks, then award v2 logging once on the third hit
+  ---
+  duration_ms: 451.8434
+  type: 'test'
+  ...
+# Subtest: authored stone pickup uses normal authority and an operation replay cannot duplicate the reward
+ok 44 - authored stone pickup uses normal authority and an operation replay cannot duplicate the reward
+  ---
+  duration_ms: 258.3327
+  type: 'test'
+  ...
+# Subtest: removed and moved authored nodes retain depleted state through rollback, reactivation, and restart
+ok 45 - removed and moved authored nodes retain depleted state through rollback, reactivation, and restart
+  ---
+  duration_ms: 655.925
+  type: 'test'
+  ...
+# Subtest: append-only roster creates schema-correct palm ledgers for resource baselines v1, v2, and v3
+    # Subtest: v1
+    ok 1 - v1
+      ---
+      duration_ms: 256.6737
+      type: 'test'
+      ...
+    # Subtest: v2
+    ok 2 - v2
+      ---
+      duration_ms: 267.9491
+      type: 'test'
+      ...
+    # Subtest: v3
+    ok 3 - v3
+      ---
+      duration_ms: 253.4709
+      type: 'test'
+      ...
+    1..3
+ok 46 - append-only roster creates schema-correct palm ledgers for resource baselines v1, v2, and v3
+  ---
+  duration_ms: 778.7865
+  type: 'test'
+  ...
+# Subtest: CAS conflict and ambiguous SQL acknowledgement fence the host without installing the target map
+    # Subtest: conflict
+    ok 1 - conflict
+      ---
+      duration_ms: 442.1177
+      type: 'test'
+      ...
+    # Subtest: ambiguous
+    ok 2 - ambiguous
+      ---
+      duration_ms: 445.368
+      type: 'test'
+      ...
+    1..2
+ok 47 - CAS conflict and ambiguous SQL acknowledgement fence the host without installing the target map
+  ---
+  duration_ms: 887.9784
+  type: 'test'
+  ...
+# Subtest: unsupported ground-authority resource admission rejects before roster writes
+ok 48 - unsupported ground-authority resource admission rejects before roster writes
+  ---
+  duration_ms: 411.7931
+  type: 'test'
+  ...
+# Subtest: resource aliases resolve only to the pinned physical assets and stable simulation IDs
+ok 49 - resource aliases resolve only to the pinned physical assets and stable simulation IDs
+  ---
+  duration_ms: 1.0088
+  type: 'test'
+  ...
+# Subtest: authored resources compile to stable grounded nodes and install as a separate projection
+ok 50 - authored resources compile to stable grounded nodes and install as a separate projection
+  ---
+  duration_ms: 398.9742
+  type: 'test'
+  ...
+# Subtest: shared publication validation enforces resource transform, spacing and authored collider limits
+ok 51 - shared publication validation enforces resource transform, spacing and authored collider limits
+  ---
+  duration_ms: 338.3755
+  type: 'test'
+  ...
+# Subtest: draft and publication admission pin physical assets and hash the compiled functional layout
+ok 52 - draft and publication admission pin physical assets and hash the compiled functional layout
+  ---
+  duration_ms: 1270.6976
+  type: 'test'
+  ...
+# Subtest: content registry and M5 host activate resources, gather normally, rollback and restore on restart without pruning
+ok 53 - content registry and M5 host activate resources, gather normally, rollback and restore on restart without pruning
+  ---
+  duration_ms: 2667.2839
+  type: 'test'
+  ...
+# Subtest: lost pointer ACK reconciles an admitted functional layout and exact retry does not admit twice
+ok 54 - lost pointer ACK reconciles an admitted functional layout and exact retry does not admit twice
+  ---
+  duration_ms: 3570.3282
+  type: 'test'
+  ...
+# Subtest: lost SQL ACK fences gameplay before pointer switch and leaves only inactive durable rows
+ok 55 - lost SQL ACK fences gameplay before pointer switch and leaves only inactive durable rows
+  ---
+  duration_ms: 4069.2271
+  type: 'test'
+  ...
+# Subtest: resource model aliases use the native gameplay silhouettes and reserved source mapping
+ok 56 - resource model aliases use the native gameplay silhouettes and reserved source mapping
+  ---
+  duration_ms: 4.2772
+  type: 'test'
+  ...
+# Subtest: authored GM palm identity always selects the tall native render variant
+ok 57 - authored GM palm identity always selects the tall native render variant
+  ---
+  duration_ms: 0.1617
+  type: 'test'
+  ...
+# Subtest: resource renderer reserves authored palm instances and keeps authored stones at yaw zero
+ok 58 - resource renderer reserves authored palm instances and keeps authored stones at yaw zero
+  ---
+  duration_ms: 22.9615
+  type: 'test'
+  ...
+# Subtest: resource palette presents reserved resource actions and routes selection through the editor
+ok 59 - resource palette presents reserved resource actions and routes selection through the editor
+  ---
+  duration_ms: 0.8131
+  type: 'test'
+  ...
+# Subtest: published resource objects are omitted from decorative GM mesh projection
+ok 60 - published resource objects are omitted from decorative GM mesh projection
+  ---
+  duration_ms: 414.8092
+  type: 'test'
+  ...
+# Subtest: GM roster readiness probes the deployed validator semantics and exact resource shapes
+ok 61 - GM roster readiness probes the deployed validator semantics and exact resource shapes
+  ---
+  duration_ms: 3.2314
+  type: 'test'
+  ...
+# Subtest: stale readiness cannot hide invalid validator behavior, while unavailable roster skips probes
+ok 62 - stale readiness cannot hide invalid validator behavior, while unavailable roster skips probes
+  ---
+  duration_ms: 1.1942
+  type: 'test'
+  ...
+# Subtest: roster readiness continues to redact and propagate validator RPC failures
+ok 63 - roster readiness continues to redact and propagate validator RPC failures
+  ---
+  duration_ms: 0.6777
+  type: 'test'
+  ...
+# Subtest: meal field is optional, strict, and preserves a valid active meal through profile sanitization
+ok 64 - meal field is optional, strict, and preserves a valid active meal through profile sanitization
+  ---
+  duration_ms: 3.9607
+  type: 'test'
+  ...
+# Subtest: meal duration restores on reconnect, pauses while disabled, counts connected ticks, and persists each second
+ok 65 - meal duration restores on reconnect, pauses while disabled, counts connected ticks, and persists each second
+  ---
+  duration_ms: 305.8618
+  type: 'test'
+  ...
+# Subtest: meal modifiers affect max HP without healing and expiry clamps HP back to the unbuffed maximum
+ok 66 - meal modifiers affect max HP without healing and expiry clamps HP back to the unbuffed maximum
+  ---
+  duration_ms: 293.5782
+  type: 'test'
+  ...
+# Subtest: respawn clears meal state and persisted buff while the ordinary needs reset remains intact
+ok 67 - respawn clears meal state and persisted buff while the ordinary needs reset remains intact
+  ---
+  duration_ms: 230.2144
+  type: 'test'
+  ...
+# Subtest: meal effects and comfort default to the active saved meal without changing carry ceilings
+ok 68 - meal effects and comfort default to the active saved meal without changing carry ceilings
+  ---
+  duration_ms: 0.6954
+  type: 'test'
+  ...
+# Subtest: authority snapshots and prediction stay bit-identical through hearty-biscuit expiry and load tier change
+ok 69 - authority snapshots and prediction stay bit-identical through hearty-biscuit expiry and load tier change
+  ---
+  duration_ms: 8.4254
+  type: 'test'
+  ...
+# Subtest: guard regeneration applies grog after hunger and remains zero at empty needs
+ok 70 - guard regeneration applies grog after hunger and remains zero at empty needs
+  ---
+  duration_ms: 981.0339
+  type: 'test'
+  ...
+# Subtest: replacing roast fish with grog uses one bonus, preserves HP, and clamps to the new maximum
+ok 71 - replacing roast fish with grog uses one bonus, preserves HP, and clamps to the new maximum
+  ---
+  duration_ms: 441.0126
+  type: 'test'
+  ...
+# Subtest: three recipes commit with one replacing effect; replay cannot renew time, heal or spend twice
+ok 72 - three recipes commit with one replacing effect; replay cannot renew time, heal or spend twice
+  ---
+  duration_ms: 538.514
+  type: 'test'
+  ...
+# Subtest: hot meals require real owned, living, near and lit cooker; voyage permits only dry-shore grog
+ok 73 - hot meals require real owned, living, near and lit cooker; voyage permits only dry-shore grog
+  ---
+  duration_ms: 392.8283
+  type: 'test'
+  ...
+# Subtest: held commit freezes meal time and inventory; disconnect and host restart retain remaining ticks
+ok 74 - held commit freezes meal time and inventory; disconnect and host restart retain remaining ticks
+  ---
+  duration_ms: 582.5389
+  type: 'test'
+  ...
+# Subtest: special meal flag and SQL readiness fail closed without changing old canteen flow
+ok 75 - special meal flag and SQL readiness fail closed without changing old canteen flow
+  ---
+  duration_ms: 527.5607
+  type: 'test'
+  ...
+# Subtest: ordinary commerce without before preserves the database meal exactly and replays
+ok 76 - ordinary commerce without before preserves the database meal exactly and replays
+  ---
+  duration_ms: 7.7941
+  type: 'test'
+  ...
+# Subtest: special meals are feature gated and prepare exact commands with eligible cooker identity
+ok 77 - special meals are feature gated and prepare exact commands with eligible cooker identity
+  ---
+  duration_ms: 4.4432
+  type: 'test'
+  ...
+# Subtest: hot recipes explain heat and goods blocks; grog needs no cooker and meal replacement shows a timer
+ok 78 - hot recipes explain heat and goods blocks; grog needs no cooker and meal replacement shows a timer
+  ---
+  duration_ms: 1.0049
+  type: 'test'
+  ...
+# Subtest: English cards show explicit action, cost, effect and duration
+ok 79 - English cards show explicit action, cost, effect and duration
+  ---
+  duration_ms: 0.2363
+  type: 'test'
+  ...
+# Subtest: reinforced biscuit reports comfortable load as 10 units in both locales
+ok 80 - reinforced biscuit reports comfortable load as 10 units in both locales
+  ---
+  duration_ms: 0.3316
+  type: 'test'
+  ...
+# Subtest: meal retry reuses the exact request and server ingredient errors stay meal specific
+ok 81 - meal retry reuses the exact request and server ingredient errors stay meal specific
+  ---
+  duration_ms: 0.4224
+  type: 'test'
+  ...
+# Subtest: authority snapshots carry each adopted load tier into bit-identical predicted movement replay
+ok 82 - authority snapshots carry each adopted load tier into bit-identical predicted movement replay
+  ---
+  duration_ms: 21.4274
+  type: 'test'
+  ...
+# Subtest: load boundaries use exact comfort/ceiling values, including level 10 Carga 9
+ok 83 - load boundaries use exact comfort/ceiling values, including level 10 Carga 9
+  ---
+  duration_ms: 0.6656
+  type: 'test'
+  ...
+# Subtest: the next authority command reflects profile and cargo changes, including water vessel mass
+ok 84 - the next authority command reflects profile and cargo changes, including water vessel mass
+  ---
+  duration_ms: 5.3371
+  type: 'test'
+  ...
+# Subtest: swimming applies its own saturated cargo slowdown without stacking the land tier multiplier
+ok 85 - swimming applies its own saturated cargo slowdown without stacking the land tier multiplier
+  ---
+  duration_ms: 5.8307
+  type: 'test'
+  ...
+# Subtest: gather capacity rejects over-ceiling cargo commands without consuming the node and accepts an exact-ceiling result
+ok 86 - gather capacity rejects over-ceiling cargo commands without consuming the node and accepts an exact-ceiling result
+  ---
+  duration_ms: 13.88
+  type: 'test'
+  ...
+# Subtest: commerce capacity rejects a buy cargo command above the ceiling without changing pack, gold, or market stock
+ok 87 - commerce capacity rejects a buy cargo command above the ceiling without changing pack, gold, or market stock
+  ---
+  duration_ms: 293.6658
+  type: 'test'
+  ...
+# Subtest: the comfortable load is 80 % of the ceiling only with Carga adopted
+ok 88 - the comfortable load is 80 % of the ceiling only with Carga adopted
+  ---
+  duration_ms: 2.3685
+  type: 'test'
+  ...
+# Subtest: a heavy pack walks at 70 % without dash; above the ceiling at 40 %; the client predicts the server tier
+ok 89 - a heavy pack walks at 70 % without dash; above the ceiling at 40 %; the client predicts the server tier
+  ---
+  duration_ms: 31.0669
+  type: 'test'
+  ...
+# Subtest: an unadopted legacy pack above its ceiling keeps its goods, normal walking and dash
+ok 90 - an unadopted legacy pack above its ceiling keeps its goods, normal walking and dash
+  ---
+  duration_ms: 7.3237
+  type: 'test'
+  ...
+# Subtest: pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+ok 91 - pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+  ---
+  duration_ms: 62.4604
+  type: 'test'
+  ...
+# Subtest: remote stop settles the runner and permits the same controller to pair again
+ok 92 - remote stop settles the runner and permits the same controller to pair again
+  ---
+  duration_ms: 36.1066
+  type: 'test'
+  ...
+# Subtest: stop during asynchronous document loading cancels setup before runner connect
+ok 93 - stop during asynchronous document loading cancels setup before runner connect
+  ---
+  duration_ms: 24.6219
+  type: 'test'
+  ...
+# Subtest: pairing fails closed for reused companion files with a different model policy
+ok 94 - pairing fails closed for reused companion files with a different model policy
+  ---
+  duration_ms: 26.3254
+  type: 'test'
+  ...
+# Subtest: claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+ok 95 - claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+  ---
+  duration_ms: 3.6257
+  type: 'test'
+  ...
+# Subtest: live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+ok 96 - live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+  ---
+  duration_ms: 1382.8279
+  type: 'test'
+  ...
+# Subtest: stop during a local model request fences its late response and does not capture an exchange
+ok 97 - stop during a local model request fences its late response and does not capture an exchange
+  ---
+  duration_ms: 942.8826
+  type: 'test'
+  ...
+# Subtest: the CLI validates options before prompting and accepts a pasted multi-character hex code
+ok 98 - the CLI validates options before prompting and accepts a pasted multi-character hex code
+  ---
+  duration_ms: 1.6754
+  type: 'test'
+  ...
+# Subtest: quick and powerful shots produce distinct normalized recoil profiles
+ok 99 - quick and powerful shots produce distinct normalized recoil profiles
+  ---
+  duration_ms: 1.4929
+  type: 'test'
+  ...
+# Subtest: simultaneous hands decay independently and settle back to zero
+ok 100 - simultaneous hands decay independently and settle back to zero
+  ---
+  duration_ms: 0.4182
+  type: 'test'
+  ...
+# Subtest: a new shot resets only its hand while preserving the other hand
+ok 101 - a new shot resets only its hand while preserving the other hand
+  ---
+  duration_ms: 0.2435
+  type: 'test'
+  ...
+# Subtest: nonfinite and negative time or invalid fields cannot create nonfinite recoil
+ok 102 - nonfinite and negative time or invalid fields cannot create nonfinite recoil
+  ---
+  duration_ms: 0.3359
+  type: 'test'
+  ...
+# Subtest: /health, /status and only the client files are served
+ok 103 - /health, /status and only the client files are served
+  ---
+  duration_ms: 529.3422
+  type: 'test'
+  ...
+# Subtest: two players join the same island, see each other move, and leaving despawns
+ok 104 - two players join the same island, see each other move, and leaving despawns
+  ---
+  duration_ms: 1670.7777
+  type: 'test'
+  ...
+# Subtest: a full instance and a wrong protocol version are refused politely
+ok 105 - a full instance and a wrong protocol version are refused politely
+  ---
+  duration_ms: 543.7188
+  type: 'test'
+  ...
+# Subtest: junk does not hurt the server: malformed messages close only that socket
+ok 106 - junk does not hurt the server: malformed messages close only that socket
+  ---
+  duration_ms: 737.5036
+  type: 'test'
+  ...
+# Subtest: names are cleaned: control characters, markup and length
+ok 107 - names are cleaned: control characters, markup and length
+  ---
+  duration_ms: 317.2172
+  type: 'test'
+  ...
+# Subtest: default signed saves restore and spoofed account fields never create stored profiles
+ok 108 - default signed saves restore and spoofed account fields never create stored profiles
+  ---
+  duration_ms: 446.3208
+  type: 'test'
+  ...
+# Subtest: trusted account profile loads before WELCOME and overrides an older signed save
+ok 109 - trusted account profile loads before WELCOME and overrides an older signed save
+  ---
+  duration_ms: 361.7224
+  type: 'test'
+  ...
+# Subtest: null identity keeps signed anonymous saves; resolver errors fail closed without secrets
+ok 110 - null identity keeps signed anonymous saves; resolver errors fail closed without secrets
+  ---
+  duration_ms: 484.1454
+  type: 'test'
+  ...
+# Subtest: identity verifier gets request context without retained credential headers
+ok 111 - identity verifier gets request context without retained credential headers
+  ---
+  duration_ms: 251.8632
+  type: 'test'
+  ...
+# Subtest: duplicate HELLO and pending admission respect capacity, then release it on close
+ok 112 - duplicate HELLO and pending admission respect capacity, then release it on close
+  ---
+  duration_ms: 236.7784
+  type: 'test'
+  ...
+# Subtest: same account has one authority and remains reserved through its final write
+ok 113 - same account has one authority and remains reserved through its final write
+  ---
+  duration_ms: 252.1316
+  type: 'test'
+  ...
+# Subtest: close cancels an unresolved load and shutdown does not wait for a stuck resolver
+ok 114 - close cancels an unresolved load and shutdown does not wait for a stuck resolver
+  ---
+  duration_ms: 584.7341
+  type: 'test'
+  ...
+# Subtest: write snapshots are isolated and serialized; shutdown awaits the final ECS/profile state
+ok 115 - write snapshots are isolated and serialized; shutdown awaits the final ECS/profile state
+  ---
+  duration_ms: 247.5961
+  type: 'test'
+  ...
+# Subtest: CAS conflict fences the session and reports failed shutdown without overwriting newer state
+ok 116 - CAS conflict fences the session and reports failed shutdown without overwriting newer state
+  ---
+  duration_ms: 258.8051
+  type: 'test'
+  ...
+# Subtest: join timeout releases capacity and unavailable stores never admit an empty replacement
+ok 117 - join timeout releases capacity and unavailable stores never admit an empty replacement
+  ---
+  duration_ms: 484.0742
+  type: 'test'
+  ...
+# Subtest: real WebSocket account path saves on shutdown and loads across two host instances
+ok 118 - real WebSocket account path saves on shutdown and loads across two host instances
+  ---
+  duration_ms: 788.7223
+  type: 'test'
+  ...
+# Subtest: memory profile roundtrip sanitizes and returns isolated snapshots
+ok 119 - memory profile roundtrip sanitizes and returns isolated snapshots
+  ---
+  duration_ms: 5.0777
+  type: 'test'
+  ...
+# Subtest: memory store rejects invalid identity, data and unknown profile versions
+ok 120 - memory store rejects invalid identity, data and unknown profile versions
+  ---
+  duration_ms: 0.7626
+  type: 'test'
+  ...
+# Subtest: concurrent create and compare-and-swap writes admit one winner
+ok 121 - concurrent create and compare-and-swap writes admit one winner
+  ---
+  duration_ms: 1.8741
+  type: 'test'
+  ...
+# Subtest: world state is isolated by key and each key has independent CAS versions
+ok 122 - world state is isolated by key and each key has independent CAS versions
+  ---
+  duration_ms: 0.357
+  type: 'test'
+  ...
+# Subtest: unique ownership arbitrates competing owners and release generations
+ok 123 - unique ownership arbitrates competing owners and release generations
+  ---
+  duration_ms: 0.3657
+  type: 'test'
+  ...
+# Subtest: Supabase adapter uses fixed RPC names, validated arguments and sanitized records
+ok 124 - Supabase adapter uses fixed RPC names, validated arguments and sanitized records
+  ---
+  duration_ms: 1.9501
+  type: 'test'
+  ...
+# Subtest: Supabase adapter rejects malformed responses and redacts provider errors
+ok 125 - Supabase adapter rejects malformed responses and redacts provider errors
+  ---
+  duration_ms: 0.3243
+  type: 'test'
+  ...
+# Subtest: storeFromEnv uses memory only when credentials are both absent and configures service auth
+ok 126 - storeFromEnv uses memory only when credentials are both absent and configures service auth
+  ---
+  duration_ms: 0.3541
+  type: 'test'
+  ...
+# Subtest: rest and active foot/swim/aboard commands drain at the approved rates
+ok 127 - rest and active foot/swim/aboard commands drain at the approved rates
+  ---
+  duration_ms: 348.9624
+  type: 'test'
+  ...
+# Subtest: death and disabled survival freeze meters; offline has no stepping path
+ok 128 - death and disabled survival freeze meters; offline has no stepping path
+  ---
+  duration_ms: 552.6364
+  type: 'test'
+  ...
+# Subtest: profile field is strict and sanitizer rejects malformed present fields
+ok 129 - profile field is strict and sanitizer rejects malformed present fields
+  ---
+  duration_ms: 1.1979
+  type: 'test'
+  ...
+# Subtest: meter restore updates maxima without healing and preserves an explicit full field
+ok 130 - meter restore updates maxima without healing and preserves an explicit full field
+  ---
+  duration_ms: 222.9036
+  type: 'test'
+  ...
+# Subtest: respawn sets both meters to 50 and profile capture agrees with live meters
+ok 131 - respawn sets both meters to 50 and profile capture agrees with live meters
+  ---
+  duration_ms: 247.9943
+  type: 'test'
+  ...
+# Subtest: client HUD reports the same penalized stamina maximum as combat
+ok 132 - client HUD reports the same penalized stamina maximum as combat
+  ---
+  duration_ms: 232.9278
+  type: 'test'
+  ...
+1..132
+# tests 137
+# suites 0
+# pass 137
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 53439.4873

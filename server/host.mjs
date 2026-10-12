@@ -39,6 +39,8 @@ import { MARKET_QUERY_LIMIT, MARKET_FAILURES, validMarketQuery, validMarketProje
 import { readCommerce } from '../src/sim/systems/commerce.js';
 import { townAt } from '../src/sim/systems/trade.js';
 import { newResourceState, restoreResourceState, upgradeLoggingState, upgradeTimingState } from './resourceState.mjs';
+import { appendGmResourceRoster } from './gmResourceRoster.mjs';
+import { installResources } from '../src/sim/systems/resources.js';
 import { BTN } from '../src/sim/systems/movement.js';
 import { types } from 'node:util';
 import { economicOperationId, economicCommand, EconomicAuthority } from './economicAuthority.mjs';
@@ -593,6 +595,10 @@ export class GameHost {
       if ((this.worldState.resources?.v >= 2 && !this.loggingOperations) ||
           (this.worldState.resources?.v === 3 && !this.workshopOperations)) throw new StoreError('configuration');
       if (this.resourceOperations) {
+        if (this.server.world.map.gmResources?.length && (this.groundAuthority ||
+            typeof this.store.checkGmResourceRoster !== 'function' || (await this.store.checkGmResourceRoster())?.version !== 1)) {
+          throw new StoreError('configuration');
+        }
         const adopting = !this.worldState.resources || this.loggingOperations && this.worldState.resources.v === 1 || this.workshopOperations && this.worldState.resources.v < 3;
         if (adopting && this.groundAuthority) throw new StoreError('configuration');
         if (this.worldState.resources) restoreResourceState(this.server.world, this.worldState.resources);
@@ -637,6 +643,48 @@ export class GameHost {
         this.groundAuthority && !this.groundAuthority.canMutate()) throw Object.assign(new Error('gm_content_busy'), { code: 'gm_content_busy' });
     this.contentSwitching = true;
     return () => { this.contentSwitching = false; this.server.last = performance.now(); this.server.acc = 0; };
+  }
+
+  /** Empty-world preflight; admission precedes the durable map pointer and never resets existing work. */
+  async prepareContentResources(targetMap) {
+    const nodes = targetMap.gmResources || [];
+    if (!nodes.length) return;
+    if (!this.contentSwitching || !this.resourceOperations || this.groundAuthority || !this.worldState?.ready ||
+        !this.worldState.resources || typeof this.store.admitGmResources !== 'function' ||
+        typeof this.store.checkGmResourceRoster !== 'function' ||
+        (await this.store.checkGmResourceRoster())?.version !== 1) {
+      throw Object.assign(new Error('gm_resource_unavailable'), { code: 'gm_resource_unavailable' });
+    }
+    const next = appendGmResourceRoster(this.worldState.resources, nodes);
+    if (next.nodes.length === this.worldState.resources.nodes.length) return;
+    try {
+      const result = await this.store.admitGmResources(this.worldState.id, this.worldState.version, next);
+      this.worldState.accept(result);
+      this.worldState.resources = next;
+      // The RPC changes only resources in the last confirmed snapshot, not unsaved economy time.
+      this.worldState.last = JSON.stringify({ ...JSON.parse(this.worldState.last), resources: next });
+    } catch (failure) {
+      this.worldState.fail('gm_resource_admission');
+      throw failure;
+    }
+  }
+
+  installContentResources() {
+    const world = this.server.world, previous = world.resources;
+    if (world.map.gmResources?.length && !this.resourceOperations) throw new StoreError('configuration');
+    installResources(world);
+    if (this.worldState?.ready && this.worldState.resources) restoreResourceState(world, this.worldState.resources);
+    else if (!this.worldState?.ready && previous) {
+      // Startup still restores the durable roster in prepare(); preserve baseline session data meanwhile.
+      for (const [id, node] of world.resources.nodes) {
+        const old = previous.nodes.get(id);
+        if (old?.kind === node.kind) Object.assign(node, { rev: old.rev, readyTick: old.readyTick, ...(old.hits === undefined ? {} : { hits: old.hits }) });
+      }
+    }
+    world.resources.cooldowns = previous?.cooldowns || new Map();
+    world.resources.receipts = previous?.receipts || new Map();
+    if (previous?.timing !== undefined) world.resources.timing = previous.timing;
+    if (previous?.logicalTick) world.resources.logicalTick = previous.logicalTick;
   }
 
   closeContentSpectators() {

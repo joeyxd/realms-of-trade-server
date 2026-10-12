@@ -15,6 +15,7 @@ import { deathDropOperation, deathDropResult, deathDropInWindow, deathDropKey, c
 import { registerMemoryPearlStore, permitsMemoryPearlReceipt } from './pearlMemoryIdentity.mjs';
 import { EconomicOperationError, economicOperation, canonicalEconomicText, checkedEconomicResult, checkedEconomicReceipt } from './economicOperation.mjs';
 import { checkedResourceState, upgradeLoggingState, upgradeTimingState } from './resourceState.mjs';
+import { validGmResourceAppend } from './gmResourceRoster.mjs';
 import { loggingResultProfiles, loggingWorldTransition } from './loggingOperation.mjs';
 import { artisanWorldTransition, artisanMutation } from './artisanOperation.mjs';
 import { attributeMutation, attributeWorldTransition } from './attributeOperation.mjs';
@@ -229,6 +230,15 @@ export function createMemoryStore() {
     },
     async legacyClaimed(importedKey) { return legacyImports.has(legacyKey(importedKey)); },
     async loadWorld(id) { return load(worlds, key(id)); },
+    async checkGmResourceRoster() { return { version: 1 }; },
+    async admitGmResources(id, expected, raw) {
+      id = key(id); const expectedVersion = version(expected, 1, MAX_VERSION - 1);
+      const current = worlds.get(id), resources = checkedResourceState(raw);
+      if (!current || current.version !== expectedVersion) return conflict();
+      if (!validGmResourceAppend(current.data.resources, resources)) throw new StoreError('operation');
+      if (canonicalEconomicText(current.data.resources) === canonicalEconomicText(resources)) return { ok: true, version: expectedVersion };
+      return save(worlds, id, { ...current.data, resources }, expectedVersion);
+    },
     async saveWorld(id, raw, expected) {
       id = key(id); const data = json(raw), expectedVersion = version(expected, 0, MAX_VERSION - 1);
       const current = worlds.get(id);
@@ -665,6 +675,27 @@ export function createSupabaseStore(client) {
       return written(await rpc('mn_save_profile', { p_player_id: playerKey(id), p_data: profile(data), p_expected_version: version(expected, 0, MAX_VERSION - 1) }));
     },
     async loadWorld(id) { return record(await rpc('mn_load_world', { p_world: key(id) }), json); },
+    async checkGmResourceRoster() {
+      const ready = await rpc('mn_gm_resource_roster_ready', {});
+      if (ready?.version !== 1) return { version: 0 };
+      // Older SQL036 revisions also reported version 1; verify their immutable contract.
+      const state = nodes => ({ v: 1, tick: 0, nodes, cooldowns: {} });
+      const probes = [
+        [state([{ id: `gm_${'a'.repeat(32)}`, kind: 'stone', rev: 2, hits: 1, readyAt: 0 }]), false],
+        [state([{ id: 'gm_bad', kind: 'palm', rev: 1, hits: 0, readyAt: 0 }]), false],
+        [state(Array.from({ length: 1024 }, (_, i) => ({ id: `gm_${i.toString(16).padStart(32, '0')}`,
+          kind: 'stone', rev: 1, hits: 0, readyAt: 0 }))), true],
+      ];
+      for (const [resources, expected] of probes) {
+        if (await rpc('mn_valid_resource_state_v1', { p_resources: resources }) !== expected) return { version: 0 };
+      }
+      return { version: 1 };
+    },
+    async admitGmResources(id, expected, resources) {
+      const result = await rpc('mn_admit_gm_resources', { p_world: key(id),
+        p_expected_version: version(expected, 1, MAX_VERSION - 1), p_resources: checkedResourceState(resources) });
+      return written(result);
+    },
     async saveWorld(id, data, expected) {
       return written(await rpc('mn_save_world', { p_world: key(id), p_data: json(data), p_expected_version: version(expected, 0, MAX_VERSION - 1) }));
     },

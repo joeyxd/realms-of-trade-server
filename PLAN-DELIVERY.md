@@ -1,5 +1,24 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**Bucanero — reacción original + retroceso, alpha.62/protocolo 59:**
+[Contrato](docs/briefs/buccaneer-combat-reaction.md), [entrega](docs/delivery/buccaneer-v1/combat-reaction/README.md).
+Golpe original adaptado al rig armado, sin desplazar raíz/piernas ni impedir correr/disparar;
+cancelación al hacer dash/nadar/morir. RMB más fuerte/lento visualmente, con manos independientes.
+Idle/nado conservados, +57 KB por GLB, texturas 1024/512; reglas de combate y SQL propios intactos.
+Tras integrar recursos GM/compañeros/perlas: 76/76 focales + 36/36 integración, Chrome local 16/16,
+seis capturas inspeccionadas. Suite general no repetida. Publicación/aceptación pública por separado.
+
+**AREA01 GM04d, 2026-10-11 — recursos funcionales integrados, alpha.63/protocolo 59:**
+[Contrato](docs/briefs/gm04d-functional-resources.md), [entrega](docs/delivery/gm04d/DELIVERY.md).
+Palmera talable/piedra recogible en Recursos; borrador privado y publicación con admisión SQL036
+append-only. IDs existentes conservan ciclos, agotamiento y ledger al mover/retirar/republicar.
+SQL036 reaplicada, contrato vivo 4/4 y guard de semántica en store: el readiness 1 anterior no bastaba.
+418/418 CPU y 8/8 SQL seriales, UI local 9/9 ES/EN escritorio/móvil.
+Suite amplia no verde: fallo de receta reproducido en upstream y OOM resuelto al repetir serial;
+ver evidencia y alcance en la entrega. Publicación del runtime VPS pendiente de verificación.
+El autor eligió [Taller de habilidades](docs/briefs/skill-studio-vision.md): ajustar las actuales
+primero e incluir la adaptación real de un efecto Niagara; intake realizado, implementación pendiente.
+
 **L03f — emparejamiento local implementado, alpha.60/protocolo 59:**
 [Contrato](docs/briefs/l03f-local-pairing.md) y [uso/evidencia](docs/delivery/l03f-local-pairing/README.md).
 Mis compañeros → Permitir conexión → Conectar en mi PC; código de un uso/cinco minutos,
@@ -19,15 +38,19 @@ Publicado por el actualizador habitual en `62490c8`, alpha.59: imagen validada, 
 24 hashes públicos y entrada/gatillos/nado/regreso a tierra ES/EN 12/12 escritorio/móvil emulado.
 Cero errores o pendientes; choque aceptado localmente. Recibo y límites visuales nocturnos en la entrega.
 
-**AREA03 SRV02, 2026-10-11 — comidas especiales implementadas; SQL035/activación pública pendientes:**
+**AREA03 SRV02, 2026-10-11 — SQL035 activo; grog aceptado en público, alpha.59/protocolo 58:**
 [Contrato](docs/briefs/srv02-special-meals.md) y [entrega/evidencia](docs/delivery/srv02-special-meals/README.md).
-Alpha.58/protocolo 57: pescado asado +10 % HP máximo, grog +25 % recuperación de aguante,
+Pescado asado +10 % HP máximo, grog +25 % recuperación de aguante,
 galleta reforzada +10 unidades de carga cómoda; una activa por 15 min conectados, pausa offline,
-se pierde al reaparecer. Operación freshwater/M5, sin segunda autoridad. Flag nuevo apagado.
-194/194 grupo del actualizador, SQL 33/33 y UI local 6/6 ES/EN escritorio/móvil/rotado; conteos solapados.
-INV02d ya está incluido en VPS cd5df25/alpha.57; un jugador, sin forzar relevo. Sigue SQL035,
-readiness y aceptación autenticada. Después INV03/bolsas; no reimplementar sobrepeso.
-Enviado en `12c7339`; relevo normal diferido por jugador conectado, SQL035 RPC aún ausente.
+se pierde al reaparecer. Operación freshwater/M5, SQL035 readiness 1 y flag activo.
+WSS público 11/11 en `e625a5c`: grog, coste/replay/colisión, pausa offline/reentrada y denegación caliente.
+Navegador público 9/9 en `9ea14a0`: botón real y perfil guardado, ES/EN escritorio/móvil emulado.
+Cuenta/perfil temporales eliminados, recibos conservados y autoridad sana; 403 solo del acceso GM denegado.
+194/194 actualizador, SQL 33/33 y recheck M5 33/33, conteos solapados. Primer rechazo SQL sin causa
+confirmada; consumo público con cocina propia encendida pendiente. [INV03](docs/briefs/inv03-existing-backpacks.md)
+completará aceptación de las mochilas 18/30/42 ya existentes con Carga; no rehacer sobrepeso.
+Primer avance INV03: [SQL029 11/11](docs/delivery/inv03-existing-backpacks/README.md), segundo tier,
+coste/conservación/denegación/replay; cadena SQL completa y recorrido público pendientes.
 
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](docs/delivery/l03e-companion-creation/README.md), [brief](docs/briefs/l03e-companion-creation.md).
@@ -49,8 +72,13 @@ Rollback y cerco ante deriva/cierre/desconexión, incluso callback nulo antes de
 Tres archivos con fallos de asignación/clonación repiten 49/49 sin cambios; quedan dos fallos heredados
 HTML localizado y Cometa/agua reproducidos en upstream limpio. Cohorte completa no verde. Dos SIGKILL nuevos
 con recuperación/recogida únicas y cero efectos históricos. Conteos solapados.
-Código aceptado localmente; publicación y verificación VPS todavía pendientes.
+Integración de compañeros alpha.60: 122/122 en 17 archivos seriales; GM036 alpha.61: 83/83 en 12 archivos.
+VPS verificado en `6b713d2`, alpha.60/protocolo 59: actualizador 194/194, entrada pública 6/6 y
+16 módulos iguales a Git; montajes comunes nulos, sin adopción ni SQL nuevo para `leave`.
+Los recursos GM activos aún excluyen el piloto común: esa composición queda pendiente.
 Sigue `give` transaccional, después `swallow` y sobre completo kill/cofre; luego transición/adopción y canario VPS.
+Regla del autor: `give` solo entrega sin pago un UID en la bolsa del dueño. Tragada no se entrega ni vende.
+Compraventa entre jugadores aprobada como dirección; requiere su propio corte y confirmar juntos perla y pago.
 
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-pearl-mint.md), [contrato](docs/briefs/m5-ground-pearl-mint.md).

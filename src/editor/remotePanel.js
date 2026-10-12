@@ -220,6 +220,8 @@ export class RemoteDraftPanel {
       gm_content_routes: ['The revision blocks a protected route.', 'La revisión bloquea una ruta protegida.'],
       gm_content_occupied: ['The revision overlaps a saved boat or an item on the ground.', 'La revisión invade un barco guardado o un objeto en el suelo.'],
       gm_content_limit: ['Revision storage is full. Contact the server operator.', 'El archivo de revisiones está lleno. Contacta al operador del servidor.'],
+      gm_resource_unavailable: ['Resource storage is not ready. Ask the server operator to enable SQL036.', 'El guardado de recursos no está listo. Pide al operador habilitar SQL036.'],
+      gm_resource_roster: ['Resource history is full or this identity already belongs to another resource type. Keep its original type or remove new placements.', 'El historial de recursos está lleno o esta identidad pertenece a otro tipo. Conserva su tipo original o retira las nuevas colocaciones.'],
     };
     const message = messages[this.contentError] || ['Revision storage is unavailable. Your draft is preserved.', 'El archivo de revisiones no está disponible. Tu borrador se conserva.'];
     const selected = this.contentSelection ?? data?.active.revisionId ?? '';
@@ -248,6 +250,12 @@ export class RemoteDraftPanel {
       unsupported_height: ['Too far above or below ground', 'Demasiado lejos del suelo'],
       protected_anchor_collision: ['Blocks a protected access', 'Bloquea un acceso protegido'],
       resource_collision: ['Blocks a resource or workbench', 'Bloquea un recurso o banco de trabajo'],
+      resource_resource_spacing: ['Keep resources at least 5 m apart', 'Separa los recursos al menos 5 m'],
+      resource_protected_ground: ['Place resources on unprotected dry ground', 'Coloca recursos en suelo seco sin accesos protegidos'],
+      resource_slope: ['This slope is too steep for a resource', 'Esta pendiente es demasiado pronunciada'],
+      resource_limit: ['At most 128 added resources per revision', 'Máximo 128 recursos añadidos por revisión'],
+      resource_transform: ['Unsupported resource size or rotation', 'Tamaño o giro de recurso no admitido'],
+      resource_object_collision: ['Resource overlaps an authored collision', 'El recurso invade una colisión añadida'],
       path_collision: ['Blocks the main path', 'Bloquea el camino principal'],
       visual_only_objects: ['Some models have no collision', 'Hay modelos sin colisión'],
       circle_rotation_ignored: ['Circle collisions ignore tilt', 'Las colisiones circulares ignoran la inclinación'],

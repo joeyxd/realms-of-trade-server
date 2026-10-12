@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: SQL036 extends v1 safely and admits append-only resource identities with CAS
+ok 1 - SQL036 extends v1 safely and admits append-only resource identities with CAS
+  ---
+  duration_ms: 1591.4929
+  type: 'test'
+  ...
+# Subtest: SQL036 rejects malformed, mutated, retyped, oversized and non-default appended rows without writes
+ok 2 - SQL036 rejects malformed, mutated, retyped, oversized and non-default appended rows without writes
+  ---
+  duration_ms: 2216.4231
+  type: 'test'
+  ...
+# Subtest: SQL036 preserves v1/v2/v3 validation, exact logging defaults, and freezes ordinary saves
+ok 3 - SQL036 preserves v1/v2/v3 validation, exact logging defaults, and freezes ordinary saves
+  ---
+  duration_ms: 10670.0491
+  type: 'test'
+  ...
+# Subtest: SQL036 readiness and private helper/service RPC privileges
+ok 4 - SQL036 readiness and private helper/service RPC privileges
+  ---
+  duration_ms: 2034.9634
+  type: 'test'
+  ...
+# Subtest: SQL036 keeps an already stored SQL033 receipt replayable byte-for-byte
+ok 5 - SQL036 keeps an already stored SQL033 receipt replayable byte-for-byte
+  ---
+  duration_ms: 2063.0258
+  type: 'test'
+  ...
+# Subtest: GameHost GM palm and stone receipts commit through the SQL036 economic writer
+ok 6 - GameHost GM palm and stone receipts commit through the SQL036 economic writer
+  ---
+  duration_ms: 5198.213
+  type: 'test'
+  ...
+# Subtest: a v3 timing denial receipts cleanly when the live economy is ahead of the saved baseline
+ok 7 - a v3 timing denial receipts cleanly when the live economy is ahead of the saved baseline
+  ---
+  duration_ms: 2727.461
+  type: 'test'
+  ...
+# Subtest: three valid v3 aim hits still award once and replay their exact receipt
+ok 8 - three valid v3 aim hits still award once and replay their exact receipt
+  ---
+  duration_ms: 4757.5433
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 32315.2603
