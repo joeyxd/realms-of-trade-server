@@ -1,0 +1,617 @@
+{
+  "generatedAt": "2026-10-13T05:53:45.336Z",
+  "base": "https://marea.62.171.136.148.sslip.io",
+  "revision": "a19f5e15ac6b50a858ef76c1f66bbe0bfb68adff",
+  "hashes": [
+    {
+      "file": "assets/manifest.json",
+      "sha256": "e6f895f913413f0352f370fec37989dbd49977f1a38ad0412b7dc78361f9e04b",
+      "bytes": 21317
+    },
+    {
+      "file": "assets/editor/thumbnails.json",
+      "sha256": "b5b9d39340f7830d807de75c2ceb188ecf7081dbed167f736c2db58e29706e9f",
+      "bytes": 8878
+    },
+    {
+      "file": "src/render/assets/manifest.js",
+      "sha256": "15e139ab09d94a76f595582e942ab5d42cff77377b67e7132ede8dec3a198fd3",
+      "bytes": 10779
+    },
+    {
+      "file": "src/render/assets/registry.js",
+      "sha256": "694912c662f10ce5adb404ca459499e4a7f1b1aced641b1cda90adda3d9ad47d",
+      "bytes": 14560
+    },
+    {
+      "file": "src/render/assets/toonmat.js",
+      "sha256": "dc6fb86ca3fb77a99ebcb64956711cad841fae39d3410677f43cfc34ea486f1d",
+      "bytes": 4320
+    },
+    {
+      "file": "src/render/characters.js",
+      "sha256": "f6ad177714c2f2355a10a658d5ee2f02121c9529e376f7032fd46f9ae35c8ce7",
+      "bytes": 40179
+    },
+    {
+      "file": "src/render/resourceNodes.js",
+      "sha256": "93e94fbaa59eee9f0468f6f62526f9e247d2e540f47b0057f927c7cbdf53a664",
+      "bytes": 27890
+    },
+    {
+      "file": "src/render/harvestGoods.js",
+      "sha256": "c5e56223d27e07e5c6f4297e1e46efb191ba5260b34c8c32e28ebbf580bd03b7",
+      "bytes": 2037
+    },
+    {
+      "file": "src/render/scene.js",
+      "sha256": "6ee112bb667ed318dfc9c346ba3cde38e406dc879dcea1748b5e4983b4c0ec1b",
+      "bytes": 21422
+    },
+    {
+      "file": "src/main.js",
+      "sha256": "539a00dfe5860301e076eaf87f179399dd468380ff2353e0a63f5c26dd1435e2",
+      "bytes": 114561
+    },
+    {
+      "file": "assets/models/items-v1/resina-desktop.glb",
+      "sha256": "ab5d0235ccbc9ab370be625c0a6ff447eb56eaf6bac3d179352a89e98851a8bd",
+      "bytes": 59732
+    },
+    {
+      "file": "assets/models/items-v1/resina-mobile.glb",
+      "sha256": "2d6a482b9da720a5fceb77c5c5aa1f5fb8f7accd1198e09963c579ae4470f4cc",
+      "bytes": 36476
+    },
+    {
+      "file": "assets/models/items-v1/antorcha-desktop.glb",
+      "sha256": "20bdb2816f062ec0308e139a94f3680643c90af1ab57f070865981a5fe512f40",
+      "bytes": 78028
+    },
+    {
+      "file": "assets/models/items-v1/antorcha-mobile.glb",
+      "sha256": "e4ef37493c1a1963c334dc0355644a3f85f864ce28bc78a8e43381c3585aa9fa",
+      "bytes": 42364
+    },
+    {
+      "file": "assets/models/items-v1/coco-desktop.glb",
+      "sha256": "df4bf3bbb2ce53f75def9e19dca4f850f569e0d7775629865acb561c75ddc5a0",
+      "bytes": 61348
+    },
+    {
+      "file": "assets/models/items-v1/coco-mobile.glb",
+      "sha256": "a439860deb43011036873a4b1d9f85c215c917693b23f4b2043b63b09856b2db",
+      "bytes": 37852
+    },
+    {
+      "file": "assets/models/items-v1/lima-desktop.glb",
+      "sha256": "3c53194cf4d69bcbb24fbbf8e584e6ca6424ee1c1f6bb6489de8f64c1afbc389",
+      "bytes": 55916
+    },
+    {
+      "file": "assets/models/items-v1/lima-mobile.glb",
+      "sha256": "1d738bc865308617e8584ecc1bc2bed064bd7e060123f5e8eeb9becfa76655e0",
+      "bytes": 37972
+    },
+    {
+      "file": "assets/models/items-v1/especias-desktop.glb",
+      "sha256": "b7d97a91f6696c067f3533d16406eaf12260553f5e76438717745dfe73cdc6b9",
+      "bytes": 69432
+    },
+    {
+      "file": "assets/models/items-v1/especias-mobile.glb",
+      "sha256": "4e7e0adc9fc18b177c43952b47dc73a0215aaf827d9f8158d0c17cd32ac7ed72",
+      "bytes": 42656
+    },
+    {
+      "file": "assets/models/items-v1/meal_grog-desktop.glb",
+      "sha256": "d2ce7b23178603edbb9729eb2aafbace4f696ae52bdd3b6382bced7f42daaf0a",
+      "bytes": 73064
+    },
+    {
+      "file": "assets/models/items-v1/meal_grog-mobile.glb",
+      "sha256": "08bb96511a834165270a117976c9ed396af2441d0b7f63271933ec90f5e55a4c",
+      "bytes": 47464
+    },
+    {
+      "file": "assets/models/items-v1/meal_roastFish-desktop.glb",
+      "sha256": "d18413e347530b19f35d56059d4577de4d8c1a24f7dd4229cc7a1a194a2b3908",
+      "bytes": 107340
+    },
+    {
+      "file": "assets/models/items-v1/meal_roastFish-mobile.glb",
+      "sha256": "d2a67f8fdc8d20fdb0baa7db768f4f04aa4d072fc1d75f5c52e7cb1dd6dbc249",
+      "bytes": 57528
+    },
+    {
+      "file": "assets/models/items-v1/cana-desktop.glb",
+      "sha256": "6ff6544c1b36af5df386aa40ca87a14095b4cd0f38f0b317bc519dc6382c2c35",
+      "bytes": 71932
+    },
+    {
+      "file": "assets/models/items-v1/cana-mobile.glb",
+      "sha256": "473c6fb7b91405c36fb04846080ef5cc3638014b71fe6469216c4ad1faf40da5",
+      "bytes": 46028
+    },
+    {
+      "file": "assets/models/items-v1/hierbas_aromaticas-desktop.glb",
+      "sha256": "5edec9953abbe9c1fc3a1ab180035a34208c9061b67c685931d65ca7a4f5d6dc",
+      "bytes": 74272
+    },
+    {
+      "file": "assets/models/items-v1/hierbas_aromaticas-mobile.glb",
+      "sha256": "eb76b5e051a877c48dcca5f7d9ddbf13b7d7ddcf7a4ba5f163d364c6c5b33f09",
+      "bytes": 50640
+    },
+    {
+      "file": "assets/models/items-v1/meal_heartyBiscuit-desktop.glb",
+      "sha256": "9d36b903d083f5ef507fac452d9739f020d9fa945e4c25b4c0a6a924e1fb4b62",
+      "bytes": 83336
+    },
+    {
+      "file": "assets/models/items-v1/meal_heartyBiscuit-mobile.glb",
+      "sha256": "fcd84c8eb765d88535189e016fee08f259fa31f76abf1e729867ee69e58d545d",
+      "bytes": 49712
+    },
+    {
+      "file": "assets/models/items-v1/agua-desktop.glb",
+      "sha256": "183029851e6c326343b96bec0b3c924f56968d4f515f69c52fb7fa9dedd39636",
+      "bytes": 55208
+    },
+    {
+      "file": "assets/models/items-v1/agua-mobile.glb",
+      "sha256": "37f573046d397e7170799e8e9ff008185fb64f85ca9a6bd78d16de6a1a28785d",
+      "bytes": 38072
+    },
+    {
+      "file": "assets/models/items-v1/harina-desktop.glb",
+      "sha256": "d2fa102d68e88e3b0ad697ad3db544479f8be87bd2b1ad94a3e4a16fc57ad4ff",
+      "bytes": 90248
+    },
+    {
+      "file": "assets/models/items-v1/harina-mobile.glb",
+      "sha256": "08086ebcd8bc2594561d4a45aa4cff58227d0dd78027aa32345e96543a3ea3eb",
+      "bytes": 46512
+    }
+  ],
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "errors": [],
+      "requests": [
+        "https://marea.62.171.136.148.sslip.io/assets/models/items-v1/resina-desktop.glb",
+        "https://marea.62.171.136.148.sslip.io/assets/models/items-v1/antorcha-desktop.glb",
+        "https://marea.62.171.136.148.sslip.io/assets/models/items-v1/coco-desktop.glb"
+      ],
+      "models": [
+        {
+          "id": "model:item-resina-v1",
+          "kind": "model",
+          "src": "models/items-v1/resina-desktop.glb",
+          "selectedSrc": "models/items-v1/resina-desktop.glb",
+          "state": "ok",
+          "error": "",
+          "tris": 472,
+          "notes": [],
+          "sizes": [
+            [
+              512,
+              512
+            ]
+          ]
+        },
+        {
+          "id": "model:item-antorcha-v1",
+          "kind": "model",
+          "src": "models/items-v1/antorcha-desktop.glb",
+          "selectedSrc": "models/items-v1/antorcha-desktop.glb",
+          "state": "ok",
+          "error": "",
+          "tris": 498,
+          "notes": [],
+          "sizes": [
+            [
+              512,
+              512
+            ]
+          ]
+        },
+        {
+          "id": "model:item-coco-v1",
+          "kind": "model",
+          "src": "models/items-v1/coco-desktop.glb",
+          "selectedSrc": "models/items-v1/coco-desktop.glb",
+          "state": "ok",
+          "error": "",
+          "tris": 402,
+          "notes": [],
+          "sizes": [
+            [
+              512,
+              512
+            ]
+          ]
+        },
+        {
+          "id": "model:item-lima-v1",
+          "kind": "model",
+          "src": "models/items-v1/lima-desktop.glb",
+          "selectedSrc": "models/items-v1/lima-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-especias-v1",
+          "kind": "model",
+          "src": "models/items-v1/especias-desktop.glb",
+          "selectedSrc": "models/items-v1/especias-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-meal_grog-v1",
+          "kind": "model",
+          "src": "models/items-v1/meal_grog-desktop.glb",
+          "selectedSrc": "models/items-v1/meal_grog-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-meal_roastFish-v1",
+          "kind": "model",
+          "src": "models/items-v1/meal_roastFish-desktop.glb",
+          "selectedSrc": "models/items-v1/meal_roastFish-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-cana-v1",
+          "kind": "model",
+          "src": "models/items-v1/cana-desktop.glb",
+          "selectedSrc": "models/items-v1/cana-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-hierbas_aromaticas-v1",
+          "kind": "model",
+          "src": "models/items-v1/hierbas_aromaticas-desktop.glb",
+          "selectedSrc": "models/items-v1/hierbas_aromaticas-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-meal_heartyBiscuit-v1",
+          "kind": "model",
+          "src": "models/items-v1/meal_heartyBiscuit-desktop.glb",
+          "selectedSrc": "models/items-v1/meal_heartyBiscuit-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-agua-v1",
+          "kind": "model",
+          "src": "models/items-v1/agua-desktop.glb",
+          "selectedSrc": "models/items-v1/agua-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-harina-v1",
+          "kind": "model",
+          "src": "models/items-v1/harina-desktop.glb",
+          "selectedSrc": "models/items-v1/harina-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        }
+      ],
+      "joined": {
+        "joined": true,
+        "errors": [],
+        "torch": true,
+        "woodAtlas": true
+      },
+      "status": "passed"
+    },
+    {
+      "name": "mobile",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "errors": [],
+      "requests": [
+        "https://marea.62.171.136.148.sslip.io/assets/models/items-v1/resina-mobile.glb",
+        "https://marea.62.171.136.148.sslip.io/assets/models/items-v1/antorcha-mobile.glb",
+        "https://marea.62.171.136.148.sslip.io/assets/models/items-v1/coco-mobile.glb"
+      ],
+      "models": [
+        {
+          "id": "model:item-resina-v1",
+          "kind": "model",
+          "src": "models/items-v1/resina-desktop.glb",
+          "selectedSrc": "models/items-v1/resina-mobile.glb",
+          "state": "ok",
+          "error": "",
+          "tris": 472,
+          "notes": [],
+          "sizes": [
+            [
+              256,
+              256
+            ]
+          ]
+        },
+        {
+          "id": "model:item-antorcha-v1",
+          "kind": "model",
+          "src": "models/items-v1/antorcha-desktop.glb",
+          "selectedSrc": "models/items-v1/antorcha-mobile.glb",
+          "state": "ok",
+          "error": "",
+          "tris": 498,
+          "notes": [],
+          "sizes": [
+            [
+              256,
+              256
+            ]
+          ]
+        },
+        {
+          "id": "model:item-coco-v1",
+          "kind": "model",
+          "src": "models/items-v1/coco-desktop.glb",
+          "selectedSrc": "models/items-v1/coco-mobile.glb",
+          "state": "ok",
+          "error": "",
+          "tris": 402,
+          "notes": [],
+          "sizes": [
+            [
+              256,
+              256
+            ]
+          ]
+        },
+        {
+          "id": "model:item-lima-v1",
+          "kind": "model",
+          "src": "models/items-v1/lima-desktop.glb",
+          "selectedSrc": "models/items-v1/lima-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-especias-v1",
+          "kind": "model",
+          "src": "models/items-v1/especias-desktop.glb",
+          "selectedSrc": "models/items-v1/especias-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-meal_grog-v1",
+          "kind": "model",
+          "src": "models/items-v1/meal_grog-desktop.glb",
+          "selectedSrc": "models/items-v1/meal_grog-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-meal_roastFish-v1",
+          "kind": "model",
+          "src": "models/items-v1/meal_roastFish-desktop.glb",
+          "selectedSrc": "models/items-v1/meal_roastFish-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-cana-v1",
+          "kind": "model",
+          "src": "models/items-v1/cana-desktop.glb",
+          "selectedSrc": "models/items-v1/cana-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-hierbas_aromaticas-v1",
+          "kind": "model",
+          "src": "models/items-v1/hierbas_aromaticas-desktop.glb",
+          "selectedSrc": "models/items-v1/hierbas_aromaticas-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-meal_heartyBiscuit-v1",
+          "kind": "model",
+          "src": "models/items-v1/meal_heartyBiscuit-desktop.glb",
+          "selectedSrc": "models/items-v1/meal_heartyBiscuit-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-agua-v1",
+          "kind": "model",
+          "src": "models/items-v1/agua-desktop.glb",
+          "selectedSrc": "models/items-v1/agua-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        },
+        {
+          "id": "model:item-harina-v1",
+          "kind": "model",
+          "src": "models/items-v1/harina-desktop.glb",
+          "selectedSrc": "models/items-v1/harina-desktop.glb",
+          "state": "pending",
+          "error": "",
+          "tris": 0,
+          "notes": [],
+          "sizes": []
+        }
+      ],
+      "joined": {
+        "joined": true,
+        "errors": [],
+        "torch": true,
+        "woodAtlas": true
+      },
+      "status": "passed"
+    }
+  ],
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.67",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 5771,
+    "uptime": 108,
+    "stepMs": 1.459,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true,
+        "torchRules": 2
+      },
+      "foraging": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true,
+        "meals": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "companionPairing": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 5237,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 43,
+      "late": 3,
+      "trimmed": 0,
+      "clamped": 5,
+      "kbOut": 1634.3,
+      "kbIn": 4.4,
+      "dropped": 0
+    }
+  }
+}

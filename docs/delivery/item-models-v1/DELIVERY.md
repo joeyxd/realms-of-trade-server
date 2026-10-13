@@ -63,4 +63,17 @@ retirarlas, cero errores de navegador/WebGL. La prueba no mide FPS de teléfono 
 La primera captura incluyó bordes del atlas y se corrigió a un recorte de tabla
 pintada; las capturas finales muestran el resultado revisado.
 
-Publicación pendiente del relevo habitual, con verificación de revisión y entrada pública.
+Integración con Niagara alpha.66: [76/76 pruebas](integration.tap), conservando su
+biblioteca y checkpoint. El actualizador del VPS complet? 197/197 pruebas
+antes del relevo (registro `update-a19f5e15ac6b50a858ef76c1f66bbe0bfb68adff.log`). Publicado por el actualizador habitual como **alpha.67,
+protocolo 60**, revisión `a19f5e15ac6b50a858ef76c1f66bbe0bfb68adff`.
+[Contenedor activo](public/runtime.json): una autoridad saludable, 38 archivos
+idénticos a Git, foraging habilitado/ready y receta de antorcha 2.
+[Aceptación pública](public/acceptance.json): 34 hashes HTTP coincidentes y entrada
+normal de invitado en escritorio/móvil 2/2, tres modelos cargados y nueve diferidos,
+mapas reales 512/256 y madera con el atlas existente. Cero errores de navegador,
+WebGL y guardado. Se confirmó también la identidad del pan/vasija/saco con el autor.
+
+Las pruebas de proximidad y 48 copias fueron locales y cosméticas. La entrada
+pública comprueba carga, revisión y materiales; no añade nuevas operaciones de
+inventario ni repite la aceptación SQL/gameplay de antorcha/coco/tala anterior.
