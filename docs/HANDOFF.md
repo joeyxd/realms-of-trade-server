@@ -3,10 +3,12 @@
 **AREA03, 2026-10-13 — alimentos e INV03:**
 [Entrega](delivery/food-item-completion/README.md): fichas ES/EN con usos, masa/volumen,
 valores y efectos actuales; ambas barras de carga incluyen el bonus de la galleta.
-38/38 regresiones focales y 6/6 configuraciones locales del panel de provisiones.
+38/38 regresiones focales, 6/6 configuraciones locales de provisiones y 4/4 de ficha.
 [INV03](delivery/inv03-existing-backpacks/README.md) conserva las mejoras existentes:
 la prueba pública encontró y corrigió el recorte del taller en móvil girado (4/4 locales).
-La aceptación pública completa se registra en su entrega, sin nueva SQL ni balance.
+Aceptación pública completa 22/22: ambos tiers, coste exacto, Carga, piedra conservada,
+replay, denegación y reentrada. Publicado en `a21c47f`, siete hashes de UI/CSS exactos
+en contenedor/HTTPS; una autoridad saludable, sin nueva SQL ni balance.
 El autor eligió cerrar alimentos actuales y continuar mochilas; lima/hierbas siguen
 como propuestas. Añadida al plan [fibra, techumbre y cuero](briefs/plant-fiber-thatch-leather.md):
 plantas → fibra → lona, palmeras → hojas/techos económicos, animales → piel → cuero.

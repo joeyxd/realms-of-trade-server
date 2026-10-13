@@ -19,7 +19,13 @@ La [aceptación pública PRG01d de alpha.39](../delivery/prg01d-starter-workshop
 
 Por tanto, INV03 debe completar esas lagunas sobre el taller existente: ambos tiers con Carga adoptada y mercancía ajena al pago, replay idéntico, denegación por materiales insuficientes, persistencia al volver y botones reales ES/EN en escritorio/móvil. No hace falta diseñar otro sistema de mochilas para este corte.
 
-Primer avance local: [cadena SQL001–036 11/11](../delivery/inv03-existing-backpacks/README.md), incluido el segundo tier con Carga conservada, coste exacto, otra mercancía, denegación y replay durable. La aceptación pública permanece pendiente.
+Primer avance local: [cadena SQL001–036 11/11](../delivery/inv03-existing-backpacks/README.md), incluido el segundo tier con Carga conservada, coste exacto, otra mercancía, denegación y replay durable.
+
+**Aceptado el 2026-10-13:** 22/22 comprobaciones públicas en `a21c47f`, con ambos botones,
+costes, Carga, otra mercancía, replay, denegación durable y reentrada; ES/EN escritorio y
+móvil girado. La prueba encontró y corrigió el recorte del taller en ese último formato.
+[Entrega y límites](../delivery/inv03-existing-backpacks/README.md). No cambió costes,
+capacidades, balance o SQL.
 
 Una bolsa como objeto que se posee y equipa sería una ampliación distinta. Antes de implementarla hay que cerrar su relación con las mejoras ya pagadas, la ranura, el origen/receta, la capacidad y qué ocurre al quitarla con mercancías dentro. No introducir un segundo modificador de volumen ni reiniciar las mejoras existentes. Cinturones y nuevos tiers se coordinan con PRG04.
 
