@@ -79,7 +79,7 @@ test('selector leave reserves and persists an owned pearl, then applies only at 
   } finally { release.resolve(); await host.close().catch(() => {}); }
 });
 
-test('real CMD pearl leave is routed only when mounted; give, swallow, combat, unknown, spit and sell fail closed', async t => {
+test('real CMD pearl leave is routed only when mounted; malformed give/swallow, combat, unknown, spit and sell fail closed', async t => {
   const f = await fixture(t), host = f.host, player = await joinPlayer(host), world = host.server.world;
   const uid = await seedOwnedPearl(f, host, player);
   try {
@@ -90,7 +90,7 @@ test('real CMD pearl leave is routed only when mounted; give, swallow, combat, u
     const count = f.transactions.filter(isLeave).length;
     for (const msg of [
       { t: MSG.CMD, type: 'pearl', op: 'give', uid },
-      { t: MSG.CMD, type: 'pearl', op: 'swallow', uid },
+      { t: MSG.CMD, type: 'pearl', op: 'swallow', uid, replaceUid: uid },
       { t: MSG.CMD, type: 'pearl', op: 'spit', uid },
       { t: MSG.CMD, type: 'pearl', op: 'sell', uid },
       { t: MSG.CMD, type: 'pearl', op: 'mystery', uid },

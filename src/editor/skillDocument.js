@@ -1,8 +1,8 @@
+import { defaultEffectDocument, effectParameters, FLIPBOOK_PARAMETERS, getEffect } from './effectLibrary.js';
+
 const SCHEMA = 'marea.skill-presentation';
-const VERSION = 1;
-const MAX_BYTES = 16 * 1024;
+export const MAX_SKILL_DOCUMENT_BYTES = 16 * 1024;
 const HEX = /^#[0-9a-f]{6}$/;
-const KEYS = Object.freeze(['scale', 'height', 'duration', 'density', 'spread', 'speed', 'brightness', 'deep', 'foam']);
 
 export const SKILL_PARAMETERS = Object.freeze([
   Object.freeze({ key: 'scale', min: 0.5, max: 1.5, step: 0.01, default: 1 }),
@@ -16,17 +16,9 @@ export const SKILL_PARAMETERS = Object.freeze([
   Object.freeze({ key: 'foam', type: 'color', default: '#dff7ff' }),
 ]);
 
-const DEFAULT_PARAMETERS = Object.freeze({
-  scale: 1, height: 1, duration: 1, density: 1, spread: 1, speed: 1, brightness: 1,
-  deep: '#1f86c0', foam: '#dff7ff',
-});
-
 export const DEFAULT_SKILL_DOCUMENT = Object.freeze({
-  schema: SCHEMA,
-  version: VERSION,
-  skill: 'tromba',
-  effect: 'tromba-current-v1',
-  parameters: DEFAULT_PARAMETERS,
+  schema: SCHEMA, version: 1, skill: 'tromba', effect: 'tromba-current-v1',
+  parameters: Object.freeze({ scale: 1, height: 1, duration: 1, density: 1, spread: 1, speed: 1, brightness: 1, deep: '#1f86c0', foam: '#dff7ff' }),
 });
 
 const isPlainObject = (value) => value !== null && typeof value === 'object' &&
@@ -38,16 +30,9 @@ const exactKeys = (value, expected) => {
     expected.every((key) => Object.hasOwn(value, key));
 };
 
-/** Validate the closed, versioned Tromba presentation contract. */
-export function validateSkillDocument(value) {
-  const rootKeys = ['schema', 'version', 'skill', 'effect', 'parameters'];
-  if (!exactKeys(value, rootKeys)) return { ok: false, why: 'shape' };
-  if (value.schema !== SCHEMA || value.version !== VERSION || value.skill !== 'tromba' || value.effect !== 'tromba-current-v1') {
-    return { ok: false, why: 'identity' };
-  }
-  const parameters = value.parameters;
-  if (!exactKeys(parameters, KEYS)) return { ok: false, why: 'parameters' };
-  for (const meta of SKILL_PARAMETERS) {
+function validateParameters(parameters, metadata) {
+  if (!exactKeys(parameters, metadata.map(({ key }) => key))) return { ok: false, why: 'parameters' };
+  for (const meta of metadata) {
     const next = parameters[meta.key];
     if (meta.type === 'color') {
       if (typeof next !== 'string' || !HEX.test(next)) return { ok: false, why: 'color' };
@@ -58,18 +43,46 @@ export function validateSkillDocument(value) {
   return { ok: true };
 }
 
-/** Return a detached document copy after validating the complete document. */
+/** Validate either the unchanged Tromba v1 contract or a registered ready flipbook v2 contract. */
+export function validateSkillDocument(value) {
+  if (!isPlainObject(value)) return { ok: false, why: 'shape' };
+  if (value.version === 1) {
+    if (!exactKeys(value, ['schema', 'version', 'skill', 'effect', 'parameters'])) return { ok: false, why: 'shape' };
+    if (value.schema !== SCHEMA || value.version !== 1 || value.skill !== 'tromba' || value.effect !== 'tromba-current-v1') return { ok: false, why: 'identity' };
+    return validateParameters(value.parameters, SKILL_PARAMETERS);
+  }
+  if (value.version !== 2) return { ok: false, why: 'version' };
+  if (!exactKeys(value, ['schema', 'version', 'skill', 'effect', 'parameters'])) return { ok: false, why: 'shape' };
+  const effect = getEffect(value.effect);
+  return validateFlipbookDocument(value, effect, effect ? effectParameters(effect.id) : FLIPBOOK_PARAMETERS);
+}
+
+/** Validate a v2 descriptor against a closed registry entry and its parameter schema. */
+export function validateFlipbookDocument(value, effect, metadata = FLIPBOOK_PARAMETERS) {
+  if (!exactKeys(value, ['schema', 'version', 'skill', 'effect', 'parameters'])) return { ok: false, why: 'shape' };
+  if (value.schema !== SCHEMA || value.version !== 2 || value.skill !== 'preview' || typeof value.effect !== 'string') return { ok: false, why: 'identity' };
+  if (!effect?.ready || effect.id !== value.effect || effect.adapter !== 'flipbook-v1') return { ok: false, why: 'effect' };
+  return validateParameters(value.parameters, metadata);
+}
+
+/** Return a detached validated document copy. */
 export function cloneSkillDocument(value = DEFAULT_SKILL_DOCUMENT) {
   if (!validateSkillDocument(value).ok) throw new Error('Invalid skill document');
   return {
-    schema: SCHEMA, version: VERSION, skill: 'tromba', effect: 'tromba-current-v1',
-    parameters: { ...value.parameters },
+    schema: SCHEMA, version: value.version, skill: value.version === 1 ? 'tromba' : 'preview',
+    effect: value.effect, parameters: { ...value.parameters },
   };
 }
 
-/** Parse bounded UTF-8 JSON and reject any unknown or unsafe fields. */
+export function createDefaultSkillDocument(effectId = DEFAULT_SKILL_DOCUMENT.effect) {
+  const value = defaultEffectDocument(effectId);
+  if (!value) throw new Error('Effect is not ready for editing');
+  return cloneSkillDocument(value);
+}
+
+/** Parse bounded UTF-8 JSON and reject unknown, unregistered, or unsafe fields. */
 export function parseSkillDocument(text) {
-  if (typeof text !== 'string' || new TextEncoder().encode(text).byteLength > MAX_BYTES) {
+  if (typeof text !== 'string' || new TextEncoder().encode(text).byteLength > MAX_SKILL_DOCUMENT_BYTES) {
     throw new Error('Invalid skill document');
   }
   let value;

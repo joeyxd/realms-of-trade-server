@@ -1,6 +1,16 @@
 # CH01: personajes guardados independientes
 
-2026-10-12. Candidato alpha.65, protocolo 60. Implementado localmente; SQL038 y publicación alpha pendientes.
+2026-10-12, integrado el 2026-10-13 como alpha.70, protocolo 62. Requiere SQL038 listo antes de publicar.
+
+## Integración 2026-10-13
+
+La rama se unió con origin en alpha.69/protocolo 61, que ya traía L03g-a (presencia segura de
+compañeros, SQL039). La presencia usaba `session.key` como dueño; con slots esa clave es el
+personaje elegido, no la cuenta. `companionPresence` y el bloqueo de pairing pasan a
+`sessionOwner(session)`, igual que configuración, control, creación, pairing e inferencia.
+La prueba nueva de `player-character-owner-scope` falla sin ese cambio y pasa con él.
+Las operaciones de perlas siguen ligadas al personaje: su perfil lleva `account:<personaje>`
+(SQL038 lo impone), que es lo que comprueban give/swallow/leave.
 
 ## Comportamiento
 

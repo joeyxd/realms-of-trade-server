@@ -1,0 +1,209 @@
+{
+  "schema": "st01b-water-splash-exact-renderer-evidence/v2",
+  "sourceReport": "docs/research/unreal-assets/st01b/renderer-grid-evidence.json",
+  "method": "UE 5.8 NullRHI: load only exact AssetRegistry-verified system packages with hard dependency to SubUVAnimation; enumerate NiagaraSpriteRendererProperties and read SubImageSize, Material and MaterialInstanceConstant.TextureParameterValues.",
+  "root": [
+    {
+      "package": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+      "name": "NS_Spline_WaterSplash",
+      "source": {
+        "project": "MyProject",
+        "package": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+        "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\NS\\NS_Spline_WaterSplash.uasset",
+        "sha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+        "bytes": 5381446,
+        "family": "_SplineVFX",
+        "category": "water",
+        "effectId": "niagara-104efce88caa3644"
+      },
+      "loadError": null,
+      "loadedClass": "NiagaraSystem"
+    }
+  ],
+  "renderers": [
+    {
+      "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+      "systemName": "NS_Spline_WaterSplash",
+      "class": "NiagaraSpriteRendererProperties",
+      "objectPath": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:Spark002_3.NiagaraSpriteRendererProperties_0",
+      "subImageSize": {
+        "columns": 1.0,
+        "rows": 1.0
+      },
+      "material": {
+        "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_Basic_stuff_splash_03",
+        "class": "MaterialInstanceConstant",
+        "source": {
+          "project": "MyProject",
+          "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_Basic_stuff_splash_03",
+          "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Material\\MI\\MI_Vfx_Basic_stuff_splash_03.uasset",
+          "bytes": 9627,
+          "sha256": "a2b74f032c6e92e73686eefe7e8aee452353b2f384537f7eabb7ff4101c27277"
+        }
+      },
+      "materialTextureParameters": [
+        {
+          "parameterName": "mask",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stuff_splash_03",
+          "textureClass": "Texture2D",
+          "source": {
+            "project": "MyProject",
+            "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stuff_splash_03.uasset",
+            "sha256": "ac1b4f855b7b4cd0dc3f31a7a9455f576dede3ae3be50fa9223d878520bea02d",
+            "bytes": 21016
+          }
+        }
+      ],
+      "errors": [],
+      "subImageSizeText": "<Struct 'Vector2D' (0x000001DF9BE80310) {x: 1.000000, y: 1.000000}>",
+      "source_mode": "<NiagaraRendererSourceDataMode.PARTICLES: 0>",
+      "renderer_visibility": "0",
+      "systemSource": {
+        "project": "MyProject",
+        "package": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+        "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\NS\\NS_Spline_WaterSplash.uasset",
+        "sha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+        "bytes": 5381446,
+        "family": "_SplineVFX",
+        "category": "water",
+        "effectId": "niagara-104efce88caa3644"
+      },
+      "gridGreaterThanOne": false
+    },
+    {
+      "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+      "systemName": "NS_Spline_WaterSplash",
+      "class": "NiagaraSpriteRendererProperties",
+      "objectPath": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:Spark_3.NiagaraSpriteRendererProperties_0",
+      "subImageSize": {
+        "columns": 1.0,
+        "rows": 1.0
+      },
+      "material": {
+        "package": "/Niagara/DefaultAssets/DefaultSpriteMaterial",
+        "class": "Material",
+        "source": {
+          "project": "MyProject",
+          "package": "/Niagara/DefaultAssets/DefaultSpriteMaterial",
+          "path": "C:\\Niagara\\DefaultAssets\\DefaultSpriteMaterial.uasset",
+          "missing": true
+        }
+      },
+      "materialTextureParameters": [],
+      "errors": [],
+      "subImageSizeText": "<Struct 'Vector2D' (0x000001DF9BE83310) {x: 1.000000, y: 1.000000}>",
+      "source_mode": "<NiagaraRendererSourceDataMode.PARTICLES: 0>",
+      "renderer_visibility": "0",
+      "systemSource": {
+        "project": "MyProject",
+        "package": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+        "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\NS\\NS_Spline_WaterSplash.uasset",
+        "sha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+        "bytes": 5381446,
+        "family": "_SplineVFX",
+        "category": "water",
+        "effectId": "niagara-104efce88caa3644"
+      },
+      "gridGreaterThanOne": false
+    },
+    {
+      "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+      "systemName": "NS_Spline_WaterSplash",
+      "class": "NiagaraSpriteRendererProperties",
+      "objectPath": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:Splash_7.NiagaraSpriteRendererProperties_0",
+      "subImageSize": {
+        "columns": 7.0,
+        "rows": 7.0
+      },
+      "material": {
+        "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_WaterSplash_77_mask",
+        "class": "MaterialInstanceConstant",
+        "source": {
+          "project": "MyProject",
+          "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_WaterSplash_77_mask",
+          "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Material\\MI\\MI_Vfx_ParticleSubUV_Stamp_WaterSplash_77_mask.uasset",
+          "bytes": 13001,
+          "sha256": "b494d0ec4f6d070e017cd1d1cac151e0b7e211724468a521f8c238f40c8f3e2e"
+        }
+      },
+      "materialTextureParameters": [
+        {
+          "parameterName": "baseTex",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_WaterSplash_77",
+          "textureClass": "Texture2D",
+          "source": {
+            "project": "MyProject",
+            "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_WaterSplash_77.uasset",
+            "sha256": "26e09bd0f93cb620768268867f7887759315452bd5e9da4a7506da06e798a672",
+            "bytes": 1577127
+          }
+        }
+      ],
+      "errors": [],
+      "subImageSizeText": "<Struct 'Vector2D' (0x000001DF9BE86310) {x: 7.000000, y: 7.000000}>",
+      "source_mode": "<NiagaraRendererSourceDataMode.PARTICLES: 0>",
+      "renderer_visibility": "0",
+      "systemSource": {
+        "project": "MyProject",
+        "package": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+        "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\NS\\NS_Spline_WaterSplash.uasset",
+        "sha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+        "bytes": 5381446,
+        "family": "_SplineVFX",
+        "category": "water",
+        "effectId": "niagara-104efce88caa3644"
+      },
+      "gridGreaterThanOne": true
+    },
+    {
+      "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+      "systemName": "NS_Spline_WaterSplash",
+      "class": "NiagaraSpriteRendererProperties",
+      "objectPath": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:Steam_11.NiagaraSpriteRendererProperties_0",
+      "subImageSize": {
+        "columns": 8.0,
+        "rows": 8.0
+      },
+      "material": {
+        "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+        "class": "MaterialInstanceConstant",
+        "source": {
+          "project": "MyProject",
+          "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+          "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Material\\MI\\MI_Vfx_ParticleSubUV_fog03_88_fade.uasset",
+          "bytes": 10904,
+          "sha256": "fb628872e5779a71ef0f914def1d685122ad936cdd2a4d151a3852275567becb"
+        }
+      },
+      "materialTextureParameters": [
+        {
+          "parameterName": "baseTex",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88",
+          "textureClass": "Texture2D",
+          "source": {
+            "project": "MyProject",
+            "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_stamp_fog3_88.uasset",
+            "sha256": "dd710adffbd411cd04757b30db840fbd9e4db02cb5e9d40e649c4457d825bb4c",
+            "bytes": 309507
+          }
+        }
+      ],
+      "errors": [],
+      "subImageSizeText": "<Struct 'Vector2D' (0x000001DF9BE89310) {x: 8.000000, y: 8.000000}>",
+      "source_mode": "<NiagaraRendererSourceDataMode.PARTICLES: 0>",
+      "renderer_visibility": "0",
+      "systemSource": {
+        "project": "MyProject",
+        "package": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+        "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\NS\\NS_Spline_WaterSplash.uasset",
+        "sha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+        "bytes": 5381446,
+        "family": "_SplineVFX",
+        "category": "water",
+        "effectId": "niagara-104efce88caa3644"
+      },
+      "gridGreaterThanOne": true
+    }
+  ],
+  "ownership": "exact object package and basename prefix ending in colon; corrected report, not prior substring attribution"
+}

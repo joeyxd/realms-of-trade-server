@@ -1,8 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
+import { readFile } from 'node:fs/promises';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { assets } from '../src/render/assets/registry.js';
-import { ResourceNodes } from '../src/render/resourceNodes.js';
+import { ResourceNodes, PICKUP_WOOD_RECT } from '../src/render/resourceNodes.js';
+import { RAFT_ATLAS_ID } from '../src/render/raftMaterials.js';
 import { palmGeometry, palmVariant } from '../src/render/palmGeometry.js';
 import { palmMaterials } from '../src/render/palmMaterials.js';
 import { buildLook } from '../src/render/charlooks.js';
@@ -30,6 +33,20 @@ function buildNodes() {
   const mats = palmMaterials({ texture: () => null }, swayUniform);
   const nodes = withEmptyAssets(() => new ResourceNodes(scene, { palms: { geometries, mats }, swayUniform }));
   return { scene, nodes, geometries, mats };
+}
+
+function withWoodAtlas(fn, data = null) {
+  const descriptors = new Map(['texture', 'data'].map((key) => [key, Object.getOwnPropertyDescriptor(assets, key)]));
+  const atlas = new THREE.Texture();
+  assets.texture = (id) => id === RAFT_ATLAS_ID ? atlas : null;
+  assets.data = (id) => id === 'model:beach-debris-log-v1' ? data : null;
+  try { return fn(atlas); }
+  finally {
+    for (const [key, descriptor] of descriptors) {
+      if (descriptor) Object.defineProperty(assets, key, descriptor); else delete assets[key];
+    }
+    atlas.dispose();
+  }
 }
 
 function disposeBuilt(built) {
@@ -82,6 +99,67 @@ test('resource renderer builds finite stump geometry and accepts an already-depl
     assert.ok(nearZero(matrix(meshes.trunk, record.slot)));
     assert.ok(!nearZero(matrix(nodes.stumpMeshes.body, record.stumpSlot)));
   } finally { disposeBuilt(built); }
+});
+
+test('collectible driftwood reuses the raft painted wood atlas and keeps its outline material paired', () => {
+  withWoodAtlas((atlas) => {
+    const scene = new THREE.Scene(), nodes = new ResourceNodes(scene);
+    try {
+      const wood = { id: 'wood-atlas-test', kind: 'wood', x: 1, y: 0, z: 1, rev: 1, ready: true, wait: 0 };
+      nodes.update({ nodes: [wood], bench: null }, { x: 1, z: 1 }, 0);
+      const record = nodes.records.get(wood.id), uv = record.mesh.geometry.getAttribute('uv'), rect = PICKUP_WOOD_RECT;
+      assert.equal(nodes.woodPaint.map, atlas, 'uses the already loaded raft comic atlas');
+      assert.deepEqual(nodes.woodPaint.userData.dockWood, { family: 'dock-wood-v1', atlas: RAFT_ATLAS_ID, texturesAdded: 0 });
+      assert.ok(uv && uv.count === record.mesh.geometry.getAttribute('position').count);
+      for (let i = 0; i < uv.count; i++) {
+        assert.ok(uv.getX(i) >= rect.u0 - 1e-6 && uv.getX(i) <= rect.u1 + 1e-6);
+        assert.ok(uv.getY(i) >= rect.v0 - 1e-6 && uv.getY(i) <= rect.v1 + 1e-6);
+      }
+      assert.ok(record.mesh.userData.nm?.isMeshNormalMaterial, 'wood keeps a paired outline-pass material');
+      assert.equal(record.mesh.userData.nm.customProgramCacheKey(), nodes.woodNm.customProgramCacheKey());
+    } finally {
+      scene.traverse((object) => { object.geometry?.dispose(); object.material?.dispose?.(); });
+    }
+  });
+});
+
+test('authored pickup wood keeps grain aligned across each face and preserves its lighting normals', async () => {
+  const bytes = await readFile(new URL('../assets/models/beach-debris-log-v1.glb', import.meta.url));
+  const gltf = await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '');
+  gltf.scene.updateMatrixWorld(true);
+  let source;
+  gltf.scene.traverse(o => { if (o.isMesh) source = o.geometry.clone().applyMatrix4(o.matrixWorld); });
+  const expected = source.index ? source.toNonIndexed() : source.clone();
+  const originalUV = source.attributes.uv ? Array.from(source.attributes.uv.array) : null;
+  withWoodAtlas(() => {
+    const scene = new THREE.Scene(), nodes = new ResourceNodes(scene);
+    try {
+      const geometry = nodes.wood, p = geometry.attributes.position, uv = geometry.attributes.uv;
+      assert.deepEqual(Array.from(p.array), Array.from(expected.attributes.position.array), 'same triangle positions and order');
+      assert.deepEqual(Array.from(geometry.attributes.normal.array), Array.from(expected.attributes.normal.array), 'smooth lighting normals survive UV projection');
+      assert.deepEqual(source.attributes.uv ? Array.from(source.attributes.uv.array) : null, originalUV, 'registry source remains untouched');
+      geometry.computeBoundingBox();
+      const { min, max } = geometry.boundingBox, r = PICKUP_WOOD_RECT;
+      const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), normal = new THREE.Vector3();
+      let sideFaces = 0;
+      for (let i = 0; i < p.count; i += 3) {
+        a.fromBufferAttribute(p, i); b.fromBufferAttribute(p, i + 1); c.fromBufferAttribute(p, i + 2);
+        THREE.Triangle.getNormal(a, b, c, normal);
+        if (Math.abs(normal.x) >= Math.max(Math.abs(normal.y), Math.abs(normal.z))) continue;
+        sideFaces++;
+        const top = Math.abs(normal.y) > Math.abs(normal.z);
+        for (let j = i; j < i + 3; j++) {
+          const u = (uv.getX(j) - r.u0) / (r.u1 - r.u0);
+          const v = (uv.getY(j) - r.v0) / (r.v1 - r.v0);
+          assert.ok(Math.abs(u - (p.getX(j) - min.x) / (max.x - min.x)) < 1e-5, 'grain follows log length at every side vertex');
+          const cross = top ? (p.getZ(j) - min.z) / (max.z - min.z) : (p.getY(j) - min.y) / (max.y - min.y);
+          assert.ok(Math.abs(v - cross) < 1e-5, 'one cross-grain projection across the entire triangle');
+        }
+      }
+      assert.ok(sideFaces > 0);
+    } finally { nodes.wood.dispose(); nodes.planks.dispose(); }
+  }, { parts: [{ geo: source }] });
+  expected.dispose(); source.dispose();
 });
 
 test('palms in all three variants fall once, leave unique stumps, then regrow from a ready snapshot', () => {

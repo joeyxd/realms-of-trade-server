@@ -16,6 +16,7 @@ export const FOODS = Object.freeze({
   pescado: Object.freeze({ sat: 35, hyd: 0 }),
   galleta: Object.freeze({ sat: 25, hyd: 0 }),
   fruta: Object.freeze({ sat: 15, hyd: 10 }),
+  coco: Object.freeze({ sat: 0, hyd: 25 }),
   agua: Object.freeze({ sat: 0, hyd: 40 }),
   ron: Object.freeze({ sat: 5, hyd: 15 }),
 });

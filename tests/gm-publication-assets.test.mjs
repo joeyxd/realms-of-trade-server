@@ -134,6 +134,23 @@ test('resolveBaseline fails closed when an unused manifest source is missing', a
   assert.equal((await assets.resolve(f.document)).length, 1);
 });
 
+test('deferred model mobile variants remain pinned in publication metadata and closure', async (t) => {
+  const f = await fixture(t);
+  await mkdir(path.join(f.root, 'assets/models'), { recursive: true });
+  await writeFile(path.join(f.root, 'assets/models/rock.glb'), f.bytes);
+  await writeFile(path.join(f.root, 'assets/models/mobile.glb'), f.bytes);
+  await writeFile(path.join(f.root, 'assets/manifest.json'), JSON.stringify({ version: 1, assets: [
+    { id: 'model:rock', kind: 'model', src: 'models/rock.glb', mobileSrc: 'models/mobile.glb', preload: false },
+  ] }));
+  const assets = createGmPublicationAssets({ root: f.root }); await assets.prepare();
+  const selected = await assets.resolve(f.document);
+  assert.equal(selected[0].loader.mobileSrc, 'models/mobile.glb');
+  assert.equal(selected[0].loader.preload, false);
+  assert.deepEqual((await assets.resolveBaseline()).map(entry => entry.variant), ['default', 'mobile']);
+  await rm(path.join(f.root, 'assets/models/mobile.glb'));
+  await assert.rejects(assets.resolveBaseline(), { code: 'asset_unavailable' });
+});
+
 test('resolve rejects an assets directory junction that escapes the assets root', async (t) => {
   const f = await fixture(t, { src: 'linked/escape.glb', catalogPriority: true });
   const outside = await mkdtemp(path.join(os.tmpdir(), 'gm-pub-junction-'));

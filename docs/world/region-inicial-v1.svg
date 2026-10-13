@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1660" viewBox="0 0 1440 1660" role="img" aria-labelledby="title desc">
+  <title id="title">Primera región de MAREA NEGRA: esquema provisional</title>
+  <desc id="desc">Salty Shore y Puerto Sol comparten isla, camino y ruta costera. El interior contiene bosque, manantial y una rama hacia La Caldera. Cala es opcional y separada del camino principal. Bahía Ceniza está mucho más lejos, en otra isla tras una larga travesía de mar abierto con combate naval para llegar. Sin escala ni coordenadas de juego.</desc>
+  <defs>
+    <pattern id="sea" width="72" height="36" patternUnits="userSpaceOnUse"><path d="M8 20q12-8 24 0t24 0" fill="none" stroke="#b6e4e1" stroke-opacity=".16" stroke-width="2"/></pattern>
+    <style>
+      text{font-family:Segoe UI,Arial,sans-serif;fill:#183a3d}
+      .title{font-size:32px;font-weight:700;fill:#f6ead0}.subtitle{font-size:17px;fill:#c5dfdb}
+      .name{font-size:23px;font-weight:700}.small{font-size:17px}.note{font-size:15px}.zone{font-size:17px;font-weight:600;letter-spacing:1px}
+      .city{fill:#fff2d2;stroke:#9d7144;stroke-width:3}.place{fill:#f1f4df;stroke:#637d49;stroke-width:2}
+      .road{fill:none;stroke:#b7873b;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+      .branch{fill:none;stroke:#b7873b;stroke-width:5;stroke-dasharray:10 8;stroke-linecap:round}
+      .sailing{fill:none;stroke:#126485;stroke-width:7;stroke-linecap:round}
+      .later{fill:none;stroke:#126485;stroke-width:5;stroke-dasharray:12 9;stroke-linecap:round}
+    </style>
+  </defs>
+  <rect width="1440" height="1660" fill="#21484d"/>
+  <text x="42" y="52" class="title">PRIMERA REGIÓN · DISEÑO ANTES DE CONSTRUIR</text>
+  <text x="42" y="82" class="subtitle">A0-P · 13 octubre 2026 · relaciones propuestas, sin escala ni coordenadas XZ</text>
+  <rect x="28" y="106" width="1384" height="1372" rx="20" fill="#67b6b8"/>
+  <path d="M28 896C320 824 785 911 1412 846V1458Q1412 1478 1392 1478H48Q28 1478 28 1458Z" fill="#398caa"/>
+  <rect x="28" y="106" width="1384" height="1372" rx="20" fill="url(#sea)"/>
+  <!-- Conceptual silhouettes represent relationships, not the active world heightfield. -->
+  <path d="M180 478C135 384 183 285 291 248C360 180 473 188 540 154C634 131 741 166 785 210C894 199 1030 263 1094 337C1186 364 1196 473 1123 532C1091 551 1074 569 1098 616C1128 686 1035 743 959 696C917 672 912 622 868 605C776 643 691 631 623 599C551 644 468 647 413 602C351 653 265 638 248 575C205 574 177 526 180 478Z" fill="#e6d69c" stroke="#eaf2cc" stroke-width="19"/>
+  <path d="M244 468C214 376 302 293 394 287C435 234 547 227 611 198C692 187 747 236 788 266C893 254 1022 311 1053 365C1100 381 1135 435 1076 478C1007 505 959 554 870 552C773 592 695 580 628 546C532 587 448 593 405 551C331 596 273 535 244 468Z" fill="#a8bd78"/>
+  <path d="M435 306C520 271 578 245 648 255C733 267 772 310 777 365C718 436 625 429 565 403C515 374 473 361 435 306Z" fill="#82966b" opacity=".7"/>
+  <text x="647" y="145" text-anchor="middle" class="zone">ISLA INICIAL · MISMA TIERRA</text>
+  <!-- Routes are intentionally distinct from the lawless branch. -->
+  <path class="road" d="M320 502C414 476 480 463 535 446C641 459 738 481 813 440L961 414"/>
+  <path class="branch" d="M430 474L423 402"/>
+  <path class="branch" d="M535 446C557 397 610 349 652 298"/>
+  <path class="branch" d="M636 465L713 393L813 440"/>
+  <path class="branch" d="M810 440C853 494 924 528 964 632"/>
+  <path class="sailing" d="M317 632C408 728 531 736 622 708C714 715 766 705 812 724C912 786 1117 755 1191 680C1250 610 1195 551 1169 495C1169 458 1135 420 1084 430"/>
+  <path class="later" d="M812 724C842 855 1051 903 1015 1047C976 1171 1101 1229 1137 1350"/>
+  <!-- Existing functional sectors are shown as relational references; they are not moved by this diagram. -->
+  <rect x="235" y="483" width="217" height="80" rx="13" class="city"/>
+  <text x="343" y="516" text-anchor="middle" class="name">Salty Shore</text>
+  <text x="343" y="543" text-anchor="middle" class="small">Inicio · hogar · madera</text>
+  <path d="M317 564v70m-24-10h48" fill="none" stroke="#826047" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="292" cy="604" r="11" fill="#ffe18d" stroke="#946638" stroke-width="3"/>
+  <text x="221" y="667" class="small">Playa + muelle</text>
+  <rect x="880" y="351" width="239" height="82" rx="13" class="city"/>
+  <text x="999" y="384" text-anchor="middle" class="name">Puerto Sol</text>
+  <text x="999" y="412" text-anchor="middle" class="small">Provisiones · tejidos</text>
+  <path d="M1081 431l9 29m-19-5 37-10" fill="none" stroke="#826047" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="1123" cy="448" r="11" fill="#ffe18d" stroke="#946638" stroke-width="3"/>
+  <rect x="320" y="339" width="212" height="74" rx="12" class="place"/>
+  <text x="426" y="369" text-anchor="middle" class="name">Manantial</text>
+  <text x="426" y="396" text-anchor="middle" class="small">Agua interior + PvE</text>
+  <rect x="557" y="214" width="191" height="83" rx="12" fill="#4d5350" stroke="#dfac62" stroke-width="3"/>
+  <text x="652" y="249" text-anchor="middle" style="fill:#ffe1b0" class="name">La Caldera</text>
+  <text x="652" y="278" text-anchor="middle" style="fill:#f6ddbf" class="small">Aventura · desafío</text>
+  <text x="571" y="354" class="zone">BOSQUE / SENDERO</text>
+  <rect x="642" y="375" width="180" height="51" rx="10" class="place"/>
+  <text x="732" y="407" text-anchor="middle" class="small">Desvío PvE</text>
+  <circle cx="535" cy="446" r="10" fill="#fff2d2" stroke="#9d7144" stroke-width="3"/>
+  <text x="537" y="491" class="note">Bifurcación señalizada</text>
+  <text x="709" y="522" class="small">Camino principal</text>
+  <ellipse cx="982" cy="652" rx="110" ry="57" fill="#e8b7a0" stroke="#a34f43" stroke-width="3" stroke-dasharray="7 5"/>
+  <text x="982" y="646" text-anchor="middle" class="name">Cala Calavera</text>
+  <text x="982" y="675" text-anchor="middle" class="small">PvP · rama opcional</text>
+  <rect x="515" y="619" width="221" height="62" rx="11" fill="#e4f0d5" stroke="#567e6c" stroke-width="2"/>
+  <text x="625" y="646" text-anchor="middle" class="small">Ensenada de parada</text>
+  <text x="625" y="669" text-anchor="middle" class="note">Sin mercado ni bodega remota</text>
+  <path d="M623 682v24" fill="none" stroke="#567e6c" stroke-width="2"/>
+  <text x="395" y="786" class="name" style="fill:#164d65">Ruta costera · mismo viaje</text>
+  <text x="394" y="812" class="small" style="fill:#164d65">Bahías, maniobra y acceso real a tierra</text>
+  <text x="192" y="984" class="name" style="fill:#f1ecd9;font-size:36px;letter-spacing:3px">MAR ABIERTO</text>
+  <text x="193" y="1021" class="small" style="fill:#e2eff0">Travesía mucho más larga que la ruta a Sol</text>
+  <text x="193" y="1051" class="small" style="fill:#e2eff0">Agua · comida · luz · reparación · armamento</text>
+  <text x="193" y="1110" class="note" style="fill:#e2eff0">Distancia y duración por medir con carga y combate.</text>
+  <text x="193" y="1136" class="note" style="fill:#e2eff0">Esta expansión no tiene que caber en la isla inicial.</text>
+  <circle cx="1014" cy="1049" r="27" fill="#f1d6b0" stroke="#9d5142" stroke-width="3"/>
+  <path d="M999 1060l28-22m-26-2 26 26m-28-22 5-4m18 30 5-4" fill="none" stroke="#9d5142" stroke-width="4" stroke-linecap="round"/>
+  <rect x="1083" y="1009" width="258" height="83" rx="12" fill="#f4e3c7" stroke="#9d5142" stroke-width="2"/>
+  <text x="1212" y="1043" text-anchor="middle" class="name">Combate naval</text>
+  <text x="1212" y="1071" text-anchor="middle" class="small">PvE · antes de llegar</text>
+  <path d="M1043 1049h40" fill="none" stroke="#f4e3c7" stroke-width="3"/>
+  <text x="1042" y="1180" class="note" style="fill:#e2eff0">Encuentro propuesto · A6 / D10</text>
+  <path d="M1112 1344C1140 1303 1224 1309 1265 1349C1340 1349 1380 1398 1328 1437C1315 1467 1228 1471 1187 1445C1121 1451 1086 1394 1112 1344Z" fill="#c8c2ad" stroke="#eaf2cc" stroke-width="13"/>
+  <rect x="1071" y="1342" width="275" height="82" rx="14" fill="#eeeadb" stroke="#5e6a66" stroke-width="3" stroke-dasharray="9 6"/>
+  <text x="1208" y="1374" text-anchor="middle" class="name">Bahía Ceniza</text>
+  <text x="1208" y="1400" text-anchor="middle" class="small">Metal · componente raro · A4</text>
+  <text x="65" y="147" class="small">Orientación propuesta ↑</text>
+  <text x="65" y="171" class="note">No corresponde al norte del mapa actual</text>
+  <text x="1208" y="1451" text-anchor="middle" class="note">Isla lejana · después de combate naval</text>
+  <rect x="28" y="1500" width="1384" height="132" rx="16" fill="#f1ecd9"/>
+  <path d="M57 1534h47" class="road"/><text x="118" y="1540" class="small">Camino</text>
+  <path d="M265 1534h47" class="branch"/><text x="326" y="1540" class="small">Rama / exploración</text>
+  <path d="M564 1534h47" class="sailing"/><text x="625" y="1540" class="small">Navegación costera</text>
+  <path d="M890 1534h47" class="later"/><text x="951" y="1540" class="small">Expedición posterior</text>
+  <circle cx="1263" cy="1534" r="10" fill="#ffe18d" stroke="#946638" stroke-width="3"/><text x="1281" y="1540" class="small">Luz urbana</text>
+  <text x="57" y="1581" class="small">Plano de diseño: las formas y distancias se ajustan tras medir el terreno, los recorridos y los cascos reales.</text>
+  <text x="57" y="1609" class="note">Salty Shore, muelle, fuente, Caldera, Cala y recursos existentes conservan sus anclas; este dibujo no los traslada.</text>
+</svg>

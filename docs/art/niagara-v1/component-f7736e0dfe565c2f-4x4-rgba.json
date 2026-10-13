@@ -1,0 +1,166 @@
+{
+  "schema": "marea.niagara-web-derivative",
+  "version": 1,
+  "id": "niagara-3ccdf359dea4068d",
+  "atlasId": "component-f7736e0dfe565c2f-4x4-rgba",
+  "sourceSha256": "3ccdf359dea4068dc125768c3916fa38b542d8dd3840d316d881649cb172051f",
+  "sourceFrames": [
+    "cff7bbd96cfe2a8ed78c103db400f3f4557ea7cadb9ec0a08c01afbefb86fa04",
+    "fb2a64ee21afea939b774c3f86602af0442106386c26e43fb047ed258c1f5dd2",
+    "d6751b8e877a7cad2eaf13f8faef9c1e77c17d372d65c0d489dfb9463eac0646",
+    "a1466ca40c686b5b20dff3135c3bd9f6bf89c1b8faeb85bda97a658c50edc80a",
+    "c166df7e347842dae9c3e19c0336ffb00583b0354bc20fcc9a38a40454914550",
+    "da44619f8052c43ecf2df158ecd808f3f3dbdeb2cce4bb85b98dc4746c8ab3da",
+    "623f586c6a3c7459911c79a9b6a044d07a54d92e3eadb049d2df24553bf7c3b5",
+    "a73cea1f8acf50f8c49cfd84e0042fd72ce3bab65279a718c94326e7a6350342",
+    "677a6fa1a030749a8f73d4f6d8899d6b19434a2384372797dc7101adcfb0a49c",
+    "c9dcd36dcfed9dc5b5395d7fa7a7de129655b3f52b85dc01a2aab5f2df959fcb",
+    "224d4d1ab7b5279c8184baa047264ecfff6a5106b5800486217e90875a7995d8",
+    "58309a08875a9e9b3c4e349550fe9151f02f559ddf963217953b0bec5abf2438",
+    "4e6494613a0e9e2c3d355d8126e9bd675f7587b4b4d3d721158644174aa8cfff",
+    "2dc4060ee5e9622a2a245d810221ac823906dd412e5e2c40e344f2eb6c42ca27",
+    "caf96f5ccda5654011831a71ad91bc9c589b189c8da840d479eb72edc654e506",
+    "12dd50b5cf60283d3fb682254645d9165210254ce6df34b7145faf63e10c80c5"
+  ],
+  "files": {
+    "desktop": {
+      "url": "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-desktop.webp",
+      "bytes": 329652,
+      "sha256": "83a99d6b7bedfa9a22761351af413db32882570f87ae4c36845f45ee0f9764d9",
+      "width": 1024,
+      "height": 1024
+    },
+    "mobile": {
+      "url": "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-mobile.webp",
+      "bytes": 91080,
+      "sha256": "cdf5a7478f0ace23daca20a83795f190c3e23511479278846c0be8aca100d143",
+      "width": 512,
+      "height": 512
+    }
+  },
+  "derivative": {
+    "adapter": "flipbook-v1",
+    "role": "source-texture",
+    "atlas": {
+      "desktop": "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-desktop.webp",
+      "mobile": "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-mobile.webp"
+    },
+    "columns": 4,
+    "rows": 4,
+    "frames": 16,
+    "duration": 2,
+    "width": 6,
+    "height": 6,
+    "blend": "alpha",
+    "atlasId": "component-f7736e0dfe565c2f-4x4-rgba",
+    "component": {
+      "textureSha256": "f7736e0dfe565c2f523efab21ae24b0fbc4354d824c8ad1e69730d88821e2115",
+      "columns": 4,
+      "rows": 4,
+      "mapping": "original-rgba",
+      "name": "T_WaterSpark"
+    },
+    "sourceBinding": {
+      "systemSha256": "3ccdf359dea4068dc125768c3916fa38b542d8dd3840d316d881649cb172051f",
+      "rendererPath": "/Game/ArrowTrail/FX/NS_ArrowTrail_Water.NS_ArrowTrail_Water:Particle001_1.NiagaraSpriteRendererProperties_0",
+      "materialPackage": "/Game/ArrowTrail/Material/MI_Instance/MI_WaterParticle",
+      "texturePackage": "/Game/ArrowTrail/Texture/T_WaterSpark"
+    }
+  },
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-7e1c530db9f2f8df",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\ArrowTrail\\Texture\\T_WaterSpark.uasset",
+      "sha256": "f7736e0dfe565c2f523efab21ae24b0fbc4354d824c8ad1e69730d88821e2115",
+      "bytes": 685475
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\ArrowTrail\\Texture\\T_WaterSpark.png",
+      "sha256": "200cb5ec2207d31ee8c966b13b7ad97b939c0207d8a1e220a851871fab3a4252",
+      "bytes": 602128,
+      "format": "PNG",
+      "width": 1024,
+      "height": 1024,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 4,
+      "rows": 4,
+      "cells": 16,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "original-rgba",
+    "mappingFormula": "RGB and A retained from decoded source image; PNG sRGB RGB / linear alpha or EXR linear RGBA",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-3ccdf359dea4068d",
+        "systemPackage": "/Game/ArrowTrail/FX/NS_ArrowTrail_Water",
+        "sourceBinding": {
+          "systemSha256": "3ccdf359dea4068dc125768c3916fa38b542d8dd3840d316d881649cb172051f",
+          "rendererPath": "/Game/ArrowTrail/FX/NS_ArrowTrail_Water.NS_ArrowTrail_Water:Particle001_1.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/ArrowTrail/Material/MI_Instance/MI_WaterParticle",
+          "texturePackage": "/Game/ArrowTrail/Texture/T_WaterSpark"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/ArrowTrail/FX/NS_ArrowTrail_Water.NS_ArrowTrail_Water:",
+          "matched": true
+        },
+        "parameterName": "Texture"
+      }
+    ]
+  },
+  "packing": {
+    "desktopTile": 256,
+    "mobileTile": 128,
+    "gutter": 2,
+    "oneAtlasVariantLoaded": true
+  },
+  "limitations": [
+    "Original SubUV texture only; the complete Niagara system is pending.",
+    "Playback duration is an editor default, not verified Niagara emitter timing.",
+    "Presentation controls do not modify Niagara emitter particle counts."
+  ]
+}

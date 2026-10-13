@@ -5,6 +5,7 @@ import { CompanionConfigService } from '../server/companionConfig.mjs';
 import { CompanionControlService } from '../server/companionControl.mjs';
 import { CompanionCreationService } from '../server/companionCreation.mjs';
 import { CompanionPairingService } from '../server/companionPairing.mjs';
+import { CompanionPresenceService } from '../server/companionPresence.mjs';
 import { InferenceConfigService } from '../server/inferenceConfig.mjs';
 import { companionCreationConfig, DEFAULT_COMPANION_PRESET } from '../src/net/companionCreation.js';
 import { MSG } from '../src/net/protocol.js';
@@ -190,4 +191,32 @@ test('inference settings and rate slot use the auth owner and reject another own
   await save('inference-foreign', { ...config, companions: [{ ...config.companions[0], character: FOREIGN }] });
   assert.equal(f.replies.at(-1).why, 'ineligible');
   assert.equal(scopes.length, 1, 'a foreign character never reaches inference storage');
+});
+
+test('companion presence and its pairing fence use the auth owner, not the selected profile', async () => {
+  const f = setup(), presenceScopes = [], fenced = [];
+  const control = { revision: 1, stopped: true, savedAt: timestamp };
+  const config = { revision: 1, config: companionCreationConfig(DEFAULT_COMPANION_PRESET), savedAt: timestamp };
+  const record = { characterKey: OWN, creationId: '50000000-0000-4000-8000-000000000001',
+    preset: DEFAULT_COMPANION_PRESET, createdAt: timestamp, configuration: config, control };
+  f.host.store.loadCompanionCreation = async () => record;
+  f.host.store.loadCompanionPresence = async scope => { presenceScopes.push(scope); return { active: false, revision: 0 }; };
+  f.host.companionControl = { ready: true, managed: true, registerCreated: () => true, allowed: () => false };
+  f.host.companionPairing = new CompanionPairingService(f.host, { enabled: true, allowMemory: true });
+  f.host.companionPairing.ready = true;
+  const presence = new CompanionPresenceService(f.host, { enabled: true, allowMemory: true });
+  presence.ready = true;
+  f.host.companionPresence = presence;
+
+  await presence.dispatch(f.sock, { t: MSG.AGENT_COMPANION_PRESENCE, requestId: 'presence-load', op: 'load' });
+  assert.equal(f.replies.at(-1).ok, true);
+  assert.equal(f.replies.at(-1).presence.characterKey, OWN);
+  assert.deepEqual(presenceScopes, [{ world: WORLD, owner: OWNER, character: OWN }]);
+  assert.equal(presence.entries.has(OWNER), true);
+  assert.equal(presence.entries.has(PROFILE), false);
+
+  presence.pairingBlocked = async (owner, character) => { fenced.push([owner, character]); return true; };
+  await f.host.companionPairing.dispatchOwner(f.sock, { t: MSG.AGENT_COMPANION_PAIR, requestId: 'pair-issue', op: 'issue' });
+  assert.equal(f.replies.at(-1).why, 'busy');
+  assert.deepEqual(fenced, [[OWNER, OWN]]);
 });

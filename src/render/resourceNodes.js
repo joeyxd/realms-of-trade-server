@@ -9,6 +9,8 @@ import { TOWN_ALBEDO_ID, TOWN_NORMAL_ID } from './townMaterials.js';
 import { townWorkbenchGeometry, townFurnitureMaterial } from './townFurniture.js';
 import { palmVariant } from './palmGeometry.js';
 import { naturalRockMaterial } from './rockMaterials.js';
+import { RAFT_ATLAS_ID, mapRaftUV } from './raftMaterials.js';
+import { dockWoodMaterial } from './dockWood.js';
 
 const mat4 = new THREE.Matrix4();
 const position = new THREE.Vector3();
@@ -19,6 +21,25 @@ const axisZ = new THREE.Vector3(0, 0, 1);
 const easeOut = (t) => 1 - (1 - t) * (1 - t);
 const MINING_SCALE = 2.4;
 const MINING_DEPLETED_SCALE = .30;
+
+// Match the pickup's broad cross-section to a clean painted board area. The dock's
+// 23px strip stretches its knot across a log and makes the grain look perpendicular.
+// Keep atlas U along local X (the log's length), without changing shared textures.
+export const PICKUP_WOOD_RECT = Object.freeze({ u0: 165 / 1024, u1: 305 / 1024,
+  v0: 1 - 378 / 1024, v1: 1 - 333 / 1024 });
+
+function mapPickupWood(geometry) {
+  // Smooth vertex normals can select different box projections within one triangle.
+  // Split UV seams and choose a single projection per face, then restore the original
+  // lighting normals. Cap faces keep their cross-section mapping; sides follow X.
+  const mapped = geometry.index ? geometry.toNonIndexed() : geometry;
+  if (mapped !== geometry) geometry.dispose();
+  const normals = mapped.getAttribute('normal').clone();
+  mapped.computeVertexNormals();
+  mapRaftUV(mapped, 'wood', { grain: 'box', rect: PICKUP_WOOD_RECT, woodSlice: false });
+  mapped.setAttribute('normal', normals);
+  return mapped;
+}
 
 function instanceMatrix(mesh, index, x, y, z, yaw, size, tilt = null) {
   rotation.setFromAxisAngle(axisY, yaw || 0);
@@ -135,6 +156,12 @@ export class ResourceNodes {
     const planks = loadedDebrisGeometry(assets.data(DEBRIS_IDS[2]));
     this.wood = wood || debrisGeometry(1); this.planks = planks || debrisGeometry(2);
     this.paint = toon({ color: 0xffffff, vertexColors: true }, { comic: false, key: 'coast-resource-paint' });
+    this.woodAtlas = assets.texture(RAFT_ATLAS_ID);
+    if (this.woodAtlas) {
+      this.wood = mapPickupWood(this.wood); this.planks = mapPickupWood(this.planks);
+    }
+    this.woodPaint = dockWoodMaterial(this.woodAtlas, this.paint);
+    this.woodNm = normalMatFor({ occluder: true });
     this.rockPaint = naturalRockMaterial('harvest-stone');
     this.legPaint = toon({ color: 0x82532e }, { comic: false, key: 'coast-resource-legs' });
     this.gold = new THREE.MeshBasicMaterial({ color: 0xe6b75b });
@@ -423,8 +450,9 @@ export class ResourceNodes {
         const stone = node.kind === 'stone';
         const group = new THREE.Group(), mesh = new THREE.Mesh(
           mining ? (node.kind === 'iron_ore' ? this.ironOre : this.miningRock) : (stone ? this.rock : this.wood),
-          mining ? this.paint : (stone ? this.rockPaint : this.paint));
+          mining ? this.paint : (stone ? this.rockPaint : this.woodPaint));
         if (stone) mesh.userData.nm = this.stumpNm;
+        else if (!mining) mesh.userData.nm = this.woodNm;
         mesh.castShadow = false; mesh.receiveShadow = true;
         mesh.scale.setScalar(mining ? MINING_SCALE : stone ? 1.5 : 1.25);
         mesh.rotation.y = node.id.startsWith('gm_') ? 0 : (Number(node.id.split('-')[1]) || 0) * 2.4;

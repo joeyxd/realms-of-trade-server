@@ -6,7 +6,9 @@
       "kind": "char",
       "src": "models/buccaneer-v1-desktop.glb",
       "mobileSrc": "models/buccaneer-v1-mobile.glb",
-      "looks": ["Bucanero"],
+      "looks": [
+        "Bucanero"
+      ],
       "height": 2.12,
       "figureAnimation": "idle",
       "swimAnimation": "swim",
@@ -409,6 +411,234 @@
       ],
       "data": true,
       "notes": "S14 supplied town wood tangent-space normal maps in a padded 4x4 atlas; desktop 2048 / mobile 1024. See docs/art/town-wood/material-receipt-v1.json."
+    },
+    {
+      "id": "model:item-resina-v1",
+      "kind": "model",
+      "src": "models/items-v1/resina-desktop.glb",
+      "mobileSrc": "models/items-v1/resina-mobile.glb",
+      "fit": "height",
+      "height": 0.45,
+      "preload": true,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Resina. Tripo original artwork; 512/256 WebP. Gameplay visual."
+    },
+    {
+      "id": "model:item-antorcha-v1",
+      "kind": "model",
+      "src": "models/items-v1/antorcha-desktop.glb",
+      "mobileSrc": "models/items-v1/antorcha-mobile.glb",
+      "fit": "height",
+      "height": 0.52,
+      "preload": true,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Antorcha apagada. Tripo original artwork; 512/256 WebP. Gameplay visual."
+    },
+    {
+      "id": "model:item-coco-v1",
+      "kind": "model",
+      "src": "models/items-v1/coco-desktop.glb",
+      "mobileSrc": "models/items-v1/coco-mobile.glb",
+      "fit": "height",
+      "height": 0.42,
+      "preload": true,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Coco entero. Tripo original artwork; 512/256 WebP. Gameplay visual."
+    },
+    {
+      "id": "model:item-lima-v1",
+      "kind": "model",
+      "src": "models/items-v1/lima-desktop.glb",
+      "mobileSrc": "models/items-v1/lima-mobile.glb",
+      "fit": "height",
+      "height": 0.3,
+      "preload": false,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Lima. Tripo original artwork; 512/256 WebP. Decoration loaded on demand. Visual proposal; no gameplay item or recipe."
+    },
+    {
+      "id": "model:item-especias-v1",
+      "kind": "model",
+      "src": "models/items-v1/especias-desktop.glb",
+      "mobileSrc": "models/items-v1/especias-mobile.glb",
+      "fit": "height",
+      "height": 0.65,
+      "preload": false,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Especias. Tripo original artwork; 512/256 WebP. Decoration loaded on demand."
+    },
+    {
+      "id": "model:item-meal_grog-v1",
+      "kind": "model",
+      "src": "models/items-v1/meal_grog-desktop.glb",
+      "mobileSrc": "models/items-v1/meal_grog-mobile.glb",
+      "fit": "height",
+      "height": 0.55,
+      "preload": false,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Grog. Tripo original artwork; 512/256 WebP. Decoration loaded on demand."
+    },
+    {
+      "id": "model:item-meal_roastFish-v1",
+      "kind": "model",
+      "src": "models/items-v1/meal_roastFish-desktop.glb",
+      "mobileSrc": "models/items-v1/meal_roastFish-mobile.glb",
+      "fit": "height",
+      "height": 0.35,
+      "preload": false,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Pescado asado. Tripo original artwork; 512/256 WebP. Decoration loaded on demand."
+    },
+    {
+      "id": "model:item-cana-v1",
+      "kind": "model",
+      "src": "models/items-v1/cana-desktop.glb",
+      "mobileSrc": "models/items-v1/cana-mobile.glb",
+      "fit": "height",
+      "height": 0.65,
+      "preload": false,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Caña de azúcar. Tripo original artwork; 512/256 WebP. Decoration loaded on demand."
+    },
+    {
+      "id": "model:item-hierbas_aromaticas-v1",
+      "kind": "model",
+      "src": "models/items-v1/hierbas_aromaticas-desktop.glb",
+      "mobileSrc": "models/items-v1/hierbas_aromaticas-mobile.glb",
+      "fit": "height",
+      "height": 0.45,
+      "preload": false,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Hierbas aromáticas. Tripo original artwork; 512/256 WebP. Decoration loaded on demand. Visual proposal; no gameplay item or recipe."
+    },
+    {
+      "id": "model:item-meal_heartyBiscuit-v1",
+      "kind": "model",
+      "src": "models/items-v1/meal_heartyBiscuit-desktop.glb",
+      "mobileSrc": "models/items-v1/meal_heartyBiscuit-mobile.glb",
+      "fit": "height",
+      "height": 0.25,
+      "preload": false,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Galleta reforzada. Tripo original artwork; 512/256 WebP. Decoration loaded on demand."
+    },
+    {
+      "id": "model:item-agua-v1",
+      "kind": "model",
+      "src": "models/items-v1/agua-desktop.glb",
+      "mobileSrc": "models/items-v1/agua-mobile.glb",
+      "fit": "height",
+      "height": 0.65,
+      "preload": false,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Frasco de agua. Tripo original artwork; 512/256 WebP. Decoration loaded on demand."
+    },
+    {
+      "id": "model:item-harina-v1",
+      "kind": "model",
+      "src": "models/items-v1/harina-desktop.glb",
+      "mobileSrc": "models/items-v1/harina-mobile.glb",
+      "fit": "height",
+      "height": 0.65,
+      "preload": false,
+      "toon": {
+        "comic": false,
+        "rim": false,
+        "posterize": 0,
+        "sat": 1,
+        "bright": 1,
+        "occluder": false
+      },
+      "shadow": false,
+      "notes": "Saco de harina. Tripo original artwork; 512/256 WebP. Decoration loaded on demand."
     }
   ]
 }

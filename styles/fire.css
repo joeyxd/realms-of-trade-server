@@ -36,11 +36,13 @@
 .fire-time small { color: var(--kit-dim); font: italic 600 11px / 1 var(--f-display); letter-spacing: .05em; text-transform: uppercase; }
 .fire-time strong { color: #fff; font: 700 27px / 1 var(--f-display); }
 
-/* Fuel needed: one material card like the crafting menu, with the stock beside it. */
-.fire-need { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "title title" "card stock"; gap: 7px 12px; align-items: center; }
+/* Fuel requirements remain visible as separate material cards. */
+.fire-need { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "title title" "cards stock"; gap: 7px 12px; align-items: center; }
 .fire-need[hidden] { display: none; }
 .fire-need-title { grid-area: title; margin: 0; color: var(--kit-sky); font: italic 600 16px / 1 var(--f-display); text-transform: uppercase; letter-spacing: .01em; }
-.fire-card { grid-area: card; width: 88px; height: 106px; box-sizing: border-box; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; justify-items: center;
+.fire-cards { grid-area: cards; display: flex; gap: 6px; }
+.fire-card[hidden] { display: none; }
+.fire-card { width: 82px; height: 106px; box-sizing: border-box; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; justify-items: center;
   padding: 5px 4px 6px; border: 1px solid var(--kit-line); border-radius: 3px; background: radial-gradient(ellipse at 50% 35%, #1d3550, #0c1a29 70%); box-shadow: inset 0 0 0 1px #0007; }
 .fire-card-art { width: 62px; height: 56px; }
 .fire-card b { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; font: 600 13px / 1.1 var(--f-body); text-align: center; }
@@ -86,9 +88,9 @@
   .fire-slot { min-height: 50px; padding: 6px 10px; }
   .fire-slot-copy b { font-size: 16px; }
   .fire-time strong { font-size: 23px; }
-  .fire-need { grid-template-areas: "card stock"; }
+  .fire-need { grid-template-areas: "cards stock"; }
   .fire-need-title, .fire-note { display: none; }
-  .fire-card { width: 72px; height: 76px; padding: 3px 3px 4px; }
+  .fire-card { width: 68px; height: 76px; padding: 3px 3px 4px; }
   .fire-card-art { width: 44px; height: 36px; }
   .fire-card em { font-size: 17px; }
   .fire-hint { padding: 5px 8px; font-size: 13px; }

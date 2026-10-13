@@ -13,7 +13,7 @@ Si falta, está rota o tarda demasiado, esa pieza sigue procedural; el motivo ap
 | **Modelo** por id (barco del muelle, futuros barcos, edificios, mercancías) | `assets.model(id)` lo da ajustado o `null` | Material toon, sombras, tinta |
 | **Textura** por id | `assets.texture(id)` | sRGB, repetición, filtro |
 
-Las texturas y personajes (`kind: "char"`) pueden incluir `mobileSrc` relativo a `assets/`: variante de menor resolución para puntero táctil.
+Las texturas, personajes y modelos estáticos pueden incluir `mobileSrc` relativo a `assets/`: variante de menor resolución para puntero táctil.
 El registro carga solo la variante seleccionada y la expone en `assets.list().selectedSrc`.
 [Bucanero v1](delivery/buccaneer-v1/README.md) aplica esta selección al GLB completo (albedo 1024/512)
 y a su retrato ilustrado, conservando el original y el rig fuente fuera del runtime.
@@ -80,6 +80,9 @@ temporal, `import-asset` con `--dry` y luego sin él, `--check`, una captura con
 |---|---|---|
 | `id` | todos | Único, `tipo:nombre`. El tipo sale del prefijo (`char`, `prop`, `tex`); cualquier otro prefijo necesita `"kind": "model"` |
 | `src` | todos | Ruta dentro de `assets/` |
+| `mobileSrc` | todos | Una sola variante de menor resolución para puntero táctil |
+| `preload` | prop / model | `false`: conservar en catálogo y cargar al usar `ensureModel`, sin descarga al entrar |
+| `toon.occluder` | prop / model | `false`: conservar objetos pequeños/portátiles sin disolverlos por cercanía al jugador |
 | `rotY` | modelos | Grados sobre +Y antes de todo (glTF mira a +Z, igual que el juego). Un personaje con los lados al revés se gira solo |
 | `scale`, `yOffset` | modelos | × extra después de ajustar; subir o bajar (u) |
 | `toon.posterize` | modelos | 0 = no; si no, niveles de color (4–6 vuelve «pintada» una textura fotográfica) |

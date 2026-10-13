@@ -4,25 +4,37 @@ import assert from 'node:assert/strict';
 import { TORCH_RECIPE, WorkbenchPanel, workbenchPreview } from '../src/ui/workbench.js';
 import { CRAFT_TEXT, RECIPE_UI, UPCOMING_RECIPES } from '../src/ui/craftingCatalog.js';
 import { newFirePanel } from '../src/ui/firePanel.js';
-import { FIRE_FUEL, FIRE_SECONDS } from '../src/data/fire.js';
+import { FIRE_SECONDS } from '../src/data/fire.js';
+import { getLocale, setLocale } from '../src/core/locale.js';
+import { uiLang } from '../src/ui/kit.js';
 import { generateWorld } from '../src/sim/worldgen.js';
 import { GAME } from '../src/data/meta.js';
 
 const profile = (goods) => ({ eco: { pack: { cap: 30, goods }, tradeRev: 4 }, tools: {} });
-const fire = (seconds = 0, lit = false) => ({ enabled: true, rev: 6, slots: seconds ? [{ key: 'hand', kind: 'handTorch', seconds, lit }] : [] });
+const fire = (seconds = 0, lit = false, torchRules = 2) => ({ enabled: true, rev: 6, torchRules, slots: seconds ? [{ key: 'hand', kind: 'handTorch', seconds, lit }] : [] });
 
-test('the torch is a real hand recipe: one plank from the pack, no output goods, one load', () => {
-  assert.deepEqual(TORCH_RECIPE.inputs, { [FIRE_FUEL.good]: FIRE_FUEL.count });
+test('crafting UI language follows the locale source even when document.lang is stale', () => {
+  const originalLocale = getLocale(), originalDocument = globalThis.document;
+  globalThis.document = { documentElement: { lang: originalLocale === 'en' ? 'es' : 'en' } };
+  try {
+    setLocale('en'); assert.equal(uiLang(), 'en');
+    setLocale('es'); assert.equal(uiLang(), 'es');
+  } finally { setLocale(originalLocale); globalThis.document = originalDocument; }
+});
+
+test('the torch is a real hand recipe: two logs and resin from the pack, no output goods, one load', () => {
+  assert.deepEqual(TORCH_RECIPE.inputs, { tronco: 2, resina: 1 });
   assert.equal(TORCH_RECIPE.hand, true);
   assert.equal(RECIPE_UI.antorcha.cat, 'tools');
   assert.equal(UPCOMING_RECIPES.tools.some(([id]) => id === 'antorcha'), false, 'no longer listed as undiscovered');
-  const ready = workbenchPreview(profile({ madera: 1, tronco: 4 }), 1, 'antorcha');
+  const ready = workbenchPreview(profile({ tronco: 2, resina: 1 }), 1, 'antorcha');
   assert.equal(ready.fire, 'handTorch');
   assert.equal(ready.canCraft, true);
   assert.equal(ready.craftMax, 1);
-  assert.equal(ready.usedAfter, ready.usedBefore - 3, 'the plank leaves the pack and nothing is added');
+  assert.equal(ready.usedAfter, ready.usedBefore - 6.25, 'fuel leaves the pack without adding output goods');
   const logsOnly = workbenchPreview(profile({ tronco: 6 }), 1, 'antorcha');
-  assert.equal(logsOnly.materialsFit, false, 'raw logs are not fuel: they become planks at the bench first');
+  assert.equal(logsOnly.materialsFit, false, 'resin is required alongside logs');
+  assert.deepEqual(workbenchPreview(profile({ madera: 1 }), 1, 'antorcha', 1).inputs.map(i => i.good), ['madera']);
 });
 
 function torchPanel(goods, torch) {
@@ -39,10 +51,10 @@ function torchPanel(goods, torch) {
 }
 
 test('crafting the torch sends the fire panel intent and resolves on the matching fire event', () => {
-  const { panel, sent } = torchPanel({ madera: 2 }, fire());
+  const { panel, sent } = torchPanel({ tronco: 2, resina: 1 }, fire());
   assert.equal(panel.confirm(), true);
   assert.equal(sent.length, 1);
-  assert.deepEqual({ ...sent[0], opId: 'id' }, { t: 'cmd', type: 'fire', op: 'load', opId: 'id', ship: '', part: 'hand', kind: 'handTorch', expectedRev: 6, lit: true });
+  assert.deepEqual({ ...sent[0], opId: 'id' }, { t: 'cmd', type: 'fire', op: 'load', opId: 'id', ship: '', part: 'hand', kind: 'handTorch', expectedRev: 6, lit: true, rules: 2 });
   assert.equal(Object.isFrozen(sent[0]), true);
   assert.equal(panel.confirm(), false, 'one request at a time');
   assert.equal(panel.onFire({ type: 'fire', op: 'load', opId: 'other', ok: true }), false);
@@ -52,27 +64,27 @@ test('crafting the torch sends the fire panel intent and resolves on the matchin
   assert.match(panel.lastResult, new RegExp(`${FIRE_SECONDS.handTorch / 60} min`));
 });
 
-test('a burning torch, a missing plank or a world without fire block the torch with a clear reason', () => {
+test('a burning torch, missing resin or a world without fire block the torch with a clear reason', () => {
   const f = CRAFT_TEXT.es.feedback;
-  const burning = torchPanel({ madera: 1 }, fire(600, true));
+  const burning = torchPanel({ tronco: 2, resina: 1 }, fire(600, true));
   assert.equal(burning.panel.confirm(), false);
-  const p = burning.panel.firePreview(workbenchPreview(profile({ madera: 1 }), 1, 'antorcha'), burning.panel.torchState());
+  const p = burning.panel.firePreview(workbenchPreview(profile({ tronco: 2, resina: 1 }), 1, 'antorcha'), burning.panel.torchState());
   assert.equal(p.fireBlock, 'burning');
   assert.equal(burning.panel.previewMessage(p, {}, TORCH_RECIPE), f.torchBurning.replace('{time}', '10:00'));
 
-  const noPlank = torchPanel({ tronco: 5 }, fire());
-  assert.equal(noPlank.panel.confirm(), false);
-  const q = noPlank.panel.firePreview(workbenchPreview(profile({ tronco: 5 }), 1, 'antorcha'));
-  assert.equal(noPlank.panel.previewMessage(q, {}, TORCH_RECIPE), f.torchPlank);
+  const noResin = torchPanel({ tronco: 5 }, fire());
+  assert.equal(noResin.panel.confirm(), false);
+  const q = noResin.panel.firePreview(workbenchPreview(profile({ tronco: 5 }), 1, 'antorcha'));
+  assert.equal(noResin.panel.previewMessage(q, {}, TORCH_RECIPE), f.torchFuel);
 
-  const off = torchPanel({ madera: 1 }, { enabled: false, rev: 0, slots: [] });
+  const off = torchPanel({ tronco: 2, resina: 1 }, { enabled: false, rev: 0, slots: [] });
   assert.equal(off.panel.confirm(), false);
-  assert.equal(off.sent.length + noPlank.sent.length + burning.sent.length, 0);
+  assert.equal(off.sent.length + noResin.sent.length + burning.sent.length, 0);
 
-  const denied = torchPanel({ madera: 1 }, fire());
+  const denied = torchPanel({ tronco: 2, resina: 1 }, fire());
   denied.panel.confirm();
   denied.panel.onFire({ type: 'fire', op: 'load', opId: denied.sent[0].opId, ok: false, why: 'goods' });
-  assert.equal(denied.panel.lastResult, f.torchPlank);
+  assert.equal(denied.panel.lastResult, f.torchFuel);
 });
 
 class Element {
@@ -90,26 +102,27 @@ class Element {
   click() { for (const fn of this.listeners.click || []) fn({ target: this }); }
 }
 
-test('the fire panel shows the plank card, the logs hint and a link to crafting when fuel is missing', () => {
+test('the fire panel shows both log and resin cards and links to torch crafting when short', () => {
   const doc = { createElement: () => new Element(), addEventListener() {}, removeEventListener() {} };
   const parent = new Element(); parent.ownerDocument = doc;
   const client = { joined: true, youServer: 3, fire: fire(), profile: { eco: { pack: { goods: { tronco: 4 } } } }, send() {} };
   let crafted = 0;
-  const panel = newFirePanel({ parent, client: () => client, openCraft: () => { crafted++; } });
+  const panel = newFirePanel({ parent, client: () => client, openCraft: kind => { assert.equal(kind, 'handTorch'); crafted++; } });
   assert.equal(panel.open(), true);
-  assert.equal(panel.$('.fire-card-name').textContent, 'Tabla básica');
-  assert.equal(panel.$('.fire-card-count').textContent, '0 / 1');
-  assert.equal(panel.$('.fire-card').className, 'fire-card is-short');
+  assert.equal(panel.$('.fire-card-name-tronco').textContent, 'Tronco');
+  assert.equal(panel.$('.fire-card-count-tronco').textContent, '2 / 2');
+  assert.equal(panel.$('.fire-card-count-resina').textContent, '0 / 1');
+  assert.equal(panel.$('.fire-card-resina').className, 'fire-card fire-card-resina is-short');
   assert.equal(panel.$('.fire-hint').hidden, false);
-  assert.match(panel.$('.fire-hint').textContent, /2 troncos por tabla\. Llevas 4 troncos/);
+  assert.match(panel.$('.fire-hint').textContent, /resina puede caer al talar palmeras/);
   assert.equal(panel.loadButton.disabled, true);
   assert.equal(panel.$('.fire-craft').hidden, false);
   panel.$('.fire-craft').click();
   assert.equal(crafted, 1);
   assert.equal(panel.active, false, 'the panel steps aside for the crafting menu');
 
-  client.profile.eco.pack.goods.madera = 1; panel.open();
-  assert.equal(panel.$('.fire-card').className, 'fire-card is-ok');
+  client.profile.eco.pack.goods.resina = 1; panel.open();
+  assert.equal(panel.$('.fire-card-resina').className, 'fire-card fire-card-resina is-ok');
   assert.equal(panel.$('.fire-hint').hidden, true);
   assert.equal(panel.$('.fire-craft').hidden, true);
   assert.equal(panel.loadButton.disabled, false);

@@ -1,0 +1,18 @@
+﻿{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "ST01c Source Probe",
+  "Description": "Read-only Niagara metadata commandlet for the ST01c pilot.",
+  "Category": "Editor",
+  "CanContainContent": false,
+  "EnabledByDefault": true,
+  "Plugins": [{ "Name": "Niagara", "Enabled": true }],
+  "Modules": [
+    {
+      "Name": "ST01cProbe",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    }
+  ]
+}

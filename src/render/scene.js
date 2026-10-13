@@ -10,6 +10,7 @@ import { createProps } from './props.js';
 import { createFreshwaterSpring } from './freshwater.js';
 import { RaftLayer } from './rafts.js';
 import { ResourceNodes } from './resourceNodes.js';
+import { HarvestGoods } from './harvestGoods.js';
 import { CameraRig } from './camera.js';
 import { CharacterView, SENTINEL, ENEMY_LOOK, characterMaterial } from './characters.js';
 import { createCalaRing } from './vfx/calaring.js';
@@ -104,6 +105,7 @@ export class GameScene {
     this.scene.add(props.group);
     this.resources = new ResourceNodes(this.scene, { palms: veg.palmResources, swayUniform: veg.swayU, map });
     this.resources.onChange = () => this.pipeline.markDirty();
+    this.harvestGoods = new HarvestGoods(this.scene);
     this.rafts = new RaftLayer(this.scene, { dock: map.dock, surfaceSkin: raftSkin, sailingRig: true });
     this.effects = new Effects(this.scene, map);
     this.projectiles = new ProjectileView(this.scene, map);
@@ -299,6 +301,7 @@ export class GameScene {
     this.grass.update(ctx.focus);
     this.beachDebris.update(ctx.focus);
     this.resources.update(ctx.resources, ctx.focus, this.time);
+    this.harvestGoods.update(dt);
     this.seaweed.update(ctx.focus);
     U.mnPlayer.value.set(ctx.focus.x, ctx.focus.y + 0.9, ctx.focus.z);
     // The close naval camera must keep the hull, sail and helm fully visible.

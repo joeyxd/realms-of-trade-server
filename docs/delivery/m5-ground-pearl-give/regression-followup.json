@@ -1,0 +1,35 @@
+{
+  "startedAt": "2026-10-12T17:05:57.618310+00:00",
+  "finishedAt": "2026-10-12T17:06:06.218819+00:00",
+  "revision": "3de3b53fa5fb7e9a0ae967ea3534bed3a3d3d1e2",
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=1",
+    "tests/pearl-command-access.test.mjs",
+    "tests/ground-pearl-command-route.test.mjs"
+  ],
+  "testFiles": 2,
+  "exitCode": 0,
+  "counts": {
+    "tests": 27,
+    "pass": 27,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "sourcesUnchanged": true,
+  "sha256": {
+    "tests/pearl-command-access.test.mjs": "7ccc8083d128395d4eac76404866a941935c13f1a1d000d12bafe30efea6b2d5",
+    "tests/ground-pearl-command-route.test.mjs": "5e5c9b4c700b39982e06946c2070d6773f3fe6debf000ea2abd2c4aacdeb598b",
+    "src/ui/rewards.js": "24dd515b2f58c4b685ccee6c01dde1c37905a5915a9c0c4df9ad08640870f819",
+    "src/i18n/adventure.js": "ae9672fc9ae16b67685afec97e4bcc52e0c64dc1dac41fb10bc1d0069f977ff6"
+  },
+  "scope": "Full command-access file and pearl route compatibility after updating only the stale fixed localized HTML expectation; no runtime change.",
+  "broadCohortSourceDelta": [
+    "tests/pearl-command-access.test.mjs"
+  ],
+  "runtimeMatchesBroadCohort": true
+}

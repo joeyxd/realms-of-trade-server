@@ -1,0 +1,2603 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-10-13T05:25:41.748Z",
+  "policy": {
+    "intakeOverwrite": "refuse unless existing and incoming SHA-256 hashes are identical",
+    "derivativeOverwrite": "refuse unless existing and generated SHA-256 hashes are identical",
+    "sourceFiles": "unchanged GLB copies under docs/art/source; Downloads is read only when an explicit --stage-from folder is passed",
+    "geometry": "preserve positions, normals, UVs, indices and triangle count; no decimation, quantization or Meshopt transform",
+    "textures": "retain and resize base-color only; remove normal and metallic-roughness maps because the item toon renderer ignores them; WebP quality 90, desktop max 512px, mobile max 256px",
+    "materials": "preserve base-color, emissive and alpha factors exactly; preserve the base-color image pixel values apart from resize and WebP encoding; no recolor or rebake",
+    "visualStyle": "preserve the authored hand-painted, Borderlands-inspired target with in-game toon shading; this pipeline does not repaint PBR imagery or claim visual acceptance"
+  },
+  "totals": {
+    "sourceCount": 12,
+    "canonicalDownloadCount": 12,
+    "assignedCount": 12,
+    "derivativeCount": 24,
+    "sourceBytes": 29394732,
+    "sourceMiB": 28.033,
+    "assignedSourceBytes": 29394732,
+    "assignedSourceMiB": 28.033,
+    "derivativeBytes": 1413132,
+    "derivativeMiB": 1.3477,
+    "reductionPercentAssignedSources": 95.19
+  },
+  "mappingDecisions": [
+    {
+      "id": "meal_heartyBiscuit",
+      "sourceDownloadName": "bread loaf 3d model.glb",
+      "archiveSource": "docs/art/source/cooking-items-v1/meal_heartyBiscuit/meal_heartyBiscuit-v1.glb",
+      "remainingAmbiguity": null,
+      "recipeChanged": false,
+      "authorConfirmed": true
+    },
+    {
+      "id": "agua",
+      "sourceDownloadName": "blue ceramic vase 3d model.glb",
+      "archiveSource": "docs/art/source/cooking-items-v1/agua/agua-v1.glb",
+      "remainingAmbiguity": null,
+      "recipeChanged": false,
+      "authorConfirmed": true
+    },
+    {
+      "id": "harina",
+      "sourceDownloadName": "rice+sack+3d+model.glb",
+      "archiveSource": "docs/art/source/cooking-items-v1/harina/harina-v1.glb",
+      "remainingAmbiguity": null,
+      "recipeChanged": false,
+      "authorConfirmed": true
+    }
+  ],
+  "entries": [
+    {
+      "source": "docs/art/source/torch-resin-coconut-v1/resina/resina-v1.glb",
+      "sourceDownloadName": "amber gemstone 3d model.glb",
+      "sourceSha256": "6733c7ee8424d05636696fb624b82d9f17d712ca3bbbf8880710997de8616840",
+      "sourceBytes": 2506676,
+      "sourceMiB": 2.3906,
+      "sourceTriangles": 472,
+      "sourceVertices": 454,
+      "geometryAndUvSha256": "6b2477b002af5706de9e2608f6630fa9735b36c43b0e24a7ba6a0f9c74eadc36",
+      "materialColorFactors": [
+        {
+          "name": "tripo_material_dd075ee0-9f33-4f5e-ac9a-f4571658b570",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "c50369125485e32879e6f0d447b18fdd80d11312de200630718c062fcb8d5757",
+      "declaredExtensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "amber+gemstone+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 670879,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "amber+gemstone+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 219861,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "amber+gemstone+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/png",
+          "bytes": 1593671,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "png"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "resina",
+      "derivatives": [
+        {
+          "id": "resina",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/resina-desktop.glb",
+          "bytes": 59732,
+          "mib": 0.057,
+          "sha256": "ab5d0235ccbc9ab370be625c0a6ff447eb56eaf6bac3d179352a89e98851a8bd",
+          "sourceBytes": 2506676,
+          "sourceToDerivativeFileReductionPercent": 97.62,
+          "created": false,
+          "triangles": 472,
+          "vertices": 454,
+          "sourceBaseColorTextureBytes": 670879,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_dd075ee0-9f33-4f5e-ac9a-f4571658b570",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "amber+gemstone+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 38052,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_dd075ee0-9f33-4f5e-ac9a-f4571658b570",
+              "baseColorTexture": "amber+gemstone+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 94.33
+        },
+        {
+          "id": "resina",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/resina-mobile.glb",
+          "bytes": 36476,
+          "mib": 0.0348,
+          "sha256": "2d6a482b9da720a5fceb77c5c5aa1f5fb8f7accd1198e09963c579ae4470f4cc",
+          "sourceBytes": 2506676,
+          "sourceToDerivativeFileReductionPercent": 98.54,
+          "created": false,
+          "triangles": 472,
+          "vertices": 454,
+          "sourceBaseColorTextureBytes": 670879,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_dd075ee0-9f33-4f5e-ac9a-f4571658b570",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "amber+gemstone+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 14798,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_dd075ee0-9f33-4f5e-ac9a-f4571658b570",
+              "baseColorTexture": "amber+gemstone+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 97.79
+        }
+      ]
+    },
+    {
+      "source": "docs/art/source/torch-resin-coconut-v1/antorcha/antorcha-v1.glb",
+      "sourceDownloadName": "wooden club 3d model.glb",
+      "sourceSha256": "437478944a06a53e491bba167aa710b17cc77eb5aa0aa069d5efd5bfe5fc689b",
+      "sourceBytes": 3405724,
+      "sourceMiB": 3.248,
+      "sourceTriangles": 498,
+      "sourceVertices": 523,
+      "geometryAndUvSha256": "d376807b6be0ab56ab38014cf1a352a32674baaed45342f911c75bdb8d1821a3",
+      "materialColorFactors": [
+        {
+          "name": "tripo_material_ad594df3-7169-4947-9b6a-9e573c582a6c",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "fc7da811534bd4ba7c31d52492c6037e51caef3e8a30bab1a1716857d7b8b5be",
+      "orientationAnalysis": {
+        "principalAxis": [
+          0.38776,
+          0.73928,
+          -0.55055
+        ],
+        "localBoundsSourceUnits": "glTF POSITION accessors; no node transforms applied",
+        "suggestedEulerDegreesForAxisToPlusY": {
+          "rotX": 33.40497,
+          "rotZ": 27.67739
+        },
+        "ambiguity": "PCA sign cannot identify which end is the wrapped torch head; confirm top direction in the browser fixture before applying a rotation."
+      },
+      "declaredExtensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "wooden+club+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 866409,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "wooden+club+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 424019,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "wooden+club+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/png",
+          "bytes": 2090514,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "png"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "antorcha",
+      "derivatives": [
+        {
+          "id": "antorcha",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/antorcha-desktop.glb",
+          "bytes": 78028,
+          "mib": 0.0744,
+          "sha256": "20bdb2816f062ec0308e139a94f3680643c90af1ab57f070865981a5fe512f40",
+          "sourceBytes": 3405724,
+          "sourceToDerivativeFileReductionPercent": 97.71,
+          "created": false,
+          "triangles": 498,
+          "vertices": 523,
+          "sourceBaseColorTextureBytes": 866409,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_ad594df3-7169-4947-9b6a-9e573c582a6c",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "wooden+club+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 53832,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_ad594df3-7169-4947-9b6a-9e573c582a6c",
+              "baseColorTexture": "wooden+club+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 93.79
+        },
+        {
+          "id": "antorcha",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/antorcha-mobile.glb",
+          "bytes": 42364,
+          "mib": 0.0404,
+          "sha256": "e4ef37493c1a1963c334dc0355644a3f85f864ce28bc78a8e43381c3585aa9fa",
+          "sourceBytes": 3405724,
+          "sourceToDerivativeFileReductionPercent": 98.76,
+          "created": false,
+          "triangles": 498,
+          "vertices": 523,
+          "sourceBaseColorTextureBytes": 866409,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_ad594df3-7169-4947-9b6a-9e573c582a6c",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "wooden+club+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 18168,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_ad594df3-7169-4947-9b6a-9e573c582a6c",
+              "baseColorTexture": "wooden+club+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 97.9
+        }
+      ]
+    },
+    {
+      "source": "docs/art/source/torch-resin-coconut-v1/coco/coco-v1.glb",
+      "sourceDownloadName": "coconut 3d model.glb",
+      "sourceSha256": "1eaa90668b7a8a08e0a1069dde89e03ffb114c74e22c2e4c74a81b1a61506d0c",
+      "sourceBytes": 2383848,
+      "sourceMiB": 2.2734,
+      "sourceTriangles": 402,
+      "sourceVertices": 548,
+      "geometryAndUvSha256": "d0352e5e0dfe42be21c9a350f2ff461adee815a832e516383545a423eddda6e9",
+      "materialColorFactors": [
+        {
+          "name": "tripo_material_caccc252-07dc-4820-af6f-e807f3561730",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "eb1dbe7b28b3d315e1d4af57236cf9e3ec4282e8cff49caa7ba9458230198b12",
+      "declaredExtensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "coconut+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 689218,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "coconut+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 347620,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "coconut+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/png",
+          "bytes": 1322597,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "png"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "coco",
+      "derivatives": [
+        {
+          "id": "coco",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/coco-desktop.glb",
+          "bytes": 61348,
+          "mib": 0.0585,
+          "sha256": "df4bf3bbb2ce53f75def9e19dca4f850f569e0d7775629865acb561c75ddc5a0",
+          "sourceBytes": 2383848,
+          "sourceToDerivativeFileReductionPercent": 97.43,
+          "created": false,
+          "triangles": 402,
+          "vertices": 548,
+          "sourceBaseColorTextureBytes": 689218,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_caccc252-07dc-4820-af6f-e807f3561730",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "coconut+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 37508,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_caccc252-07dc-4820-af6f-e807f3561730",
+              "baseColorTexture": "coconut+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 94.56
+        },
+        {
+          "id": "coco",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/coco-mobile.glb",
+          "bytes": 37852,
+          "mib": 0.0361,
+          "sha256": "a439860deb43011036873a4b1d9f85c215c917693b23f4b2043b63b09856b2db",
+          "sourceBytes": 2383848,
+          "sourceToDerivativeFileReductionPercent": 98.41,
+          "created": false,
+          "triangles": 402,
+          "vertices": 548,
+          "sourceBaseColorTextureBytes": 689218,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_caccc252-07dc-4820-af6f-e807f3561730",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "coconut+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 14010,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_caccc252-07dc-4820-af6f-e807f3561730",
+              "baseColorTexture": "coconut+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 97.97
+        }
+      ]
+    },
+    {
+      "source": "docs/art/source/cooking-items-v1/lima/lima-v1.glb",
+      "sourceDownloadName": "lime 3d model.glb",
+      "sourceSha256": "0cfe5ab88fac70c83c45079734878a1512d55d5e5efff5f1f1a2f40c59cef043",
+      "sourceBytes": 1729188,
+      "sourceMiB": 1.6491,
+      "sourceTriangles": 664,
+      "sourceVertices": 555,
+      "geometryAndUvSha256": "cf6f4ac2669276cb725416e4940a36b1eeeb2d5407e346664e989ed97fea45a1",
+      "materialColorFactors": [
+        {
+          "name": "tripo_material_0f2b8c48-4108-4d25-8d87-7d6a838ba9e7",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "74ba1a0391983f7a7c4dab846e04ef4d3901991063b47d6d792d946bd7d1b00d",
+      "declaredExtensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "lime+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 500644,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "lime+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 288933,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "lime+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/png",
+          "bytes": 911839,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "png"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "lima",
+      "derivatives": [
+        {
+          "id": "lima",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/lima-desktop.glb",
+          "bytes": 55916,
+          "mib": 0.0533,
+          "sha256": "3c53194cf4d69bcbb24fbbf8e584e6ca6424ee1c1f6bb6489de8f64c1afbc389",
+          "sourceBytes": 1729188,
+          "sourceToDerivativeFileReductionPercent": 96.77,
+          "created": false,
+          "triangles": 664,
+          "vertices": 555,
+          "sourceBaseColorTextureBytes": 500644,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_0f2b8c48-4108-4d25-8d87-7d6a838ba9e7",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "lime+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 28712,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_0f2b8c48-4108-4d25-8d87-7d6a838ba9e7",
+              "baseColorTexture": "lime+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 94.26
+        },
+        {
+          "id": "lima",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/lima-mobile.glb",
+          "bytes": 37972,
+          "mib": 0.0362,
+          "sha256": "1d738bc865308617e8584ecc1bc2bed064bd7e060123f5e8eeb9becfa76655e0",
+          "sourceBytes": 1729188,
+          "sourceToDerivativeFileReductionPercent": 97.8,
+          "created": false,
+          "triangles": 664,
+          "vertices": 555,
+          "sourceBaseColorTextureBytes": 500644,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_0f2b8c48-4108-4d25-8d87-7d6a838ba9e7",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "lime+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 10766,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_0f2b8c48-4108-4d25-8d87-7d6a838ba9e7",
+              "baseColorTexture": "lime+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 97.85
+        }
+      ]
+    },
+    {
+      "source": "docs/art/source/cooking-items-v1/especias/especias-v1.glb",
+      "sourceDownloadName": "chili powder sack 3d model.glb",
+      "sourceSha256": "a51c91423efd50ce5a73a4c6a1b6f600bfb53f5b46275800909cd45cbcfa5a4c",
+      "sourceBytes": 2864884,
+      "sourceMiB": 2.7322,
+      "sourceTriangles": 635,
+      "sourceVertices": 613,
+      "geometryAndUvSha256": "2fd1c6b7d9e057f1ba646dd0ef938793c3e809094fafaae0c954d00e607b898b",
+      "materialColorFactors": [
+        {
+          "name": "tripo_material_e817f048-f5bd-4169-9a54-a7b4b347147f",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "26be88edeeafaf3bff6f23fd9b85b489e72c025d940cf53afa5d441ccbf77653",
+      "declaredExtensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "chili+powder+sack+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 828442,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "chili+powder+sack+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 416523,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "chili+powder+sack+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/png",
+          "bytes": 1590599,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "png"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "especias",
+      "derivatives": [
+        {
+          "id": "especias",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/especias-desktop.glb",
+          "bytes": 69432,
+          "mib": 0.0662,
+          "sha256": "b7d97a91f6696c067f3533d16406eaf12260553f5e76438717745dfe73cdc6b9",
+          "sourceBytes": 2864884,
+          "sourceToDerivativeFileReductionPercent": 97.58,
+          "created": false,
+          "triangles": 635,
+          "vertices": 613,
+          "sourceBaseColorTextureBytes": 828442,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_e817f048-f5bd-4169-9a54-a7b4b347147f",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "chili+powder+sack+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 40708,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_e817f048-f5bd-4169-9a54-a7b4b347147f",
+              "baseColorTexture": "chili+powder+sack+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 95.09
+        },
+        {
+          "id": "especias",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/especias-mobile.glb",
+          "bytes": 42656,
+          "mib": 0.0407,
+          "sha256": "4e7e0adc9fc18b177c43952b47dc73a0215aaf827d9f8158d0c17cd32ac7ed72",
+          "sourceBytes": 2864884,
+          "sourceToDerivativeFileReductionPercent": 98.51,
+          "created": false,
+          "triangles": 635,
+          "vertices": 613,
+          "sourceBaseColorTextureBytes": 828442,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_e817f048-f5bd-4169-9a54-a7b4b347147f",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "chili+powder+sack+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 13928,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_e817f048-f5bd-4169-9a54-a7b4b347147f",
+              "baseColorTexture": "chili+powder+sack+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 98.32
+        }
+      ]
+    },
+    {
+      "source": "docs/art/source/cooking-items-v1/meal_grog/meal_grog-v1.glb",
+      "sourceDownloadName": "wooden beer mug 3d model.glb",
+      "sourceSha256": "9c72b16903ef22b2f637fb7d5c7b5ba894fbd67adfcefab6bb34d773d6d6f209",
+      "sourceBytes": 2580424,
+      "sourceMiB": 2.4609,
+      "sourceTriangles": 692,
+      "sourceVertices": 683,
+      "geometryAndUvSha256": "ac3555fa5b59a4032683f7dd69c9f3425e0956c54de7d15aad730611d62c550e",
+      "materialColorFactors": [
+        {
+          "name": "tripo_material_12836e16-e992-4322-8c18-786808a46dd2",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "d3fa719e26b232531612eec28453c02022e36c6d890deb9e18138c7769e4d3b2",
+      "declaredExtensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "wooden+beer+mug+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 674176,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "wooden+beer+mug+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 464632,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "wooden+beer+mug+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/png",
+          "bytes": 1409402,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "png"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "meal_grog",
+      "derivatives": [
+        {
+          "id": "meal_grog",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/meal_grog-desktop.glb",
+          "bytes": 73064,
+          "mib": 0.0697,
+          "sha256": "d2ce7b23178603edbb9729eb2aafbace4f696ae52bdd3b6382bced7f42daaf0a",
+          "sourceBytes": 2580424,
+          "sourceToDerivativeFileReductionPercent": 97.17,
+          "created": false,
+          "triangles": 692,
+          "vertices": 683,
+          "sourceBaseColorTextureBytes": 674176,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_12836e16-e992-4322-8c18-786808a46dd2",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "wooden+beer+mug+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 41418,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_12836e16-e992-4322-8c18-786808a46dd2",
+              "baseColorTexture": "wooden+beer+mug+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 93.86
+        },
+        {
+          "id": "meal_grog",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/meal_grog-mobile.glb",
+          "bytes": 47464,
+          "mib": 0.0453,
+          "sha256": "08bb96511a834165270a117976c9ed396af2441d0b7f63271933ec90f5e55a4c",
+          "sourceBytes": 2580424,
+          "sourceToDerivativeFileReductionPercent": 98.16,
+          "created": false,
+          "triangles": 692,
+          "vertices": 683,
+          "sourceBaseColorTextureBytes": 674176,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_12836e16-e992-4322-8c18-786808a46dd2",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "wooden+beer+mug+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 15824,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_12836e16-e992-4322-8c18-786808a46dd2",
+              "baseColorTexture": "wooden+beer+mug+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 97.65
+        }
+      ]
+    },
+    {
+      "source": "docs/art/source/cooking-items-v1/meal_roastFish/meal_roastFish-v1.glb",
+      "sourceDownloadName": "orange striped fish 3d model.glb",
+      "sourceSha256": "696579d3179567f55c5a817e0507e8ad5d7804770ad50bb7378a5c4d96b58a1b",
+      "sourceBytes": 3701420,
+      "sourceMiB": 3.5299,
+      "sourceTriangles": 670,
+      "sourceVertices": 688,
+      "geometryAndUvSha256": "cf2cffd0c7521964c5484f0b5fc0c86e07d9f875ba5337859194b8e86d92ddd3",
+      "materialColorFactors": [
+        {
+          "name": "tripo_material_136f309f-9312-4609-adac-678ef4ffadf4",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "8dfe560a043180a98a65267139c2c6e46c0afc6bb875fdbe0682d2fe267352a2",
+      "declaredExtensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "orange+striped+fish+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 979435,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "orange+striped+fish+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 346466,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "orange+striped+fish+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/png",
+          "bytes": 2343376,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "png"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "meal_roastFish",
+      "derivatives": [
+        {
+          "id": "meal_roastFish",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/meal_roastFish-desktop.glb",
+          "bytes": 107340,
+          "mib": 0.1024,
+          "sha256": "d18413e347530b19f35d56059d4577de4d8c1a24f7dd4229cc7a1a194a2b3908",
+          "sourceBytes": 3701420,
+          "sourceToDerivativeFileReductionPercent": 97.1,
+          "created": false,
+          "triangles": 670,
+          "vertices": 688,
+          "sourceBaseColorTextureBytes": 979435,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_136f309f-9312-4609-adac-678ef4ffadf4",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "orange+striped+fish+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 75788,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_136f309f-9312-4609-adac-678ef4ffadf4",
+              "baseColorTexture": "orange+striped+fish+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 92.26
+        },
+        {
+          "id": "meal_roastFish",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/meal_roastFish-mobile.glb",
+          "bytes": 57528,
+          "mib": 0.0549,
+          "sha256": "d2a67f8fdc8d20fdb0baa7db768f4f04aa4d072fc1d75f5c52e7cb1dd6dbc249",
+          "sourceBytes": 3701420,
+          "sourceToDerivativeFileReductionPercent": 98.45,
+          "created": false,
+          "triangles": 670,
+          "vertices": 688,
+          "sourceBaseColorTextureBytes": 979435,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_136f309f-9312-4609-adac-678ef4ffadf4",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "orange+striped+fish+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 25984,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_136f309f-9312-4609-adac-678ef4ffadf4",
+              "baseColorTexture": "orange+striped+fish+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 97.35
+        }
+      ]
+    },
+    {
+      "source": "docs/art/source/cooking-items-v1/cana/cana-v1.glb",
+      "sourceDownloadName": "bamboo stalk 3d model.glb",
+      "sourceSha256": "0f4dd7b65b0213f19e95c1497be48819277591db126bf7f7d7e8a93eb41506f4",
+      "sourceBytes": 2394944,
+      "sourceMiB": 2.284,
+      "sourceTriangles": 684,
+      "sourceVertices": 612,
+      "geometryAndUvSha256": "3e0941937e79f2c71e180bc0b899f6819a7bff074da641e5788126f9f2c45a53",
+      "materialColorFactors": [
+        {
+          "name": "tripo_material_be13d86d-3cf3-488c-bdc0-e0da7d4818d5",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "9510b64a7617c714939efefd0781c64c309a03120f35fec4a81e1c4702396a4e",
+      "declaredExtensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "bamboo+stalk+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 650042,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "bamboo+stalk+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 295466,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "bamboo+stalk+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/png",
+          "bytes": 1419574,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "png"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "cana",
+      "derivatives": [
+        {
+          "id": "cana",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/cana-desktop.glb",
+          "bytes": 71932,
+          "mib": 0.0686,
+          "sha256": "6ff6544c1b36af5df386aa40ca87a14095b4cd0f38f0b317bc519dc6382c2c35",
+          "sourceBytes": 2394944,
+          "sourceToDerivativeFileReductionPercent": 97,
+          "created": false,
+          "triangles": 684,
+          "vertices": 612,
+          "sourceBaseColorTextureBytes": 650042,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_be13d86d-3cf3-488c-bdc0-e0da7d4818d5",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "bamboo+stalk+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 42654,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_be13d86d-3cf3-488c-bdc0-e0da7d4818d5",
+              "baseColorTexture": "bamboo+stalk+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 93.44
+        },
+        {
+          "id": "cana",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/cana-mobile.glb",
+          "bytes": 46028,
+          "mib": 0.0439,
+          "sha256": "473c6fb7b91405c36fb04846080ef5cc3638014b71fe6469216c4ad1faf40da5",
+          "sourceBytes": 2394944,
+          "sourceToDerivativeFileReductionPercent": 98.08,
+          "created": false,
+          "triangles": 684,
+          "vertices": 612,
+          "sourceBaseColorTextureBytes": 650042,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_be13d86d-3cf3-488c-bdc0-e0da7d4818d5",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "bamboo+stalk+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 16746,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_be13d86d-3cf3-488c-bdc0-e0da7d4818d5",
+              "baseColorTexture": "bamboo+stalk+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 97.42
+        }
+      ]
+    },
+    {
+      "source": "docs/art/source/cooking-items-v1/hierbas_aromaticas/hierbas_aromaticas-v1.glb",
+      "sourceDownloadName": "herb bundle 3d model.glb",
+      "sourceSha256": "9dc113a8f069c527cb5eed94b7e05c6bd0b827af124382ccbe6aab08554f6b72",
+      "sourceBytes": 2305592,
+      "sourceMiB": 2.1988,
+      "sourceTriangles": 547,
+      "sourceVertices": 829,
+      "geometryAndUvSha256": "c21216c9b4cf5bb23030d1cb31b287ba91989023da5da47de3af646c036f84eb",
+      "materialColorFactors": [
+        {
+          "name": "tripo_material_c7df6a94-3f5e-4fe4-a311-58da85c4c80c",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "8517f61e3853f523c3bf5d49d5a7ab6d416c84bc94dff43e41312d1dafe60fe4",
+      "declaredExtensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "herb+bundle+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 630782,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "herb+bundle+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 674640,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "herb+bundle+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/png",
+          "bytes": 965021,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "png"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "hierbas_aromaticas",
+      "derivatives": [
+        {
+          "id": "hierbas_aromaticas",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/hierbas_aromaticas-desktop.glb",
+          "bytes": 74272,
+          "mib": 0.0708,
+          "sha256": "5edec9953abbe9c1fc3a1ab180035a34208c9061b67c685931d65ca7a4f5d6dc",
+          "sourceBytes": 2305592,
+          "sourceToDerivativeFileReductionPercent": 96.78,
+          "created": false,
+          "triangles": 547,
+          "vertices": 829,
+          "sourceBaseColorTextureBytes": 630782,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_c7df6a94-3f5e-4fe4-a311-58da85c4c80c",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "herb+bundle+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 39702,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_c7df6a94-3f5e-4fe4-a311-58da85c4c80c",
+              "baseColorTexture": "herb+bundle+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 93.71
+        },
+        {
+          "id": "hierbas_aromaticas",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/hierbas_aromaticas-mobile.glb",
+          "bytes": 50640,
+          "mib": 0.0483,
+          "sha256": "eb76b5e051a877c48dcca5f7d9ddbf13b7d7ddcf7a4ba5f163d364c6c5b33f09",
+          "sourceBytes": 2305592,
+          "sourceToDerivativeFileReductionPercent": 97.8,
+          "created": false,
+          "triangles": 547,
+          "vertices": 829,
+          "sourceBaseColorTextureBytes": 630782,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_c7df6a94-3f5e-4fe4-a311-58da85c4c80c",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "herb+bundle+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 16076,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_c7df6a94-3f5e-4fe4-a311-58da85c4c80c",
+              "baseColorTexture": "herb+bundle+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 97.45
+        }
+      ]
+    },
+    {
+      "source": "docs/art/source/cooking-items-v1/meal_heartyBiscuit/meal_heartyBiscuit-v1.glb",
+      "sourceDownloadName": "bread loaf 3d model.glb",
+      "sourceSha256": "09746d01c90887f2f873c7d77a484d92514f104df7887a6b04d0b389475245b0",
+      "sourceBytes": 3009504,
+      "sourceMiB": 2.8701,
+      "sourceTriangles": 628,
+      "sourceVertices": 692,
+      "geometryAndUvSha256": "3fe3bd32ccdeb3754c8b10c767294ac010023f1eae1a6872b968aa952391a60d",
+      "materialColorFactors": [
+        {
+          "name": "tripo_material_fd536291-161b-41f9-8173-eb45895e3581",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "d1ace2ec26e1386c24dad3ad91afc7ceebdd30bf96c036b2dd90dde1bf5ef8e8",
+      "declaredExtensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "bread+loaf+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 817798,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "bread+loaf+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 441160,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "bread+loaf+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/png",
+          "bytes": 1718816,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "png"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "meal_heartyBiscuit",
+      "mappingBasis": "author confirmed 2026-10-12; rounded baked item fits the meal slot, while visible perforations differ from the existing biscuit art",
+      "remainingAmbiguity": null,
+      "derivatives": [
+        {
+          "id": "meal_heartyBiscuit",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/meal_heartyBiscuit-desktop.glb",
+          "bytes": 83336,
+          "mib": 0.0795,
+          "sha256": "9d36b903d083f5ef507fac452d9739f020d9fa945e4c25b4c0a6a924e1fb4b62",
+          "sourceBytes": 3009504,
+          "sourceToDerivativeFileReductionPercent": 97.23,
+          "created": false,
+          "triangles": 628,
+          "vertices": 692,
+          "sourceBaseColorTextureBytes": 817798,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_fd536291-161b-41f9-8173-eb45895e3581",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "bread+loaf+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 52184,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_fd536291-161b-41f9-8173-eb45895e3581",
+              "baseColorTexture": "bread+loaf+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 93.62
+        },
+        {
+          "id": "meal_heartyBiscuit",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/meal_heartyBiscuit-mobile.glb",
+          "bytes": 49712,
+          "mib": 0.0474,
+          "sha256": "fcd84c8eb765d88535189e016fee08f259fa31f76abf1e729867ee69e58d545d",
+          "sourceBytes": 3009504,
+          "sourceToDerivativeFileReductionPercent": 98.35,
+          "created": false,
+          "triangles": 628,
+          "vertices": 692,
+          "sourceBaseColorTextureBytes": 817798,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_fd536291-161b-41f9-8173-eb45895e3581",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "bread+loaf+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 18560,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_fd536291-161b-41f9-8173-eb45895e3581",
+              "baseColorTexture": "bread+loaf+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 97.73
+        }
+      ],
+      "authorConfirmed": true
+    },
+    {
+      "source": "docs/art/source/cooking-items-v1/agua/agua-v1.glb",
+      "sourceDownloadName": "blue ceramic vase 3d model.glb",
+      "sourceSha256": "e65fa5f02dfab0a0610bbecb18fdb56bf0f52a41403968a0dfbcec5587a36867",
+      "sourceBytes": 1891520,
+      "sourceMiB": 1.8039,
+      "sourceTriangles": 628,
+      "sourceVertices": 551,
+      "geometryAndUvSha256": "f7ae18bc9d94747f4be3b7b37dfa788ba8725a6db3b509c68954371b4ef84b28",
+      "materialColorFactors": [
+        {
+          "name": "tripo_material_2e922187-b430-4e3e-95f0-1070b065f118",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "446f93ac096abac22a8327678f3bb047b11e96ac48ca8c10a682a9f0b4c4df69",
+      "declaredExtensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "blue+ceramic+vase+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 496021,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "blue+ceramic+vase+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 357441,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "blue+ceramic+vase+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/png",
+          "bytes": 1010804,
+          "dimensions": {
+            "width": 2048,
+            "height": 2048,
+            "format": "png"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "agua",
+      "mappingBasis": "author confirmed 2026-10-12; blue stoppered vessel matches the water-jar silhouette, though the mesh reads as glazed ceramic and shows no water",
+      "remainingAmbiguity": null,
+      "derivatives": [
+        {
+          "id": "agua",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/agua-desktop.glb",
+          "bytes": 55208,
+          "mib": 0.0527,
+          "sha256": "183029851e6c326343b96bec0b3c924f56968d4f515f69c52fb7fa9dedd39636",
+          "sourceBytes": 1891520,
+          "sourceToDerivativeFileReductionPercent": 97.08,
+          "created": false,
+          "triangles": 628,
+          "vertices": 551,
+          "sourceBaseColorTextureBytes": 496021,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_2e922187-b430-4e3e-95f0-1070b065f118",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "blue+ceramic+vase+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 28550,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_2e922187-b430-4e3e-95f0-1070b065f118",
+              "baseColorTexture": "blue+ceramic+vase+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 94.24
+        },
+        {
+          "id": "agua",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/agua-mobile.glb",
+          "bytes": 38072,
+          "mib": 0.0363,
+          "sha256": "37f573046d397e7170799e8e9ff008185fb64f85ca9a6bd78d16de6a1a28785d",
+          "sourceBytes": 1891520,
+          "sourceToDerivativeFileReductionPercent": 97.99,
+          "created": false,
+          "triangles": 628,
+          "vertices": 551,
+          "sourceBaseColorTextureBytes": 496021,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_material_2e922187-b430-4e3e-95f0-1070b065f118",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "blue+ceramic+vase+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "bytes": 11412,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_materials_volume"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_material_2e922187-b430-4e3e-95f0-1070b065f118",
+              "baseColorTexture": "blue+ceramic+vase+3d+model_basecolor.jpg",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 97.7
+        }
+      ],
+      "authorConfirmed": true
+    },
+    {
+      "source": "docs/art/source/cooking-items-v1/harina/harina-v1.glb",
+      "sourceDownloadName": "rice+sack+3d+model.glb",
+      "sourceSha256": "eee231e8701f5408e62268b06e235146f1f0a419fcd1a2cadd0a59b6ffece666",
+      "sourceBytes": 621008,
+      "sourceMiB": 0.5922,
+      "sourceTriangles": 658,
+      "sourceVertices": 648,
+      "geometryAndUvSha256": "9811de243775cb90eff1cbaaf7ec6c3c3123ab9b08d8bb357bf49d0b151408f2",
+      "materialColorFactors": [
+        {
+          "name": "tripo_mat_30ada640-0b09-46fb-9b6b-e853280fced0",
+          "baseColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "emissive": [
+            0,
+            0,
+            0
+          ],
+          "alphaMode": "OPAQUE",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        }
+      ],
+      "materialColorFactorsSha256": "2c1b309137532f2c5786f4ed2619f62dd5a011280cd06d780aa5a096d15ca7c9",
+      "declaredExtensions": [],
+      "extensionsWithPayload": [],
+      "unsupportedExtensionPolicy": "KHR_materials_volume registered and preserved when present; FB_ngon_encoding has declaration only and no payload in these sources, so the optional declaration is dropped; any other extension payload fails closed.",
+      "sourceImages": [
+        {
+          "index": 0,
+          "name": "rice_sack_3d_model_normal",
+          "roles": [
+            "normal"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 102920,
+          "dimensions": {
+            "width": 1024,
+            "height": 1024,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 1,
+          "name": "rice_sack_3d_model_basecolor",
+          "roles": [
+            "base color"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 326908,
+          "dimensions": {
+            "width": 1024,
+            "height": 1024,
+            "format": "jpeg"
+          }
+        },
+        {
+          "index": 2,
+          "name": "rice_sack_3d_model_rm",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mimeType": "image/jpeg",
+          "bytes": 164646,
+          "dimensions": {
+            "width": 1024,
+            "height": 1024,
+            "format": "jpeg"
+          }
+        }
+      ],
+      "assigned": true,
+      "sourceRole": "canonical",
+      "match": "harina",
+      "mappingBasis": "author confirmed 2026-10-12; white-filled sack matches the flour-sack silhouette, while visible grains suggest rice",
+      "remainingAmbiguity": null,
+      "derivatives": [
+        {
+          "id": "harina",
+          "variant": "desktop",
+          "textureMax": 512,
+          "path": "assets/models/items-v1/harina-desktop.glb",
+          "bytes": 90248,
+          "mib": 0.0861,
+          "sha256": "d2fa102d68e88e3b0ad697ad3db544479f8be87bd2b1ad94a3e4a16fc57ad4ff",
+          "sourceBytes": 621008,
+          "sourceToDerivativeFileReductionPercent": 85.47,
+          "created": false,
+          "triangles": 658,
+          "vertices": 648,
+          "sourceBaseColorTextureBytes": 326908,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_mat_30ada640-0b09-46fb-9b6b-e853280fced0",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "rice_sack_3d_model_basecolor",
+              "mimeType": "image/webp",
+              "bytes": 63970,
+              "dimensions": {
+                "width": 512,
+                "height": 512,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_mat_30ada640-0b09-46fb-9b6b-e853280fced0",
+              "baseColorTexture": "rice_sack_3d_model_basecolor",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 80.43
+        },
+        {
+          "id": "harina",
+          "variant": "mobile",
+          "textureMax": 256,
+          "path": "assets/models/items-v1/harina-mobile.glb",
+          "bytes": 46512,
+          "mib": 0.0444,
+          "sha256": "08086ebcd8bc2594561d4a45aa4cff58227d0dd78027aa32345e96543a3ea3eb",
+          "sourceBytes": 621008,
+          "sourceToDerivativeFileReductionPercent": 92.51,
+          "created": false,
+          "triangles": 658,
+          "vertices": 648,
+          "sourceBaseColorTextureBytes": 326908,
+          "geometryAndUvPreserved": true,
+          "materialColorFactorsPreserved": true,
+          "materials": [
+            {
+              "name": "tripo_mat_30ada640-0b09-46fb-9b6b-e853280fced0",
+              "baseColor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "emissive": [
+                0,
+                0,
+                0
+              ],
+              "alphaMode": "OPAQUE",
+              "alphaCutoff": 0.5,
+              "doubleSided": false
+            }
+          ],
+          "textures": [
+            {
+              "name": "rice_sack_3d_model_basecolor",
+              "mimeType": "image/webp",
+              "bytes": 20234,
+              "dimensions": {
+                "width": 256,
+                "height": 256,
+                "format": "webp"
+              }
+            }
+          ],
+          "extensionsUsed": [
+            "EXT_texture_webp"
+          ],
+          "sourceTextureAndPBRMapsRemoved": true,
+          "materialTextureAudit": [
+            {
+              "material": "tripo_mat_30ada640-0b09-46fb-9b6b-e853280fced0",
+              "baseColorTexture": "rice_sack_3d_model_basecolor",
+              "mimeType": "image/webp",
+              "hasNormal": false,
+              "hasMetallicRoughness": false
+            }
+          ],
+          "sourceToDerivativeBaseColorTextureReductionPercent": 93.81
+        }
+      ],
+      "authorConfirmed": true
+    }
+  ]
+}

@@ -1,0 +1,232 @@
+{
+  "schema": "marea.niagara-web-derivative",
+  "version": 1,
+  "id": "niagara-104efce88caa3644",
+  "atlasId": "component-26e09bd0f93cb620-7x7-luma",
+  "sourceSha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+  "sourceFrames": [
+    "93b9990e7621b72912e0c13a5c0ef44874e068af4cef123c0705a95c8a3d899c",
+    "c48aa52c4e2b36816e4a8c6517b573f1b968c8dffa20ab538eb997c88b4c9f23",
+    "736b3ed2714bcd35f0af58c035e1efa304b2faff7c26f299b48283679a8eca60",
+    "d8c5c59ca25723c91911ccd72f2e65372f092d739c82b5b5c7dea07a43b1e4c2",
+    "94ae3fb7cff275e63604caa279a489c650a532be91c7d02c013c2a5408975330",
+    "f3bab03dd5e2ef78032660ef89bc74588f62869136cbf2ec8b351a35e5770d30",
+    "2538f33f6eee36d80cc67ce42281e0a3db252c012f2185d78518ca443f3fa4bb",
+    "4a33f288e43f003c9298c15ca06edf9c71edbecadb175b2406d258c012817674",
+    "c2a6f5f3eefdf8c114e02ea3badbfb0e5d7a9daffd8bf00964081e1d8061f116",
+    "92e8ed0bcc11fe7c61fce7c185e9dcce2a40d7cd45b62e8e3d2dd8989fa22b9b",
+    "3858119d3a4b7533687213caeb4839491bd42d68a9bf71c55ad789fd2444005e",
+    "d78614e7aae8cbf3f66acc614806022dcecf7aa4890ab8db5977e9cbe3ec5eab",
+    "c688cd94d99d20ab7fc2f23cbe8a70ab9bd6086cfd0f27c3bf8014bdaee735dd",
+    "911fd7a046898897be272254eeb67b0ef808ea4ea10d8837bb4dea00c152b284",
+    "bc5bf319e7423d71600400bcc9d944bf901a33a22ea70cc6f9771b85281dbab3",
+    "692f86c5b64bcdb4bc29aaaa8c4fcffe16afe48688a93f1686452e7faff54272",
+    "75c9f63b969041ec585767d666c8be4165c24c504e837c14c2ee0a6e2e75cd09",
+    "3eb77074f8dfca0c770a3a51b1473a674b26ece11f9494753cf13ce3f416002e",
+    "7c221bb94dcb8ff06b357ecb3a765e1c1c72f5f3c421f53527e8f84482d34ce0",
+    "c2876f18e1df4afa591dc166a129cd9b3f73d640153de39b9c2e618d4054ae5f",
+    "c9390c1ed6d282515ee4cd41fb2cb4c35daa16bf5faedb80f8448ffcecce02aa",
+    "195fab1c53de01e9c1ebc3150d3e093df54410e513e528a340808a975261c7f7",
+    "8378896a722d5606b5535b9ace5803c5048e520bc62f204196bb5acc4def67f0",
+    "d5c7d9c5261192b4ea6373b39766f622ce6cd90e2c6a64d5a7d37c3252d124bf",
+    "eb20a3d6c911f4ef3e61653e6ec503c57c2ca6e78c1e10ffc4f701dc6077ea57",
+    "369819d9ed6955f852e4191f5dc579f531159c5a056358712ae03a7d85640bcb",
+    "ef40990e39bb13555abd4b591ea83d81ed73805b890aa21a6cb7ef22a449ea36",
+    "9b44d6f0c0376afdee816850fa3e938d7474892c02ed7429ffcf4aa425e5703d",
+    "7ad3120971dd9b7688234b8673f00d40e654954a09e6b78533a0af829d98f950",
+    "c3166a07e7b056eb67c464dcc9128daf109589782ecf0eb9519212cec7a7e023",
+    "52f126dc9cd85cf9d518615025c0a55c78997a0581fe66480187705976ec2bd4",
+    "377674a97d99452549e22f9bacd745a03644c6ba465fd62ee7158b94de88d6e1",
+    "56e21e017069b428bcc74616c9618ee6d5eb2a3a53e7ae25997313d588897f0a",
+    "019463dc95e8a8886dd7c0bc818ec30a11aa5778e6ec51e166d592dcc7690bfa",
+    "de3c710fe0d516990664af0171c2db73250c07ea3f7e7db8d7733e2d8917dbde",
+    "5d46d5523611510c8756a27f6d42c7ab9c12766ded5aa643dd36d43dd09c63fa",
+    "ee99f9a959f375c865106413666ad5ac90a2f015874bea7807b48e3e40c9b2cb",
+    "46c24302699c5a09988b199660283f704e98d818fed44b3d52aa1d944e67a61b",
+    "28fa48cab49bcab03b335faca686d1d00be15febda0a911729c43326fb85581b",
+    "0ce3141987d5f1b7c629595f866981e378d056f377d597739a1ce6c1bc5e213b",
+    "f3b7ad47138a826c212f16cbeaaaf0598d511c5d07b9be6c80984d79d5b1f910",
+    "8a8e1c0b2cff07b5501289ddeae13fb8534f22a4951ec7c7c971023b467dfb06",
+    "27e6f9f5da1d314f0919a650d397017adfeeecae6fa044b0d723fc8a332da540",
+    "bc33c94a6e175bc0ae7248214595841045ee5f72970e369a14d0c6445c386214",
+    "f2ce91e150ec93ade8c3cc84a79e4842f7b83797761c75b6a20f6964f7f7edd5",
+    "a0d6b563d96b4fecacf6758fe59f002e2b48c5f83ba5df2f9f196793f37817a5",
+    "93b9990e7621b72912e0c13a5c0ef44874e068af4cef123c0705a95c8a3d899c",
+    "93b9990e7621b72912e0c13a5c0ef44874e068af4cef123c0705a95c8a3d899c",
+    "93b9990e7621b72912e0c13a5c0ef44874e068af4cef123c0705a95c8a3d899c"
+  ],
+  "files": {
+    "desktop": {
+      "url": "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-desktop.webp",
+      "bytes": 820226,
+      "sha256": "c6d58b8f597079fc0dc329a6c492427efe1505240ccd33f382737818cc1287a8",
+      "width": 2048,
+      "height": 2048
+    },
+    "mobile": {
+      "url": "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp",
+      "bytes": 253454,
+      "sha256": "e5c7d186ea39e166cc1905ea4591e61e0901c552b4c3ec715874c7ee9e8dba70",
+      "width": 1024,
+      "height": 1024
+    }
+  },
+  "derivative": {
+    "adapter": "flipbook-v1",
+    "role": "source-texture",
+    "atlas": {
+      "desktop": "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-desktop.webp",
+      "mobile": "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp"
+    },
+    "columns": 8,
+    "rows": 8,
+    "frames": 49,
+    "duration": 2,
+    "width": 6,
+    "height": 6,
+    "blend": "alpha",
+    "atlasId": "component-26e09bd0f93cb620-7x7-luma",
+    "component": {
+      "textureSha256": "26e09bd0f93cb620768268867f7887759315452bd5e9da4a7506da06e798a672",
+      "columns": 7,
+      "rows": 7,
+      "mapping": "luminance-to-white-alpha",
+      "name": "T_Vfx_Stamp_WaterSplash_77"
+    },
+    "sourceBinding": {
+      "systemSha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+      "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:Splash_7.NiagaraSpriteRendererProperties_0",
+      "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_WaterSplash_77_mask",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_WaterSplash_77"
+    }
+  },
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-40abfaa92d054075",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_WaterSplash_77.uasset",
+      "sha256": "26e09bd0f93cb620768268867f7887759315452bd5e9da4a7506da06e798a672",
+      "bytes": 1577127
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_WaterSplash_77.png",
+      "sha256": "44e51814943eebcd04e802b8ad15525700dde45c400098a663e1fc64728f60c9",
+      "bytes": 1741387,
+      "format": "PNG",
+      "width": 2048,
+      "height": 2048,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 7,
+      "rows": 7,
+      "cells": 49,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "luminance-to-white-alpha",
+    "mappingFormula": "RGB=white; A=0.299R+0.587G+0.114B in source channel domain",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-104efce88caa3644",
+        "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+        "sourceBinding": {
+          "systemSha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+          "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:Splash_7.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_WaterSplash_77_mask",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_WaterSplash_77"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:",
+          "matched": true
+        },
+        "parameterName": "baseTex"
+      }
+    ]
+  },
+  "packing": {
+    "desktopTile": 256,
+    "mobileTile": 128,
+    "gutter": 2,
+    "oneAtlasVariantLoaded": true
+  },
+  "limitations": [
+    "Original SubUV texture only; the complete Niagara system is pending.",
+    "Playback duration is an editor default, not verified Niagara emitter timing.",
+    "Presentation controls do not modify Niagara emitter particle counts."
+  ]
+}

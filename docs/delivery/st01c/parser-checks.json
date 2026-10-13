@@ -1,0 +1,8 @@
+{
+  "schema": "st01c-parser-check/v1",
+  "nestedOpaqueBytesMarked": true,
+  "quotedPinRetained": true,
+  "malformedAndOversizedRejected": 4,
+  "activeStackAuditObjectsAndPinsUnchanged": true,
+  "toolSha256": "4946e565bc2f9d060cc6c8a414f4671de3485a9c0141ed529677247f83535506"
+}

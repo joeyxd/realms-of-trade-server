@@ -1,5 +1,9 @@
 # Mallas de objetos con Tripo e imágenes con GPT Image (tripo-items-v1)
 
+**Punto de entrada actual:** [galería de objetos y cocina](../../ARTE-Y-MODELOS.html)
+y [carpetas de entrega](ITEMS.md). Esta guía conserva los iconos y prompts generales
+de herramientas, armas y ropa; el centro nuevo elige las referencias actuales por objeto.
+
 Fecha: 2026-10-10. Guía para el autor: de dónde salen los iconos, cuántos triángulos pedir en Tripo para cada
 tipo de pieza y qué prompts usar en GPT Image ahora que Higgsfield no tiene créditos. Los prompts van en inglés
 porque los modelos de imagen los siguen con más precisión. Ruta general de modelos: [ASSETS.md](../ASSETS.md).

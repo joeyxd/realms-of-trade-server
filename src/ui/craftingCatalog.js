@@ -1,7 +1,7 @@
 // Crafting panel presentation: ES/EN text by stable key, recipe categories/descriptions and line icons.
 // Gameplay (inputs, outputs, bench rules) stays in data/resources.js; this file only decides how it reads.
 import { CRAFT_RECIPES, RESOURCE_KINDS, HARVEST } from '../data/resources.js';
-import { FIRE_FUEL, FIRE_SECONDS } from '../data/fire.js';
+import { FIRE_SECONDS } from '../data/fire.js';
 import { GOODS } from '../data/goods.js';
 import { DT } from '../data/tuning.js';
 import { formatNumber } from '../core/i18n.js';
@@ -33,7 +33,8 @@ export const CRAFT_TEXT = {
       madeTool: '{name} fabricada. Ya está en tu cinturón.', madeGood: 'Preparaste {n} {name}.',
       torchLit: 'Antorcha encendida: {min} min de luz. Pulsa N para apagarla o volver a encenderla.',
       torchBurning: 'Tu antorcha aún arde ({time}). Cuando se consuma podrás fabricar otra.',
-      torchPlank: 'Te falta 1 tabla básica. Prepárala en el banco de materiales con 2 troncos.',
+      torchFuel: 'Necesitas 2 troncos y 1 resina para la antorcha. La resina puede caer al talar palmeras.',
+      legacyTorchFuel: 'Necesitas 1 tabla básica para la antorcha; prepárala en el banco con 2 troncos.',
       torchOff: 'El fuego todavía no está disponible en este mundo.',
       torchAccount: 'Entra con una cuenta para guardar tu antorcha.',
       unknown: 'No se pudo completar la receta. Revisa tu mochila e inténtalo otra vez.',
@@ -61,7 +62,8 @@ export const CRAFT_TEXT = {
       madeTool: '{name} crafted. It is now on your belt.', madeGood: 'You prepared {n} {name}.',
       torchLit: 'Torch lit: {min} min of light. Press N to put it out or light it again.',
       torchBurning: 'Your torch is still burning ({time}). Craft another once it burns out.',
-      torchPlank: 'You need 1 basic plank. Prepare it at the materials bench from 2 logs.',
+      torchFuel: 'You need 2 logs and 1 resin for a torch. Resin may drop when you fell palms.',
+      legacyTorchFuel: 'You need 1 basic plank for a torch; prepare it at the bench from 2 logs.',
       torchOff: 'Fire is not available in this world yet.',
       torchAccount: 'Sign in to keep your torch.',
       unknown: 'The recipe could not be completed. Check your backpack and try again.',
@@ -108,6 +110,7 @@ export const CRAFT_REASONS = {
 // English display names for goods; Spanish uses the catalog name in data/goods.js.
 const GOOD_EN = {
   pescado: 'Salted fish', fruta: 'Tropical fruit', harina: 'Flour', galleta: 'Ship biscuit', ron: 'Rum', agua: 'Fresh water',
+  coco: 'Coconut', resina: 'Resin',
   cana: 'Sugarcane', madera: 'Basic plank', tronco: 'Log', piedra: 'Rough stone', hierro: 'Iron', mineral_hierro: 'Iron ore',
   azufre: 'Sulfur', lona: 'Canvas', polvora: 'Gunpowder', balas: 'Cannonballs', tabaco: 'Tobacco', especias: 'Spices',
   seda: 'Silk', coral: 'Red coral', perlas: 'White pearls',
@@ -150,14 +153,14 @@ export const RECIPE_UI = {
   // The hand torch is a fire load (data/fire.js), not a resource craft: one plank, 20 minutes of light, by hand.
   antorcha: {
     cat: 'tools', order: 3,
-    es: { name: 'Antorcha', desc: 'Una tabla untada de brea que arde y alumbra a tu alrededor.',
+    es: { name: 'Antorcha', desc: 'Dos troncos y una resina alimentan 20 minutos de luz que llevas contigo.',
       flavor: 'La noche en la isla es oscura de verdad.\nLleva el fuego contigo.', motto: 'Enciende. Explora. Regresa.' },
-    en: { name: 'Torch', desc: 'A tar-coated plank that burns and lights up your surroundings.',
+    en: { name: 'Torch', desc: 'Two logs and one resin fuel 20 minutes of light you can carry.',
       flavor: 'Night on the island is truly dark.\nCarry the fire with you.', motto: 'Light up. Explore. Come back.' },
     stats: () => [
       { icon: 'clock', es: 'Minutos de luz', en: 'Minutes of light', value: FIRE_SECONDS.handTorch / 60, max: 60, text: `${FIRE_SECONDS.handTorch / 60} min` },
-      { icon: 'stack', es: 'Tablas por carga', en: 'Planks per load', value: FIRE_FUEL.count, max: 4, text: `${FIRE_FUEL.count}` },
-      { icon: 'logs', es: 'Troncos por tabla', en: 'Logs per plank', value: CRAFT_RECIPES.madera.inputs.tronco, max: 4, text: `${CRAFT_RECIPES.madera.inputs.tronco}` },
+      { icon: 'logs', es: 'Troncos por carga', en: 'Logs per load', value: 2, max: 4, text: '2' },
+      { icon: 'stack', es: 'Resina por carga', en: 'Resin per load', value: 1, max: 4, text: '1' },
     ],
   },
   madera: {

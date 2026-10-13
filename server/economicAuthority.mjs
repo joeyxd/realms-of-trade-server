@@ -37,7 +37,7 @@ export function economicCommand(msg) {
   if (!msg || typeof msg !== 'object' || Array.isArray(msg) || typeof msg.opId !== 'string' || !OP_ID.test(msg.opId) ||
       (msg.t !== undefined && msg.t !== MSG.CMD)) throw new StoreError('operation');
   if (msg.type === 'freshwater') { const { t, ...raw } = msg; const checked = checkedFreshwaterCommand(raw); if (!checked) throw new StoreError('operation'); return checked; }
-  const fields = msg.type === 'attributes' ? { adopt: ['expectedRev'], assign: ['expectedRev', 'stat', 'n'], reset: ['expectedRev'] }[msg.op] : msg.type === 'fire' ? { load: ['ship', 'part', 'kind', 'expectedRev', 'lit'], set: ['ship', 'part', 'kind', 'expectedRev', 'lit'] }[msg.op] : msg.type === 'commerce' ? {
+  const fields = msg.type === 'attributes' ? { adopt: ['expectedRev'], assign: ['expectedRev', 'stat', 'n'], reset: ['expectedRev'] }[msg.op] : msg.type === 'fire' ? { load: ['ship', 'part', 'kind', 'expectedRev', 'lit', ...(Object.hasOwn(msg, 'rules') ? ['rules'] : [])], set: ['ship', 'part', 'kind', 'expectedRev', 'lit'] }[msg.op] : msg.type === 'commerce' ? {
     buy: ['town', 'g', 'n', 'expectedTotal'], sell: ['town', 'g', 'n', 'expectedTotal'],
     transfer: ['id', 'expectedRev', 'g', 'n', 'side'],
   }[msg.op] : msg.type === 'raft' ? { supply: ['id', 'expectedRev', 'g', 'n'],
@@ -47,11 +47,14 @@ export function economicCommand(msg) {
   }[msg.op] : msg.type === 'community' ? {
     list: [], contribute: ['projectId', 'good', 'amount', 'expectedRev'],
   }[msg.op] : msg.type === 'resource' ? {
-    gather: ['node', 'expectedRev', ...(Object.hasOwn(msg, 'challenge') ? ['challenge'] : [])], craft: ['recipe', 'expectedRev', 'n'],
+    gather: ['node', 'expectedRev', ...(Object.hasOwn(msg, 'challenge') ? ['challenge'] : []),
+      ...(Object.hasOwn(msg, 'lootRules') ? ['lootRules'] : [])], craft: ['recipe', 'expectedRev', 'n'],
   }[msg.op] : null;
   if (!fields || Object.keys(msg).some(k => !['t', 'type', 'op', 'opId', ...fields, ...(msg.type === 'raft' && msg.piece?.[0] === 'waterBarrel' ? ['rules'] : [])].includes(k)) ||
       fields.some(k => !Object.hasOwn(msg, k) && !(msg.type === 'resource' && msg.op === 'craft' && k === 'n'))) throw new StoreError('operation');
   if (Object.hasOwn(msg, 'rules') && msg.rules !== 2) throw new StoreError('operation');
+  if (msg.type === 'fire' && Object.hasOwn(msg, 'rules') && (msg.kind !== 'handTorch' || msg.op !== 'load')) throw new StoreError('operation');
+  if (Object.hasOwn(msg, 'lootRules') && (msg.type !== 'resource' || msg.op !== 'gather' || msg.lootRules !== 1)) throw new StoreError('operation');
   const out = Object.fromEntries(['type', 'op', 'opId', ...fields].map(k => [k, msg[k]]));
   if (msg.type === 'attributes' && (!Number.isSafeInteger(msg.expectedRev) || msg.expectedRev < 0 ||
       msg.expectedRev > 2147483645 || msg.op === 'assign' && (msg.stat !== 'carga' || !Number.isSafeInteger(msg.n) || msg.n < 1 || msg.n > 9))) {
@@ -179,6 +182,18 @@ export class EconomicAuthority {
     if (isCanteenCommand(command) && !h.canteenOperations) { reject('disabled'); return true; }
     if (command.type === 'freshwater' && command.op === 'meal' && !h.specialMealOperations) { reject('disabled'); return true; }
     if (command.type === 'fire' && !h.fireOperations) { reject('disabled'); return true; }
+    let recipeDenial = null;
+    if (command.type === 'fire' && command.kind === 'handTorch' && command.op === 'load' &&
+        (h.torchResinCoconutOperations ? command.rules !== 2 : Object.hasOwn(command, 'rules'))) recipeDenial = 'command';
+    if (command.type === 'resource' && command.op === 'gather') {
+      const palm = h.worldState.resources?.nodes.find(node => node.id === command.node)?.kind === 'palm';
+      if ((palm && h.torchResinCoconutOperations) ? command.lootRules !== 1 : Object.hasOwn(command, 'lootRules')) {
+        recipeDenial = 'command';
+      }
+    }
+    if (command.type === 'freshwater' && command.op === 'eat' && command.source === 'coco' && !h.torchResinCoconutOperations) {
+      recipeDenial = 'disabled';
+    }
     if ((command.type === 'artisan' || artisanMutation(command)) && !h.artisanOperations) { reject('disabled'); return true; }
     if (command.op === 'list') {
       const why = this.busy ? 'busy' : !h.worldState.community ? 'disabled' : communityAccess(h.server.world, c.entity);
@@ -209,7 +224,7 @@ export class EconomicAuthority {
         members.set(account, { account, s: session, c: client, entity, profile: account === s.key ? profile : capturePearlProfile(h.server.world, entity) });
       }
       const gate = pearlMutationGate(h.profiles), reservation = gate.reserve(lanes);
-      const a = { id: sock.id, entity: c.entity, c, s, command, profile, reservation, gate,
+      const a = { id: sock.id, entity: c.entity, c, s, command, profile, reservation, gate, recipeDenial,
         members, operationId: economicOperationId(h.worldState.id, s.key, command.opId), ready: false, request: null, agent,
         timing: command.type === 'resource' && command.op === 'gather' && h.workshopOperations ? h.loggingAim.proof(sock.id, c.entity, command) : null };
       this.active = a;
@@ -282,6 +297,13 @@ export class EconomicAuthority {
         if (a.command.type === 'community') a.ack.currentProject = publicCommunity(h.worldState.community);
         this.replays++;
       }
+      a.replay = true; a.ready = true; return;
+    }
+    // Rules apply to new operations. Exact historical receipts remain replayable after activation.
+    if (a.recipeDenial) {
+      a.ack = { type: a.command.type, op: a.command.op, opId: a.command.opId, ok: false,
+        why: a.recipeDenial, rev: a.profile.eco.tradeRev };
+      if (a.agent) a.denial = a.recipeDenial;
       a.replay = true; a.ready = true; return;
     }
     if (a.agent) {

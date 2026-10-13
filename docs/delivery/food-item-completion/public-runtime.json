@@ -1,0 +1,136 @@
+{
+  "at": "2026-10-13T06:40:12.637Z",
+  "container": "95533ecf4ab2a021868490cf5b53fbe52c2190236cb84fd46d1484ae7339879f",
+  "image": "sha256:9bc92a3c0df69dd339130b77053b0d14caadc594bdc3c1277aa64db846e88b77",
+  "revision": "a21c47f0fe6acbc3c63682b1aaa3b87acbeb4ccf",
+  "health": "healthy",
+  "hashes": {
+    "src/ui/provisionInfo.js": "cdb9421bbe5220e5a7b118b57c2592ace863a118ba92b01ae75a2fdfce81b4df",
+    "src/ui/freshwaterPanel.js": "eeb58cdbd064e23117565bb33ceecce45b752e3cf5129f435ff6a912f0b51692",
+    "src/ui/characterScreen.js": "31398ad9dbc224acae71015b6b0c8a226998761692447dd9c5149a3801f93fec",
+    "styles/kit.css": "acd0727ee1a82fa593c1f80e5c143ffd0da9ea7113ba154c942d85ba261328a4",
+    "styles/freshwater.css": "aedb1102e4e58d535d9901bb06957966ce1c5779a783f4e24bdffb7e39378b25",
+    "styles/character.css": "d887b074d394345aebdf672ca4cf61f4b4f507c193fc5960ed2d48129f318b06",
+    "styles/workshop.css": "8719456bb55fd38c63b586416b4f8880d740d124b41132334d240a63f28abab5"
+  },
+  "expected": {
+    "src/ui/provisionInfo.js": "cdb9421bbe5220e5a7b118b57c2592ace863a118ba92b01ae75a2fdfce81b4df",
+    "src/ui/freshwaterPanel.js": "eeb58cdbd064e23117565bb33ceecce45b752e3cf5129f435ff6a912f0b51692",
+    "src/ui/characterScreen.js": "31398ad9dbc224acae71015b6b0c8a226998761692447dd9c5149a3801f93fec",
+    "styles/kit.css": "acd0727ee1a82fa593c1f80e5c143ffd0da9ea7113ba154c942d85ba261328a4",
+    "styles/freshwater.css": "aedb1102e4e58d535d9901bb06957966ce1c5779a783f4e24bdffb7e39378b25",
+    "styles/character.css": "d887b074d394345aebdf672ca4cf61f4b4f507c193fc5960ed2d48129f318b06",
+    "styles/workshop.css": "8719456bb55fd38c63b586416b4f8880d740d124b41132334d240a63f28abab5"
+  },
+  "publicHashes": {
+    "src/ui/provisionInfo.js": "cdb9421bbe5220e5a7b118b57c2592ace863a118ba92b01ae75a2fdfce81b4df",
+    "src/ui/freshwaterPanel.js": "eeb58cdbd064e23117565bb33ceecce45b752e3cf5129f435ff6a912f0b51692",
+    "src/ui/characterScreen.js": "31398ad9dbc224acae71015b6b0c8a226998761692447dd9c5149a3801f93fec",
+    "styles/kit.css": "acd0727ee1a82fa593c1f80e5c143ffd0da9ea7113ba154c942d85ba261328a4",
+    "styles/freshwater.css": "aedb1102e4e58d535d9901bb06957966ce1c5779a783f4e24bdffb7e39378b25",
+    "styles/character.css": "d887b074d394345aebdf672ca4cf61f4b4f507c193fc5960ed2d48129f318b06",
+    "styles/workshop.css": "8719456bb55fd38c63b586416b4f8880d740d124b41132334d240a63f28abab5"
+  },
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.67",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 9804,
+    "uptime": 184,
+    "stepMs": 1.529,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 3,
+        "replays": 2
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true,
+        "torchRules": 2
+      },
+      "foraging": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true,
+        "meals": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "companionPairing": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 5300,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 169,
+      "late": 15,
+      "trimmed": 398,
+      "clamped": 0,
+      "kbOut": 33379,
+      "kbIn": 350.8,
+      "dropped": 0
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "l03g-companion-presence-browser-runs/v1",
+  "runs": [
+    {
+      "result": "failed",
+      "stage": "final browser diagnostics",
+      "observed": "Two console 503 errors from the unconfigured memory-fixture /api/gm/session route; all 11 presence/UI checks before diagnostics had passed.",
+      "classification": "Harness setup defect: the established pairing QA fixture supplies in-memory GM account and draft configuration. This run omitted that fixture configuration, so it did not establish a companion-presence product failure.",
+      "resolution": "Added gmAccountIds and gmDraftsAllowMemory to the local fixture; reran without filtering or suppressing diagnostics."
+    },
+    {
+      "result": "passed",
+      "stage": "full browser run on current UI tree",
+      "observed": "12 checks passed; page errors, console errors, failed requests, controller starts, and model calls were all zero.",
+      "evidence": "browser.json and five screenshots in this directory"
+    }
+  ]
+}

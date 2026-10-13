@@ -1,0 +1,950 @@
+{
+  "engine": "5.8.0",
+  "dependencyMethod": "UE 5.8 AssetRegistry hard package refs; no system/asset objects loaded",
+  "assetCount": 5394,
+  "roots": [
+    {
+      "system": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke",
+      "name": "NS_Chimney_Smoke",
+      "directDependencyPackages": [
+        "/Game/NiagaraExamples/EffectTypes/NET_Environment_Looping",
+        "/Game/NiagaraExamples/FX_Smoke/Emitters/NE_Smoke",
+        "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+        "/Game/NiagaraExamples/NPC_NiagaraExamples",
+        "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop",
+        "/Game/NiagaraExamples/Textures/Utils/CutoutMask_8x8",
+        "/Niagara/DynamicInputs/Add/Add_Float",
+        "/Niagara/DynamicInputs/Bool/v2/SetBoolByFloatComparison",
+        "/Niagara/DynamicInputs/Clamp/ClampFloat",
+        "/Niagara/DynamicInputs/Clamp/Float/RemapRange",
+        "/Niagara/DynamicInputs/Divide/Divide_Float",
+        "/Niagara/DynamicInputs/LinearColor/MakeFloat4FromVectorAndFloat",
+        "/Niagara/DynamicInputs/LinearColor/MultiplyLinearColor",
+        "/Niagara/DynamicInputs/Math/OneMinusFloat",
+        "/Niagara/DynamicInputs/Multiply/Multiply_Float",
+        "/Niagara/DynamicInputs/Multiply/Multiply_VectorByFloat",
+        "/Niagara/DynamicInputs/TypeConversions/MakeFloatFromLinearColor",
+        "/Niagara/DynamicInputs/TypeConversions/VectorLength",
+        "/Niagara/DynamicInputs/UniformRange/V2/RandomRangeFloat",
+        "/Niagara/DynamicInputs/ValueFromCurve/FloatFromCurve",
+        "/Niagara/Enums/Angles/ENiagara_AngleInput",
+        "/Niagara/Enums/ENiagaraBooleanLogicOps_v2",
+        "/Niagara/Enums/ENiagaraChannelCorrelation",
+        "/Niagara/Enums/ENiagaraCurlNoiseQuality",
+        "/Niagara/Enums/ENiagaraEmitterLifeCycleMode",
+        "/Niagara/Enums/ENiagaraEmitterScalabilityMode_Limited",
+        "/Niagara/Enums/ENiagaraFloatFromLinearColorOptions",
+        "/Niagara/Enums/ENiagaraInactiveMode",
+        "/Niagara/Enums/ENiagaraMeshOrSprite",
+        "/Niagara/Enums/ENiagaraRandomnessEvaluation",
+        "/Niagara/Enums/ENiagaraRandomnessMode",
+        "/Niagara/Enums/ENiagaraScaleColorMode",
+        "/Niagara/Enums/ENiagaraShapeTorusMode",
+        "/Niagara/Enums/ENiagaraSphereDistributionMode",
+        "/Niagara/Enums/ENiagaraSystemInactiveMode",
+        "/Niagara/Enums/ENiagaraTorusDistributionMode",
+        "/Niagara/Enums/ENiagaraVectorNoiseQuality",
+        "/Niagara/Enums/ENiagara_AttributeSamplingApplyOutput",
+        "/Niagara/Enums/ENiagara_ColorInitializationMode",
+        "/Niagara/Enums/ENiagara_EmitterStateOptions",
+        "/Niagara/Enums/ENiagara_InfiniteLoopDuration",
+        "/Niagara/Enums/ENiagara_LifetimeMode",
+        "/Niagara/Enums/ENiagara_MassInitializationMode",
+        "/Niagara/Enums/ENiagara_PositionInitializationMode",
+        "/Niagara/Enums/ENiagara_SizeScaleMode",
+        "/Niagara/Enums/ENiagara_SpriteRotationMode",
+        "/Niagara/Enums/ENiagara_SubUVLookupModeV2",
+        "/Niagara/Enums/ENiagara_UVFlippingMode",
+        "/Niagara/Enums/ENiagara_WrapClamp",
+        "/Niagara/Enums/Location/ENiagaraRingDiscMode",
+        "/Niagara/Enums/Location/ENiagara_BoxPlaneMode",
+        "/Niagara/Enums/Location/ENiagara_ConeMode",
+        "/Niagara/Enums/Location/ENiagara_CylinderMode",
+        "/Niagara/Enums/Location/ENiagara_LocationShapes",
+        "/Niagara/Enums/Ribbons/ENiagara_UnsetDirectSet",
+        "/Niagara/Enums/Ribbons/ENiagara_UnsetDirectSetRandom",
+        "/Niagara/Enums/SpriteRenderer/ENiagara_AutomaticManual",
+        "/Niagara/Enums/SpriteRenderer/ENiagara_FPSPlayrate",
+        "/Niagara/Enums/SpriteRenderer/ENiagara_ScaleSpriteSize",
+        "/Niagara/Enums/Transforms/ENiagara_OffsetMode",
+        "/Niagara/Enums/Transforms/ENiagara_RotationMode",
+        "/Niagara/Enums/Transforms/ENiagara_ScaleMode",
+        "/Niagara/Enums/Transforms/ENiagara_TransformOrder",
+        "/Niagara/Enums/Transforms/ENiagara_TransformType",
+        "/Niagara/Enums/Utility/ENiagara_CurlNoiseRemapType",
+        "/Niagara/Enums/Wind/ENiagaraWindCombingMode",
+        "/Niagara/Enums/Wind/ENiagaraWindFrictionDistanceMode",
+        "/Niagara/Enums/Wind/ENiagaraWindFrictionMode",
+        "/Niagara/Enums/Wind/ENiagaraWindGroundMaskMode",
+        "/Niagara/Enums/Wind/ENiagaraWindOffsetMode",
+        "/Niagara/Enums/Wind/ENiagaraWindTurbulenceContributionMode",
+        "/Niagara/Enums/Wind/ENiagaraWindTurbulenceFrequencyMode",
+        "/Niagara/Enums/Wind/ENiagaraWindTurbulenceMode",
+        "/Niagara/Modules/Emitter/EmitterState",
+        "/Niagara/Modules/Emitter/SpawnRate",
+        "/Niagara/Modules/Solvers/SolveForcesAndVelocity",
+        "/Niagara/Modules/Spawn/Initialization/V2/InitializeParticle",
+        "/Niagara/Modules/Spawn/Location/V2/ShapeLocation",
+        "/Niagara/Modules/Spawn/Velocity/LinearForce",
+        "/Niagara/Modules/System/SystemState",
+        "/Niagara/Modules/Update/Color/Color",
+        "/Niagara/Modules/Update/Color/ScaleColor",
+        "/Niagara/Modules/Update/Forces/Drag",
+        "/Niagara/Modules/Update/Forces/V2/CurlNoiseForce",
+        "/Niagara/Modules/Update/Forces/WindForce",
+        "/Niagara/Modules/Update/Lifetime/KillParticles",
+        "/Niagara/Modules/Update/Lifetime/ParticleState",
+        "/Niagara/Modules/Update/Orientation/SpriteRotationRate",
+        "/Niagara/Modules/Update/Size/ScaleSpriteSize",
+        "/Niagara/Modules/Update/SubUV/V2/SubUVAnimation",
+        "/Niagara/Modules/Update/Utility/VectorNoiseValue",
+        "/Niagara/ParameterDefinitions/CoreParameters",
+        "/Niagara/ParameterDefinitions/RibbonRenderer",
+        "/Niagara/VectorFields/Assets/TilingCurl32",
+        "/Script/DataHierarchyEditor",
+        "/Script/Niagara",
+        "/Script/NiagaraEditor"
+      ],
+      "closurePackageCount": 113,
+      "closureGamePackages": [
+        {
+          "package": "/Game/NiagaraExamples/EffectTypes/NET_Environment_Looping",
+          "name": "NET_Environment_Looping",
+          "class": "NiagaraEffectType"
+        },
+        {
+          "package": "/Game/NiagaraExamples/FX_Smoke/Emitters/NE_Smoke",
+          "name": "NE_Smoke",
+          "class": "NiagaraEmitter"
+        },
+        {
+          "package": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke",
+          "name": "NS_Chimney_Smoke",
+          "class": "NiagaraSystem"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MasterMaterials/M_SmokeAndFire_Sprites",
+          "name": "M_SmokeAndFire_Sprites",
+          "class": "Material"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MaterialFunctions/MF_ExposureCompensation",
+          "name": "MF_ExposureCompensation",
+          "class": "MaterialFunction"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MaterialFunctions/MF_FastSphereNormal",
+          "name": "MF_FastSphereNormal",
+          "class": "MaterialFunction"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+          "name": "MI_SmokePuffLight_8x8",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/MPC_NiagaraExamples",
+          "name": "MPC_NiagaraExamples",
+          "class": "MaterialParameterCollection"
+        },
+        {
+          "package": "/Game/NiagaraExamples/NPC_NiagaraExamples",
+          "name": "NPC_NiagaraExamples",
+          "class": "NiagaraParameterCollection"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/ColorCurves/Atlas_FXColorCurves",
+          "name": "Atlas_FXColorCurves",
+          "class": "CurveLinearColorAtlas"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/ColorCurves/EmissiveColorCurve",
+          "name": "EmissiveColorCurve",
+          "class": "CurveLinearColor"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop",
+          "name": "T_SmokePuffLight_EOO_Loop",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_Normals_Loop",
+          "name": "T_SmokePuffLight_Normals_Loop",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Utils/BaseEOO",
+          "name": "BaseEOO",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Utils/BaseNormal",
+          "name": "BaseNormal",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Utils/CutoutMask_8x8",
+          "name": "CutoutMask_8x8",
+          "class": "Texture2D"
+        }
+      ],
+      "materialInstancePackages": [
+        "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8"
+      ],
+      "texturePackages": [
+        "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop",
+        "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_Normals_Loop",
+        "/Game/NiagaraExamples/Textures/Utils/BaseEOO",
+        "/Game/NiagaraExamples/Textures/Utils/BaseNormal",
+        "/Game/NiagaraExamples/Textures/Utils/CutoutMask_8x8"
+      ],
+      "subUVModuleDirectRefs": [
+        "/Niagara/Modules/Update/SubUV/V2/SubUVAnimation"
+      ]
+    },
+    {
+      "system": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood",
+      "name": "NS_Impact_Wood",
+      "directDependencyPackages": [
+        "/Game/NiagaraExamples/EffectTypes/NET_Gameplay_Burst",
+        "/Game/NiagaraExamples/FX_Weapons/Impacts/DynamicInputs/BurstVector",
+        "/Game/NiagaraExamples/FX_Weapons/Impacts/DynamicInputs/RelativeOffsetFloat",
+        "/Game/NiagaraExamples/FX_Weapons/Impacts/Emitters/NE_Impact_LightDecal",
+        "/Game/NiagaraExamples/FX_Weapons/Impacts/Emitters/NE_Impact_MeshAndSprite",
+        "/Game/NiagaraExamples/FX_Weapons/Impacts/Emitters/NE_Impact_SecondarySprite",
+        "/Game/NiagaraExamples/FX_Weapons/Impacts/Emitters/NE_Impact_Sprite",
+        "/Game/NiagaraExamples/Materials/MI_BulletHole",
+        "/Game/NiagaraExamples/Materials/MI_ImpactFlash",
+        "/Game/NiagaraExamples/Materials/MI_SimpleDebris",
+        "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+        "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+        "/Game/NiagaraExamples/Materials/MI_Sparks",
+        "/Game/NiagaraExamples/Materials/MasterMaterials/M_BrightCore",
+        "/Game/NiagaraExamples/StaticMesh/S_Concrete_Rubble_uc1iccejw",
+        "/Game/NiagaraExamples/StaticMesh/S_Concrete_Rubble_uc1jagbjw",
+        "/Game/NiagaraExamples/StaticMesh/S_Concrete_Rubble_uc1jagnjw",
+        "/Game/NiagaraExamples/StaticMesh/S_Pine_Bark_Piece_wjtsdevs",
+        "/Game/NiagaraExamples/StaticMesh/S_Pine_Bark_Piece_wjtuebms",
+        "/Game/NiagaraExamples/StaticMesh/S_Rock_shopk",
+        "/Game/NiagaraExamples/StaticMesh/S_Tree_Debris_wjtuagls",
+        "/Game/NiagaraExamples/StaticMesh/S_Wood_Debris_vb2mfeliw",
+        "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop",
+        "/Game/NiagaraExamples/Textures/Utils/CutoutMask",
+        "/Niagara/DynamicInputs/Add/Add_Float",
+        "/Niagara/DynamicInputs/Bool/v2/SetBoolByFloatComparison",
+        "/Niagara/DynamicInputs/Clamp/Float/RemapRange",
+        "/Niagara/DynamicInputs/Execution/ReturnNormalizedExecIndex",
+        "/Niagara/DynamicInputs/Helpers/DistributionCurveFloat",
+        "/Niagara/DynamicInputs/LinearColor/MakeVector4_FromLinearColor",
+        "/Niagara/DynamicInputs/LinearColor/MultiplyLinearColor",
+        "/Niagara/DynamicInputs/Math/Max_Float",
+        "/Niagara/DynamicInputs/Math/OneMinusFloat",
+        "/Niagara/DynamicInputs/Multiply/Multiply_Float",
+        "/Niagara/DynamicInputs/Multiply/Multiply_LinearColorByFloat",
+        "/Niagara/DynamicInputs/Multiply/Multiply_Vector2D_ByFloat",
+        "/Niagara/DynamicInputs/Multiply/Multiply_VectorByFloat",
+        "/Niagara/DynamicInputs/Power/Power",
+        "/Niagara/DynamicInputs/Random/V2/RandomBool",
+        "/Niagara/DynamicInputs/Random/V2/RandomVector",
+        "/Niagara/DynamicInputs/Transforms/TransformVector",
+        "/Niagara/DynamicInputs/TypeConversions/MakeCustomFloatFromBool",
+        "/Niagara/DynamicInputs/TypeConversions/MakeCustomIntFromBool",
+        "/Niagara/DynamicInputs/TypeConversions/MakeIntFromFloat",
+        "/Niagara/DynamicInputs/TypeConversions/MakeVector4_FromFloat",
+        "/Niagara/DynamicInputs/TypeConversions/Vector2DFromFloat",
+        "/Niagara/DynamicInputs/TypeConversions/VectorFromFloat",
+        "/Niagara/DynamicInputs/UniformRange/V2/RandomRangeFloat",
+        "/Niagara/DynamicInputs/UniformRange/V2/RandomRangeVector",
+        "/Niagara/DynamicInputs/ValueFromCurve/FloatFromCurve",
+        "/Niagara/DynamicInputs/Vectors/Position/AddVectorToPosition",
+        "/Niagara/Enums/Angles/ENiagara_AngleInput",
+        "/Niagara/Enums/Collision/SceneDepthCollisionQueryMethod",
+        "/Niagara/Enums/ENiagaraBooleanLogicOps_v2",
+        "/Niagara/Enums/ENiagaraCalculateRadiusOptions",
+        "/Niagara/Enums/ENiagaraChannelCorrelation",
+        "/Niagara/Enums/ENiagaraCollisionRadiusOptions",
+        "/Niagara/Enums/ENiagaraCurlNoiseQuality",
+        "/Niagara/Enums/ENiagaraEmitterLifeCycleMode",
+        "/Niagara/Enums/ENiagaraEmitterScalabilityMode_Limited",
+        "/Niagara/Enums/ENiagaraFrictionMergeType",
+        "/Niagara/Enums/ENiagaraInactiveMode",
+        "/Niagara/Enums/ENiagaraMeshOrSprite",
+        "/Niagara/Enums/ENiagaraMeshTransforms",
+        "/Niagara/Enums/ENiagaraRandomnessEvaluation",
+        "/Niagara/Enums/ENiagaraRandomnessMode",
+        "/Niagara/Enums/ENiagaraRestitutionMergeType",
+        "/Niagara/Enums/ENiagaraScaleColorMode",
+        "/Niagara/Enums/ENiagaraSystemInactiveMode",
+        "/Niagara/Enums/ENiagara_AttributeSamplingApplyOutput",
+        "/Niagara/Enums/ENiagara_CPUCollisionType",
+        "/Niagara/Enums/ENiagara_ColorInitializationMode",
+        "/Niagara/Enums/ENiagara_DirectReadApplicationMode",
+        "/Niagara/Enums/ENiagara_DirectReadParticleIDSampling",
+        "/Niagara/Enums/ENiagara_DirectReadSamplingMode",
+        "/Niagara/Enums/ENiagara_EmitterLocSamplingMode",
+        "/Niagara/Enums/ENiagara_EmitterStateOptions",
+        "/Niagara/Enums/ENiagara_GPUCollisionType",
+        "/Niagara/Enums/ENiagara_InfiniteLoopDuration",
+        "/Niagara/Enums/ENiagara_LifetimeInheritanceOptions",
+        "/Niagara/Enums/ENiagara_LifetimeMode",
+        "/Niagara/Enums/ENiagara_MassInitializationMode",
+        "/Niagara/Enums/ENiagara_PositionInitializationMode",
+        "/Niagara/Enums/ENiagara_SizeScaleMode",
+        "/Niagara/Enums/ENiagara_SpriteRotationMode",
+        "/Niagara/Enums/ENiagara_SubUVLookupModeV2",
+        "/Niagara/Enums/ENiagara_UVFlippingMode",
+        "/Niagara/Enums/ENiagara_WrapClamp",
+        "/Niagara/Enums/Ribbons/ENiagara_UnsetDirectSet",
+        "/Niagara/Enums/Ribbons/ENiagara_UnsetDirectSetRandom",
+        "/Niagara/Enums/SpriteRenderer/ENiagara_AutomaticManual",
+        "/Niagara/Enums/SpriteRenderer/ENiagara_FPSPlayrate",
+        "/Niagara/Enums/SpriteRenderer/ENiagara_ScaleSpriteSize",
+        "/Niagara/Enums/Transforms/ENiagara_MeshOrientationOptions",
+        "/Niagara/Enums/Transforms/ENiagara_RotationMode",
+        "/Niagara/Enums/Utility/ENiagara_DynamicMaterialParametersInputMode",
+        "/Niagara/Enums/Utility/ENiagara_IntegerConversion",
+        "/Niagara/Enums/Utility/ENiagara_OrientVectorCount",
+        "/Niagara/Enums/Utility/ENiagara_UpdateMeshOrientationMode",
+        "/Niagara/Enums/Utility/ENiagara_VelocityMode",
+        "/Niagara/Modules/AttributeReader/SampleParticlesFromOtherEmitter",
+        "/Niagara/Modules/AttributeReader/SpawnParticlesFromOtherEmitter",
+        "/Niagara/Modules/Collision/Collision",
+        "/Niagara/Modules/Decal/Decal_Attributes",
+        "/Niagara/Modules/Emitter/EmitterState",
+        "/Niagara/Modules/Emitter/SpawnBurst_Instantaneous",
+        "/Niagara/Modules/Solvers/SolveForcesAndVelocity",
+        "/Niagara/Modules/Spawn/Initialization/V2/InitializeParticle",
+        "/Niagara/Modules/Spawn/Orientation/V3/InitialMeshOrientation",
+        "/Niagara/Modules/Spawn/Velocity/AddVelocity",
+        "/Niagara/Modules/System/SystemState",
+        "/Niagara/Modules/Update/Color/ScaleColor",
+        "/Niagara/Modules/Update/Forces/Drag",
+        "/Niagara/Modules/Update/Forces/GravityForce",
+        "/Niagara/Modules/Update/Forces/V2/CurlNoiseForce",
+        "/Niagara/Modules/Update/Lifetime/KillParticles",
+        "/Niagara/Modules/Update/Lifetime/ParticleState",
+        "/Niagara/Modules/Update/Material/DynamicMaterialParameters",
+        "/Niagara/Modules/Update/Orientation/V3/UpdateMeshOrientation",
+        "/Niagara/Modules/Update/Size/ScaleMeshSize",
+        "/Niagara/Modules/Update/Size/ScaleSpriteSize",
+        "/Niagara/Modules/Update/SubUV/V2/SubUVAnimation",
+        "/Niagara/ParameterDefinitions/CoreParameters",
+        "/Niagara/ParameterDefinitions/MeshRenderer",
+        "/Niagara/ParameterDefinitions/RibbonRenderer",
+        "/Niagara/ParameterDefinitions/SpriteRenderer",
+        "/Niagara/VectorFields/Assets/TilingCurl32",
+        "/Script/DataHierarchyEditor",
+        "/Script/Niagara",
+        "/Script/NiagaraEditor"
+      ],
+      "closurePackageCount": 209,
+      "closureGamePackages": [
+        {
+          "package": "/Game/NiagaraExamples/EffectTypes/NET_Gameplay_Burst",
+          "name": "NET_Gameplay_Burst",
+          "class": "NiagaraEffectType"
+        },
+        {
+          "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/DynamicInputs/BurstVector",
+          "name": "BurstVector",
+          "class": "NiagaraScript"
+        },
+        {
+          "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/DynamicInputs/RelativeOffsetFloat",
+          "name": "RelativeOffsetFloat",
+          "class": "NiagaraScript"
+        },
+        {
+          "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/Emitters/NE_Impact",
+          "name": "NE_Impact",
+          "class": "NiagaraEmitter"
+        },
+        {
+          "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/Emitters/NE_Impact_LightDecal",
+          "name": "NE_Impact_LightDecal",
+          "class": "NiagaraEmitter"
+        },
+        {
+          "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/Emitters/NE_Impact_MeshAndSprite",
+          "name": "NE_Impact_MeshAndSprite",
+          "class": "NiagaraEmitter"
+        },
+        {
+          "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/Emitters/NE_Impact_SecondarySprite",
+          "name": "NE_Impact_SecondarySprite",
+          "class": "NiagaraEmitter"
+        },
+        {
+          "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/Emitters/NE_Impact_Sprite",
+          "name": "NE_Impact_Sprite",
+          "class": "NiagaraEmitter"
+        },
+        {
+          "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood",
+          "name": "NS_Impact_Wood",
+          "class": "NiagaraSystem"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MasterMaterials/M_BrightCore",
+          "name": "M_BrightCore",
+          "class": "Material"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MasterMaterials/M_BulletHole",
+          "name": "M_BulletHole",
+          "class": "Material"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MasterMaterials/M_Quixel_Simple",
+          "name": "M_Quixel_Simple",
+          "class": "Material"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MasterMaterials/M_SimpleDebris",
+          "name": "M_SimpleDebris",
+          "class": "Material"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MasterMaterials/M_SmokeAndFire_Sprites",
+          "name": "M_SmokeAndFire_Sprites",
+          "class": "Material"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MasterMaterials/M_Sparks",
+          "name": "M_Sparks",
+          "class": "Material"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MaterialFunctions/MF_DecalNormalFade",
+          "name": "MF_DecalNormalFade",
+          "class": "MaterialFunction"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MaterialFunctions/MF_ExposureCompensation",
+          "name": "MF_ExposureCompensation",
+          "class": "MaterialFunction"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MaterialFunctions/MF_FastSphereNormal",
+          "name": "MF_FastSphereNormal",
+          "class": "MaterialFunction"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MaterialFunctions/MF_MotionStretchSpark",
+          "name": "MF_MotionStretchSpark",
+          "class": "MaterialFunction"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MI_BulletHole",
+          "name": "MI_BulletHole",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MI_ImpactFlash",
+          "name": "MI_ImpactFlash",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MI_SimpleDebris",
+          "name": "MI_SimpleDebris",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+          "name": "MI_SmokePuffLight_8x8",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+          "name": "MI_SmokePuffLight_8x8_Emissive",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Materials/MI_Sparks",
+          "name": "MI_Sparks",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/MPC_NiagaraExamples",
+          "name": "MPC_NiagaraExamples",
+          "class": "MaterialParameterCollection"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/MI_Concrete_Rubble_uc1iccejw_1K",
+          "name": "MI_Concrete_Rubble_uc1iccejw_1K",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/T_Concrete_Rubble_uc1iccejw_1K_D",
+          "name": "T_Concrete_Rubble_uc1iccejw_1K_D",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/T_Concrete_Rubble_uc1iccejw_1K_N",
+          "name": "T_Concrete_Rubble_uc1iccejw_1K_N",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/T_ConcreteRubble_uc1iccejw_1K_DpR",
+          "name": "T_ConcreteRubble_uc1iccejw_1K_DpR",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/MI_Concrete_Rubble_uc1jagbjw_1K",
+          "name": "MI_Concrete_Rubble_uc1jagbjw_1K",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/T_Concrete_Rubble_uc1jagbjw_1K_D",
+          "name": "T_Concrete_Rubble_uc1jagbjw_1K_D",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/T_Concrete_Rubble_uc1jagbjw_1K_N",
+          "name": "T_Concrete_Rubble_uc1jagbjw_1K_N",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/T_ConcreteRubble_uc1jagbjw_1K_DpR",
+          "name": "T_ConcreteRubble_uc1jagbjw_1K_DpR",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/MI_Concrete_Rubble_uc1jagnjw_1K",
+          "name": "MI_Concrete_Rubble_uc1jagnjw_1K",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/T_Concrete_Rubble_uc1jagnjw_1K_D",
+          "name": "T_Concrete_Rubble_uc1jagnjw_1K_D",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/T_Concrete_Rubble_uc1jagnjw_1K_N",
+          "name": "T_Concrete_Rubble_uc1jagnjw_1K_N",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/T_ConcreteRubble_uc1jagnjw_1K_DpR",
+          "name": "T_ConcreteRubble_uc1jagnjw_1K_DpR",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/MI_Pine_Bark_Piece_wjtsdevs_2K",
+          "name": "MI_Pine_Bark_Piece_wjtsdevs_2K",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/T_Pine_Bark_Piece_wjtsdevs_2K_D",
+          "name": "T_Pine_Bark_Piece_wjtsdevs_2K_D",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/T_Pine_Bark_Piece_wjtsdevs_2K_N",
+          "name": "T_Pine_Bark_Piece_wjtsdevs_2K_N",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/T_PineBarkPiece_wjtsdevs_2K_DpR",
+          "name": "T_PineBarkPiece_wjtsdevs_2K_DpR",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/MI_Pine_Bark_Piece_wjtuebms_2K",
+          "name": "MI_Pine_Bark_Piece_wjtuebms_2K",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/T_Pine_Bark_Piece_wjtuebms_2K_D",
+          "name": "T_Pine_Bark_Piece_wjtuebms_2K_D",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/T_Pine_Bark_Piece_wjtuebms_2K_N",
+          "name": "T_Pine_Bark_Piece_wjtuebms_2K_N",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/T_PineBarkPiece_wjtuebms_2K_DpR",
+          "name": "T_PineBarkPiece_wjtuebms_2K_DpR",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Rock_shopk/MI_Rock_shopk_2K",
+          "name": "MI_Rock_shopk_2K",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Rock_shopk/T_Rock_shopk_2K_D",
+          "name": "T_Rock_shopk_2K_D",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Rock_shopk/T_Rock_shopk_2K_DpR",
+          "name": "T_Rock_shopk_2K_DpR",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Rock_shopk/T_Rock_shopk_2K_N",
+          "name": "T_Rock_shopk_2K_N",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/S_Concrete_Rubble_uc1iccejw",
+          "name": "S_Concrete_Rubble_uc1iccejw",
+          "class": "StaticMesh"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/S_Concrete_Rubble_uc1jagbjw",
+          "name": "S_Concrete_Rubble_uc1jagbjw",
+          "class": "StaticMesh"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/S_Concrete_Rubble_uc1jagnjw",
+          "name": "S_Concrete_Rubble_uc1jagnjw",
+          "class": "StaticMesh"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/S_Pine_Bark_Piece_wjtsdevs",
+          "name": "S_Pine_Bark_Piece_wjtsdevs",
+          "class": "StaticMesh"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/S_Pine_Bark_Piece_wjtuebms",
+          "name": "S_Pine_Bark_Piece_wjtuebms",
+          "class": "StaticMesh"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/S_Rock_shopk",
+          "name": "S_Rock_shopk",
+          "class": "StaticMesh"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/S_Tree_Debris_wjtuagls",
+          "name": "S_Tree_Debris_wjtuagls",
+          "class": "StaticMesh"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/S_Wood_Debris_vb2mfeliw",
+          "name": "S_Wood_Debris_vb2mfeliw",
+          "class": "StaticMesh"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/MI_Tree_Debris_wjtuagls_2K",
+          "name": "MI_Tree_Debris_wjtuagls_2K",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/T_Tree_Debris_wjtuagls_2K_D",
+          "name": "T_Tree_Debris_wjtuagls_2K_D",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/T_Tree_Debris_wjtuagls_2K_N",
+          "name": "T_Tree_Debris_wjtuagls_2K_N",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/T_TreeDebris_wjtuagls_2K_DpR",
+          "name": "T_TreeDebris_wjtuagls_2K_DpR",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/MI_Wood_Debris_vb2mfeliw_2K",
+          "name": "MI_Wood_Debris_vb2mfeliw_2K",
+          "class": "MaterialInstanceConstant"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/T_Wood_Debris_vb2mfeliw_2K_D",
+          "name": "T_Wood_Debris_vb2mfeliw_2K_D",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/T_Wood_Debris_vb2mfeliw_2K_N",
+          "name": "T_Wood_Debris_vb2mfeliw_2K_N",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/T_WoodDebris_vb2mfeliw_2K_DpR",
+          "name": "T_WoodDebris_vb2mfeliw_2K_DpR",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/ColorCurves/Atlas_FXColorCurves",
+          "name": "Atlas_FXColorCurves",
+          "class": "CurveLinearColorAtlas"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/ColorCurves/EmissiveColorCurve",
+          "name": "EmissiveColorCurve",
+          "class": "CurveLinearColor"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Decals/BulletHole",
+          "name": "BulletHole",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Decals/BulletHole_Normals",
+          "name": "BulletHole_Normals",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Noise/T_Hermite2Noise_CenteredTiling",
+          "name": "T_Hermite2Noise_CenteredTiling",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop",
+          "name": "T_SmokePuffLight_EOO_Loop",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_Normals_Loop",
+          "name": "T_SmokePuffLight_Normals_Loop",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Utils/BaseEOO",
+          "name": "BaseEOO",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Utils/BaseNormal",
+          "name": "BaseNormal",
+          "class": "Texture2D"
+        },
+        {
+          "package": "/Game/NiagaraExamples/Textures/Utils/CutoutMask",
+          "name": "CutoutMask",
+          "class": "Texture2D"
+        }
+      ],
+      "materialInstancePackages": [
+        "/Game/NiagaraExamples/Materials/MI_BulletHole",
+        "/Game/NiagaraExamples/Materials/MI_ImpactFlash",
+        "/Game/NiagaraExamples/Materials/MI_SimpleDebris",
+        "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+        "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+        "/Game/NiagaraExamples/Materials/MI_Sparks",
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/MI_Concrete_Rubble_uc1iccejw_1K",
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/MI_Concrete_Rubble_uc1jagbjw_1K",
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/MI_Concrete_Rubble_uc1jagnjw_1K",
+        "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/MI_Pine_Bark_Piece_wjtsdevs_2K",
+        "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/MI_Pine_Bark_Piece_wjtuebms_2K",
+        "/Game/NiagaraExamples/StaticMesh/Rock_shopk/MI_Rock_shopk_2K",
+        "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/MI_Tree_Debris_wjtuagls_2K",
+        "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/MI_Wood_Debris_vb2mfeliw_2K"
+      ],
+      "texturePackages": [
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/T_ConcreteRubble_uc1iccejw_1K_DpR",
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/T_Concrete_Rubble_uc1iccejw_1K_D",
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/T_Concrete_Rubble_uc1iccejw_1K_N",
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/T_ConcreteRubble_uc1jagbjw_1K_DpR",
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/T_Concrete_Rubble_uc1jagbjw_1K_D",
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/T_Concrete_Rubble_uc1jagbjw_1K_N",
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/T_ConcreteRubble_uc1jagnjw_1K_DpR",
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/T_Concrete_Rubble_uc1jagnjw_1K_D",
+        "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/T_Concrete_Rubble_uc1jagnjw_1K_N",
+        "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/T_PineBarkPiece_wjtsdevs_2K_DpR",
+        "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/T_Pine_Bark_Piece_wjtsdevs_2K_D",
+        "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/T_Pine_Bark_Piece_wjtsdevs_2K_N",
+        "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/T_PineBarkPiece_wjtuebms_2K_DpR",
+        "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/T_Pine_Bark_Piece_wjtuebms_2K_D",
+        "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/T_Pine_Bark_Piece_wjtuebms_2K_N",
+        "/Game/NiagaraExamples/StaticMesh/Rock_shopk/T_Rock_shopk_2K_D",
+        "/Game/NiagaraExamples/StaticMesh/Rock_shopk/T_Rock_shopk_2K_DpR",
+        "/Game/NiagaraExamples/StaticMesh/Rock_shopk/T_Rock_shopk_2K_N",
+        "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/T_TreeDebris_wjtuagls_2K_DpR",
+        "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/T_Tree_Debris_wjtuagls_2K_D",
+        "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/T_Tree_Debris_wjtuagls_2K_N",
+        "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/T_WoodDebris_vb2mfeliw_2K_DpR",
+        "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/T_Wood_Debris_vb2mfeliw_2K_D",
+        "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/T_Wood_Debris_vb2mfeliw_2K_N",
+        "/Game/NiagaraExamples/Textures/Decals/BulletHole",
+        "/Game/NiagaraExamples/Textures/Decals/BulletHole_Normals",
+        "/Game/NiagaraExamples/Textures/Noise/T_Hermite2Noise_CenteredTiling",
+        "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop",
+        "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_Normals_Loop",
+        "/Game/NiagaraExamples/Textures/Utils/BaseEOO",
+        "/Game/NiagaraExamples/Textures/Utils/BaseNormal",
+        "/Game/NiagaraExamples/Textures/Utils/CutoutMask"
+      ],
+      "subUVModuleDirectRefs": [
+        "/Niagara/Modules/Update/SubUV/V2/SubUVAnimation"
+      ]
+    }
+  ],
+  "materialInstanceTextureEdges": [
+    {
+      "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+      "materialName": "MI_SmokePuffLight_8x8",
+      "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop",
+      "textureName": "T_SmokePuffLight_EOO_Loop"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+      "materialName": "MI_SmokePuffLight_8x8",
+      "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_Normals_Loop",
+      "textureName": "T_SmokePuffLight_Normals_Loop"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+      "materialName": "MI_SmokePuffLight_8x8_Emissive",
+      "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop",
+      "textureName": "T_SmokePuffLight_EOO_Loop"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+      "materialName": "MI_SmokePuffLight_8x8_Emissive",
+      "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_Normals_Loop",
+      "textureName": "T_SmokePuffLight_Normals_Loop"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/MI_Concrete_Rubble_uc1iccejw_1K",
+      "materialName": "MI_Concrete_Rubble_uc1iccejw_1K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/T_Concrete_Rubble_uc1iccejw_1K_D",
+      "textureName": "T_Concrete_Rubble_uc1iccejw_1K_D"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/MI_Concrete_Rubble_uc1iccejw_1K",
+      "materialName": "MI_Concrete_Rubble_uc1iccejw_1K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/T_Concrete_Rubble_uc1iccejw_1K_N",
+      "textureName": "T_Concrete_Rubble_uc1iccejw_1K_N"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/MI_Concrete_Rubble_uc1iccejw_1K",
+      "materialName": "MI_Concrete_Rubble_uc1iccejw_1K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1iccejw/T_ConcreteRubble_uc1iccejw_1K_DpR",
+      "textureName": "T_ConcreteRubble_uc1iccejw_1K_DpR"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/MI_Concrete_Rubble_uc1jagbjw_1K",
+      "materialName": "MI_Concrete_Rubble_uc1jagbjw_1K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/T_Concrete_Rubble_uc1jagbjw_1K_D",
+      "textureName": "T_Concrete_Rubble_uc1jagbjw_1K_D"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/MI_Concrete_Rubble_uc1jagbjw_1K",
+      "materialName": "MI_Concrete_Rubble_uc1jagbjw_1K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/T_Concrete_Rubble_uc1jagbjw_1K_N",
+      "textureName": "T_Concrete_Rubble_uc1jagbjw_1K_N"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/MI_Concrete_Rubble_uc1jagbjw_1K",
+      "materialName": "MI_Concrete_Rubble_uc1jagbjw_1K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagbjw/T_ConcreteRubble_uc1jagbjw_1K_DpR",
+      "textureName": "T_ConcreteRubble_uc1jagbjw_1K_DpR"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/MI_Concrete_Rubble_uc1jagnjw_1K",
+      "materialName": "MI_Concrete_Rubble_uc1jagnjw_1K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/T_Concrete_Rubble_uc1jagnjw_1K_D",
+      "textureName": "T_Concrete_Rubble_uc1jagnjw_1K_D"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/MI_Concrete_Rubble_uc1jagnjw_1K",
+      "materialName": "MI_Concrete_Rubble_uc1jagnjw_1K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/T_Concrete_Rubble_uc1jagnjw_1K_N",
+      "textureName": "T_Concrete_Rubble_uc1jagnjw_1K_N"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/MI_Concrete_Rubble_uc1jagnjw_1K",
+      "materialName": "MI_Concrete_Rubble_uc1jagnjw_1K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Concrete_Rubble_uc1jagnjw/T_ConcreteRubble_uc1jagnjw_1K_DpR",
+      "textureName": "T_ConcreteRubble_uc1jagnjw_1K_DpR"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/MI_Pine_Bark_Piece_wjtsdevs_2K",
+      "materialName": "MI_Pine_Bark_Piece_wjtsdevs_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/T_Pine_Bark_Piece_wjtsdevs_2K_D",
+      "textureName": "T_Pine_Bark_Piece_wjtsdevs_2K_D"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/MI_Pine_Bark_Piece_wjtsdevs_2K",
+      "materialName": "MI_Pine_Bark_Piece_wjtsdevs_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/T_Pine_Bark_Piece_wjtsdevs_2K_N",
+      "textureName": "T_Pine_Bark_Piece_wjtsdevs_2K_N"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/MI_Pine_Bark_Piece_wjtsdevs_2K",
+      "materialName": "MI_Pine_Bark_Piece_wjtsdevs_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtsdevs/T_PineBarkPiece_wjtsdevs_2K_DpR",
+      "textureName": "T_PineBarkPiece_wjtsdevs_2K_DpR"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/MI_Pine_Bark_Piece_wjtuebms_2K",
+      "materialName": "MI_Pine_Bark_Piece_wjtuebms_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/T_Pine_Bark_Piece_wjtuebms_2K_D",
+      "textureName": "T_Pine_Bark_Piece_wjtuebms_2K_D"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/MI_Pine_Bark_Piece_wjtuebms_2K",
+      "materialName": "MI_Pine_Bark_Piece_wjtuebms_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/T_Pine_Bark_Piece_wjtuebms_2K_N",
+      "textureName": "T_Pine_Bark_Piece_wjtuebms_2K_N"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/MI_Pine_Bark_Piece_wjtuebms_2K",
+      "materialName": "MI_Pine_Bark_Piece_wjtuebms_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Pine_Bark_Piece_wjtuebms/T_PineBarkPiece_wjtuebms_2K_DpR",
+      "textureName": "T_PineBarkPiece_wjtuebms_2K_DpR"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Rock_shopk/MI_Rock_shopk_2K",
+      "materialName": "MI_Rock_shopk_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Rock_shopk/T_Rock_shopk_2K_D",
+      "textureName": "T_Rock_shopk_2K_D"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Rock_shopk/MI_Rock_shopk_2K",
+      "materialName": "MI_Rock_shopk_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Rock_shopk/T_Rock_shopk_2K_DpR",
+      "textureName": "T_Rock_shopk_2K_DpR"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Rock_shopk/MI_Rock_shopk_2K",
+      "materialName": "MI_Rock_shopk_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Rock_shopk/T_Rock_shopk_2K_N",
+      "textureName": "T_Rock_shopk_2K_N"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/MI_Tree_Debris_wjtuagls_2K",
+      "materialName": "MI_Tree_Debris_wjtuagls_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/T_Tree_Debris_wjtuagls_2K_D",
+      "textureName": "T_Tree_Debris_wjtuagls_2K_D"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/MI_Tree_Debris_wjtuagls_2K",
+      "materialName": "MI_Tree_Debris_wjtuagls_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/T_Tree_Debris_wjtuagls_2K_N",
+      "textureName": "T_Tree_Debris_wjtuagls_2K_N"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/MI_Tree_Debris_wjtuagls_2K",
+      "materialName": "MI_Tree_Debris_wjtuagls_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Tree_Debris_wjtuagls/T_TreeDebris_wjtuagls_2K_DpR",
+      "textureName": "T_TreeDebris_wjtuagls_2K_DpR"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/MI_Wood_Debris_vb2mfeliw_2K",
+      "materialName": "MI_Wood_Debris_vb2mfeliw_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/T_Wood_Debris_vb2mfeliw_2K_D",
+      "textureName": "T_Wood_Debris_vb2mfeliw_2K_D"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/MI_Wood_Debris_vb2mfeliw_2K",
+      "materialName": "MI_Wood_Debris_vb2mfeliw_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/T_Wood_Debris_vb2mfeliw_2K_N",
+      "textureName": "T_Wood_Debris_vb2mfeliw_2K_N"
+    },
+    {
+      "materialPackage": "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/MI_Wood_Debris_vb2mfeliw_2K",
+      "materialName": "MI_Wood_Debris_vb2mfeliw_2K",
+      "texturePackage": "/Game/NiagaraExamples/StaticMesh/Wood_Debris_vb2mfeliw/T_WoodDebris_vb2mfeliw_2K_DpR",
+      "textureName": "T_WoodDebris_vb2mfeliw_2K_DpR"
+    }
+  ],
+  "queriedPackageDependencyCount": 249,
+  "dependencyQueryErrors": []
+}

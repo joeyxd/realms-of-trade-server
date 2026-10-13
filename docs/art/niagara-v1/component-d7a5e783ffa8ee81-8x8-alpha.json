@@ -1,0 +1,277 @@
+{
+  "schema": "marea.niagara-web-derivative",
+  "version": 1,
+  "id": "niagara-16fc0b8630da2831",
+  "atlasId": "component-d7a5e783ffa8ee81-8x8-alpha",
+  "sourceSha256": "16fc0b8630da2831f843d796bd29a252b99e4cf529cec027df8725cf15c0a475",
+  "sourceFrames": [
+    "6280a75e42078b2873bcacdfa8ada00508853adabfceadfd91e26d0231ea7c3f",
+    "82a5cca072d252bff6da551b66a1b5470993bda08f4e1aa73ce5ceb5ea1a07b2",
+    "d1686fcc92519b345e0005225ebbe7b47f12a8473e23d6317b8d38478de282ae",
+    "ebd6111bd9ac82a22706dfd2bc791bda7818ca26649246c3c18b4d9d0f874398",
+    "3be7a0f2c5435b0c8e8a6fba2dd10a38a209a1b5ac4ef76f4082f405fbe63788",
+    "fa6f8d681507b3ff1ba6849935d46861e0e12e69859890951054da95281df50f",
+    "79a233384df145be5da88556c7da5a284fd6ad88c47c5d8dc7cc05ccf7af1677",
+    "8667081ed08ae553a744b9d381860bf3051a1385eadd69230129d50be435488e",
+    "734e9286fabe70765faca4b54c74ffd9342613c9609eade7a3db7a7e9a6def66",
+    "601c36761ad5fa0b8a6d849fec8bfb2df876429e15f84df535da700bd843f121",
+    "0a889c617adbbaf8431b91852c2e5534f6a5a642883efde31fa8e90b42093cb7",
+    "d94e5b5f6a2db2f4a4c321040b8dec0e3e59a7069303e4e3e431219ccae4379d",
+    "6e8935ee69bf7c3f254bfdee565245e2ceaaf6469ae189d52f48890bc82e2cff",
+    "c25549f6727bebc9bdcb391a048fca34ed9366ac17a37dbd9310ebf430588d35",
+    "067c8e4e4ef8ff45c6cb7ca485aab1408e7f4e3175fd50be61d72d201bbac9e9",
+    "bca5f61e0ba9633af9bfd8f3a19c3aba92f497266266ee31ac69015a0fb833f6",
+    "78b8b2f00e8314b9bc1f38b613826a4783a4caf051ea220111ad76c1a56fb5b0",
+    "23021b5321fef26dd4e9470ba867bb8283b90c9390900ba7057eac79698aabce",
+    "041e60f4fc1b1f98e93244e3ee3b06264ca40af3e568d258b59bc570bc5a95e8",
+    "b4cf8bd81379534145f79aaedacaf11daed7919666f528655d9a73ae05faae3f",
+    "227b925a466f3f4152b2887793c643c1990d8399ee236b76cca30752daa382a2",
+    "ce47976f2b69a9334837abf7f7e6b794cf24a433ff24a5a5d5f1de36691cb0b6",
+    "ba81f1ca54deb19c8a0bc6ce925f28b33f466df4b60756a6f0c832c224eb9c38",
+    "fd3c35c5da5161157cbde9c7b3596badd6f934c2e8862ec57ee92a93f7b32104",
+    "cdc66f92a3cd00484b5e167418b0590395962c7d86e3657d90768fda8ee8848f",
+    "e6372db02995c1030fe970d64e5f2e28ca6c9d04e79e4bcaea92872cbff59693",
+    "329bd3634a84ec4192b4991a48b34d16aa1396f85e8dedec571f198703593b83",
+    "87314942a492695b85005f0613da378c9a5f1c049c7598fd1dff8bf6324a3f87",
+    "29bb88672bc83c307b088bf00ee484f470860cf94abe98d30935d2a357052cee",
+    "33b832811ba666fa909686330a66108ba24aac09230aaa01f5d0eecef24322fd",
+    "e7394d320f868992ef2d1a123c2b4f2d4e05ff1d51c617c5c95e69daa6e6b7b8",
+    "f2b1101957b19fd0a7b86a3b76b5ae6e4e87e94f2eed07e3fc5d73ea3fef5c46",
+    "bc5b31492484a506ac9ccc4b801f2b8ee99cf0e1567f753d761b9da08728cb34",
+    "3fbff3884c1a5dcca26def56297501503dacacbb19a0872f90cfeb61f87ed6e2",
+    "1389271314d27e600b2365ab3a8452d02b8d281221223850faf0740c68c9bbdc",
+    "0cede50298107ab4280df4172f08925d89976e2c2ecd7648ca2bf3d933c587bd",
+    "eb636dca76d59437c8639139a1c010af725d519c4c30405701a8913f488fa4b3",
+    "0b2511e011598cf69bd9da86b05ed93785f62c647e95b957f72b20caff9a34ca",
+    "f95b365d9be655a2313abfbc4dd1edc8443336378ee9db92b950d78bd09669b1",
+    "199996cf0bf289cf56f13618b7ab601d0dc02105d967fb7ea787cda238da7188",
+    "a80acdee263937d28e352a5667a13879b25eb3ae7836c74e9b7bd42618a39ab9",
+    "66d9ea3f4743de4da599365add2569becd4fe5b8e163948ddcde1e494b82ec74",
+    "d711f63720a79f8bb09a553d1cd53b1527839dc8e70dfe283226dedf8bcbfabc",
+    "707ac9ed78dc410356fd95060675d405af10fe8e5dc14fffe2f368a0f457746a",
+    "f30cb7040b7911ed36ef65d9398cc49334b7ff05c7d69f857d16cec941413e97",
+    "ee3ee0a8d3383bea0b3295b3d62dbc0294bd9b43eae28d0a9f6d6073c2554abf",
+    "0d25425ec892f39cbeb5297f0d850e7c129050306f5dcf7796d2ae410ca158b6",
+    "749619bcf56160c5fa235782fbb8419d1aa408dc9084da1f78282510185088bf",
+    "a9befaffa7e3f0a18f318348971c4307b58a7afc36b3190561cf06b7500a31d9",
+    "5ead1f9fe3e95800edca9216f15b59b8b9896b50f56862b4041fd022a91843e5",
+    "df1fa9fa75af61f3ff764df325fdf4c7ae6be7c37017e3bf0135f047002abbdf",
+    "b32bc86eae449779c203563d03060a15bef3bd7f458edb37d8003a1495a0705b",
+    "7b4548182db5800f276d4a884fc94af8e5bd7a2d446befe99a050e34fd8935ce",
+    "29adbf2d11c332b198362b7cb50d3b98f4e5b62cc63ef143e1a5d8a633c026e0",
+    "f6d9903054311f8ae2eef350876c141c869a7d17558bfb68a6ad033ff6266e2d",
+    "c15340a36d2d1f22ab84c22f9e2fce160943a5ec4e771e81046410de5c09ae59",
+    "a64322ae04c0f2cc4193bdc080580738ce4458acd34ec64206ece3556eb262ae",
+    "98f399eaec6cab59c5258e61b5f89db54448c359265a516d58dee260511bdd0e",
+    "e8e0e9c5ee0cfe7b127b9868a5f63475658d49a2fcb868994f6e0747bb94291d",
+    "2155fc61a1eaaf3f3a1d4e9914dead3111550b47c95c29e036fe055aff4ace6b",
+    "2cf3c6bde9e3e0044b16e3e6617218bca5ea0ba83d64fb1647f477624557d8a9",
+    "7f3879a9ec9f7b3671a84607a62976ed8fd87b9773572aa46d19d3be2cac65cc",
+    "60ebca9eb81124ead3c581380c36695a124fcda44c2055722810986bf57ce270",
+    "2d43533888726863573bdd88019e52fc9d44e4a9d1d25a7344b93d1ac5bff4a8"
+  ],
+  "files": {
+    "desktop": {
+      "url": "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-desktop.webp",
+      "bytes": 1726410,
+      "sha256": "3d26d941dd765edd7b9d2c46b512c3373819a6cdc514e598805aa49375f9feb1",
+      "width": 4096,
+      "height": 4096
+    },
+    "mobile": {
+      "url": "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-mobile.webp",
+      "bytes": 202262,
+      "sha256": "41e386d6624f10fc68ab9b050c2e470f17637e675b6fcdb27e948cf80da0f8b4",
+      "width": 1024,
+      "height": 1024
+    }
+  },
+  "derivative": {
+    "adapter": "flipbook-v1",
+    "role": "source-texture",
+    "atlas": {
+      "desktop": "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-desktop.webp",
+      "mobile": "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-mobile.webp"
+    },
+    "columns": 8,
+    "rows": 8,
+    "frames": 64,
+    "duration": 2,
+    "width": 6,
+    "height": 6,
+    "blend": "alpha",
+    "atlasId": "component-d7a5e783ffa8ee81-8x8-alpha",
+    "component": {
+      "textureSha256": "d7a5e783ffa8ee81e49dcd903a9a63c02c3950a000ad504a99a93ec57552d640",
+      "columns": 8,
+      "rows": 8,
+      "mapping": "original-alpha-to-white",
+      "name": "T_FlowLoop"
+    },
+    "sourceBinding": {
+      "systemSha256": "16fc0b8630da2831f843d796bd29a252b99e4cf529cec027df8725cf15c0a475",
+      "rendererPath": "/Game/ArrowTrail/FX/NS_ArrowTrail_Holy.NS_ArrowTrail_Holy:Particle001_1.NiagaraSpriteRendererProperties_1",
+      "materialPackage": "/Game/ArrowTrail/Material/MI_Instance/MI_Smoke",
+      "texturePackage": "/Game/ArrowTrail/Texture/T_FlowLoop"
+    }
+  },
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-b8543465984ee6a1",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\ArrowTrail\\Texture\\T_FlowLoop.uasset",
+      "sha256": "d7a5e783ffa8ee81e49dcd903a9a63c02c3950a000ad504a99a93ec57552d640",
+      "bytes": 26764294
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\ArrowTrail\\Texture\\T_FlowLoop.exr",
+      "sha256": "28606f66df114eb9b38b1ad19e531063f6218b7fe751e213538f15ac57babfbc",
+      "bytes": 12373651,
+      "format": "EXR",
+      "width": 4096,
+      "height": 4096,
+      "nativeAlpha": true,
+      "sourceMode": "gbrapf16le",
+      "pixelMethod": "census ffmpeg gbrapf32le plane decode reordered to linear RGBA; no preview normalization applied"
+    },
+    "grid": {
+      "columns": 8,
+      "rows": 8,
+      "cells": 64,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        512,
+        512
+      ]
+    },
+    "mapping": "original-alpha-to-white",
+    "mappingFormula": "RGB=white; A=native source alpha without remapping",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-16fc0b8630da2831",
+        "systemPackage": "/Game/ArrowTrail/FX/NS_ArrowTrail_Holy",
+        "sourceBinding": {
+          "systemSha256": "16fc0b8630da2831f843d796bd29a252b99e4cf529cec027df8725cf15c0a475",
+          "rendererPath": "/Game/ArrowTrail/FX/NS_ArrowTrail_Holy.NS_ArrowTrail_Holy:Particle001_1.NiagaraSpriteRendererProperties_1",
+          "materialPackage": "/Game/ArrowTrail/Material/MI_Instance/MI_Smoke",
+          "texturePackage": "/Game/ArrowTrail/Texture/T_FlowLoop"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/ArrowTrail/FX/NS_ArrowTrail_Holy.NS_ArrowTrail_Holy:",
+          "matched": true
+        },
+        "parameterName": "Texture"
+      },
+      {
+        "effectId": "niagara-8e83e5d96c101971",
+        "systemPackage": "/Game/ArrowTrail/FX/NS_ArrowTrail_Ice",
+        "sourceBinding": {
+          "systemSha256": "8e83e5d96c101971c3083c314b0cdeb6d1f1805e76c540cbb4fb37df317cd742",
+          "rendererPath": "/Game/ArrowTrail/FX/NS_ArrowTrail_Ice.NS_ArrowTrail_Ice:Smoke_2.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/ArrowTrail/Material/MI_Instance/MI_Smoke",
+          "texturePackage": "/Game/ArrowTrail/Texture/T_FlowLoop"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/ArrowTrail/FX/NS_ArrowTrail_Ice.NS_ArrowTrail_Ice:",
+          "matched": true
+        },
+        "parameterName": "Texture"
+      }
+    ]
+  },
+  "packing": {
+    "desktopTile": 512,
+    "mobileTile": 128,
+    "gutter": 2,
+    "oneAtlasVariantLoaded": true
+  },
+  "limitations": [
+    "Original SubUV texture only; the complete Niagara system is pending.",
+    "Playback duration is an editor default, not verified Niagara emitter timing.",
+    "Presentation controls do not modify Niagara emitter particle counts."
+  ]
+}

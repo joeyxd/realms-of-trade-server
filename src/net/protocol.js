@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 60; // Human character slots: owner-validated profile selection; reload peers.
+export const PROTOCOL_VERSION = 62; // Human character slots: owner-validated profile selection; reload peers.
 
 export const MSG = {
   // client -> server
@@ -17,6 +17,7 @@ export const MSG = {
   AGENT_COMPANION_CONFIG: 'agent_companion_config', // private metadata load/save; owner/world come from the admitted session
   AGENT_COMPANION_CREATE: 'agent_companion_create', // private load/create; authenticated principal supplies owner/world
   AGENT_COMPANION_PAIR: 'agent_companion_pair', // private owner load/issue/revoke or pre-admission one-use claim
+  AGENT_COMPANION_PRESENCE: 'agent_companion_presence', // owner load/order; host chooses identity and anchor
   INFERENCE_CONFIG: 'inference_config', // private owner/world configuration only; no provider call or credentials
   AGENT_INVENTORY: 'agent_inventory', // managed pilot read: {requestId,epoch,sessionId}; no account/entity selector
   AGENT_MARKET: 'agent_market', // managed pilot read: {requestId,epoch,sessionId,op,g?,n?,side?}; server selects town
@@ -40,6 +41,7 @@ export const MSG = {
   AGENT_COMPANION_CONFIG_RESULT: 'agent_companion_config_result', // private CAS head; never a grant or running-mind ACK
   AGENT_COMPANION_CREATE_RESULT: 'agent_companion_create_result', // prepared identity and documents; no controller grant
   AGENT_COMPANION_PAIR_RESULT: 'agent_companion_pair_result', // private ephemeral pairing result; never broadcast or persisted
+  AGENT_COMPANION_PRESENCE_RESULT: 'agent_companion_presence_result', // private presence receipt; no provider grant
   INFERENCE_CONFIG_RESULT: 'inference_config_result', // private CAS head and admitted metadata; not a budget reservation
   AGENT_INVENTORY_RESULT: 'agent_inventory_result', // {requestId,epoch,sessionId,ok,why,tick,replay,inventory}
   AGENT_MARKET_RESULT: 'agent_market_result', // {requestId,epoch,sessionId,ok,why,tick,replay,market}; advisory only

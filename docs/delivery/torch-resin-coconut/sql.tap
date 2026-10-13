@@ -1,0 +1,148 @@
+TAP version 13
+# Subtest: SQL032 historical compatibility stores freshwater commands in the existing immutable economic receipt with replay
+ok 1 - SQL032 historical compatibility stores freshwater commands in the existing immutable economic receipt with replay
+  ---
+  duration_ms: 6032.8374
+  type: 'test'
+  ...
+# Subtest: SQL032 historical compatibility rejects forged vessel deltas, duplicate containers, and unsupported command shapes
+ok 2 - SQL032 historical compatibility rejects forged vessel deltas, duplicate containers, and unsupported command shapes
+  ---
+  duration_ms: 4511.1082
+  type: 'test'
+  ...
+# Subtest: SQL032 historical compatibility keeps legacy profiles without vessels valid and rejects invalid container bounds
+ok 3 - SQL032 historical compatibility keeps legacy profiles without vessels valid and rejects invalid container bounds
+  ---
+  duration_ms: 4906.2008
+  type: 'test'
+  ...
+# Subtest: SQL032 historical compatibility records a denied freshwater interaction without changing profile contents
+ok 4 - SQL032 historical compatibility records a denied freshwater interaction without changing profile contents
+  ---
+  duration_ms: 4046.6005
+  type: 'test'
+  ...
+# Subtest: SQL032 historical compatibility charges hold-first for a waterBarrel and rejects filled-barrel removal
+ok 5 - SQL032 historical compatibility charges hold-first for a waterBarrel and rejects filled-barrel removal
+  ---
+  duration_ms: 5553.2234
+  type: 'test'
+  ...
+# Subtest: SQL032 historical compatibility commits fill, deposit, withdraw, and decant through the existing receipt writer
+ok 6 - SQL032 historical compatibility commits fill, deposit, withdraw, and decant through the existing receipt writer
+  ---
+  duration_ms: 4598.1828
+  type: 'test'
+  ...
+# Subtest: SQL032 historical compatibility replays an ordinary no-before receipt after bucket crafting changes the profile vessels
+ok 7 - SQL032 historical compatibility replays an ordinary no-before receipt after bucket crafting changes the profile vessels
+  ---
+  duration_ms: 4340.0342
+  type: 'test'
+  ...
+# Subtest: SQL032 historical compatibility records stale rules:2 raft no-op denials with the normal current-revision record
+ok 8 - SQL032 historical compatibility records stale rules:2 raft no-op denials with the normal current-revision record
+  ---
+  duration_ms: 4057.2634
+  type: 'test'
+  ...
+# Subtest: SQL032 historical compatibility preserves and validates bucket mass through attribute assignment
+ok 9 - SQL032 historical compatibility preserves and validates bucket mass through attribute assignment
+  ---
+  duration_ms: 4342.7135
+  type: 'test'
+  ...
+# Subtest: SQL032 conserves bucket water and commits one drink with exact replay
+ok 10 - SQL032 conserves bucket water and commits one drink with exact replay
+  ---
+  duration_ms: 3838.9467
+  type: 'test'
+  ...
+# Subtest: SQL032 rejects malformed needs, injected canteens, and confirms food decrement plus needs
+ok 11 - SQL032 rejects malformed needs, injected canteens, and confirms food decrement plus needs
+  ---
+  duration_ms: 4164.0024
+  type: 'test'
+  ...
+# Subtest: SQL032 mixed vessel order preserves legacy transfers and binds canteen barrel refills
+ok 12 - SQL032 mixed vessel order preserves legacy transfers and binds canteen barrel refills
+  ---
+  duration_ms: 4560.0058
+  type: 'test'
+  ...
+# Subtest: SQL032 ordinary economic receipts cannot restore or erase needs
+ok 13 - SQL032 ordinary economic receipts cannot restore or erase needs
+  ---
+  duration_ms: 4280.9613
+  type: 'test'
+  ...
+# Subtest: SQL022 validates, commits, and replays an exact paid hand-fuel receipt
+ok 14 - SQL022 validates, commits, and replays an exact paid hand-fuel receipt
+  ---
+  duration_ms: 5399.3126
+  type: 'test'
+  ...
+# Subtest: SQL022 rejects a candidate that exceeds the new fire-slot bound without writing profile, world, or receipt
+ok 15 - SQL022 rejects a candidate that exceeds the new fire-slot bound without writing profile, world, or receipt
+  ---
+  duration_ms: 3643.002
+  type: 'test'
+  ...
+# Subtest: SQL022 preserves paid fire across commerce while allowing exact historical replay
+ok 16 - SQL022 preserves paid fire across commerce while allowing exact historical replay
+  ---
+  duration_ms: 22312.8833
+  type: 'test'
+  ...
+# Subtest: SQL037 is rerunnable, reports readiness only to service_role, and preserves old migration capabilities
+ok 17 - SQL037 is rerunnable, reports readiness only to service_role, and preserves old migration capabilities
+  ---
+  duration_ms: 18713.4233
+  type: 'test'
+  ...
+# Subtest: SQL037 derives final palm loot, strips only verified awards, and preserves pre-existing goods and beneficiaries
+ok 18 - SQL037 derives final palm loot, strips only verified awards, and preserves pre-existing goods and beneficiaries
+  ---
+  duration_ms: 36165.3884
+  type: 'test'
+  ...
+# Subtest: SQL037 commits marked final palm loot atomically, replays exactly, and preserves historical unmarked receipts
+ok 19 - SQL037 commits marked final palm loot atomically, replays exactly, and preserves historical unmarked receipts
+  ---
+  duration_ms: 33240.1522
+  type: 'test'
+  ...
+# Subtest: SQL037 rejects deterministic palm loot on a nonfinal marked hit through the composed RPC
+ok 20 - SQL037 rejects deterministic palm loot on a nonfinal marked hit through the composed RPC
+  ---
+  duration_ms: 38648.1981
+  type: 'test'
+  ...
+# Subtest: coconut eating consumes exactly one unit and restores 25 hydration through the existing survival receipt
+ok 21 - coconut eating consumes exactly one unit and restores 25 hydration through the existing survival receipt
+  ---
+  duration_ms: 55560.0872
+  type: 'test'
+  ...
+# Subtest: versioned hand torch costs two logs and resin while historic torch and raft fuel keep the plank rule
+ok 22 - versioned hand torch costs two logs and resin while historic torch and raft fuel keep the plank rule
+  ---
+  duration_ms: 21247.7177
+  type: 'test'
+  ...
+# Subtest: ordinary commerce and raft transfers retain pre-existing resin and coconut through durable profile writes
+ok 23 - ordinary commerce and raft transfers retain pre-existing resin and coconut through durable profile writes
+  ---
+  duration_ms: 28854.1871
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 349037.3823

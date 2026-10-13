@@ -7,13 +7,13 @@ const COPY = {
     command: 'No se pudo validar la solicitud de luz.', fireOn: 'Encender antorcha', fireOff: 'Apagar antorcha',
     firePendingOn: 'Encendiendo antorcha…', firePendingOff: 'Apagando antorcha…', fireLit: 'Antorcha encendida.',
     fireDark: 'Antorcha apagada.', fireEmpty: 'Crear antorcha (20 min)', fireDelayed: 'La conexión tarda. El combustible sigue bajo control del servidor.',
-    fireDenied: 'No se pudo completar la acción de la antorcha.', goods: 'Necesitas 1 tabla básica en la mochila.' },
+    fireDenied: 'No se pudo completar la acción de la antorcha.', goods: 'Necesitas 2 troncos y 1 resina; la resina puede caer al talar palmeras.' },
   en: { on: 'Light lantern', off: 'Extinguish lantern', pendingOn: 'Lighting…', pendingOff: 'Extinguishing…',
     lit: 'Lantern lit.', dark: 'Lantern extinguished.', delayed: 'The connection is taking longer. The light remains under server control.',
     command: 'The light request could not be validated.', fireOn: 'Light torch', fireOff: 'Extinguish torch',
     firePendingOn: 'Lighting torch…', firePendingOff: 'Extinguishing torch…', fireLit: 'Torch lit.',
     fireDark: 'Torch extinguished.', fireEmpty: 'Craft torch (20 min)', fireDelayed: 'The connection is taking longer. Fuel remains under server control.',
-    fireDenied: 'The torch action could not be completed.', goods: 'You need 1 basic plank in your pack.' },
+    fireDenied: 'The torch action could not be completed.', goods: 'You need 2 logs and 1 resin; resin may drop when you fell palms.' },
 };
 
 const isDead = (entity, player) => !!entity?.dying || entity?.r?.act === 6 || entity?.r?.hp <= 0 || !!player?.dead;
@@ -38,7 +38,11 @@ export class PersonalLanternActions {
     if (parent?.ownerDocument) this.mount(parent.ownerDocument);
   }
 
-  get copy() { return COPY[this.locale()] || COPY.es; }
+  get copy() {
+    const copy = COPY[this.locale()] || COPY.es;
+    if (this.client()?.fire?.torchRules === 2) return copy;
+    return { ...copy, goods: this.locale() === 'en' ? 'You need 1 basic plank in your pack.' : 'Necesitas 1 tabla básica en la mochila.' };
+  }
 
   mount(doc) {
     const button = doc.createElement('button');

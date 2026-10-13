@@ -44,6 +44,7 @@ export class Assets {
   // onProgress(done, total, id). timeoutMs: per file.
   async load(url = 'assets/manifest.json', { onProgress = null, timeoutMs = 60000, fetchFn = (u, o) => fetch(u, o), mobileTextures = null } = {}) {
     const useMobileTextures = mobileTextures === null ? coarsePointerDefault() : !!mobileTextures;
+    this.mobileTextures = useMobileTextures;
     this.base = url.replace(/[^/]*$/, '');
     let json = null;
     try {
@@ -52,7 +53,7 @@ export class Assets {
     } catch (e) { if (!/404|Failed to fetch|NetworkError/i.test(String(e))) this.errors.push('manifest: ' + e.message); }
     this.man = normalizeManifest(json, { looks: LOOKS.map((l) => l.name) });
     this.errors.push(...this.man.errors);
-    const list = [...this.man.entries.values()];
+    const list = [...this.man.entries.values()].filter(entry => entry.preload !== false);
     if (!list.length) { this.loaded = true; this.report(); return this; }
     let gltf = null;
     if (list.some((e) => e.kind !== 'tex')) gltf = await this.gltfLoader().catch((e) => { this.errors.push('GLTFLoader: ' + e.message); return null; });
@@ -106,7 +107,7 @@ export class Assets {
 
   // Editor-only catalog entries are indexed separately and fetched when selected. They never
   // replace the manifest's prop bindings or add work to the normal boot download.
-  async ensureModel(raw, { base = 'assets/', timeoutMs = 60000 } = {}) {
+  async ensureModel(raw, { base = 'assets/', timeoutMs = 60000, mobileTextures = null } = {}) {
     const normalized = normalizeManifest({ assets: [raw] });
     const entry = normalized.entries.get(raw?.id);
     if (!entry || !['model', 'prop'].includes(entry.kind) || normalized.errors.length) return false;
@@ -115,16 +116,17 @@ export class Assets {
     if (this.has(entry.id)) return true;
     if (this.pendingModels.has(entry.id)) return this.pendingModels.get(entry.id);
     this.man.entries.set(entry.id, entry);
-    const source = new URL(entry.src, new URL(base, globalThis.location?.href || 'http://localhost/')).href;
+    const selectedSrc = selectTextureSource(entry, mobileTextures === null ? (this.mobileTextures ?? coarsePointerDefault()) : !!mobileTextures);
+    const source = new URL(selectedSrc, new URL(base, globalThis.location?.href || 'http://localhost/')).href;
     const pending = (async () => {
-      this.state.set(entry.id, { state: 'loading', selectedSrc: entry.src });
+      this.state.set(entry.id, { state: 'loading', selectedSrc });
       try {
         const loader = await this.gltfLoader();
         const gltf = await withTimeout(loader.loadAsync(source), timeoutMs, entry.src);
-        this.state.set(entry.id, { state: 'ok', selectedSrc: entry.src, data: prepStatic(gltf.scene, entry) });
+        this.state.set(entry.id, { state: 'ok', selectedSrc, data: prepStatic(gltf.scene, entry) });
         return true;
       } catch (error) {
-        this.state.set(entry.id, { state: 'error', selectedSrc: entry.src, error: String(error.message || error) });
+        this.state.set(entry.id, { state: 'error', selectedSrc, error: String(error.message || error) });
         return false;
       } finally { this.pendingModels.delete(entry.id); }
     })();

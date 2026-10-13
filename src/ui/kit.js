@@ -4,13 +4,8 @@
 import { getLocale, onLocaleChange } from '../core/locale.js';
 
 export const UI_LANGS = ['es', 'en'];
-/** The interface language: the document's lang, which core/i18n keeps in sync with the player's choice
- * (PLAN-I18N); without a document (tests, tools) Spanish, the product's reference language. */
-export const uiLang = () => {
-  const lang = typeof document !== 'undefined' ? document.documentElement?.lang || '' : '';
-  if (lang) return lang.toLowerCase().startsWith('en') ? 'en' : 'es';
-  return typeof document !== 'undefined' && getLocale() === 'en' ? 'en' : 'es';
-};
+/** Resolve interface language from the player's locale source; document.lang can lag on mobile. */
+export const uiLang = () => getLocale() === 'en' ? 'en' : 'es';
 export { onLocaleChange };
 /** Picks the text for the current language from an { es, en } pair (Spanish fallback). */
 export const tr = (pair, lang = uiLang()) => (pair && typeof pair === 'object' ? pair[lang] ?? pair.es : pair) ?? '';
@@ -38,9 +33,11 @@ export const ICON_ATLASES = {
 const CELL = new Map();
 for (const [atlas, { cols, ids }] of Object.entries(ICON_ATLASES))
   ids.forEach((id, i) => { if (!CELL.has(id)) CELL.set(id, { atlas, x: i % cols, y: Math.floor(i / cols) }); });
-export const hasAtlasIcon = (id) => CELL.has(id);
+const standaloneIcon = id => id === 'resina' || id === 'coco';
+export const hasAtlasIcon = (id) => CELL.has(id) || standaloneIcon(id);
 /** A painted icon as a sized span (class `cls`), or '' when the id has no painted art. */
 export function atlasIcon(id, cls = '') {
+  if (standaloneIcon(id)) return `<span class="kit-item-art kit-item-art-${id} ${cls}" aria-hidden="true"></span>`;
   const cell = CELL.get(id);
   return cell ? `<span class="kit-ico ${cls}" data-atlas="${cell.atlas}" style="--ix:${cell.x};--iy:${cell.y}" aria-hidden="true"></span>` : '';
 }

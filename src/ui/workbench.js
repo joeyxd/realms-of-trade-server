@@ -1,7 +1,7 @@
 // Crafting menu: recipes by category, materials, real base stats and the backpack. Hand recipes craft anywhere on
 // land; the rest need the shore workbench. The server stays authoritative; this panel only previews and asks.
 import { CRAFT_RECIPES, HARVEST, WOOD_RECIPE } from '../data/resources.js';
-import { FIRE_FUEL, FIRE_SECONDS } from '../data/fire.js';
+import { FIRE_SECONDS } from '../data/fire.js';
 import { onLocaleChange, formatNumber } from '../core/i18n.js';
 import { GOODS, GOOD_IDS } from '../data/goods.js';
 import { goodMass, goodVolume, holdMass, holdUsed } from '../sim/economy/cargo.js';
@@ -15,12 +15,14 @@ const LOCALE = { es: 'es-MX', en: 'en-US' };
 const fmt = (value, lang = craftLang()) => formatNumber(Math.max(0, Number.isFinite(value) ? value : 0));
 const fill = (text, params) => text.replace(/\{(\w+)\}/g, (_, key) => String(params[key] ?? ''));
 const esc = (text) => String(text).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
-// The hand torch is listed with the recipes but is a fire load (the `fire` op, SQL022), not a resource craft: one plank
-// becomes 20 lit minutes in the hand slot. The server keeps its own rules; this entry only previews and asks.
-export const TORCH_RECIPE = Object.freeze({ id: 'antorcha', name: 'Antorcha', inputs: Object.freeze({ [FIRE_FUEL.good]: FIRE_FUEL.count }),
+// The hand torch is a versioned fire load (the `fire` op), not a resource craft: current worlds use logs and resin,
+// while historical worlds keep their one-plank rule. The server remains authoritative for both.
+export const TORCH_RECIPE = Object.freeze({ id: 'antorcha', name: 'Antorcha', inputs: Object.freeze({ tronco: 2, resina: 1 }),
   fire: 'handTorch', hand: true, count: 1, max: 1 });
+const LEGACY_TORCH_RECIPE = Object.freeze({ ...TORCH_RECIPE, inputs: Object.freeze({ madera: 1 }) });
 const RECIPES = Object.freeze({ ...CRAFT_RECIPES, [TORCH_RECIPE.id]: TORCH_RECIPE });
-const recipeFor = (id = WOOD_RECIPE.id) => RECIPES[id] || RECIPES[WOOD_RECIPE.id] || WOOD_RECIPE;
+const recipeFor = (id = WOOD_RECIPE.id, rules = 2) => id === TORCH_RECIPE.id && rules !== 2
+  ? LEGACY_TORCH_RECIPE : RECIPES[id] || RECIPES[WOOD_RECIPE.id] || WOOD_RECIPE;
 const recipeInputs = (recipe) => recipe.inputs || { [recipe.input]: recipe.count || 1 };
 const recipeOutput = (recipe) => recipe.output;
 const isToolRecipe = (recipe) => !!recipe.tool;
@@ -38,8 +40,8 @@ function validPack(pack) {
 }
 
 /** Calculate an all-or-nothing batch against the current profile without changing it. */
-export function workbenchPreview(profile, n, recipeId = WOOD_RECIPE.id) {
-  const recipe = recipeFor(recipeId), pack = profile?.eco?.pack, inputs = recipeInputs(recipe);
+export function workbenchPreview(profile, n, recipeId = WOOD_RECIPE.id, torchRules = 2) {
+  const recipe = recipeFor(recipeId, torchRules), pack = profile?.eco?.pack, inputs = recipeInputs(recipe);
   const tool = isToolRecipe(recipe), noGoods = tool || !!recipe.fire, craftMax = noGoods ? 1 : Math.min(MAX_CRAFT(), recipe.max || MAX_CRAFT());
   let packKnown = validPack(pack), usedBefore = 0, massBefore = 0;
   if (packKnown) { try { usedBefore = holdUsed(pack); massBefore = holdMass(pack); packKnown = Number.isFinite(usedBefore) && usedBefore <= pack.cap && Number.isFinite(massBefore)
@@ -62,7 +64,7 @@ export function workbenchPreview(profile, n, recipeId = WOOD_RECIPE.id) {
   const massAfter = packKnown ? massBefore + requested * massDeltaPerBatch : 0;
   const spaceFits = tool || (packKnown && spaceAfter >= -1e-8);
   const massFits = tool || (packKnown && (pack.maxMass === undefined || massAfter <= pack.maxMass + 1e-8));
-  const english = globalThis.document?.documentElement?.lang?.toLowerCase().startsWith('en') === true;
+  const english = craftLang() === 'en';
   const plankName = recipe.id === WOOD_RECIPE.id ? (english ? 'Basic plank' : 'Tabla básica') : GOODS[output]?.name || output;
   return { recipe: recipe.id, tool: recipe.tool || null, tier: recipe.tier || 0, hand: !!recipe.hand, fire: recipe.fire || null, inputs: needs,
     input: needs[0]?.good, output, inputName: needs[0]?.name || '', outputName: noGoods ? recipe.name : plankName,
@@ -79,7 +81,7 @@ function call(getter, fallback = null) { try { return typeof getter === 'functio
 /** Match the private server receipt against the exact recipe and revision that was sent. */
 export function craftAcknowledgementMatches(pending, ev) {
   if (!pending?.command || ev?.ok !== true || ev.rev !== pending.command.expectedRev + 1) return false;
-  const recipe = recipeFor(pending.recipe);
+  const recipe = recipeFor(pending.recipe, pending.rules);
   if (pending.tool) return ev.tool === pending.tool && ev.tier === pending.tier && ev.count === 1;
   return ev.good === recipe.output && ev.count === pending.count;
 }
@@ -180,7 +182,8 @@ export class WorkbenchPanel {
     if (Math.abs(player.y - bench.y) > 1.5 || Math.hypot(player.x - bench.x, player.z - bench.z) > HARVEST.benchRadius) return null;
     return { ...base, bench };
   }
-  craftContext(recipeId = this.recipe) { return recipeFor(recipeId).hand ? this.baseContext() : this.context(); }
+  torchRules() { return call(this.torch)?.torchRules === 2 ? 2 : 1; }
+  craftContext(recipeId = this.recipe) { return recipeFor(recipeId, this.torchRules()).hand ? this.baseContext() : this.context(); }
   /** The hand torch slot as the server last confirmed it (client.fire); null while the fire system is off. */
   torchState() {
     const fire = call(this.torch);
@@ -211,7 +214,7 @@ export class WorkbenchPanel {
     if (source.kind === 'reason') return CRAFT_REASONS[lang][source.why] || CRAFT_TEXT[lang].feedback.unknown;
     if (source.kind === 'fire') {
       const f = CRAFT_TEXT[lang].feedback;
-      return { goods: f.torchPlank, account_required: f.torchAccount, disabled: f.torchOff }[source.why] || CRAFT_REASONS[lang][source.why] || f.unknown;
+      return { goods: this.torchRules() === 2 ? f.torchFuel : f.legacyTorchFuel, account_required: f.torchAccount, disabled: f.torchOff }[source.why] || CRAFT_REASONS[lang][source.why] || f.unknown;
     }
     return CRAFT_TEXT[lang].feedback.sendFailed;
   }
@@ -233,10 +236,10 @@ export class WorkbenchPanel {
       const done = this.pending; this.pending = null; this.resultSource = { kind: 'success', done }; this.lastResult = this.resultText(); this.resultTone = 'ok';
     }
     if (!this.active) return;
-    const lang = craftLang(), t = CRAFT_TEXT[lang], bench = this.context(), recipe = this.recipe ? recipeFor(this.recipe) : null;
+    const lang = craftLang(), t = CRAFT_TEXT[lang], bench = this.context(), torchRules = this.torchRules(), recipe = this.recipe ? recipeFor(this.recipe, torchRules) : null;
     this.lastResult = this.resultText();
     const ctx = recipe ? (recipe.hand ? base : bench) : null, pending = this.pending;
-    const torch = this.torchState(), rawPreview = workbenchPreview(profile, this.qty, recipe ? recipe.id : undefined);
+    const torch = this.torchState(), rawPreview = workbenchPreview(profile, this.qty, recipe ? recipe.id : undefined, torchRules);
     const preview = recipe?.fire ? this.firePreview(rawPreview, torch) : rawPreview;
     const retryReady = !!pending && performance.now() - pending.sentAt >= 5000;
     const pack = profile?.eco?.pack, tools = profile?.tools || {};
@@ -274,7 +277,9 @@ export class WorkbenchPanel {
     const confirm = this.$('.wb-confirm');
     if (empty) { confirm.disabled = true; this.$('[data-confirm-label]').textContent = t.craft; this.$('[data-feedback]').textContent = ''; this.$('.wb-retry').hidden = true; return; }
     const copy = recipeText(recipe.id, lang), tool = !!recipe.tool, single = tool || !!recipe.fire;
-    this.$('[data-output-name]').textContent = copy.name; this.$('[data-desc]').textContent = copy.desc;
+    this.$('[data-output-name]').textContent = copy.name;
+    this.$('[data-desc]').textContent = recipe.id === TORCH_RECIPE.id && this.torchRules() !== 2
+      ? (lang === 'en' ? 'A basic plank fuels 20 minutes of light you can carry.' : 'Una tabla básica alimenta 20 minutos de luz que llevas contigo.') : copy.desc;
     this.$('[data-flavor]').textContent = copy.flavor; this.$('[data-motto]').textContent = copy.motto;
     const where = this.$('[data-where]');
     where.textContent = recipe.hand ? t.hand : bench ? t.benchNear : t.benchFar;
@@ -293,7 +298,10 @@ export class WorkbenchPanel {
     this.$('[data-output-icon]').innerHTML = itemIcon(recipe.id, 'cr-out-art');
     this.$('[data-output-label]').textContent = copy.name;
     this.$('[data-output-count]').textContent = recipe.fire ? `${fmt(FIRE_SECONDS[recipe.fire] / 60, lang)} min` : `x${fmt(tool ? 1 : (p.outputAmount || recipe.count || 1), lang)}`;
-    const stats = RECIPE_UI[recipe.id]?.stats?.() || [];
+    let stats = RECIPE_UI[recipe.id]?.stats?.() || [];
+    if (recipe.id === TORCH_RECIPE.id && this.torchRules() !== 2) stats = [stats[0],
+      { icon: 'stack', es: 'Tabla por carga', en: 'Plank per load', value: 1, max: 4, text: '1' },
+      { icon: 'logs', es: 'Troncos por tabla', en: 'Logs per plank', value: 2, max: 4, text: '2' }];
     this.$('[data-stats]').innerHTML = stats.map((s) => `<div class="cr-stat"><span class="cr-stat-ico">${CRAFT_ICONS[s.icon] || ''}</span><span class="cr-stat-name">${esc(s[lang] || s.es)}</span><span class="cr-bar"><i style="width:${Math.max(4, Math.min(100, s.value / s.max * 100)).toFixed(1)}%"></i></span><b>${esc(s.text)}</b></div>`).join('');
     // Quantity: batch recipes only; tools are a single craft.
     const qtyRow = this.$('[data-qty-row]'), input = this.$('[data-qty-input]');
@@ -335,12 +343,12 @@ export class WorkbenchPanel {
     }).join('') + (torch ? `<div class="cr-slot cr-belt-slot ${torch.seconds > 0 ? 'is-owned' : 'is-missing'}${torch.seconds > 0 && torch.lit ? ' is-lit' : ''}" title="${esc(torch.seconds > 0
       ? fill(t.torchOn, { time: clock(torch.seconds) }) : `${recipeText(TORCH_RECIPE.id, lang).name} · ${t.beltMissing}`)}">${itemIcon(TORCH_RECIPE.id, 'cr-slot-art')}</div>` : '');
   }
-  previewMessage(p, ctx, recipe = recipeFor(this.recipe)) {
+  previewMessage(p, ctx, recipe = recipeFor(this.recipe, this.torchRules())) {
     const f = this.text().feedback;
     if (!ctx) return recipe.hand ? '' : f.far;
     if (recipe.fire) {
       if (p.fireBlock === 'off') return f.torchOff; if (p.fireBlock === 'burning') return fill(f.torchBurning, { time: clock(p.torchSeconds) });
-      if (!p.packKnown) return f.pack; return p.materialsFit ? f.ready : f.torchPlank;
+      if (!p.packKnown) return f.pack; return p.materialsFit ? f.ready : this.torchRules() === 2 ? f.torchFuel : f.legacyTorchFuel;
     }
     if (p.ownedTool) return f.owned; if (!p.packKnown) return f.pack;
     if (!p.qtyValid) return fill(f.qty, { max: p.craftMax }); if (!p.materialsFit) return f.materials; if (!p.spaceFits) return f.space;
@@ -355,7 +363,7 @@ export class WorkbenchPanel {
   }
   confirm() {
     if (!this.recipe || !RECIPES[this.recipe]) return false;
-    if (recipeFor(this.recipe).fire) return this.lightTorch();
+    if (recipeFor(this.recipe, this.torchRules()).fire) return this.lightTorch();
     const ctx = this.craftContext(this.recipe), preview = workbenchPreview(ctx?.profile, this.qty, this.recipe);
     if (this.pending || !ctx || !preview.canCraft || typeof this.submitCommand !== 'function') return false;
     const recipe = recipeFor(this.recipe), command = Object.freeze({ t: 'cmd', type: 'resource', op: 'craft', opId: globalThis.crypto.randomUUID(), recipe: recipe.id, n: preview.n, expectedRev: ctx.profile.eco.tradeRev });
@@ -366,11 +374,11 @@ export class WorkbenchPanel {
   }
   /** Load and light the hand torch: the same immutable `fire` intent as the fire panel, answered by a `fire` event. */
   lightTorch() {
-    const ctx = this.baseContext(), torch = this.torchState(), preview = this.firePreview(workbenchPreview(ctx?.profile, 1, TORCH_RECIPE.id), torch);
+    const rules = this.torchRules(), ctx = this.baseContext(), torch = this.torchState(), preview = this.firePreview(workbenchPreview(ctx?.profile, 1, TORCH_RECIPE.id, rules), torch);
     if (this.pending || !ctx || !torch || !preview.canCraft || typeof this.submitFire !== 'function') return false;
     const command = Object.freeze({ t: 'cmd', type: 'fire', op: 'load', opId: globalThis.crypto.randomUUID(), ship: '', part: 'hand',
-      kind: TORCH_RECIPE.fire, expectedRev: torch.rev, lit: true });
-    this.pending = { command, sentAt: performance.now(), fire: true, count: 1, recipe: TORCH_RECIPE.id, tool: null, tier: 0 };
+      kind: TORCH_RECIPE.fire, expectedRev: torch.rev, lit: true, ...(rules === 2 ? { rules: 2 } : {}) });
+    this.pending = { command, sentAt: performance.now(), fire: true, count: 1, recipe: TORCH_RECIPE.id, rules, tool: null, tier: 0 };
     this.clearResult(); this.resultTone = ''; let accepted = false; try { accepted = this.submitFire(command) === true; } catch {}
     if (!accepted) { this.pending = null; this.resultSource = { kind: 'sendFailed' }; this.lastResult = this.resultText(); this.resultTone = 'error'; this.update(); return false; }
     this.update(); return true;

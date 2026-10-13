@@ -1,0 +1,1430 @@
+{
+  "schema": "firework-tight-sequential-capture-v1",
+  "engine": "UE5.8",
+  "source_reference": "C:/Unreal/MyProject/Content/NiagaraExamples/FX_Misc/NS_FireworkBurst.uasset",
+  "source_sha256_expected": "b23e30580f0f5d097c19d496c0d7685eb61da4882e224f876cd5d16346d438b0",
+  "frames_requested": 60,
+  "requested_relative_ages_seconds": [
+    0.0,
+    0.03333333333333333,
+    0.06666666666666667,
+    0.1,
+    0.13333333333333333,
+    0.16666666666666666,
+    0.2,
+    0.23333333333333334,
+    0.26666666666666666,
+    0.3,
+    0.3333333333333333,
+    0.36666666666666664,
+    0.4,
+    0.43333333333333335,
+    0.4666666666666667,
+    0.5,
+    0.5333333333333333,
+    0.5666666666666667,
+    0.6,
+    0.6333333333333333,
+    0.6666666666666666,
+    0.7,
+    0.7333333333333333,
+    0.7666666666666667,
+    0.8,
+    0.8333333333333334,
+    0.8666666666666667,
+    0.9,
+    0.9333333333333333,
+    0.9666666666666667,
+    1.0,
+    1.0333333333333334,
+    1.0666666666666667,
+    1.1,
+    1.1333333333333333,
+    1.1666666666666667,
+    1.2,
+    1.2333333333333334,
+    1.2666666666666666,
+    1.3,
+    1.3333333333333333,
+    1.3666666666666667,
+    1.4,
+    1.4333333333333333,
+    1.4666666666666666,
+    1.5,
+    1.5333333333333334,
+    1.5666666666666667,
+    1.6,
+    1.6333333333333333,
+    1.6666666666666667,
+    1.7,
+    1.7333333333333334,
+    1.7666666666666666,
+    1.8,
+    1.8333333333333333,
+    1.8666666666666667,
+    1.9,
+    1.9333333333333333,
+    1.9666666666666666
+  ],
+  "sampling": "uniform 1/30 second output spacing, manually advance at 1/60 second with 2 ticks between frames",
+  "capture_source": "SCS_FINAL_COLOR_LDR",
+  "RT_format": "RTF_RGBA8",
+  "background": "opaque black",
+  "camera_distance_multiplier": 0.43,
+  "resolution": [
+    1024,
+    1024
+  ],
+  "timeline": {
+    "reset_activate_once": true,
+    "pre_roll_editor_ticks": 3,
+    "absolute_age_offset_unverified": true,
+    "pause_before_first_advance": true,
+    "pause_before_every_capture_readback": true,
+    "cumulative_manual_ticks": 118,
+    "last_relative_seconds": 1.9666666666666666,
+    "last_delta_ticks": 2
+  },
+  "renderer_material_evidence": "two firework sprite renderers both MI_Fireworks -> M_Flare BLEND_ADDITIVE (exact ObjectIterator paths in ../material-blend-inspection/exact-renderer-blends-v2.json)",
+  "alpha": "not included in source captures; derive only after verified additive classification",
+  "frames": [
+    {
+      "index": 0,
+      "relative_seconds": 0.0,
+      "manual_ticks": 0,
+      "stats": {
+        "rgb_gt4_pixels": 0,
+        "rgb_gt4_bbox": null,
+        "rgb_max": [
+          1,
+          1,
+          1
+        ]
+      },
+      "file": "firework_frame_00_relative_000000ms",
+      "sha256": "7ad1d9493e6b5116f641225175c891876ca043bd9c804d93ada1e499426d4414",
+      "bytes": 225665
+    },
+    {
+      "index": 1,
+      "relative_seconds": 0.03333333333333333,
+      "manual_ticks": 2,
+      "stats": {
+        "rgb_gt4_pixels": 0,
+        "rgb_gt4_bbox": null,
+        "rgb_max": [
+          1,
+          1,
+          1
+        ]
+      },
+      "file": "firework_frame_01_relative_000033ms",
+      "sha256": "7ad1d9493e6b5116f641225175c891876ca043bd9c804d93ada1e499426d4414",
+      "bytes": 225665
+    },
+    {
+      "index": 2,
+      "relative_seconds": 0.06666666666666667,
+      "manual_ticks": 4,
+      "stats": {
+        "rgb_gt4_pixels": 0,
+        "rgb_gt4_bbox": null,
+        "rgb_max": [
+          1,
+          1,
+          1
+        ]
+      },
+      "file": "firework_frame_02_relative_000066ms",
+      "sha256": "7ad1d9493e6b5116f641225175c891876ca043bd9c804d93ada1e499426d4414",
+      "bytes": 225665
+    },
+    {
+      "index": 3,
+      "relative_seconds": 0.1,
+      "manual_ticks": 6,
+      "stats": {
+        "rgb_gt4_pixels": 368,
+        "rgb_gt4_bbox": [
+          470,
+          837,
+          533,
+          891
+        ],
+        "rgb_max": [
+          255,
+          255,
+          199
+        ]
+      },
+      "file": "firework_frame_03_relative_000100ms",
+      "sha256": "6e43725f22948f47d7639f6d9edd6baedb3e7bf640d7491dc82916c50ac143a6",
+      "bytes": 225665
+    },
+    {
+      "index": 4,
+      "relative_seconds": 0.13333333333333333,
+      "manual_ticks": 8,
+      "stats": {
+        "rgb_gt4_pixels": 670,
+        "rgb_gt4_bbox": [
+          468,
+          820,
+          539,
+          889
+        ],
+        "rgb_max": [
+          255,
+          255,
+          193
+        ]
+      },
+      "file": "firework_frame_04_relative_000133ms",
+      "sha256": "dfe0217c94a898e7af65e5cac2526a0339c9a12f2285e08dc9878f1b5460a0fa",
+      "bytes": 225665
+    },
+    {
+      "index": 5,
+      "relative_seconds": 0.16666666666666666,
+      "manual_ticks": 10,
+      "stats": {
+        "rgb_gt4_pixels": 1071,
+        "rgb_gt4_bbox": [
+          466,
+          799,
+          542,
+          889
+        ],
+        "rgb_max": [
+          255,
+          255,
+          200
+        ]
+      },
+      "file": "firework_frame_05_relative_000166ms",
+      "sha256": "f643dc568b5ca058d800f1e07463bd90abb248e2c107a43464cbd6183351b66f",
+      "bytes": 225665
+    },
+    {
+      "index": 6,
+      "relative_seconds": 0.2,
+      "manual_ticks": 12,
+      "stats": {
+        "rgb_gt4_pixels": 1617,
+        "rgb_gt4_bbox": [
+          465,
+          779,
+          548,
+          889
+        ],
+        "rgb_max": [
+          255,
+          255,
+          201
+        ]
+      },
+      "file": "firework_frame_06_relative_000200ms",
+      "sha256": "e2585cfc288350f8ec1ad978e28530cc5c9cc5adb744730502cd74560897cd7f",
+      "bytes": 225665
+    },
+    {
+      "index": 7,
+      "relative_seconds": 0.23333333333333334,
+      "manual_ticks": 14,
+      "stats": {
+        "rgb_gt4_pixels": 2137,
+        "rgb_gt4_bbox": [
+          463,
+          759,
+          550,
+          889
+        ],
+        "rgb_max": [
+          255,
+          255,
+          202
+        ]
+      },
+      "file": "firework_frame_07_relative_000233ms",
+      "sha256": "79785fbb919187c095dbe1a3fa783678d69cb5f58bd293ccaa93117ebbb31038",
+      "bytes": 310838
+    },
+    {
+      "index": 8,
+      "relative_seconds": 0.26666666666666666,
+      "manual_ticks": 16,
+      "stats": {
+        "rgb_gt4_pixels": 2699,
+        "rgb_gt4_bbox": [
+          461,
+          739,
+          553,
+          889
+        ],
+        "rgb_max": [
+          255,
+          255,
+          211
+        ]
+      },
+      "file": "firework_frame_08_relative_000266ms",
+      "sha256": "8e859121da1e1e151fdbb43206bb31e2f8f363a232655e559c0c5db97963d0dd",
+      "bytes": 315339
+    },
+    {
+      "index": 9,
+      "relative_seconds": 0.3,
+      "manual_ticks": 18,
+      "stats": {
+        "rgb_gt4_pixels": 3251,
+        "rgb_gt4_bbox": [
+          459,
+          719,
+          555,
+          889
+        ],
+        "rgb_max": [
+          255,
+          255,
+          205
+        ]
+      },
+      "file": "firework_frame_09_relative_000300ms",
+      "sha256": "871806bf616fea13ed2c6322c0ed88cdb9c0b99218274da293ece81bf8794b64",
+      "bytes": 315909
+    },
+    {
+      "index": 10,
+      "relative_seconds": 0.3333333333333333,
+      "manual_ticks": 20,
+      "stats": {
+        "rgb_gt4_pixels": 3724,
+        "rgb_gt4_bbox": [
+          457,
+          700,
+          557,
+          889
+        ],
+        "rgb_max": [
+          255,
+          255,
+          209
+        ]
+      },
+      "file": "firework_frame_10_relative_000333ms",
+      "sha256": "4271ec7bbd0a616088ae1c330d11e6bbd80b85068c6aead4f17a20bafc534eec",
+      "bytes": 315909
+    },
+    {
+      "index": 11,
+      "relative_seconds": 0.36666666666666664,
+      "manual_ticks": 22,
+      "stats": {
+        "rgb_gt4_pixels": 4268,
+        "rgb_gt4_bbox": [
+          456,
+          681,
+          559,
+          889
+        ],
+        "rgb_max": [
+          255,
+          255,
+          209
+        ]
+      },
+      "file": "firework_frame_11_relative_000366ms",
+      "sha256": "09606b5ee8e6ea29f2d5c46fe245aa956966892b4ad712265d1dc485f38ceb68",
+      "bytes": 315909
+    },
+    {
+      "index": 12,
+      "relative_seconds": 0.4,
+      "manual_ticks": 24,
+      "stats": {
+        "rgb_gt4_pixels": 4750,
+        "rgb_gt4_bbox": [
+          454,
+          662,
+          561,
+          888
+        ],
+        "rgb_max": [
+          255,
+          255,
+          209
+        ]
+      },
+      "file": "firework_frame_12_relative_000400ms",
+      "sha256": "5bde91e7d0ca4903102cf705c91aef8c98f12c298930e972fba8e6728e3d7726",
+      "bytes": 315909
+    },
+    {
+      "index": 13,
+      "relative_seconds": 0.43333333333333335,
+      "manual_ticks": 26,
+      "stats": {
+        "rgb_gt4_pixels": 5185,
+        "rgb_gt4_bbox": [
+          452,
+          644,
+          563,
+          883
+        ],
+        "rgb_max": [
+          255,
+          255,
+          213
+        ]
+      },
+      "file": "firework_frame_13_relative_000433ms",
+      "sha256": "bc9d715c4ee6c15f0bddb6bb47c9e70b104371f1a79175943409ec6df8241598",
+      "bytes": 315909
+    },
+    {
+      "index": 14,
+      "relative_seconds": 0.4666666666666667,
+      "manual_ticks": 28,
+      "stats": {
+        "rgb_gt4_pixels": 5618,
+        "rgb_gt4_bbox": [
+          451,
+          626,
+          566,
+          884
+        ],
+        "rgb_max": [
+          255,
+          255,
+          215
+        ]
+      },
+      "file": "firework_frame_14_relative_000466ms",
+      "sha256": "e620bf123d4ce85d336268029782c6d28aa6151a4c05ac6ee116412a6e465881",
+      "bytes": 315909
+    },
+    {
+      "index": 15,
+      "relative_seconds": 0.5,
+      "manual_ticks": 30,
+      "stats": {
+        "rgb_gt4_pixels": 6068,
+        "rgb_gt4_bbox": [
+          449,
+          608,
+          568,
+          883
+        ],
+        "rgb_max": [
+          255,
+          255,
+          214
+        ]
+      },
+      "file": "firework_frame_15_relative_000500ms",
+      "sha256": "4934435b38af66dd4dff1745ff29053c085d4492daf23b8a733670d139cd96bc",
+      "bytes": 315909
+    },
+    {
+      "index": 16,
+      "relative_seconds": 0.5333333333333333,
+      "manual_ticks": 32,
+      "stats": {
+        "rgb_gt4_pixels": 6435,
+        "rgb_gt4_bbox": [
+          446,
+          591,
+          570,
+          883
+        ],
+        "rgb_max": [
+          255,
+          255,
+          231
+        ]
+      },
+      "file": "firework_frame_16_relative_000533ms",
+      "sha256": "788fa7cbcf6f2aa1e0b9b905c63bd1c64a418ac9066ba16b073cf1eee94a2e27",
+      "bytes": 315909
+    },
+    {
+      "index": 17,
+      "relative_seconds": 0.5666666666666667,
+      "manual_ticks": 34,
+      "stats": {
+        "rgb_gt4_pixels": 6677,
+        "rgb_gt4_bbox": [
+          444,
+          574,
+          572,
+          880
+        ],
+        "rgb_max": [
+          255,
+          255,
+          214
+        ]
+      },
+      "file": "firework_frame_17_relative_000566ms",
+      "sha256": "5845e649519052bc4e3d469b8960cbc2ba693519a894bdcfd2661c73988f337a",
+      "bytes": 315909
+    },
+    {
+      "index": 18,
+      "relative_seconds": 0.6,
+      "manual_ticks": 36,
+      "stats": {
+        "rgb_gt4_pixels": 6826,
+        "rgb_gt4_bbox": [
+          442,
+          557,
+          574,
+          875
+        ],
+        "rgb_max": [
+          255,
+          255,
+          221
+        ]
+      },
+      "file": "firework_frame_18_relative_000600ms",
+      "sha256": "bb8d6aa5aafcbe900c367d1e2110aa272dda8994d005709bafc9a25edb1db88c",
+      "bytes": 315909
+    },
+    {
+      "index": 19,
+      "relative_seconds": 0.6333333333333333,
+      "manual_ticks": 38,
+      "stats": {
+        "rgb_gt4_pixels": 6863,
+        "rgb_gt4_bbox": [
+          439,
+          541,
+          575,
+          875
+        ],
+        "rgb_max": [
+          255,
+          255,
+          218
+        ]
+      },
+      "file": "firework_frame_19_relative_000633ms",
+      "sha256": "dc1774e133b0629ba37fbe05ba8085e827b7936aab84954b56154a606d4d4cb7",
+      "bytes": 315909
+    },
+    {
+      "index": 20,
+      "relative_seconds": 0.6666666666666666,
+      "manual_ticks": 40,
+      "stats": {
+        "rgb_gt4_pixels": 6940,
+        "rgb_gt4_bbox": [
+          437,
+          524,
+          577,
+          875
+        ],
+        "rgb_max": [
+          255,
+          255,
+          221
+        ]
+      },
+      "file": "firework_frame_20_relative_000666ms",
+      "sha256": "7c2ca95ec201fd185848ae9151359511657fbf6e17bf3b2d010c8c3ae846e638",
+      "bytes": 315909
+    },
+    {
+      "index": 21,
+      "relative_seconds": 0.7,
+      "manual_ticks": 42,
+      "stats": {
+        "rgb_gt4_pixels": 7030,
+        "rgb_gt4_bbox": [
+          434,
+          509,
+          579,
+          858
+        ],
+        "rgb_max": [
+          255,
+          255,
+          223
+        ]
+      },
+      "file": "firework_frame_21_relative_000700ms",
+      "sha256": "3a11dcddaa37e5f22ea62ff091a130f0a4473cd988576447ebad0eb4b5481ab1",
+      "bytes": 315909
+    },
+    {
+      "index": 22,
+      "relative_seconds": 0.7333333333333333,
+      "manual_ticks": 44,
+      "stats": {
+        "rgb_gt4_pixels": 7164,
+        "rgb_gt4_bbox": [
+          431,
+          493,
+          581,
+          851
+        ],
+        "rgb_max": [
+          255,
+          255,
+          221
+        ]
+      },
+      "file": "firework_frame_22_relative_000733ms",
+      "sha256": "e3490afa33590cfe63e84fd635c22a62321f07663922ddd4cc53b7d7e96fe286",
+      "bytes": 315909
+    },
+    {
+      "index": 23,
+      "relative_seconds": 0.7666666666666667,
+      "manual_ticks": 46,
+      "stats": {
+        "rgb_gt4_pixels": 7300,
+        "rgb_gt4_bbox": [
+          429,
+          478,
+          583,
+          834
+        ],
+        "rgb_max": [
+          255,
+          255,
+          221
+        ]
+      },
+      "file": "firework_frame_23_relative_000766ms",
+      "sha256": "72057cfe7b04790e1cc9c546168a98e5b17a66f5560a72ba3f7cf018a6d6b965",
+      "bytes": 315909
+    },
+    {
+      "index": 24,
+      "relative_seconds": 0.8,
+      "manual_ticks": 48,
+      "stats": {
+        "rgb_gt4_pixels": 7388,
+        "rgb_gt4_bbox": [
+          426,
+          464,
+          584,
+          813
+        ],
+        "rgb_max": [
+          255,
+          255,
+          221
+        ]
+      },
+      "file": "firework_frame_24_relative_000800ms",
+      "sha256": "826b0b63926cd3ff27aadaae34af998448cfb3d580b8833597ff8ef2d53a4257",
+      "bytes": 315909
+    },
+    {
+      "index": 25,
+      "relative_seconds": 0.8333333333333334,
+      "manual_ticks": 50,
+      "stats": {
+        "rgb_gt4_pixels": 7486,
+        "rgb_gt4_bbox": [
+          424,
+          450,
+          586,
+          782
+        ],
+        "rgb_max": [
+          255,
+          255,
+          228
+        ]
+      },
+      "file": "firework_frame_25_relative_000833ms",
+      "sha256": "881252f6b2e2be4b2e186fd57f167072595fe584e082d0d7ba54b94a0a143d02",
+      "bytes": 315909
+    },
+    {
+      "index": 26,
+      "relative_seconds": 0.8666666666666667,
+      "manual_ticks": 52,
+      "stats": {
+        "rgb_gt4_pixels": 7500,
+        "rgb_gt4_bbox": [
+          421,
+          435,
+          588,
+          782
+        ],
+        "rgb_max": [
+          255,
+          255,
+          225
+        ]
+      },
+      "file": "firework_frame_26_relative_000866ms",
+      "sha256": "06ef9e584605f4cc40116961744c106101324e56388bf44dd7079d40e84efa3b",
+      "bytes": 315909
+    },
+    {
+      "index": 27,
+      "relative_seconds": 0.9,
+      "manual_ticks": 54,
+      "stats": {
+        "rgb_gt4_pixels": 7491,
+        "rgb_gt4_bbox": [
+          419,
+          422,
+          589,
+          778
+        ],
+        "rgb_max": [
+          255,
+          255,
+          224
+        ]
+      },
+      "file": "firework_frame_27_relative_000900ms",
+      "sha256": "52e30efa67ea82b7b52d76570797e649d84983c581141c5715bf14fad96347ea",
+      "bytes": 315909
+    },
+    {
+      "index": 28,
+      "relative_seconds": 0.9333333333333333,
+      "manual_ticks": 56,
+      "stats": {
+        "rgb_gt4_pixels": 7417,
+        "rgb_gt4_bbox": [
+          417,
+          409,
+          591,
+          763
+        ],
+        "rgb_max": [
+          255,
+          255,
+          224
+        ]
+      },
+      "file": "firework_frame_28_relative_000933ms",
+      "sha256": "440a41219ed276bc88e362f4fc0858d0daf00cb6ff4bd24d2e6329d989b3003b",
+      "bytes": 315909
+    },
+    {
+      "index": 29,
+      "relative_seconds": 0.9666666666666667,
+      "manual_ticks": 58,
+      "stats": {
+        "rgb_gt4_pixels": 7487,
+        "rgb_gt4_bbox": [
+          414,
+          396,
+          592,
+          762
+        ],
+        "rgb_max": [
+          255,
+          255,
+          224
+        ]
+      },
+      "file": "firework_frame_29_relative_000966ms",
+      "sha256": "eb5fac393832c8264a8910fce3f1e940bf1073dae4c0b07774e04acd1ef2b00e",
+      "bytes": 315909
+    },
+    {
+      "index": 30,
+      "relative_seconds": 1.0,
+      "manual_ticks": 60,
+      "stats": {
+        "rgb_gt4_pixels": 7435,
+        "rgb_gt4_bbox": [
+          412,
+          383,
+          594,
+          749
+        ],
+        "rgb_max": [
+          255,
+          255,
+          224
+        ]
+      },
+      "file": "firework_frame_30_relative_001000ms",
+      "sha256": "065da9e7e2d53b1fd3139f2f552c8981f4f4e040ddc8ad6c9a9213cbadd7f7a7",
+      "bytes": 315909
+    },
+    {
+      "index": 31,
+      "relative_seconds": 1.0333333333333334,
+      "manual_ticks": 62,
+      "stats": {
+        "rgb_gt4_pixels": 7446,
+        "rgb_gt4_bbox": [
+          410,
+          371,
+          595,
+          733
+        ],
+        "rgb_max": [
+          255,
+          255,
+          229
+        ]
+      },
+      "file": "firework_frame_31_relative_001033ms",
+      "sha256": "761b09dbf4238bac00c699464b44912ebefcf01b3db3a26ef0ee2e353dde982a",
+      "bytes": 315909
+    },
+    {
+      "index": 32,
+      "relative_seconds": 1.0666666666666667,
+      "manual_ticks": 64,
+      "stats": {
+        "rgb_gt4_pixels": 7448,
+        "rgb_gt4_bbox": [
+          408,
+          359,
+          597,
+          732
+        ],
+        "rgb_max": [
+          255,
+          255,
+          227
+        ]
+      },
+      "file": "firework_frame_32_relative_001066ms",
+      "sha256": "7eb56501ee95cc7dc80ac81c92b6b2b0640e50916509433209f787656723340d",
+      "bytes": 315909
+    },
+    {
+      "index": 33,
+      "relative_seconds": 1.1,
+      "manual_ticks": 66,
+      "stats": {
+        "rgb_gt4_pixels": 7506,
+        "rgb_gt4_bbox": [
+          405,
+          347,
+          598,
+          711
+        ],
+        "rgb_max": [
+          255,
+          255,
+          226
+        ]
+      },
+      "file": "firework_frame_33_relative_001100ms",
+      "sha256": "5ae714b41c45549f7afd89a57190a66099317af17d66f5e8e3c69b26b4792084",
+      "bytes": 315909
+    },
+    {
+      "index": 34,
+      "relative_seconds": 1.1333333333333333,
+      "manual_ticks": 68,
+      "stats": {
+        "rgb_gt4_pixels": 7529,
+        "rgb_gt4_bbox": [
+          403,
+          336,
+          600,
+          692
+        ],
+        "rgb_max": [
+          255,
+          255,
+          228
+        ]
+      },
+      "file": "firework_frame_34_relative_001133ms",
+      "sha256": "1bec73e27cd9312c707b766d480b31f8e85402adb897673e4b2c8a33679960d2",
+      "bytes": 315909
+    },
+    {
+      "index": 35,
+      "relative_seconds": 1.1666666666666667,
+      "manual_ticks": 70,
+      "stats": {
+        "rgb_gt4_pixels": 8556,
+        "rgb_gt4_bbox": [
+          401,
+          322,
+          601,
+          678
+        ],
+        "rgb_max": [
+          255,
+          255,
+          224
+        ]
+      },
+      "file": "firework_frame_35_relative_001166ms",
+      "sha256": "ddda732f8fa0a08f8c1904a296205ca09ec4821125e84f8921a21dc8d1949be6",
+      "bytes": 315909
+    },
+    {
+      "index": 36,
+      "relative_seconds": 1.2,
+      "manual_ticks": 72,
+      "stats": {
+        "rgb_gt4_pixels": 10995,
+        "rgb_gt4_bbox": [
+          399,
+          315,
+          602,
+          672
+        ],
+        "rgb_max": [
+          255,
+          255,
+          226
+        ]
+      },
+      "file": "firework_frame_36_relative_001200ms",
+      "sha256": "75a721d654f3d5995600177892326129e6c284c7852dc299f8320df1690680ae",
+      "bytes": 315909
+    },
+    {
+      "index": 37,
+      "relative_seconds": 1.2333333333333334,
+      "manual_ticks": 74,
+      "stats": {
+        "rgb_gt4_pixels": 14835,
+        "rgb_gt4_bbox": [
+          397,
+          306,
+          605,
+          671
+        ],
+        "rgb_max": [
+          255,
+          255,
+          221
+        ]
+      },
+      "file": "firework_frame_37_relative_001233ms",
+      "sha256": "9dd9ee1d50cf0d395b928e45b4fd3a06225fb387630f1899d644b4e624c1842a",
+      "bytes": 315909
+    },
+    {
+      "index": 38,
+      "relative_seconds": 1.2666666666666666,
+      "manual_ticks": 76,
+      "stats": {
+        "rgb_gt4_pixels": 20102,
+        "rgb_gt4_bbox": [
+          390,
+          296,
+          613,
+          661
+        ],
+        "rgb_max": [
+          255,
+          255,
+          207
+        ]
+      },
+      "file": "firework_frame_38_relative_001266ms",
+      "sha256": "5f9767ad34d62993fded8258a96a3e093a29245170b2f461c6e794beb2bf6671",
+      "bytes": 315909
+    },
+    {
+      "index": 39,
+      "relative_seconds": 1.3,
+      "manual_ticks": 78,
+      "stats": {
+        "rgb_gt4_pixels": 26009,
+        "rgb_gt4_bbox": [
+          380,
+          288,
+          623,
+          660
+        ],
+        "rgb_max": [
+          255,
+          255,
+          165
+        ]
+      },
+      "file": "firework_frame_39_relative_001300ms",
+      "sha256": "2f84147b5c393cb7444a78332673135fcc536be7bc14e5f49dc009e47149163b",
+      "bytes": 315909
+    },
+    {
+      "index": 40,
+      "relative_seconds": 1.3333333333333333,
+      "manual_ticks": 80,
+      "stats": {
+        "rgb_gt4_pixels": 31570,
+        "rgb_gt4_bbox": [
+          371,
+          279,
+          632,
+          652
+        ],
+        "rgb_max": [
+          255,
+          255,
+          117
+        ]
+      },
+      "file": "firework_frame_40_relative_001333ms",
+      "sha256": "dea91ba5458455fd1a0d500307557461f5eb000e15f229b195925de0eca08a44",
+      "bytes": 436883
+    },
+    {
+      "index": 41,
+      "relative_seconds": 1.3666666666666667,
+      "manual_ticks": 82,
+      "stats": {
+        "rgb_gt4_pixels": 36205,
+        "rgb_gt4_bbox": [
+          362,
+          271,
+          642,
+          660
+        ],
+        "rgb_max": [
+          255,
+          255,
+          101
+        ]
+      },
+      "file": "firework_frame_41_relative_001366ms",
+      "sha256": "c4177140e7e5bbffbe2bee3e0c0d26cff1668803e1147f22160ea95ae843e64d",
+      "bytes": 439995
+    },
+    {
+      "index": 42,
+      "relative_seconds": 1.4,
+      "manual_ticks": 84,
+      "stats": {
+        "rgb_gt4_pixels": 40200,
+        "rgb_gt4_bbox": [
+          354,
+          264,
+          650,
+          668
+        ],
+        "rgb_max": [
+          255,
+          255,
+          93
+        ]
+      },
+      "file": "firework_frame_42_relative_001400ms",
+      "sha256": "a059b623ff8f18d205259caf735d6d27000f33fbbd0760ecc28c62b9491e1bd7",
+      "bytes": 439995
+    },
+    {
+      "index": 43,
+      "relative_seconds": 1.4333333333333333,
+      "manual_ticks": 86,
+      "stats": {
+        "rgb_gt4_pixels": 44192,
+        "rgb_gt4_bbox": [
+          346,
+          257,
+          658,
+          675
+        ],
+        "rgb_max": [
+          255,
+          255,
+          78
+        ]
+      },
+      "file": "firework_frame_43_relative_001433ms",
+      "sha256": "32ba95a98bef6a428a99ddff0cbf4804b014e3060e10ad0c40f2819e4c64bfd2",
+      "bytes": 439995
+    },
+    {
+      "index": 44,
+      "relative_seconds": 1.4666666666666666,
+      "manual_ticks": 88,
+      "stats": {
+        "rgb_gt4_pixels": 46717,
+        "rgb_gt4_bbox": [
+          339,
+          251,
+          666,
+          682
+        ],
+        "rgb_max": [
+          255,
+          254,
+          62
+        ]
+      },
+      "file": "firework_frame_44_relative_001466ms",
+      "sha256": "c17d1d6d247375ad72431d3617893bd026f9bf9eddf0047e9474cf1562a18b7e",
+      "bytes": 439995
+    },
+    {
+      "index": 45,
+      "relative_seconds": 1.5,
+      "manual_ticks": 90,
+      "stats": {
+        "rgb_gt4_pixels": 48034,
+        "rgb_gt4_bbox": [
+          332,
+          244,
+          673,
+          689
+        ],
+        "rgb_max": [
+          255,
+          252,
+          53
+        ]
+      },
+      "file": "firework_frame_45_relative_001500ms",
+      "sha256": "980c4d20ee1f3f0cd69ac6fba8ab005d852cab75b5a84f3e78f8f22944d51b2f",
+      "bytes": 439995
+    },
+    {
+      "index": 46,
+      "relative_seconds": 1.5333333333333334,
+      "manual_ticks": 92,
+      "stats": {
+        "rgb_gt4_pixels": 49206,
+        "rgb_gt4_bbox": [
+          325,
+          238,
+          680,
+          695
+        ],
+        "rgb_max": [
+          255,
+          252,
+          57
+        ]
+      },
+      "file": "firework_frame_46_relative_001533ms",
+      "sha256": "40e66f998b31de3df494a44576ae1ceb37b0467842ab60e6b72428d71882d6f4",
+      "bytes": 439995
+    },
+    {
+      "index": 47,
+      "relative_seconds": 1.5666666666666667,
+      "manual_ticks": 94,
+      "stats": {
+        "rgb_gt4_pixels": 50544,
+        "rgb_gt4_bbox": [
+          319,
+          233,
+          687,
+          701
+        ],
+        "rgb_max": [
+          255,
+          239,
+          19
+        ]
+      },
+      "file": "firework_frame_47_relative_001566ms",
+      "sha256": "d6accf25bfc835bbcfb44bd72c3e452a12de75763e4ffe934d75d9ab01983298",
+      "bytes": 439995
+    },
+    {
+      "index": 48,
+      "relative_seconds": 1.6,
+      "manual_ticks": 96,
+      "stats": {
+        "rgb_gt4_pixels": 51299,
+        "rgb_gt4_bbox": [
+          313,
+          228,
+          693,
+          707
+        ],
+        "rgb_max": [
+          255,
+          231,
+          9
+        ]
+      },
+      "file": "firework_frame_48_relative_001600ms",
+      "sha256": "0845cea88a4295b6daf6451f07ef4f26b587feb2acda7ce05d0356aa8e31cd0f",
+      "bytes": 439995
+    },
+    {
+      "index": 49,
+      "relative_seconds": 1.6333333333333333,
+      "manual_ticks": 98,
+      "stats": {
+        "rgb_gt4_pixels": 51680,
+        "rgb_gt4_bbox": [
+          307,
+          223,
+          698,
+          712
+        ],
+        "rgb_max": [
+          255,
+          193,
+          1
+        ]
+      },
+      "file": "firework_frame_49_relative_001633ms",
+      "sha256": "e2efbffee81145796eda9e3ba8939a593700495d9c6a83ee0868527f1e385ba4",
+      "bytes": 439995
+    },
+    {
+      "index": 50,
+      "relative_seconds": 1.6666666666666667,
+      "manual_ticks": 100,
+      "stats": {
+        "rgb_gt4_pixels": 52611,
+        "rgb_gt4_bbox": [
+          300,
+          218,
+          704,
+          718
+        ],
+        "rgb_max": [
+          255,
+          161,
+          3
+        ]
+      },
+      "file": "firework_frame_50_relative_001666ms",
+      "sha256": "d6e0840119d1057e542c28db9f9e98bc0ea041ae1dc7acbb1aa45b89b1ccc5a0",
+      "bytes": 439995
+    },
+    {
+      "index": 51,
+      "relative_seconds": 1.7,
+      "manual_ticks": 102,
+      "stats": {
+        "rgb_gt4_pixels": 53435,
+        "rgb_gt4_bbox": [
+          295,
+          214,
+          709,
+          723
+        ],
+        "rgb_max": [
+          255,
+          131,
+          1
+        ]
+      },
+      "file": "firework_frame_51_relative_001700ms",
+      "sha256": "dc2858294d670aac98c24bc0e2284dac5d52b979511654fefb1230e372ea5a3b",
+      "bytes": 439995
+    },
+    {
+      "index": 52,
+      "relative_seconds": 1.7333333333333334,
+      "manual_ticks": 104,
+      "stats": {
+        "rgb_gt4_pixels": 53839,
+        "rgb_gt4_bbox": [
+          289,
+          210,
+          713,
+          727
+        ],
+        "rgb_max": [
+          255,
+          74,
+          1
+        ]
+      },
+      "file": "firework_frame_52_relative_001733ms",
+      "sha256": "1c70ca6431666cd27e32e5a681ad3f184667247394995042bb7158765bbf45be",
+      "bytes": 439995
+    },
+    {
+      "index": 53,
+      "relative_seconds": 1.7666666666666666,
+      "manual_ticks": 106,
+      "stats": {
+        "rgb_gt4_pixels": 54083,
+        "rgb_gt4_bbox": [
+          285,
+          206,
+          718,
+          732
+        ],
+        "rgb_max": [
+          255,
+          47,
+          1
+        ]
+      },
+      "file": "firework_frame_53_relative_001766ms",
+      "sha256": "fb40f3ae48581c539bc6225159b94324e774931f9ae6a362d9302ba3cd29fd61",
+      "bytes": 439995
+    },
+    {
+      "index": 54,
+      "relative_seconds": 1.8,
+      "manual_ticks": 108,
+      "stats": {
+        "rgb_gt4_pixels": 53982,
+        "rgb_gt4_bbox": [
+          280,
+          202,
+          722,
+          736
+        ],
+        "rgb_max": [
+          255,
+          45,
+          1
+        ]
+      },
+      "file": "firework_frame_54_relative_001800ms",
+      "sha256": "f683b955ebd57d097b1fc7ba9fee084d56a04dcf1b96019188d409d57d3cb1c1",
+      "bytes": 439995
+    },
+    {
+      "index": 55,
+      "relative_seconds": 1.8333333333333333,
+      "manual_ticks": 110,
+      "stats": {
+        "rgb_gt4_pixels": 54357,
+        "rgb_gt4_bbox": [
+          276,
+          199,
+          726,
+          740
+        ],
+        "rgb_max": [
+          255,
+          51,
+          1
+        ]
+      },
+      "file": "firework_frame_55_relative_001833ms",
+      "sha256": "a829580f35806a3ea51606bdf2f4695c27eb0f2ec062e1f320835fa03f2cc32c",
+      "bytes": 439995
+    },
+    {
+      "index": 56,
+      "relative_seconds": 1.8666666666666667,
+      "manual_ticks": 112,
+      "stats": {
+        "rgb_gt4_pixels": 54487,
+        "rgb_gt4_bbox": [
+          272,
+          196,
+          729,
+          744
+        ],
+        "rgb_max": [
+          255,
+          53,
+          1
+        ]
+      },
+      "file": "firework_frame_56_relative_001866ms",
+      "sha256": "d346500cc6b2f2f0f6db9cd45d84c1001a1dc41e8f94a72fc101663c41400dee",
+      "bytes": 439995
+    },
+    {
+      "index": 57,
+      "relative_seconds": 1.9,
+      "manual_ticks": 114,
+      "stats": {
+        "rgb_gt4_pixels": 54667,
+        "rgb_gt4_bbox": [
+          268,
+          193,
+          733,
+          748
+        ],
+        "rgb_max": [
+          255,
+          52,
+          1
+        ]
+      },
+      "file": "firework_frame_57_relative_001900ms",
+      "sha256": "3aecfcd2789f65de88ff595c88eca58a8979cb7b5161c7775ce103badabdacce",
+      "bytes": 439995
+    },
+    {
+      "index": 58,
+      "relative_seconds": 1.9333333333333333,
+      "manual_ticks": 116,
+      "stats": {
+        "rgb_gt4_pixels": 54995,
+        "rgb_gt4_bbox": [
+          264,
+          191,
+          736,
+          752
+        ],
+        "rgb_max": [
+          255,
+          48,
+          1
+        ]
+      },
+      "file": "firework_frame_58_relative_001933ms",
+      "sha256": "2c33bcbb5e7c086ac3e40d00b255bbb1feffdcb10e6b3a47cb206fac2e087a01",
+      "bytes": 439995
+    },
+    {
+      "index": 59,
+      "relative_seconds": 1.9666666666666666,
+      "manual_ticks": 118,
+      "stats": {
+        "rgb_gt4_pixels": 55059,
+        "rgb_gt4_bbox": [
+          261,
+          188,
+          739,
+          755
+        ],
+        "rgb_max": [
+          255,
+          40,
+          1
+        ]
+      },
+      "file": "firework_frame_59_relative_001966ms",
+      "sha256": "645bec2bb331d51e8b2df4f7d0ea0eeb974cb01240a205054da798160651a3c3",
+      "bytes": 439995
+    }
+  ],
+  "errors": [],
+  "source_sha256_actual": "b23e30580f0f5d097c19d496c0d7685eb61da4882e224f876cd5d16346d438b0",
+  "source_sha_matches": true,
+  "calibration": {
+    "material": "/Game/_ST01B_Control/M_CaptureMagenta.M_CaptureMagenta",
+    "pixels_magenta": 17417,
+    "expected_minimum": 100,
+    "control_pass": true
+  },
+  "camera": {
+    "target": [
+      0.0,
+      0.0,
+      2250.0
+    ],
+    "bounds_extent": [
+      1000.0,
+      1000.0,
+      2750.0
+    ],
+    "location": [
+      1419.0,
+      -1892.0,
+      2959.5
+    ]
+  },
+  "temporal_union_rgb_gt4_bbox": [
+    261,
+    188,
+    739,
+    891
+  ],
+  "status": "complete_all_frames"
+}

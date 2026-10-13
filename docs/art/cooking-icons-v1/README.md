@@ -1,5 +1,10 @@
 # Cocina: iconos con alfa y referencias para Tripo
 
+**Índice y entrega de meshes:** [galería única](../../../ARTE-Y-MODELOS.html) ·
+[guía de objetos](../ITEMS.md). Deja los modelos de cocina en
+`docs/art/source/cooking-items-v1/<id>/`. Antorcha/resina/coco tienen su entrega
+única en `docs/art/source/torch-resin-coconut-v1/`; sus imágenes de este pack son reutilizadas.
+
 **17 PNG individuales transparentes: 14 referencias actuales y 3 ingredientes propuestos.** Se generaron 14 objetos nuevos mediante la herramienta integrada `image_gen` y se reutilizaron las referencias existentes de coco, resina y antorcha. Los PNG individuales conservan su resolución de origen; el atlas externo usa celdas de 512 px como derivado. El recorte se comprobó sobre alfa real, sin quitar fondos por color ni repintar.
 
 - [Descargar paquete ZIP](cooking-tripo-pack-v1.zip): PNG individuales, conceptos, atlas, vista de conjunto, manifiesto y prompts.

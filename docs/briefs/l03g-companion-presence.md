@@ -1,6 +1,6 @@
 # L03g — presencia del compañero independiente del modelo
 
-2026-10-12. **Propuesta para alinear con el autor; sin aprobación de implementación.**
+2026-10-13. **Dirección autorizada por el autor al pedir continuar este plan.**
 Responde a probar desde el alfa real con Qwen apagado y a separar reunirse,
 esperar, pausar la mente y retirarse sin ventajas de combate o transporte.
 
@@ -42,6 +42,38 @@ pendientes. Anclas iniciales: un punto seguro definido en Salty Shore. Casas y
 barcos requieren sus propias reglas de custodia/seguridad antes de habilitarlos.
 
 ## Primera entrega propuesta
+
+### Corte L03g-a: presencia segura sin proveedor
+
+El primer cuerpo pertenece al host, ocupa una plaza normal y usa el perfil M5 existente.
+El dueño autenticado solicita salir, seguir, esperar, volver al ancla o descansar desde
+Mis compañeros. El ancla es el punto de llegada de Salty Shore (`landmarks.spawn`);
+la estancia se limita a un radio de 12 unidades, sujeto a suelo seco, colisiones y peligro.
+Ingreso y retiro requieren proximidad de 3 unidades al ancla. No se acepta posición,
+identidad ajena ni entradas de combate/economía del cliente.
+
+SQL039 agrega únicamente un cerco durable de presencia sobre la creación SQL034.
+Se confirma `active` con un UUID de ejecución antes de publicar el cuerpo. Solo se
+libera tras descansar sano y sin efectos/escrituras pendientes, con el perfil ya guardado
+por ProfileSessions. Si hay caída abrupta o resultado incierto, el registro activo bloquea
+otra invocación: no se reconstruye un cuerpo curado desde el checkpoint. Recuperación
+de una presencia incierta requiere un corte propio; no existe botón para borrar el cerco.
+Esta disponibilidad se habilita con `MN_COMPANION_PRESENCE=1` y readiness SQL039;
+la migración no activa gameplay ni modifica perfiles históricos.
+
+El cuerpo mantiene una orden determinista independiente de SQL027. Detener/revocar la
+mente no lo retira. Al salir el dueño, intenta volver físicamente al ancla; ante peligro,
+herida u obstáculo espera y conserva el cerco. Seguir tiene colisión y detección de atasco,
+sin prometer navegación global. No avanza necesidades, checkpoint ni acciones autónomas
+del perfil durante este ensayo: esas consecuencias requieren integrarse antes de salir
+de esta zona. Daño recibido conserva vida/cuerpo y deniega retiro; no se otorga inmunidad.
+
+En este corte se excluyen mutuamente presencia del host y controlador local L03f:
+emparejar mientras hay presencia activa se deniega, y salir mientras hay un controlador
+o un permiso de emparejamiento pendiente también. Reconectar una mente al mismo cuerpo
+es L03g-b, con su contrato de chat/percepción; no se recrea la identidad ni se amplía el
+grant público `chat`. El ensayo con Qwen apagado cubre el cuerpo y los controles, no una
+conversación, memoria o calidad del modelo.
 
 1. Ingreso/retiro desde **Mis compañeros** en el ancla de Salty Shore, sin terminal
    ni proveedor, con cuerpo controlado por el host y una plaza normal. Mostrar
@@ -86,5 +118,7 @@ Revisar antes del código AgentControl, órdenes/epochs, LocalServer, perfiles M
 capacidad/plazas, wizard y controles existentes. Este corte requiere control e
 identidad, no arte nuevo; reutiliza el aspecto de la ficha. El inventario Unreal/FAB
 del proyecto no sustituye el ciclo de vida/autoridad del host. Si se añade UI/animación
-nueva, comprobar candidatos concretos antes de producir assets. Este documento no
-concede movimiento ni combate al grant público L03f y no cambia runtime, SQL o protocolo.
+nueva, comprobar candidatos concretos antes de producir assets. La implementación L03g-a
+añade SQL039 y protocolo 61; no concede movimiento ni combate al grant público L03f.
+La aceptación local, la instalación SQL y la activación pública se registran por separado
+en [la entrega](../delivery/l03g-companion-presence/README.md).

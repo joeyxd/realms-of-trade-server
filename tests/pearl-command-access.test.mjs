@@ -362,7 +362,7 @@ test('async command hooks and invalid hook configuration fail closed before help
   assert.equal(denied(c).length, 0);
 });
 
-test('commandDenied reaches only the player as the fixed Rewards toast without profile or UID data', () => {
+test('commandDenied reaches only the player as the fixed localized Rewards toast without profile or UID data', () => {
   const delivered = (youServer) => {
     const events = [], client = Object.create(GameClient.prototype);
     Object.assign(client, { youServer, pred: { hazards: {} }, predicted: new Set(),
@@ -378,7 +378,7 @@ test('commandDenied reaches only the player as the fixed Rewards toast without p
   assert.equal(remote[0].me, false);
   Rewards.prototype.handle.call(rewards, own[0]);
   Rewards.prototype.handle.call(rewards, remote[0]);
-  assert.deepEqual(toasts, [{ html: '<b>Acción no disponible.</b> Espera un momento y vuelve a intentarlo.', ms: 5000 }]);
+  assert.deepEqual(toasts, [{ html: '<span data-l10n-html="reward.action_unavailable" data-l10n-params="{}"><b>Acción no disponible.</b> Espera un momento y vuelve a intentarlo.</span>', ms: 5000 }]);
   assert.equal(JSON.stringify({ own, remote, toasts }).includes(UID), false);
   assert.equal('profile' in own[0], false);
   assert.equal('receipt' in own[0], false);

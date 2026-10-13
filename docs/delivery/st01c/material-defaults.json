@@ -1,0 +1,122 @@
+{
+  "schema": "st01c-material-defaults/v1",
+  "expressions": [
+    {
+      "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke.M_Smoke:MaterialExpressionDepthFade_0",
+      "class": "MaterialExpressionDepthFade",
+      "fields": {
+        "fade_distance_default": 100.0,
+        "in_opacity": {
+          "unavailable": "MaterialExpressionDepthFade: Failed to find property 'in_opacity' for attribute 'in_opacity' on 'MaterialExpressionDepthFade'"
+        },
+        "fade_distance": {
+          "unavailable": "MaterialExpressionDepthFade: Failed to find property 'fade_distance' for attribute 'fade_distance' on 'MaterialExpressionDepthFade'"
+        }
+      }
+    },
+    {
+      "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke.M_Smoke:MaterialExpressionClamp_0",
+      "class": "MaterialExpressionClamp",
+      "fields": {
+        "min_default": 0.0,
+        "max_default": 1.0,
+        "clamp_mode": "<ClampMode.CMODE_CLAMP: 0>",
+        "input": {
+          "unavailable": "MaterialExpressionClamp: Property 'Input' for attribute 'input' on 'MaterialExpressionClamp' is protected and cannot be read"
+        },
+        "min": {
+          "unavailable": "MaterialExpressionClamp: Property 'Min' for attribute 'min' on 'MaterialExpressionClamp' is protected and cannot be read"
+        },
+        "max": {
+          "unavailable": "MaterialExpressionClamp: Property 'Max' for attribute 'max' on 'MaterialExpressionClamp' is protected and cannot be read"
+        }
+      }
+    },
+    {
+      "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke.M_Smoke:MaterialExpressionTextureSampleParameterSubUV_0",
+      "class": "MaterialExpressionTextureSampleParameterSubUV",
+      "fields": {
+        "texture": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall.T_FireBall",
+        "sampler_type": "<MaterialSamplerType.SAMPLERTYPE_COLOR: 0>",
+        "sampler_source": "<SamplerSourceMode.SSM_FROM_TEXTURE_ASSET: 0>",
+        "blend": true,
+        "parameter_name": "SUBUV"
+      }
+    },
+    {
+      "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke.M_Smoke:MaterialExpressionMultiply_0",
+      "class": "MaterialExpressionMultiply",
+      "fields": {
+        "const_a": 0.0,
+        "const_b": 1.0,
+        "a": {
+          "unavailable": "MaterialExpressionMultiply: Property 'A' for attribute 'a' on 'MaterialExpressionMultiply' is protected and cannot be read"
+        },
+        "b": {
+          "unavailable": "MaterialExpressionMultiply: Property 'B' for attribute 'b' on 'MaterialExpressionMultiply' is protected and cannot be read"
+        }
+      }
+    },
+    {
+      "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke.M_Smoke:MaterialExpressionMultiply_1",
+      "class": "MaterialExpressionMultiply",
+      "fields": {
+        "const_a": 0.0,
+        "const_b": 1.0,
+        "a": {
+          "unavailable": "MaterialExpressionMultiply: Property 'A' for attribute 'a' on 'MaterialExpressionMultiply' is protected and cannot be read"
+        },
+        "b": {
+          "unavailable": "MaterialExpressionMultiply: Property 'B' for attribute 'b' on 'MaterialExpressionMultiply' is protected and cannot be read"
+        }
+      }
+    }
+  ],
+  "instances": [
+    {
+      "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1.MI_Flame_1",
+      "scalars": [
+        {
+          "name": "RefractionDepthBias",
+          "value": 0.0
+        }
+      ],
+      "textures": [
+        {
+          "name": "SUBUV",
+          "value": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1.T_FlameUV_1"
+        }
+      ]
+    },
+    {
+      "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_2.MI_Flame_2",
+      "scalars": [
+        {
+          "name": "RefractionDepthBias",
+          "value": 0.0
+        }
+      ],
+      "textures": [
+        {
+          "name": "SUBUV",
+          "value": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_2.T_FlameUV_2"
+        }
+      ]
+    },
+    {
+      "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1.MI_Smoke_1",
+      "scalars": [
+        {
+          "name": "RefractionDepthBias",
+          "value": 0.0
+        }
+      ],
+      "textures": [
+        {
+          "name": "SUBUV",
+          "value": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1.T_Smoke_1"
+        }
+      ]
+    }
+  ]
+}

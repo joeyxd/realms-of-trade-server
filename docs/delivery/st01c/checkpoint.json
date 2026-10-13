@@ -1,0 +1,146 @@
+{
+  "schema": "st01c-extraction-checkpoint/v1",
+  "sourceSystemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "engine": "5.8.0-55116800+++UE5+Release-5.8",
+  "nullRhi": true,
+  "gpuUsed": false,
+  "effectiveEmitters": 2,
+  "effectiveRendererEntries": 2,
+  "rapidIterationRecords": 100,
+  "uniqueParameterNames": 80,
+  "opaqueRecords": 0,
+  "twoColdNativeReadsEqual": true,
+  "syntaxOnlyParserCounts": {
+    "objects": 451,
+    "roots": 1,
+    "pins": 385,
+    "functionFields": 59,
+    "sortedParameterOffsets": 15,
+    "curveLiterals": 9,
+    "materialNodes": 0,
+    "opaqueByteFields": 21
+  },
+  "nativeBuilds": [
+    {
+      "log": "native-build01.log",
+      "succeeded": true,
+      "durationSeconds": 96.37
+    },
+    {
+      "log": "native-build02.log",
+      "succeeded": true,
+      "durationSeconds": 27.2
+    },
+    {
+      "log": "native-build03.log",
+      "succeeded": true,
+      "durationSeconds": 10.21
+    }
+  ],
+  "all102OriginalAndCopyHashesMatch": true,
+  "nativeValuesAuditScope": "100 store occurrences match selected script name, offset and raw bytes; not whole runtime semantics",
+  "visualEquivalenceAccepted": false,
+  "threeJsSimulationImplemented": false,
+  "toolSources": [
+    {
+      "path": "tools/inspect-niagara-text.py",
+      "sha256": "4946e565bc2f9d060cc6c8a414f4671de3485a9c0141ed529677247f83535506",
+      "bytes": 12459
+    },
+    {
+      "path": "tools/unreal-niagara-probe/probe_material_defaults.py",
+      "sha256": "2b3ea8757935146f9264a75d48ffb2f8f531e3f2bcbf845e959432c09965d068",
+      "bytes": 2717
+    },
+    {
+      "path": "tools/unreal-niagara-probe/probe_source.py",
+      "sha256": "1478ac0eb484378b3479d9cdd78383f25c946c375ba6daa1eef8c0f7320cbaf2",
+      "bytes": 6700
+    },
+    {
+      "path": "tools/unreal-niagara-probe/README.md",
+      "sha256": "9c89feb84e7c9e3a543a9979f10d74f3d2d8d022966b7442b409924682698121",
+      "bytes": 3677
+    },
+    {
+      "path": "tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/Private/ST01cProbeCommandlet.cpp",
+      "sha256": "878b18474e4693e685af6da1533cf6ad10ed26201d3eab66b5a18a7ea29327c6",
+      "bytes": 17797,
+      "executionSourceSha256": "e7f529be87ae4d041ed96b6535992e7bfb347edc8c22fffb50ca4359c7a443e6",
+      "gitBytes": 17796,
+      "gitNormalization": "CRLF to LF only; executable source text identical"
+    },
+    {
+      "path": "tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/Public/ST01cProbeCommandlet.h",
+      "sha256": "14000f6e6ce0f7291df45a50526eaf306cdaaafa0cda2c5af0f8a51695d88bbf",
+      "bytes": 323,
+      "executionSourceSha256": "c3fadcfb50bab9c251f2583e9a9114d37077c43423eb1d65ce35efd19c1a1f58",
+      "gitBytes": 322,
+      "gitNormalization": "CRLF to LF only; executable source text identical"
+    },
+    {
+      "path": "tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/ST01cProbe.Build.cs",
+      "sha256": "b4b63c32936faa3526178e76a25538e4b88d2c8161b307de00b7f344c0a7f8b1",
+      "bytes": 475,
+      "executionSourceSha256": "db197010b982f74d222b6636b9e7d0d2281cc437fbf69a98f7599aedd970d4ec",
+      "gitBytes": 474,
+      "gitNormalization": "CRLF to LF only; executable source text identical"
+    },
+    {
+      "path": "tools/unreal-niagara-probe/ST01cProbe/ST01cProbe.uplugin",
+      "sha256": "7d1b0fd8cc5af43f5a27b5b1da2df0765d683e6c3cf456e5095edd0f3b401a08",
+      "bytes": 439,
+      "executionSourceSha256": "9efcb9da7b1bd6e63925e3a0273caa6eae0752130a40dd8f279054eb94111d4a",
+      "gitBytes": 438,
+      "gitNormalization": "CRLF to LF only; executable source text identical"
+    }
+  ],
+  "finalProbeSourcesByteMatchExecuted": true,
+  "coldTextExportComparison": {
+    "normalization": "Exclude only whole lines matching (CachedChangeId|ChangeId|LastBuiltTraversalDataChangeId)=32uppercaseHex; no parameter/node/pin/connection/version fields removed",
+    "files": [
+      {
+        "file": "M_Smoke.t3d",
+        "priorSha256": "2cf916c9a3c37b3e8319e6405e0a3abe888cd09e15a79ccb0e58f769e01a46ae",
+        "finalSha256": "2cf916c9a3c37b3e8319e6405e0a3abe888cd09e15a79ccb0e58f769e01a46ae",
+        "equalAfterExcludingChangeAndCacheIdLines": true
+      },
+      {
+        "file": "MI_Flame_1.t3d",
+        "priorSha256": "411e20704b47fb670d0f99c4b9f91b170492dd780344e3c50e809726ab88291e",
+        "finalSha256": "411e20704b47fb670d0f99c4b9f91b170492dd780344e3c50e809726ab88291e",
+        "equalAfterExcludingChangeAndCacheIdLines": true
+      },
+      {
+        "file": "MI_Flame_2.t3d",
+        "priorSha256": "613a0470130c383b0d5a4850bc70f15f62ed04b4d24d2891182057b94c88edac",
+        "finalSha256": "613a0470130c383b0d5a4850bc70f15f62ed04b4d24d2891182057b94c88edac",
+        "equalAfterExcludingChangeAndCacheIdLines": true
+      },
+      {
+        "file": "MI_Smoke_1.t3d",
+        "priorSha256": "124fa009da28a83f496c1492c3f6c129911d665ec5a6606e3056fe9758f9421e",
+        "finalSha256": "124fa009da28a83f496c1492c3f6c129911d665ec5a6606e3056fe9758f9421e",
+        "equalAfterExcludingChangeAndCacheIdLines": true
+      },
+      {
+        "file": "NE_Flame_Basic_001.t3d",
+        "priorSha256": "df6b70d52d034e784515c1d19017d978203ccb4eaeb208342f47ad34be71bc08",
+        "finalSha256": "46d316a765d1f63aed68a79330ff28980835c09a68593283a39edf285f855846",
+        "equalAfterExcludingChangeAndCacheIdLines": true
+      },
+      {
+        "file": "NE_Smoke_Basic.t3d",
+        "priorSha256": "611242815aa698468995b5192265bcf3df1ebfbbae98e47ffd7e19680142e750",
+        "finalSha256": "19e07764d67a7a1088fe4ab642ca577090e15ba185e82b4862844f9c0baa7d7f",
+        "equalAfterExcludingChangeAndCacheIdLines": true
+      },
+      {
+        "file": "system.t3d",
+        "priorSha256": "d7d78b14338a081a2b2a0af6a86ded8faf4fe46072e2e0fc26e1b0fc90d7aa11",
+        "finalSha256": "00e5e08d39ce24c743400060ac59a693fe24044c0aec3d3366cf6a07086370d3",
+        "equalAfterExcludingChangeAndCacheIdLines": true
+      }
+    ]
+  }
+}

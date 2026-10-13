@@ -1,0 +1,79 @@
+// Compile source metadata only. Uasset bytes and workstation paths never enter the client bundle.
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import path from 'node:path';
+const input = process.argv[2] || 'docs/research/unreal-assets/niagara-catalog.json';
+const output = process.argv[3] || 'src/editor/niagaraCatalog.js';
+const catalog = JSON.parse(await fs.readFile(input, 'utf8'));
+let thumbnails = new Map();
+let thumbnailManifest;
+try { thumbnailManifest = await fs.readFile('docs/art/niagara-v1/thumbnails.json', 'utf8'); }
+catch (error) { if (error.code !== 'ENOENT') throw error; }
+if (thumbnailManifest) {
+  const manifest = JSON.parse(thumbnailManifest);
+  assert.equal(manifest.schema, 'marea.niagara-cached-thumbnails');
+  assert.equal(manifest.version, 1);
+  assert.ok(Array.isArray(manifest.entries));
+  const manifestIds = new Set();
+  for (const entry of manifest.entries) {
+    assert.match(entry.id, /^niagara-[a-f0-9]{16}$/);
+    assert.ok(!manifestIds.has(entry.id), `duplicate thumbnail entry ${entry.id}`);
+    manifestIds.add(entry.id);
+    assert.ok(['extracted', 'missing'].includes(entry.status), `invalid thumbnail status for ${entry.id}`);
+    assert.equal(entry.role, 'cached-editor-thumbnail', `invalid thumbnail role for ${entry.id}`);
+    assert.equal(entry.animationClaim, false, `cached editor thumbnail cannot claim animation: ${entry.id}`);
+    if (entry.status === 'missing') {
+      assert.ok(typeof entry.reason === 'string' && entry.reason.length > 0, `missing thumbnail needs a reason: ${entry.id}`);
+      continue;
+    }
+    const expectedUrl = `/assets/vfx/niagara/thumbnails/${entry.id}.webp`;
+    assert.equal(entry.output, expectedUrl, `invalid thumbnail URL for ${entry.id}`);
+    assert.equal(entry.method, 'Exact serialized FString NiagaraSystem + package basename row; bounded FObjectThumbnail header and payload; Pillow decoded dimensions verified.');
+    assert.match(entry.sourceSha256, /^[a-f0-9]{64}$/);
+    assert.ok(Number.isSafeInteger(entry.sourceBytes) && entry.sourceBytes > 0);
+    assert.ok(Number.isSafeInteger(entry.tableRowOffset) && entry.tableRowOffset >= 0);
+    assert.equal(entry.classStringOffset, entry.tableRowOffset + 4);
+    assert.ok(Number.isSafeInteger(entry.thumbnailFileOffset) && entry.thumbnailFileOffset >= 0 && entry.thumbnailFileOffset < entry.tableRowOffset);
+    assert.ok(['jpeg', 'png'].includes(entry.thumbnailFormat));
+    for (const key of ['thumbnailWidth', 'thumbnailHeight', 'thumbnailCompressedBytes', 'outputWidth', 'outputHeight', 'outputBytes']) {
+      assert.ok(Number.isSafeInteger(entry[key]) && entry[key] > 0, `${key} invalid for ${entry.id}`);
+    }
+    assert.ok(entry.thumbnailWidth <= 8192 && entry.thumbnailHeight <= 8192 && entry.thumbnailWidth * entry.thumbnailHeight <= 16_777_216);
+    assert.ok(entry.thumbnailCompressedBytes <= 32 * 1024 * 1024);
+    assert.ok(entry.outputWidth <= 128 && entry.outputHeight <= 128);
+    assert.match(entry.outputSha256, /^[a-f0-9]{64}$/);
+    const relativeFile = expectedUrl.slice(1).split('/').join(path.sep);
+    const file = path.resolve(relativeFile);
+    const root = path.resolve('assets/vfx/niagara/thumbnails');
+    assert.equal(path.dirname(file), root, `thumbnail file escapes output root: ${entry.id}`);
+    const bytes = await fs.readFile(file);
+    assert.equal(bytes.length, entry.outputBytes, `thumbnail byte length mismatch for ${entry.id}`);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), entry.outputSha256, `thumbnail hash mismatch for ${entry.id}`);
+    thumbnails.set(entry.id, entry);
+  }
+}
+assert.equal(catalog.schema, 'marea.niagara-source-catalog');
+assert.equal(catalog.version, 1);
+const seen = new Set();
+for (const id of thumbnails.keys()) assert.ok(catalog.effects.some(effect => effect.id === id), `thumbnail not present in catalog: ${id}`);
+const effects = catalog.effects.map(effect => {
+  assert.match(effect.id, /^niagara-[a-f0-9]{16}$/);
+  assert.ok(!seen.has(effect.id)); seen.add(effect.id);
+  assert.ok(effect.name && effect.family && effect.category && effect.sources.length);
+  const thumbnail = thumbnails.get(effect.id);
+  if (thumbnail) {
+    assert.equal(thumbnail.output, `/assets/vfx/niagara/thumbnails/${effect.id}.webp`);
+    assert.equal(thumbnail.sourceSha256, effect.sources[0].sha256);
+    assert.equal(thumbnail.sourceBytes, effect.sources[0].bytes);
+  }
+  return { id: effect.id, name: effect.name, category: effect.category, family: effect.family,
+    ...(thumbnail ? { thumbnail: thumbnail.output } : {}),
+    evidence: effect.evidence, sources: effect.sources.map(({ project, package: pkg, sha256, bytes }) => {
+      assert.match(sha256, /^[a-f0-9]{64}$/); assert.ok(Number.isSafeInteger(bytes) && bytes > 0);
+      return { project, package: pkg, sha256, bytes };
+    }) };
+});
+await fs.writeFile(output, '// Generated by tools/build-niagara-catalog.mjs; source metadata, not converted effects.\n'
+  + 'export const NIAGARA_CATALOG = Object.freeze(' + JSON.stringify(effects, null, 2) + ');\n');
+console.log(JSON.stringify({ effects: effects.length, sources: effects.reduce((n, e) => n + e.sources.length, 0), output }));

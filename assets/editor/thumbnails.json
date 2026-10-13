@@ -215,6 +215,150 @@
         "triangles": 49999,
         "bytes": 3482648
       }
+    },
+    "model:item-resina-v1": {
+      "label": {
+        "es": "Resina",
+        "en": "Resin"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-resina-v1.webp",
+      "stats": {
+        "triangles": 472,
+        "bytes": 59732
+      },
+      "model": true
+    },
+    "model:item-antorcha-v1": {
+      "label": {
+        "es": "Antorcha apagada",
+        "en": "Unlit torch"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-antorcha-v1.webp",
+      "stats": {
+        "triangles": 498,
+        "bytes": 78028
+      },
+      "model": true
+    },
+    "model:item-coco-v1": {
+      "label": {
+        "es": "Coco entero",
+        "en": "Coconut"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-coco-v1.webp",
+      "stats": {
+        "triangles": 402,
+        "bytes": 61348
+      },
+      "model": true
+    },
+    "model:item-lima-v1": {
+      "label": {
+        "es": "Lima",
+        "en": "Lime (concept)"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-lima-v1.webp",
+      "stats": {
+        "triangles": 664,
+        "bytes": 55916
+      },
+      "model": true
+    },
+    "model:item-especias-v1": {
+      "label": {
+        "es": "Especias",
+        "en": "Spices"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-especias-v1.webp",
+      "stats": {
+        "triangles": 635,
+        "bytes": 69432
+      },
+      "model": true
+    },
+    "model:item-meal_grog-v1": {
+      "label": {
+        "es": "Grog",
+        "en": "Grog"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-meal_grog-v1.webp",
+      "stats": {
+        "triangles": 692,
+        "bytes": 73064
+      },
+      "model": true
+    },
+    "model:item-meal_roastFish-v1": {
+      "label": {
+        "es": "Pescado asado",
+        "en": "Roast fish"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-meal_roastFish-v1.webp",
+      "stats": {
+        "triangles": 670,
+        "bytes": 107340
+      },
+      "model": true
+    },
+    "model:item-cana-v1": {
+      "label": {
+        "es": "Caña de azúcar",
+        "en": "Sugar cane"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-cana-v1.webp",
+      "stats": {
+        "triangles": 684,
+        "bytes": 71932
+      },
+      "model": true
+    },
+    "model:item-hierbas_aromaticas-v1": {
+      "label": {
+        "es": "Hierbas aromáticas",
+        "en": "Herbs (concept)"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-hierbas_aromaticas-v1.webp",
+      "stats": {
+        "triangles": 547,
+        "bytes": 74272
+      },
+      "model": true
+    },
+    "model:item-meal_heartyBiscuit-v1": {
+      "label": {
+        "es": "Galleta reforzada",
+        "en": "Hearty biscuit"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-meal_heartyBiscuit-v1.webp",
+      "stats": {
+        "triangles": 628,
+        "bytes": 83336
+      },
+      "model": true
+    },
+    "model:item-agua-v1": {
+      "label": {
+        "es": "Frasco de agua",
+        "en": "Water"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-agua-v1.webp",
+      "stats": {
+        "triangles": 628,
+        "bytes": 55208
+      },
+      "model": true
+    },
+    "model:item-harina-v1": {
+      "label": {
+        "es": "Saco de harina",
+        "en": "Flour"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-harina-v1.webp",
+      "stats": {
+        "triangles": 658,
+        "bytes": 90248
+      },
+      "model": true
     }
   }
 }

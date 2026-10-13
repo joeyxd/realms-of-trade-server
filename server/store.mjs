@@ -27,6 +27,7 @@ import { groundTransactionOperation, checkedGroundTransactionResult, checkedGrou
 import { createMemoryGmDraftMethods, createSupabaseGmDraftMethods } from './gmDraftStore.mjs';
 import { createMemoryCompanionConfigMethods, createSupabaseCompanionConfigMethods } from './companionConfigStore.mjs';
 import { createMemoryCompanionControlMethods, createSupabaseCompanionControlMethods } from './companionControlStore.mjs';
+import { createMemoryCompanionPresenceMethods, createSupabaseCompanionPresenceMethods } from './companionPresenceStore.mjs';
 import { createMemoryInferenceConfigMethods, createSupabaseInferenceConfigMethods } from './inferenceConfigStore.mjs';
 import { createMemoryCompanionCreationMethods, createSupabaseCompanionCreationMethods } from './companionCreationStore.mjs';
 import { createMemoryPlayerCharacterMethods, createSupabasePlayerCharacterMethods } from './playerCharacterStore.mjs';
@@ -100,6 +101,7 @@ export function createMemoryStore() {
   const gmDraftMethods = createMemoryGmDraftMethods();
   const companionConfigMethods = createMemoryCompanionConfigMethods();
   const companionControlMethods = createMemoryCompanionControlMethods();
+  const companionPresenceMethods = createMemoryCompanionPresenceMethods();
   const inferenceConfigMethods = createMemoryInferenceConfigMethods();
   const companionCreationMethods = createMemoryCompanionCreationMethods();
   const profiles = new Map(), worlds = new Map(), uniques = new Map(), legacyImports = new Map(), pearlReceipts = new Map();
@@ -197,7 +199,7 @@ export function createMemoryStore() {
     return reply;
   };
   const store = {
-    ...gmDraftMethods, ...companionConfigMethods, ...companionControlMethods, ...inferenceConfigMethods, ...companionCreationMethods,
+    ...gmDraftMethods, ...companionConfigMethods, ...companionControlMethods, ...companionPresenceMethods, ...inferenceConfigMethods, ...companionCreationMethods,
     kind: 'memory', durable: false,
     async loadProfile(id) { return load(profiles, playerKey(id)); },
     async listGmContentProfiles({ after = null, limit = 100 } = {}) {
@@ -254,6 +256,7 @@ export function createMemoryStore() {
     async checkStarterWorkshop() { return { version: 1 }; },
     async checkAttributeOperations() { return { version: 1 }; },
     async checkFireOperations() { return { version: 1 }; },
+    async checkTorchResinCoconutOperations() { return { version: 1 }; },
     async checkFreshwaterOperations() { return { version: 1 }; },
     async checkCanteenOperations() { return { version: 1 }; },
     async checkSpecialMealOperations() { return { version: 1 }; },
@@ -593,6 +596,7 @@ export function createSupabaseStore(client) {
   const gmDraftMethods = createSupabaseGmDraftMethods(client);
   const companionConfigMethods = createSupabaseCompanionConfigMethods(client);
   const companionControlMethods = createSupabaseCompanionControlMethods(client);
+  const companionPresenceMethods = createSupabaseCompanionPresenceMethods(client);
   const inferenceConfigMethods = createSupabaseInferenceConfigMethods(client);
   const companionCreationMethods = createSupabaseCompanionCreationMethods(client);
   async function rpc(name, args, duplicateCode = null) {
@@ -622,7 +626,7 @@ export function createSupabaseStore(client) {
   }
   return {
     ...createSupabasePlayerCharacterMethods(client),
-    ...gmDraftMethods, ...companionConfigMethods, ...companionControlMethods, ...inferenceConfigMethods, ...companionCreationMethods,
+    ...gmDraftMethods, ...companionConfigMethods, ...companionControlMethods, ...companionPresenceMethods, ...inferenceConfigMethods, ...companionCreationMethods,
     kind: 'supabase', durable: true,
     async checkGroundTransactions() {
       const raw = await rpc('mn_ground_transactions_ready', {});
@@ -768,6 +772,11 @@ export function createSupabaseStore(client) {
     async checkCanteenOperations() { const raw = await rpc('mn_canteen_operations_ready', {}); if (raw?.version !== 1) throw new StoreError('configuration'); return { version: 1 }; },
     async checkSpecialMealOperations() { const raw = await rpc('mn_special_meal_operations_ready', {}); if (raw?.version !== 1) throw new StoreError('configuration'); return { version: 1 }; },
     async checkFireOperations() { const raw = await rpc('mn_fire_operations_ready', {}); if (raw?.version !== 1) throw new StoreError('configuration'); return { version: 1 }; },
+    async checkTorchResinCoconutOperations() {
+      const raw = await rpc('mn_torch_resin_coconut_ready', {});
+      if (!raw || raw.version !== 1 || Object.keys(raw).length !== 1) throw new StoreError('configuration');
+      return { version: 1 };
+    },
     async checkArtisanOperations() {
       const result = await rpc('mn_artisan_operations_ready', {});
       if (!result || result.version !== 1 || Object.keys(result).length !== 1) throw new StoreError('response');

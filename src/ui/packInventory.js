@@ -17,6 +17,7 @@ const LABELS = {
 };
 
 const GOOD_LABELS_EN = {
+  coco: 'Coconut', resina: 'Resin',
   pescado: 'Salted fish', fruta: 'Tropical fruit', harina: 'Flour', galleta: 'Ship biscuit', ron: 'Rum',
   agua: 'Fresh water', cana: 'Sugar cane', madera: 'Basic plank', tronco: 'Log', piedra: 'Stone', hierro: 'Iron',
   mineral_hierro: 'Iron ore', azufre: 'Sulfur', lona: 'Canvas', polvora: 'Gunpowder', balas: 'Cannonballs',

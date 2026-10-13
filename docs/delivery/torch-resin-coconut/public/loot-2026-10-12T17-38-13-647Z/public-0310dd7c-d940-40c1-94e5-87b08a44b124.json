@@ -1,0 +1,56 @@
+{
+  "schema": "mn.torch-resin-coconut.public.v1",
+  "at": "2026-10-12T17:38:13.897Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "protocol": 60,
+  "gameVersion": "0.6.0-alpha.65",
+  "checks": [
+    {
+      "name": "public_tls_release_and_sql037_readiness",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.65",
+      "protocolVersion": 60,
+      "players": 0,
+      "foragingReady": true,
+      "torchRules": 2
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "candidatePalms": [
+    {
+      "id": "palm-116",
+      "revision": 4,
+      "expectedResin": false,
+      "expectedCoconut": true
+    },
+    {
+      "id": "palm-98",
+      "revision": 1,
+      "expectedResin": true,
+      "expectedCoconut": false
+    },
+    {
+      "id": "palm-110",
+      "revision": 1,
+      "expectedResin": false,
+      "expectedCoconut": true
+    }
+  ],
+  "pass": false,
+  "failure": "normal movement stalled: nearby available palm",
+  "cleanup": {
+    "deferred": false,
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 0,
+    "completedContributorPalmIds": [],
+    "receiptPolicy": "economic receipts intentionally retained",
+    "receipts": []
+  },
+  "completedAt": "2026-10-12T17:38:27.588Z",
+  "durationMs": 13691
+}

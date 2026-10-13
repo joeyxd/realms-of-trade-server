@@ -43,7 +43,7 @@ function sqlPageStore(base, storage) {
   };
 }
 
-export async function fixture(t, { commitHook = null } = {}) {
+export async function fixture(t, { commitHook = null, accounts = {} } = {}) {
   const dir = await mkdtemp(join(tmpdir(), 'ground-pearl-mint-host-')), path = join(dir, 'db');
   let db = await database(path);
   let host, restarted;
@@ -64,6 +64,11 @@ export async function fixture(t, { commitHook = null } = {}) {
   await db.db.query('insert into public.mn_worlds(world,economy,version) values($1,$2::jsonb,7)', [WORLD, data]);
   const profile = newProfile(); profile.pirateId = `account:${OWNER}`;
   assert.equal((await db.store.saveProfile(OWNER, profile, 0)).ok, true);
+  for (const key of new Set(Object.values(accounts))) {
+    if (key === OWNER) continue;
+    const extra = newProfile(); extra.pirateId = `account:${key}`;
+    assert.equal((await db.store.saveProfile(key, extra, 0)).ok, true);
+  }
   const adoption = await db.adoptionClient.rpc('mn_adopt_ground_world', { p_operation_id: adoptionId(471),
     p_request: { world: WORLD, expectedWorldVersion: 7, worldData: data } });
   assert.equal(adoption.error, null, adoption.error?.message); assert.equal(adoption.data.ok, true);
@@ -80,7 +85,7 @@ export async function fixture(t, { commitHook = null } = {}) {
       return result;
     } };
     const result = new GameHost({ seed: 91, bots: 0, store, worldId: WORLD, log() {},
-      resolvePlayer: async (_req, msg) => msg.token === 'owner' ? OWNER : null,
+      resolvePlayer: async (_req, msg) => msg.token === 'owner' ? OWNER : accounts[msg.token] ?? null,
       economicOperations: true, resourceOperations: true, loggingOperations: true,
       groundTransactions: { journal: storage.journal(WORLD) } });
     const stage = result.groundAuthority.stageFamily.bind(result.groundAuthority);

@@ -1,0 +1,8 @@
+{
+  "recordedAt": "2026-10-13T06:28:47.284239+00:00",
+  "commit": "46902fe7942c766e8a452fe606e711c6214725f5",
+  "comparedTo": "regression-followup.json",
+  "sourceHashes": 1193,
+  "changedAfterConcurrentDocsMerges": [],
+  "scope": "src/server/tests JS,MJS,SQL identical to verified local sources after concurrent model documentation and initial-region merges."
+}

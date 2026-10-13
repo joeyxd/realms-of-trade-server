@@ -1,0 +1,190 @@
+TAP version 13
+# Subtest: N opens the hand fuel panel while empty, and confirmed snapshots label torch duration
+ok 1 - N opens the hand fuel panel while empty, and confirmed snapshots label torch duration
+  ---
+  duration_ms: 2.5161
+  type: 'test'
+  ...
+# Subtest: fueled hand torch sends exact immutable fire set command and waits for confirmation
+ok 2 - fueled hand torch sends exact immutable fire set command and waits for confirmation
+  ---
+  duration_ms: 4.0564
+  type: 'test'
+  ...
+# Subtest: fire command retries exact request once, times out, and denial feedback is localized
+ok 3 - fire command retries exact request once, times out, and denial feedback is localized
+  ---
+  duration_ms: 0.8634
+  type: 'test'
+  ...
+# Subtest: owner-only raft interaction opens fire panel for the nearest supported fixture kind
+ok 4 - owner-only raft interaction opens fire panel for the nearest supported fixture kind
+  ---
+  duration_ms: 3.3239
+  type: 'test'
+  ...
+# Subtest: fuelled fixture prompts from confirmed fire rows and still opens its station panel
+ok 5 - fuelled fixture prompts from confirmed fire rows and still opens its station panel
+  ---
+  duration_ms: 0.6941
+  type: 'test'
+  ...
+# Subtest: legacy lantern path remains unchanged when fire feature flag is absent
+ok 6 - legacy lantern path remains unchanged when fire feature flag is absent
+  ---
+  duration_ms: 1.8549
+  type: 'test'
+  ...
+# Subtest: paid hand fuel is replay-safe, lit state is public, and simulation expiry clears the public flame
+ok 7 - paid hand fuel is replay-safe, lit state is public, and simulation expiry clears the public flame
+  ---
+  duration_ms: 813.8608
+  type: 'test'
+  ...
+# Subtest: no wood denies fuel without changing profile, and missing fire readiness blocks host startup
+ok 8 - no wood denies fuel without changing profile, and missing fire readiness blocks host startup
+  ---
+  duration_ms: 977.2967
+  type: 'test'
+  ...
+# Subtest: crafting UI language follows the locale source even when document.lang is stale
+ok 9 - crafting UI language follows the locale source even when document.lang is stale
+  ---
+  duration_ms: 11.173
+  type: 'test'
+  ...
+# Subtest: the torch is a real hand recipe: two logs and resin from the pack, no output goods, one load
+ok 10 - the torch is a real hand recipe: two logs and resin from the pack, no output goods, one load
+  ---
+  duration_ms: 1.6996
+  type: 'test'
+  ...
+# Subtest: crafting the torch sends the fire panel intent and resolves on the matching fire event
+ok 11 - crafting the torch sends the fire panel intent and resolves on the matching fire event
+  ---
+  duration_ms: 50.1075
+  type: 'test'
+  ...
+# Subtest: a burning torch, missing resin or a world without fire block the torch with a clear reason
+ok 12 - a burning torch, missing resin or a world without fire block the torch with a clear reason
+  ---
+  duration_ms: 1.5262
+  type: 'test'
+  ...
+# Subtest: the fire panel shows both log and resin cards and links to torch crafting when short
+ok 13 - the fire panel shows both log and resin cards and links to torch crafting when short
+  ---
+  duration_ms: 3.458
+  type: 'test'
+  ...
+# Subtest: projectiles light their surroundings with free slots only, nearest first
+ok 14 - projectiles light their surroundings with free slots only, nearest first
+  ---
+  duration_ms: 648.955
+  type: 'test'
+  ...
+# Subtest: projectile lights never take the slots of the ranked static lights
+ok 15 - projectile lights never take the slots of the ranked static lights
+  ---
+  duration_ms: 629.3724
+  type: 'test'
+  ...
+# Subtest: capability snapshot advertises versioned rules and enabled host rejects unversioned commands
+ok 16 - capability snapshot advertises versioned rules and enabled host rejects unversioned commands
+  ---
+  duration_ms: 676.661
+  type: 'test'
+  ...
+# Subtest: torch capability fails closed when its SQL readiness check is unavailable
+ok 17 - torch capability fails closed when its SQL readiness check is unavailable
+  ---
+  duration_ms: 570.8156
+  type: 'test'
+  ...
+# Subtest: marked final palm receipt grants exact drops once and versioned torch spends two logs plus resin
+ok 18 - marked final palm receipt grants exact drops once and versioned torch spends two logs plus resin
+  ---
+  duration_ms: 907.0499
+  type: 'test'
+  ...
+# Subtest: coconut hydration is capped, durable across restart, and receipt replay consumes only once
+ok 19 - coconut hydration is capped, durable across restart, and receipt replay consumes only once
+  ---
+  duration_ms: 1095.9203
+  type: 'test'
+  ...
+# Subtest: disabled capability retains unversioned one-plank hand torch and no palm drops
+ok 20 - disabled capability retains unversioned one-plank hand torch and no palm drops
+  ---
+  duration_ms: 1046.8534
+  type: 'test'
+  ...
+# Subtest: two logs make one board; batch crafting consumes exact inputs and advances one revision
+ok 21 - two logs make one board; batch crafting consumes exact inputs and advances one revision
+  ---
+  duration_ms: 9.3994
+  type: 'test'
+  ...
+# Subtest: exact batch replay does not debit twice; quantity reuse is denied and omitted n equals one
+ok 22 - exact batch replay does not debit twice; quantity reuse is denied and omitted n equals one
+  ---
+  duration_ms: 3.5883
+  type: 'test'
+  ...
+# Subtest: batch schema rejects invalid n values and gather cannot carry n
+ok 23 - batch schema rejects invalid n values and gather cannot carry n
+  ---
+  duration_ms: 2.2979
+  type: 'test'
+  ...
+# Subtest: insufficient materials, stale revision, preflight false or throw leave profile and side effects untouched
+ok 24 - insufficient materials, stale revision, preflight false or throw leave profile and side effects untouched
+  ---
+  duration_ms: 2.8524
+  type: 'test'
+  ...
+# Subtest: final output volume overflow rejects the entire batch
+ok 25 - final output volume overflow rejects the entire batch
+  ---
+  duration_ms: 2.2053
+  type: 'test'
+  ...
+# Subtest: craft rejects dead, low-health, combat, distant, and naval-locked actions
+ok 26 - craft rejects dead, low-health, combat, distant, and naval-locked actions
+  ---
+  duration_ms: 1.5906
+  type: 'test'
+  ...
+# Subtest: only the first of two distinct requests at the same revision can craft
+ok 27 - only the first of two distinct requests at the same revision can craft
+  ---
+  duration_ms: 3.9508
+  type: 'test'
+  ...
+# Subtest: pure workbench preview agrees with server batch input, output, and pack-space limits
+ok 28 - pure workbench preview agrees with server batch input, output, and pack-space limits
+  ---
+  duration_ms: 3.8918
+  type: 'test'
+  ...
+# Subtest: workbench preview and server agree when a recipe would exceed the pack mass limit
+ok 29 - workbench preview and server agree when a recipe would exceed the pack mass limit
+  ---
+  duration_ms: 5.6531
+  type: 'test'
+  ...
+# Subtest: LocalServer HMAC batch craft acknowledges, saves, replays once, and reloads exact profile state
+ok 30 - LocalServer HMAC batch craft acknowledges, saves, replays once, and reloads exact profile state
+  ---
+  duration_ms: 1548.6807
+  type: 'test'
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11025.7776

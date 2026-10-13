@@ -1,12 +1,145 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
-**CH01, 2026-10-12 ? personajes independientes, candidato alpha.65/protocolo 60:**
+**CH01, 2026-10-13 — personajes independientes, alpha.70/protocolo 62:**
 [Contrato](briefs/CH01-character-slots.md), [entrega](delivery/character-slots/README.md).
-Tres slots por cuenta; perfil hist?rico conservado con el mismo UUID, Bucanero nuevo con pistolas.
-Auth owner separado del perfil; compa?eros/GM/wallet mantienen permisos de cuenta.
-SQL+memoria 10/10, slots 17/17, cuentas/perlas 75/75 y regresiones de servicios 21/21.
-Chrome local invitado y cuenta: 77 ? 0 ? 77 monedas, pistolas nuevas, seis capturas inspeccionadas.
-**SQL038 e instalaci?n alpha pendientes**: no hay acceso SQL desde esta sesi?n; no publicar antes de verificar readiness.
+Tres slots por cuenta; perfil histórico conservado con el mismo UUID, Bucanero nuevo con pistolas.
+Auth owner separado del perfil; compañeros/GM/wallet mantienen permisos de cuenta. Al integrar
+L03g-a, la presencia y su bloqueo de pairing también pasan a la cuenta, no al personaje.
+**Requiere SQL038 listo** (`mn_player_characters_ready()` = `{"version":1}`): sin él, la entrada con cuenta responde 503.
+
+**AREA01 A0-G1, 2026-10-13 — levantamiento cerrado; sigue GM06a:**
+[Estudio/matriz](world/a0-g1/README.md), [plano medido](world/a0-g1/terrain-survey.svg),
+[datos reproducibles](world/a0-g1/survey.json). Base `a7cf225`, 560/N561, 29 anclas y
+206 recursos actuales. Dos sitios existentes son cortos; se recomienda Sol en extensión
+occidental, XZ (-720,100), envelope X [-840,280], Z [-280,280], mismo mercado `sol`.
+810 u de camino/921 u de costa son previsiones parciales, sin recorrido jugado.
+Conservar llegada/Salty/fuente/Caldera/Cala/IDs; banda de conexión censada sin colocaciones.
+Primero contrato y prototipo privado de costa/bounds/compatibilidad GM06a; luego A0-G2/A3.
+Sin juego, SQL, versión/protocolo o geografía nueva activada. Ceniza sigue lejana y posterior a A6/D10.
+
+**AREA01 A0-P, 2026-10-13 — ajuste del autor: Ceniza mucho más lejos:**
+[Plan](../PLAN-REGION-INICIAL.md) y [plano](world/region-inicial-v1.svg).
+Mar abierto y combate desde el barco antes de llegar; duración/distancia por medir.
+D10/A6 pasa a ser requisito de A4/primera llegada. Preparar equipo desde Salty/Sol;
+no exigir su componente raro para superar el viaje ni PvP. Ruta corta a Sol conservada.
+Se actualizan región/alfa/roadmap naval; siguiente corte A0-G1, sin cambio de mapa activo.
+
+**Troncos recogibles, 2026-10-13 — corrección de veta:**
+[Entrega](delivery/pickup-wood-uv/README.md). Proyección UV por cara sobre el GLB
+curvo, normales originales conservadas y recorte limpio del atlas existente.
+34/34 pruebas, Chrome local escritorio/móvil 2/2 y comparación visual inspeccionada.
+Alpha.69/protocolo 61 publicada en `676833a`: actualizador 197/197, runtime 38 hashes
+y entrada pública escritorio/móvil 2/2 con 34 archivos HTTP exactos, cero errores.
+
+**ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
+[Entrega](delivery/st01c/DELIVERY.md), [plan autorizado](briefs/st01c-niagara-native-fidelity.md).
+Piloto exacto MyProject `NS_Flame_Single`; consultas UE5.8 NullRHI y helper C++ compilado.
+Dos versiones/renderers efectivos, 100 registros tipados en ocho stores (80 nombres);
+100 cotejos de bytes y valores, cadenas por conexiones, material común de seis expresiones.
+51 originales/copias conservan hashes. La extracción justifica un prototipo acotado;
+no acepta equivalencia visual ni convierte el resto de la biblioteca. Sin runtime/SQL/protocolo.
+Completar semántica/curvas/estado global y referencia multiángulo antes del port privado;
+reconsiderar si requiere una réplica desproporcionada. UI Workshop continúa solo en plan.
+
+**AREA17 L03g-a — presencia segura, 2026-10-13:**
+[Contrato](briefs/l03g-companion-presence.md) y [entrega](delivery/l03g-companion-presence/README.md).
+Mis compañeros: salir, seguir, esperar, volver y descansar sin modelo; cuerpo del host
+y plaza normal, limitado al ancla/zona de Salty Shore. SQL039 confirma ingreso antes de
+publicar y conserva cerco ante caída/incertidumbre; perfil con su única autoridad existente.
+111/111 locales y navegador 12/12 con auth/store simulados, sin Qwen. SQL039/flag/canario
+públicos pendientes; Brisa real intacta y detenida. L03g-b conectará mente al mismo cuerpo;
+ahora presencia y controlador L03f se excluyen mutuamente. No hay recuperación automática
+del cerco ni salida a combate/recolección/economía; detalles y límites en la entrega.
+
+**AREA03, 2026-10-13 — alimentos e INV03:**
+[Entrega](delivery/food-item-completion/README.md): fichas ES/EN con usos, masa/volumen,
+valores y efectos actuales; ambas barras de carga incluyen el bonus de la galleta.
+38/38 regresiones focales, 6/6 configuraciones locales de provisiones y 4/4 de ficha.
+[INV03](delivery/inv03-existing-backpacks/README.md) conserva las mejoras existentes:
+la prueba pública encontró y corrigió el recorte del taller en móvil girado (4/4 locales).
+Aceptación pública completa 22/22: ambos tiers, coste exacto, Carga, piedra conservada,
+replay, denegación y reentrada. Publicado en `a21c47f`, siete hashes de UI/CSS exactos
+en contenedor/HTTPS; una autoridad saludable, sin nueva SQL ni balance.
+El autor eligió cerrar alimentos actuales y continuar mochilas; lima/hierbas siguen
+como propuestas. Añadida al plan [fibra, techumbre y cuero](briefs/plant-fiber-thatch-leather.md):
+plantas → fibra → lona, palmeras → hojas/techos económicos, animales → piel → cuero.
+Recetas y rendimientos por definir; aún no son recursos jugables nuevos.
+
+**AREA15, 2026-10-13 — swallow con recibo común; piloto público apagado:**
+[Entrega/evidencia](delivery/m5-ground-pearl-swallow.md), [contrato](briefs/m5-ground-pearl-swallow.md).
+Cuenta autenticada, bolsa → ranura tragada vacía; misma cuenta/UID, un perfil CAS,
+generación/tombstone y mundo/reloj confirmados por SQL006/018/019 antes de apply.
+Efecto de los cuatro poderes y filtrado reversible de inputs antiguos; ligado hasta morir, sin reemplazo/escupir.
+45/45 aceptación en cuatro archivos, incluidas dos recuperaciones SIGKILL locales;
+266/267 regresión pertinente en 24 archivos; único fallo de expectativa de swallow ya habilitado,
+corregida para rechazar reemplazo. 13/13 seguimiento focal en dos archivos, sin delta runtime.
+Fuentes congeladas; conteos solapados, sin reetiquetar la cohorte amplia.
+Sin SQL/flag/protocolo nuevos. Código publicado en `46902fe`, alpha.67/protocolo 60:
+actualizador 197/197, imagen 100/100 y 27 hashes; entrada 6/6,
+saludable y cero errores/pendientes. Montajes comunes públicos nulos.
+Sigue candidato completo kill/cofre y luego composición GM/compañeros/control/bots/antorchas,
+adopción detenida y canario VPS; montaje común público apagado.
+Integración posterior alpha.68/protocolo 61: presencia/swallow 78/78 y guard 9/9; VPS `5ad1029` verificado, imagen 38/38, entrada 6/6. Presencia y Ground siguen apagados.
+
+**AREA01 A0-P, 2026-10-13 — diseñar geografía antes de construir Puerto Sol:**
+[Plan de primera región](../PLAN-REGION-INICIAL.md), [plano provisional](world/region-inicial-v1.svg).
+Salty Shore/Sol comparten isla y camino/costa; Ceniza ocupa otra isla. Esquema de relaciones propuesto,
+sin escala ni coordenadas runtime. Conservar anclas/IDs actuales de llegada, puerto, fuente, Caldera,
+Cala y recursos; editor actual no crea costa nueva. Siguiente corte **A0-G1: medir terreno y anclas**,
+decidir emplazamiento real de Sol y extensión necesaria, antes de GM06/A3 y descarga multipuerto.
+No hay código, SQL, versión nueva o geografía activada en esta entrega documental.
+
+**Modelos de campo/cocina, 2026-10-12 — integración visual y optimización:**
+[Entrega y evidencia](delivery/item-models-v1/DELIVERY.md). 12 GLB del autor archivados intactos;
+24 derivados WebP 512/256, 28,03 → 1,35 MiB, geometría/UV/color conservados.
+Antorcha original portátil; resina/coco con presentación breve tras recibo aceptado,
+máximo ocho y sin nueva recogida. Troncos recogibles con atlas ilustrado de madera
+reutilizado. Nueve piezas de cocina/propuesta en biblioteca GM con carga bajo demanda.
+65/65 regresiones focales, 76/76 integración y Chrome local/público 2/2 cada uno.
+Alpha.67/protocolo 60 publicada en `a19f5e1`: 38 hashes de contenedor, 34 públicos,
+una autoridad saludable, cero errores y variantes reales 512/256. Fuentes confirmadas.
+Sin nueva receta, SQL o protocolo.
+
+**ST01b — biblioteca Niagara original, 2026-10-12, alpha.66/protocolo 60 publicada:**
+[Entrega y límites](delivery/st01b/DELIVERY.md), [contrato](briefs/st01b-niagara-library.md).
+Censo completo de 993 fuentes/916 identidades binarias y 775 miniaturas; 15 componentes
+originales separados de sus sistemas y un extracto real de Firework de MyProject, 60 frames.
+17 vistas con Tromba, búsqueda/filtros, borradores/historial/recuperación independientes;
+biblioteca móvil y foco de teclado. 58/58 CPU y 9/9 Chrome local, 32 variantes de atlas,
+cero acciones de juego/escrituras GM. Publicado en `739e1b2`: 197/197 del actualizador,
+11 hashes de runtime/paquete y 32 atlas públicos exactos, 9/9 Chrome con cuenta GM,
+entrada WSS normal y cierre sin jugadores/errores/pendientes. Sin SQL ni protocolo nuevos.
+Las 916 simulaciones Niagara no se ejecutan en el navegador; componentes y captura 2D no
+aceptan volumen, densidad ni calidad AAA equivalente. [ST01c](briefs/st01c-niagara-native-fidelity.md)
+tiene el piloto de extracción autorizado y documentado arriba; adaptación visual pendiente.
+UI Workshop conserva su plan. Fuentes Unreal y trabajo concurrente intactos.
+
+**AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
+[Entrega/evidencia](delivery/m5-ground-pearl-give.md), [contrato](briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
+reserva de ambas cuentas/UIDs antes de IO, progreso/autosaves previos, dos CAS y generación durable.
+Apply conjunto o rollback/cerco, reintento exacto y dos SIGKILL locales sin efectos históricos.
+38/38 aceptación en 4 archivos. Cohorte pertinente 400/401 en 51 archivos congelados;
+único fallo HTML localizado reproducido en upstream. Expectativa corregida; 27/27 repetidos en 2 archivos, sin cambios de runtime.
+Sin SQL/flag/protocolo nuevos. Montaje común apagado; venta con pago y perla tragada no entran en give.
+Integración posterior de antorchas/resina/coco: 60/60 en siete archivos, fuentes congeladas; conserva su exclusión con el montaje común.
+Código publicado en `e237768`, alpha.65/protocolo 60: actualizador 197/197, imagen 74/74 y 23 hashes; entrada pública 6/6, cero errores/pendientes. Montajes comunes y flag nuevo de antorchas apagados.
+Siguen swallow/kill-cofre, composición GM/compañeros/control/bots/antorchas, adopción detenida y canario VPS.
+
+**Antorchas/resina/coco, 2026-10-12 — alpha.65 pública y activada, protocolo 60:**
+[Contrato](briefs/torch-resin-coconut.md), [entrega y activación](delivery/torch-resin-coconut/DELIVERY.md).
+Antorcha a mano por 2 troncos + 1 resina; extras de tala de palmera 35 % resina/40 % coco,
+coco +25 hidratación, iconos 128/64 px y referencias PNG con alfa para Tripo3D.
+Corregidos idioma del fuego y solapamiento de estadísticas/botón de fabricación.
+Chrome local 4/4 EN/ES escritorio/móvil; regresión focal 149/149 y SQL037 final 9/9;
+SQL037 readiness 1 y `MN_TORCH_RESIN_COCONUT_OPERATIONS=1` verificados; revisión activa
+`fcd5160`, 31 hashes de contenedor y 25 públicos. Receta, coco y reentrada durables
+completados en cuatro configuraciones, con repetición final ES aceptada; probes GM
+cancelados conservados aparte. Tala pública final 5/5: resina y coco observados,
+recibos SQL, reintento sin duplicación y reentrada. Cero errores/pendientes
+al cierre, cuentas temporales eliminadas, recibos conservados. GLB espera al autor.
+Referencias y recepción de GLB reunidas en [galería](../ARTE-Y-MODELOS.html) y
+[guía de objetos](art/ITEMS.md).
+La entrega distingue un test antiguo de ficha que falla también en HEAD limpio.
 
 **L03f — recorrido desde la cuenta real, 2026-10-12:**
 [Evidencia y límites](delivery/l03f-local-pairing/README.md#recorrido-en-cuenta-real-y-refresco-de-lista).
@@ -26,7 +159,7 @@ y resultado propio en el panel existente. Atlas de UI 81/27 KB, una variante por
 **AREA15, 2026-10-12 — plan de continuidad reconciliado:**
 [Matriz de cobertura](CONTINUITY-MATRIX.md), [revisión y lectura VPS](delivery/m5-continuity-review.md).
 Alpha.63 observado sano; los montajes comunes siguen nulos. La matriz separa estado guardado, recibo probado y aceptación pública.
-Sigue [give gratuito de bolsa entre cuentas](briefs/m5-ground-pearl-give.md), contrato preparado, implementación pendiente.
+El contrato give preparado en esta revisión tiene aceptación posterior en la entrega enlazada arriba; sigue swallow/kill-cofre.
 Componer GM/compañeros/control y rutas activas antes de adoptar; conservar los guards actuales y los checkpoints fechados debajo.
 
 **ST01a — laboratorio privado de Tromba, alpha.64/protocolo 59:**

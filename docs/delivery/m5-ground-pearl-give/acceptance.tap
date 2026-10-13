@@ -1,0 +1,242 @@
+TAP version 13
+# Subtest: default pearl command still uses the existing immediate gameplay helper
+ok 1 - default pearl command still uses the existing immediate gameplay helper
+  ---
+  duration_ms: 593.1536
+  type: 'test'
+  ...
+# Subtest: without the common mount, give retains the existing bag-only gameplay route
+ok 2 - without the common mount, give retains the existing bag-only gameplay route
+  ---
+  duration_ms: 401.8227
+  type: 'test'
+  ...
+# Subtest: mounted false, true and async command decisions never fall through to a local pearl mutation
+ok 3 - mounted false, true and async command decisions never fall through to a local pearl mutation
+  ---
+  duration_ms: 412.7417
+  type: 'test'
+  ...
+# Subtest: command access rejection precedes the receipted dispatch hook
+ok 4 - command access rejection precedes the receipted dispatch hook
+  ---
+  duration_ms: 360.7403
+  type: 'test'
+  ...
+# Subtest: give reserves both accounts before IO and applies the two-profile receipt only at drain
+ok 5 - give reserves both accounts before IO and applies the two-profile receipt only at drain
+  ---
+  duration_ms: 7438.6501
+  type: 'test'
+  ...
+# Subtest: real give command validates selectors and never accepts client authority fields
+ok 6 - real give command validates selectors and never accepts client authority fields
+  ---
+  duration_ms: 11175.6194
+  type: 'test'
+  ...
+# Subtest: prior autosaves for both accounts settle under the give reservation
+ok 7 - prior autosaves for both accounts settle under the give reservation
+  ---
+  duration_ms: 16303.8799
+  type: 'test'
+  ...
+# Subtest: a near-limit running profile is rejected before reserving or starting settlement IO
+ok 8 - a near-limit running profile is rejected before reserving or starting settlement IO
+  ---
+  duration_ms: 19252.5564
+  type: 'test'
+  ...
+# Subtest: lost SQL response and missing receipt read retry the same request without duplicating a gift
+ok 9 - lost SQL response and missing receipt read retry the same request without duplicating a gift
+  ---
+  duration_ms: 23501.1667
+  type: 'test'
+  ...
+# Subtest: receiver disconnect fences a committed give before local apply
+ok 10 - receiver disconnect fences a committed give before local apply
+  ---
+  duration_ms: 26100.0508
+  type: 'test'
+  ...
+# Subtest: receiver death fences a committed give before local apply
+ok 11 - receiver death fences a committed give before local apply
+  ---
+  duration_ms: 29650.38
+  type: 'test'
+  ...
+# Subtest: receiver recycle fences a committed give before local apply
+ok 12 - receiver recycle fences a committed give before local apply
+  ---
+  duration_ms: 18529.928
+  type: 'test'
+  ...
+# Subtest: close fences a committed give before local apply
+ok 13 - close fences a committed give before local apply
+  ---
+  duration_ms: 14995.1804
+  type: 'test'
+  ...
+# Subtest: completion replaced fences a committed give before local apply
+ok 14 - completion replaced fences a committed give before local apply
+  ---
+  duration_ms: 16446.3883
+  type: 'test'
+  ...
+# Subtest: command null fences a committed give before local apply
+ok 15 - command null fences a committed give before local apply
+  ---
+  duration_ms: 16515.1895
+  type: 'test'
+  ...
+# Subtest: give fences a null command hook before reaching legacy transfer
+ok 16 - give fences a null command hook before reaching legacy transfer
+  ---
+  duration_ms: 10781.9725
+  type: 'test'
+  ...
+# Subtest: give fences a replacement command hook before reaching legacy transfer
+ok 17 - give fences a replacement command hook before reaching legacy transfer
+  ---
+  duration_ms: 6644.312
+  type: 'test'
+  ...
+# Subtest: second session apply failure rolls back both live bags and fences the committed host
+ok 18 - second session apply failure rolls back both live bags and fences the committed host
+  ---
+  duration_ms: 7577.2433
+  type: 'test'
+  ...
+# Subtest: partial events apply failure rolls back both live bags and fences the committed host
+ok 19 - partial events apply failure rolls back both live bags and fences the committed host
+  ---
+  duration_ms: 7811.6929
+  type: 'test'
+  ...
+# Subtest: authenticated pearl give recovers exact ownership after SIGKILL after-journal-prepare
+ok 20 - authenticated pearl give recovers exact ownership after SIGKILL after-journal-prepare
+  ---
+  duration_ms: 14290.2969
+  type: 'test'
+  ...
+# SIGKILL after-journal-prepare; reopened SQL018/019/023 without migrations, reconciled the exact give UUID, then verified one later give at generation 2 → 3.
+# Subtest: authenticated pearl give recovers exact ownership after SIGKILL after-sql-commit
+ok 21 - authenticated pearl give recovers exact ownership after SIGKILL after-sql-commit
+  ---
+  duration_ms: 14430.7453
+  type: 'test'
+  ...
+# SIGKILL after-sql-commit; reopened SQL018/019/023 without migrations, reconciled the exact give UUID, then verified one later give at generation 2 → 3.
+# Subtest: give prepares a detached two-profile CAS operation and applies both profiles and events
+ok 22 - give prepares a detached two-profile CAS operation and applies both profiles and events
+  ---
+  duration_ms: 77.2326
+  type: 'test'
+  ...
+# Subtest: give rejects swallowed, distant, combat, full, wrong-holder and self transfers without mutation
+    # Subtest: swallowed
+    ok 1 - swallowed
+      ---
+      duration_ms: 31.9673
+      type: 'test'
+      ...
+    # Subtest: far
+    ok 2 - far
+      ---
+      duration_ms: 44.6318
+      type: 'test'
+      ...
+    # Subtest: combat
+    ok 3 - combat
+      ---
+      duration_ms: 35.137
+      type: 'test'
+      ...
+    # Subtest: full
+    ok 4 - full
+      ---
+      duration_ms: 24.6832
+      type: 'test'
+      ...
+    # Subtest: holder
+    ok 5 - holder
+      ---
+      duration_ms: 17.8971
+      type: 'test'
+      ...
+    # Subtest: self
+    ok 6 - self
+      ---
+      duration_ms: 17.1168
+      type: 'test'
+      ...
+    1..6
+ok 23 - give rejects swallowed, distant, combat, full, wrong-holder and self transfers without mutation
+  ---
+  duration_ms: 173.5048
+  type: 'test'
+  ...
+# Subtest: baseline allows settlement counters but catches either endpoint or shared ledger drift
+ok 24 - baseline allows settlement counters but catches either endpoint or shared ledger drift
+  ---
+  duration_ms: 31.826
+  type: 'test'
+  ...
+# Subtest: preflight accepts autosave activity for both accounts, snapshots read-only and cannot apply
+ok 25 - preflight accepts autosave activity for both accounts, snapshots read-only and cannot apply
+  ---
+  duration_ms: 35.139
+  type: 'test'
+  ...
+# Subtest: current endpoint loss, death and guest identity cancel or reject a plan
+    # Subtest: recycled
+    ok 1 - recycled
+      ---
+      duration_ms: 33.6141
+      type: 'test'
+      ...
+    # Subtest: dead
+    ok 2 - dead
+      ---
+      duration_ms: 19.2569
+      type: 'test'
+      ...
+    # Subtest: guest
+    ok 3 - guest
+      ---
+      duration_ms: 5.2041
+      type: 'test'
+      ...
+    1..3
+ok 26 - current endpoint loss, death and guest identity cancel or reject a plan
+  ---
+  duration_ms: 59.0562
+  type: 'test'
+  ...
+# Subtest: failure while marking the second profile dirty rolls back both sessions and the first profile
+ok 27 - failure while marking the second profile dirty rolls back both sessions and the first profile
+  ---
+  duration_ms: 40.5366
+  type: 'test'
+  ...
+# Subtest: one-shot failure writing the second session confirmed value restores both sessions and projections
+ok 28 - one-shot failure writing the second session confirmed value restores both sessions and projections
+  ---
+  duration_ms: 40.0069
+  type: 'test'
+  ...
+# Subtest: partial event append failure truncates publication and restores the full give projection
+ok 29 - partial event append failure truncates publication and restores the full give projection
+  ---
+  duration_ms: 46.9559
+  type: 'test'
+  ...
+1..29
+# tests 38
+# suites 0
+# pass 38
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 266349.277
