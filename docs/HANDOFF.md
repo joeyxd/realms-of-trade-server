@@ -1,5 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA17 L03g-a — presencia segura, 2026-10-13:**
+[Contrato](briefs/l03g-companion-presence.md) y [entrega](delivery/l03g-companion-presence/README.md).
+Mis compañeros: salir, seguir, esperar, volver y descansar sin modelo; cuerpo del host
+y plaza normal, limitado al ancla/zona de Salty Shore. SQL039 confirma ingreso antes de
+publicar y conserva cerco ante caída/incertidumbre; perfil con su única autoridad existente.
+111/111 locales y navegador 12/12 con auth/store simulados, sin Qwen. SQL039/flag/canario
+públicos pendientes; Brisa real intacta y detenida. L03g-b conectará mente al mismo cuerpo;
+ahora presencia y controlador L03f se excluyen mutuamente. No hay recuperación automática
+del cerco ni salida a combate/recolección/economía; detalles y límites en la entrega.
+
 **AREA03, 2026-10-13 — alimentos e INV03:**
 [Entrega](delivery/food-item-completion/README.md): fichas ES/EN con usos, masa/volumen,
 valores y efectos actuales; ambas barras de carga incluyen el bonus de la galleta.

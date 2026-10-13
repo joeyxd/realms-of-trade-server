@@ -64,7 +64,7 @@ export class LocalServer {
   #ownsTickPublication = false;
   #afterWorld = false; #holdingPublication = false;
 
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false, survival = false, meals = false, harvestLoot = false }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, residentStep = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false, survival = false, meals = false, harvestLoot = false }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -122,6 +122,7 @@ export class LocalServer {
     this.send = send; // (clientId, msg) => void
     this.now = now;
     this.clients = new Map(); // clientId -> {entity, queue, ack}
+    this.residentStep = residentStep; // Trusted host-only body policy, after the accepted tick boundary.
     this.inputAccess = null; // Optional host-owned controller gate, checked at enqueue and consumption.
     this.onPearlCommand = null; // Optional receipted owner; never fall through to an immediate mutation.
     this.chat = new ChatService({ config: chat, now, send, peers: () => {
@@ -173,7 +174,7 @@ export class LocalServer {
       this.world.fireReceipts?.delete(c.entity);
       this.world.freshwaterGather?.delete(c.entity); this.world.freshwaterProofs?.delete(c.entity); this.world.freshwaterReceipts?.delete(c.entity);
       this.world.fireHandOff?.delete(c.entity);
-      const p = detachProfile(this.world, c.entity);
+      const p = detachProfile(this.world, c.entity, { sync: !c.companionResident });
       if (save && p && this.onSave) this.onSave(clientId, p);
       this.world.despawn(c.entity); this.flushEvents();
     }
@@ -717,8 +718,10 @@ export class LocalServer {
 
   #stepWorld(completion) {
     const w = this.world;
+    if (this.residentStep !== null) this.residentStep();
     for (const [id, c] of this.clients) {
       if (!c.entity) continue;
+      if (c.companionResident) continue; // No socket inputs, combat, filler or autonomous profile changes.
       // The host invalidates queues synchronously; physical neutralization remains inside a tick.
       if (c.controlNeutral) {
         c.controlNeutral = false;
@@ -776,7 +779,7 @@ export class LocalServer {
     // Saves: the ones due, and a look at everyone every SAVE_TIMING.every s (sent only if it changed).
     const sweep = w.tick % Math.round(SAVE_TIMING.every / DT) === 0;
     for (const [id, c] of this.clients) {
-      if (!c.entity) continue;
+      if (!c.entity || c.companionResident) continue;
       if (sweep && c.saveAt == null) c.saveAt = w.tick;
       if (c.saveAt != null && w.tick >= c.saveAt) this.sendSave(id, c);
     }
@@ -843,7 +846,7 @@ export class LocalServer {
     // Profiles that changed, at most every DROPS.profileEvery ticks per player.
     if (w.profileDirty && w.profileDirty.size) {
       for (const [id, c] of this.clients) {
-        if (c.entity && w.profileDirty.has(c.entity) && !(w.tick - (c.profT ?? -1e9) < DROPS.profileEvery)) this.sendProfile(id, c);
+        if (!c.companionResident && c.entity && w.profileDirty.has(c.entity) && !(w.tick - (c.profT ?? -1e9) < DROPS.profileEvery)) this.sendProfile(id, c);
       }
     }
   }

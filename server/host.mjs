@@ -7,6 +7,7 @@ import { LoggingAim } from './loggingAim.mjs';
 import { CompanionConfigService } from './companionConfig.mjs';
 import { CompanionCreationService } from './companionCreation.mjs';
 import { CompanionPairingService } from './companionPairing.mjs';
+import { CompanionPresenceService } from './companionPresence.mjs';
 import { CompanionControlService } from './companionControl.mjs';
 import { InferenceConfigService } from './inferenceConfig.mjs';
 import { LocalServer } from '../src/net/localServer.js';
@@ -88,7 +89,7 @@ export class GameHost {
     economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, torchResinCoconutOperations = false, agentTrade = false,
     groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false,
     inferenceCatalog = [], inferenceConfigAllowMemory = false, companionCreation = false, companionCreationAllowMemory = false,
-    companionPairing = false, companionPairingAllowMemory = false } = {}) {
+    companionPairing = false, companionPairingAllowMemory = false, companionPresence = false, companionPresenceAllowMemory = false } = {}) {
     if (groundTransactions !== null) {
       groundTransactions = assemblyOptions(groundTransactions, ['journal']);
       if (Object.keys(groundTransactions).length !== 1 || !groundTransactions.journal || !economicOperations ||
@@ -126,6 +127,7 @@ export class GameHost {
         (!companionCreation || !resolvePlayer || !worldId || groundTransactions !== null)) throw new StoreError('configuration');
     this.agentControl = agentControl === null ? (companionPairing ? new AgentControl({ worldId, bindings: [], ttlMs: 3600000 }) : null)
       : new AgentControl(agentControl);
+    if (typeof companionPresence !== 'boolean' || companionPresence && (!companionPairing || groundTransactions !== null || agentPilot !== null)) throw new StoreError('configuration');
     this.agentPilot = null;
     if (agentPilot !== null) {
       const pilot = assemblyOptions(agentPilot, ['maxAgents']);
@@ -167,6 +169,7 @@ export class GameHost {
       if (this.#drainingPearls || this.groundAuthority?.busy) { this.#stopPearls(); return; }
       const sock = this.sockets.get(id);
       if (sock) { try { sock.ws.close(1011, 'storage'); } catch { /* gone */ } this.onClose(sock); }
+      else this.companionPresence?.profileFailure(id);
     }, { journal: pearlJournal, starter: workshopOperations });
     // A blocked final snapshot is evidence of an incomplete shutdown, never a retryable save blob.
     // Keep its detached data private for explicit reconciliation; it may contain pre-commit UIDs.
@@ -181,6 +184,7 @@ export class GameHost {
       tickAccess: () => this.tickAvailable(),
       beforeDetach: (id, entity) => this.beforeProfileDetach(id, entity),
       onSave: (id, p) => this.saveProfile(id, p),
+      residentStep: () => this.companionPresence?.step(),
       progressionPersistence: (id, milestone) => {
         const session = this.profiles.clients.get(id);
         if (!session || this.store.durable !== true) return 'local';
@@ -214,6 +218,7 @@ export class GameHost {
     this.started = performance.now();
     this.companionControl = new CompanionControlService(this, { allowMemory: companionControlAllowMemory });
     this.companionPairing = new CompanionPairingService(this, { enabled: companionPairing, allowMemory: companionPairingAllowMemory });
+    this.companionPresence = new CompanionPresenceService(this, { enabled: companionPresence, allowMemory: companionPresenceAllowMemory });
     this.inferenceConfig = new InferenceConfigService(this, { catalog: inferenceCatalog, allowMemory: inferenceConfigAllowMemory });
   }
 
@@ -759,6 +764,8 @@ export class GameHost {
         companionCreation: { enabled: this.companionCreation.enabled, ready: this.companionCreation.ready,
           pending: this.companionCreation.busy.size },
         companionPairing: { enabled: this.companionPairing.enabled, ready: this.companionPairing.ready },
+        companionPresence: { enabled: this.companionPresence.enabled, ready: this.companionPresence.ready,
+          bodies: [...this.companionPresence.entries.values()].filter(e => e.body).length, pending: this.companionPresence.busy.size },
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
@@ -790,6 +797,7 @@ export class GameHost {
   receive(sock, msg) {
     if (this.closing || sock.economicClosing || !this.sockets.has(sock.id)) return;
     this.sweepAgentControl();
+    if (this.companionPresence.handle(sock, msg)) return;
     if (this.companionPairing.handle(sock, msg)) return;
     if (msg.t === MSG.AGENT_INVENTORY) { this.agentInventoryMessage(sock, msg); return; }
     if (msg.t === MSG.AGENT_MARKET) { this.agentMarketMessage(sock, msg); return; }
@@ -870,7 +878,7 @@ export class GameHost {
       this.server.receive(sock.id, msg); return;
     }
     if (sock.joining) return;
-    if (this.server.humans + this.pendingJoins >= this.maxPlayers) {
+    if (this.server.humans + this.pendingJoins + this.companionPresence.pendingSlots >= this.maxPlayers) {
       this.sendTo(sock.id, { t: MSG.FULL, max: this.maxPlayers }); return;
     }
     sock.joining = true; this.pendingJoins++;
@@ -1066,7 +1074,9 @@ export class GameHost {
         (!this.agentPilot || candidate.worldAdmitted) && candidate.ws.readyState === 1 &&
         candidate.agentSessionId === this.agentControl.byCharacter(row.characterKey)?.grant.scope.sessionId);
       const entity = current && this.server.clients.get(current.id)?.entity;
-      const name = entity ? this.server.world.describe(entity).name : null;
+      const prepared = this.companionPairing.owners.get(owner)?.record;
+      const name = entity ? this.server.world.describe(entity).name :
+        prepared?.characterKey === row.characterKey ? prepared.preset.name : null;
       return { ...row, online: !!current, name: typeof name === 'string' ? name.slice(0, 64) : null,
         ...this.companionControl.projection(row.characterKey) };
     });
@@ -1195,6 +1205,7 @@ export class GameHost {
       } else identity = await untilAbort(Promise.resolve().then(() => this.resolvePlayer(sock.req, msg, { signal })), signal);
       if (!this.sockets.has(sock.id) || signal.aborted) return;
       if (msg.agent === true) {
+        if (this.companionPresence.fencedCharacter(identity)) throw new StoreError('auth');
         if (!this.companionControl.allowed(identity)) throw new StoreError('auth');
         // Reserve synchronously before profile I/O; concurrent joins count toward the pilot ceiling.
         if (this.agentPilot && [...this.sockets.values()].filter((s) => s.agentIdentity).length >= this.agentPilot.maxAgents)
@@ -1335,6 +1346,7 @@ export class GameHost {
         // The target is an entity selector, never an account identity. Resolve the current client
         // and authenticated session, including all its inventory/ledger lanes, before transfer.
         const targetId = this.server.clientOf(plan.target);
+        if (this.companionPresence.hasClient(targetId)) return false;
         if (!this.server.world.ecs.alive[plan.target]) throw new StoreError('session');
         const target = this.profileLanes(targetId, plan.target);
         lanes.accounts.push(...target.accounts); lanes.uids.push(...target.uids);
@@ -1437,6 +1449,7 @@ export class GameHost {
 
   onClose(sock, force = false) {
     if (!this.sockets.has(sock.id)) return;
+    this.companionPresence?.onClose(sock);
     this.companionPairing?.onClose(sock);
     if (!force && this.economicAuthority?.busy && !this.economicAuthority.failed) {
       // Keep the exact actor/profile alive until a confirmed operation is applied or fenced.
@@ -1494,7 +1507,7 @@ export class GameHost {
     for (let message of messages) {
       if ((this.agentPilot || this.companionPairing?.enabled) && message.t === MSG.SPAWN) {
         const clientId = this.server.world.ecs.clientId[message.e.id];
-        if (this.sockets.get(clientId)?.agentIdentity) message = { ...message, e: { ...message.e, controller: 'agent' } };
+        if (this.sockets.get(clientId)?.agentIdentity || this.server.clients.get(clientId)?.companionResident) message = { ...message, e: { ...message.e, controller: 'agent' } };
       }
       this.sendWire(sock, message);
     }
@@ -1545,6 +1558,7 @@ export class GameHost {
       await this.#groundDeaths?.settle();
       await this.#groundPearlMints?.settle();
       await Promise.all([...this.joins]);
+      await this.companionPresence.close();
       // Cancelled reads may reconcile receipts, but never install ground or admit after close.
       if (this.#prepareTask) await this.#prepareTask.catch(() => {});
       // Storage continuations may finish after close invalidated and detached their actor. Wait for
