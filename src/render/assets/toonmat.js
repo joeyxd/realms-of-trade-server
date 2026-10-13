@@ -41,11 +41,11 @@ function paramsOf(src, entry, { vertexColors = false } = {}) {
 // hatching unless the entry turns it off. Returns { mat, nm } (nm: the outline pass's paired material).
 export function worldToon(src, entry) {
   const t = entry.toon, p = paramsOf(src, entry, { vertexColors: !!src.vertexColors });
-  const opts = { occluder: true, comic: t.comic, rim: !!t.rim, key: 'ext-w-' + gradeKey(t) + (p.vertexColors ? 'v' : ''), albedo: gradeGlsl(t) };
+  const opts = { occluder: t.occluder !== false, comic: t.comic, rim: !!t.rim, key: 'ext-w-' + gradeKey(t) + (p.vertexColors ? 'v' : ''), albedo: gradeGlsl(t) };
   const mat = toon(p, opts);
   mat.flatShading = !!t.flat;
   mat.name = src.name || '';
-  const nm = normalMatFor({ occluder: true }, p.side);
+  const nm = normalMatFor({ occluder: opts.occluder }, p.side);
   if (p.alphaTest) { nm.alphaTest = p.alphaTest; nm.map = p.map; } // cut-outs cut their outline too
   return { mat, nm };
 }

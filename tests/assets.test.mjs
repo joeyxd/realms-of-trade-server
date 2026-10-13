@@ -47,8 +47,10 @@ test('manifest: invalid optional mobile texture path is reported without droppin
     assert.equal(m.entries.get('tex:test').mobileSrc, undefined);
     assert.ok(m.errors.some((e) => /mobileSrc must be a relative path/.test(e)));
   }
-  const ignoredOnModel = normalizeManifest({ assets: [{ id: 'model:test', kind: 'model', src: 'models/test.glb', mobileSrc: 'models/mobile.glb' }] });
-  assert.equal(ignoredOnModel.entries.get('model:test').mobileSrc, undefined);
+  const mobileModel = normalizeManifest({ assets: [{ id: 'model:test', kind: 'model', src: 'models/test.glb', mobileSrc: 'models/mobile.glb' }] });
+  assert.equal(selectTextureSource(mobileModel.entries.get('model:test'), true), 'models/mobile.glb');
+  const deferred = normalizeManifest({ assets: [{ id: 'model:food', src: 'models/food.glb', preload: false }] });
+  assert.equal(deferred.entries.get('model:food').preload, false);
 });
 
 test('manifest: primary asset paths reject absolute and drive-qualified paths', () => {

@@ -1,5 +1,14 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**Modelos de campo/cocina, 2026-10-12 — integración visual y optimización:**
+[Entrega y evidencia](docs/delivery/item-models-v1/DELIVERY.md). 12 GLB del autor archivados intactos;
+24 derivados WebP 512/256, 28,03 → 1,35 MiB, geometría/UV/color conservados.
+Antorcha original portátil; resina/coco con presentación breve tras recibo aceptado,
+máximo ocho y sin nueva recogida. Troncos recogibles con atlas ilustrado de madera
+reutilizado. Nueve piezas de cocina/propuesta en biblioteca GM con carga bajo demanda.
+65/65 regresiones focales; aceptación visual y publicación se registran en la entrega.
+Sin nueva receta, SQL o protocolo.
+
 **AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-pearl-give.md), [contrato](docs/briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
 reserva de ambas cuentas/UIDs antes de IO, progreso/autosaves previos, dos CAS y generación durable.
@@ -11,13 +20,17 @@ Integración posterior de antorchas/resina/coco: 60/60 en siete archivos, fuente
 Código publicado en `e237768`, alpha.65/protocolo 60: actualizador 197/197, imagen 74/74 y 23 hashes; entrada pública 6/6, cero errores/pendientes. Montajes comunes y flag nuevo de antorchas apagados.
 Siguen swallow/kill-cofre, composición GM/compañeros/control/bots/antorchas, adopción detenida y canario VPS.
 
-**Antorcha de campo/resina/coco, 2026-10-12 — corte local preparado:**
+**Antorcha de campo/resina/coco, 2026-10-12 — alpha.65 pública y activada:**
 [Contrato](docs/briefs/torch-resin-coconut.md), [entrega](docs/delivery/torch-resin-coconut/DELIVERY.md).
 Receta elegida por el autor: 2 troncos + 1 resina sin banco; extras probabilísticos
 al completar tala y coco consumible para +25 hidratación. Arte con alfa entregado
 para Tripo3D; meshes a cargo del autor. UI revisada ES/EN, 720p y móvil, 4/4 navegador
-y 149/149 regresiones focales; SQL037 final 9/9. Aplicación SQL y activación pública pendientes; no marcar
-publicado ni sustituir la aceptación de Supabase por pruebas locales.
+y 149/149 regresiones focales; SQL037 final 9/9. SQL real readiness 1 y flag activos.
+Receta, hidratación y reentrada durables completadas en cuatro configuraciones públicas;
+repetición final de escritorio ES aceptada y cancelaciones GM documentadas. Tala pública final 5/5:
+resina/coco observados, recibos, reintento sin duplicación y reentrada durable.
+Arte/meshes centralizados para el autor en [galería](ARTE-Y-MODELOS.html) y
+[guía de entregas](docs/art/ITEMS.md); 17 referencias, tres propuestas separadas.
 
 **AREA03 — iconos de cocina y referencias Tripo, 2026-10-12:**
 [Entrega de arte](docs/art/cooking-icons-v1/README.md): 17 PNG con alfa y ZIP, ingredientes y

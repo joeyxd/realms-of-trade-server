@@ -1,13 +1,12 @@
 {
-  "at": "2026-10-12T17:04:54.665Z",
+  "at": "2026-10-12T17:23:32.734Z",
   "scope": "Read-only deployed status and service-role readiness RPCs",
   "checks": {
     "mn_torch_resin_coconut_ready": {
-      "data": null,
-      "error": {
-        "code": "PGRST202",
-        "message": "Could not find the function public.mn_torch_resin_coconut_ready without parameters in the schema cache"
-      }
+      "data": {
+        "version": 1
+      },
+      "error": null
     },
     "mn_fire_operations_ready": {
       "data": {
@@ -20,17 +19,25 @@
         "version": 1
       },
       "error": null
+    },
+    "legacy_goods": {
+      "data": true,
+      "error": null
+    },
+    "new_goods": {
+      "data": true,
+      "error": null
     }
   },
   "status": {
     "game": "MAREA NEGRA",
-    "version": "0.6.0-alpha.64",
+    "version": "0.6.0-alpha.65",
     "players": 0,
     "max": 4,
     "sockets": 0,
-    "tick": 181014,
-    "uptime": 3113,
-    "stepMs": 1.363,
+    "tick": 13380,
+    "uptime": 234,
+    "stepMs": 1.193,
     "bots": 3,
     "names": [],
     "errors": 0,
@@ -72,7 +79,12 @@
       },
       "fire": {
         "enabled": true,
-        "ready": true
+        "ready": true,
+        "torchRules": 1
+      },
+      "foraging": {
+        "enabled": false,
+        "ready": false
       },
       "freshwater": {
         "enabled": true,
@@ -105,17 +117,17 @@
         "id": "marea-negra",
         "ready": true,
         "failed": false,
-        "version": 4435,
+        "version": 4454,
         "errors": 0
       }
     },
     "net": {
-      "fill": 41606,
-      "late": 14138,
-      "trimmed": 1412,
-      "clamped": 5055,
-      "kbOut": 2004436.5,
-      "kbIn": 13915.8,
+      "fill": 17,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 422.6,
+      "kbIn": 0.1,
       "dropped": 0
     }
   },

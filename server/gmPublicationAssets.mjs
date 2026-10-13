@@ -89,6 +89,8 @@ function loaderMetadata(entry) {
   for (const key of ['fit', 'size', 'height', 'scale', 'rotY', 'yOffset', 'shadow', 'toon', 'props']) {
     if (entry[key] !== undefined) loader[key] = key === 'toon' ? structuredClone(entry[key]) : entry[key];
   }
+  if (entry.mobileSrc) loader.mobileSrc = entry.mobileSrc;
+  if (entry.preload === false) loader.preload = false;
   return loader;
 }
 
@@ -204,7 +206,7 @@ export function createGmPublicationAssets({ root }) {
       const assetsRoot = await realpath(path.join(absoluteRoot, 'assets'));
       for (const entry of prepared.manifestEntries) {
         const variants = [['default', entry.src]];
-        if (entry.kind === 'tex' && entry.mobileSrc) variants.push(['mobile', entry.mobileSrc]);
+        if (entry.mobileSrc) variants.push(['mobile', entry.mobileSrc]);
         for (const [variant, src] of variants) {
           if (!safeRelative(src)) fail('asset_reference');
           const extension = path.extname(src).toLowerCase();

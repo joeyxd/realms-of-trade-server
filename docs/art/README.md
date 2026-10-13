@@ -1,5 +1,9 @@
 # Arte del puerto
 
+**Objetos, cocina y entregas Tripo:** abre [ARTE-Y-MODELOS.html](../../ARTE-Y-MODELOS.html)
+o la [guía única de iconos, referencias y meshes](ITEMS.md). Allí están las 17 piezas
+actuales, sus referencias y las carpetas para dejar los GLB.
+
 Este índice reúne los cortes locales de autoría visual. El plan general y sus gates están en
 [PLAN-VISUAL-PORT.md](../../PLAN-VISUAL-PORT.md); el catálogo operativo está en
 [tools/art-catalog/README.md](../../tools/art-catalog/README.md).

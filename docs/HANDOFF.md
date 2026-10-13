@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Modelos de campo/cocina, 2026-10-12 — integración visual y optimización:**
+[Entrega y evidencia](delivery/item-models-v1/DELIVERY.md). 12 GLB del autor archivados intactos;
+24 derivados WebP 512/256, 28,03 → 1,35 MiB, geometría/UV/color conservados.
+Antorcha original portátil; resina/coco con presentación breve tras recibo aceptado,
+máximo ocho y sin nueva recogida. Troncos recogibles con atlas ilustrado de madera
+reutilizado. Nueve piezas de cocina/propuesta en biblioteca GM con carga bajo demanda.
+65/65 regresiones focales; aceptación visual y publicación se registran en la entrega.
+Sin nueva receta, SQL o protocolo.
+
 **AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
 [Entrega/evidencia](delivery/m5-ground-pearl-give.md), [contrato](briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
 reserva de ambas cuentas/UIDs antes de IO, progreso/autosaves previos, dos CAS y generación durable.
@@ -11,13 +20,20 @@ Integración posterior de antorchas/resina/coco: 60/60 en siete archivos, fuente
 Código publicado en `e237768`, alpha.65/protocolo 60: actualizador 197/197, imagen 74/74 y 23 hashes; entrada pública 6/6, cero errores/pendientes. Montajes comunes y flag nuevo de antorchas apagados.
 Siguen swallow/kill-cofre, composición GM/compañeros/control/bots/antorchas, adopción detenida y canario VPS.
 
-**Antorchas/resina/coco, 2026-10-12 — implementación local, protocolo 60:**
+**Antorchas/resina/coco, 2026-10-12 — alpha.65 pública y activada, protocolo 60:**
 [Contrato](briefs/torch-resin-coconut.md), [entrega y activación](delivery/torch-resin-coconut/DELIVERY.md).
 Antorcha a mano por 2 troncos + 1 resina; extras de tala de palmera 35 % resina/40 % coco,
 coco +25 hidratación, iconos 128/64 px y referencias PNG con alfa para Tripo3D.
 Corregidos idioma del fuego y solapamiento de estadísticas/botón de fabricación.
 Chrome local 4/4 EN/ES escritorio/móvil; regresión focal 149/149 y SQL037 final 9/9;
-Supabase y `MN_TORCH_RESIN_COCONUT_OPERATIONS=1` pendientes, sin publicación de este corte.
+SQL037 readiness 1 y `MN_TORCH_RESIN_COCONUT_OPERATIONS=1` verificados; revisión activa
+`fcd5160`, 31 hashes de contenedor y 25 públicos. Receta, coco y reentrada durables
+completados en cuatro configuraciones, con repetición final ES aceptada; probes GM
+cancelados conservados aparte. Tala pública final 5/5: resina y coco observados,
+recibos SQL, reintento sin duplicación y reentrada. Cero errores/pendientes
+al cierre, cuentas temporales eliminadas, recibos conservados. GLB espera al autor.
+Referencias y recepción de GLB reunidas en [galería](../ARTE-Y-MODELOS.html) y
+[guía de objetos](art/ITEMS.md).
 La entrega distingue un test antiguo de ficha que falla también en HEAD limpio.
 
 **L03f — recorrido desde la cuenta real, 2026-10-12:**

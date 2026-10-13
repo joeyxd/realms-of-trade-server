@@ -9,6 +9,8 @@ import { TOWN_ALBEDO_ID, TOWN_NORMAL_ID } from './townMaterials.js';
 import { townWorkbenchGeometry, townFurnitureMaterial } from './townFurniture.js';
 import { palmVariant } from './palmGeometry.js';
 import { naturalRockMaterial } from './rockMaterials.js';
+import { RAFT_ATLAS_ID, mapRaftUV } from './raftMaterials.js';
+import { dockWoodMaterial, DOCK_WOOD_RECTS } from './dockWood.js';
 
 const mat4 = new THREE.Matrix4();
 const position = new THREE.Vector3();
@@ -135,6 +137,12 @@ export class ResourceNodes {
     const planks = loadedDebrisGeometry(assets.data(DEBRIS_IDS[2]));
     this.wood = wood || debrisGeometry(1); this.planks = planks || debrisGeometry(2);
     this.paint = toon({ color: 0xffffff, vertexColors: true }, { comic: false, key: 'coast-resource-paint' });
+    this.woodAtlas = assets.texture(RAFT_ATLAS_ID);
+    if (this.woodAtlas) {
+      for (const geometry of [this.wood, this.planks]) mapRaftUV(geometry, 'wood', { grain: 'box', rect: DOCK_WOOD_RECTS[0], woodSlice: false });
+    }
+    this.woodPaint = dockWoodMaterial(this.woodAtlas, this.paint);
+    this.woodNm = normalMatFor({ occluder: true });
     this.rockPaint = naturalRockMaterial('harvest-stone');
     this.legPaint = toon({ color: 0x82532e }, { comic: false, key: 'coast-resource-legs' });
     this.gold = new THREE.MeshBasicMaterial({ color: 0xe6b75b });
@@ -423,8 +431,9 @@ export class ResourceNodes {
         const stone = node.kind === 'stone';
         const group = new THREE.Group(), mesh = new THREE.Mesh(
           mining ? (node.kind === 'iron_ore' ? this.ironOre : this.miningRock) : (stone ? this.rock : this.wood),
-          mining ? this.paint : (stone ? this.rockPaint : this.paint));
+          mining ? this.paint : (stone ? this.rockPaint : this.woodPaint));
         if (stone) mesh.userData.nm = this.stumpNm;
+        else if (!mining) mesh.userData.nm = this.woodNm;
         mesh.castShadow = false; mesh.receiveShadow = true;
         mesh.scale.setScalar(mining ? MINING_SCALE : stone ? 1.5 : 1.25);
         mesh.rotation.y = node.id.startsWith('gm_') ? 0 : (Number(node.id.split('-')[1]) || 0) * 2.4;

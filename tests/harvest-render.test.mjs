@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { assets } from '../src/render/assets/registry.js';
 import { ResourceNodes } from '../src/render/resourceNodes.js';
+import { RAFT_ATLAS_ID } from '../src/render/raftMaterials.js';
+import { DOCK_WOOD_RECTS } from '../src/render/dockWood.js';
 import { palmGeometry, palmVariant } from '../src/render/palmGeometry.js';
 import { palmMaterials } from '../src/render/palmMaterials.js';
 import { buildLook } from '../src/render/charlooks.js';
@@ -30,6 +32,20 @@ function buildNodes() {
   const mats = palmMaterials({ texture: () => null }, swayUniform);
   const nodes = withEmptyAssets(() => new ResourceNodes(scene, { palms: { geometries, mats }, swayUniform }));
   return { scene, nodes, geometries, mats };
+}
+
+function withWoodAtlas(fn) {
+  const descriptors = new Map(['texture', 'data'].map((key) => [key, Object.getOwnPropertyDescriptor(assets, key)]));
+  const atlas = new THREE.Texture();
+  assets.texture = (id) => id === RAFT_ATLAS_ID ? atlas : null;
+  assets.data = () => null;
+  try { return fn(atlas); }
+  finally {
+    for (const [key, descriptor] of descriptors) {
+      if (descriptor) Object.defineProperty(assets, key, descriptor); else delete assets[key];
+    }
+    atlas.dispose();
+  }
 }
 
 function disposeBuilt(built) {
@@ -82,6 +98,28 @@ test('resource renderer builds finite stump geometry and accepts an already-depl
     assert.ok(nearZero(matrix(meshes.trunk, record.slot)));
     assert.ok(!nearZero(matrix(nodes.stumpMeshes.body, record.stumpSlot)));
   } finally { disposeBuilt(built); }
+});
+
+test('collectible driftwood reuses the raft painted wood atlas and keeps its outline material paired', () => {
+  withWoodAtlas((atlas) => {
+    const scene = new THREE.Scene(), nodes = new ResourceNodes(scene);
+    try {
+      const wood = { id: 'wood-atlas-test', kind: 'wood', x: 1, y: 0, z: 1, rev: 1, ready: true, wait: 0 };
+      nodes.update({ nodes: [wood], bench: null }, { x: 1, z: 1 }, 0);
+      const record = nodes.records.get(wood.id), uv = record.mesh.geometry.getAttribute('uv'), rect = DOCK_WOOD_RECTS[0];
+      assert.equal(nodes.woodPaint.map, atlas, 'uses the already loaded raft comic atlas');
+      assert.deepEqual(nodes.woodPaint.userData.dockWood, { family: 'dock-wood-v1', atlas: RAFT_ATLAS_ID, texturesAdded: 0 });
+      assert.ok(uv && uv.count === record.mesh.geometry.getAttribute('position').count);
+      for (let i = 0; i < uv.count; i++) {
+        assert.ok(uv.getX(i) >= rect.u0 - 1e-6 && uv.getX(i) <= rect.u1 + 1e-6);
+        assert.ok(uv.getY(i) >= rect.v0 - 1e-6 && uv.getY(i) <= rect.v1 + 1e-6);
+      }
+      assert.ok(record.mesh.userData.nm?.isMeshNormalMaterial, 'wood keeps a paired outline-pass material');
+      assert.equal(record.mesh.userData.nm.customProgramCacheKey(), nodes.woodNm.customProgramCacheKey());
+    } finally {
+      scene.traverse((object) => { object.geometry?.dispose(); object.material?.dispose?.(); });
+    }
+  });
 });
 
 test('palms in all three variants fall once, leave unique stumps, then regrow from a ready snapshot', () => {

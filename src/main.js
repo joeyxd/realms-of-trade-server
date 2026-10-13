@@ -352,9 +352,13 @@ async function boot() {
   bus.on('personalLantern', (ev) => safe('personalLantern', () => personalLantern.acknowledge(ev)));
   bus.on('you:welcome', () => personalLantern.reset());
   input.onHotkey('KeyN', () => personalLantern.toggle());
-  bus.on('resource', (ev) => safe('resource', () => { resources.onResult(ev); workbench.onResult(ev); }));
+  bus.on('resource', (ev) => safe('resource', () => {
+    const nodeId = resources.gathers.get(ev.opId)?.command.node;
+    world.harvestGoods.award(ev, client.resources?.nodes?.find(node => node.id === nodeId));
+    resources.onResult(ev); workbench.onResult(ev);
+  }));
   bus.on('loggingAim', ev => safe('loggingAim', () => resources.onAim(ev)));
-  bus.on('you:welcome', () => { resources.reset(); workbench.reset(); world.resources.reset(); });
+  bus.on('you:welcome', () => { resources.reset(); workbench.reset(); world.resources.reset(); world.harvestGoods.reset(); });
   const community = new CommunityPanel({ parent: $('#ui'), profile: () => client?.profile,
     context: () => workbench.context(),
     enabled: () => st.online && st.mode === 'playing' && !!client?.joined && !pause.open && input.enabled && !client.t.closed,

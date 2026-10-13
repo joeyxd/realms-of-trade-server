@@ -84,12 +84,14 @@ export function normalizeManifest(json, { looks = null } = {}) {
         rim: t.rim ?? kind === 'char', flat: !!t.flat, comic: t.comic ?? kind !== 'char', alphaTest: num(t.alphaTest, 0),
       },
       shadow: raw.shadow !== false,
+      preload: kind === 'model' || kind === 'prop' ? raw.preload !== false : true,
       notes: typeof raw.notes === 'string' ? raw.notes : '',
     };
-    if ((kind === 'char' || kind === 'tex') && raw.mobileSrc !== undefined) {
+    if (raw.mobileSrc !== undefined) {
       if (validAssetPath(raw.mobileSrc)) e.mobileSrc = raw.mobileSrc;
       else err('mobileSrc must be a relative path inside assets/');
     }
+    if (t.occluder === false) e.toon.occluder = false;
     if (kind === 'char') {
       e.looks = strList(raw.looks);
       if (!e.looks.length) { err('char needs "looks": the procedural look names it replaces'); continue; }

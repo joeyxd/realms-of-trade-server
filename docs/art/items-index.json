@@ -1,0 +1,193 @@
+{
+  "schema": "mn.item-art-index.v1",
+  "updatedAt": "2026-10-12",
+  "items": [
+    {
+      "id": "antorcha",
+      "label": "Antorcha apagada",
+      "group": "Campo",
+      "reference": "docs/art/torch-resin-coconut-v1/torch-tripo-reference.png",
+      "intake": "docs/art/source/torch-resin-coconut-v1/antorcha",
+      "model": "antorcha-v1.glb",
+      "notes": "Modelo del autor integrado al uso visual; originales conservados.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "GLB recibido y optimizado"
+    },
+    {
+      "id": "resina",
+      "label": "Resina",
+      "group": "Campo",
+      "reference": "docs/art/torch-resin-coconut-v1/resin-tripo-reference.png",
+      "intake": "docs/art/source/torch-resin-coconut-v1/resina",
+      "model": "resina-v1.glb",
+      "notes": "Modelo del autor integrado al uso visual; originales conservados.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "GLB recibido y optimizado"
+    },
+    {
+      "id": "coco",
+      "label": "Coco entero",
+      "group": "Campo",
+      "reference": "docs/art/torch-resin-coconut-v1/coconut-tripo-reference.png",
+      "intake": "docs/art/source/torch-resin-coconut-v1/coco",
+      "model": "coco-v1.glb",
+      "notes": "Modelo del autor integrado al uso visual; originales conservados.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "GLB recibido y optimizado"
+    },
+    {
+      "id": "pescado",
+      "label": "Pescado",
+      "group": "Cocina",
+      "reference": "docs/art/cooking-icons-v1/singles/pescado.png",
+      "intake": "docs/art/source/cooking-items-v1/pescado",
+      "model": "pescado-v1.glb",
+      "notes": "Referencia lista. Mesh pendiente de recepción; priorizar según su uso visible en el juego.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "Pendiente u opcional"
+    },
+    {
+      "id": "fruta",
+      "label": "Fruta tropical",
+      "group": "Cocina",
+      "reference": "docs/art/cooking-icons-v1/singles/fruta.png",
+      "intake": "docs/art/source/cooking-items-v1/fruta",
+      "model": "fruta-v1.glb",
+      "notes": "Referencia lista. Mesh pendiente de recepción; priorizar según su uso visible en el juego.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "Pendiente u opcional"
+    },
+    {
+      "id": "harina",
+      "label": "Saco de harina",
+      "group": "Cocina",
+      "reference": "docs/art/cooking-icons-v1/singles/harina.png",
+      "intake": "docs/art/source/cooking-items-v1/harina",
+      "model": "harina-v1.glb",
+      "notes": "Modelo del autor disponible como decoración en el editor. Conserva las recetas actuales.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "GLB recibido y optimizado"
+    },
+    {
+      "id": "galleta",
+      "label": "Galleta de barco",
+      "group": "Cocina",
+      "reference": "docs/art/cooking-icons-v1/singles/galleta.png",
+      "intake": "docs/art/source/cooking-items-v1/galleta",
+      "model": "galleta-v1.glb",
+      "notes": "Referencia lista. Mesh pendiente de recepción; priorizar según su uso visible en el juego.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "Pendiente u opcional"
+    },
+    {
+      "id": "ron",
+      "label": "Botella de ron",
+      "group": "Cocina",
+      "reference": "docs/art/cooking-icons-v1/singles/ron.png",
+      "intake": "docs/art/source/cooking-items-v1/ron",
+      "model": "ron-v1.glb",
+      "notes": "Referencia lista. Mesh pendiente de recepción; priorizar según su uso visible en el juego.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "Pendiente u opcional"
+    },
+    {
+      "id": "agua",
+      "label": "Frasco de agua",
+      "group": "Cocina",
+      "reference": "docs/art/cooking-icons-v1/singles/agua.png",
+      "intake": "docs/art/source/cooking-items-v1/agua",
+      "model": "agua-v1.glb",
+      "notes": "Modelo del autor disponible como decoración en el editor. Conserva las recetas actuales.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "GLB recibido y optimizado"
+    },
+    {
+      "id": "meal_roastFish",
+      "label": "Pescado asado",
+      "group": "Cocina",
+      "reference": "docs/art/cooking-icons-v1/singles/meal_roastFish.png",
+      "intake": "docs/art/source/cooking-items-v1/meal_roastFish",
+      "model": "meal_roastFish-v1.glb",
+      "notes": "Modelo del autor disponible como decoración en el editor. Conserva las recetas actuales.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "GLB recibido y optimizado"
+    },
+    {
+      "id": "meal_grog",
+      "label": "Grog",
+      "group": "Cocina",
+      "reference": "docs/art/cooking-icons-v1/singles/meal_grog.png",
+      "intake": "docs/art/source/cooking-items-v1/meal_grog",
+      "model": "meal_grog-v1.glb",
+      "notes": "Modelo del autor disponible como decoración en el editor. Conserva las recetas actuales.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "GLB recibido y optimizado"
+    },
+    {
+      "id": "meal_heartyBiscuit",
+      "label": "Galleta reforzada",
+      "group": "Cocina",
+      "reference": "docs/art/cooking-icons-v1/singles/meal_heartyBiscuit.png",
+      "intake": "docs/art/source/cooking-items-v1/meal_heartyBiscuit",
+      "model": "meal_heartyBiscuit-v1.glb",
+      "notes": "Modelo del autor disponible como decoración en el editor. Conserva las recetas actuales.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "GLB recibido y optimizado"
+    },
+    {
+      "id": "sal_marina",
+      "label": "Sal marina",
+      "group": "Propuestas",
+      "reference": "docs/art/cooking-icons-v1/proposals/sal_marina.png",
+      "intake": "docs/art/source/cooking-items-v1/sal_marina",
+      "model": "sal_marina-v1.glb",
+      "notes": "Concepto visual; obtención y receta todavía sin implementar. Modelo opcional.",
+      "iconStatus": "Propuesta visual",
+      "modelStatus": "Pendiente u opcional"
+    },
+    {
+      "id": "lima",
+      "label": "Lima",
+      "group": "Propuestas",
+      "reference": "docs/art/cooking-icons-v1/proposals/lima.png",
+      "intake": "docs/art/source/cooking-items-v1/lima",
+      "model": "lima-v1.glb",
+      "notes": "Modelo del autor disponible como decoración en el editor. La mecánica continúa como propuesta.",
+      "iconStatus": "Propuesta visual",
+      "modelStatus": "GLB recibido y optimizado"
+    },
+    {
+      "id": "hierbas_aromaticas",
+      "label": "Hierbas aromáticas",
+      "group": "Propuestas",
+      "reference": "docs/art/cooking-icons-v1/proposals/hierbas_aromaticas.png",
+      "intake": "docs/art/source/cooking-items-v1/hierbas_aromaticas",
+      "model": "hierbas_aromaticas-v1.glb",
+      "notes": "Modelo del autor disponible como decoración en el editor. La mecánica continúa como propuesta.",
+      "iconStatus": "Propuesta visual",
+      "modelStatus": "GLB recibido y optimizado"
+    },
+    {
+      "id": "cana",
+      "label": "Caña de azúcar",
+      "group": "Cocina",
+      "reference": "docs/art/cooking-icons-v1/singles/cana.png",
+      "intake": "docs/art/source/cooking-items-v1/cana",
+      "model": "cana-v1.glb",
+      "notes": "Modelo del autor disponible como decoración en el editor. Conserva las recetas actuales.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "GLB recibido y optimizado"
+    },
+    {
+      "id": "especias",
+      "label": "Especias",
+      "group": "Cocina",
+      "reference": "docs/art/cooking-icons-v1/singles/especias.png",
+      "intake": "docs/art/source/cooking-items-v1/especias",
+      "model": "especias-v1.glb",
+      "notes": "Modelo del autor disponible como decoración en el editor. Conserva las recetas actuales.",
+      "iconStatus": "Icono disponible",
+      "modelStatus": "GLB recibido y optimizado"
+    }
+  ]
+}

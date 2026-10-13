@@ -1,4 +1,8 @@
-﻿# Torch, resin, and coconut art references
+# Torch, resin, and coconut art references
+
+**Entrega de meshes:** [centro de objetos](../ITEMS.md) · [galería única](../../../ARTE-Y-MODELOS.html).
+Guarda los GLB en `docs/art/source/torch-resin-coconut-v1/antorcha/`, `resina/` y `coco/`.
+Las carpetas ya están preparadas; conserva el original exportado y sus versiones.
 
 Generated with the built-in `image_gen` tool. The five source PNGs below are retained at full resolution; all five were visually inspected. Each has a real transparent alpha channel (alpha range 0–255).
 

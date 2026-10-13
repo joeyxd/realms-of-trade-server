@@ -1,0 +1,961 @@
+{
+  "generatedAt": "2026-10-13T05:39:20.323Z",
+  "scope": "local Chrome browser acceptance on an isolated in-memory game host; no production authority or persistence writes",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "mapSize": 512,
+      "errors": [],
+      "requests": [
+        "http://127.0.0.1:56179/assets/models/buccaneer-v1-desktop.glb",
+        "http://127.0.0.1:56179/assets/models/prop-storage-crate.glb",
+        "http://127.0.0.1:56179/assets/models/coast-rock-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-pebbles-v1.glb",
+        "http://127.0.0.1:56179/assets/models/palm-tall-v1.glb",
+        "http://127.0.0.1:56179/assets/models/palm-curved-v1.glb",
+        "http://127.0.0.1:56179/assets/models/palm-short-v1.glb",
+        "http://127.0.0.1:56179/assets/models/palm-base-open-v1.glb",
+        "http://127.0.0.1:56179/assets/models/palm-base-lush-v1.glb",
+        "http://127.0.0.1:56179/assets/models/shrub-round-v1.glb",
+        "http://127.0.0.1:56179/assets/models/shrub-low-v1.glb",
+        "http://127.0.0.1:56179/assets/models/shrub-tall-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-debris-branch-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-debris-log-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-debris-planks-v1.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/resina-desktop.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/antorcha-desktop.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/coco-desktop.glb",
+        "http://127.0.0.1:56179/assets/editor/catalog.json",
+        "http://127.0.0.1:56179/assets/editor/thumbnails.json",
+        "http://127.0.0.1:56179/assets/models/items-v1/cana-desktop.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/lima-desktop.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/especias-desktop.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/meal_grog-desktop.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/meal_roastFish-desktop.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/hierbas_aromaticas-desktop.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/meal_heartyBiscuit-desktop.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/agua-desktop.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/harina-desktop.glb"
+      ],
+      "checks": [
+        "booted all three registered item models",
+        "one GLB device variant requested per item",
+        "read embedded maps at 512x512",
+        "joined the real game client against the local memory host",
+        "collectible wood material uses the loaded raft atlas",
+        "wood UVs map inside the atlas wood swatch",
+        "CharacterView imported torch is unlit by default",
+        "setLantern toggles flame/core and carried visibility",
+        "main.js resource hook maps ack opId to the gathered node",
+        "cosmetic resina/coco reveal is receipt-deduplicated and does not write game authority",
+        "captured imported models in the live game scene",
+        "48-copy desktop/mobile render stress reused geometry/material",
+        "captured lit/unlit torch, atlas wood, and new-goods close-ups",
+        "temporary scene lineup removed after the captures",
+        "editor catalog keeps non-boot cooking/proposal model unloaded at boot",
+        "editor selection invokes ensureModel and loads the 512px desktop / 256px mobile source",
+        "all 12 imported item models parsed on demand with the correct device map size",
+        "captured a 12-item contact sheet in the actual game scene"
+      ],
+      "screenshots": [
+        "desktop-boot-title.png",
+        "desktop-joined-overview.png",
+        "desktop-item-lineup.png",
+        "desktop-torch-lit-closeup.png",
+        "desktop-torch-unlit-closeup.png",
+        "desktop-new-goods-closeup.png",
+        "desktop-wood-closeup.png",
+        "desktop-all-12-item-contact.png"
+      ],
+      "bootModels": [
+        {
+          "id": "model:item-antorcha-v1",
+          "src": "models/items-v1/antorcha-desktop.glb",
+          "mobileSrc": "models/items-v1/antorcha-mobile.glb",
+          "selectedSrc": "models/items-v1/antorcha-desktop.glb",
+          "state": "ok",
+          "tris": 498,
+          "maps": [
+            {
+              "width": 512,
+              "height": 512,
+              "url": ""
+            }
+          ],
+          "parts": 1
+        },
+        {
+          "id": "model:item-resina-v1",
+          "src": "models/items-v1/resina-desktop.glb",
+          "mobileSrc": "models/items-v1/resina-mobile.glb",
+          "selectedSrc": "models/items-v1/resina-desktop.glb",
+          "state": "ok",
+          "tris": 472,
+          "maps": [
+            {
+              "width": 512,
+              "height": 512,
+              "url": ""
+            }
+          ],
+          "parts": 1
+        },
+        {
+          "id": "model:item-coco-v1",
+          "src": "models/items-v1/coco-desktop.glb",
+          "mobileSrc": "models/items-v1/coco-mobile.glb",
+          "selectedSrc": "models/items-v1/coco-desktop.glb",
+          "state": "ok",
+          "tris": 402,
+          "maps": [
+            {
+              "width": 512,
+              "height": 512,
+              "url": ""
+            }
+          ],
+          "parts": 1
+        }
+      ],
+      "deferredAtBoot": [
+        {
+          "id": "model:item-lima-v1",
+          "state": "pending",
+          "src": "models/items-v1/lima-desktop.glb",
+          "mobileSrc": "models/items-v1/lima-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-especias-v1",
+          "state": "pending",
+          "src": "models/items-v1/especias-desktop.glb",
+          "mobileSrc": "models/items-v1/especias-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-meal_grog-v1",
+          "state": "pending",
+          "src": "models/items-v1/meal_grog-desktop.glb",
+          "mobileSrc": "models/items-v1/meal_grog-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-meal_roastFish-v1",
+          "state": "pending",
+          "src": "models/items-v1/meal_roastFish-desktop.glb",
+          "mobileSrc": "models/items-v1/meal_roastFish-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-cana-v1",
+          "state": "pending",
+          "src": "models/items-v1/cana-desktop.glb",
+          "mobileSrc": "models/items-v1/cana-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-hierbas_aromaticas-v1",
+          "state": "pending",
+          "src": "models/items-v1/hierbas_aromaticas-desktop.glb",
+          "mobileSrc": "models/items-v1/hierbas_aromaticas-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-meal_heartyBiscuit-v1",
+          "state": "pending",
+          "src": "models/items-v1/meal_heartyBiscuit-desktop.glb",
+          "mobileSrc": "models/items-v1/meal_heartyBiscuit-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-agua-v1",
+          "state": "pending",
+          "src": "models/items-v1/agua-desktop.glb",
+          "mobileSrc": "models/items-v1/agua-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-harina-v1",
+          "state": "pending",
+          "src": "models/items-v1/harina-desktop.glb",
+          "mobileSrc": "models/items-v1/harina-mobile.glb",
+          "fetched": false
+        }
+      ],
+      "player": {
+        "joined": true,
+        "id": 26,
+        "mode": "playing",
+        "renderer": 738
+      },
+      "wood": {
+        "atlasLoaded": true,
+        "sameAtlas": true,
+        "material": "dock:coastal-wood",
+        "uvCount": 54,
+        "finiteUv": true,
+        "insideAtlasWoodSwatch": true,
+        "atlasSize": [
+          1024,
+          1024
+        ],
+        "woodGeometryVertices": 54
+      },
+      "cosmetic": {
+        "unlit": {
+          "imported": true,
+          "flame": false,
+          "core": false,
+          "carried": true
+        },
+        "lit": {
+          "flame": true,
+          "core": true,
+          "carried": true
+        },
+        "hidden": {
+          "flame": false,
+          "core": false,
+          "carried": false
+        },
+        "three": true
+      },
+      "awardHook": {
+        "before": 0,
+        "first": 2,
+        "second": 2,
+        "rows": [
+          "coco",
+          "resina"
+        ],
+        "authority": "isolated memory host only"
+      },
+      "lineup": {
+        "target": [
+          108.37726239036033,
+          11.299750677087374,
+          99.56941205506213
+        ],
+        "counts": {
+          "baseline": 5,
+          "stress": 48,
+          "removedCopies": 48
+        },
+        "references": {
+          "baselineGeometries": 8,
+          "baselineMaterials": 8,
+          "copyGeometries": 8,
+          "copyMaterials": 8,
+          "sharedOnly": true
+        },
+        "baselineFrames": {
+          "frames": 30,
+          "meanFrameMs": 11.689999999962735,
+          "p95FrameMs": 16.69999999999891,
+          "calls": 201,
+          "geometries": 167,
+          "textures": 64
+        },
+        "stressFrames": {
+          "frames": 45,
+          "meanFrameMs": 11.333333333325047,
+          "p95FrameMs": 16.600000000000364,
+          "calls": 282,
+          "geometries": 167,
+          "textures": 64
+        },
+        "postFrames": {
+          "frames": 30,
+          "meanFrameMs": 10.146666666629425,
+          "p95FrameMs": 12.699999999998909,
+          "calls": 201,
+          "geometries": 167,
+          "textures": 64
+        },
+        "warm": true,
+        "postRemovalFrames": {
+          "frames": 30,
+          "meanFrameMs": 9.75666666666669,
+          "p95FrameMs": 12.600000000000364,
+          "calls": 191,
+          "geometries": 167,
+          "textures": 64,
+          "fixtureRemoved": true,
+          "sceneChildrenBefore": 358,
+          "sceneChildrenAfter": 358,
+          "sceneChildrenRestored": true
+        },
+        "browserFrames": {
+          "frames": 36,
+          "meanFrameMs": 11.630555555524502,
+          "p95FrameMs": 16.600000000000364,
+          "renderCalls": 191,
+          "geometries": 167,
+          "textures": 64
+        }
+      },
+      "editor": {
+        "id": "model:item-cana-v1",
+        "status": "",
+        "category": "",
+        "src": "models/items-v1/cana-desktop.glb",
+        "mobileSrc": "models/items-v1/cana-mobile.glb",
+        "selectedSrc": "models/items-v1/cana-desktop.glb",
+        "state": "ok",
+        "selectedModel": true,
+        "expectedSrc": "models/items-v1/cana-desktop.glb",
+        "expectedMapSize": 512,
+        "maps": [
+          [
+            512,
+            512
+          ]
+        ],
+        "beforePending": true,
+        "requestsBefore": [],
+        "requestsAfter": [
+          "http://127.0.0.1:56179/assets/models/items-v1/cana-desktop.glb"
+        ]
+      },
+      "allModels": {
+        "loaded": [
+          {
+            "id": "model:item-resina-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/resina-desktop.glb",
+            "expectedSrc": "models/items-v1/resina-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          },
+          {
+            "id": "model:item-antorcha-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/antorcha-desktop.glb",
+            "expectedSrc": "models/items-v1/antorcha-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          },
+          {
+            "id": "model:item-coco-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/coco-desktop.glb",
+            "expectedSrc": "models/items-v1/coco-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          },
+          {
+            "id": "model:item-lima-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/lima-desktop.glb",
+            "expectedSrc": "models/items-v1/lima-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          },
+          {
+            "id": "model:item-especias-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/especias-desktop.glb",
+            "expectedSrc": "models/items-v1/especias-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          },
+          {
+            "id": "model:item-meal_grog-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/meal_grog-desktop.glb",
+            "expectedSrc": "models/items-v1/meal_grog-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          },
+          {
+            "id": "model:item-meal_roastFish-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/meal_roastFish-desktop.glb",
+            "expectedSrc": "models/items-v1/meal_roastFish-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          },
+          {
+            "id": "model:item-cana-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/cana-desktop.glb",
+            "expectedSrc": "models/items-v1/cana-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          },
+          {
+            "id": "model:item-hierbas_aromaticas-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/hierbas_aromaticas-desktop.glb",
+            "expectedSrc": "models/items-v1/hierbas_aromaticas-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          },
+          {
+            "id": "model:item-meal_heartyBiscuit-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/meal_heartyBiscuit-desktop.glb",
+            "expectedSrc": "models/items-v1/meal_heartyBiscuit-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          },
+          {
+            "id": "model:item-agua-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/agua-desktop.glb",
+            "expectedSrc": "models/items-v1/agua-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          },
+          {
+            "id": "model:item-harina-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/harina-desktop.glb",
+            "expectedSrc": "models/items-v1/harina-desktop.glb",
+            "maps": [
+              [
+                512,
+                512
+              ]
+            ]
+          }
+        ],
+        "allOk": true,
+        "contactCount": 12
+      },
+      "webgl": {
+        "errors": [],
+        "gameErrors": []
+      },
+      "status": "passed"
+    },
+    {
+      "name": "mobile-landscape",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "mapSize": 256,
+      "errors": [],
+      "requests": [
+        "http://127.0.0.1:56179/assets/models/buccaneer-v1-mobile.glb",
+        "http://127.0.0.1:56179/assets/models/prop-storage-crate.glb",
+        "http://127.0.0.1:56179/assets/models/coast-rock-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-pebbles-v1.glb",
+        "http://127.0.0.1:56179/assets/models/palm-tall-v1.glb",
+        "http://127.0.0.1:56179/assets/models/palm-curved-v1.glb",
+        "http://127.0.0.1:56179/assets/models/palm-short-v1.glb",
+        "http://127.0.0.1:56179/assets/models/palm-base-open-v1.glb",
+        "http://127.0.0.1:56179/assets/models/palm-base-lush-v1.glb",
+        "http://127.0.0.1:56179/assets/models/shrub-round-v1.glb",
+        "http://127.0.0.1:56179/assets/models/shrub-low-v1.glb",
+        "http://127.0.0.1:56179/assets/models/shrub-tall-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-debris-branch-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-debris-log-v1.glb",
+        "http://127.0.0.1:56179/assets/models/beach-debris-planks-v1.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/resina-mobile.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/antorcha-mobile.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/coco-mobile.glb",
+        "http://127.0.0.1:56179/assets/editor/catalog.json",
+        "http://127.0.0.1:56179/assets/editor/thumbnails.json",
+        "http://127.0.0.1:56179/assets/models/items-v1/cana-mobile.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/lima-mobile.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/especias-mobile.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/meal_grog-mobile.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/meal_roastFish-mobile.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/hierbas_aromaticas-mobile.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/meal_heartyBiscuit-mobile.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/agua-mobile.glb",
+        "http://127.0.0.1:56179/assets/models/items-v1/harina-mobile.glb"
+      ],
+      "checks": [
+        "booted all three registered item models",
+        "one GLB device variant requested per item",
+        "read embedded maps at 256x256",
+        "joined the real game client against the local memory host",
+        "collectible wood material uses the loaded raft atlas",
+        "wood UVs map inside the atlas wood swatch",
+        "CharacterView imported torch is unlit by default",
+        "setLantern toggles flame/core and carried visibility",
+        "main.js resource hook maps ack opId to the gathered node",
+        "cosmetic resina/coco reveal is receipt-deduplicated and does not write game authority",
+        "captured imported models in the live game scene",
+        "48-copy desktop/mobile render stress reused geometry/material",
+        "captured lit/unlit torch, atlas wood, and new-goods close-ups",
+        "temporary scene lineup removed after the captures",
+        "editor catalog keeps non-boot cooking/proposal model unloaded at boot",
+        "editor selection invokes ensureModel and loads the 512px desktop / 256px mobile source",
+        "all 12 imported item models parsed on demand with the correct device map size",
+        "captured a 12-item contact sheet in the actual game scene"
+      ],
+      "screenshots": [
+        "mobile-landscape-boot-title.png",
+        "mobile-landscape-joined-overview.png",
+        "mobile-landscape-item-lineup.png",
+        "mobile-landscape-torch-lit-closeup.png",
+        "mobile-landscape-torch-unlit-closeup.png",
+        "mobile-landscape-new-goods-closeup.png",
+        "mobile-landscape-wood-closeup.png",
+        "mobile-landscape-all-12-item-contact.png"
+      ],
+      "bootModels": [
+        {
+          "id": "model:item-antorcha-v1",
+          "src": "models/items-v1/antorcha-desktop.glb",
+          "mobileSrc": "models/items-v1/antorcha-mobile.glb",
+          "selectedSrc": "models/items-v1/antorcha-mobile.glb",
+          "state": "ok",
+          "tris": 498,
+          "maps": [
+            {
+              "width": 256,
+              "height": 256,
+              "url": ""
+            }
+          ],
+          "parts": 1
+        },
+        {
+          "id": "model:item-resina-v1",
+          "src": "models/items-v1/resina-desktop.glb",
+          "mobileSrc": "models/items-v1/resina-mobile.glb",
+          "selectedSrc": "models/items-v1/resina-mobile.glb",
+          "state": "ok",
+          "tris": 472,
+          "maps": [
+            {
+              "width": 256,
+              "height": 256,
+              "url": ""
+            }
+          ],
+          "parts": 1
+        },
+        {
+          "id": "model:item-coco-v1",
+          "src": "models/items-v1/coco-desktop.glb",
+          "mobileSrc": "models/items-v1/coco-mobile.glb",
+          "selectedSrc": "models/items-v1/coco-mobile.glb",
+          "state": "ok",
+          "tris": 402,
+          "maps": [
+            {
+              "width": 256,
+              "height": 256,
+              "url": ""
+            }
+          ],
+          "parts": 1
+        }
+      ],
+      "deferredAtBoot": [
+        {
+          "id": "model:item-lima-v1",
+          "state": "pending",
+          "src": "models/items-v1/lima-desktop.glb",
+          "mobileSrc": "models/items-v1/lima-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-especias-v1",
+          "state": "pending",
+          "src": "models/items-v1/especias-desktop.glb",
+          "mobileSrc": "models/items-v1/especias-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-meal_grog-v1",
+          "state": "pending",
+          "src": "models/items-v1/meal_grog-desktop.glb",
+          "mobileSrc": "models/items-v1/meal_grog-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-meal_roastFish-v1",
+          "state": "pending",
+          "src": "models/items-v1/meal_roastFish-desktop.glb",
+          "mobileSrc": "models/items-v1/meal_roastFish-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-cana-v1",
+          "state": "pending",
+          "src": "models/items-v1/cana-desktop.glb",
+          "mobileSrc": "models/items-v1/cana-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-hierbas_aromaticas-v1",
+          "state": "pending",
+          "src": "models/items-v1/hierbas_aromaticas-desktop.glb",
+          "mobileSrc": "models/items-v1/hierbas_aromaticas-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-meal_heartyBiscuit-v1",
+          "state": "pending",
+          "src": "models/items-v1/meal_heartyBiscuit-desktop.glb",
+          "mobileSrc": "models/items-v1/meal_heartyBiscuit-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-agua-v1",
+          "state": "pending",
+          "src": "models/items-v1/agua-desktop.glb",
+          "mobileSrc": "models/items-v1/agua-mobile.glb",
+          "fetched": false
+        },
+        {
+          "id": "model:item-harina-v1",
+          "state": "pending",
+          "src": "models/items-v1/harina-desktop.glb",
+          "mobileSrc": "models/items-v1/harina-mobile.glb",
+          "fetched": false
+        }
+      ],
+      "player": {
+        "joined": true,
+        "id": 26,
+        "mode": "playing",
+        "renderer": 771
+      },
+      "wood": {
+        "atlasLoaded": true,
+        "sameAtlas": true,
+        "material": "dock:coastal-wood",
+        "uvCount": 54,
+        "finiteUv": true,
+        "insideAtlasWoodSwatch": true,
+        "atlasSize": [
+          512,
+          512
+        ],
+        "woodGeometryVertices": 54
+      },
+      "cosmetic": {
+        "unlit": {
+          "imported": true,
+          "flame": false,
+          "core": false,
+          "carried": true
+        },
+        "lit": {
+          "flame": true,
+          "core": true,
+          "carried": true
+        },
+        "hidden": {
+          "flame": false,
+          "core": false,
+          "carried": false
+        },
+        "three": true
+      },
+      "awardHook": {
+        "before": 0,
+        "first": 2,
+        "second": 2,
+        "rows": [
+          "coco",
+          "resina"
+        ],
+        "authority": "isolated memory host only"
+      },
+      "lineup": {
+        "target": [
+          107.74588375556253,
+          11.328589904776473,
+          98.93182050393378
+        ],
+        "counts": {
+          "baseline": 5,
+          "stress": 48,
+          "removedCopies": 48
+        },
+        "references": {
+          "baselineGeometries": 8,
+          "baselineMaterials": 8,
+          "copyGeometries": 8,
+          "copyMaterials": 8,
+          "sharedOnly": true
+        },
+        "baselineFrames": {
+          "frames": 30,
+          "meanFrameMs": 12.513333333333321,
+          "p95FrameMs": 17.100000000000364,
+          "calls": 207,
+          "geometries": 167,
+          "textures": 64
+        },
+        "stressFrames": {
+          "frames": 45,
+          "meanFrameMs": 10.557777777752946,
+          "p95FrameMs": 16.199999999999818,
+          "calls": 288,
+          "geometries": 167,
+          "textures": 64
+        },
+        "postFrames": {
+          "frames": 30,
+          "meanFrameMs": 9.563333333296093,
+          "p95FrameMs": 16.300000000000182,
+          "calls": 207,
+          "geometries": 167,
+          "textures": 64
+        },
+        "warm": true,
+        "postRemovalFrames": {
+          "frames": 30,
+          "meanFrameMs": 11.160000000000005,
+          "p95FrameMs": 16.699999999999818,
+          "calls": 197,
+          "geometries": 167,
+          "textures": 64,
+          "fixtureRemoved": true,
+          "sceneChildrenBefore": 358,
+          "sceneChildrenAfter": 358,
+          "sceneChildrenRestored": true
+        },
+        "browserFrames": {
+          "frames": 36,
+          "meanFrameMs": 11.652777777757088,
+          "p95FrameMs": 13.600000000000364,
+          "renderCalls": 197,
+          "geometries": 167,
+          "textures": 64
+        }
+      },
+      "editor": {
+        "id": "model:item-cana-v1",
+        "status": "",
+        "category": "",
+        "src": "models/items-v1/cana-desktop.glb",
+        "mobileSrc": "models/items-v1/cana-mobile.glb",
+        "selectedSrc": "models/items-v1/cana-mobile.glb",
+        "state": "ok",
+        "selectedModel": true,
+        "expectedSrc": "models/items-v1/cana-mobile.glb",
+        "expectedMapSize": 256,
+        "maps": [
+          [
+            256,
+            256
+          ]
+        ],
+        "beforePending": true,
+        "requestsBefore": [],
+        "requestsAfter": [
+          "http://127.0.0.1:56179/assets/models/items-v1/cana-mobile.glb"
+        ]
+      },
+      "allModels": {
+        "loaded": [
+          {
+            "id": "model:item-resina-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/resina-mobile.glb",
+            "expectedSrc": "models/items-v1/resina-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          },
+          {
+            "id": "model:item-antorcha-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/antorcha-mobile.glb",
+            "expectedSrc": "models/items-v1/antorcha-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          },
+          {
+            "id": "model:item-coco-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/coco-mobile.glb",
+            "expectedSrc": "models/items-v1/coco-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          },
+          {
+            "id": "model:item-lima-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/lima-mobile.glb",
+            "expectedSrc": "models/items-v1/lima-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          },
+          {
+            "id": "model:item-especias-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/especias-mobile.glb",
+            "expectedSrc": "models/items-v1/especias-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          },
+          {
+            "id": "model:item-meal_grog-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/meal_grog-mobile.glb",
+            "expectedSrc": "models/items-v1/meal_grog-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          },
+          {
+            "id": "model:item-meal_roastFish-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/meal_roastFish-mobile.glb",
+            "expectedSrc": "models/items-v1/meal_roastFish-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          },
+          {
+            "id": "model:item-cana-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/cana-mobile.glb",
+            "expectedSrc": "models/items-v1/cana-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          },
+          {
+            "id": "model:item-hierbas_aromaticas-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/hierbas_aromaticas-mobile.glb",
+            "expectedSrc": "models/items-v1/hierbas_aromaticas-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          },
+          {
+            "id": "model:item-meal_heartyBiscuit-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/meal_heartyBiscuit-mobile.glb",
+            "expectedSrc": "models/items-v1/meal_heartyBiscuit-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          },
+          {
+            "id": "model:item-agua-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/agua-mobile.glb",
+            "expectedSrc": "models/items-v1/agua-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          },
+          {
+            "id": "model:item-harina-v1",
+            "state": "ok",
+            "selectedSrc": "models/items-v1/harina-mobile.glb",
+            "expectedSrc": "models/items-v1/harina-mobile.glb",
+            "maps": [
+              [
+                256,
+                256
+              ]
+            ]
+          }
+        ],
+        "allOk": true,
+        "contactCount": 12
+      },
+      "webgl": {
+        "errors": [],
+        "gameErrors": []
+      },
+      "status": "passed"
+    }
+  ],
+  "failures": []
+}

@@ -82,6 +82,7 @@ function createPersonalLantern() {
   }
   const group = new THREE.Group();
   group.position.set(PERSONAL_LANTERN_LOCAL.x, PERSONAL_LANTERN_LOCAL.y, PERSONAL_LANTERN_LOCAL.z);
+  const imported = assets.model('model:item-antorcha-v1');
   const handle = new THREE.Mesh(lanternHandleGeo, lanternHandleMat);
   const wrap = new THREE.Mesh(lanternWrapGeo, lanternWrapMat);
   handle.userData.nm = charNormalMat();
@@ -93,7 +94,16 @@ function createPersonalLantern() {
   core.userData.nm = charNormalMat();
   flame.visible = false;
   flame.userData.nm = charNormalMat();
-  group.add(handle, wrap, flame, core);
+  if (imported) {
+    // The fitted unlit model shares the original flame anchor and portable light position.
+    imported.rotation.set(33.405 * Math.PI / 180, 0, 27.677 * Math.PI / 180);
+    let box = new THREE.Box3().setFromObject(imported);
+    imported.scale.setScalar(.52 / Math.max(.001, box.max.y - box.min.y));
+    box = new THREE.Box3().setFromObject(imported);
+    imported.position.set(-(box.min.x + box.max.x) / 2, -.34 - box.min.y, -(box.min.z + box.max.z) / 2);
+    group.add(imported);
+  } else group.add(handle, wrap);
+  group.add(flame, core);
   return { group, core, flame };
 }
 
