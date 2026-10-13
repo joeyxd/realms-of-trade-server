@@ -64,23 +64,35 @@
     },
     {
       "path": "tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/Private/ST01cProbeCommandlet.cpp",
-      "sha256": "e7f529be87ae4d041ed96b6535992e7bfb347edc8c22fffb50ca4359c7a443e6",
-      "bytes": 17797
+      "sha256": "878b18474e4693e685af6da1533cf6ad10ed26201d3eab66b5a18a7ea29327c6",
+      "bytes": 17797,
+      "executionSourceSha256": "e7f529be87ae4d041ed96b6535992e7bfb347edc8c22fffb50ca4359c7a443e6",
+      "gitBytes": 17796,
+      "gitNormalization": "CRLF to LF only; executable source text identical"
     },
     {
       "path": "tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/Public/ST01cProbeCommandlet.h",
-      "sha256": "c3fadcfb50bab9c251f2583e9a9114d37077c43423eb1d65ce35efd19c1a1f58",
-      "bytes": 323
+      "sha256": "14000f6e6ce0f7291df45a50526eaf306cdaaafa0cda2c5af0f8a51695d88bbf",
+      "bytes": 323,
+      "executionSourceSha256": "c3fadcfb50bab9c251f2583e9a9114d37077c43423eb1d65ce35efd19c1a1f58",
+      "gitBytes": 322,
+      "gitNormalization": "CRLF to LF only; executable source text identical"
     },
     {
       "path": "tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/ST01cProbe.Build.cs",
-      "sha256": "db197010b982f74d222b6636b9e7d0d2281cc437fbf69a98f7599aedd970d4ec",
-      "bytes": 475
+      "sha256": "b4b63c32936faa3526178e76a25538e4b88d2c8161b307de00b7f344c0a7f8b1",
+      "bytes": 475,
+      "executionSourceSha256": "db197010b982f74d222b6636b9e7d0d2281cc437fbf69a98f7599aedd970d4ec",
+      "gitBytes": 474,
+      "gitNormalization": "CRLF to LF only; executable source text identical"
     },
     {
       "path": "tools/unreal-niagara-probe/ST01cProbe/ST01cProbe.uplugin",
-      "sha256": "9efcb9da7b1bd6e63925e3a0273caa6eae0752130a40dd8f279054eb94111d4a",
-      "bytes": 439
+      "sha256": "7d1b0fd8cc5af43f5a27b5b1da2df0765d683e6c3cf456e5095edd0f3b401a08",
+      "bytes": 439,
+      "executionSourceSha256": "9efcb9da7b1bd6e63925e3a0273caa6eae0752130a40dd8f279054eb94111d4a",
+      "gitBytes": 438,
+      "gitNormalization": "CRLF to LF only; executable source text identical"
     }
   ],
   "finalProbeSourcesByteMatchExecuted": true,
