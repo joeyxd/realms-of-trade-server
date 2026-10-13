@@ -65,7 +65,8 @@ cambios rápidos/carga fallida/disposición y conservación del renderer. Repeti
 de Tromba y los guards GM, y verificar cero comandos/escrituras durante la prueba. Publicar
 solo el corte revisado mediante el actualizador habitual y comprobar revisión/salud/entrada.
 
-Estado: biblioteca implementada y revisada localmente en alpha.66/protocolo 60. Censo completo
+Estado: biblioteca publicada y verificada en `739e1b2`, alpha.66/protocolo 60. Censo completo
 de 993 fuentes/916 identidades, 15 componentes originales y un extracto de Firework aceptados;
-17 vistas con Tromba. Adaptación 3D de sistemas y publicación verificadas por sus gates propios.
+17 vistas con Tromba. Actualizador 197/197; Chrome público GM 9/9 y 32 atlas con hashes
+exactos. La adaptación 3D de sistemas sigue pendiente de su propio gate.
 Ver [entrega y límites](../delivery/st01b/DELIVERY.md). El taller de UI permanece planificado.

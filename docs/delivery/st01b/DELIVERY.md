@@ -1,6 +1,6 @@
 # ST01b — biblioteca original de Niagara
 
-Alpha.66, protocolo 60. Corte implementado y revisado localmente; publicación pendiente.
+Alpha.66, protocolo 60. Corte publicado y verificado en `739e1b2`.
 Continúa el [taller](../../briefs/st01b-niagara-library.md). El taller de UI sigue planificado.
 
 ## Qué hay en el taller
@@ -88,6 +88,28 @@ No se publica una variante del mundo ni cambia la autoridad de guardado.
 
 ## Publicación
 
-Pendiente del actualizador habitual y de verificar revisión/imagen, hashes públicos,
-salud, entrada normal y acceso GM autenticado del taller. El código local y las capturas
-anteriores no se presentan como prueba del VPS.
+El actualizador habitual publicó `739e1b2bb55b4d74592d3d2b04c9b870c7de47ac` en la única
+autoridad existente: imagen `marea-negra:alpha-739e1b2bb55b`, contenedor sano.
+[Actualizador](updater.json): 197/197, cero fallos y marcador de revisión/imagen validado.
+[Runtime público](public-runtime.json): los 11 archivos cambiados de runtime/paquete
+coinciden con los bytes de Git; los 32 atlas públicos responden 200 y coinciden con Git
+y sus manifiestos. `/`, `/health` y `/status` responden 200; alpha.66 y mundo listo.
+
+[Chrome público con cuenta GM](public/browser.json): 9/9, las 32 variantes reproducidas,
+sin errores, escrituras GM ni acciones de gameplay; el cliente no ingresa al mundo.
+Revisión visual de [Firework](public/niagara-b23e30580f0f5d09-desktop.png),
+[agua](public/component-26e09bd0f93cb620-7x7-luma-desktop.png),
+[pendiente horizontal](public/niagara-pending-844x390.png) y
+[vertical EN](public/niagara-library-en-mobile.png). Three.js/GSAP se suministraron desde
+copias locales durante QA; esto no verifica disponibilidad externa de esos CDN.
+
+[Entrada normal](public-entry.json): invitado por WSS con Origin y generación de contenido
+vigentes; bienvenida/protocolo 60, perfil y snapshot recibidos, conexión cerrada.
+Sin input ni comandos; al cerrar hay cero jugadores, sockets, errores de servidor/almacén
+y guardados pendientes. El primer fixture sin Origin recibió el rechazo 403 esperado;
+el segundo sin generación vigente no ingresó. Se corrigió el fixture, no el guard del servidor.
+No hay nueva migración, configuración ni autoridad. `/status` no expone el estado de drenaje;
+no se deduce de esta evidencia una aceptación de recuperación M5 o rendimiento físico.
+
+Esta aceptación cubre ST01b: catálogo y vistas declaradas. Los 915 sistemas restantes
+siguen pendientes y ST01c conserva su estado de propuesta; no se acepta equivalencia AAA/3D.
