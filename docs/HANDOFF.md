@@ -36,6 +36,7 @@ actualizador 197/197, imagen 100/100 y 27 hashes; entrada 6/6,
 saludable y cero errores/pendientes. Montajes comunes públicos nulos.
 Sigue candidato completo kill/cofre y luego composición GM/compañeros/control/bots/antorchas,
 adopción detenida y canario VPS; montaje común público apagado.
+Integración posterior alpha.68/protocolo 61: presencia/swallow 78/78 y guard 9/9; VPS `5ad1029` verificado, imagen 38/38, entrada 6/6. Presencia y Ground siguen apagados.
 
 **AREA01 A0-P, 2026-10-13 — diseñar geografía antes de construir Puerto Sol:**
 [Plan de primera región](../PLAN-REGION-INICIAL.md), [plano provisional](world/region-inicial-v1.svg).

@@ -259,6 +259,21 @@ test('replacing the installed beforeTick owner fences the world', async t => {
   assert.equal(f.host.groundAuthority.status().failed, true);
 });
 
+test('the common ground host keeps companion presence disabled and rejects pairing/presence composition', async t => {
+  const f = await fixture(); cleanup(t, f.host);
+  assert.equal(f.host.groundAuthority.ready, true);
+  assert.deepEqual(f.host.status().storage.companionPresence,
+    { enabled: false, ready: false, bodies: 0, pending: 0 });
+  const options = { seed: 713, bots: 0, store: f.store, worldId: WORLD, log() {},
+    resolvePlayer: async () => ACCOUNT, economicOperations: true, resourceOperations: true,
+    groundTransactions: { journal: f.journal }, companionCreation: true };
+  for (const flags of [
+    { companionPairing: true },
+    { companionPairing: true, companionPresence: true },
+    { companionPresence: true },
+  ]) assert.throws(() => new GameHost({ ...options, ...flags }), { code: 'configuration' });
+});
+
 
 
 

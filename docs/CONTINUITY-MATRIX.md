@@ -56,6 +56,11 @@ La matriz no copia sus parámetros para evitar balances divergentes.
    y también rechaza `torchResinCoconutOperations` junto con `groundTransactions`. Componer sus
    costes, extras de tala y consumo antes de quitar ese guard; publicar código no activa su flag.
    Mantener los guards mientras falte aceptación; activar el piloto no debe apagar features silenciosamente.
+   [L03g presencia](delivery/l03g-companion-presence/README.md), integrado desde `5ad1029`,
+   añade SQL039 para ingreso durable antes de publicar el cuerpo. Sigue excluido de Ground;
+   vida/pose, derrota y recuperación completas quedan fuera de su corte de puerto seguro.
+   [Swallow/presencia 78/78 y guard 9/9](delivery/m5-ground-pearl-swallow.md) conservan esa exclusión;
+   no aceptan ambos montajes simultáneos ni activan SQL039/presencia públicos.
    El piloto actual es accounts-only/cero bots y el VPS observado tiene tres bots: la transición
    necesita política explícita de admisión y configuración, no copiar los flags de una fixture.
 4. **Transición detenida/adopción y canario autenticado VPS**, con exclusión del writer anterior y

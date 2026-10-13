@@ -70,6 +70,17 @@ y [TAP](m5-ground-pearl-swallow/fixture-review.tap); la aceptación final usa fu
 
 ## Publicación y límites
 
+Lectura posterior `5ad1029`, alpha.68/protocolo 61, también publicada:
+actualizador 197/197, imagen exacta 38/38 en tres archivos
+de swallow/ruta/dueño con 27 hashes contrastados; entrada pública 6/6 y cero errores/pendientes.
+[Imagen posterior](m5-ground-pearl-swallow/latest-exact-image-tests.json),
+[actualizador posterior](m5-ground-pearl-swallow/latest-updater-validation.json),
+[estado posterior](m5-ground-pearl-swallow/latest-status.json),
+[dominio posterior](m5-ground-pearl-swallow/latest-domain.json),
+[entrada posterior](m5-ground-pearl-swallow/latest-public-smoke.json).
+Montajes comunes nulos; presencia del compañero apagada. El código nuevo conservó
+swallow; estas lecturas no activan ni aceptan el canario de presencia/SQL039.
+
 Código publicado en `46902fe7942c766e8a452fe606e711c6214725f5`, alpha.67/protocolo 60.
 El actualizador confirmó 197/197; pruebas en la imagen exacta
 100/100, aisladas sin red/credenciales, y 27 hashes de módulos/SQL
@@ -98,6 +109,18 @@ respecto a `46902fe`. Compatibilidad de presentación Carga/comidas y reglas de
 comidas: 9/9 en dos archivos. La evidencia de publicación de swallow anterior
 se mantiene fijada a `46902fe`, sin atribuirle las capturas o activación de ese
 otro corte. [Fuentes antes de esa integración](m5-ground-pearl-swallow/post-merge-sources.json).
+
+Integración posterior L03g de `5ad1029` (alpha.68/protocolo 61):
+[78/78 en ocho archivos](m5-ground-pearl-swallow/presence-integration.json),
+[TAP](m5-ground-pearl-swallow/presence-integration.tap), con las cuatro pruebas
+de swallow/ruta/proceso repetidas y los contratos store/SQL/política/red de presencia.
+[Guard de composición 9/9](m5-ground-pearl-swallow/presence-boundary.json)
+en un archivo: Ground válido conserva presencia apagada y rechaza pairing/presencia
+simultáneos. Fuentes congeladas, sin sumar cohortes. No monta ambas autoridades
+ni acredita la composición pública: SQL039 y presencia son el corte independiente
+de [L03g](l03g-companion-presence/README.md). Sus marcas de cuerpo residente no
+añaden campos a la propiedad/perfil de la perla; el guard debe mantenerse hasta
+componer ingreso, retirada, vida/pose y recuperación con el dueño común.
 
 El piloto común público continúa apagado. Esta entrega publica código del
 montaje explícito; no acredita swallow público con recibo, adopción del mundo,
