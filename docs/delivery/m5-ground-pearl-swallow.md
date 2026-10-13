@@ -70,7 +70,34 @@ y [TAP](m5-ground-pearl-swallow/fixture-review.tap); la aceptación final usa fu
 
 ## Publicación y límites
 
-Aceptación local terminada. Publicación por el actualizador habitual y comprobación de la revisión activa pendientes; el piloto común sigue apagado.
+Código publicado en `46902fe7942c766e8a452fe606e711c6214725f5`, alpha.67/protocolo 60.
+El actualizador confirmó 197/197; pruebas en la imagen exacta
+100/100, aisladas sin red/credenciales, y 27 hashes de módulos/SQL
+iguales a Git. Entrada pública ordinaria 6/6. Supabase/cuentas activos,
+imagen saludable, cero errores/guardados pendientes; montajes comunes nulos.
+[Imagen](m5-ground-pearl-swallow/exact-image-tests.json),
+[actualizador](m5-ground-pearl-swallow/updater-validation.json),
+[entrada](m5-ground-pearl-swallow/public-smoke.json),
+[estado final](m5-ground-pearl-swallow/final-status.json),
+[dominio SQL](m5-ground-pearl-swallow/final-domain.json).
+Las lecturas estado/dominio llevan tiempos separados; no constituyen un snapshot SQL conjunto.
+Los merges concurrentes de documentación/modelos y región inicial conservaron
+las 1.193 fuentes runtime/tests/SQL de la cohorte final sin cambios.
+Las pruebas de imagen usan memoria; SIGKILL y SQL real de fixture se acreditan localmente arriba.
+
+La primera selección de pruebas de imagen dio 100/101: el archivo de inputs
+importaba estáticamente el helper SQL/PGlite, ausente en la imagen de producción
+sin dependencias de desarrollo. [Intento conservado](m5-ground-pearl-swallow/image-fixture-selection.json).
+La selección corregida obtuvo 100/100 en diez archivos, sobre la misma imagen;
+los inputs se verifican en el planner de swallow y en la cohorte SQL local.
+No se instaló PGlite en producción ni se cambió runtime para esa corrección.
+
+Integración posterior `a21c47f` de provisiones/rotación móvil conservada: cambios
+de presentación y tests, sin delta en `server`, `src/sim`, `src/net` o `src/data`
+respecto a `46902fe`. Compatibilidad de presentación Carga/comidas y reglas de
+comidas: 9/9 en dos archivos. La evidencia de publicación de swallow anterior
+se mantiene fijada a `46902fe`, sin atribuirle las capturas o activación de ese
+otro corte. [Fuentes antes de esa integración](m5-ground-pearl-swallow/post-merge-sources.json).
 
 El piloto común público continúa apagado. Esta entrega publica código del
 montaje explícito; no acredita swallow público con recibo, adopción del mundo,

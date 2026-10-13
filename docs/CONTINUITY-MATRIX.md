@@ -3,7 +3,7 @@
 Revisión 2026-10-12, base `8fa8f58478310d9c39fa06e39bbabaf81a6ed9d3`;
 integra también ST01a de `7b34381dc8318ad83dcd5b48acfcfa68b5736931`.
 Give común continúa desde `1417975`; [entrega y aceptación](delivery/m5-ground-pearl-give.md).
-[Swallow común](delivery/m5-ground-pearl-swallow.md) continúa desde `a19f5e1`: cuatro poderes, input reversible y dos SIGKILL locales.
+[Swallow común](delivery/m5-ground-pearl-swallow.md) continúa desde `a19f5e1`: cuatro poderes, input reversible y dos SIGKILL locales. Código publicado en `46902fe`, alpha.67/protocolo 60; piloto apagado.
 Deriva de los planes y contratos enlazados; organiza sus dependencias de guardado,
 sin sustituir sus decisiones de producto. [Revisión y evidencia](delivery/m5-continuity-review.md).
 

@@ -18,7 +18,9 @@ Efecto de los cuatro poderes y filtrado reversible de inputs antiguos; ligado ha
 266/267 regresión pertinente en 24 archivos; único fallo de expectativa de swallow ya habilitado,
 corregida para rechazar reemplazo. 13/13 seguimiento focal en dos archivos, sin delta runtime.
 Fuentes congeladas; conteos solapados, sin reetiquetar la cohorte amplia.
-Sin SQL/flag/protocolo nuevos. Publicación del código pendiente del relevo y verificación exacta.
+Sin SQL/flag/protocolo nuevos. Código publicado en `46902fe`, alpha.67/protocolo 60:
+actualizador 197/197, imagen 100/100 y 27 hashes; entrada 6/6,
+saludable y cero errores/pendientes. Montajes comunes públicos nulos.
 Sigue candidato completo kill/cofre y luego composición GM/compañeros/control/bots/antorchas,
 adopción detenida y canario VPS; montaje común público apagado.
 

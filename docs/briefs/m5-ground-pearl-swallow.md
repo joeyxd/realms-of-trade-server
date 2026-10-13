@@ -4,7 +4,7 @@ Contrato previo a implementación, 2026-10-13. Continúa [M5](../../PLAN-M5.md),
 [give común](m5-ground-pearl-give.md), [swallow aislado](m5-pearl-swallow-staging.md)
 y la [decisión de perla ligada hasta morir](m5-pearl-release-staging.md).
 
-Estado: **implementado y aceptado localmente bajo montaje común explícito; piloto público apagado**.
+Estado: **código publicado y aceptado localmente bajo montaje común explícito; piloto público apagado**.
 [Entrega y evidencia](../delivery/m5-ground-pearl-swallow.md).
 
 Una cuenta autenticada puede tragar un UID de `pearls.bag` solamente si su ranura
