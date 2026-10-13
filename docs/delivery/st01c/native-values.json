@@ -1,0 +1,2002 @@
+{
+  "schema": "st01c-native-api-probe/v1",
+  "engineVersion": "5.8.0-55116800+++UE5+Release-5.8",
+  "systemObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single",
+  "expectedSourceSystemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "shaValidation": "external-only; commandlet does not hash the uasset",
+  "emitterHandleCount": 2,
+  "emitters": [
+    {
+      "handleOrder": 0,
+      "handleName": "NE_Flame_Basic_001",
+      "handleId": "af7998f6-4217-9377-2650-a0af39c360be",
+      "enabled": true,
+      "emitterObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001",
+      "requestedVersionGuid": "00000000-0000-0000-0000-000000000000",
+      "requestedVersionGuidValid": false,
+      "versioningEnabled": false,
+      "exposedVersionGuid": "5f99d80a-2bf5-f86c-597e-4ea5a1fcf1ae",
+      "resolvedVersionGuid": "5f99d80a-2bf5-f86c-597e-4ea5a1fcf1ae",
+      "graphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0",
+      "localSpace": false,
+      "determinism": false,
+      "randomSeed": 0,
+      "simTarget": "CPUSim",
+      "versionedParentObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Flame_Basic_001.NE_Flame_Basic_001",
+      "versionedParentGuid": "00000000-0000-0000-0000-000000000000",
+      "versionedParentAtLastMergeObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NE_Flame_Basic_001",
+      "versionedParentAtLastMergeGuid": "00000000-0000-0000-0000-000000000000",
+      "activeVersionRendererArray": [
+        {
+          "rendererOrder": 0,
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraSpriteRendererProperties_0",
+          "classPath": "/Script/Niagara.NiagaraSpriteRendererProperties",
+          "enabled": true,
+          "kind": "sprite",
+          "materialPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_2.MI_Flame_2",
+          "materialUserParameter": "None",
+          "subImageSize": [
+            8,
+            4
+          ],
+          "subImageBlend": false,
+          "alignment": "Unaligned",
+          "facingMode": "FaceCamera"
+        }
+      ],
+      "scripts": [
+        {
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.SpawnScript",
+          "usage": "ParticleSpawnScriptInterpolated",
+          "usageId": "00000000-0000-0000-0000-000000000000",
+          "rapidIterationParameters": [
+            {
+              "name": "Constants.NE_Flame_Basic_001.AddVelocity.Scale Added Velocity",
+              "offset": 0,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f",
+                "decodedAs": "FVector3f",
+                "value": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.AddVelocity.Velocity",
+              "offset": 12,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000000000000000cb394042",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  48.05643844604492
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.FloatFromCurve001.Scale Curve",
+              "offset": 160,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.InitializeParticle.Mass",
+              "offset": 24,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.InitializeParticle.Mesh Scale",
+              "offset": 28,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f",
+                "decodedAs": "FVector3f",
+                "value": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.InitializeParticle.Sprite Rotation",
+              "offset": 40,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraFloat",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.MultiplyLinearColor.Linear Color",
+              "offset": 44,
+              "registeredTypeIndexDiagnostic": 106,
+              "typeName": "LinearColor",
+              "typePath": "/Script/CoreUObject.LinearColor",
+              "byteSize": 16,
+              "value": {
+                "typeName": "LinearColor",
+                "typePath": "/Script/CoreUObject.LinearColor",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "00004842418e1b41a0e3783f0000803f",
+                "decodedAs": "FLinearColor",
+                "value": [
+                  50,
+                  9.722229957580566,
+                  0.9722232818603516,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.ScaleColor.Scale RGB",
+              "offset": 164,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f",
+                "decodedAs": "FVector3f",
+                "value": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.ScaleColor.Scale RGBA",
+              "offset": 176,
+              "registeredTypeIndexDiagnostic": 105,
+              "typeName": "Vector4f",
+              "typePath": "/Script/CoreUObject.Vector4f",
+              "byteSize": 16,
+              "value": {
+                "typeName": "Vector4f",
+                "typePath": "/Script/CoreUObject.Vector4f",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f0000803f",
+                "decodedAs": "FVector4f",
+                "value": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Acceleration Limit",
+              "offset": 192,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "003c1c46",
+                "decodedAs": "NiagaraFloat",
+                "value": 9999
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Manually Enable Rotational Solver",
+              "offset": 196,
+              "registeredTypeIndexDiagnostic": 111,
+              "typeName": "NiagaraBool",
+              "typePath": "/Script/Niagara.NiagaraBool",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraBool",
+                "typePath": "/Script/Niagara.NiagaraBool",
+                "byteSize": 4,
+                "staticType": true,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraBool",
+                "value": false,
+                "rawValue": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Mesh Orientation",
+              "offset": 200,
+              "registeredTypeIndexDiagnostic": 108,
+              "typeName": "Quat4f",
+              "typePath": "/Script/CoreUObject.Quat4f",
+              "byteSize": 16,
+              "value": {
+                "typeName": "Quat4f",
+                "typePath": "/Script/CoreUObject.Quat4f",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "0000000000000000000000000000803f",
+                "decodedAs": "FQuat4f",
+                "value": [
+                  0,
+                  0,
+                  0,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Rotational Force",
+              "offset": 216,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "000000000000000000000000",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Rotational Velocity",
+              "offset": 228,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "000000000000000000000000",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Speed Limit",
+              "offset": 240,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00007a44",
+                "decodedAs": "NiagaraFloat",
+                "value": 1000
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SphereLocation.Non Uniform Scale",
+              "offset": 60,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f",
+                "decodedAs": "FVector3f",
+                "value": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SphereLocation.Offset",
+              "offset": 72,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000000000000000a6e2c341",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  24.485668182373047
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SphereLocation.Radius Position",
+              "offset": 84,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SphereLocation.Random Seed",
+              "offset": 88,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SphereLocation.Spawn Group Mask",
+              "offset": 92,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SphereLocation.Sphere Radius",
+              "offset": 96,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "a48a453e",
+                "decodedAs": "NiagaraFloat",
+                "value": 0.19291168451309204
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SphereLocation.Surface Only Band Thickness",
+              "offset": 100,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraFloat",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SphereLocation.U Position",
+              "offset": 104,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraFloat",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SphereLocation.V Position",
+              "offset": 108,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000003f",
+                "decodedAs": "NiagaraFloat",
+                "value": 0.5
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SubUVAnimation.Number Of Frames",
+              "offset": 244,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000042",
+                "decodedAs": "NiagaraFloat",
+                "value": 32
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.UniformRangedFloat.Maximum",
+              "offset": 112,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "5dce1943",
+                "decodedAs": "NiagaraFloat",
+                "value": 153.8061065673828
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.UniformRangedFloat.Minimum",
+              "offset": 116,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000f042",
+                "decodedAs": "NiagaraFloat",
+                "value": 120
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.UniformRangedFloat.Random Seed",
+              "offset": 120,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.UniformRangedVector4.Maximum",
+              "offset": 124,
+              "registeredTypeIndexDiagnostic": 105,
+              "typeName": "Vector4f",
+              "typePath": "/Script/CoreUObject.Vector4f",
+              "byteSize": 16,
+              "value": {
+                "typeName": "Vector4f",
+                "typePath": "/Script/CoreUObject.Vector4f",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f0000803f",
+                "decodedAs": "FVector4f",
+                "value": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.UniformRangedVector4.Minimum",
+              "offset": 140,
+              "registeredTypeIndexDiagnostic": 105,
+              "typeName": "Vector4f",
+              "typePath": "/Script/CoreUObject.Vector4f",
+              "byteSize": 16,
+              "value": {
+                "typeName": "Vector4f",
+                "typePath": "/Script/CoreUObject.Vector4f",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "3333333f3333333f3333333f0000803f",
+                "decodedAs": "FVector4f",
+                "value": [
+                  0.699999988079071,
+                  0.699999988079071,
+                  0.699999988079071,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.UniformRangedVector4.Random Seed",
+              "offset": 156,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            }
+          ]
+        },
+        {
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.UpdateScript",
+          "usage": "ParticleUpdateScript",
+          "usageId": "00000000-0000-0000-0000-000000000000",
+          "rapidIterationParameters": [
+            {
+              "name": "Constants.NE_Flame_Basic_001.FloatFromCurve001.Scale Curve",
+              "offset": 0,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.ScaleColor.Scale RGB",
+              "offset": 4,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f",
+                "decodedAs": "FVector3f",
+                "value": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.ScaleColor.Scale RGBA",
+              "offset": 16,
+              "registeredTypeIndexDiagnostic": 105,
+              "typeName": "Vector4f",
+              "typePath": "/Script/CoreUObject.Vector4f",
+              "byteSize": 16,
+              "value": {
+                "typeName": "Vector4f",
+                "typePath": "/Script/CoreUObject.Vector4f",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f0000803f",
+                "decodedAs": "FVector4f",
+                "value": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Acceleration Limit",
+              "offset": 32,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "003c1c46",
+                "decodedAs": "NiagaraFloat",
+                "value": 9999
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Manually Enable Rotational Solver",
+              "offset": 84,
+              "registeredTypeIndexDiagnostic": 111,
+              "typeName": "NiagaraBool",
+              "typePath": "/Script/Niagara.NiagaraBool",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraBool",
+                "typePath": "/Script/Niagara.NiagaraBool",
+                "byteSize": 4,
+                "staticType": true,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraBool",
+                "value": false,
+                "rawValue": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Mesh Orientation",
+              "offset": 56,
+              "registeredTypeIndexDiagnostic": 108,
+              "typeName": "Quat4f",
+              "typePath": "/Script/CoreUObject.Quat4f",
+              "byteSize": 16,
+              "value": {
+                "typeName": "Quat4f",
+                "typePath": "/Script/CoreUObject.Quat4f",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "0000000000000000000000000000803f",
+                "decodedAs": "FQuat4f",
+                "value": [
+                  0,
+                  0,
+                  0,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Rotational Force",
+              "offset": 44,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "000000000000000000000000",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Rotational Velocity",
+              "offset": 72,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "000000000000000000000000",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SolveForcesAndVelocity.Speed Limit",
+              "offset": 36,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00007a44",
+                "decodedAs": "NiagaraFloat",
+                "value": 1000
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SubUVAnimation.Number Of Frames",
+              "offset": 40,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000042",
+                "decodedAs": "NiagaraFloat",
+                "value": 32
+              }
+            }
+          ]
+        },
+        {
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.EmitterSpawnScript",
+          "usage": "EmitterSpawnScript",
+          "usageId": "00000000-0000-0000-0000-000000000000",
+          "rapidIterationParameters": []
+        },
+        {
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.EmitterUpdateScript",
+          "usage": "EmitterUpdateScript",
+          "usageId": "00000000-0000-0000-0000-000000000000",
+          "rapidIterationParameters": [
+            {
+              "name": "Constants.NE_Flame_Basic_001.EmitterState.Loop Delay",
+              "offset": 0,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraFloat",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.EmitterState.MaxDistance",
+              "offset": 4,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00409c45",
+                "decodedAs": "NiagaraFloat",
+                "value": 5000
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.EmitterState.MinDistance",
+              "offset": 8,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraFloat",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SpawnBurst_Instantaneous.Spawn Count",
+              "offset": 12,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "32000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 50
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SpawnBurst_Instantaneous.Spawn Group",
+              "offset": 16,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SpawnBurst_Instantaneous.Spawn Probability",
+              "offset": 20,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SpawnBurst_Instantaneous.Spawn Time",
+              "offset": 24,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraFloat",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SpawnRate.Spawn Probability",
+              "offset": 28,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SpawnRate.SpawnGroup",
+              "offset": 32,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Flame_Basic_001.SpawnRate.SpawnRate",
+              "offset": 36,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00004040",
+                "decodedAs": "NiagaraFloat",
+                "value": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "handleOrder": 1,
+      "handleName": "NE_Smoke_Basic",
+      "handleId": "6af5821f-4c36-bf6d-cf93-53bb51ad1eb7",
+      "enabled": true,
+      "emitterObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic",
+      "requestedVersionGuid": "00000000-0000-0000-0000-000000000000",
+      "requestedVersionGuidValid": false,
+      "versioningEnabled": false,
+      "exposedVersionGuid": "e0cc0084-5927-1bf0-c833-3ccaea80ab69",
+      "resolvedVersionGuid": "e0cc0084-5927-1bf0-c833-3ccaea80ab69",
+      "graphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0",
+      "localSpace": false,
+      "determinism": false,
+      "randomSeed": 0,
+      "simTarget": "CPUSim",
+      "versionedParentObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Smoke_Basic.NE_Smoke_Basic",
+      "versionedParentGuid": "00000000-0000-0000-0000-000000000000",
+      "versionedParentAtLastMergeObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NE_Smoke_Basic",
+      "versionedParentAtLastMergeGuid": "00000000-0000-0000-0000-000000000000",
+      "activeVersionRendererArray": [
+        {
+          "rendererOrder": 0,
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraSpriteRendererProperties_0",
+          "classPath": "/Script/Niagara.NiagaraSpriteRendererProperties",
+          "enabled": true,
+          "kind": "sprite",
+          "materialPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1.MI_Smoke_1",
+          "materialUserParameter": "None",
+          "subImageSize": [
+            10,
+            6
+          ],
+          "subImageBlend": false,
+          "alignment": "Unaligned",
+          "facingMode": "FaceCameraPlane"
+        }
+      ],
+      "scripts": [
+        {
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.SpawnScript",
+          "usage": "ParticleSpawnScriptInterpolated",
+          "usageId": "00000000-0000-0000-0000-000000000000",
+          "rapidIterationParameters": [
+            {
+              "name": "Constants.NE_Smoke_Basic.AddVelocity.Scale Added Velocity",
+              "offset": 0,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f",
+                "decodedAs": "FVector3f",
+                "value": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.AddVelocity.Velocity",
+              "offset": 12,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000000000000000e186a242",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  81.26343536376953
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.CylinderLocation.Cylinder Height",
+              "offset": 24,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.CylinderLocation.Cylinder Radius",
+              "offset": 28,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "1cd6bf41",
+                "decodedAs": "NiagaraFloat",
+                "value": 23.97954559326172
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.CylinderLocation.Non Uniform Scale",
+              "offset": 32,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f",
+                "decodedAs": "FVector3f",
+                "value": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.CylinderLocation.Offset",
+              "offset": 44,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "00000000000000000a17f741",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  30.886249542236328
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.CylinderLocation.Random Seed",
+              "offset": 56,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.CylinderLocation.Spawn Group Mask",
+              "offset": 60,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.CylinderLocation.Surface Only Band Thickness",
+              "offset": 64,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000a040",
+                "decodedAs": "NiagaraFloat",
+                "value": 5
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.FloatFromCurve001.Scale Curve",
+              "offset": 136,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.InitializeParticle.Color",
+              "offset": 68,
+              "registeredTypeIndexDiagnostic": 106,
+              "typeName": "LinearColor",
+              "typePath": "/Script/CoreUObject.LinearColor",
+              "byteSize": 16,
+              "value": {
+                "typeName": "LinearColor",
+                "typePath": "/Script/CoreUObject.LinearColor",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "abaaca3eabaaca3eabaaca3e0000803f",
+                "decodedAs": "FLinearColor",
+                "value": [
+                  0.3958333432674408,
+                  0.3958333432674408,
+                  0.3958333432674408,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.InitializeParticle.Lifetime",
+              "offset": 84,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000040",
+                "decodedAs": "NiagaraFloat",
+                "value": 2
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.InitializeParticle.Mass",
+              "offset": 88,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.InitializeParticle.Mesh Scale",
+              "offset": 92,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f",
+                "decodedAs": "FVector3f",
+                "value": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.InitializeParticle.Sprite Rotation",
+              "offset": 104,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "7f54fe3f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1.986953616142273
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.ScaleColor.Scale RGB",
+              "offset": 140,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f",
+                "decodedAs": "FVector3f",
+                "value": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.ScaleColor.Scale RGBA",
+              "offset": 152,
+              "registeredTypeIndexDiagnostic": 105,
+              "typeName": "Vector4f",
+              "typePath": "/Script/CoreUObject.Vector4f",
+              "byteSize": 16,
+              "value": {
+                "typeName": "Vector4f",
+                "typePath": "/Script/CoreUObject.Vector4f",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f0000803f",
+                "decodedAs": "FVector4f",
+                "value": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Acceleration Limit",
+              "offset": 168,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "003c1c46",
+                "decodedAs": "NiagaraFloat",
+                "value": 9999
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Manually Enable Rotational Solver",
+              "offset": 172,
+              "registeredTypeIndexDiagnostic": 111,
+              "typeName": "NiagaraBool",
+              "typePath": "/Script/Niagara.NiagaraBool",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraBool",
+                "typePath": "/Script/Niagara.NiagaraBool",
+                "byteSize": 4,
+                "staticType": true,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraBool",
+                "value": false,
+                "rawValue": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Mesh Orientation",
+              "offset": 176,
+              "registeredTypeIndexDiagnostic": 108,
+              "typeName": "Quat4f",
+              "typePath": "/Script/CoreUObject.Quat4f",
+              "byteSize": 16,
+              "value": {
+                "typeName": "Quat4f",
+                "typePath": "/Script/CoreUObject.Quat4f",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "0000000000000000000000000000803f",
+                "decodedAs": "FQuat4f",
+                "value": [
+                  0,
+                  0,
+                  0,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Rotational Force",
+              "offset": 192,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "000000000000000000000000",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Rotational Velocity",
+              "offset": 204,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "000000000000000000000000",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Speed Limit",
+              "offset": 216,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00007a44",
+                "decodedAs": "NiagaraFloat",
+                "value": 1000
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SubUVAnimation.Number Of Frames",
+              "offset": 220,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00007042",
+                "decodedAs": "NiagaraFloat",
+                "value": 60
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SystemLocation.Offset",
+              "offset": 108,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "000000000000000000000000",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SystemLocation.Spawn Group Mask",
+              "offset": 120,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.UniformRangedFloat.Maximum",
+              "offset": 124,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "5dce1943",
+                "decodedAs": "NiagaraFloat",
+                "value": 153.8061065673828
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.UniformRangedFloat.Minimum",
+              "offset": 128,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000c842",
+                "decodedAs": "NiagaraFloat",
+                "value": 100
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.UniformRangedFloat.Random Seed",
+              "offset": 132,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            }
+          ]
+        },
+        {
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.UpdateScript",
+          "usage": "ParticleUpdateScript",
+          "usageId": "00000000-0000-0000-0000-000000000000",
+          "rapidIterationParameters": [
+            {
+              "name": "Constants.NE_Smoke_Basic.FloatFromCurve001.Scale Curve",
+              "offset": 0,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.ScaleColor.Scale RGB",
+              "offset": 4,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f",
+                "decodedAs": "FVector3f",
+                "value": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.ScaleColor.Scale RGBA",
+              "offset": 16,
+              "registeredTypeIndexDiagnostic": 105,
+              "typeName": "Vector4f",
+              "typePath": "/Script/CoreUObject.Vector4f",
+              "byteSize": 16,
+              "value": {
+                "typeName": "Vector4f",
+                "typePath": "/Script/CoreUObject.Vector4f",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "0000803f0000803f0000803f0000803f",
+                "decodedAs": "FVector4f",
+                "value": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Acceleration Limit",
+              "offset": 32,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "003c1c46",
+                "decodedAs": "NiagaraFloat",
+                "value": 9999
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Manually Enable Rotational Solver",
+              "offset": 84,
+              "registeredTypeIndexDiagnostic": 111,
+              "typeName": "NiagaraBool",
+              "typePath": "/Script/Niagara.NiagaraBool",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraBool",
+                "typePath": "/Script/Niagara.NiagaraBool",
+                "byteSize": 4,
+                "staticType": true,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraBool",
+                "value": false,
+                "rawValue": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Mesh Orientation",
+              "offset": 56,
+              "registeredTypeIndexDiagnostic": 108,
+              "typeName": "Quat4f",
+              "typePath": "/Script/CoreUObject.Quat4f",
+              "byteSize": 16,
+              "value": {
+                "typeName": "Quat4f",
+                "typePath": "/Script/CoreUObject.Quat4f",
+                "byteSize": 16,
+                "staticType": false,
+                "rawBytesHex": "0000000000000000000000000000803f",
+                "decodedAs": "FQuat4f",
+                "value": [
+                  0,
+                  0,
+                  0,
+                  1
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Rotational Force",
+              "offset": 44,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "000000000000000000000000",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Rotational Velocity",
+              "offset": 72,
+              "registeredTypeIndexDiagnostic": 104,
+              "typeName": "Vector3f",
+              "typePath": "/Script/CoreUObject.Vector3f",
+              "byteSize": 12,
+              "value": {
+                "typeName": "Vector3f",
+                "typePath": "/Script/CoreUObject.Vector3f",
+                "byteSize": 12,
+                "staticType": false,
+                "rawBytesHex": "000000000000000000000000",
+                "decodedAs": "FVector3f",
+                "value": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SolveForcesAndVelocity.Speed Limit",
+              "offset": 36,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00007a44",
+                "decodedAs": "NiagaraFloat",
+                "value": 1000
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SubUVAnimation.Number Of Frames",
+              "offset": 40,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00007042",
+                "decodedAs": "NiagaraFloat",
+                "value": 60
+              }
+            }
+          ]
+        },
+        {
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.EmitterSpawnScript",
+          "usage": "EmitterSpawnScript",
+          "usageId": "00000000-0000-0000-0000-000000000000",
+          "rapidIterationParameters": []
+        },
+        {
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.EmitterUpdateScript",
+          "usage": "EmitterUpdateScript",
+          "usageId": "00000000-0000-0000-0000-000000000000",
+          "rapidIterationParameters": [
+            {
+              "name": "Constants.NE_Smoke_Basic.EmitterState.Loop Delay",
+              "offset": 0,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraFloat",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.EmitterState.MaxDistance",
+              "offset": 4,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00409c45",
+                "decodedAs": "NiagaraFloat",
+                "value": 5000
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.EmitterState.MinDistance",
+              "offset": 8,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraFloat",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SpawnBurst_Instantaneous.Spawn Count",
+              "offset": 12,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "32000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 50
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SpawnBurst_Instantaneous.Spawn Group",
+              "offset": 16,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SpawnBurst_Instantaneous.Spawn Probability",
+              "offset": 20,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SpawnBurst_Instantaneous.Spawn Time",
+              "offset": 24,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraFloat",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SpawnRate.Spawn Probability",
+              "offset": 28,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "0000803f",
+                "decodedAs": "NiagaraFloat",
+                "value": 1
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SpawnRate.SpawnGroup",
+              "offset": 32,
+              "registeredTypeIndexDiagnostic": 101,
+              "typeName": "NiagaraInt32",
+              "typePath": "/Script/Niagara.NiagaraInt32",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraInt32",
+                "typePath": "/Script/Niagara.NiagaraInt32",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00000000",
+                "decodedAs": "NiagaraInt32",
+                "value": 0
+              }
+            },
+            {
+              "name": "Constants.NE_Smoke_Basic.SpawnRate.SpawnRate",
+              "offset": 36,
+              "registeredTypeIndexDiagnostic": 99,
+              "typeName": "NiagaraFloat",
+              "typePath": "/Script/Niagara.NiagaraFloat",
+              "byteSize": 4,
+              "value": {
+                "typeName": "NiagaraFloat",
+                "typePath": "/Script/Niagara.NiagaraFloat",
+                "byteSize": 4,
+                "staticType": false,
+                "rawBytesHex": "00002041",
+                "decodedAs": "NiagaraFloat",
+                "value": 10
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
+[Entrega](delivery/st01c/DELIVERY.md), [plan autorizado](briefs/st01c-niagara-native-fidelity.md).
+Piloto exacto MyProject `NS_Flame_Single`; consultas UE5.8 NullRHI y helper C++ compilado.
+Dos versiones/renderers efectivos, 100 registros tipados en ocho stores (80 nombres);
+100 cotejos de bytes y valores, cadenas por conexiones, material común de seis expresiones.
+51 originales/copias conservan hashes. La extracción justifica un prototipo acotado;
+no acepta equivalencia visual ni convierte el resto de la biblioteca. Sin runtime/SQL/protocolo.
+Completar semántica/curvas/estado global y referencia multiángulo antes del port privado;
+reconsiderar si requiere una réplica desproporcionada. UI Workshop continúa solo en plan.
+
 **Modelos de campo/cocina, 2026-10-12 — integración visual y optimización:**
 [Entrega y evidencia](delivery/item-models-v1/DELIVERY.md). 12 GLB del autor archivados intactos;
 24 derivados WebP 512/256, 28,03 → 1,35 MiB, geometría/UV/color conservados.
@@ -20,7 +30,7 @@ cero acciones de juego/escrituras GM. Publicado en `739e1b2`: 197/197 del actual
 entrada WSS normal y cierre sin jugadores/errores/pendientes. Sin SQL ni protocolo nuevos.
 Las 916 simulaciones Niagara no se ejecutan en el navegador; componentes y captura 2D no
 aceptan volumen, densidad ni calidad AAA equivalente. [ST01c](briefs/st01c-niagara-native-fidelity.md)
-propone portar emisores/materiales originales con referencia multiángulo; sin implementación.
+tiene el piloto de extracción autorizado y documentado arriba; adaptación visual pendiente.
 UI Workshop conserva su plan. Fuentes Unreal y trabajo concurrente intactos.
 
 **AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**

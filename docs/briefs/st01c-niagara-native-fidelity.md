@@ -1,6 +1,19 @@
 # ST01c — adaptador Niagara de partículas 3D
 
-**Estado: propuesta de diseño para revisión; no aceptada ni implementada.** No habilita sistemas en el juego ni cambia el registro de ST01b.
+**Estado: piloto de viabilidad autorizado por el autor, 2026-10-13; adaptación 3D aún no implementada.** No habilita sistemas en el juego ni cambia el registro de ST01b.
+
+El autor eligió avanzar por extracción directa y adaptación gradual, apuntando a una calidad
+cercana al original, y reconsiderar la ruta si exige un esfuerzo desproporcionado. Este primer
+corte se limita a `NS_Flame_Single` de MyProject: demostrar acceso a valores, curvas y materiales
+antes de escribir un simulador. No se compromete una conversión automática ni un calendario
+para las 916 identidades. REA queda como herramienta opcional para preguntas concretas sobre
+comportamientos inaccesibles; no es una dependencia de este piloto.
+
+La decisión de seguir requiere un manifiesto trazable con los dos handles efectivos y sus
+versiones, módulos conectados, parámetros tipados/curvas y gráficos de material. Si solo obtenemos
+nombres, defaults parciales, buffers opacos o dependencias sin semántica, registramos ese límite
+y revisamos el alcance antes de invertir en un port. La equivalencia visual requiere después
+referencias multiángulo y un prototipo 3D; la extracción por sí sola no la acepta.
 
 ## Objetivo
 
@@ -10,11 +23,11 @@ El navegador no ejecutará Niagara ni sus Niagara Data Interfaces. El runtime us
 
 ## Selección inicial basada en evidencia
 
-**Piloto propuesto: `NS_Flame_Single` de `MyProject`**, identidad `niagara-985a431dc6c0d1ca`, SHA-256 `985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165`, paquete `/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single`.
+**Piloto de este corte: `NS_Flame_Single` de `MyProject`**, identidad `niagara-985a431dc6c0d1ca`, SHA-256 `985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165`, paquete `/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single`.
 
-La copia aislada del cierre contiene dos emisores (`NE_Flame_Basic_001`, `NE_Smoke_Basic`), 41 paquetes de cierre, tres materiales y cuatro texturas. La evidencia SubUV atribuye dos renderers de llama y uno de humo al sistema exacto. Hay candidatos de atlas para `T_FlameUV_1` y `T_FlameUV_2` (8×4, 32 celdas cada uno) y `T_Smoke_1` (10×6, 60 celdas). El cierre reporta spawn burst/rate, localización esférica/cilíndrica/de sistema, velocidad, solver, color, vida y SubUV; no muestra en ese registro una dependencia de spline o actor Blueprint.
+El cierre de dependencias registra dos emisores (`NE_Flame_Basic_001`, `NE_Smoke_Basic`), 41 paquetes, tres materiales y cuatro texturas. La enumeración SubUV anterior incluía objetos heredados y no probaba el renderer efectivo. El extractor C++ de este corte resuelve las versiones usadas por los dos handles: **un renderer de llama con `MI_Flame_2` y otro de humo con `MI_Smoke_1`**, ambos CPU y habilitados. No sumar las copias de padres ni tratar `MI_Flame_1` como otra capa activa. Hay candidatos de atlas para `T_FlameUV_1` y `T_FlameUV_2` (8×4, 32 celdas cada uno) y `T_Smoke_1` (10×6, 60 celdas); solo los dos últimos están asignados a esos renderers efectivos. El cierre reporta spawn burst/rate, localización esférica/cilíndrica/de sistema, velocidad, solver, color, vida y SubUV; esa lista no prueba qué módulos ejecuta cada uso.
 
-Existe una exportación PNG segura de `T_FireBall` (SHA-256 `6be3a6e443561c262ff7e992758059d01068da88b78254af3a6379d807be0a1c`), fuera del bundle del juego. Aún falta trazar en el grafo real de `MI_Flame_1`, `MI_Flame_2` y `MI_Smoke_1` qué canales consume cada renderer, y cotejarlo con esa exportación y las de las tres SubUV. No se descarta ni reemplaza ninguna textura. También faltan los valores serializados de los módulos y una captura renderizada; la lista de dependencias no demuestra cómo se ve el efecto ni su tiempo.
+Existe una exportación PNG segura de `T_FireBall` (SHA-256 `6be3a6e443561c262ff7e992758059d01068da88b78254af3a6379d807be0a1c`), fuera del bundle del juego. El gráfico exportado confirma que es el valor por defecto de `SUBUV` en `M_Smoke`; las instancias lo sustituyen por sus atlas. El padre compartido es un material translúcido/unlit de seis expresiones: RGB de textura y color por partícula para emisión; máscara por alfa, clamp y DepthFade para opacidad. Se leyeron los defaults 0–1 del clamp, 100 cm de DepthFade y la interpolación SubUV del material. La traducción de canales, coerciones, unidades y comportamiento de profundidad todavía necesita contraste visual. No se descarta ni reemplaza ninguna textura.
 
 No se deben agrupar identidades solo por nombre o ruta: el catálogo contiene otro `NS_Flame_Single` en `SimpleMultiplayerSurvival` con distinto SHA-256 (`4e2ad705daafa1bfc65b3b09a80bfbb700696aa435f363337689912b197153f4`). Este piloto queda ligado a la identidad MyProject, sus hashes y sus renderers exactos.
 
@@ -61,4 +74,22 @@ Antes de código: cerrar los exports y settings del piloto, referencia Unreal mu
 - [Estado de exportación de texturas](../research/unreal-assets/st01b/grid-texture-export-manifest.json) y [calidad de candidatos](../research/unreal-assets/st01b/source-component-frame-quality.json).
 - [Contrato actual de preview privado](../../src/render/skillPreview.js); Three.js 0.160.0 fijado en [package.json](../../package.json).
 
-No se abrió Unreal ni se usó navegador/GPU en esta revisión. Los documentos consultados verifican clase, dependencias, configuración de renderer y hashes; no verifican apariencia, timing Niagara, portabilidad final ni calidad AAA.
+## Checkpoint de extracción, 2026-10-13
+
+[Entrega y evidencia](../delivery/st01c/DELIVERY.md). Unreal 5.8 ejecutó las consultas Python
+y el helper C++ en una copia aislada, con NullRHI. Se resolvieron dos versiones efectivas,
+dos renderers y 100 registros de parámetros de rapid iteration (80 nombres únicos, ocho
+stores). Todos los registros se contrastaron por nombre/offset/bytes con el T3D y se
+decodificaron por el tipo real, no por índices de registro inferidos.
+
+Los ocho usos tienen una cadena de mapa de parámetros trazada por sus conexiones; la
+auditoría conserva módulos desactivados sin tratarlos como candidatos ejecutables. Eso
+no evalúa los módulos ni cierra todas las entradas dinámicas/curvas ni el estado global
+del sistema. Los 51 archivos fuente y sus copias conservaron sus hashes después de las
+consultas. No se ejecutó Niagara, navegador ni GPU: la extracción de fuente queda probada;
+la equivalencia visual, simulación 3D, densidad editable y rendimiento siguen pendientes.
+
+Decisión: continuar únicamente con el prototipo de este piloto y su comparación. La
+existencia de datos accesibles y un material común justifica ese experimento; no permite
+estimar aún el esfuerzo para toda la biblioteca. Si exige módulos/interfaces o un
+renderer desproporcionados para mejorar una sola familia, reconsiderar antes de ampliar.

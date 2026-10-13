@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
+[Entrega](docs/delivery/st01c/DELIVERY.md), [plan autorizado](docs/briefs/st01c-niagara-native-fidelity.md).
+Piloto MyProject `NS_Flame_Single`: helper C++ y consultas UE5.8 NullRHI; dos renderers
+efectivos, 100 registros tipados/80 nombres, cotejo de bytes y cadenas por conexiones.
+Material común identificado y fuentes intactas. Continuar con semántica/curvas/estado
+global, referencia multiángulo y prototipo privado antes de ampliar. Reconsiderar esfuerzo
+si exige reproducir interfaces/renderer desproporcionados. Sin efecto 3D habilitado ni runtime nuevo.
+
 **Modelos de campo/cocina, 2026-10-12 — integración visual y optimización:**
 [Entrega y evidencia](docs/delivery/item-models-v1/DELIVERY.md). 12 GLB del autor archivados intactos;
 24 derivados WebP 512/256, 28,03 → 1,35 MiB, geometría/UV/color conservados.
@@ -18,8 +26,8 @@ Publicado en `739e1b2`: actualizador 197/197, 11 hashes de runtime/paquete y 32 
 públicos exactos, 9/9 Chrome con cuenta GM; entrada WSS y cierre sin errores/pendientes.
 Sin SQL/protocolo nuevo ni variantes compartidas.
 La captura 2D y un componente no aceptan equivalencia AAA/3D. [ST01c](docs/briefs/st01c-niagara-native-fidelity.md)
-propone emisores, materiales, capas y movimiento originales con comparación multiángulo;
-sin implementar. UI Workshop sigue planificado. ST01 permanece activo.
+tiene el piloto de extracción autorizado; emisores/materiales visuales aún pendientes.
+UI Workshop sigue planificado. ST01 permanece activo.
 
 **AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-pearl-give.md), [contrato](docs/briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
