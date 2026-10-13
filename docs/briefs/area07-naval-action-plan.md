@@ -134,8 +134,9 @@ RNV01 entrega techo/puerta y RNV02 completa el refugio con luz, antes de oscurec
 | 2 | **Primer refugio naval construible** | Techo y puerta interactuable, después farol; poder armar una habitación, caminar por ella y navegar sin bloquear salida ni cambiar el origen del barco. Habilitar catálogo exige colisión/interacción, coste, daño, soporte y guardado completos, además de render |
 | 3 | **RNV05: agua costera y reembarque propio** | Publicado y aceptado en VPS; ver [entrega](../delivery/rnv05-coastal-swimming.md). Buceo y abordaje ajeno se mantienen después |
 | 4 | **Provisiones y servicios de hogar** | RNV06 conserva la base técnica del purificador. RNV07 comienza con fuente interior/enemigos, cubeta, barril y cantimplora conectada a supervivencia; purificador avanzado después del acceso al componente raro de la tercera ciudad. Huerto/hamaca van por cortes propios |
-| 5 | **Primer viaje comercial entre puertos** | Salty Shore–Puerto Sol con llegada física, descarga y retorno; comparar camino y costa. AREA01 entrega geografía/anclas transitables y AREA08 reutiliza mercados M5. Con AREA15, definir amarres/custodia y presencia sin dueño antes de exponer bienes públicos. Después Bahía Ceniza, con necesidad marítima real |
+| 5 | **Primer viaje comercial entre puertos** | Salty Shore–Puerto Sol con llegada física, descarga y retorno; comparar camino y costa. AREA01 entrega geografía/anclas transitables y AREA08 reutiliza mercados M5. Con AREA15, definir amarres/custodia y presencia sin dueño antes de exponer bienes públicos. Bahía Ceniza viene después del rival naval D10/A6 |
 | 6 | **Primer rival naval vencible — D10/A6** | Un barco NPC móvil con intención legible, un arma utilizable, esquiva/huida, daño a piezas y regreso a reparar. Los bienes que exponga requieren el contrato de continuidad correspondiente; no basta ampliar la batería fija |
+| 6b | **Expedición lejana a Bahía Ceniza — A4** | Mucho más allá de la costa inicial; preparación, travesía de mar abierto y combate naval antes de llegar. Requiere D10/A6 y equipo accesible desde Salty/Sol; después metalurgia/componente raro y purificador avanzado |
 | 7 | **Cooperación y riesgo público** | Delegación de timón/tareas, expulsión real de carga, rendición y saqueo con capacidad. PvP, patrullas y abordaje avanzan después de definir consecuencias y comprobar liquidación única |
 
 La prioridad posterior a PRG02 puede cambiar por el resultado del prototipo. El primer refugio es la mayor
@@ -219,6 +220,9 @@ cantimplora/consumo con supervivencia en RNV07b. Después, primer viaje comercia
 con anclas/geografía AREA01 y mercados AREA08. Purificador avanzado tras el componente de la tercera
 ciudad. Huerto/hamaca continúan como cortes propios.
 
+Ajuste del autor, 2026-10-13: Ceniza exige mar abierto lejano y combate naval para llegar.
+Por eso D10/A6 debe preceder a su primera expedición; la ruta corta a Sol sigue antes.
+
 ## 5 Más allá del alfa
 
 - **Especialización mediante construcción:** carguero, pescador/taller, explorador y escolta con ventajas
@@ -290,3 +294,7 @@ la orientación y los tiempos son propuestas, no coordenadas ni trayectos acepta
 Sigue **A0-G1: levantamiento y anclas sobre el mapa real**. Después GM06 si hace falta crear costa,
 accesos/Puerto Sol físico con A3, y llegada/carga/descarga/retorno con AREA08. RNV08a continúa
 como base de abastecimiento personal en una parada, con sus límites de bodega intactos.
+
+El autor aprobó el esquema y pidió alejar mucho Bahía Ceniza. El [plano actualizado](../world/region-inicial-v1.svg)
+separa costa y mar abierto e incluye la etapa de combate naval previa a la llegada. La
+distancia/duración y el encuentro se medirán en A6/A4; no se activa PvP ni contenido nuevo aquí.

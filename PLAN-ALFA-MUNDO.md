@@ -13,6 +13,11 @@ Cala opcional y Ceniza en otra isla. Silueta, orientación y tiempos son propues
 las anclas funcionales y los IDs existentes se conservan. Es una entrega documental.
 Sigue **A0-G1: levantamiento y anclas sobre el terreno real**, antes de GM06/costa o A3/Puerto Sol.
 
+**Ajuste aprobado por el autor, 2026-10-13:** Bahía Ceniza estará mucho más lejos, tras una
+travesía de mar abierto con combate naval para llegar. Salty Shore–Sol conserva su escala
+costera. Duración/distancia de Ceniza por medir; el rival PvE naval A6/D10 y el equipo
+preparable en Salty/Sol son requisitos de esa primera llegada. Ver [región §5](PLAN-REGION-INICIAL.md#5-recorridos-y-escala-para-la-primera-prueba).
+
 
 ## Checkpoint S21 - terreno de isla (2026-10-08)
 
@@ -82,8 +87,12 @@ del transporte naval. Los tres pueblos deberán ser accesibles por recorridos re
 ```text
 Salty Shore ===== camino / bosque / recursos ===== Puerto Sol
      \____________ navegación costera ______________/
-       \                 mar                     /
-                       Bahía Ceniza
+                         |
+                travesía de mar abierto
+                  combate naval previo
+                         |
+                         |
+                    Bahía Ceniza
 ```
 
 | Opción | Ventaja propuesta | Coste/riesgo y motivo para mejorar |
@@ -91,7 +100,7 @@ Salty Shore ===== camino / bosque / recursos ===== Puerto Sol
 | A pie por camino principal | Entrada barata; entregas pequeñas, compras urgentes y recolección durante el viaje | Poco espacio; desvíos y encuentros PvE anunciados. Medir tiempo completo y número de viajes necesarios |
 | A pie por desvío del bosque | Acceso a recursos y atajos, con decisión de explorar o escoltar | Bandidos más exigentes y menor visibilidad; no debe ser obligatorio para recetas iniciales |
 | Balsa por la costa | Más capacidad para mercancía a granel; aprovechar viento/corrientes y combinar puertos | Construir/cargar/atracar/reparar cuesta recursos y tiempo; costa, manejo y carga limitan el viaje |
-| Viaje a Ceniza | Acceso a otra cadena productiva y demanda de suministros | Necesita transporte marítimo; preparar provisiones/capacidad y evaluar el recorrido |
+| Viaje a Ceniza | Expedición lejana de mar abierto, metalurgia y demanda de suministros | Preparar provisiones/armamento/reparación; combate naval antes de llegar, duración por medir |
 
 La rentabilidad depende de cotización vigente, cantidad transportable, tiempo total de carga/viaje/venta,
 consumibles/reparación y riesgo. No garantizar que mar sea siempre más rápido, ni que caminar gane siempre
@@ -259,8 +268,9 @@ al gameplay se tratan por separado. Este documento no autoriza ejecutar un wipe 
 |---|---|---|
 | Personajes conectados | 8 en total, humanos + agentes con cuerpo | 12 y luego 16 tras carga sostenida y revisión de densidad |
 | Balsas en navegación | Las 8 pueden navegar a la vez, una principal por personaje | Flotas y más NPC navales después de medir |
-| Mundo navegable | Envolvente inicial de 800–1.000 u por lado, tres núcleos | Más islas/sectores cuando navegación y carga lo justifiquen |
-| Rutas directas | 90–180 s de navegación entre puertos como objetivo de diseño | Atajos/corrientes y rutas opcionales con riesgo, midiendo barco cargado |
+| Mundo navegable | Presupuesto previo de 800–1.000 u por lado por revisar; no limita la distancia de Ceniza | Dimensionar isla inicial y expansión oceánica por separado, sin rejilla uniforme de detalle |
+| Ruta costera Salty Shore–Puerto Sol | 90–180 s navegando por sentido como objetivo de diseño | Atajos/corrientes y rutas opcionales con riesgo, midiendo barco cargado |
+| Travesía a Ceniza | Mar abierto mucho más lejano que Sol, con combate naval antes de llegar | Medir navegación, encuentro y retorno; sin duración definitiva aprobada |
 | Parcela doméstica | Huella de 16×16 u, una inicial por personaje residente | Ampliaciones y propiedad conjunta posteriores |
 | Densidad residencial | Ensayo inicial con 8 propietarios y sus viviendas; parcelas repartidas entre pueblos | Cupo total de residentes/parcelas por mundo por diseñar; no equivale a conexiones simultáneas |
 | Nave/construcción para ensayo de rendimiento | Escenarios de 120 y 240 piezas por barco/casa | Elegir límite operativo tras medir; no confundirlo con las 600 tuplas técnicas actuales |
@@ -403,9 +413,9 @@ El runtime sigue en Three r160: revisar APIs disponibles localmente, sin migrar 
 | A1 — carpintería y aprendizaje | Proyecto compartido, entrega conservada/única, tres estados visuales, artesano y primeras recetas personales guardadas |
 | A2 — cadena completa | Recursos → refinado → puerta/bodega/vela adicional → construcción y navegación reales; reparación y reentrada |
 | A3 — Puerto Sol y corredor | Segundo pueblo en la misma isla: mercado accesible a pie y por costa, bosque/recursos/bandidos PvE, cadena fibra/lona y contrato regional |
-| A4 — Bahía Ceniza | Tercer pueblo caminable, metalurgia y abastecimiento; ruta completa sin dependencias circulares |
+| A4 — Bahía Ceniza | Tras A6/D10: travesía lejana de mar abierto con combate, llegada y tercer pueblo caminable al desembarcar; metalurgia y abastecimiento sin dependencias circulares |
 | A5 — vivienda inicial | Parcelas reservadas, propietario/permisos, piezas/transitabilidad/almacenamiento; no limitarse a un modelo de casa |
-| A6 — encuentro naval | Armamento del jugador y rival móvil/derrotable sobre el daño por pieza; salida/recuperación y economía conservadas |
+| A6 — encuentro naval | Antes de la primera llegada a Ceniza: armamento preparable en Salty/Sol y rival móvil/derrotable; daño, retirada/reparación y economía conservados |
 | A7 — ocho conectados | Reservas multipuerto, ocho pilotajes, aislamiento por mundo y límites medidos; población persistente y cupo simultáneo separados |
 | A8 — base para regiones | Después del loop y capacidad inicial: filtro de interés, dos regiones reales y handoff recuperable; sin anunciar todavía miles de conectados |
 

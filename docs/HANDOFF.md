@@ -1,5 +1,12 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA01 A0-P, 2026-10-13 — ajuste del autor: Ceniza mucho más lejos:**
+[Plan](../PLAN-REGION-INICIAL.md) y [plano](world/region-inicial-v1.svg).
+Mar abierto y combate desde el barco antes de llegar; duración/distancia por medir.
+D10/A6 pasa a ser requisito de A4/primera llegada. Preparar equipo desde Salty/Sol;
+no exigir su componente raro para superar el viaje ni PvP. Ruta corta a Sol conservada.
+Se actualizan región/alfa/roadmap naval; siguiente corte A0-G1, sin cambio de mapa activo.
+
 **ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
 [Entrega](delivery/st01c/DELIVERY.md), [plan autorizado](briefs/st01c-niagara-native-fidelity.md).
 Piloto exacto MyProject `NS_Flame_Single`; consultas UE5.8 NullRHI y helper C++ compilado.

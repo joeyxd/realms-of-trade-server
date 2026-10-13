@@ -7,6 +7,11 @@ Este documento concreta esa dirección con un plano provisional y una cola de tr
 La relación entre los tres pueblos ya estaba acordada; la silueta, orientación, distancias
 y composición que se proponen aquí siguen siendo ajustables. El plano no es el mapa activo.
 
+**Revisión del autor, 2026-10-13:** el esquema gusta; Bahía Ceniza debe estar **mucho más
+lejos**, con una travesía que se adentre en mar abierto y exija luchar desde el barco para
+llegar. El resto del esquema se conserva. Distancia, duración y encuentros concretos se
+ajustarán al probar navegación y combate; Ceniza deja de ser un salto costero corto.
+
 [Plano provisional SVG](docs/world/region-inicial-v1.svg) ·
 [Plan de alfa](PLAN-ALFA-MUNDO.md) · [Dirección visual](PLAN-VISUAL-PORT.md) ·
 [Editor y costa GM06](PLAN-GM-EDITOR.md#9-edición-y-ampliación-del-terreno) ·
@@ -17,7 +22,7 @@ y composición que se proponen aquí siguen siendo ajustables. El plano no es el
 Llegar a Salty Shore, encontrar un hogar reconocible, salir por agua/materiales y aventura,
 afrontar La Caldera y regresar con una mejora útil. La balsa abre otra manera de explorar,
 transportar y habitar. Puerto Sol da una razón para cruzar la isla o rodearla por mar;
-Bahía Ceniza abre una expedición posterior que sí exige navegación.
+Bahía Ceniza abre una expedición posterior de mar abierto que exige preparación y combate naval.
 
 La primera región debe servir tanto a quien quiere combate y poderes raros como a quien
 construye, recolecta o comercia. El terreno conecta esas actividades: el camino de aventura
@@ -34,10 +39,10 @@ la ubicación exacta, probabilidades y garantía de conseguir una perla no se fi
 
 | Tema | Dirección acordada | Propuesta espacial de este documento |
 |---|---|---|
-| Pueblos | Salty Shore y Puerto Sol en una misma isla; Bahía Ceniza en otra | Isla inicial alargada, dos bahías en extremos de una costa, interior elevado y una isla minera separada por mar |
+| Pueblos | Salty Shore y Puerto Sol en una misma isla; Bahía Ceniza en otra, mucho más lejana | Isla inicial alargada, dos bahías en extremos de una costa, interior elevado y una isla minera tras una travesía de mar abierto |
 | Salty Shore | Inicio, madera/piedra, pesca, viviendas, reparación y carpintería | Bahía abrigada; playa → plaza/servicios → muelle, con viviendas a un costado y salida libre hacia el interior |
 | Puerto Sol | Tejidos/provisiones; necesita madera y alimentos | Bahía más abierta, mercado próximo al camino y al muelle; espacio reservado para tejeduría y velas |
-| Bahía Ceniza | Mineral/metal; abastecimiento marítimo y componente raro para el purificador avanzado | Puerto abrigado en isla rocosa, área industrial separada del desembarco; detalle en A4 |
+| Bahía Ceniza | Mineral/metal; mar abierto lejano y combate naval antes de llegar; componente raro para el purificador avanzado | Puerto abrigado en isla rocosa, área industrial separada del desembarco; acceso tras A6/D10 y detalle en A4 |
 | Agua inicial | Fuente interior con enemigos; cubeta, barril y cantimplora antes del purificador avanzado | Desvío corto desde la salida de Salty Shore, con combate local y un retorno claro para transportar reservas |
 | Riesgo | Cala conserva su régimen propio; no exigir PvP para progreso doméstico básico | Camino a Sol con riesgo PvE anunciado y opción de retirarse/desviar; Cala en una rama separada |
 | Noche | Exterior casi negro sin luz; fuentes utilizables y UI legible | Puertos como referencias de fuego permanente; oscuridad real entre refugios, sin iluminar todo el bosque o el mar |
@@ -52,7 +57,8 @@ levantamiento del mapa existente, conservando sus sectores funcionales.
 
 El trazo ocre representa el camino principal; el azul, la ruta costera. Las ramas del
 manantial, La Caldera, bosque y Cala permiten explorar sin confundir el destino comercial.
-La ruta a Ceniza y su isla quedan reservadas para la fase posterior. El dibujo no representa
+La ruta a Ceniza cruza una franja amplia de mar abierto; navegación, combate y destino
+quedan reservados para la fase posterior. El dibujo no representa
 colisiones, alturas medidas, peligros ya colocados ni contenido publicado.
 
 ## 4. Sectores y motivos para detenerse
@@ -69,7 +75,8 @@ colisiones, alturas medidas, peligros ya colocados ni contenido publicado.
 | Costa entre puertos | Cabos reconocibles, arrecifes visibles y una ensenada de parada | Navegar con carga, leer costa, desembarcar/reembarcar. Reservar agua suficiente para maniobrar |
 | Puerto Sol | Playa de acceso, muelle, mercado y espacio textil | Llegada a pie o en balsa al mismo pueblo y mercado; la fibra/tejidos nuevos necesitan su propio corte |
 | Cala Calavera | Rama con aviso de peligro y frontera reconocible | Destino PvP opcional existente. Preservar su ubicación/ley hasta una migración específica |
-| Bahía Ceniza | Isla separada, roca y puerto industrial | Expedición naval posterior, metalurgia y componente raro. Evitar requisitos circulares entre ciudades |
+| Mar abierto hacia Ceniza | Travesía claramente más larga que la ruta a Sol, lejos de la costa inicial | Preparar agua/comida/luz/reparación y afrontar enemigos desde el barco antes de llegar |
+| Bahía Ceniza | Isla lejana, roca y puerto industrial | Llegar tras la expedición naval, metalurgia y componente raro. Evitar requisitos circulares entre ciudades |
 
 La ensenada costera no es otra ciudad ni concede un mercado, teletransporte, amarre persistente
 o acceso remoto a bodega. Su primera función sería una parada normal del mismo viaje;
@@ -88,16 +95,37 @@ representativa. Las compras, lucha, acopio y decisiones se registran aparte del 
 | Salty Shore → Puerto Sol por camino | 2–4 min de desplazamiento por sentido | Mochila y entrega pequeña útiles; terreno/pendiente/carga medidos antes de fijar distancia |
 | Salty Shore → Puerto Sol por costa | 90–180 s navegando por sentido, objetivo heredado del plan alfa | Capacidad de carga útil y maniobras reales; sumar preparación, carga, atraque y venta al comparar rutas |
 | Salty Shore → La Caldera → regreso | Primer capítulo de aventura, duración por medir | Desafío y mejora útil; encuentro completo antes de ajustar longitud del sendero |
-| Puerto → Ceniza | Objetivo de 90–180 s para el tramo directo, a revisar en A4 | Necesidad marítima y provisiones; no extender el mar solo para llenar tiempo |
+| Puerto → Ceniza | Travesía de mar abierto mucho más larga que Salty–Sol; duración por medir en A4 con carga y combate | Alejarse de la costa, luchar desde el barco y llegar con capacidad para retornar; registrar navegación y encuentros por separado |
 
 Mantener la propuesta alfa de un núcleo urbano de 100–140 u, plaza abierta de 30–45 u
 y corredores principales de 5–6 u como **presupuesto de maqueta jugable**, sujeto a cámara y cuerpos
-reales. La envolvente regional de 800–1.000 u por lado del plan alfa sigue siendo una hipótesis:
-el mundo actual tiene 560 u. No se convierte en una rejilla nueva de detalle uniforme.
+reales. La envolvente regional de 800–1.000 u por lado del plan alfa deja de ser una
+restricción para incluir Ceniza: primero medir la isla inicial/ruta a Sol y después dimensionar
+su expansión oceánica. El mundo actual tiene 560 u. No se convierte en una rejilla nueva de
+detalle uniforme ni se comprime Ceniza para hacerla caber en ese presupuesto anterior.
 
 El canal, la zona de giro y el desembarco se dimensionan con la balsa de ensayo más grande
 y cargada del corte. Primero comprobar una llegada completa; después concurrencia/amarres
 con AREA16. Ocho personajes/balsas es una meta de capacidad, no una aceptación de este plano.
+
+### Expedición a Ceniza: preparación, combate y regreso
+
+Secuencia de diseño: preparar la nave en Salty Shore/Puerto Sol → dejar atrás la costa →
+enfrentamiento naval en mar abierto → aproximación a Ceniza → desembarco y abastecimiento →
+regreso. La distancia debe dar espacio a maniobrar y tomar decisiones, no añadir minutos
+vacíos. Los enemigos, su número, ritmo y comportamiento se diseñan con el primer rival naval.
+
+La base propuesta es **combate PvE naval**, con enemigo móvil vencible, arma propia utilizable,
+señales legibles, daño/reparación y opción de retirarse para volver a preparar la expedición.
+Luchar en barco forma parte de la llegada a Ceniza; si el jugador se retira, aún no completa
+el acceso. No se exige PvP, victoria sobre humanos ni abordar una nave ajena.
+
+El primer equipo capaz de superar ese encuentro debe poder prepararse con recursos y
+servicios accesibles desde Salty Shore/Sol. El metal o componente raro que se busca en
+Ceniza no puede ser requisito del arma/casco/reparación necesarios para alcanzarla.
+La expedición completa se acepta después de A6/D10; el purificador avanzado sigue siendo
+una mejora posterior a conseguir su componente allí. Formato del encuentro, pérdidas,
+custodia y liquidación se concretan con AREA15 antes de exponer bienes públicos.
 
 ## 6. Luz, agua y abastecimiento como parte de la geografía
 
@@ -211,7 +239,8 @@ después se extiende el kit al pueblo. Ver [inventario](docs/research/unreal-ass
 | **A3b — Puerto Sol físico mínimo** | Mercado existente ligado a ancla real, plaza/muelle y servicio útil; llegada por tierra y costa | Mismo mercado/stock desde ambas entradas, distancia/permisos/reentrada; no duplicar economía |
 | **AREA07/08 — viaje comercial completo** | Cargar en origen, viajar, atracar, acceder a carga con permiso, vender/descargar, volver | Conservación y recibos M5, respuesta perdida y reinicio. No basta abrir el mercado de mochila en una parada |
 | **A3c — corredor y vida regional** | Señales, recursos/encuentros PvE, una cadena textil sin dependencias circulares | Retirada/rutas alternativas, materiales no duplicados y motivo real para comercio; balance medido |
-| **A4 — isla de Ceniza** | Segundo terreno/isla, puerto, abastecimiento y componente raro | Tramo naval completo y continuidad; después receta avanzada del purificador |
+| **A6/D10 — combate para la expedición** | Rival NPC móvil vencible, arma disponible desde Salty/Sol, daño a piezas, reparación y retirada | Combate real desde el barco y regreso para reparar; continuidad de carga/daño. Prerrequisito de la primera llegada a Ceniza |
+| **A4 — isla lejana de Ceniza** | Expansión de mar abierto, segundo terreno/isla, puerto, abastecimiento y componente raro | Travesía larga + combate naval + llegada/desembarco + retorno conservados; después receta avanzada del purificador |
 
 La composición visual detallada acompaña los cortes con espacio jugable aceptado. Casa,
 astillero, parcelas y reservas multipuerto mantienen sus contratos propios. Este orden no
@@ -225,6 +254,7 @@ reabre los sistemas que ya funcionan ni reemplaza las entregas paralelas de GM/A
 - Primer capítulo de aventura: encargo, recompensa visible, descubrimiento de poderes raros y regreso con mejora; reglas de obtención en su corte de contenido.
 - Sendero/Caldera y Cala existentes accesibles y conservados; frontera PvP claramente anunciada.
 - Casco de ensayo cargado entra, gira y desembarca sin atravesar terreno ni perder al ocupante.
+- Ceniza: salir de la costa, superar el encuentro desde el barco, llegar y volver con estado conservado; preparar el equipo inicial sin recursos exclusivos de Ceniza.
 - Minimap y mapa grande muestran la misma costa, bounds, destino y posición que servidor/renderer.
 - Noche legible con luz utilizable en bajo/móvil; exterior oscuro y faros municipales con cobertura acotada.
 - Guardar, reiniciar, reentrar y cambiar/volver de revisión conserva estado e identidades; errores/reintentos sin duplicados.

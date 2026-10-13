@@ -49,6 +49,20 @@ Purificador mucho más difícil: más hierro/tablas y componente raro de origen 
 son propuestas, no balance aprobado. RNV06 conserva la base técnica; este documento no modifica
 el runtime ni convierte barriles decorativos en reservas funcionales.
 
+### Bahía Ceniza lejana y combate de acceso
+
+**Decisión del autor, 2026-10-13:** conservar el esquema de la primera región, pero situar
+Bahía Ceniza mucho más lejos para adentrarse en mar abierto y luchar desde el barco antes
+de llegar. Salty Shore–Puerto Sol mantiene la ruta costera inicial. La duración y distancia
+oceánicas quedan por medir, separando navegación/combate; no conservar el objetivo corto
+de 90–180 s para Ceniza ni comprimirla en la envolvente anterior de 800–1.000 u.
+
+Orden: primer comercio Salty/Sol → rival naval vencible A6/D10 → expedición a Ceniza A4 →
+componente raro y purificador avanzado. El equipo inicial para el encuentro se prepara
+desde Salty/Sol, sin exigir materiales exclusivos de Ceniza. PvE naval es la base propuesta;
+PvP no se vuelve requisito para llegar. Encuentro, dificultad, retirada, pérdidas/custodia
+y recuperación conservan sus contratos específicos. [Plan y plano](../PLAN-REGION-INICIAL.md).
+
 ## 2. Tamaño, materiales, navegación y distribución
 
 Recomendación: separar **límite estructural**, **límite de operación competente** y **límite técnico del juego**.

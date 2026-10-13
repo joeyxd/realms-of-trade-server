@@ -1,5 +1,12 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA01 A0-P, 2026-10-13 — Bahía Ceniza lejana, ajuste aprobado del plano:**
+[Región y orden](PLAN-REGION-INICIAL.md), [plano actualizado](docs/world/region-inicial-v1.svg).
+Ceniza pasa a una expedición larga de mar abierto con combate naval antes de llegar.
+Salty–Sol conserva camino/costa; duración y extensión oceánica por medir. D10/A6 precede
+a la primera llegada A4, con equipo preparable en Salty/Sol, sin dependencia circular ni PvP requerido.
+Solo diseño: siguiente corte A0-G1, levantamiento/anclas. Sin terreno o gameplay nuevo activado.
+
 **ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
 [Entrega](docs/delivery/st01c/DELIVERY.md), [plan autorizado](docs/briefs/st01c-niagara-native-fidelity.md).
 Piloto MyProject `NS_Flame_Single`: helper C++ y consultas UE5.8 NullRHI; dos renderers
