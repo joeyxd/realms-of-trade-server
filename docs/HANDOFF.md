@@ -1,5 +1,11 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Troncos recogibles, 2026-10-13 — corrección de veta:**
+[Entrega](delivery/pickup-wood-uv/README.md). Proyección UV por cara sobre el GLB
+curvo, normales originales conservadas y recorte limpio del atlas existente.
+34/34 pruebas, Chrome local escritorio/móvil 2/2 y comparación visual inspeccionada.
+Alpha.69/protocolo 61 preparada; publicación pendiente de comprobación.
+
 **ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
 [Entrega](delivery/st01c/DELIVERY.md), [plan autorizado](briefs/st01c-niagara-native-fidelity.md).
 Piloto exacto MyProject `NS_Flame_Single`; consultas UE5.8 NullRHI y helper C++ compilado.
