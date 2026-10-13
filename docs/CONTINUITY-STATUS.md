@@ -1,5 +1,18 @@
 # Continuidad de servidor — AREA15
 
+**AREA15, 2026-10-13 — swallow con recibo común; piloto público apagado:**
+[Entrega/evidencia](delivery/m5-ground-pearl-swallow.md), [contrato](briefs/m5-ground-pearl-swallow.md).
+Cuenta autenticada, bolsa → ranura tragada vacía; misma cuenta/UID, un perfil CAS,
+generación/tombstone y mundo/reloj confirmados por SQL006/018/019 antes de apply.
+Efecto de los cuatro poderes y filtrado reversible de inputs antiguos; ligado hasta morir, sin reemplazo/escupir.
+45/45 aceptación en cuatro archivos, incluidas dos recuperaciones SIGKILL locales;
+266/267 regresión pertinente en 24 archivos; único fallo de expectativa de swallow ya habilitado,
+corregida para rechazar reemplazo. 13/13 seguimiento focal en dos archivos, sin delta runtime.
+Fuentes congeladas; conteos solapados, sin reetiquetar la cohorte amplia.
+Sin SQL/flag/protocolo nuevos. Publicación del código pendiente del relevo y verificación exacta.
+Sigue candidato completo kill/cofre y luego composición GM/compañeros/control/bots/antorchas,
+adopción detenida y canario VPS; montaje común público apagado.
+
 **AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
 [Entrega/evidencia](delivery/m5-ground-pearl-give.md), [contrato](briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
 reserva de ambas cuentas/UIDs antes de IO, progreso/autosaves previos, dos CAS y generación durable.

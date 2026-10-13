@@ -281,3 +281,12 @@ Runtime `cd2a97b`, una instancia sana, 176/176 en Docker y 21/21 hashes público
 WSS autenticado 5/5: consumo, replay y reconexión durables; cuenta temporal retirada, cero errores/pendientes.
 Navegador local ES/EN con fixture de ubicación: comercio, agua/comida y el mismo viaje tras reembarcar.
 Puerto Sol aún necesita geografía/anclas físicas; este corte no acepta la ruta completa ni descarga.
+
+## Continuación acordada, 2026-10-13 — diseñar terreno antes de la ruta
+
+El autor aclaró que todavía falta planear la forma del terreno y autorizó empezar por el diseño.
+[AREA01 A0-P](../../PLAN-REGION-INICIAL.md) concreta un esquema de región, ciudades, agua y rutas;
+la orientación y los tiempos son propuestas, no coordenadas ni trayectos aceptados.
+Sigue **A0-G1: levantamiento y anclas sobre el mapa real**. Después GM06 si hace falta crear costa,
+accesos/Puerto Sol físico con A3, y llegada/carga/descarga/retorno con AREA08. RNV08a continúa
+como base de abastecimiento personal en una parada, con sus límites de bodega intactos.

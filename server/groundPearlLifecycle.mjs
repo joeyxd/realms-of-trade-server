@@ -7,6 +7,7 @@ import { prepareGroundPearlPickup } from './groundPearlPickup.mjs';
 import { prepareGroundPearlReturn } from './groundPearlReturn.mjs';
 import { prepareGroundPearlLeave } from './groundPearlLeave.mjs';
 import { prepareGroundPearlGive } from './groundPearlGive.mjs';
+import { prepareGroundPearlSwallow } from './groundPearlSwallow.mjs';
 import { snapshotDropData, assertDropContainers } from './deathDropApply.mjs';
 import { managedPearlDrop } from './pearlLifecycle.mjs';
 import { managedDeathDrop } from './deathDropLifecycle.mjs';
@@ -86,8 +87,8 @@ export class GroundPearlLifecycle {
     };
     if (raw.op === 'spit') return deny('bound');
     if (raw.op === 'sell') return deny('notForSale');
-    // Remaining mutations cannot use the immediate helper inside this incomplete pilot.
-    if (!['leave', 'give'].includes(raw.op)) return deny('disabled');
+    // These commands all belong to the common receipt owner, never an immediate mutation.
+    if (!['leave', 'give', 'swallow'].includes(raw.op)) return deny('disabled');
     try {
       const value = snapshotDropData(raw);
       const source = { clientId, entity };
@@ -97,7 +98,8 @@ export class GroundPearlLifecycle {
         this.give({ source, receiver: { clientId: this.#server.clientOf(value.target), entity: value.target }, uid: value.uid });
       } else {
         if (Object.keys(value).sort().join(',') !== 'op,t,type,uid' || typeof value.uid !== 'string') fail('operation');
-        this.leave({ source, uid: value.uid });
+        if (value.op === 'swallow') this.swallow({ source, uid: value.uid });
+        else this.leave({ source, uid: value.uid });
       }
       return true;
     } catch (error) {
@@ -248,6 +250,73 @@ export class GroundPearlLifecycle {
       });
       active.result.catch(() => { this.#failed = true; });
       return Object.freeze({ operationId, result: active.result });
+    } catch (error) { this.#active = null; throw error; }
+  }
+  // Bag -> empty swallowed slot keeps the holder and advances the durable UID generation.
+  swallow(raw) {
+    this.#server.assertTickIdle(); this.#available();
+    const value = snapshotDropData(raw);
+    if (!value || Object.keys(value).sort().join(',') !== 'source,uid' || typeof value.uid !== 'string') fail('operation');
+    const w = this.#world, sessions = this.#host.profiles;
+    const session = sessions.clients.get(value.source?.clientId);
+    const profile = w.profiles.get(value.source?.entity);
+    if (profile?.pearls?.swallowed) fail('bound');
+    const pearl = profile?.pearls?.bag.find(q => q.uid === value.uid);
+    if (!pearl) fail('unknown');
+    const create = (row, preflight = false) => prepareGroundPearlSwallow({ host: this.#host, deadlineClock: this.#clock,
+      source: value.source, uid: value.uid, row, preflight });
+    let plan = create({ ...pearl, holder: session?.key, version: 1 }, true);
+    const preflight = plan, before = capturePearlProfile(w, value.source.entity);
+    const initial = { version: session.version, confirmed: structuredClone(session.confirmed), last: session.last,
+      maxSettledWrites: session.running ? 2 : 1 };
+    const beforeText = canonicalText(before), nextLast = JSON.stringify(before);
+    const possibleWrites = session.running ? 2 : initial.last !== nextLast ? 1 : 0;
+    if (initial.version + possibleWrites >= 2147483647) fail('conflict');
+    const completion = this.#server.afterTick, fatal = w.deferPlayerDeath, pendingDeath = w.isPlayerDeathPending,
+      mint = w.deferPearlMint, deaths = this.#host.groundDeaths, mints = this.#host.groundPearlMints;
+    const active = { operationId: randomUUID(), result: null };
+    this.#active = active;
+    const assertCurrent = (settling = false) => {
+      this.#owner();
+      if (this.#active !== active || this.#failed || this.#stopping || this.#host.closing || session.pearlBusy) fail('cancelled');
+      if (this.#server.afterTick !== completion || w.deferPlayerDeath !== fatal || w.isPlayerDeathPending !== pendingDeath ||
+          w.deferPearlMint !== mint || this.#host.groundDeaths !== deaths || this.#host.groundPearlMints !== mints) fail('cancelled');
+      preflight.assertBaseline();
+      const unchanged = session.version === initial.version && session.last === initial.last &&
+        canonicalText(session.confirmed) === canonicalText(initial.confirmed);
+      const settled = session.version > initial.version && session.version <= initial.version + initial.maxSettledWrites &&
+        session.last === nextLast && canonicalText(session.confirmed) === beforeText;
+      const priorSave = settling && session.version > initial.version && session.version <= initial.version + initial.maxSettledWrites &&
+        session.last === JSON.stringify(session.confirmed) &&
+        canonicalText(profilePearls(session.confirmed)) === canonicalText(profilePearls(before));
+      if (!unchanged && !settled && !priorSave) fail('conflict');
+    };
+    try {
+      active.result = this.#authority.stagePreparedFamily({ operationId: active.operationId, family: 'ground', lanes: {
+        accounts: [session.key], uids: profilePearls(before).map(q => q.uid), drops: [],
+      } }, async reservation => {
+        await settleGroundProfile(sessions, { session, clientId: value.source.clientId }, before, reservation, () => assertCurrent(true));
+        assertCurrent();
+        const reads = await Promise.allSettled([
+          this.#host.store.loadUnique(value.uid), this.#host.store.loadPearlLocation(value.uid),
+        ]);
+        assertCurrent();
+        for (const read of reads) if (read.status === 'rejected') throw read.reason;
+        const unique = snapshotDropData(reads[0].value), location = checkedLocation(reads[1].value);
+        if (!unique || Object.keys(unique).sort().join(',') !== 'holder,kind,version' ||
+            unique.holder !== session.key || unique.kind !== pearlKind(pearl.kind) ||
+            !Number.isSafeInteger(unique.version) || unique.version < 1 || unique.version >= 2147483647 ||
+            location && (location.world !== this.#host.worldState.id || location.ground !== null ||
+              location.version !== unique.version)) fail('ownership');
+        plan = create({ ...pearl, holder: unique.holder, version: unique.version });
+        return plan.operation;
+      }, effect => {
+        assertCurrent();
+        if (plan.apply(effect) !== true) fail('effect');
+        this.#active = null; return true;
+      });
+      active.result.catch(() => { this.#failed = true; });
+      return Object.freeze({ operationId: active.operationId, result: active.result });
     } catch (error) { this.#active = null; throw error; }
   }
   pickup(raw) {
