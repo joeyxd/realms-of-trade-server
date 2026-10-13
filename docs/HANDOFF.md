@@ -7,6 +7,12 @@ D10/A6 pasa a ser requisito de A4/primera llegada. Preparar equipo desde Salty/S
 no exigir su componente raro para superar el viaje ni PvP. Ruta corta a Sol conservada.
 Se actualizan región/alfa/roadmap naval; siguiente corte A0-G1, sin cambio de mapa activo.
 
+**Troncos recogibles, 2026-10-13 — corrección de veta:**
+[Entrega](delivery/pickup-wood-uv/README.md). Proyección UV por cara sobre el GLB
+curvo, normales originales conservadas y recorte limpio del atlas existente.
+34/34 pruebas, Chrome local escritorio/móvil 2/2 y comparación visual inspeccionada.
+Alpha.69/protocolo 61 preparada; publicación pendiente de comprobación.
+
 **ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
 [Entrega](delivery/st01c/DELIVERY.md), [plan autorizado](briefs/st01c-niagara-native-fidelity.md).
 Piloto exacto MyProject `NS_Flame_Single`; consultas UE5.8 NullRHI y helper C++ compilado.

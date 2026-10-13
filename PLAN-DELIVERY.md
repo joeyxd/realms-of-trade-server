@@ -7,6 +7,10 @@ Salty–Sol conserva camino/costa; duración y extensión oceánica por medir. D
 a la primera llegada A4, con equipo preparable en Salty/Sol, sin dependencia circular ni PvP requerido.
 Solo diseño: siguiente corte A0-G1, levantamiento/anclas. Sin terreno o gameplay nuevo activado.
 
+**Troncos recogibles, 2026-10-13:** [corrección de veta](docs/delivery/pickup-wood-uv/README.md),
+proyección UV por cara y recorte propio del atlas; 34/34 pruebas y Chrome local 2/2.
+Alpha.69/protocolo 61 preparada, pendiente de verificación pública.
+
 **ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
 [Entrega](docs/delivery/st01c/DELIVERY.md), [plan autorizado](docs/briefs/st01c-niagara-native-fidelity.md).
 Piloto MyProject `NS_Flame_Single`: helper C++ y consultas UE5.8 NullRHI; dos renderers
