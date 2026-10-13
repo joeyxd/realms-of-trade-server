@@ -27,6 +27,7 @@ import { groundTransactionOperation, checkedGroundTransactionResult, checkedGrou
 import { createMemoryGmDraftMethods, createSupabaseGmDraftMethods } from './gmDraftStore.mjs';
 import { createMemoryCompanionConfigMethods, createSupabaseCompanionConfigMethods } from './companionConfigStore.mjs';
 import { createMemoryCompanionControlMethods, createSupabaseCompanionControlMethods } from './companionControlStore.mjs';
+import { createMemoryCompanionPresenceMethods, createSupabaseCompanionPresenceMethods } from './companionPresenceStore.mjs';
 import { createMemoryInferenceConfigMethods, createSupabaseInferenceConfigMethods } from './inferenceConfigStore.mjs';
 import { createMemoryCompanionCreationMethods, createSupabaseCompanionCreationMethods } from './companionCreationStore.mjs';
 
@@ -99,6 +100,7 @@ export function createMemoryStore() {
   const gmDraftMethods = createMemoryGmDraftMethods();
   const companionConfigMethods = createMemoryCompanionConfigMethods();
   const companionControlMethods = createMemoryCompanionControlMethods();
+  const companionPresenceMethods = createMemoryCompanionPresenceMethods();
   const inferenceConfigMethods = createMemoryInferenceConfigMethods();
   const companionCreationMethods = createMemoryCompanionCreationMethods();
   const profiles = new Map(), worlds = new Map(), uniques = new Map(), legacyImports = new Map(), pearlReceipts = new Map();
@@ -196,7 +198,7 @@ export function createMemoryStore() {
     return reply;
   };
   const store = {
-    ...gmDraftMethods, ...companionConfigMethods, ...companionControlMethods, ...inferenceConfigMethods, ...companionCreationMethods,
+    ...gmDraftMethods, ...companionConfigMethods, ...companionControlMethods, ...companionPresenceMethods, ...inferenceConfigMethods, ...companionCreationMethods,
     kind: 'memory', durable: false,
     async loadProfile(id) { return load(profiles, playerKey(id)); },
     async listGmContentProfiles({ after = null, limit = 100 } = {}) {
@@ -590,6 +592,7 @@ export function createSupabaseStore(client) {
   const gmDraftMethods = createSupabaseGmDraftMethods(client);
   const companionConfigMethods = createSupabaseCompanionConfigMethods(client);
   const companionControlMethods = createSupabaseCompanionControlMethods(client);
+  const companionPresenceMethods = createSupabaseCompanionPresenceMethods(client);
   const inferenceConfigMethods = createSupabaseInferenceConfigMethods(client);
   const companionCreationMethods = createSupabaseCompanionCreationMethods(client);
   async function rpc(name, args, duplicateCode = null) {
@@ -618,7 +621,7 @@ export function createSupabaseStore(client) {
     throw new StoreError('response');
   }
   return {
-    ...gmDraftMethods, ...companionConfigMethods, ...companionControlMethods, ...inferenceConfigMethods, ...companionCreationMethods,
+    ...gmDraftMethods, ...companionConfigMethods, ...companionControlMethods, ...companionPresenceMethods, ...inferenceConfigMethods, ...companionCreationMethods,
     kind: 'supabase', durable: true,
     async checkGroundTransactions() {
       const raw = await rpc('mn_ground_transactions_ready', {});

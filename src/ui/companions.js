@@ -295,6 +295,11 @@ export class CompanionsUI {
   setInferenceEditor(editor) { this.inferenceEditor = editor; this.render(); }
   setCreationEditor(editor) { this.creationEditor = editor; this.render(); }
   setPairingEditor(editor) { this.pairingEditor = editor; this.render(); }
+  setPresencePanel(panel) {
+    this.presencePanel = panel;
+    this.panel.insertBefore?.(panel.container, this.list);
+    this.render();
+  }
   openPairing() {
     if (!this.pairingEditor || this.state.status !== 'ready') return;
     this.configEditor?.close(); this.inferenceEditor?.close(); this.creationEditor?.close();
@@ -432,6 +437,7 @@ export class CompanionsUI {
       this.list.append(item);
     });
     const configuring = this.configEditor?.isOpen === true || this.inferenceEditor?.isOpen === true || this.creationEditor?.isOpen === true || this.pairingEditor?.isOpen === true;
+    if (this.presencePanel) this.presencePanel.container.hidden = configuring;
     this.creationButton.hidden = !this.creationEditor || configuring;
     this.pairingButton.hidden = !this.pairingEditor || !creation?.record || configuring;
     this.inferenceButton.hidden = !this.inferenceEditor || configuring;

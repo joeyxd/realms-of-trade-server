@@ -36,6 +36,8 @@ import { CompanionCreationClient } from './client/companionCreation.js';
 import { CompanionCreationUI } from './ui/companionCreation.js';
 import { CompanionPairingClient } from './client/companionPairing.js';
 import { CompanionPairingUI } from './ui/companionPairing.js';
+import { CompanionPresenceClient } from './client/companionPresence.js';
+import { CompanionPresenceUI } from './ui/companionPresence.js';
 import { GameScene } from './render/scene.js';
 import { SKINS, CharacterView, PortraitStudio } from './render/characters.js';
 import { Quality } from './render/quality.js';
@@ -582,11 +584,13 @@ async function boot() {
   const companionPairing = new CompanionPairingClient({ transport, auth: accountAuth,
     controllerUrl: `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws`,
     joined: () => st.online && st.mode === 'playing' && client.joined && !transport.closed });
+  const companionPresence = new CompanionPresenceClient({ transport, auth: accountAuth,
+    joined: () => st.online && st.mode === 'playing' && client.joined && !transport.closed });
   let companionsPoll = null;
   companionsPanel = new CompanionsUI(hud.root.querySelector('.hud-top-right'), {
     getState: () => companions.snapshot(),
     lang: getLocale(),
-    onRefresh: () => companions.refresh(), onStop: (key) => companions.stop(key), onResume: (key) => companions.resume(key),
+    onRefresh: () => { companionPresence.load(); return companions.refresh(); }, onStop: (key) => companions.stop(key), onResume: (key) => companions.resume(key),
     onVisibilityChange: (open) => {
       clearInterval(companionsPoll); companionsPoll = null;
       if (open) {
@@ -597,12 +601,15 @@ async function boot() {
         companions.refresh();
         companionCreation.load();
         companionPairing.load();
-        companionsPoll = setInterval(() => { if (!document.hidden && !companionsPanel.configEditor?.isOpen && !companionsPanel.inferenceEditor?.isOpen && !companionsPanel.creationEditor?.isOpen && !companionsPanel.pairingEditor?.isOpen) companions.refresh(); }, 5000);
+        companionPresence.load();
+        companionsPoll = setInterval(() => { if (!document.hidden && !companionsPanel.configEditor?.isOpen && !companionsPanel.inferenceEditor?.isOpen && !companionsPanel.creationEditor?.isOpen && !companionsPanel.pairingEditor?.isOpen) { companions.refresh(); companionPresence.load(); } }, 5000);
       }
       input.clearActions(); input.keys.clear(); aimCtl.reset(); st.wantWeapon = 0;
       input.enabled = !open && st.mode === 'playing' && !pause.open && !chatPanel.typing && !transport.closed;
     },
   });
+  const companionPresencePanel = new CompanionPresenceUI(companionsPanel.panel, { client: companionPresence, lang: getLocale() });
+  companionsPanel.setPresencePanel(companionPresencePanel);
   const companionConfigEditor = new CompanionConfigUI(companionsPanel.panel, { client: companionConfig,
     lang: getLocale(), onClose: () => companionsPanel.closeConfiguration() });
   companionsPanel.setConfigurationEditor(companionConfigEditor);
@@ -627,9 +634,10 @@ async function boot() {
     const key = state.status === 'ready' && state.record?.characterKey;
     // Hydrate the owner list after creation; status loading never issues a code or resumes control.
     if (key && key !== listedCreationKey && companionPairing.load({ refresh: true })) listedCreationKey = key;
+    if (key) companionPresence.load({ refresh: true });
   });
   companions.subscribe((state) => companionsPanel.setState(state));
-  onLocaleChange(() => { companionsPanel.setLanguage(getLocale()); companionConfigEditor.setLanguage(getLocale()); inferenceConfigEditor.setLanguage(getLocale()); companionCreationEditor.setLanguage(getLocale()); companionPairingEditor.setLanguage(getLocale()); });
+  onLocaleChange(() => { companionsPanel.setLanguage(getLocale()); companionConfigEditor.setLanguage(getLocale()); inferenceConfigEditor.setLanguage(getLocale()); companionCreationEditor.setLanguage(getLocale()); companionPairingEditor.setLanguage(getLocale()); companionPresencePanel.setLanguage(getLocale()); });
   document.addEventListener('pointerdown', (event) => {
     if (companionsPanel.isOpen && !companionsPanel.container.contains(event.target) &&
         !companionsPanel.panel.contains(event.target)) companionsPanel.close();
@@ -790,7 +798,7 @@ async function boot() {
   }
   // The server went away: a veil with a way back (reload = reconnect; settings and weapon are saved).
   function netLost(contentChanged = false) {
-    companionsPanel?.close(); companions.disconnect(); companionConfig.disconnect(); inferenceConfig.disconnect(); companionCreation.disconnect(); companionPairing.disconnect();
+    companionsPanel?.close(); companions.disconnect(); companionConfig.disconnect(); inferenceConfig.disconnect(); companionCreation.disconnect(); companionPairing.disconnect(); companionPresence.disconnect();
     if (gmEditor?.active) void gmEditor.close({ force: true });
     if (skillStudio?.active) skillStudio.close({ force: true });
     chatPanel.disconnected();
@@ -1106,7 +1114,7 @@ async function boot() {
           client.join(settings.name, settings.skin, weaponIndex(settings.weapon), saved, account);
         });
         if (r.k !== 'ok') {
-          joiningCompanionAccount = null; companions.setSession(null); companionConfig.setSession(null); inferenceConfig.setSession(null); companionCreation.setSession(null); companionPairing.setSession(null);
+          joiningCompanionAccount = null; companions.setSession(null); companionConfig.setSession(null); inferenceConfig.setSession(null); companionCreation.setSession(null); companionPairing.setSession(null); companionPresence.setSession(null);
           if (r.k === 'timeout') transport.close();
           const joinErrors = {
             version: rich('join.version'),
@@ -1130,7 +1138,7 @@ async function boot() {
       accountPanel?.hide();
       await title.hide();
     } catch {
-      joiningCompanionAccount = null; companions.setSession(null); companionConfig.setSession(null); inferenceConfig.setSession(null); companionCreation.setSession(null); companionPairing.setSession(null);
+      joiningCompanionAccount = null; companions.setSession(null); companionConfig.setSession(null); inferenceConfig.setSession(null); companionCreation.setSession(null); companionPairing.setSession(null); companionPresence.setSession(null);
       title.message(rich('join.recover'));
     } finally {
       st.boarding = false;
@@ -1144,6 +1152,7 @@ async function boot() {
     companionConfig.setSession(joiningCompanionAccount);
     inferenceConfig.setSession(joiningCompanionAccount);
     companionCreation.setSession(joiningCompanionAccount); companionPairing.setSession(joiningCompanionAccount);
+    companionPresence.setSession(joiningCompanionAccount);
     companionsPanel.setVisible(true);
     companions.refresh();
     world.setTitleShadows(false);

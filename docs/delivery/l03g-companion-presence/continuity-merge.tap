@@ -1,0 +1,208 @@
+TAP version 13
+# Subtest: owner creates a stopped companion, loads, and joins as a normal safe-zone entity
+ok 1 - owner creates a stopped companion, loads, and joins as a normal safe-zone entity
+  ---
+  duration_ms: 455.876
+  type: 'test'
+  ...
+# Subtest: wait and follow are direct server orders; no identity or coordinate fields are accepted
+ok 2 - wait and follow are direct server orders; no identity or coordinate fields are accepted
+  ---
+  duration_ms: 496.6549
+  type: 'test'
+  ...
+# Subtest: presence is private to the authenticated owner; guests and another account cannot direct it
+ok 3 - presence is private to the authenticated owner; guests and another account cannot direct it
+  ---
+  duration_ms: 420.6185
+  type: 'test'
+  ...
+# Subtest: capacity and repeated joins cannot create a second body or consume another slot
+ok 4 - capacity and repeated joins cannot create a second body or consume another slot
+  ---
+  duration_ms: 637.3029
+  type: 'test'
+  ...
+# Subtest: hurt and danger deny retirement without healing or despawning the entity
+ok 5 - hurt and danger deny retirement without healing or despawning the entity
+  ---
+  duration_ms: 373.5189
+  type: 'test'
+  ...
+# Subtest: pairing and body presence exclude each other in both directions
+ok 6 - pairing and body presence exclude each other in both directions
+  ---
+  duration_ms: 389.2234
+  type: 'test'
+  ...
+# Subtest: a claimed live pairing token fences a concurrent host-body admission without a duplicate entity
+ok 7 - a claimed live pairing token fences a concurrent host-body admission without a duplicate entity
+  ---
+  duration_ms: 357.9015
+  type: 'test'
+  ...
+# Subtest: delayed join rechecks the owner anchor after profile I/O before creating the companion entity
+ok 8 - delayed join rechecks the owner anchor after profile I/O before creating the companion entity
+  ---
+  duration_ms: 281.92
+  type: 'test'
+  ...
+# Subtest: owner disconnect makes the body walk back before healthy auto-retirement
+ok 9 - owner disconnect makes the body walk back before healthy auto-retirement
+  ---
+  duration_ms: 362.5185
+  type: 'test'
+  ...
+# Subtest: host restart with a wounded active body requires review and never respawns or heals it
+ok 10 - host restart with a wounded active body requires review and never respawns or heals it
+  ---
+  duration_ms: 844.7304
+  type: 'test'
+  ...
+# Subtest: the safe-port body earns no passive kill or zone rewards and does not synchronize checkpoints
+ok 11 - the safe-port body earns no passive kill or zone rewards and does not synchronize checkpoints
+  ---
+  duration_ms: 359.4674
+  type: 'test'
+  ...
+# Subtest: ambiguous admission timeout never publishes a late body or permits pairing around the gate
+ok 12 - ambiguous admission timeout never publishes a late body or permits pairing around the gate
+  ---
+  duration_ms: 407.0337
+  type: 'test'
+  ...
+# Subtest: a failed final resident profile write preserves its exact evidence and fences the host
+ok 13 - a failed final resident profile write preserves its exact evidence and fences the host
+  ---
+  duration_ms: 311.1755
+  type: 'test'
+  ...
+# Subtest: an unpublished attachment failure leaves no entity, slot, or profile while retaining the admission gate
+ok 14 - an unpublished attachment failure leaves no entity, slot, or profile while retaining the admission gate
+  ---
+  duration_ms: 402.5895
+  type: 'test'
+  ...
+# Subtest: default pearl command still uses the existing immediate gameplay helper
+ok 15 - default pearl command still uses the existing immediate gameplay helper
+  ---
+  duration_ms: 376.0592
+  type: 'test'
+  ...
+# Subtest: without the common mount, give retains the existing bag-only gameplay route
+ok 16 - without the common mount, give retains the existing bag-only gameplay route
+  ---
+  duration_ms: 297.5438
+  type: 'test'
+  ...
+# Subtest: without the common mount, swallow retains its bound-until-death gameplay rule
+ok 17 - without the common mount, swallow retains its bound-until-death gameplay rule
+  ---
+  duration_ms: 278.4506
+  type: 'test'
+  ...
+# Subtest: mounted false, true and async command decisions never fall through to a local pearl mutation
+ok 18 - mounted false, true and async command decisions never fall through to a local pearl mutation
+  ---
+  duration_ms: 268.0456
+  type: 'test'
+  ...
+# Subtest: command access rejection precedes the receipted dispatch hook
+ok 19 - command access rejection precedes the receipted dispatch hook
+  ---
+  duration_ms: 260.9871
+  type: 'test'
+  ...
+# Subtest: swallow reserves its account and UIDs, then applies one same-holder receipt at tick drain
+ok 20 - swallow reserves its account and UIDs, then applies one same-holder receipt at tick drain
+  ---
+  duration_ms: 4767.9186
+  type: 'test'
+  ...
+# Subtest: real swallow command accepts only the selected UID and denies replacement, spit, and swallowed-slot transfers
+ok 21 - real swallow command accepts only the selected UID and denies replacement, spit, and swallowed-slot transfers
+  ---
+  duration_ms: 3492.7915
+  type: 'test'
+  ...
+# Subtest: a running prior autosave is boundedly settled and rebased before swallow planning
+ok 22 - a running prior autosave is boundedly settled and rebased before swallow planning
+  ---
+  duration_ms: 3549.5058
+  type: 'test'
+  ...
+# Subtest: near-limit running profile rejects swallow before reservation or settlement IO
+ok 23 - near-limit running profile rejects swallow before reservation or settlement IO
+  ---
+  duration_ms: 3097.1181
+  type: 'test'
+  ...
+# Subtest: lost swallow response and missing receipt replay the exact operation once
+ok 24 - lost swallow response and missing receipt replay the exact operation once
+  ---
+  duration_ms: 3472.3673
+  type: 'test'
+  ...
+# Subtest: disconnect fences committed swallow before local apply
+ok 25 - disconnect fences committed swallow before local apply
+  ---
+  duration_ms: 3107.6475
+  type: 'test'
+  ...
+# Subtest: death fences committed swallow before local apply
+ok 26 - death fences committed swallow before local apply
+  ---
+  duration_ms: 3136.654
+  type: 'test'
+  ...
+# Subtest: recycle fences committed swallow before local apply
+ok 27 - recycle fences committed swallow before local apply
+  ---
+  duration_ms: 3106.2266
+  type: 'test'
+  ...
+# Subtest: close fences committed swallow before local apply
+ok 28 - close fences committed swallow before local apply
+  ---
+  duration_ms: 3181.1989
+  type: 'test'
+  ...
+# Subtest: completion replaced fences committed swallow before local apply
+ok 29 - completion replaced fences committed swallow before local apply
+  ---
+  duration_ms: 3207.7857
+  type: 'test'
+  ...
+# Subtest: command null fences committed swallow before local apply
+ok 30 - command null fences committed swallow before local apply
+  ---
+  duration_ms: 3221.4909
+  type: 'test'
+  ...
+# Subtest: queued swallow action inputs are filtered while sequence and movement survive
+ok 31 - queued swallow action inputs are filtered while sequence and movement survive
+  ---
+  duration_ms: 3392.2418
+  type: 'test'
+  ...
+# Subtest: partial publication failure rolls back local swallow profile, session, effect, inputs and event
+ok 32 - partial publication failure rolls back local swallow profile, session, effect, inputs and event
+  ---
+  duration_ms: 3159.8192
+  type: 'test'
+  ...
+# Subtest: both character load meters reflect active biscuit, replacement and expiry without changing capacity
+ok 33 - both character load meters reflect active biscuit, replacement and expiry without changing capacity
+  ---
+  duration_ms: 17.3763
+  type: 'test'
+  ...
+1..33
+# tests 33
+# suites 0
+# pass 33
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 53140.6807

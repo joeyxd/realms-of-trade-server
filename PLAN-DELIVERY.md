@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA17 L03g-a — presencia segura, 2026-10-13:**
+[Contrato](docs/briefs/l03g-companion-presence.md), [entrega](docs/delivery/l03g-companion-presence/README.md).
+Salir/seguir/esperar/volver/descansar desde Mis compañeros, sin proveedor; una plaza,
+ancla validada y movimiento con colisión. SQL039 protege el ingreso frente a reconstrucción
+curada; retiro sano y perfil guardado antes de liberar. 111/111 locales y navegador 12/12,
+sin modelo ni modificación de la Brisa real. SQL/activación/canario públicos pendientes.
+Sigue L03g-b: mente sobre el mismo cuerpo; resolver recuperación/vida antes de zonas de riesgo.
+
 **AREA03, 2026-10-13 — cierre funcional de alimentos y siguiente corte:**
 [Contrato](docs/briefs/food-item-completion.md): fichas de uso/estadísticas con datos reales,
 comidas y carga cómoda coherentes; luego [INV03](docs/briefs/inv03-existing-backpacks.md),

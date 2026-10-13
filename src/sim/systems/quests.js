@@ -140,6 +140,7 @@ export function zoneSweep(world) {
   const ecs = world.ecs;
   for (const e of world.profiles.keys()) {
     if (!ecs.alive[e]) continue;
+    if (world.residentPlayers?.has(e)) continue;
     const z = world.map.zoneAt(ecs.x[e], ecs.z[e]);
     if (z === world.zoneOf.get(e)) continue;
     world.zoneOf.set(e, z);
