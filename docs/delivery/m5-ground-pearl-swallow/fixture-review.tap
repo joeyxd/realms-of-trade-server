@@ -1,0 +1,367 @@
+TAP version 13
+# Subtest: default pearl command still uses the existing immediate gameplay helper
+ok 1 - default pearl command still uses the existing immediate gameplay helper
+  ---
+  duration_ms: 451.5616
+  type: 'test'
+  ...
+# Subtest: without the common mount, give retains the existing bag-only gameplay route
+ok 2 - without the common mount, give retains the existing bag-only gameplay route
+  ---
+  duration_ms: 542.9828
+  type: 'test'
+  ...
+# Subtest: without the common mount, swallow retains its bound-until-death gameplay rule
+ok 3 - without the common mount, swallow retains its bound-until-death gameplay rule
+  ---
+  duration_ms: 526.6612
+  type: 'test'
+  ...
+# Subtest: mounted false, true and async command decisions never fall through to a local pearl mutation
+ok 4 - mounted false, true and async command decisions never fall through to a local pearl mutation
+  ---
+  duration_ms: 413.481
+  type: 'test'
+  ...
+# Subtest: command access rejection precedes the receipted dispatch hook
+ok 5 - command access rejection precedes the receipted dispatch hook
+  ---
+  duration_ms: 444.1673
+  type: 'test'
+  ...
+# Subtest: swallow reserves its account and UIDs, then applies one same-holder receipt at tick drain
+ok 6 - swallow reserves its account and UIDs, then applies one same-holder receipt at tick drain
+  ---
+  duration_ms: 8589.9261
+  type: 'test'
+  ...
+# Subtest: real swallow command accepts only the selected UID and denies replacement, spit, and swallowed-slot transfers
+ok 7 - real swallow command accepts only the selected UID and denies replacement, spit, and swallowed-slot transfers
+  ---
+  duration_ms: 7210.8887
+  type: 'test'
+  ...
+# Subtest: a running prior autosave is boundedly settled and rebased before swallow planning
+ok 8 - a running prior autosave is boundedly settled and rebased before swallow planning
+  ---
+  duration_ms: 7667.3874
+  type: 'test'
+  ...
+# Subtest: near-limit running profile rejects swallow before reservation or settlement IO
+ok 9 - near-limit running profile rejects swallow before reservation or settlement IO
+  ---
+  duration_ms: 7230.2909
+  type: 'test'
+  ...
+# Subtest: lost swallow response and missing receipt replay the exact operation once
+ok 10 - lost swallow response and missing receipt replay the exact operation once
+  ---
+  duration_ms: 7381.6358
+  type: 'test'
+  ...
+# Subtest: disconnect fences committed swallow before local apply
+ok 11 - disconnect fences committed swallow before local apply
+  ---
+  duration_ms: 4514.7185
+  type: 'test'
+  ...
+# Subtest: death fences committed swallow before local apply
+ok 12 - death fences committed swallow before local apply
+  ---
+  duration_ms: 3538.2802
+  type: 'test'
+  ...
+# Subtest: recycle fences committed swallow before local apply
+ok 13 - recycle fences committed swallow before local apply
+  ---
+  duration_ms: 3599.5711
+  type: 'test'
+  ...
+# Subtest: close fences committed swallow before local apply
+ok 14 - close fences committed swallow before local apply
+  ---
+  duration_ms: 3878.3039
+  type: 'test'
+  ...
+# Subtest: completion replaced fences committed swallow before local apply
+ok 15 - completion replaced fences committed swallow before local apply
+  ---
+  duration_ms: 4283.0286
+  type: 'test'
+  ...
+# Subtest: command null fences committed swallow before local apply
+ok 16 - command null fences committed swallow before local apply
+  ---
+  duration_ms: 4282.7352
+  type: 'test'
+  ...
+# Subtest: queued swallow action inputs are filtered while sequence and movement survive
+ok 17 - queued swallow action inputs are filtered while sequence and movement survive
+  ---
+  duration_ms: 3982.4705
+  type: 'test'
+  ...
+# Subtest: partial publication failure rolls back local swallow profile, session, effect, inputs and event
+not ok 18 - partial publication failure rolls back local swallow profile, session, effect, inputs and event
+  ---
+  duration_ms: 3782.3586
+  type: 'test'
+  location: 'C:\\DEV\\real of trade\\area15-resource-live\\tests\\ground-pearl-swallow-host.test.mjs:218:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    ... Skipped lines
+
+      [
+        {
+          e: 28,
+          elem: 0,
+          id: 'tierra',
+    ...
+        },
+    +   {
+    +     id: 26,
+    +     type: 'despawn'
+    +   },
+    +   {
+    +     id: 28,
+    +     type: 'despawn'
+    +   },
+    +   {
+    +     id: 30,
+    +     type: 'despawn'
+    +   }
+      ]
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      type: 'quest'
+      to: 28
+      e: 28
+      id: 'tierra'
+      st: 'start'
+      n: 0
+      of: 1
+      elem: 0
+    1:
+      type: 'quest'
+      to: 30
+      e: 30
+      id: 'tierra'
+      st: 'start'
+      n: 0
+      of: 1
+      elem: 0
+  actual:
+    0:
+      type: 'quest'
+      to: 28
+      e: 28
+      id: 'tierra'
+      st: 'start'
+      n: 0
+      of: 1
+      elem: 0
+    1:
+      type: 'quest'
+      to: 30
+      e: 30
+      id: 'tierra'
+      st: 'start'
+      n: 0
+      of: 1
+      elem: 0
+    2:
+      type: 'despawn'
+      id: 26
+    3:
+      type: 'despawn'
+      id: 28
+    4:
+      type: 'despawn'
+      id: 30
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/DEV/real%20of%20trade/area15-resource-live/tests/ground-pearl-swallow-host.test.mjs:247:12)
+    async Test.run (node:internal/test_runner/test:1125:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+  ...
+# Subtest: authenticated pearl swallow recovers exact ownership after SIGKILL after-journal-prepare
+ok 19 - authenticated pearl swallow recovers exact ownership after SIGKILL after-journal-prepare
+  ---
+  duration_ms: 7954.0914
+  type: 'test'
+  ...
+# SIGKILL after-journal-prepare; reopened SQL006/018/019/023 without migrations, reconciled the exact swallow UUID, and verified the same holder at generation 2 with one profile CAS.
+# Subtest: authenticated pearl swallow recovers exact ownership after SIGKILL after-sql-commit
+ok 20 - authenticated pearl swallow recovers exact ownership after SIGKILL after-sql-commit
+  ---
+  duration_ms: 7996.1569
+  type: 'test'
+  ...
+# SIGKILL after-sql-commit; reopened SQL006/018/019/023 without migrations, reconciled the exact swallow UUID, and verified the same holder at generation 2 with one profile CAS.
+# Subtest: swallow planner uses the real brasa helper and applies once
+ok 21 - swallow planner uses the real brasa helper and applies once
+  ---
+  duration_ms: 53.3909
+  type: 'test'
+  ...
+# Subtest: swallow planner uses the real escarcha helper and applies once
+ok 22 - swallow planner uses the real escarcha helper and applies once
+  ---
+  duration_ms: 36.1448
+  type: 'test'
+  ...
+# Subtest: swallow planner uses the real tormenta helper and applies once
+ok 23 - swallow planner uses the real tormenta helper and applies once
+  ---
+  duration_ms: 32.8804
+  type: 'test'
+  ...
+# Subtest: swallow planner uses the real tinta helper and applies once
+ok 24 - swallow planner uses the real tinta helper and applies once
+  ---
+  duration_ms: 36.3704
+  type: 'test'
+  ...
+# Subtest: occupied swallowed slot, combat, and malformed authority selectors reject without writes
+    # Subtest: occupied
+    ok 1 - occupied
+      ---
+      duration_ms: 12.6294
+      type: 'test'
+      ...
+    # Subtest: combat
+    ok 2 - combat
+      ---
+      duration_ms: 23.022
+      type: 'test'
+      ...
+    # Subtest: holder
+    ok 3 - holder
+      ---
+      duration_ms: 14.3322
+      type: 'test'
+      ...
+    # Subtest: kind
+    ok 4 - kind
+      ---
+      duration_ms: 17.5166
+      type: 'test'
+      ...
+    # Subtest: uid
+    ok 5 - uid
+      ---
+      duration_ms: 12.9761
+      type: 'test'
+      ...
+    # Subtest: version
+    ok 6 - version
+      ---
+      duration_ms: 13.2465
+      type: 'test'
+      ...
+    # Subtest: row extra
+    ok 7 - row extra
+      ---
+      duration_ms: 12.028
+      type: 'test'
+      ...
+    # Subtest: source extra
+    ok 8 - source extra
+      ---
+      duration_ms: 11.8607
+      type: 'test'
+      ...
+    1..8
+ok 25 - occupied swallowed slot, combat, and malformed authority selectors reject without writes
+  ---
+  duration_ms: 119.1213
+  type: 'test'
+  ...
+# Subtest: source authentication and row accessors fail closed without invoking getters
+ok 26 - source authentication and row accessors fail closed without invoking getters
+  ---
+  duration_ms: 12.2612
+  type: 'test'
+  ...
+# Subtest: baseline detects profile, ECS, ledger, drops, RNG, session, and input drift
+    # Subtest: profile
+    ok 1 - profile
+      ---
+      duration_ms: 24.281
+      type: 'test'
+      ...
+    # Subtest: ECS
+    ok 2 - ECS
+      ---
+      duration_ms: 12.939
+      type: 'test'
+      ...
+    # Subtest: ledger
+    ok 3 - ledger
+      ---
+      duration_ms: 15.4799
+      type: 'test'
+      ...
+    # Subtest: drop
+    ok 4 - drop
+      ---
+      duration_ms: 16.3095
+      type: 'test'
+      ...
+    # Subtest: RNG identity
+    ok 5 - RNG identity
+      ---
+      duration_ms: 13.6092
+      type: 'test'
+      ...
+    # Subtest: session version
+    ok 6 - session version
+      ---
+      duration_ms: 15.0994
+      type: 'test'
+      ...
+    1..6
+ok 27 - baseline detects profile, ECS, ledger, drops, RNG, session, and input drift
+  ---
+  duration_ms: 98.5901
+  type: 'test'
+  ...
+# Subtest: receipt validation and synchronous apply failures restore profile, ECS, session, events, and inputs
+    # Subtest: wrong receipt
+    ok 1 - wrong receipt
+      ---
+      duration_ms: 26.0273
+      type: 'test'
+      ...
+    # Subtest: projection write
+    ok 2 - projection write
+      ---
+      duration_ms: 26.4297
+      type: 'test'
+      ...
+    # Subtest: partial event append
+    ok 3 - partial event append
+      ---
+      duration_ms: 26.7989
+      type: 'test'
+      ...
+    1..3
+ok 28 - receipt validation and synchronous apply failures restore profile, ECS, session, events, and inputs
+  ---
+  duration_ms: 79.8171
+  type: 'test'
+  ...
+1..28
+# tests 45
+# suites 0
+# pass 44
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 90928.4478
