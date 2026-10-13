@@ -1,0 +1,534 @@
+{
+  "schema": "marea.st01b-public-runtime/v1",
+  "observedAtUtc": "2026-10-13T05:14:32.587Z",
+  "verificationMode": "read-only; no environment variables or credentials read; no restart or world mutation",
+  "target": {
+    "commit": "739e1b2bb55b4d74592d3d2b04c9b870c7de47ac",
+    "localHead": "739e1b2bb55b4d74592d3d2b04c9b870c7de47ac",
+    "headMatches": true,
+    "packageVersion": "0.6.0-alpha.66",
+    "protocolVersion": 60
+  },
+  "container": {
+    "name": "marea-negra-alpha-marea-negra-alpha-1",
+    "image": "marea-negra:alpha-739e1b2bb55b",
+    "imageId": "sha256:2c229aac5800c0f3802a916f0acbab48acc373f2b5154c53381cd88d9b1724af",
+    "state": "running",
+    "health": "healthy",
+    "workingDirectory": "/app",
+    "composeProject": "marea-negra-alpha",
+    "composeService": "marea-negra-alpha",
+    "gitMetadataInContainer": false,
+    "changedRuntimeFiles": {
+      "count": 11,
+      "matches": 11,
+      "allMatch": true,
+      "files": [
+        {
+          "path": "src/data/meta.js",
+          "gitSha256": "9161157aa88f51f1046bb5b63956c9d12e014689a2cd67a6cade00c24e4dea06",
+          "containerSha256": "9161157aa88f51f1046bb5b63956c9d12e014689a2cd67a6cade00c24e4dea06",
+          "matches": true
+        },
+        {
+          "path": "src/editor/skillDocument.js",
+          "gitSha256": "769fb8a02e25e702a449cbf0b96bab1dd06fabf8edf4e77843d45015a626876d",
+          "containerSha256": "769fb8a02e25e702a449cbf0b96bab1dd06fabf8edf4e77843d45015a626876d",
+          "matches": true
+        },
+        {
+          "path": "src/editor/skillStudio.css",
+          "gitSha256": "cb423c30250fce562ff8b623ae70817da974671ae7eeddfcb43a062819628b1c",
+          "containerSha256": "cb423c30250fce562ff8b623ae70817da974671ae7eeddfcb43a062819628b1c",
+          "matches": true
+        },
+        {
+          "path": "src/editor/skillStudio.js",
+          "gitSha256": "7523d8b97d3bb78710825ef57069ff86518ce701f6d56878cef07a46e934b01f",
+          "containerSha256": "7523d8b97d3bb78710825ef57069ff86518ce701f6d56878cef07a46e934b01f",
+          "matches": true
+        },
+        {
+          "path": "src/render/skillPreview.js",
+          "gitSha256": "fe296f4fb2f7c925c957d94437707a6264ab5e4e0d271d8af5abc09acceab6a0",
+          "containerSha256": "fe296f4fb2f7c925c957d94437707a6264ab5e4e0d271d8af5abc09acceab6a0",
+          "matches": true
+        },
+        {
+          "path": "src/editor/effectLibrary.js",
+          "gitSha256": "d782e30f7dcf5bbbfde91048fd69d890f8e0ee2188d088823c2c465ed8e53de2",
+          "containerSha256": "d782e30f7dcf5bbbfde91048fd69d890f8e0ee2188d088823c2c465ed8e53de2",
+          "matches": true
+        },
+        {
+          "path": "src/editor/niagaraCatalog.js",
+          "gitSha256": "f16ac44310f2bfbdea681c82ecb178c5f6efae1c8895dc2b600f49a63f542e1a",
+          "containerSha256": "f16ac44310f2bfbdea681c82ecb178c5f6efae1c8895dc2b600f49a63f542e1a",
+          "matches": true
+        },
+        {
+          "path": "src/editor/niagaraDerivatives.js",
+          "gitSha256": "b69f1397b892a373ffcd73eeb32f88c1540caece1d6ca086ffea70a4eada3e60",
+          "containerSha256": "b69f1397b892a373ffcd73eeb32f88c1540caece1d6ca086ffea70a4eada3e60",
+          "matches": true
+        },
+        {
+          "path": "src/render/vfx/flipbook.js",
+          "gitSha256": "2fc787ebbc8286b72495ffebbecc3f2ce5153e5c4bcef49f1d15c4ebc5ce5d2b",
+          "containerSha256": "2fc787ebbc8286b72495ffebbecc3f2ce5153e5c4bcef49f1d15c4ebc5ce5d2b",
+          "matches": true
+        },
+        {
+          "path": "package.json",
+          "gitSha256": "f2caf44f56824569afd63fb456246bfc0c06392f6151207e59187f059f810efe",
+          "containerSha256": "f2caf44f56824569afd63fb456246bfc0c06392f6151207e59187f059f810efe",
+          "matches": true
+        },
+        {
+          "path": "package-lock.json",
+          "gitSha256": "5a2f84245f07353da2137a4f1531cf975762fa030296b3fb65f3cf0427515a25",
+          "containerSha256": "5a2f84245f07353da2137a4f1531cf975762fa030296b3fb65f3cf0427515a25",
+          "matches": true
+        }
+      ]
+    }
+  },
+  "updater": {
+    "log": "/opt/marea-negra/ops/update-739e1b2bb55b4d74592d3d2b04c9b870c7de47ac.log",
+    "logMtimeLocal": "2026-10-13 07:06:04 +0200",
+    "validationMarker": {
+      "revision": "739e1b2bb55b4d74592d3d2b04c9b870c7de47ac",
+      "imageId": "sha256:2c229aac5800c0f3802a916f0acbab48acc373f2b5154c53381cd88d9b1724af",
+      "testsPassed": true
+    },
+    "logSummary": {
+      "tests": 197,
+      "passed": 197,
+      "failed": 0,
+      "durationMs": 502875.814525,
+      "completedRevision": "739e1b2bb55b4d74592d3d2b04c9b870c7de47ac",
+      "systemJournal": "updated target revision; subsequent runs reported already current"
+    }
+  },
+  "publicHttp": {
+    "base": "https://marea.62.171.136.148.sslip.io",
+    "root": {
+      "status": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "health": {
+      "status": 200,
+      "body": "ok"
+    },
+    "status": {
+      "httpStatus": 200,
+      "game": "MAREA NEGRA",
+      "version": "0.6.0-alpha.66",
+      "players": 0,
+      "sockets": 0,
+      "bots": 3,
+      "errors": 0,
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 5197,
+        "errors": 0
+      },
+      "content": {
+        "generation": 8,
+        "switching": false
+      },
+      "storage": {
+        "kind": "supabase",
+        "durable": true,
+        "accounts": true,
+        "errors": 0,
+        "unsaved": 0,
+        "profileWrites": 0,
+        "worldWriting": false,
+        "economic": {
+          "enabled": true,
+          "pending": 0,
+          "failed": false,
+          "completed": 0,
+          "replays": 0
+        },
+        "resourcesReady": true,
+        "fireReady": true,
+        "worldReady": true
+      },
+      "authorityDrainFieldExposed": false
+    },
+    "authorityDrainNote": "No authority-draining field is exposed by the public /status response; current observation has 0 players, 1 socket, and worldWriting=false."
+  },
+  "atlases": {
+    "registered": 32,
+    "http200": 32,
+    "manifestGitHttpAllMatch": true,
+    "files": [
+      {
+        "id": "component-12ce65c60986b47a-8x8-alpha",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-12ce65c60986b47a-8x8-alpha-desktop.webp",
+        "status": 200,
+        "bytes": 818732,
+        "httpSha256": "feda40af9f6a5bde14d8836e3b05e3655597481123d547799371b35b51a3bda2",
+        "gitSha256": "feda40af9f6a5bde14d8836e3b05e3655597481123d547799371b35b51a3bda2",
+        "manifestSha256": "feda40af9f6a5bde14d8836e3b05e3655597481123d547799371b35b51a3bda2",
+        "allMatch": true
+      },
+      {
+        "id": "component-12ce65c60986b47a-8x8-alpha",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-12ce65c60986b47a-8x8-alpha-mobile.webp",
+        "status": 200,
+        "bytes": 256096,
+        "httpSha256": "1e8d76f37792e681d7b839e29f0cb7b07c850fd543d9ff518f1ec53c6e6cc5f1",
+        "gitSha256": "1e8d76f37792e681d7b839e29f0cb7b07c850fd543d9ff518f1ec53c6e6cc5f1",
+        "manifestSha256": "1e8d76f37792e681d7b839e29f0cb7b07c850fd543d9ff518f1ec53c6e6cc5f1",
+        "allMatch": true
+      },
+      {
+        "id": "component-1d5c64ec6742cb1b-8x4-luma",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-desktop.webp",
+        "status": 200,
+        "bytes": 267166,
+        "httpSha256": "0c57edca524ea8fe223bb4a91a0cc8ed3010f1aa0b4d3f33bc362260ba774da4",
+        "gitSha256": "0c57edca524ea8fe223bb4a91a0cc8ed3010f1aa0b4d3f33bc362260ba774da4",
+        "manifestSha256": "0c57edca524ea8fe223bb4a91a0cc8ed3010f1aa0b4d3f33bc362260ba774da4",
+        "allMatch": true
+      },
+      {
+        "id": "component-1d5c64ec6742cb1b-8x4-luma",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-mobile.webp",
+        "status": 200,
+        "bytes": 95472,
+        "httpSha256": "5d439862e41b84f38b1ff827a10283ee68a174374c4f79cabe2b3b56e7bee24b",
+        "gitSha256": "5d439862e41b84f38b1ff827a10283ee68a174374c4f79cabe2b3b56e7bee24b",
+        "manifestSha256": "5d439862e41b84f38b1ff827a10283ee68a174374c4f79cabe2b3b56e7bee24b",
+        "allMatch": true
+      },
+      {
+        "id": "component-26e09bd0f93cb620-7x7-luma",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-desktop.webp",
+        "status": 200,
+        "bytes": 820226,
+        "httpSha256": "c6d58b8f597079fc0dc329a6c492427efe1505240ccd33f382737818cc1287a8",
+        "gitSha256": "c6d58b8f597079fc0dc329a6c492427efe1505240ccd33f382737818cc1287a8",
+        "manifestSha256": "c6d58b8f597079fc0dc329a6c492427efe1505240ccd33f382737818cc1287a8",
+        "allMatch": true
+      },
+      {
+        "id": "component-26e09bd0f93cb620-7x7-luma",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp",
+        "status": 200,
+        "bytes": 253454,
+        "httpSha256": "e5c7d186ea39e166cc1905ea4591e61e0901c552b4c3ec715874c7ee9e8dba70",
+        "gitSha256": "e5c7d186ea39e166cc1905ea4591e61e0901c552b4c3ec715874c7ee9e8dba70",
+        "manifestSha256": "e5c7d186ea39e166cc1905ea4591e61e0901c552b4c3ec715874c7ee9e8dba70",
+        "allMatch": true
+      },
+      {
+        "id": "component-3e0a757f3e8443eb-8x4-luma",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-3e0a757f3e8443eb-8x4-luma-desktop.webp",
+        "status": 200,
+        "bytes": 239088,
+        "httpSha256": "faaa1f78644294baed1d4b844579b8caffb987797e9983813ad77a3aa60f7466",
+        "gitSha256": "faaa1f78644294baed1d4b844579b8caffb987797e9983813ad77a3aa60f7466",
+        "manifestSha256": "faaa1f78644294baed1d4b844579b8caffb987797e9983813ad77a3aa60f7466",
+        "allMatch": true
+      },
+      {
+        "id": "component-3e0a757f3e8443eb-8x4-luma",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-3e0a757f3e8443eb-8x4-luma-mobile.webp",
+        "status": 200,
+        "bytes": 77478,
+        "httpSha256": "be4d28a165526538f1c6350aff65e220ade7f493571d533a6fdabf657347624e",
+        "gitSha256": "be4d28a165526538f1c6350aff65e220ade7f493571d533a6fdabf657347624e",
+        "manifestSha256": "be4d28a165526538f1c6350aff65e220ade7f493571d533a6fdabf657347624e",
+        "allMatch": true
+      },
+      {
+        "id": "component-3e468435ddbe1951-3x3-alpha",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-desktop.webp",
+        "status": 200,
+        "bytes": 45498,
+        "httpSha256": "1544617caa13becb35481c2c6d906d62f9292f96c70e3a06d52ddc81bef06875",
+        "gitSha256": "1544617caa13becb35481c2c6d906d62f9292f96c70e3a06d52ddc81bef06875",
+        "manifestSha256": "1544617caa13becb35481c2c6d906d62f9292f96c70e3a06d52ddc81bef06875",
+        "allMatch": true
+      },
+      {
+        "id": "component-3e468435ddbe1951-3x3-alpha",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-mobile.webp",
+        "status": 200,
+        "bytes": 16790,
+        "httpSha256": "385c9a2d9a2692fe8d60eed8457e864d5ebf962822e7c4279d2e957484d42ac3",
+        "gitSha256": "385c9a2d9a2692fe8d60eed8457e864d5ebf962822e7c4279d2e957484d42ac3",
+        "manifestSha256": "385c9a2d9a2692fe8d60eed8457e864d5ebf962822e7c4279d2e957484d42ac3",
+        "allMatch": true
+      },
+      {
+        "id": "component-4866b9058807eeef-8x4-luma",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-4866b9058807eeef-8x4-luma-desktop.webp",
+        "status": 200,
+        "bytes": 266268,
+        "httpSha256": "baaf9dabf9bedd61ea4ac265552acbdc82bf2e593be57b8a94cbd96d63cea075",
+        "gitSha256": "baaf9dabf9bedd61ea4ac265552acbdc82bf2e593be57b8a94cbd96d63cea075",
+        "manifestSha256": "baaf9dabf9bedd61ea4ac265552acbdc82bf2e593be57b8a94cbd96d63cea075",
+        "allMatch": true
+      },
+      {
+        "id": "component-4866b9058807eeef-8x4-luma",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-4866b9058807eeef-8x4-luma-mobile.webp",
+        "status": 200,
+        "bytes": 83998,
+        "httpSha256": "24d0937359ad54cc801a55831d9c639b54e652d5b6d60f717da018e064050665",
+        "gitSha256": "24d0937359ad54cc801a55831d9c639b54e652d5b6d60f717da018e064050665",
+        "manifestSha256": "24d0937359ad54cc801a55831d9c639b54e652d5b6d60f717da018e064050665",
+        "allMatch": true
+      },
+      {
+        "id": "component-7e5099cefb584032-8x8-alpha",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-7e5099cefb584032-8x8-alpha-desktop.webp",
+        "status": 200,
+        "bytes": 687032,
+        "httpSha256": "83d5d6205a61e274aad9ee05532d7e05cf255b47d004a2be415471f3fe6c9572",
+        "gitSha256": "83d5d6205a61e274aad9ee05532d7e05cf255b47d004a2be415471f3fe6c9572",
+        "manifestSha256": "83d5d6205a61e274aad9ee05532d7e05cf255b47d004a2be415471f3fe6c9572",
+        "allMatch": true
+      },
+      {
+        "id": "component-7e5099cefb584032-8x8-alpha",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-7e5099cefb584032-8x8-alpha-mobile.webp",
+        "status": 200,
+        "bytes": 242682,
+        "httpSha256": "3c644e6c3c5fa0fe574971b38ecd6d7c58eb41478ec030133f7cb9404ddd1a1c",
+        "gitSha256": "3c644e6c3c5fa0fe574971b38ecd6d7c58eb41478ec030133f7cb9404ddd1a1c",
+        "manifestSha256": "3c644e6c3c5fa0fe574971b38ecd6d7c58eb41478ec030133f7cb9404ddd1a1c",
+        "allMatch": true
+      },
+      {
+        "id": "component-8117bd91eb290326-8x1-alpha",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-desktop.webp",
+        "status": 200,
+        "bytes": 33480,
+        "httpSha256": "8c6a783f3570c44e4134329a8fb7ba16657e7821e8f83f0f9650c7f9dc211717",
+        "gitSha256": "8c6a783f3570c44e4134329a8fb7ba16657e7821e8f83f0f9650c7f9dc211717",
+        "manifestSha256": "8c6a783f3570c44e4134329a8fb7ba16657e7821e8f83f0f9650c7f9dc211717",
+        "allMatch": true
+      },
+      {
+        "id": "component-8117bd91eb290326-8x1-alpha",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-mobile.webp",
+        "status": 200,
+        "bytes": 11898,
+        "httpSha256": "69a55f1777dcf951c7d07ef52033c96f49da2a7e30c89fb5c42e08ac3832085b",
+        "gitSha256": "69a55f1777dcf951c7d07ef52033c96f49da2a7e30c89fb5c42e08ac3832085b",
+        "manifestSha256": "69a55f1777dcf951c7d07ef52033c96f49da2a7e30c89fb5c42e08ac3832085b",
+        "allMatch": true
+      },
+      {
+        "id": "component-bc703e63cd85d73c-8x8-alpha",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-bc703e63cd85d73c-8x8-alpha-desktop.webp",
+        "status": 200,
+        "bytes": 2411420,
+        "httpSha256": "522bfcd8a7caef6bdf32c808e968a90010bf5c04701543e65fd0a633e316e5bc",
+        "gitSha256": "522bfcd8a7caef6bdf32c808e968a90010bf5c04701543e65fd0a633e316e5bc",
+        "manifestSha256": "522bfcd8a7caef6bdf32c808e968a90010bf5c04701543e65fd0a633e316e5bc",
+        "allMatch": true
+      },
+      {
+        "id": "component-bc703e63cd85d73c-8x8-alpha",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-bc703e63cd85d73c-8x8-alpha-mobile.webp",
+        "status": 200,
+        "bytes": 201726,
+        "httpSha256": "aa49a5c98a49d8f12471157a822b349c8f865c7f6477fab6328bbefd53779df8",
+        "gitSha256": "aa49a5c98a49d8f12471157a822b349c8f865c7f6477fab6328bbefd53779df8",
+        "manifestSha256": "aa49a5c98a49d8f12471157a822b349c8f865c7f6477fab6328bbefd53779df8",
+        "allMatch": true
+      },
+      {
+        "id": "component-d7a5e783ffa8ee81-8x8-alpha",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-desktop.webp",
+        "status": 200,
+        "bytes": 1726410,
+        "httpSha256": "3d26d941dd765edd7b9d2c46b512c3373819a6cdc514e598805aa49375f9feb1",
+        "gitSha256": "3d26d941dd765edd7b9d2c46b512c3373819a6cdc514e598805aa49375f9feb1",
+        "manifestSha256": "3d26d941dd765edd7b9d2c46b512c3373819a6cdc514e598805aa49375f9feb1",
+        "allMatch": true
+      },
+      {
+        "id": "component-d7a5e783ffa8ee81-8x8-alpha",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-mobile.webp",
+        "status": 200,
+        "bytes": 202262,
+        "httpSha256": "41e386d6624f10fc68ab9b050c2e470f17637e675b6fcdb27e948cf80da0f8b4",
+        "gitSha256": "41e386d6624f10fc68ab9b050c2e470f17637e675b6fcdb27e948cf80da0f8b4",
+        "manifestSha256": "41e386d6624f10fc68ab9b050c2e470f17637e675b6fcdb27e948cf80da0f8b4",
+        "allMatch": true
+      },
+      {
+        "id": "component-dd710adffbd411cd-8x8-alpha",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-dd710adffbd411cd-8x8-alpha-desktop.webp",
+        "status": 200,
+        "bytes": 281896,
+        "httpSha256": "96aed315f6575044a520bf55e01f377f08ad7a9762b4aeeb38b18adb636ce58b",
+        "gitSha256": "96aed315f6575044a520bf55e01f377f08ad7a9762b4aeeb38b18adb636ce58b",
+        "manifestSha256": "96aed315f6575044a520bf55e01f377f08ad7a9762b4aeeb38b18adb636ce58b",
+        "allMatch": true
+      },
+      {
+        "id": "component-dd710adffbd411cd-8x8-alpha",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-dd710adffbd411cd-8x8-alpha-mobile.webp",
+        "status": 200,
+        "bytes": 98236,
+        "httpSha256": "bd1933d621ccbee8c311261d064cb5560ef931158039d04198112fbcbda65577",
+        "gitSha256": "bd1933d621ccbee8c311261d064cb5560ef931158039d04198112fbcbda65577",
+        "manifestSha256": "bd1933d621ccbee8c311261d064cb5560ef931158039d04198112fbcbda65577",
+        "allMatch": true
+      },
+      {
+        "id": "component-eb5fe0f905f673b8-8x8-alpha",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-desktop.webp",
+        "status": 200,
+        "bytes": 1019962,
+        "httpSha256": "aff85a92afc4ad7673ac4f5be763811855c17894b11977b1a6ed9adadbf888d3",
+        "gitSha256": "aff85a92afc4ad7673ac4f5be763811855c17894b11977b1a6ed9adadbf888d3",
+        "manifestSha256": "aff85a92afc4ad7673ac4f5be763811855c17894b11977b1a6ed9adadbf888d3",
+        "allMatch": true
+      },
+      {
+        "id": "component-eb5fe0f905f673b8-8x8-alpha",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-mobile.webp",
+        "status": 200,
+        "bytes": 294898,
+        "httpSha256": "2dd4ccf9c2166a53d8bfcad4d5669b046be9be08dd07afc7513a70ee14067aa7",
+        "gitSha256": "2dd4ccf9c2166a53d8bfcad4d5669b046be9be08dd07afc7513a70ee14067aa7",
+        "manifestSha256": "2dd4ccf9c2166a53d8bfcad4d5669b046be9be08dd07afc7513a70ee14067aa7",
+        "allMatch": true
+      },
+      {
+        "id": "component-ecddb7ecffb46fb0-10x6-luma",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-desktop.webp",
+        "status": 200,
+        "bytes": 184012,
+        "httpSha256": "9967b5f53045e8fc986ce446c15b56e50311c6ea018dda2f71b27812bfa72602",
+        "gitSha256": "9967b5f53045e8fc986ce446c15b56e50311c6ea018dda2f71b27812bfa72602",
+        "manifestSha256": "9967b5f53045e8fc986ce446c15b56e50311c6ea018dda2f71b27812bfa72602",
+        "allMatch": true
+      },
+      {
+        "id": "component-ecddb7ecffb46fb0-10x6-luma",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-mobile.webp",
+        "status": 200,
+        "bytes": 67026,
+        "httpSha256": "0788b907bc7170d5ee52b2e39e091591c4ba05d849de30d9dcad71167b5b5ff6",
+        "gitSha256": "0788b907bc7170d5ee52b2e39e091591c4ba05d849de30d9dcad71167b5b5ff6",
+        "manifestSha256": "0788b907bc7170d5ee52b2e39e091591c4ba05d849de30d9dcad71167b5b5ff6",
+        "allMatch": true
+      },
+      {
+        "id": "component-ee97ef90f7754523-8x8-alpha",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-ee97ef90f7754523-8x8-alpha-desktop.webp",
+        "status": 200,
+        "bytes": 973186,
+        "httpSha256": "95a82cf7e268e7a454bfe41d86debbb2112acf18fc542e6d36a1ec445619d824",
+        "gitSha256": "95a82cf7e268e7a454bfe41d86debbb2112acf18fc542e6d36a1ec445619d824",
+        "manifestSha256": "95a82cf7e268e7a454bfe41d86debbb2112acf18fc542e6d36a1ec445619d824",
+        "allMatch": true
+      },
+      {
+        "id": "component-ee97ef90f7754523-8x8-alpha",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-ee97ef90f7754523-8x8-alpha-mobile.webp",
+        "status": 200,
+        "bytes": 286716,
+        "httpSha256": "dbdaac7579c0c5bcf0485298d0cda25669f4167f24ceaa2eb49f00014ef943e4",
+        "gitSha256": "dbdaac7579c0c5bcf0485298d0cda25669f4167f24ceaa2eb49f00014ef943e4",
+        "manifestSha256": "dbdaac7579c0c5bcf0485298d0cda25669f4167f24ceaa2eb49f00014ef943e4",
+        "allMatch": true
+      },
+      {
+        "id": "component-f7736e0dfe565c2f-4x4-rgba",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-desktop.webp",
+        "status": 200,
+        "bytes": 329652,
+        "httpSha256": "83a99d6b7bedfa9a22761351af413db32882570f87ae4c36845f45ee0f9764d9",
+        "gitSha256": "83a99d6b7bedfa9a22761351af413db32882570f87ae4c36845f45ee0f9764d9",
+        "manifestSha256": "83a99d6b7bedfa9a22761351af413db32882570f87ae4c36845f45ee0f9764d9",
+        "allMatch": true
+      },
+      {
+        "id": "component-f7736e0dfe565c2f-4x4-rgba",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-mobile.webp",
+        "status": 200,
+        "bytes": 91080,
+        "httpSha256": "cdf5a7478f0ace23daca20a83795f190c3e23511479278846c0be8aca100d143",
+        "gitSha256": "cdf5a7478f0ace23daca20a83795f190c3e23511479278846c0be8aca100d143",
+        "manifestSha256": "cdf5a7478f0ace23daca20a83795f190c3e23511479278846c0be8aca100d143",
+        "allMatch": true
+      },
+      {
+        "id": "niagara-b23e30580f0f5d09",
+        "quality": "desktop",
+        "url": "/assets/vfx/niagara/niagara-b23e30580f0f5d09-desktop.webp",
+        "status": 200,
+        "bytes": 1270092,
+        "httpSha256": "414a576c793109355a6fc621966257c07c62bfc694444e9488885c1ba277f239",
+        "gitSha256": "414a576c793109355a6fc621966257c07c62bfc694444e9488885c1ba277f239",
+        "manifestSha256": "414a576c793109355a6fc621966257c07c62bfc694444e9488885c1ba277f239",
+        "allMatch": true
+      },
+      {
+        "id": "niagara-b23e30580f0f5d09",
+        "quality": "mobile",
+        "url": "/assets/vfx/niagara/niagara-b23e30580f0f5d09-mobile.webp",
+        "status": 200,
+        "bytes": 114488,
+        "httpSha256": "a0aaa0d011d0b8bbabed69e83fe6f000eea8f21eee9f7c1088d5795b43e10019",
+        "gitSha256": "a0aaa0d011d0b8bbabed69e83fe6f000eea8f21eee9f7c1088d5795b43e10019",
+        "manifestSha256": "a0aaa0d011d0b8bbabed69e83fe6f000eea8f21eee9f7c1088d5795b43e10019",
+        "allMatch": true
+      }
+    ]
+  },
+  "browserAcceptance": {
+    "source": "Root-reported public authenticated Chrome QA, not independently repeated by this audit.",
+    "checks": "9/9; all 32 quality variants; zero errors, GM writes, or gameplay actions.",
+    "guestWebSocketProbe": "Root reports a rerun with the correct Origin is pending; omitted from acceptance result."
+  },
+  "limitations": [
+    "No GPU or browser control was performed by this audit.",
+    "Protocol version 60 is verified from the deployed commit source; public /status does not expose the protocol field.",
+    "Authority drain state is not exposed by public /status."
+  ]
+}

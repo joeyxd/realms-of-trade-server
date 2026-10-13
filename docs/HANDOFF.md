@@ -9,6 +9,20 @@ reutilizado. Nueve piezas de cocina/propuesta en biblioteca GM con carga bajo de
 65/65 regresiones focales; aceptación visual y publicación se registran en la entrega.
 Sin nueva receta, SQL o protocolo.
 
+**ST01b — biblioteca Niagara original, 2026-10-12, alpha.66/protocolo 60 publicada:**
+[Entrega y límites](delivery/st01b/DELIVERY.md), [contrato](briefs/st01b-niagara-library.md).
+Censo completo de 993 fuentes/916 identidades binarias y 775 miniaturas; 15 componentes
+originales separados de sus sistemas y un extracto real de Firework de MyProject, 60 frames.
+17 vistas con Tromba, búsqueda/filtros, borradores/historial/recuperación independientes;
+biblioteca móvil y foco de teclado. 58/58 CPU y 9/9 Chrome local, 32 variantes de atlas,
+cero acciones de juego/escrituras GM. Publicado en `739e1b2`: 197/197 del actualizador,
+11 hashes de runtime/paquete y 32 atlas públicos exactos, 9/9 Chrome con cuenta GM,
+entrada WSS normal y cierre sin jugadores/errores/pendientes. Sin SQL ni protocolo nuevos.
+Las 916 simulaciones Niagara no se ejecutan en el navegador; componentes y captura 2D no
+aceptan volumen, densidad ni calidad AAA equivalente. [ST01c](briefs/st01c-niagara-native-fidelity.md)
+propone portar emisores/materiales originales con referencia multiángulo; sin implementación.
+UI Workshop conserva su plan. Fuentes Unreal y trabajo concurrente intactos.
+
 **AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
 [Entrega/evidencia](delivery/m5-ground-pearl-give.md), [contrato](briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
 reserva de ambas cuentas/UIDs antes de IO, progreso/autosaves previos, dos CAS y generación durable.

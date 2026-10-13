@@ -4,6 +4,8 @@ import { CharacterView } from './characters.js';
 import { SkillFx } from './vfx/skillfx.js';
 import { CombatFx } from './vfx/combatfx.js';
 import { ParticlePool } from './vfx/particles.js';
+import { FlipbookEffect } from './vfx/flipbook.js';
+import { getEffect, defaultEffectDocument } from '../editor/effectLibrary.js';
 import { FXU } from './pipeline.js';
 import { U } from './toon.js';
 import { ACT } from '../sim/ecs.js';
@@ -35,6 +37,7 @@ export class SkillPreview {
     this.range = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineDashedMaterial({ color: 0xffd278, dashSize: 0.22, gapSize: 0.13 }));
     this.range.computeLineDistances(); this.stageObjects.add(this.range);
     this.effectObjects = new THREE.Group(); this.scene.add(this.effectObjects);
+    this.flipbook = new FlipbookEffect(this.effectObjects);
     this.pool = new ParticlePool(PREVIEW_PARTICLE_CAP.desktop, { name: 'skill-preview-water', random: () => this.random() });
     // Keep the private preview bounded without consuming the world's visual RNG.
     const spawn = this.pool.spawn.bind(this.pool);
@@ -71,8 +74,15 @@ export class SkillPreview {
     }, { ...options, passive: false });
   }
 
-  get duration() { return impactAt() + 0.65 * (this.original ? 1 : this.document.parameters.duration) + 1.6; }
-  get metrics() { return { particles: this.pool.alive.reduce((a, b) => a + b, 0), cap: this.cap, drawCalls: this.drawCalls || 0 }; }
+  get isFlipbook() { return this.document?.version === 2; }
+  get parameters() { return this.original ? defaultEffectDocument(this.document.effect).parameters : this.document.parameters; }
+  get duration() {
+    return this.isFlipbook ? impactAt() + this.flipbook.duration(this.parameters) + 0.4
+      : impactAt() + 0.65 * (this.original ? 1 : this.document.parameters.duration) + 1.6;
+  }
+  get metrics() { return { particles: this.isFlipbook ? 0 : this.pool.alive.reduce((a, b) => a + b, 0),
+    cap: this.isFlipbook ? 0 : this.cap, drawCalls: this.drawCalls || 0,
+    ...(this.isFlipbook ? this.flipbook.metrics : {}) }; }
   random() {
     let n = this.seed += 0x6D2B79F5;
     n = Math.imul(n ^ n >>> 15, n | 1); n ^= n + Math.imul(n ^ n >>> 7, n | 61);
@@ -80,12 +90,23 @@ export class SkillPreview {
   }
   setDocument(document) {
     if (!validateSkillDocument(document).ok) throw new Error('Invalid skill presentation');
-    this.document = cloneSkillDocument(document); this.restart();
+    const changed = this.document?.effect !== document.effect;
+    this.document = cloneSkillDocument(document);
+    this.range.visible = !this.isFlipbook;
+    if (this.isFlipbook && (changed || !this.flipbook.effect)) {
+      void this.flipbook.setEffect(getEffect(document.effect).derivative, this.quality);
+    } else if (!this.isFlipbook) this.flipbook.cancelLoad();
+    this.restart();
   }
   setOriginal(value) { this.original = value === true; this.seek(this.time); }
   setSpeed(value) { if ([0.25, 0.5, 1, 2].includes(value)) this.speed = value; }
   setLoop(value) { this.loop = value === true; }
-  setQuality(value) { this.quality = value === 'mobile' ? 'mobile' : 'desktop'; this.cap = PREVIEW_PARTICLE_CAP[this.quality]; this.restart(); }
+  setQuality(value) {
+    const next = value === 'mobile' ? 'mobile' : 'desktop', changed = next !== this.quality;
+    this.quality = next; this.cap = PREVIEW_PARTICLE_CAP[this.quality];
+    if (changed && this.isFlipbook) void this.flipbook.setEffect(getEffect(this.document.effect).derivative, this.quality);
+    this.restart();
+  }
   setSkin(value) {
     this.releaseCharacter();
     this.character = new CharacterView(Number.isInteger(value) && value >= 0 && value < 5 ? value : 0, { seed: 0 });
@@ -104,6 +125,7 @@ export class SkillPreview {
   restart() {
     this.time = 0; this.accumulator = 0; this.seed = 6371; this.fired = false;
     this.fx.resetTromba();
+    this.flipbook.reset();
     this.pool.alive.fill(0); this.pool.data.fill(0); this.pool.cursor = 0; this.pool.time = 0;
     this.pool.aData.needsUpdate = true;
     for (const ring of this.combat.rings) { ring.active = false; ring.m.visible = false; }
@@ -123,10 +145,11 @@ export class SkillPreview {
     this.character?.update(STEP, this.state(this.time));
     if (!this.fired && this.time + 1e-8 >= impactAt()) {
       this.fired = true;
-      this.fx.spout(0, 0, SKILLS.tromba.r, false, 0, this.original ? undefined : this.document.parameters);
+      if (!this.isFlipbook) this.fx.spout(0, 0, SKILLS.tromba.r, false, 0, this.original ? undefined : this.document.parameters);
     }
     this.fx.update(STEP, Math.round(this.time / STEP));
     this.combat.update(STEP); this.pool.update(STEP);
+    if (this.isFlipbook) this.flipbook.update(this.time - impactAt(), this.parameters);
   }
   seek(value) {
     const target = THREE.MathUtils.clamp(Number(value) || 0, 0, this.duration), playing = this.playing;
@@ -145,6 +168,8 @@ export class SkillPreview {
       }
     }
     const rect = this.viewport.getBoundingClientRect();
+    // Async texture completion must also become visible while the timeline is paused.
+    if (this.isFlipbook) this.flipbook.update(this.time - impactAt(), this.parameters);
     const p = stage.toLocal(stage.rotated ? rect.right : rect.left, rect.top);
     const width = stage.rotated ? rect.height : rect.width, height = stage.rotated ? rect.width : rect.height;
     if (width < 2 || height < 2) return;
@@ -174,7 +199,7 @@ export class SkillPreview {
   dispose() {
     if (this.disposed) return;
     this.disposed = true; this.controller.abort(); this.releaseCharacter();
-    this.fx.dispose();
+    this.fx.dispose(); this.flipbook.dispose();
     const geometries = new Set(), materials = new Set();
     for (const group of [this.stageObjects, this.effectObjects]) group.traverse(o => {
       if (o.geometry) geometries.add(o.geometry);

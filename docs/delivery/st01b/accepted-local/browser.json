@@ -1,0 +1,484 @@
+{
+  "schema": "niagara-studio-browser/v1",
+  "at": "2026-10-13T04:38:18.178Z",
+  "version": "0.6.0-alpha.66",
+  "production": false,
+  "simulatedAuth": true,
+  "checks": [
+    "complete_catalog_search_and_source_filters",
+    "unconverted_source_has_no_misleading_playback_and_keeps_tromba_draft",
+    "real_exported_animation_replays_and_uses_one_quality_variant",
+    "each_effect_keeps_its_draft_history_save_and_recovery",
+    "pending_selection_cancels_inflight_atlas_without_replacing_drafts",
+    "all_registered_derivatives_render_both_quality_variants",
+    "compact_library_is_accessible_844x390",
+    "compact_library_is_accessible_390x844",
+    "english_catalog_and_zero_gameplay_writes"
+  ],
+  "screenshots": [
+    "niagara-library-es-desktop.png",
+    "niagara-source-pending-es.png",
+    "niagara-converted-es-desktop.png",
+    "component-3e468435ddbe1951-3x3-alpha-desktop.png",
+    "component-3e468435ddbe1951-3x3-alpha-mobile.png",
+    "component-ee97ef90f7754523-8x8-alpha-desktop.png",
+    "component-ee97ef90f7754523-8x8-alpha-mobile.png",
+    "component-1d5c64ec6742cb1b-8x4-luma-desktop.png",
+    "component-1d5c64ec6742cb1b-8x4-luma-mobile.png",
+    "niagara-b23e30580f0f5d09-desktop.png",
+    "niagara-b23e30580f0f5d09-mobile.png",
+    "component-4866b9058807eeef-8x4-luma-desktop.png",
+    "component-4866b9058807eeef-8x4-luma-mobile.png",
+    "component-3e0a757f3e8443eb-8x4-luma-desktop.png",
+    "component-3e0a757f3e8443eb-8x4-luma-mobile.png",
+    "component-d7a5e783ffa8ee81-8x8-alpha-desktop.png",
+    "component-d7a5e783ffa8ee81-8x8-alpha-mobile.png",
+    "component-dd710adffbd411cd-8x8-alpha-desktop.png",
+    "component-dd710adffbd411cd-8x8-alpha-mobile.png",
+    "component-8117bd91eb290326-8x1-alpha-desktop.png",
+    "component-8117bd91eb290326-8x1-alpha-mobile.png",
+    "component-ecddb7ecffb46fb0-10x6-luma-desktop.png",
+    "component-ecddb7ecffb46fb0-10x6-luma-mobile.png",
+    "component-bc703e63cd85d73c-8x8-alpha-desktop.png",
+    "component-bc703e63cd85d73c-8x8-alpha-mobile.png",
+    "component-12ce65c60986b47a-8x8-alpha-desktop.png",
+    "component-12ce65c60986b47a-8x8-alpha-mobile.png",
+    "component-7e5099cefb584032-8x8-alpha-desktop.png",
+    "component-7e5099cefb584032-8x8-alpha-mobile.png",
+    "component-eb5fe0f905f673b8-8x8-alpha-desktop.png",
+    "component-eb5fe0f905f673b8-8x8-alpha-mobile.png",
+    "component-f7736e0dfe565c2f-4x4-rgba-desktop.png",
+    "component-f7736e0dfe565c2f-4x4-rgba-mobile.png",
+    "component-26e09bd0f93cb620-7x7-luma-desktop.png",
+    "component-26e09bd0f93cb620-7x7-luma-mobile.png",
+    "niagara-pending-844x390.png",
+    "niagara-pending-390x844.png",
+    "niagara-library-en-mobile.png"
+  ],
+  "errors": [],
+  "writes": [],
+  "gameplay": [],
+  "atlasRequests": [
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-ee97ef90f7754523-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-ee97ef90f7754523-8x8-alpha-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-ee97ef90f7754523-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/niagara-b23e30580f0f5d09-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/niagara-b23e30580f0f5d09-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/niagara-b23e30580f0f5d09-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-4866b9058807eeef-8x4-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-4866b9058807eeef-8x4-luma-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-4866b9058807eeef-8x4-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-3e0a757f3e8443eb-8x4-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-3e0a757f3e8443eb-8x4-luma-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-3e0a757f3e8443eb-8x4-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-dd710adffbd411cd-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-dd710adffbd411cd-8x8-alpha-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-dd710adffbd411cd-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-bc703e63cd85d73c-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-bc703e63cd85d73c-8x8-alpha-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-bc703e63cd85d73c-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-12ce65c60986b47a-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-12ce65c60986b47a-8x8-alpha-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-12ce65c60986b47a-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-7e5099cefb584032-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-7e5099cefb584032-8x8-alpha-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-7e5099cefb584032-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-desktop.webp",
+    "http://127.0.0.1:60207/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp"
+  ],
+  "serverLog": [
+    "[net] #1 connected (127.0.0.1) · sockets 1"
+  ],
+  "angle": "d3d11",
+  "runtime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.66",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 0,
+    "uptime": 0,
+    "stepMs": 0,
+    "bots": 0,
+    "names": [],
+    "errors": 0,
+    "storage": {
+      "kind": "memory",
+      "durable": false,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": null,
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": false,
+        "ready": false,
+        "logging": false
+      },
+      "fire": {
+        "enabled": false,
+        "ready": false,
+        "torchRules": 1
+      },
+      "foraging": {
+        "enabled": false,
+        "ready": false
+      },
+      "freshwater": {
+        "enabled": false,
+        "ready": false,
+        "canteen": false,
+        "meals": false
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "workshop": {
+        "enabled": false,
+        "ready": false
+      },
+      "attributes": {
+        "enabled": false,
+        "ready": false
+      },
+      "companionCreation": {
+        "enabled": false,
+        "ready": false,
+        "pending": 0
+      },
+      "companionPairing": {
+        "enabled": false,
+        "ready": false
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "catalog": {
+    "total": 932,
+    "ready": 17,
+    "sources": 1008
+  },
+  "animation": {
+    "id": "component-26e09bd0f93cb620-7x7-luma",
+    "role": "source-texture",
+    "texture": {
+      "quality": "mobile",
+      "width": 1024,
+      "height": 1024,
+      "frame": 22
+    }
+  },
+  "derivatives": [
+    {
+      "id": "component-3e468435ddbe1951-3x3-alpha",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 1,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "component-3e468435ddbe1951-3x3-alpha",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 1,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "id": "component-ee97ef90f7754523-8x8-alpha",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 12,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "id": "component-ee97ef90f7754523-8x8-alpha",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 12,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "component-1d5c64ec6742cb1b-8x4-luma",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 6,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "id": "component-1d5c64ec6742cb1b-8x4-luma",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 6,
+      "width": 1024,
+      "height": 512
+    },
+    {
+      "id": "niagara-b23e30580f0f5d09",
+      "role": "system-capture",
+      "quality": "desktop",
+      "frame": 47,
+      "width": 4096,
+      "height": 4096
+    },
+    {
+      "id": "niagara-b23e30580f0f5d09",
+      "role": "system-capture",
+      "quality": "mobile",
+      "frame": 47,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "component-4866b9058807eeef-8x4-luma",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 6,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "id": "component-4866b9058807eeef-8x4-luma",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 6,
+      "width": 1024,
+      "height": 512
+    },
+    {
+      "id": "component-3e0a757f3e8443eb-8x4-luma",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 6,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "id": "component-3e0a757f3e8443eb-8x4-luma",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 6,
+      "width": 1024,
+      "height": 512
+    },
+    {
+      "id": "component-d7a5e783ffa8ee81-8x8-alpha",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 12,
+      "width": 4096,
+      "height": 4096
+    },
+    {
+      "id": "component-d7a5e783ffa8ee81-8x8-alpha",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 12,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "component-dd710adffbd411cd-8x8-alpha",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 12,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "id": "component-dd710adffbd411cd-8x8-alpha",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 12,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "component-8117bd91eb290326-8x1-alpha",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 1,
+      "width": 1024,
+      "height": 512
+    },
+    {
+      "id": "component-8117bd91eb290326-8x1-alpha",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 1,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "id": "component-ecddb7ecffb46fb0-10x6-luma",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 11,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "id": "component-ecddb7ecffb46fb0-10x6-luma",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 11,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "component-bc703e63cd85d73c-8x8-alpha",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 12,
+      "width": 4096,
+      "height": 4096
+    },
+    {
+      "id": "component-bc703e63cd85d73c-8x8-alpha",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 12,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "component-12ce65c60986b47a-8x8-alpha",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 12,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "id": "component-12ce65c60986b47a-8x8-alpha",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 12,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "component-7e5099cefb584032-8x8-alpha",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 12,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "id": "component-7e5099cefb584032-8x8-alpha",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 12,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "component-eb5fe0f905f673b8-8x8-alpha",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 12,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "id": "component-eb5fe0f905f673b8-8x8-alpha",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 12,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "component-f7736e0dfe565c2f-4x4-rgba",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 3,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "id": "component-f7736e0dfe565c2f-4x4-rgba",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 3,
+      "width": 512,
+      "height": 512
+    },
+    {
+      "id": "component-26e09bd0f93cb620-7x7-luma",
+      "role": "source-texture",
+      "quality": "desktop",
+      "frame": 9,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "id": "component-26e09bd0f93cb620-7x7-luma",
+      "role": "source-texture",
+      "quality": "mobile",
+      "frame": 9,
+      "width": 1024,
+      "height": 1024
+    }
+  ]
+}
