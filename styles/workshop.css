@@ -45,3 +45,11 @@
   .workshop-body > :first-child, .workshop-actions, .workshop-status { grid-column: 1 / -1; }
 }
 @media (prefers-reduced-motion: reduce) { .workshop-track i, .workshop-panel.is-pending .workshop-mark { transition: none; animation: none; } }
+/* The portrait touch stage is rotated into landscape. Size the scrollable panel
+   in that logical space so its heading and actions stay inside the screen. */
+@media (orientation: portrait) and (max-width: 520px) {
+  body.rotated .workshop-panel {
+    width: min(430px, calc(100dvh - 24px));
+    max-height: calc(100dvw - 24px);
+  }
+}

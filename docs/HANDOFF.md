@@ -1,5 +1,17 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA03, 2026-10-13 — alimentos e INV03:**
+[Entrega](delivery/food-item-completion/README.md): fichas ES/EN con usos, masa/volumen,
+valores y efectos actuales; ambas barras de carga incluyen el bonus de la galleta.
+38/38 regresiones focales y 6/6 configuraciones locales del panel de provisiones.
+[INV03](delivery/inv03-existing-backpacks/README.md) conserva las mejoras existentes:
+la prueba pública encontró y corrigió el recorte del taller en móvil girado (4/4 locales).
+La aceptación pública completa se registra en su entrega, sin nueva SQL ni balance.
+El autor eligió cerrar alimentos actuales y continuar mochilas; lima/hierbas siguen
+como propuestas. Añadida al plan [fibra, techumbre y cuero](briefs/plant-fiber-thatch-leather.md):
+plantas → fibra → lona, palmeras → hojas/techos económicos, animales → piel → cuero.
+Recetas y rendimientos por definir; aún no son recursos jugables nuevos.
+
 **Modelos de campo/cocina, 2026-10-12 — integración visual y optimización:**
 [Entrega y evidencia](delivery/item-models-v1/DELIVERY.md). 12 GLB del autor archivados intactos;
 24 derivados WebP 512/256, 28,03 → 1,35 MiB, geometría/UV/color conservados.

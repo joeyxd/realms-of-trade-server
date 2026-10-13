@@ -13,3 +13,19 @@ Esta prueba no asigna puntos de Carga ni acredita interfaz o partida pública. L
 ## Por completar
 
 Aceptar ambos tiers mediante los botones del taller público: Carga adoptada, mercancía ajena al coste, replay, materiales insuficientes, recarga/reentrada y presentación ES/EN en escritorio/móvil. Mantener el volumen 18/30/42 y el modelo de sobrepeso existente. Las bolsas equipables y el cinturón necesitan su diseño aparte.
+
+## Revisión pública y corrección móvil, 2026-10-13
+
+Sobre alpha.67, el botón real pagó 18→30; coste exacto, Carga 4, techo de masa 70 y
+piedra ajena al pago conservados. Replay histórico sin gasto repetido y rechazo durable
+por faltar una tabla para 30→42. Los recibos se conservaron; cuentas y perfiles temporales
+se eliminaron. La ejecución se detuvo antes de la segunda compra al encontrar el taller
+recortado en móvil girado: [evidencia del fallo](browser-20261013-b/browser-0283eea2-8631-4bcd-8882-5a953b2569d3.json).
+
+`styles/workshop.css` ahora limita la altura según el espacio lógico del escenario girado.
+**4/4 configuraciones locales** ES/EN escritorio/móvil girado; cabecera, compra y acciones
+accesibles mediante scroll, sin desbordamiento: [evidencia](layout/evidence-2026-10-13T06-21-29-121Z.json).
+Falta repetir la compra móvil y la reentrada sobre la corrección publicada.
+
+El primer intento también ajustó el recorrido del harness: debía detenerse dentro del
+radio real de interacción (3), en lugar de 3,1. No cambió el alcance del juego.

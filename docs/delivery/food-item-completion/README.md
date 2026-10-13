@@ -39,6 +39,12 @@ Solo hay un efecto activo. El temporizador se pausa sin conexión.
   receta completa de antorcha y guía abierta conservada al actualizar.
 - **1/1** `tests/item-models.test.mjs`: conservada la integración existente de modelos.
   [Entrega de arte y límites](../item-models-v1/DELIVERY.md).
+- **4/4 configuraciones locales de CharacterScreen**, 20 capturas ES/EN escritorio y
+  móvil girado: [evidencia](character-verified/evidence-2026-10-13T06-28-04-182Z.json).
+  Constructor, render y actualización de regiones reales con perfil de prueba; bonus
+  40→50→40, guía conservada abierta y lectura con scroll. La revisión detectó y corrigió
+  el solapamiento de la guía con los detalles del objeto en pantallas bajas. La figura
+  3D no se carga en este fixture; no acredita interacción pública o teléfono físico.
 
 Los modelos de antorcha, resina y coco tienen su conexión de gameplay existente.
 Los otros nueve modelos de cocina/propuesta son decoración GM bajo demanda; una malla
