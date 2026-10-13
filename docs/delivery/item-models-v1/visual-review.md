@@ -15,11 +15,11 @@ I compared the rendered forms and their base-color maps with the current painted
 | `chili powder sack 3d model.glb` | `especias` | **Strong subject match.** Open burlap sack containing orange-red ground spice, matching the existing sack icon. |
 | `wooden beer mug 3d model.glb` | `meal_grog` | **Strong presentation match.** Open wood-and-metal tankard visibly contains amber drink, like the grog image. Treat as a presentation mesh for the prepared meal; it does not represent the ron bottle or a new stored good. |
 | `orange striped fish 3d model.glb` | `meal_roastFish` | **Strong subject match.** A whole fish with dark grilled bands; the source icon is also a grilled striped fish. |
-| `bread loaf 3d model.glb` | `meal_heartyBiscuit` | **Working visual mapping.** A round baked item suits the prepared-biscuit presentation slot. Remaining uncertainty is semantic identity (loaf/bun versus biscuit). |
-| `blue ceramic vase 3d model.glb` | `agua` | **Working visual mapping.** Its blue stoppered silhouette fits the water-jar reference; the ceramic finish and lack of visible water leave a semantic mismatch. |
-| `rice+sack+3d+model.glb` | `harina` | **Working visual mapping.** The white-filled sack matches the flour reference's silhouette, while the source name and visible grains read as rice. |
+| `bread loaf 3d model.glb` | `meal_heartyBiscuit` | **Author-confirmed mapping (2026-10-12).** A round baked item suits the prepared-biscuit presentation slot. Remaining uncertainty is semantic identity (loaf/bun versus biscuit). |
+| `blue ceramic vase 3d model.glb` | `agua` | **Author-confirmed mapping (2026-10-12).** Its blue stoppered silhouette fits the water-jar reference; the ceramic finish and lack of visible water leave a semantic mismatch. |
+| `rice+sack+3d+model.glb` | `harina` | **Author-confirmed mapping (2026-10-12).** The white-filled sack matches the flour reference's silhouette, while the source name and visible grains read as rice. |
 
-These three mappings follow the current asset-preparation decision. Their remaining ambiguity concerns the semantic read of the visible art; no item behavior or cooking recipe changes with the mapping.
+The author confirmed all three item identities on 2026-10-12. The descriptions above retain the initial silhouette review; no item behavior or cooking recipe changes with the mapping.
 | `bamboo stalk 3d model.glb` | `cana` | **Strong shape match.** Short green segmented cane with cut ends, close to the sugar-cane reference. |
 | `herb bundle 3d model.glb` | proposed `hierbas_aromaticas` | **Strong subject match.** Bound leafy green bundle. This remains a proposal, not an implemented resource. |
 

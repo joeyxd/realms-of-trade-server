@@ -26,9 +26,9 @@ const sources = [
   { download: 'orange striped fish 3d model.glb', source: 'docs/art/source/cooking-items-v1/meal_roastFish/meal_roastFish-v1.glb', id: 'meal_roastFish', assigned: true },
   { download: 'bamboo stalk 3d model.glb', source: 'docs/art/source/cooking-items-v1/cana/cana-v1.glb', id: 'cana', assigned: true },
   { download: 'herb bundle 3d model.glb', source: 'docs/art/source/cooking-items-v1/hierbas_aromaticas/hierbas_aromaticas-v1.glb', id: 'hierbas_aromaticas', assigned: true },
-  { download: 'bread loaf 3d model.glb', source: 'docs/art/source/cooking-items-v1/meal_heartyBiscuit/meal_heartyBiscuit-v1.glb', id: 'meal_heartyBiscuit', assigned: true, mappingBasis: 'working visual-reference mapping; rounded baked item fits the meal slot, while visible perforations differ from the existing biscuit art' },
-  { download: 'blue ceramic vase 3d model.glb', source: 'docs/art/source/cooking-items-v1/agua/agua-v1.glb', id: 'agua', assigned: true, mappingBasis: 'working visual-reference mapping; blue stoppered vessel matches the water-jar silhouette, though the mesh reads as glazed ceramic and shows no water' },
-  { download: 'rice+sack+3d+model.glb', source: 'docs/art/source/cooking-items-v1/harina/harina-v1.glb', id: 'harina', assigned: true, mappingBasis: 'working visual-reference mapping; white-filled sack matches the flour-sack silhouette, while visible grains suggest rice' },
+  { download: 'bread loaf 3d model.glb', source: 'docs/art/source/cooking-items-v1/meal_heartyBiscuit/meal_heartyBiscuit-v1.glb', id: 'meal_heartyBiscuit', assigned: true, mappingBasis: 'author confirmed 2026-10-12; rounded baked item fits the meal slot, while visible perforations differ from the existing biscuit art' },
+  { download: 'blue ceramic vase 3d model.glb', source: 'docs/art/source/cooking-items-v1/agua/agua-v1.glb', id: 'agua', assigned: true, mappingBasis: 'author confirmed 2026-10-12; blue stoppered vessel matches the water-jar silhouette, though the mesh reads as glazed ceramic and shows no water' },
+  { download: 'rice+sack+3d+model.glb', source: 'docs/art/source/cooking-items-v1/harina/harina-v1.glb', id: 'harina', assigned: true, mappingBasis: 'author confirmed 2026-10-12; white-filled sack matches the flour-sack silhouette, while visible grains suggest rice' },
 ];
 
 const gmRequire = createRequire(path.join(root, 'tools/gm-assets/package.json'));
@@ -255,7 +255,7 @@ for (const entry of sources) {
     assigned: entry.assigned,
     sourceRole: entry.sourceRole || 'canonical',
     match: entry.id,
-    ...(entry.mappingBasis ? { mappingBasis: entry.mappingBasis, remainingAmbiguity: 'Semantic/illustration fit only; this mapping is a working asset assignment and does not change item behavior or recipes.' } : {}),
+    ...(entry.mappingBasis ? { mappingBasis: entry.mappingBasis, authorConfirmed: true, remainingAmbiguity: null } : {}),
     derivatives: [],
   };
   if (entry.assigned) {
@@ -297,9 +297,9 @@ const report = {
     reductionPercentAssignedSources: Number(((1 - derivativeBytesTotal / assignedSourceBytes) * 100).toFixed(2)),
   },
   mappingDecisions: [
-    { id: 'meal_heartyBiscuit', sourceDownloadName: 'bread loaf 3d model.glb', archiveSource: 'docs/art/source/cooking-items-v1/meal_heartyBiscuit/meal_heartyBiscuit-v1.glb', remainingAmbiguity: 'Semantic identity of a loaf/bun versus biscuit only; mapping follows the working assumption.', recipeChanged: false },
-    { id: 'agua', sourceDownloadName: 'blue ceramic vase 3d model.glb', archiveSource: 'docs/art/source/cooking-items-v1/agua/agua-v1.glb', remainingAmbiguity: 'Semantic identity of a decorative-looking blue vessel versus water container only; mapping follows the working assumption.', recipeChanged: false },
-    { id: 'harina', sourceDownloadName: 'rice+sack+3d+model.glb', archiveSource: 'docs/art/source/cooking-items-v1/harina/harina-v1.glb', remainingAmbiguity: 'Semantic identity of rice versus flour only; mapping follows the working assumption.', recipeChanged: false },
+    { id: 'meal_heartyBiscuit', sourceDownloadName: 'bread loaf 3d model.glb', archiveSource: 'docs/art/source/cooking-items-v1/meal_heartyBiscuit/meal_heartyBiscuit-v1.glb', authorConfirmed: true, remainingAmbiguity: null, recipeChanged: false },
+    { id: 'agua', sourceDownloadName: 'blue ceramic vase 3d model.glb', archiveSource: 'docs/art/source/cooking-items-v1/agua/agua-v1.glb', authorConfirmed: true, remainingAmbiguity: null, recipeChanged: false },
+    { id: 'harina', sourceDownloadName: 'rice+sack+3d+model.glb', archiveSource: 'docs/art/source/cooking-items-v1/harina/harina-v1.glb', authorConfirmed: true, remainingAmbiguity: null, recipeChanged: false },
   ],
   entries,
 };

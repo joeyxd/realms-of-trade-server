@@ -10,8 +10,8 @@ Los 12 originales se copiaron sin cambios a
 La [galería del autor](../../../ARTE-Y-MODELOS.html) muestra cada entrega y referencia.
 El [inventario](inventory.json), [contacto original](model-thumbnails.jpg) y
 [asignaciones visuales](visual-review.md) conservan su procedencia. Pan, vasija azul
-y saco blanco se asignaron provisionalmente a galleta reforzada, agua y harina
-por las referencias que el autor estaba modelando; sus nombres de Tripo son genéricos.
+y saco blanco se asignaron a galleta reforzada, agua y harina; el autor confirmó las tres
+asignaciones el 2026-10-12. Los nombres de Tripo son genéricos.
 
 La geometría ya era económica: 402–692 triángulos por modelo. Se conservaron
 posiciones, normales, índices, UV y factores de color, sin decimar ni repintar.

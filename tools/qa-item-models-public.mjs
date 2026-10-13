@@ -4,10 +4,12 @@ import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
 const base = process.env.MN_PUBLIC_BASE || 'https://marea.62.171.136.148.sslip.io';
 const out = path.resolve(process.env.MN_ITEM_PUBLIC_OUT || 'docs/delivery/item-models-v1/public');
 await fs.mkdir(out, { recursive: true });
-const report = { generatedAt: new Date().toISOString(), base, hashes: [], viewports: [] };
+const revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+const report = { generatedAt: new Date().toISOString(), base, revision, hashes: [], viewports: [] };
 const manifest = JSON.parse(await fs.readFile('assets/manifest.json', 'utf8'));
 const files = ['assets/manifest.json', 'assets/editor/thumbnails.json', 'src/render/assets/manifest.js',
   'src/render/assets/registry.js', 'src/render/assets/toonmat.js', 'src/render/characters.js',
@@ -17,7 +19,7 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 for (const file of files) {
   const response = await fetch(`${base}/${file}`, { cache: 'no-store' });
   assert.equal(response.status, 200, file);
-  const bytes = Buffer.from(await response.arrayBuffer()), expected = hash(await fs.readFile(file));
+  const bytes = Buffer.from(await response.arrayBuffer()), expected = hash(execFileSync('git', ['show', `${revision}:${file}`]));
   assert.equal(hash(bytes), expected, file);
   report.hashes.push({ file, sha256: expected, bytes: bytes.length });
 }

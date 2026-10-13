@@ -28,22 +28,25 @@
       "id": "meal_heartyBiscuit",
       "sourceDownloadName": "bread loaf 3d model.glb",
       "archiveSource": "docs/art/source/cooking-items-v1/meal_heartyBiscuit/meal_heartyBiscuit-v1.glb",
-      "remainingAmbiguity": "Semantic identity of a loaf/bun versus biscuit only; mapping follows the working assumption.",
-      "recipeChanged": false
+      "remainingAmbiguity": null,
+      "recipeChanged": false,
+      "authorConfirmed": true
     },
     {
       "id": "agua",
       "sourceDownloadName": "blue ceramic vase 3d model.glb",
       "archiveSource": "docs/art/source/cooking-items-v1/agua/agua-v1.glb",
-      "remainingAmbiguity": "Semantic identity of a decorative-looking blue vessel versus water container only; mapping follows the working assumption.",
-      "recipeChanged": false
+      "remainingAmbiguity": null,
+      "recipeChanged": false,
+      "authorConfirmed": true
     },
     {
       "id": "harina",
       "sourceDownloadName": "rice+sack+3d+model.glb",
       "archiveSource": "docs/art/source/cooking-items-v1/harina/harina-v1.glb",
-      "remainingAmbiguity": "Semantic identity of rice versus flour only; mapping follows the working assumption.",
-      "recipeChanged": false
+      "remainingAmbiguity": null,
+      "recipeChanged": false,
+      "authorConfirmed": true
     }
   ],
   "entries": [
@@ -2041,8 +2044,8 @@
       "assigned": true,
       "sourceRole": "canonical",
       "match": "meal_heartyBiscuit",
-      "mappingBasis": "working visual-reference mapping; rounded baked item fits the meal slot, while visible perforations differ from the existing biscuit art",
-      "remainingAmbiguity": "Semantic/illustration fit only; this mapping is a working asset assignment and does not change item behavior or recipes.",
+      "mappingBasis": "author confirmed 2026-10-12; rounded baked item fits the meal slot, while visible perforations differ from the existing biscuit art",
+      "remainingAmbiguity": null,
       "derivatives": [
         {
           "id": "meal_heartyBiscuit",
@@ -2170,7 +2173,8 @@
           ],
           "sourceToDerivativeBaseColorTextureReductionPercent": 97.73
         }
-      ]
+      ],
+      "authorConfirmed": true
     },
     {
       "source": "docs/art/source/cooking-items-v1/agua/agua-v1.glb",
@@ -2254,8 +2258,8 @@
       "assigned": true,
       "sourceRole": "canonical",
       "match": "agua",
-      "mappingBasis": "working visual-reference mapping; blue stoppered vessel matches the water-jar silhouette, though the mesh reads as glazed ceramic and shows no water",
-      "remainingAmbiguity": "Semantic/illustration fit only; this mapping is a working asset assignment and does not change item behavior or recipes.",
+      "mappingBasis": "author confirmed 2026-10-12; blue stoppered vessel matches the water-jar silhouette, though the mesh reads as glazed ceramic and shows no water",
+      "remainingAmbiguity": null,
       "derivatives": [
         {
           "id": "agua",
@@ -2383,7 +2387,8 @@
           ],
           "sourceToDerivativeBaseColorTextureReductionPercent": 97.7
         }
-      ]
+      ],
+      "authorConfirmed": true
     },
     {
       "source": "docs/art/source/cooking-items-v1/harina/harina-v1.glb",
@@ -2464,8 +2469,8 @@
       "assigned": true,
       "sourceRole": "canonical",
       "match": "harina",
-      "mappingBasis": "working visual-reference mapping; white-filled sack matches the flour-sack silhouette, while visible grains suggest rice",
-      "remainingAmbiguity": "Semantic/illustration fit only; this mapping is a working asset assignment and does not change item behavior or recipes.",
+      "mappingBasis": "author confirmed 2026-10-12; white-filled sack matches the flour-sack silhouette, while visible grains suggest rice",
+      "remainingAmbiguity": null,
       "derivatives": [
         {
           "id": "harina",
@@ -2591,7 +2596,8 @@
           ],
           "sourceToDerivativeBaseColorTextureReductionPercent": 93.81
         }
-      ]
+      ],
+      "authorConfirmed": true
     }
   ]
 }
