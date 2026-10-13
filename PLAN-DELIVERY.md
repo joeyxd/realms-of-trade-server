@@ -8,13 +8,52 @@ Material común identificado y fuentes intactas. Continuar con semántica/curvas
 global, referencia multiángulo y prototipo privado antes de ampliar. Reconsiderar esfuerzo
 si exige reproducir interfaces/renderer desproporcionados. Sin efecto 3D habilitado ni runtime nuevo.
 
+**AREA17 L03g-a — presencia segura, 2026-10-13:**
+[Contrato](docs/briefs/l03g-companion-presence.md), [entrega](docs/delivery/l03g-companion-presence/README.md).
+Salir/seguir/esperar/volver/descansar desde Mis compañeros, sin proveedor; una plaza,
+ancla validada y movimiento con colisión. SQL039 protege el ingreso frente a reconstrucción
+curada; retiro sano y perfil guardado antes de liberar. 111/111 locales y navegador 12/12,
+sin modelo ni modificación de la Brisa real. SQL/activación/canario públicos pendientes.
+Sigue L03g-b: mente sobre el mismo cuerpo; resolver recuperación/vida antes de zonas de riesgo.
+
+**AREA03, 2026-10-13 — cierre funcional de alimentos y siguiente corte:**
+[Contrato](docs/briefs/food-item-completion.md): fichas de uso/estadísticas con datos reales,
+comidas y carga cómoda coherentes; luego [INV03](docs/briefs/inv03-existing-backpacks.md),
+aceptación de mejoras existentes 18→30→42. El autor eligió cerrar los alimentos actuales;
+lima/hierbas conservan su estado de propuestas. [Fibra, techumbre y cuero](docs/briefs/plant-fiber-thatch-leather.md)
+incorpora la nueva dirección solicitada: plantas → fibra → tela/lona, palmeras → hojas
+para estructuras ligeras/techos, animales → piel → cuero. Planificado, con recetas y
+balance por concretar; no altera ahora catálogos, botín ni costes de mochilas.
+
+**AREA15, 2026-10-13 — swallow con recibo común; piloto público apagado:**
+[Entrega/evidencia](docs/delivery/m5-ground-pearl-swallow.md), [contrato](docs/briefs/m5-ground-pearl-swallow.md).
+Cuenta autenticada, bolsa → ranura tragada vacía; misma cuenta/UID, un perfil CAS,
+generación/tombstone y mundo/reloj confirmados por SQL006/018/019 antes de apply.
+Efecto de los cuatro poderes y filtrado reversible de inputs antiguos; ligado hasta morir, sin reemplazo/escupir.
+45/45 aceptación en cuatro archivos, incluidas dos recuperaciones SIGKILL locales;
+266/267 regresión pertinente en 24 archivos; único fallo de expectativa de swallow ya habilitado,
+corregida para rechazar reemplazo. 13/13 seguimiento focal en dos archivos, sin delta runtime.
+Fuentes congeladas; conteos solapados, sin reetiquetar la cohorte amplia.
+Sin SQL/flag/protocolo nuevos. Publicación del código pendiente del relevo y verificación exacta.
+Sigue candidato completo kill/cofre y luego composición GM/compañeros/control/bots/antorchas,
+adopción detenida y canario VPS; montaje común público apagado.
+
+**AREA01 A0-P, 2026-10-13 — diseño de región, sin cambios al mundo activo:**
+[Plan](PLAN-REGION-INICIAL.md) y [plano](docs/world/region-inicial-v1.svg).
+Antes de construir Puerto Sol, definir terreno, pueblos y caminos sobre la dirección alfa acordada.
+El esquema conserva aventura/Caldera, agua interior, costa y Cala separada; Ceniza queda en otra isla.
+Posiciones y tiempos propuestos, sin coordenadas nuevas ni migraciones. Siguiente entrega:
+**A0-G1 levantamiento/anclas**, luego costa GM06 si hace falta, accesos A3 y viaje comercial AREA07/08.
+
 **Modelos de campo/cocina, 2026-10-12 — integración visual y optimización:**
 [Entrega y evidencia](docs/delivery/item-models-v1/DELIVERY.md). 12 GLB del autor archivados intactos;
 24 derivados WebP 512/256, 28,03 → 1,35 MiB, geometría/UV/color conservados.
 Antorcha original portátil; resina/coco con presentación breve tras recibo aceptado,
 máximo ocho y sin nueva recogida. Troncos recogibles con atlas ilustrado de madera
 reutilizado. Nueve piezas de cocina/propuesta en biblioteca GM con carga bajo demanda.
-65/65 regresiones focales; aceptación visual y publicación se registran en la entrega.
+65/65 regresiones focales, 76/76 integración y Chrome local/público 2/2 cada uno.
+Alpha.67/protocolo 60 publicada en `a19f5e1`: 38 hashes de contenedor, 34 públicos,
+una autoridad saludable, cero errores y variantes reales 512/256. Fuentes confirmadas.
 Sin nueva receta, SQL o protocolo.
 
 **ST01b — biblioteca Niagara original, 2026-10-12, alpha.66/protocolo 60 publicada:**

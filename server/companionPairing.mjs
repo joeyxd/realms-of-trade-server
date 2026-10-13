@@ -151,6 +151,8 @@ export class CompanionPairingService {
           this.revokeOwner(session.key, 'revoked');
           return { why: null };
         }
+        if (await h.companionPresence?.pairingBlocked(session.key, owner.record.characterKey)) return { why: 'busy' };
+        if (this.principal(sock) !== session || abandoned) throw new Error('session');
         if (!h.companionControl.allowed(owner.record.characterKey)) return { why: 'stopped' };
         // Replacing a code also invalidates any earlier admission and active socket.
         this.revokeOwner(session.key, 'repaired');

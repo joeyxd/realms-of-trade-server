@@ -249,8 +249,8 @@ export function syncProfile(world, e) {
 }
 
 // The player leaves: its drops go with it. Returns the final profile.
-export function detachProfile(world, e) {
-  const p = syncProfile(world, e);
+export function detachProfile(world, e, { sync = true } = {}) {
+  const p = sync ? syncProfile(world, e) : profileOf(world, e);
   detachPearls(world, e);
   if (world.profiles) world.profiles.delete(e);
   if (world.drops) for (const [id, d] of world.drops) if (d.to === e) world.drops.delete(id);

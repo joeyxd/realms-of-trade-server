@@ -4,6 +4,15 @@ Fecha: 2026-10-08. Plan de producto y contrato entre mecánicas, mundo y arte.
 Estado: plan aprobado por el autor como base de trabajo; nombres secundarios y cifras siguen ajustables.
 Este documento no acredita implementación, rendimiento, migraciones ni publicación.
 
+## A0-P — diseño de la primera región (2026-10-13)
+
+El autor pidió diseñar terreno y accesos antes de construir la ruta física a Puerto Sol.
+[Plan de región](PLAN-REGION-INICIAL.md) y [plano provisional](docs/world/region-inicial-v1.svg):
+dos pueblos en la isla inicial por camino/costa, rama de aventura a La Caldera, agua interior,
+Cala opcional y Ceniza en otra isla. Silueta, orientación y tiempos son propuestas por medir;
+las anclas funcionales y los IDs existentes se conservan. Es una entrega documental.
+Sigue **A0-G1: levantamiento y anclas sobre el terreno real**, antes de GM06/costa o A3/Puerto Sol.
+
 
 ## Checkpoint S21 - terreno de isla (2026-10-08)
 

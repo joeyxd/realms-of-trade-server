@@ -68,3 +68,14 @@
 .kit-slot.is-empty { border-color: #5f80a055; background: #0a1522b3; }
 .kit-bar { height: 8px; border: 1px solid #5f80a066; border-radius: 5px; background: #07111c; overflow: hidden; }
 .kit-bar > i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6fb6ec, #a6dcff); }
+/* Shared, touch-readable reference for carried provisions and crafting materials. */
+.provision-guide { margin: 10px 0; padding: 8px 10px; border: 1px solid #7bb4aa55; border-radius: 8px; color: #dce9e5; font: 12px/1.4 system-ui,sans-serif; }
+.provision-guide > summary { min-height: 32px; padding: 6px 0; cursor: pointer; font-weight: 700; color: #f0dbab; }
+.provision-guide > summary:focus-visible { outline: 2px solid #f1d387; outline-offset: 2px; }
+.provision-guide ul { list-style: none; padding: 0; margin: 0; }
+.provision-guide li { padding: 10px 0; border-top: 1px solid #7bb4aa33; overflow-wrap: anywhere; }
+.provision-guide p { margin: 4px 0; }
+.provision-guide .provision-guide__icon { display: inline-block; flex: 0 0 32px; width: 32px; height: 32px; vertical-align: middle; margin-right: 6px; }
+.provision-guide article { display: flex; gap: 6px; align-items: flex-start; }
+.provision-guide article > div { min-width: 0; }
+.provision-guide h4 { margin: 0; font: 700 13px/1.4 system-ui,sans-serif; color: #f1eee3; }

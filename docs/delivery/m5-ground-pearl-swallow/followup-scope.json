@@ -1,0 +1,8 @@
+{
+  "changedSourcesSinceRegression": [
+    "tests/ground-pearl-leave-host.test.mjs"
+  ],
+  "runtimeMatchesRegression": true,
+  "reason": "Valid swallow is now supported; the old leave-host denial fixture now rejects replaceUid instead.",
+  "sourcesMatchFinalAcceptanceExceptUpdatedLeaveTest": true
+}

@@ -38,6 +38,20 @@ test('without the common mount, give retains the existing bag-only gameplay rout
   assert.equal(world.profiles.get(receiver.entity).pearls.bag.filter(q => q.uid === pearl.uid).length, 1);
 });
 
+test('without the common mount, swallow retains its bound-until-death gameplay rule', () => {
+  const { server, client, world, pearl } = fixture();
+  assert.equal(server.onPearlCommand, null);
+  assert.equal(server.playerCommand(client, { type: 'pearl', op: 'swallow', uid: pearl.uid }), true);
+  const before = structuredClone(world.profiles.get(client.entity));
+  assert.equal(before.pearls.swallowed.uid, pearl.uid);
+  server.playerCommand(client, { type: 'pearl', op: 'swallow', uid: pearl.uid, confirm: true });
+  assert.equal(world.events.at(-1).why, 'bound');
+  server.playerCommand(client, { type: 'pearl', op: 'spit' });
+  assert.equal(world.events.at(-1).why, 'bound');
+  assert.deepEqual(world.profiles.get(client.entity), before);
+  assert.equal(world.drops.size, 0);
+});
+
 test('mounted false, true and async command decisions never fall through to a local pearl mutation', async () => {
   const { server, client, world, pearl } = fixture();
   const before = structuredClone(world.profiles.get(client.entity));
