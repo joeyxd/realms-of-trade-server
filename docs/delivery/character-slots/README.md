@@ -12,6 +12,12 @@ La prueba nueva de `player-character-owner-scope` falla sin ese cambio y pasa co
 Las operaciones de perlas siguen ligadas al personaje: su perfil lleva `account:<personaje>`
 (SQL038 lo impone), que es lo que comprueban give/swallow/leave.
 
+Sobre el código unido: actualizador 197/197, slots/compañeros/cuentas 155/155 y Chrome repetido
+en invitado y cuenta (77 → 0 → 77 monedas, blob anterior intacto, pistolas nuevas, 0 errores JS).
+Capturas fuera de git (sha256): cuenta `54bcdceceb2d` escritorio, `5c99913cd47c` móvil,
+`e33d7c7b3b4f` crear; invitado `413098f10fb3` escritorio, `3d0da947d748` móvil, `1b6380e131a8` crear.
+SQL038 ya existe en producción: `mn_player_characters_ready` responde 42501 al rol anon, no PGRST202.
+
 ## Comportamiento
 
 La cuenta tiene tres plazas. Continuar carga el perfil elegido; crear obtiene otro UUID, inventario,
