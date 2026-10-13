@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T05:39:20.323Z",
+  "generatedAt": "2026-10-13T05:42:28.385Z",
   "scope": "local Chrome browser acceptance on an isolated in-memory game host; no production authority or persistence writes",
   "viewports": [
     {
@@ -10,38 +10,38 @@
       "mapSize": 512,
       "errors": [],
       "requests": [
-        "http://127.0.0.1:56179/assets/models/buccaneer-v1-desktop.glb",
-        "http://127.0.0.1:56179/assets/models/prop-storage-crate.glb",
-        "http://127.0.0.1:56179/assets/models/coast-rock-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-shell-fan-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-shell-oval-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-shell-chip-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-pebbles-v1.glb",
-        "http://127.0.0.1:56179/assets/models/palm-tall-v1.glb",
-        "http://127.0.0.1:56179/assets/models/palm-curved-v1.glb",
-        "http://127.0.0.1:56179/assets/models/palm-short-v1.glb",
-        "http://127.0.0.1:56179/assets/models/palm-base-open-v1.glb",
-        "http://127.0.0.1:56179/assets/models/palm-base-lush-v1.glb",
-        "http://127.0.0.1:56179/assets/models/shrub-round-v1.glb",
-        "http://127.0.0.1:56179/assets/models/shrub-low-v1.glb",
-        "http://127.0.0.1:56179/assets/models/shrub-tall-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-debris-branch-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-debris-log-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-debris-planks-v1.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/resina-desktop.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/antorcha-desktop.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/coco-desktop.glb",
-        "http://127.0.0.1:56179/assets/editor/catalog.json",
-        "http://127.0.0.1:56179/assets/editor/thumbnails.json",
-        "http://127.0.0.1:56179/assets/models/items-v1/cana-desktop.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/lima-desktop.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/especias-desktop.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/meal_grog-desktop.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/meal_roastFish-desktop.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/hierbas_aromaticas-desktop.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/meal_heartyBiscuit-desktop.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/agua-desktop.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/harina-desktop.glb"
+        "http://127.0.0.1:52512/assets/models/buccaneer-v1-desktop.glb",
+        "http://127.0.0.1:52512/assets/models/prop-storage-crate.glb",
+        "http://127.0.0.1:52512/assets/models/coast-rock-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-pebbles-v1.glb",
+        "http://127.0.0.1:52512/assets/models/palm-tall-v1.glb",
+        "http://127.0.0.1:52512/assets/models/palm-curved-v1.glb",
+        "http://127.0.0.1:52512/assets/models/palm-short-v1.glb",
+        "http://127.0.0.1:52512/assets/models/palm-base-open-v1.glb",
+        "http://127.0.0.1:52512/assets/models/palm-base-lush-v1.glb",
+        "http://127.0.0.1:52512/assets/models/shrub-round-v1.glb",
+        "http://127.0.0.1:52512/assets/models/shrub-low-v1.glb",
+        "http://127.0.0.1:52512/assets/models/shrub-tall-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-debris-branch-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-debris-log-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-debris-planks-v1.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/resina-desktop.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/antorcha-desktop.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/coco-desktop.glb",
+        "http://127.0.0.1:52512/assets/editor/catalog.json",
+        "http://127.0.0.1:52512/assets/editor/thumbnails.json",
+        "http://127.0.0.1:52512/assets/models/items-v1/cana-desktop.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/lima-desktop.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/especias-desktop.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/meal_grog-desktop.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/meal_roastFish-desktop.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/hierbas_aromaticas-desktop.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/meal_heartyBiscuit-desktop.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/agua-desktop.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/harina-desktop.glb"
       ],
       "checks": [
         "booted all three registered item models",
@@ -192,7 +192,7 @@
         "joined": true,
         "id": 26,
         "mode": "playing",
-        "renderer": 738
+        "renderer": 734
       },
       "wood": {
         "atlasLoaded": true,
@@ -238,9 +238,9 @@
       },
       "lineup": {
         "target": [
-          108.37726239036033,
-          11.299750677087374,
-          99.56941205506213
+          108.21107288055957,
+          11.299750677087378,
+          99.29812413146952
         ],
         "counts": {
           "baseline": 5,
@@ -256,35 +256,35 @@
         },
         "baselineFrames": {
           "frames": 30,
-          "meanFrameMs": 11.689999999962735,
-          "p95FrameMs": 16.69999999999891,
+          "meanFrameMs": 12.236666666641819,
+          "p95FrameMs": 25.200000000000728,
           "calls": 201,
-          "geometries": 167,
+          "geometries": 166,
           "textures": 64
         },
         "stressFrames": {
           "frames": 45,
-          "meanFrameMs": 11.333333333325047,
-          "p95FrameMs": 16.600000000000364,
-          "calls": 282,
-          "geometries": 167,
+          "meanFrameMs": 9.731111111102816,
+          "p95FrameMs": 12.600000000000364,
+          "calls": 276,
+          "geometries": 166,
           "textures": 64
         },
         "postFrames": {
           "frames": 30,
-          "meanFrameMs": 10.146666666629425,
-          "p95FrameMs": 12.699999999998909,
+          "meanFrameMs": 8.729999999975188,
+          "p95FrameMs": 12.5,
           "calls": 201,
-          "geometries": 167,
+          "geometries": 166,
           "textures": 64
         },
         "warm": true,
         "postRemovalFrames": {
           "frames": 30,
-          "meanFrameMs": 9.75666666666669,
-          "p95FrameMs": 12.600000000000364,
+          "meanFrameMs": 9.973333333333358,
+          "p95FrameMs": 16.5,
           "calls": 191,
-          "geometries": 167,
+          "geometries": 166,
           "textures": 64,
           "fixtureRemoved": true,
           "sceneChildrenBefore": 358,
@@ -293,10 +293,10 @@
         },
         "browserFrames": {
           "frames": 36,
-          "meanFrameMs": 11.630555555524502,
-          "p95FrameMs": 16.600000000000364,
+          "meanFrameMs": 8.852777777777797,
+          "p95FrameMs": 12.5,
           "renderCalls": 191,
-          "geometries": 167,
+          "geometries": 166,
           "textures": 64
         }
       },
@@ -320,7 +320,7 @@
         "beforePending": true,
         "requestsBefore": [],
         "requestsAfter": [
-          "http://127.0.0.1:56179/assets/models/items-v1/cana-desktop.glb"
+          "http://127.0.0.1:52512/assets/models/items-v1/cana-desktop.glb"
         ]
       },
       "allModels": {
@@ -487,38 +487,38 @@
       "mapSize": 256,
       "errors": [],
       "requests": [
-        "http://127.0.0.1:56179/assets/models/buccaneer-v1-mobile.glb",
-        "http://127.0.0.1:56179/assets/models/prop-storage-crate.glb",
-        "http://127.0.0.1:56179/assets/models/coast-rock-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-shell-fan-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-shell-oval-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-shell-chip-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-pebbles-v1.glb",
-        "http://127.0.0.1:56179/assets/models/palm-tall-v1.glb",
-        "http://127.0.0.1:56179/assets/models/palm-curved-v1.glb",
-        "http://127.0.0.1:56179/assets/models/palm-short-v1.glb",
-        "http://127.0.0.1:56179/assets/models/palm-base-open-v1.glb",
-        "http://127.0.0.1:56179/assets/models/palm-base-lush-v1.glb",
-        "http://127.0.0.1:56179/assets/models/shrub-round-v1.glb",
-        "http://127.0.0.1:56179/assets/models/shrub-low-v1.glb",
-        "http://127.0.0.1:56179/assets/models/shrub-tall-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-debris-branch-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-debris-log-v1.glb",
-        "http://127.0.0.1:56179/assets/models/beach-debris-planks-v1.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/resina-mobile.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/antorcha-mobile.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/coco-mobile.glb",
-        "http://127.0.0.1:56179/assets/editor/catalog.json",
-        "http://127.0.0.1:56179/assets/editor/thumbnails.json",
-        "http://127.0.0.1:56179/assets/models/items-v1/cana-mobile.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/lima-mobile.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/especias-mobile.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/meal_grog-mobile.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/meal_roastFish-mobile.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/hierbas_aromaticas-mobile.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/meal_heartyBiscuit-mobile.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/agua-mobile.glb",
-        "http://127.0.0.1:56179/assets/models/items-v1/harina-mobile.glb"
+        "http://127.0.0.1:52512/assets/models/buccaneer-v1-mobile.glb",
+        "http://127.0.0.1:52512/assets/models/prop-storage-crate.glb",
+        "http://127.0.0.1:52512/assets/models/coast-rock-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-pebbles-v1.glb",
+        "http://127.0.0.1:52512/assets/models/palm-tall-v1.glb",
+        "http://127.0.0.1:52512/assets/models/palm-curved-v1.glb",
+        "http://127.0.0.1:52512/assets/models/palm-short-v1.glb",
+        "http://127.0.0.1:52512/assets/models/palm-base-open-v1.glb",
+        "http://127.0.0.1:52512/assets/models/palm-base-lush-v1.glb",
+        "http://127.0.0.1:52512/assets/models/shrub-round-v1.glb",
+        "http://127.0.0.1:52512/assets/models/shrub-low-v1.glb",
+        "http://127.0.0.1:52512/assets/models/shrub-tall-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-debris-branch-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-debris-log-v1.glb",
+        "http://127.0.0.1:52512/assets/models/beach-debris-planks-v1.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/resina-mobile.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/antorcha-mobile.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/coco-mobile.glb",
+        "http://127.0.0.1:52512/assets/editor/catalog.json",
+        "http://127.0.0.1:52512/assets/editor/thumbnails.json",
+        "http://127.0.0.1:52512/assets/models/items-v1/cana-mobile.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/lima-mobile.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/especias-mobile.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/meal_grog-mobile.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/meal_roastFish-mobile.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/hierbas_aromaticas-mobile.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/meal_heartyBiscuit-mobile.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/agua-mobile.glb",
+        "http://127.0.0.1:52512/assets/models/items-v1/harina-mobile.glb"
       ],
       "checks": [
         "booted all three registered item models",
@@ -669,7 +669,7 @@
         "joined": true,
         "id": 26,
         "mode": "playing",
-        "renderer": 771
+        "renderer": 630
       },
       "wood": {
         "atlasLoaded": true,
@@ -715,9 +715,9 @@
       },
       "lineup": {
         "target": [
-          107.74588375556253,
-          11.328589904776473,
-          98.93182050393378
+          107.840378808132,
+          11.46253945979279,
+          98.932990085344
         ],
         "counts": {
           "baseline": 5,
@@ -733,24 +733,24 @@
         },
         "baselineFrames": {
           "frames": 30,
-          "meanFrameMs": 12.513333333333321,
-          "p95FrameMs": 17.100000000000364,
-          "calls": 207,
+          "meanFrameMs": 11.289999999999994,
+          "p95FrameMs": 12.599999999999909,
+          "calls": 206,
           "geometries": 167,
           "textures": 64
         },
         "stressFrames": {
           "frames": 45,
-          "meanFrameMs": 10.557777777752946,
-          "p95FrameMs": 16.199999999999818,
-          "calls": 288,
+          "meanFrameMs": 8.20888888888888,
+          "p95FrameMs": 12.5,
+          "calls": 282,
           "geometries": 167,
           "textures": 64
         },
         "postFrames": {
           "frames": 30,
-          "meanFrameMs": 9.563333333296093,
-          "p95FrameMs": 16.300000000000182,
+          "meanFrameMs": 7.479999999975159,
+          "p95FrameMs": 12.5,
           "calls": 207,
           "geometries": 167,
           "textures": 64
@@ -758,8 +758,8 @@
         "warm": true,
         "postRemovalFrames": {
           "frames": 30,
-          "meanFrameMs": 11.160000000000005,
-          "p95FrameMs": 16.699999999999818,
+          "meanFrameMs": 6.353333333345745,
+          "p95FrameMs": 8.5,
           "calls": 197,
           "geometries": 167,
           "textures": 64,
@@ -770,8 +770,8 @@
         },
         "browserFrames": {
           "frames": 36,
-          "meanFrameMs": 11.652777777757088,
-          "p95FrameMs": 13.600000000000364,
+          "meanFrameMs": 6.608333333343682,
+          "p95FrameMs": 8.400000000000546,
           "renderCalls": 197,
           "geometries": 167,
           "textures": 64
@@ -797,7 +797,7 @@
         "beforePending": true,
         "requestsBefore": [],
         "requestsAfter": [
-          "http://127.0.0.1:56179/assets/models/items-v1/cana-mobile.glb"
+          "http://127.0.0.1:52512/assets/models/items-v1/cana-mobile.glb"
         ]
       },
       "allModels": {
