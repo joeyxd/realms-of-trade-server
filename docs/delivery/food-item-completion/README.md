@@ -52,6 +52,17 @@ colocada no crea comida recogible. Lima, hierbas y sal siguen como propuestas.
 
 ## Continuidad
 
+Publicado y verificado en **`a21c47f0fe6acbc3c63682b1aaa3b87acbeb4ccf`**, alpha.67,
+protocolo 60. [Prueba de runtime](public-runtime.json): una autoridad saludable,
+los siete archivos de UI/CSS coinciden con Git en el contenedor y por HTTPS;
+cocina y taller habilitados, cero errores o escrituras pendientes en esa lectura.
+El actualizador pasó **197/197** antes del relevo. Entrada pública y controles reales
+comprobados por el canario de [INV03](../inv03-existing-backpacks/README.md), **22/22**,
+con cuentas temporales eliminadas y recibos conservados.
+La integración con los cambios concurrentes pasó **36/36** en
+`meal-carry-presentation`, `meals-host`, `ground-pearl-command-route` y
+`ground-pearl-swallow` (subconjunto solapado con la cohorte anterior).
+
 [INV03](../inv03-existing-backpacks/README.md) comprueba las dos mejoras de mochila ya
 implementadas. [Fibra, techumbre y cuero](../../briefs/plant-fiber-thatch-leather.md) recoge
 la nueva dirección solicitada, pendiente de recetas y balance. No introduce todavía
