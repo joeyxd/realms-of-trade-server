@@ -1,5 +1,14 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA03, 2026-10-13 — cierre funcional de alimentos y siguiente corte:**
+[Contrato](docs/briefs/food-item-completion.md): fichas de uso/estadísticas con datos reales,
+comidas y carga cómoda coherentes; luego [INV03](docs/briefs/inv03-existing-backpacks.md),
+aceptación de mejoras existentes 18→30→42. El autor eligió cerrar los alimentos actuales;
+lima/hierbas conservan su estado de propuestas. [Fibra, techumbre y cuero](docs/briefs/plant-fiber-thatch-leather.md)
+incorpora la nueva dirección solicitada: plantas → fibra → tela/lona, palmeras → hojas
+para estructuras ligeras/techos, animales → piel → cuero. Planificado, con recetas y
+balance por concretar; no altera ahora catálogos, botín ni costes de mochilas.
+
 **Modelos de campo/cocina, 2026-10-12 — integración visual y optimización:**
 [Entrega y evidencia](docs/delivery/item-models-v1/DELIVERY.md). 12 GLB del autor archivados intactos;
 24 derivados WebP 512/256, 28,03 → 1,35 MiB, geometría/UV/color conservados.

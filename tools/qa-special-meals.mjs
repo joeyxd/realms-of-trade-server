@@ -42,7 +42,8 @@ stage.configure({ enabled: () => rotateStage }); stage.update();
 const client = { joined: true, youServer: 42, actionBusy: false, freshwaterStatus: {
   enabled: true, canteenEnabled: true, mealsEnabled: true, source: { id: 'spring-local', name: 'Manantial local', near: false },
   barrels: [], gathering: 0, meal: null, cookers: [],
-}, profile: { eco: { tradeRev: 17, pack: { goods: { pescado: 1, fruta: 1, ron: 1, agua: 1, galleta: 1, harina: 1 }, vessels: [] } }, surv: { sat: 100, hyd: 100 } }, sent: [],
+}, profile: { eco: { tradeRev: 17, pack: { goods: { pescado: 1, fruta: 1, ron: 1, agua: 1, galleta: 1, harina: 1,
+  coco: 1, resina: 1, tronco: 1, madera: 1, cana: 1, especias: 1 }, vessels: [] } }, surv: { sat: 100, hyd: 100 } }, sent: [],
   send(command) { this.sent.push(command); } };
 const panel = new FreshwaterPanel({ parent: document.querySelector('#mount'), client: () => client, locale: () => document.documentElement.lang, now: () => clock });
 panel.open();
@@ -110,9 +111,34 @@ async function run(spec) {
     }
     result.assertions.panelBounds = bounds;
     result.assertions.allThreeLocalizedRecipesAndDurations = true;
+    for (const [kind, stats] of [['roastFish', ['35']], ['grog', ['5', '55']], ['heartyBiscuit', ['25']]]) {
+      const card = page.locator(`[data-meal-card="${kind}"]`);
+      assert((await card.locator('.fresh-meal-description').innerText()).length > 15);
+      const text = await card.locator('.fresh-meal-nutrition').innerText();
+      for (const value of stats) assert(text.includes(`+${value}`));
+    }
+    assert.match(await page.locator('.fresh-meal-rules').innerText(), spec.locale === 'es' ? /sin conexión.*reemplaza.*reaparecer/ : /offline.*replaces.*Respawning/);
+    assert.match(await page.locator('[data-food="coco"] small').innerText(), /\+25/);
+    const guide = page.locator('.provision-guide');
+    const beforeGuide = await page.evaluate(() => ({ profile: window.qa.profileSnapshot(), sent: window.qa.client.sent.length }));
+    await guide.locator('summary').click();
+    assert.equal(await guide.evaluate(el => el.open), true);
+    assert.equal(await guide.locator('li').count(), 12);
+    assert.match(await guide.innerText(), /0\.25.*0\.2/);
+    assert.match(await guide.innerText(), /2 × (Tronco|Log) \+ 1 × (Resina|Resin)/);
+    await page.evaluate(() => window.qa.panel.update());
+    assert.equal(await guide.evaluate(el => el.open), true);
+    assert.deepEqual(await page.evaluate(() => ({ profile: window.qa.profileSnapshot(), sent: window.qa.client.sent.length })), beforeGuide);
+    assert.equal(await guide.evaluate(el => el.scrollWidth <= el.clientWidth + 1), true);
+    await guide.locator('li').first().scrollIntoViewIfNeeded();
+    const guideShot = `${spec.name}-${runTag}-guide.png`;
+    await page.screenshot({ path: resolve(out, guideShot), animations: 'disabled' }); result.screenshots.push(guideShot);
+    await guide.locator('summary').click();
+    result.assertions.provisionDetailsDoNotConsumeAndStayOpen = true;
+    result.assertions.immediateNutritionAndLifecycleExplained = true;
     const iconEvidence = await page.evaluate(async () => {
       const nodes = [...document.querySelectorAll('.fresh-meal-outcome-icon, .fresh-meal-ingredient-icon, .fresh-food-icon')];
-      const urls = [...new Set(nodes.map(node => getComputedStyle(node).backgroundImage))];
+      const urls = [...new Set(nodes.filter(node => node.dataset.atlas === 'foods').map(node => getComputedStyle(node).backgroundImage))];
       const image = new Image();
       image.src = urls[0].slice(5, -2); await image.decode();
       return { icons: nodes.length, urls, dimensions: [image.naturalWidth, image.naturalHeight],
@@ -120,6 +146,7 @@ async function run(spec) {
         ingredients: document.querySelectorAll('.fresh-meal-ingredient-icon[data-atlas="foods"]').length,
         foodButtons: document.querySelectorAll('.fresh-food-icon[data-atlas="foods"]').length };
     });
+    assert.equal(iconEvidence.icons, 14);
     assert.equal(iconEvidence.outcomes, 3); assert.equal(iconEvidence.ingredients, 5); assert.equal(iconEvidence.foodButtons, 5);
     assert.equal(iconEvidence.urls.length, 1);
     const expectedAtlas = `/assets/ui/kit/foods-v1${spec.mobile ? '-mobile' : ''}.webp`;

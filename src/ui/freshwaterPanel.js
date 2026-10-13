@@ -1,6 +1,7 @@
 import { FOODS } from '../data/survival.js';
 import { MEALS, MEAL_TICKS } from '../data/meals.js';
-import { atlasIcon } from './kit.js';
+import { atlasIcon, escHtml } from './kit.js';
+import { mealInfo, nutritionText, provisionsGuideHtml } from './provisionInfo.js';
 import { shoreBarrelNotice, shoreVoyageActive } from './shoreStopState.js';
 
 const RETRY_MS = 1000;
@@ -109,6 +110,18 @@ export class FreshwaterPanel {
     this.canteenBucketButton = this.$('.fresh-canteen-bucket'); this.canteenProvisionsButton = this.$('.fresh-canteen-provisions');
     this.canteenDrinkButton = this.$('.fresh-canteen-drink'); this.foodsBox = this.$('.fresh-foods');
     this.mealSection = this.$('.fresh-meals');
+    // Persistent nodes keep disclosure state across frequent status updates.
+    this.guide = doc.createElement('div'); this.guide.className = 'fresh-provisions-guide';
+    this.foodsBox.parentNode?.appendChild(this.guide);
+    this.mealRules = doc.createElement('p'); this.mealRules.className = 'fresh-meal-rules';
+    this.mealSection.appendChild(this.mealRules);
+    for (const kind of Object.keys(MEALS)) {
+      const card = this.$(`[data-meal-card="${kind}"]`);
+      if (!card) continue;
+      const description = doc.createElement('p'); description.className = 'fresh-meal-description';
+      const nutrition = doc.createElement('p'); nutrition.className = 'fresh-meal-nutrition';
+      card.querySelector('button')?.before?.(description, nutrition);
+    }
     this.closeButton.addEventListener('click', () => this.close());
     this.craftButton.addEventListener('click', () => this.craftBucket());
     this.collectButton.addEventListener('click', () => this.fill());
@@ -312,7 +325,6 @@ export class FreshwaterPanel {
     if (!enabled) return;
     const names = { roastFish: c.mealFish, grog: c.mealGrog, heartyBiscuit: c.mealBiscuit };
     const costs = { roastFish: c.mealFishCost, grog: c.mealGrogCost, heartyBiscuit: c.mealBiscuitCost };
-    const effects = { roastFish: c.mealFishEffect, grog: c.mealGrogEffect, heartyBiscuit: c.mealBiscuitEffect };
     const ingredientLabels = { pescado: c.fish, ron: c.rum, agua: c.waterGood, galleta: c.biscuit, harina: c.flour };
     this.$('.fresh-meals-title').textContent = c.meals;
     const activeMeal = status?.meal && MEALS[status.meal.kind] && Number.isFinite(status.meal.ticks) && status.meal.ticks > 0 ? status.meal : null;
@@ -325,6 +337,7 @@ export class FreshwaterPanel {
     for (const kind of Object.keys(MEALS)) {
       const recipe = MEALS[kind], card = this.$(`[data-meal-card="${kind}"]`), button = card?.querySelector('button');
       if (!card || !button) continue;
+      const info = mealInfo(kind, this.lang());
       card.querySelector('.fresh-meal-name').textContent = names[kind];
       card.querySelector('.fresh-meal-cost').textContent = costs[kind];
       const ingredients = Object.entries(recipe.cost);
@@ -334,8 +347,12 @@ export class FreshwaterPanel {
           `${index ? '<span class="fresh-meal-plus" aria-hidden="true">+</span>' : ''}<span class="fresh-meal-ingredient">${atlasIcon(good, 'fresh-meal-ingredient-icon')}<span>${amount} ${ingredientLabels[good] || good}</span></span>`).join('');
         recipeNode.dataset.recipeLang = this.lang();
       }
-      card.querySelector('.fresh-meal-effect').textContent = effects[kind];
-      card.querySelector('.fresh-meal-duration').textContent = c.mealDuration;
+      card.querySelector('.fresh-meal-effect').textContent = info.effect;
+      card.querySelector('.fresh-meal-duration').textContent = info.duration;
+      const description = card.querySelector('.fresh-meal-description'), nutrition = card.querySelector('.fresh-meal-nutrition');
+      if (description) description.textContent = info.description;
+      if (nutrition) nutrition.textContent = info.nutrition;
+      this.mealRules.textContent = info.rules;
       button.textContent = c.prepareEat;
       const hasGoods = Object.entries(recipe.cost).every(([good, amount]) => finite(goods[good]) >= amount);
       const heatReady = !recipe.heat || !!cooker;
@@ -395,7 +412,13 @@ export class FreshwaterPanel {
       const foodSignature = JSON.stringify([this.lang(), availableFoods.map(([id]) => [id, Math.floor(finite(goods[id]))])]);
       if (foodSignature !== this.foodSignature) {
         this.foodSignature = foodSignature;
-        this.foodsBox.innerHTML = availableFoods.map(([id, label]) => `<button type="button" data-food="${id}">${atlasIcon(id, 'fresh-food-icon')}<span>${label} ×${Math.floor(finite(goods[id]))}</span></button>`).join('');
+        this.foodsBox.innerHTML = availableFoods.map(([id, label]) => `<button type="button" data-food="${id}">${atlasIcon(id, 'fresh-food-icon')}<span>${label} ×${Math.floor(finite(goods[id]))}<small>${escHtml(nutritionText(FOODS[id], this.lang()))}</small></span></button>`).join('');
+      }
+      const guideHtml = provisionsGuideHtml(Object.keys(goods).filter(id => finite(goods[id]) > 0), this.lang());
+      if (this.guideHtml !== guideHtml) {
+        const open = this.guide.querySelector('details')?.open;
+        this.guide.innerHTML = guideHtml; this.guideHtml = guideHtml;
+        const details = this.guide.querySelector('details'); if (details && open) details.open = true;
       }
       this.foodsBox.setAttribute('aria-label', c.eat);
       for (const button of this.foodsBox.querySelectorAll('button')) {

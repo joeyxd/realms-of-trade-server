@@ -12,7 +12,8 @@ import { SKINS } from '../render/characters.js';
 import { itemName, itemValue, itemScore } from '../sim/items.js';
 import { gearTotals, statsFor } from '../sim/systems/stats.js';
 import { holdMass, holdUsed } from '../sim/economy/cargo.js';
-import { CARRY, comfortMass, readCarryField } from '../data/carry.js';
+import { CARRY, readCarryField } from '../data/carry.js';
+import { packComfort } from '../sim/economy/carry.js';
 import { readAttrField } from '../data/attributes.js';
 import { FOODS } from '../data/survival.js';
 import { statLines, compareLines, targetSlot } from './itemui.js';
@@ -21,6 +22,7 @@ import { pearlHtml } from './pearlpanel.js';
 import { createFigureLoop } from './figureLoop.js';
 import { loggingSkillHtml } from './loggingSkill.js';
 import { goodName } from './craftingCatalog.js';
+import { provisionsGuideHtml } from './provisionInfo.js';
 import { translateData } from '../core/i18n.js';
 import { LINE_ICONS as I, atlasIcon, escHtml as esc, fmtNum, onLocaleChange, uiLang } from './kit.js';
 
@@ -83,7 +85,7 @@ const VIEWS = [0, Math.PI / 2, Math.PI];
 const HOME_YAW = 0.38;
 const fill = (s, p) => String(s).replace(/\{(\w+)\}/g, (_, k) => String(p[k] ?? ''));
 const pct = (v) => `${Math.max(0, Math.min(100, v * 100)).toFixed(1)}%`;
-const comfortOf = (p, pack) => comfortMass(pack.maxMass, readAttrField(p).value !== null);
+const comfortOf = (p, pack) => packComfort({ ...p, eco: { ...p.eco, pack } });
 
 export class CharacterScreen extends CharPanel {
   constructor(root, opts) {
@@ -224,7 +226,9 @@ export class CharacterScreen extends CharPanel {
     if (this.parts[name] === html) return false;
     const el = this.root.querySelector(`[data-part="${name}"]`);
     if (!el) return false;
+    const guideOpen = el.querySelector('.provision-guide')?.open;
     this.parts[name] = html; el.innerHTML = html;
+    const guide = el.querySelector('.provision-guide'); if (guide && guideOpen) guide.open = true;
     return true;
   }
 
@@ -377,6 +381,7 @@ export class CharacterScreen extends CharPanel {
       <div class="ch-meter"><span>${esc(T.volume)}</span><span class="ch-cap"><i style="width:${pct(used / (pack.cap || 1))}"></i></span><b>${fmtNum(used, lang)} / ${fmtNum(pack.cap, lang)}</b></div>
       ${weighed ? `<div class="ch-meter"><span>${esc(T.weight)}</span><span class="ch-cap is-weight${mass > comfort ? ' is-over' : ''}"><i style="width:${pct(mass / (comfort || 1))}"></i></span><b>${fmtNum(mass, lang, 1)} / ${fmtNum(comfort, lang)}</b></div>` : ''}
       <div class="ch-goods">${grid}</div>
+      ${provisionsGuideHtml(goods, lang)}
       <div class="ch-belt"><span class="ch-sub">${esc(T.belt)}</span><div class="ch-belt-row">${belt}</div></div>`;
   }
 
