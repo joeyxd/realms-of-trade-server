@@ -13,6 +13,13 @@ Sin SQL/flag/protocolo nuevos. Publicación del código pendiente del relevo y v
 Sigue candidato completo kill/cofre y luego composición GM/compañeros/control/bots/antorchas,
 adopción detenida y canario VPS; montaje común público apagado.
 
+**AREA01 A0-P, 2026-10-13 — diseño de región, sin cambios al mundo activo:**
+[Plan](PLAN-REGION-INICIAL.md) y [plano](docs/world/region-inicial-v1.svg).
+Antes de construir Puerto Sol, definir terreno, pueblos y caminos sobre la dirección alfa acordada.
+El esquema conserva aventura/Caldera, agua interior, costa y Cala separada; Ceniza queda en otra isla.
+Posiciones y tiempos propuestos, sin coordenadas nuevas ni migraciones. Siguiente entrega:
+**A0-G1 levantamiento/anclas**, luego costa GM06 si hace falta, accesos A3 y viaje comercial AREA07/08.
+
 **Modelos de campo/cocina, 2026-10-12 — integración visual y optimización:**
 [Entrega y evidencia](docs/delivery/item-models-v1/DELIVERY.md). 12 GLB del autor archivados intactos;
 24 derivados WebP 512/256, 28,03 → 1,35 MiB, geometría/UV/color conservados.

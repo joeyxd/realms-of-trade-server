@@ -13,6 +13,14 @@ Sin SQL/flag/protocolo nuevos. Publicación del código pendiente del relevo y v
 Sigue candidato completo kill/cofre y luego composición GM/compañeros/control/bots/antorchas,
 adopción detenida y canario VPS; montaje común público apagado.
 
+**AREA01 A0-P, 2026-10-13 — diseñar geografía antes de construir Puerto Sol:**
+[Plan de primera región](../PLAN-REGION-INICIAL.md), [plano provisional](world/region-inicial-v1.svg).
+Salty Shore/Sol comparten isla y camino/costa; Ceniza ocupa otra isla. Esquema de relaciones propuesto,
+sin escala ni coordenadas runtime. Conservar anclas/IDs actuales de llegada, puerto, fuente, Caldera,
+Cala y recursos; editor actual no crea costa nueva. Siguiente corte **A0-G1: medir terreno y anclas**,
+decidir emplazamiento real de Sol y extensión necesaria, antes de GM06/A3 y descarga multipuerto.
+No hay código, SQL, versión nueva o geografía activada en esta entrega documental.
+
 **Modelos de campo/cocina, 2026-10-12 — integración visual y optimización:**
 [Entrega y evidencia](delivery/item-models-v1/DELIVERY.md). 12 GLB del autor archivados intactos;
 24 derivados WebP 512/256, 28,03 → 1,35 MiB, geometría/UV/color conservados.
