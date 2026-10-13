@@ -1,0 +1,42 @@
+{
+  "schema": "st01c-native-delivery-audit/v1",
+  "scope": "Read-only recheck of the previously reported Python probe provenance blocker. No UE/GPU invocation or file changes beyond this audit JSON.",
+  "blockers": [],
+  "resolvedBlockers": [
+    {
+      "id": "executed-python-probes-do-not-match-delivered-source",
+      "status": "resolved",
+      "evidence": [
+        {
+          "artifact": "tools/unreal-niagara-probe/probe_source.py",
+          "deliveredSha256": "1478ac0eb484378b3479d9cdd78383f25c946c375ba6daa1eef8c0f7320cbaf2",
+          "freshExecutionCopy": ".scratch/unreal-verified/probe_source.py",
+          "freshExecutionSha256": "1478ac0eb484378b3479d9cdd78383f25c946c375ba6daa1eef8c0f7320cbaf2",
+          "byteMatch": true,
+          "result": "Fresh exact-source run completed successfully; probe01/report.json records completed=true and seven successful exports. source-console.log ends with Success - 0 error(s), 0 warning(s)."
+        },
+        {
+          "artifact": "tools/unreal-niagara-probe/probe_material_defaults.py",
+          "deliveredSha256": "2b3ea8757935146f9264a75d48ffb2f8f531e3f2bcbf845e959432c09965d068",
+          "freshExecutionCopy": ".scratch/unreal-verified/probe_material_defaults.py",
+          "freshExecutionSha256": "2b3ea8757935146f9264a75d48ffb2f8f531e3f2bcbf845e959432c09965d068",
+          "byteMatch": true,
+          "result": "Fresh exact-source run completed successfully with 0 errors and 0 warnings. Its direct object paths are reflected in docs/delivery/st01c/material-defaults.json, which byte-matches the fresh output."
+        }
+      ],
+      "sourceExportRepeatability": {
+        "freshOutput": ".scratch/unreal-verified/probe01",
+        "filesCompared": 7,
+        "normalization": "Only whole CachedChangeId, ChangeId, and LastBuiltTraversalDataChangeId lines containing 32 uppercase hexadecimal characters are excluded; checkpoint.json records prior and fresh raw hashes and per-file normalized equality.",
+        "allNormalizedEqual": true,
+        "materialTextFilesRawHashesUnchanged": true
+      },
+      "sourceCopyIntegrity": {
+        "sourceAssetCount": 51,
+        "originalPlusTwoCopyHashChecks": 153,
+        "allMatch": true
+      },
+      "resolution": "Delivered Python probes were executed unchanged in a fresh isolated project, and the material-defaults artifact was refreshed."
+    }
+  ]
+}

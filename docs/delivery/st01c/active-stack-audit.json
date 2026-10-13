@@ -1,0 +1,996 @@
+{
+  "schema": "st01c-active-niagara-stack-audit/v1",
+  "evidence": {
+    "nativeValues02": {
+      "path": ".scratch\\unreal\\native-values02.json",
+      "sha256": "869842eb14e58e6fc634cbea888dccd3ff163e630fd7c886cb0d542b5e1dc2f6",
+      "schema": "st01c-native-api-probe/v1",
+      "systemObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single",
+      "expectedSourceSystemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165"
+    },
+    "systemTextInspection": {
+      "path": ".scratch\\native-text-parser-system01.json",
+      "sha256": "872aa69c91a63bd97fa60963e41ca510c0afded7cded6a3cf79724e0ebbdb14b",
+      "sourceT3dSha256": "d7d78b14338a081a2b2a0af6a86ded8faf4fe46072e2e0fc26e1b0fc90d7aa11",
+      "objects": 451
+    },
+    "method": "For each API script, match the exported NiagaraScript Usage and VersionData Source to that emitter's active graph source. Select exactly one NiagaraNodeOutput by usage (ParticleSpawnScriptInterpolated is connected to the graph's sole ParticleSpawnScript output; retain both raw labels). Walk the output Out pin backward through linked Niagara module OutputMap/InputMap pins and ParameterMapSet Dest/Source pins until a NiagaraNodeInput. Only linked nodes inside the exact graphSourceObjectPath are eligible."
+  },
+  "emitters": [
+    {
+      "handle": "NE_Flame_Basic_001",
+      "enabled": true,
+      "handleOrder": 0,
+      "emitterObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001",
+      "activeGraphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0",
+      "scriptCount": 4,
+      "scripts": [
+        {
+          "apiScriptObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.SpawnScript",
+          "apiUsage": "ParticleSpawnScriptInterpolated",
+          "exportedUsageRaw": "ParticleSpawnScriptInterpolated",
+          "versionDataSourceRaw": "\"/Script/NiagaraEditor.NiagaraScriptSource'NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0'\"",
+          "activeGraphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0",
+          "graphOutputUsageRaw": "ParticleSpawnScript",
+          "outputMatches": 1,
+          "usageOutputEvidence": {
+            "nodeName": "NiagaraNodeOutput_4",
+            "nodeClass": "NiagaraNodeOutput",
+            "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeOutput'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeOutput_4'\"",
+            "scriptTypeRaw": "ParticleSpawnScript",
+            "pinRaw": "Pin (PinId=8DA5C19749B121CB7F2892B61CFE501F,PinName=\"Out\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_10 0BA0012348C3C81D7C12D1AE228B9BE1,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+          },
+          "status": "linked-chain-proven",
+          "orderedModules": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_4",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_4'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Initialization/InitializeParticle.InitializeParticle'\"",
+              "inputMapPinRaw": "Pin (PinId=759EA2424DE88677F2D56495B0A9A77E,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_2 90C5E2D14392EBDEFDB2E98D80B1ADE9,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=59B66CB549361484E74728836223F68F,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_0 D3219BFF4BEDFECF61F2C8ACCAB9F9F0,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_10",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_10'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Location/SphereLocation.SphereLocation'\"",
+              "inputMapPinRaw": "Pin (PinId=8AEBF70240751D891F0274BBD4A73967,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_0 86DAB08247BF6BA5C64006A92C30EBB7,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=0BA0012348C3C81D7C12D1AE228B9BE1,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_4 8DA5C19749B121CB7F2892B61CFE501F,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "linkEvidenceInTraversalOrder": [
+            {
+              "fromNode": "NiagaraNodeFunctionCall_10",
+              "pinRaw": "Pin (PinId=8AEBF70240751D891F0274BBD4A73967,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_0 86DAB08247BF6BA5C64006A92C30EBB7,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeParameterMapSet_0",
+                "pinId": "86DAB08247BF6BA5C64006A92C30EBB7"
+              }
+            },
+            {
+              "parameterMapSet": "NiagaraNodeParameterMapSet_0",
+              "destPinRaw": "Pin (PinId=86DAB08247BF6BA5C64006A92C30EBB7,PinName=\"Dest\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_10 8AEBF70240751D891F0274BBD4A73967,),PersistentGuid=FF2CF175411D3FBC1B98189500FC8DDC,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "sourcePinRaw": "Pin (PinId=B9EA937F41030C565A7C1CB01D98CC58,PinName=\"Source\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_0 557AC1C9496313492F2CAA9B4FFD041A,),PersistentGuid=073142DC48F3BC2F9851B991403A740D,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_0",
+                "pinId": "557AC1C9496313492F2CAA9B4FFD041A"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_0",
+              "pinRaw": "Pin (PinId=D3219BFF4BEDFECF61F2C8ACCAB9F9F0,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_4 59B66CB549361484E74728836223F68F,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_4",
+                "pinId": "59B66CB549361484E74728836223F68F"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_4",
+              "pinRaw": "Pin (PinId=759EA2424DE88677F2D56495B0A9A77E,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_2 90C5E2D14392EBDEFDB2E98D80B1ADE9,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeParameterMapSet_2",
+                "pinId": "90C5E2D14392EBDEFDB2E98D80B1ADE9"
+              }
+            },
+            {
+              "parameterMapSet": "NiagaraNodeParameterMapSet_2",
+              "destPinRaw": "Pin (PinId=90C5E2D14392EBDEFDB2E98D80B1ADE9,PinName=\"Dest\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_4 759EA2424DE88677F2D56495B0A9A77E,),PersistentGuid=C67E4F0441DEF9679ECCB8ACE295B8AB,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "sourcePinRaw": "Pin (PinId=762C40EA44121310AE92029BCFE0D46C,PinName=\"Source\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_5 AFA801604FB369AE266D06960280D3B7,),PersistentGuid=53F9BAA0406B9432F70576A0D7106CB1,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeParameterMapSet_5",
+                "pinId": "AFA801604FB369AE266D06960280D3B7"
+              }
+            },
+            {
+              "parameterMapSet": "NiagaraNodeParameterMapSet_5",
+              "destPinRaw": "Pin (PinId=AFA801604FB369AE266D06960280D3B7,PinName=\"Dest\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_15 2BC59CFE491F556948174EBD29EE96DE,NiagaraNodeParameterMapSet_2 762C40EA44121310AE92029BCFE0D46C,NiagaraNodeFunctionCall_12 4A0F67F94B2B076721B954A3E8FEF9B0,NiagaraNodeParameterMapGet_0 2A34354C4B43B539F9BDAD90DCBEA507,),PersistentGuid=B26FC1B246436E65113B099496C9C134,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "sourcePinRaw": "Pin (PinId=D259D00B49CDD5FE068F388709088C15,PinName=\"Source\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_4 99AAF59A48689C2E17047FBB623DC3A2,),PersistentGuid=2A3BAA644E2012A06B72308F716C970F,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeInput_4",
+                "pinId": "99AAF59A48689C2E17047FBB623DC3A2"
+              }
+            },
+            {
+              "terminalInputNode": "NiagaraNodeInput_4",
+              "pinRaw": "Pin (PinId=99AAF59A48689C2E17047FBB623DC3A2,PinName=\"Input\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_5 D259D00B49CDD5FE068F388709088C15,NiagaraNodeFunctionCall_16 20BE7B254D9B1C39BF2E8182D94C4C9D,NiagaraNodeFunctionCall_17 6826C14145F48519F2E6458FACF0A49D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+            }
+          ],
+          "terminal": "NiagaraNodeInput",
+          "linkedModulePath": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_4",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_4'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Initialization/InitializeParticle.InitializeParticle'\"",
+              "inputMapPinRaw": "Pin (PinId=759EA2424DE88677F2D56495B0A9A77E,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_2 90C5E2D14392EBDEFDB2E98D80B1ADE9,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=59B66CB549361484E74728836223F68F,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_0 D3219BFF4BEDFECF61F2C8ACCAB9F9F0,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_0",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_0'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Velocity/AddVelocity.AddVelocity'\"",
+              "inputMapPinRaw": "Pin (PinId=D3219BFF4BEDFECF61F2C8ACCAB9F9F0,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_4 59B66CB549361484E74728836223F68F,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=557AC1C9496313492F2CAA9B4FFD041A,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_0 B9EA937F41030C565A7C1CB01D98CC58,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": "Disabled",
+              "bUserSetEnabledStateRaw": "True",
+              "stackDisposition": "excluded-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_10",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_10'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Location/SphereLocation.SphereLocation'\"",
+              "inputMapPinRaw": "Pin (PinId=8AEBF70240751D891F0274BBD4A73967,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_0 86DAB08247BF6BA5C64006A92C30EBB7,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=0BA0012348C3C81D7C12D1AE228B9BE1,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_4 8DA5C19749B121CB7F2892B61CFE501F,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "candidateModuleCount": 2,
+          "explicitlyDisabledModuleCount": 1,
+          "activityInterpretation": "Link path order is proven from pins. Explicit EnabledState=Disabled nodes are excluded from orderedModules; remaining connected nodes have no explicit disable in this export, which does not establish runtime compilation state.",
+          "explicitlyDisabledModules": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_0",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Velocity/AddVelocity.AddVelocity'\"",
+              "enabledStateRaw": "Disabled",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_0'\""
+            }
+          ]
+        },
+        {
+          "apiScriptObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.UpdateScript",
+          "apiUsage": "ParticleUpdateScript",
+          "exportedUsageRaw": "ParticleUpdateScript",
+          "versionDataSourceRaw": "\"/Script/NiagaraEditor.NiagaraScriptSource'NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0'\"",
+          "activeGraphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0",
+          "graphOutputUsageRaw": "ParticleUpdateScript",
+          "outputMatches": 1,
+          "usageOutputEvidence": {
+            "nodeName": "NiagaraNodeOutput_5",
+            "nodeClass": "NiagaraNodeOutput",
+            "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeOutput'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeOutput_5'\"",
+            "scriptTypeRaw": "ParticleUpdateScript",
+            "pinRaw": "Pin (PinId=7DA5987942C88137DEFC2EAE7DA5468C,PinName=\"Out\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_7 217B9BA1450538001799D5902106E178,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)"
+          },
+          "status": "linked-chain-proven",
+          "orderedModules": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_1",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_1'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/Lifetime/ParticleState.ParticleState'\"",
+              "inputMapPinRaw": "Pin (PinId=B741BFDD4747E9165F355195A86B66B0,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_5 0737194348A7167977AC4C8F8D5A232D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=9FAB18104B169456B7DDD78C4F0449F7,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_4 85FB1BEA427B5A49914514AA50CCD483,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_8",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_8'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Solvers/SolveForcesAndVelocity.SolveForcesAndVelocity'\"",
+              "inputMapPinRaw": "Pin (PinId=B5AC91164FBCE6A54D48B6A94C3575AE,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_5 161EB8194D9871757E250AB868911FE0,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=AAB7F9184AC2220C1E14F7A512270D52,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_7 9D1463744A6C85915D855B8D993BA313,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_7",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_7'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/SubUV/SubUVAnimation.SubUVAnimation'\"",
+              "inputMapPinRaw": "Pin (PinId=9D1463744A6C85915D855B8D993BA313,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_8 AAB7F9184AC2220C1E14F7A512270D52,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=217B9BA1450538001799D5902106E178,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_5 7DA5987942C88137DEFC2EAE7DA5468C,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "linkEvidenceInTraversalOrder": [
+            {
+              "fromNode": "NiagaraNodeFunctionCall_7",
+              "pinRaw": "Pin (PinId=9D1463744A6C85915D855B8D993BA313,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_8 AAB7F9184AC2220C1E14F7A512270D52,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_8",
+                "pinId": "AAB7F9184AC2220C1E14F7A512270D52"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_8",
+              "pinRaw": "Pin (PinId=B5AC91164FBCE6A54D48B6A94C3575AE,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_5 161EB8194D9871757E250AB868911FE0,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_5",
+                "pinId": "161EB8194D9871757E250AB868911FE0"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_5",
+              "pinRaw": "Pin (PinId=D1F9AE664BBB808F2BF47FB060E0C35F,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_3 751208444FDB556E59F3248FFE95A230,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeParameterMapSet_3",
+                "pinId": "751208444FDB556E59F3248FFE95A230"
+              }
+            },
+            {
+              "parameterMapSet": "NiagaraNodeParameterMapSet_3",
+              "destPinRaw": "Pin (PinId=751208444FDB556E59F3248FFE95A230,PinName=\"Dest\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_5 D1F9AE664BBB808F2BF47FB060E0C35F,),PersistentGuid=6F3511EE4208DA6010BFF7A2495C7592,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "sourcePinRaw": "Pin (PinId=4BA025EA41526AA5E57B99AEA748CD97,PinName=\"Source\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_4 B39539D5460A79ED9920E78925684426,),PersistentGuid=17C384D342145B1AD1E3F88DEDF221F8,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeParameterMapSet_4",
+                "pinId": "B39539D5460A79ED9920E78925684426"
+              }
+            },
+            {
+              "parameterMapSet": "NiagaraNodeParameterMapSet_4",
+              "destPinRaw": "Pin (PinId=B39539D5460A79ED9920E78925684426,PinName=\"Dest\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_6 D1903D32499F76ECE91CB096451D9389,NiagaraNodeParameterMapSet_3 4BA025EA41526AA5E57B99AEA748CD97,),PersistentGuid=D152190C4F6AC6496B155B8C05E1543F,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "sourcePinRaw": "Pin (PinId=85FB1BEA427B5A49914514AA50CCD483,PinName=\"Source\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_1 9FAB18104B169456B7DDD78C4F0449F7,),PersistentGuid=3DA8EA9B450D3D8D1AF38FA9621EBE5E,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_1",
+                "pinId": "9FAB18104B169456B7DDD78C4F0449F7"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_1",
+              "pinRaw": "Pin (PinId=B741BFDD4747E9165F355195A86B66B0,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_5 0737194348A7167977AC4C8F8D5A232D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeInput_5",
+                "pinId": "0737194348A7167977AC4C8F8D5A232D"
+              }
+            },
+            {
+              "terminalInputNode": "NiagaraNodeInput_5",
+              "pinRaw": "Pin (PinId=0737194348A7167977AC4C8F8D5A232D,PinName=\"Input\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_1 B741BFDD4747E9165F355195A86B66B0,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+            }
+          ],
+          "terminal": "NiagaraNodeInput",
+          "linkedModulePath": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_1",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_1'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/Lifetime/ParticleState.ParticleState'\"",
+              "inputMapPinRaw": "Pin (PinId=B741BFDD4747E9165F355195A86B66B0,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_5 0737194348A7167977AC4C8F8D5A232D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=9FAB18104B169456B7DDD78C4F0449F7,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_4 85FB1BEA427B5A49914514AA50CCD483,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_5",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_5'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/Color/ScaleColor.ScaleColor'\"",
+              "inputMapPinRaw": "Pin (PinId=D1F9AE664BBB808F2BF47FB060E0C35F,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_3 751208444FDB556E59F3248FFE95A230,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=161EB8194D9871757E250AB868911FE0,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_8 B5AC91164FBCE6A54D48B6A94C3575AE,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": "Disabled",
+              "bUserSetEnabledStateRaw": "True",
+              "stackDisposition": "excluded-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_8",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_8'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Solvers/SolveForcesAndVelocity.SolveForcesAndVelocity'\"",
+              "inputMapPinRaw": "Pin (PinId=B5AC91164FBCE6A54D48B6A94C3575AE,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_5 161EB8194D9871757E250AB868911FE0,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=AAB7F9184AC2220C1E14F7A512270D52,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_7 9D1463744A6C85915D855B8D993BA313,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_7",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_7'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/SubUV/SubUVAnimation.SubUVAnimation'\"",
+              "inputMapPinRaw": "Pin (PinId=9D1463744A6C85915D855B8D993BA313,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_8 AAB7F9184AC2220C1E14F7A512270D52,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=217B9BA1450538001799D5902106E178,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_5 7DA5987942C88137DEFC2EAE7DA5468C,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "candidateModuleCount": 3,
+          "explicitlyDisabledModuleCount": 1,
+          "activityInterpretation": "Link path order is proven from pins. Explicit EnabledState=Disabled nodes are excluded from orderedModules; remaining connected nodes have no explicit disable in this export, which does not establish runtime compilation state.",
+          "explicitlyDisabledModules": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_5",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/Color/ScaleColor.ScaleColor'\"",
+              "enabledStateRaw": "Disabled",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_5'\""
+            }
+          ]
+        },
+        {
+          "apiScriptObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.EmitterSpawnScript",
+          "apiUsage": "EmitterSpawnScript",
+          "exportedUsageRaw": "EmitterSpawnScript",
+          "versionDataSourceRaw": "\"/Script/NiagaraEditor.NiagaraScriptSource'NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0'\"",
+          "activeGraphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0",
+          "graphOutputUsageRaw": "EmitterSpawnScript",
+          "outputMatches": 1,
+          "usageOutputEvidence": {
+            "nodeName": "NiagaraNodeOutput_2",
+            "nodeClass": "NiagaraNodeOutput",
+            "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeOutput'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeOutput_2'\"",
+            "scriptTypeRaw": "EmitterSpawnScript",
+            "pinRaw": "Pin (PinId=3049AB024A97259B0EA4AC8370D704D6,PinName=\"Out\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_2 8071F7BD41F6F3AEF516559A7DDACF09,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+          },
+          "status": "linked-chain-proven",
+          "orderedModules": [],
+          "linkEvidenceInTraversalOrder": [
+            {
+              "terminalInputNode": "NiagaraNodeInput_2",
+              "pinRaw": "Pin (PinId=8071F7BD41F6F3AEF516559A7DDACF09,PinName=\"Input\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_2 3049AB024A97259B0EA4AC8370D704D6,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+            }
+          ],
+          "terminal": "NiagaraNodeInput",
+          "linkedModulePath": [],
+          "candidateModuleCount": 0,
+          "explicitlyDisabledModuleCount": 0,
+          "activityInterpretation": "Link path order is proven from pins. Explicit EnabledState=Disabled nodes are excluded from orderedModules; remaining connected nodes have no explicit disable in this export, which does not establish runtime compilation state."
+        },
+        {
+          "apiScriptObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.EmitterUpdateScript",
+          "apiUsage": "EmitterUpdateScript",
+          "exportedUsageRaw": "EmitterUpdateScript",
+          "versionDataSourceRaw": "\"/Script/NiagaraEditor.NiagaraScriptSource'NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0'\"",
+          "activeGraphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0",
+          "graphOutputUsageRaw": "EmitterUpdateScript",
+          "outputMatches": 1,
+          "usageOutputEvidence": {
+            "nodeName": "NiagaraNodeOutput_3",
+            "nodeClass": "NiagaraNodeOutput",
+            "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeOutput'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeOutput_3'\"",
+            "scriptTypeRaw": "EmitterUpdateScript",
+            "pinRaw": "Pin (PinId=C91348C24B00BC50829C7484CCF17ED2,PinName=\"Out\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_9 1FC0C2954F1CDF79A43AD385F8F35318,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+          },
+          "status": "linked-chain-proven",
+          "orderedModules": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_3",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_3'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/EmitterState.EmitterState'\"",
+              "inputMapPinRaw": "Pin (PinId=BB5CFF544ECC1E5300A9B686F2A2C97F,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_3 4BF9398E48F8CA170BEBBBA59539B685,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=5EFDA3F843CB4976109B008AF4C2D021,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_2 BB9FE28248F638911492F5819D8FBD1B,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_9",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_9'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/SpawnRate.SpawnRate'\"",
+              "inputMapPinRaw": "Pin (PinId=BDF2EE954B4894A599CAB0BD9C20D546,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_2 8CD8CA32493F3BC0FC2456BC91D03D6D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=1FC0C2954F1CDF79A43AD385F8F35318,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_3 C91348C24B00BC50829C7484CCF17ED2,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": "True",
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "linkEvidenceInTraversalOrder": [
+            {
+              "fromNode": "NiagaraNodeFunctionCall_9",
+              "pinRaw": "Pin (PinId=BDF2EE954B4894A599CAB0BD9C20D546,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_2 8CD8CA32493F3BC0FC2456BC91D03D6D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_2",
+                "pinId": "8CD8CA32493F3BC0FC2456BC91D03D6D"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_2",
+              "pinRaw": "Pin (PinId=BB9FE28248F638911492F5819D8FBD1B,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_3 5EFDA3F843CB4976109B008AF4C2D021,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_3",
+                "pinId": "5EFDA3F843CB4976109B008AF4C2D021"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_3",
+              "pinRaw": "Pin (PinId=BB5CFF544ECC1E5300A9B686F2A2C97F,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_3 4BF9398E48F8CA170BEBBBA59539B685,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeInput_3",
+                "pinId": "4BF9398E48F8CA170BEBBBA59539B685"
+              }
+            },
+            {
+              "terminalInputNode": "NiagaraNodeInput_3",
+              "pinRaw": "Pin (PinId=4BF9398E48F8CA170BEBBBA59539B685,PinName=\"Input\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_3 BB5CFF544ECC1E5300A9B686F2A2C97F,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+            }
+          ],
+          "terminal": "NiagaraNodeInput",
+          "linkedModulePath": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_3",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_3'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/EmitterState.EmitterState'\"",
+              "inputMapPinRaw": "Pin (PinId=BB5CFF544ECC1E5300A9B686F2A2C97F,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_3 4BF9398E48F8CA170BEBBBA59539B685,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=5EFDA3F843CB4976109B008AF4C2D021,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_2 BB9FE28248F638911492F5819D8FBD1B,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_2",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_2'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/SpawnBurst_Instantaneous.SpawnBurst_Instantaneous'\"",
+              "inputMapPinRaw": "Pin (PinId=BB9FE28248F638911492F5819D8FBD1B,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_3 5EFDA3F843CB4976109B008AF4C2D021,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=8CD8CA32493F3BC0FC2456BC91D03D6D,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_9 BDF2EE954B4894A599CAB0BD9C20D546,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": "Disabled",
+              "bUserSetEnabledStateRaw": "True",
+              "stackDisposition": "excluded-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_9",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_9'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/SpawnRate.SpawnRate'\"",
+              "inputMapPinRaw": "Pin (PinId=BDF2EE954B4894A599CAB0BD9C20D546,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_2 8CD8CA32493F3BC0FC2456BC91D03D6D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=1FC0C2954F1CDF79A43AD385F8F35318,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_3 C91348C24B00BC50829C7484CCF17ED2,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": "True",
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "candidateModuleCount": 2,
+          "explicitlyDisabledModuleCount": 1,
+          "activityInterpretation": "Link path order is proven from pins. Explicit EnabledState=Disabled nodes are excluded from orderedModules; remaining connected nodes have no explicit disable in this export, which does not establish runtime compilation state.",
+          "explicitlyDisabledModules": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_2",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/SpawnBurst_Instantaneous.SpawnBurst_Instantaneous'\"",
+              "enabledStateRaw": "Disabled",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_2'\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "handle": "NE_Smoke_Basic",
+      "enabled": true,
+      "handleOrder": 1,
+      "emitterObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic",
+      "activeGraphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0",
+      "scriptCount": 4,
+      "scripts": [
+        {
+          "apiScriptObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.SpawnScript",
+          "apiUsage": "ParticleSpawnScriptInterpolated",
+          "exportedUsageRaw": "ParticleSpawnScriptInterpolated",
+          "versionDataSourceRaw": "\"/Script/NiagaraEditor.NiagaraScriptSource'NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0'\"",
+          "activeGraphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0",
+          "graphOutputUsageRaw": "ParticleSpawnScript",
+          "outputMatches": 1,
+          "usageOutputEvidence": {
+            "nodeName": "NiagaraNodeOutput_4",
+            "nodeClass": "NiagaraNodeOutput",
+            "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeOutput'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeOutput_4'\"",
+            "scriptTypeRaw": "ParticleSpawnScript",
+            "pinRaw": "Pin (PinId=8DA5C19749B121CB7F2892B61CFE501F,PinName=\"Out\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_0 6B95C9674C0DCCD3E62B85B1A185A0CF,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+          },
+          "status": "linked-chain-proven",
+          "orderedModules": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_4",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_4'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Initialization/InitializeParticle.InitializeParticle'\"",
+              "inputMapPinRaw": "Pin (PinId=759EA2424DE88677F2D56495B0A9A77E,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_2 90C5E2D14392EBDEFDB2E98D80B1ADE9,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=59B66CB549361484E74728836223F68F,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_1 9CBEC558463E1C17EE4FD69016EB6EBE,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_13",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_13'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Location/CylinderLocation.CylinderLocation'\"",
+              "inputMapPinRaw": "Pin (PinId=A5BBF25941B9FCAA18905CA9146F2D84,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_1 1306C4474A19A84112AF17B7A8225B1B,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=2DCB0DED458147DAD0668BB12D291467,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_14 85099C014B13CE3DC9A1758CE9A9BE58,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_0",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_0'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Velocity/AddVelocity.AddVelocity'\"",
+              "inputMapPinRaw": "Pin (PinId=63F7C60949F0A81EFD4ED19CE9A0FBA6,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_14 05CF46E744F40FAFB8E84482F93BE3B5,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=6B95C9674C0DCCD3E62B85B1A185A0CF,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_4 8DA5C19749B121CB7F2892B61CFE501F,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "linkEvidenceInTraversalOrder": [
+            {
+              "fromNode": "NiagaraNodeFunctionCall_0",
+              "pinRaw": "Pin (PinId=63F7C60949F0A81EFD4ED19CE9A0FBA6,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_14 05CF46E744F40FAFB8E84482F93BE3B5,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_14",
+                "pinId": "05CF46E744F40FAFB8E84482F93BE3B5"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_14",
+              "pinRaw": "Pin (PinId=85099C014B13CE3DC9A1758CE9A9BE58,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_13 2DCB0DED458147DAD0668BB12D291467,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_13",
+                "pinId": "2DCB0DED458147DAD0668BB12D291467"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_13",
+              "pinRaw": "Pin (PinId=A5BBF25941B9FCAA18905CA9146F2D84,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_1 1306C4474A19A84112AF17B7A8225B1B,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeParameterMapSet_1",
+                "pinId": "1306C4474A19A84112AF17B7A8225B1B"
+              }
+            },
+            {
+              "parameterMapSet": "NiagaraNodeParameterMapSet_1",
+              "destPinRaw": "Pin (PinId=1306C4474A19A84112AF17B7A8225B1B,PinName=\"Dest\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_13 A5BBF25941B9FCAA18905CA9146F2D84,),PersistentGuid=0B0E24264E91CCB836459BAEA77CA40E,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "sourcePinRaw": "Pin (PinId=9CBEC558463E1C17EE4FD69016EB6EBE,PinName=\"Source\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_4 59B66CB549361484E74728836223F68F,),PersistentGuid=5C58AC22441E296C70C32998F2D6B5AF,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_4",
+                "pinId": "59B66CB549361484E74728836223F68F"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_4",
+              "pinRaw": "Pin (PinId=759EA2424DE88677F2D56495B0A9A77E,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_2 90C5E2D14392EBDEFDB2E98D80B1ADE9,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeParameterMapSet_2",
+                "pinId": "90C5E2D14392EBDEFDB2E98D80B1ADE9"
+              }
+            },
+            {
+              "parameterMapSet": "NiagaraNodeParameterMapSet_2",
+              "destPinRaw": "Pin (PinId=90C5E2D14392EBDEFDB2E98D80B1ADE9,PinName=\"Dest\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_4 759EA2424DE88677F2D56495B0A9A77E,),PersistentGuid=C67E4F0441DEF9679ECCB8ACE295B8AB,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "sourcePinRaw": "Pin (PinId=762C40EA44121310AE92029BCFE0D46C,PinName=\"Source\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_5 AFA801604FB369AE266D06960280D3B7,),PersistentGuid=53F9BAA0406B9432F70576A0D7106CB1,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeParameterMapSet_5",
+                "pinId": "AFA801604FB369AE266D06960280D3B7"
+              }
+            },
+            {
+              "parameterMapSet": "NiagaraNodeParameterMapSet_5",
+              "destPinRaw": "Pin (PinId=AFA801604FB369AE266D06960280D3B7,PinName=\"Dest\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_15 2BC59CFE491F556948174EBD29EE96DE,NiagaraNodeParameterMapSet_2 762C40EA44121310AE92029BCFE0D46C,),PersistentGuid=B26FC1B246436E65113B099496C9C134,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "sourcePinRaw": "Pin (PinId=D259D00B49CDD5FE068F388709088C15,PinName=\"Source\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_4 99AAF59A48689C2E17047FBB623DC3A2,),PersistentGuid=2A3BAA644E2012A06B72308F716C970F,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeInput_4",
+                "pinId": "99AAF59A48689C2E17047FBB623DC3A2"
+              }
+            },
+            {
+              "terminalInputNode": "NiagaraNodeInput_4",
+              "pinRaw": "Pin (PinId=99AAF59A48689C2E17047FBB623DC3A2,PinName=\"Input\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_5 D259D00B49CDD5FE068F388709088C15,NiagaraNodeFunctionCall_16 20BE7B254D9B1C39BF2E8182D94C4C9D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+            }
+          ],
+          "terminal": "NiagaraNodeInput",
+          "linkedModulePath": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_4",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_4'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Initialization/InitializeParticle.InitializeParticle'\"",
+              "inputMapPinRaw": "Pin (PinId=759EA2424DE88677F2D56495B0A9A77E,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_2 90C5E2D14392EBDEFDB2E98D80B1ADE9,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=59B66CB549361484E74728836223F68F,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_1 9CBEC558463E1C17EE4FD69016EB6EBE,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_13",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_13'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Location/CylinderLocation.CylinderLocation'\"",
+              "inputMapPinRaw": "Pin (PinId=A5BBF25941B9FCAA18905CA9146F2D84,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_1 1306C4474A19A84112AF17B7A8225B1B,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=2DCB0DED458147DAD0668BB12D291467,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_14 85099C014B13CE3DC9A1758CE9A9BE58,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_14",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_14'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Location/SystemLocation.SystemLocation'\"",
+              "inputMapPinRaw": "Pin (PinId=85099C014B13CE3DC9A1758CE9A9BE58,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_13 2DCB0DED458147DAD0668BB12D291467,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=05CF46E744F40FAFB8E84482F93BE3B5,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_0 63F7C60949F0A81EFD4ED19CE9A0FBA6,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": "Disabled",
+              "bUserSetEnabledStateRaw": "True",
+              "stackDisposition": "excluded-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_0",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_0'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Velocity/AddVelocity.AddVelocity'\"",
+              "inputMapPinRaw": "Pin (PinId=63F7C60949F0A81EFD4ED19CE9A0FBA6,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_14 05CF46E744F40FAFB8E84482F93BE3B5,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=6B95C9674C0DCCD3E62B85B1A185A0CF,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_4 8DA5C19749B121CB7F2892B61CFE501F,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "candidateModuleCount": 3,
+          "explicitlyDisabledModuleCount": 1,
+          "activityInterpretation": "Link path order is proven from pins. Explicit EnabledState=Disabled nodes are excluded from orderedModules; remaining connected nodes have no explicit disable in this export, which does not establish runtime compilation state.",
+          "explicitlyDisabledModules": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_14",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Spawn/Location/SystemLocation.SystemLocation'\"",
+              "enabledStateRaw": "Disabled",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_14'\""
+            }
+          ]
+        },
+        {
+          "apiScriptObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.UpdateScript",
+          "apiUsage": "ParticleUpdateScript",
+          "exportedUsageRaw": "ParticleUpdateScript",
+          "versionDataSourceRaw": "\"/Script/NiagaraEditor.NiagaraScriptSource'NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0'\"",
+          "activeGraphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0",
+          "graphOutputUsageRaw": "ParticleUpdateScript",
+          "outputMatches": 1,
+          "usageOutputEvidence": {
+            "nodeName": "NiagaraNodeOutput_5",
+            "nodeClass": "NiagaraNodeOutput",
+            "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeOutput'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeOutput_5'\"",
+            "scriptTypeRaw": "ParticleUpdateScript",
+            "pinRaw": "Pin (PinId=7DA5987942C88137DEFC2EAE7DA5468C,PinName=\"Out\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_7 217B9BA1450538001799D5902106E178,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)"
+          },
+          "status": "linked-chain-proven",
+          "orderedModules": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_1",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_1'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/Lifetime/ParticleState.ParticleState'\"",
+              "inputMapPinRaw": "Pin (PinId=B741BFDD4747E9165F355195A86B66B0,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_5 0737194348A7167977AC4C8F8D5A232D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=9FAB18104B169456B7DDD78C4F0449F7,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_4 85FB1BEA427B5A49914514AA50CCD483,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_5",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_5'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/Color/ScaleColor.ScaleColor'\"",
+              "inputMapPinRaw": "Pin (PinId=D1F9AE664BBB808F2BF47FB060E0C35F,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_3 751208444FDB556E59F3248FFE95A230,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=161EB8194D9871757E250AB868911FE0,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_8 B5AC91164FBCE6A54D48B6A94C3575AE,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_8",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_8'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Solvers/SolveForcesAndVelocity.SolveForcesAndVelocity'\"",
+              "inputMapPinRaw": "Pin (PinId=B5AC91164FBCE6A54D48B6A94C3575AE,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_5 161EB8194D9871757E250AB868911FE0,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=AAB7F9184AC2220C1E14F7A512270D52,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_7 9D1463744A6C85915D855B8D993BA313,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_7",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_7'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/SubUV/SubUVAnimation.SubUVAnimation'\"",
+              "inputMapPinRaw": "Pin (PinId=9D1463744A6C85915D855B8D993BA313,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_8 AAB7F9184AC2220C1E14F7A512270D52,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=217B9BA1450538001799D5902106E178,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_5 7DA5987942C88137DEFC2EAE7DA5468C,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "linkEvidenceInTraversalOrder": [
+            {
+              "fromNode": "NiagaraNodeFunctionCall_7",
+              "pinRaw": "Pin (PinId=9D1463744A6C85915D855B8D993BA313,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_8 AAB7F9184AC2220C1E14F7A512270D52,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_8",
+                "pinId": "AAB7F9184AC2220C1E14F7A512270D52"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_8",
+              "pinRaw": "Pin (PinId=B5AC91164FBCE6A54D48B6A94C3575AE,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_5 161EB8194D9871757E250AB868911FE0,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_5",
+                "pinId": "161EB8194D9871757E250AB868911FE0"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_5",
+              "pinRaw": "Pin (PinId=D1F9AE664BBB808F2BF47FB060E0C35F,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_3 751208444FDB556E59F3248FFE95A230,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeParameterMapSet_3",
+                "pinId": "751208444FDB556E59F3248FFE95A230"
+              }
+            },
+            {
+              "parameterMapSet": "NiagaraNodeParameterMapSet_3",
+              "destPinRaw": "Pin (PinId=751208444FDB556E59F3248FFE95A230,PinName=\"Dest\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_5 D1F9AE664BBB808F2BF47FB060E0C35F,),PersistentGuid=6F3511EE4208DA6010BFF7A2495C7592,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "sourcePinRaw": "Pin (PinId=4BA025EA41526AA5E57B99AEA748CD97,PinName=\"Source\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_4 B39539D5460A79ED9920E78925684426,),PersistentGuid=17C384D342145B1AD1E3F88DEDF221F8,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeParameterMapSet_4",
+                "pinId": "B39539D5460A79ED9920E78925684426"
+              }
+            },
+            {
+              "parameterMapSet": "NiagaraNodeParameterMapSet_4",
+              "destPinRaw": "Pin (PinId=B39539D5460A79ED9920E78925684426,PinName=\"Dest\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_6 D1903D32499F76ECE91CB096451D9389,NiagaraNodeParameterMapSet_3 4BA025EA41526AA5E57B99AEA748CD97,),PersistentGuid=D152190C4F6AC6496B155B8C05E1543F,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "sourcePinRaw": "Pin (PinId=85FB1BEA427B5A49914514AA50CCD483,PinName=\"Source\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_1 9FAB18104B169456B7DDD78C4F0449F7,),PersistentGuid=3DA8EA9B450D3D8D1AF38FA9621EBE5E,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_1",
+                "pinId": "9FAB18104B169456B7DDD78C4F0449F7"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_1",
+              "pinRaw": "Pin (PinId=B741BFDD4747E9165F355195A86B66B0,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_5 0737194348A7167977AC4C8F8D5A232D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeInput_5",
+                "pinId": "0737194348A7167977AC4C8F8D5A232D"
+              }
+            },
+            {
+              "terminalInputNode": "NiagaraNodeInput_5",
+              "pinRaw": "Pin (PinId=0737194348A7167977AC4C8F8D5A232D,PinName=\"Input\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_1 B741BFDD4747E9165F355195A86B66B0,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+            }
+          ],
+          "terminal": "NiagaraNodeInput",
+          "linkedModulePath": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_1",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_1'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/Lifetime/ParticleState.ParticleState'\"",
+              "inputMapPinRaw": "Pin (PinId=B741BFDD4747E9165F355195A86B66B0,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_5 0737194348A7167977AC4C8F8D5A232D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=9FAB18104B169456B7DDD78C4F0449F7,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_4 85FB1BEA427B5A49914514AA50CCD483,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_5",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_5'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/Color/ScaleColor.ScaleColor'\"",
+              "inputMapPinRaw": "Pin (PinId=D1F9AE664BBB808F2BF47FB060E0C35F,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeParameterMapSet_3 751208444FDB556E59F3248FFE95A230,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=161EB8194D9871757E250AB868911FE0,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_8 B5AC91164FBCE6A54D48B6A94C3575AE,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_8",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_8'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Solvers/SolveForcesAndVelocity.SolveForcesAndVelocity'\"",
+              "inputMapPinRaw": "Pin (PinId=B5AC91164FBCE6A54D48B6A94C3575AE,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_5 161EB8194D9871757E250AB868911FE0,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=AAB7F9184AC2220C1E14F7A512270D52,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_7 9D1463744A6C85915D855B8D993BA313,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_7",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_7'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Update/SubUV/SubUVAnimation.SubUVAnimation'\"",
+              "inputMapPinRaw": "Pin (PinId=9D1463744A6C85915D855B8D993BA313,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_8 AAB7F9184AC2220C1E14F7A512270D52,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=217B9BA1450538001799D5902106E178,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_5 7DA5987942C88137DEFC2EAE7DA5468C,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "candidateModuleCount": 4,
+          "explicitlyDisabledModuleCount": 0,
+          "activityInterpretation": "Link path order is proven from pins. Explicit EnabledState=Disabled nodes are excluded from orderedModules; remaining connected nodes have no explicit disable in this export, which does not establish runtime compilation state."
+        },
+        {
+          "apiScriptObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.EmitterSpawnScript",
+          "apiUsage": "EmitterSpawnScript",
+          "exportedUsageRaw": "EmitterSpawnScript",
+          "versionDataSourceRaw": "\"/Script/NiagaraEditor.NiagaraScriptSource'NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0'\"",
+          "activeGraphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0",
+          "graphOutputUsageRaw": "EmitterSpawnScript",
+          "outputMatches": 1,
+          "usageOutputEvidence": {
+            "nodeName": "NiagaraNodeOutput_2",
+            "nodeClass": "NiagaraNodeOutput",
+            "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeOutput'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeOutput_2'\"",
+            "scriptTypeRaw": "EmitterSpawnScript",
+            "pinRaw": "Pin (PinId=3049AB024A97259B0EA4AC8370D704D6,PinName=\"Out\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_2 8071F7BD41F6F3AEF516559A7DDACF09,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+          },
+          "status": "linked-chain-proven",
+          "orderedModules": [],
+          "linkEvidenceInTraversalOrder": [
+            {
+              "terminalInputNode": "NiagaraNodeInput_2",
+              "pinRaw": "Pin (PinId=8071F7BD41F6F3AEF516559A7DDACF09,PinName=\"Input\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_2 3049AB024A97259B0EA4AC8370D704D6,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+            }
+          ],
+          "terminal": "NiagaraNodeInput",
+          "linkedModulePath": [],
+          "candidateModuleCount": 0,
+          "explicitlyDisabledModuleCount": 0,
+          "activityInterpretation": "Link path order is proven from pins. Explicit EnabledState=Disabled nodes are excluded from orderedModules; remaining connected nodes have no explicit disable in this export, which does not establish runtime compilation state."
+        },
+        {
+          "apiScriptObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.EmitterUpdateScript",
+          "apiUsage": "EmitterUpdateScript",
+          "exportedUsageRaw": "EmitterUpdateScript",
+          "versionDataSourceRaw": "\"/Script/NiagaraEditor.NiagaraScriptSource'NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0'\"",
+          "activeGraphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0",
+          "graphOutputUsageRaw": "EmitterUpdateScript",
+          "outputMatches": 1,
+          "usageOutputEvidence": {
+            "nodeName": "NiagaraNodeOutput_3",
+            "nodeClass": "NiagaraNodeOutput",
+            "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeOutput'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeOutput_3'\"",
+            "scriptTypeRaw": "EmitterUpdateScript",
+            "pinRaw": "Pin (PinId=C91348C24B00BC50829C7484CCF17ED2,PinName=\"Out\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_9 1FC0C2954F1CDF79A43AD385F8F35318,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+          },
+          "status": "linked-chain-proven",
+          "orderedModules": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_3",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_3'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/EmitterState.EmitterState'\"",
+              "inputMapPinRaw": "Pin (PinId=BB5CFF544ECC1E5300A9B686F2A2C97F,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_3 4BF9398E48F8CA170BEBBBA59539B685,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=5EFDA3F843CB4976109B008AF4C2D021,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_2 BB9FE28248F638911492F5819D8FBD1B,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_9",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_9'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/SpawnRate.SpawnRate'\"",
+              "inputMapPinRaw": "Pin (PinId=BDF2EE954B4894A599CAB0BD9C20D546,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_2 8CD8CA32493F3BC0FC2456BC91D03D6D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=1FC0C2954F1CDF79A43AD385F8F35318,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_3 C91348C24B00BC50829C7484CCF17ED2,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": "True",
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "linkEvidenceInTraversalOrder": [
+            {
+              "fromNode": "NiagaraNodeFunctionCall_9",
+              "pinRaw": "Pin (PinId=BDF2EE954B4894A599CAB0BD9C20D546,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_2 8CD8CA32493F3BC0FC2456BC91D03D6D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_2",
+                "pinId": "8CD8CA32493F3BC0FC2456BC91D03D6D"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_2",
+              "pinRaw": "Pin (PinId=BB9FE28248F638911492F5819D8FBD1B,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_3 5EFDA3F843CB4976109B008AF4C2D021,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeFunctionCall_3",
+                "pinId": "5EFDA3F843CB4976109B008AF4C2D021"
+              }
+            },
+            {
+              "fromNode": "NiagaraNodeFunctionCall_3",
+              "pinRaw": "Pin (PinId=BB5CFF544ECC1E5300A9B686F2A2C97F,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_3 4BF9398E48F8CA170BEBBBA59539B685,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "to": {
+                "nodeName": "NiagaraNodeInput_3",
+                "pinId": "4BF9398E48F8CA170BEBBBA59539B685"
+              }
+            },
+            {
+              "terminalInputNode": "NiagaraNodeInput_3",
+              "pinRaw": "Pin (PinId=4BF9398E48F8CA170BEBBBA59539B685,PinName=\"Input\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_3 BB5CFF544ECC1E5300A9B686F2A2C97F,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)"
+            }
+          ],
+          "terminal": "NiagaraNodeInput",
+          "linkedModulePath": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_3",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_3'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/EmitterState.EmitterState'\"",
+              "inputMapPinRaw": "Pin (PinId=BB5CFF544ECC1E5300A9B686F2A2C97F,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeInput_3 4BF9398E48F8CA170BEBBBA59539B685,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=5EFDA3F843CB4976109B008AF4C2D021,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_2 BB9FE28248F638911492F5819D8FBD1B,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": null,
+              "stackDisposition": "linked-not-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_2",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_2'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/SpawnBurst_Instantaneous.SpawnBurst_Instantaneous'\"",
+              "inputMapPinRaw": "Pin (PinId=BB9FE28248F638911492F5819D8FBD1B,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_3 5EFDA3F843CB4976109B008AF4C2D021,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=8CD8CA32493F3BC0FC2456BC91D03D6D,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_9 BDF2EE954B4894A599CAB0BD9C20D546,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": "Disabled",
+              "bUserSetEnabledStateRaw": "True",
+              "stackDisposition": "excluded-explicitly-disabled"
+            },
+            {
+              "nodeName": "NiagaraNodeFunctionCall_9",
+              "class": "NiagaraNodeFunctionCall",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_9'\"",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/SpawnRate.SpawnRate'\"",
+              "inputMapPinRaw": "Pin (PinId=BDF2EE954B4894A599CAB0BD9C20D546,PinName=\"InputMap\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeFunctionCall_2 8CD8CA32493F3BC0FC2456BC91D03D6D,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=False,bAdvancedView=False,bOrphanedPin=False,)",
+              "outputMapPinRaw": "Pin (PinId=1FC0C2954F1CDF79A43AD385F8F35318,PinName=\"OutputMap\",Direction=\"EGPD_Output\",PinType.PinCategory=\"Type\",PinType.PinSubCategory=\"\",PinType.PinSubCategoryObject=\"/Script/CoreUObject.ScriptStruct'/Script/Niagara.NiagaraParameterMap'\",PinType.PinSubCategoryMemberReference=(),PinType.PinValueType=(),PinType.ContainerType=None,PinType.bIsReference=False,PinType.bIsConst=False,PinType.bIsWeakPointer=False,PinType.bIsUObjectWrapper=False,PinType.bSerializeAsSinglePrecisionFloat=False,LinkedTo=(NiagaraNodeOutput_3 C91348C24B00BC50829C7484CCF17ED2,),PersistentGuid=00000000000000000000000000000000,bHidden=False,bNotConnectable=False,bDefaultValueIsReadOnly=False,bDefaultValueIsIgnored=True,bAdvancedView=False,bOrphanedPin=False,)",
+              "enabledStateRaw": null,
+              "bUserSetEnabledStateRaw": "True",
+              "stackDisposition": "linked-not-explicitly-disabled"
+            }
+          ],
+          "candidateModuleCount": 2,
+          "explicitlyDisabledModuleCount": 1,
+          "activityInterpretation": "Link path order is proven from pins. Explicit EnabledState=Disabled nodes are excluded from orderedModules; remaining connected nodes have no explicit disable in this export, which does not establish runtime compilation state.",
+          "explicitlyDisabledModules": [
+            {
+              "nodeName": "NiagaraNodeFunctionCall_2",
+              "functionScriptRaw": "\"/Script/Niagara.NiagaraScript'/Niagara/Modules/Emitter/SpawnBurst_Instantaneous.SpawnBurst_Instantaneous'\"",
+              "enabledStateRaw": "Disabled",
+              "exportPath": "\"/Script/NiagaraEditor.NiagaraNodeFunctionCall'/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeFunctionCall_2'\""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Graph ordering here is a linked ParameterMap module path for the exported active graph, not proof of runtime scheduling or bytecode order.",
+    "Function calls in Niagara/DynamicInputs are omitted from module stacks; they are value-producing subgraphs, not stack modules.",
+    "A graph path is associated with an API script through its exported Usage and VersionData Source. Spawn interpolated usage has the exported graph output label ParticleSpawnScript; both are recorded explicitly.",
+    "No historical version, parent emitter graph, disconnected node, or graph-array ordering is used."
+  ]
+}

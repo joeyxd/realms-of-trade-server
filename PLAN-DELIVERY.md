@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
+[Entrega](docs/delivery/st01c/DELIVERY.md), [plan autorizado](docs/briefs/st01c-niagara-native-fidelity.md).
+Piloto MyProject `NS_Flame_Single`: helper C++ y consultas UE5.8 NullRHI; dos renderers
+efectivos, 100 registros tipados/80 nombres, cotejo de bytes y cadenas por conexiones.
+Material común identificado y fuentes intactas. Continuar con semántica/curvas/estado
+global, referencia multiángulo y prototipo privado antes de ampliar. Reconsiderar esfuerzo
+si exige reproducir interfaces/renderer desproporcionados. Sin efecto 3D habilitado ni runtime nuevo.
+
 **AREA17 L03g-a — presencia segura, 2026-10-13:**
 [Contrato](docs/briefs/l03g-companion-presence.md), [entrega](docs/delivery/l03g-companion-presence/README.md).
 Salir/seguir/esperar/volver/descansar desde Mis compañeros, sin proveedor; una plaza,
@@ -8,10 +16,13 @@ curada; retiro sano y perfil guardado antes de liberar. 111/111 locales y navega
 sin modelo ni modificación de la Brisa real. SQL/activación/canario públicos pendientes.
 Sigue L03g-b: mente sobre el mismo cuerpo; resolver recuperación/vida antes de zonas de riesgo.
 
-**AREA03, 2026-10-13 — cierre funcional de alimentos y siguiente corte:**
-[Contrato](docs/briefs/food-item-completion.md): fichas de uso/estadísticas con datos reales,
-comidas y carga cómoda coherentes; luego [INV03](docs/briefs/inv03-existing-backpacks.md),
-aceptación de mejoras existentes 18→30→42. El autor eligió cerrar los alimentos actuales;
+**AREA03, 2026-10-13 — alimentos e INV03 publicados y comprobados:**
+[Entrega](docs/delivery/food-item-completion/README.md): fichas de uso/estadísticas con datos reales,
+comidas y carga cómoda coherentes; 38/38 focales, 6/6 provisiones y 4/4 ficha locales.
+[INV03](docs/delivery/inv03-existing-backpacks/README.md): 22/22 públicas, mejoras existentes
+18→30→42, costes, Carga, replay, denegación y reentrada. Corrección del taller móvil;
+publicado `a21c47f`, siete hashes locales/públicos exactos y una autoridad saludable.
+El autor eligió cerrar los alimentos actuales;
 lima/hierbas conservan su estado de propuestas. [Fibra, techumbre y cuero](docs/briefs/plant-fiber-thatch-leather.md)
 incorpora la nueva dirección solicitada: plantas → fibra → tela/lona, palmeras → hojas
 para estructuras ligeras/techos, animales → piel → cuero. Planificado, con recetas y
@@ -60,8 +71,8 @@ Publicado en `739e1b2`: actualizador 197/197, 11 hashes de runtime/paquete y 32 
 públicos exactos, 9/9 Chrome con cuenta GM; entrada WSS y cierre sin errores/pendientes.
 Sin SQL/protocolo nuevo ni variantes compartidas.
 La captura 2D y un componente no aceptan equivalencia AAA/3D. [ST01c](docs/briefs/st01c-niagara-native-fidelity.md)
-propone emisores, materiales, capas y movimiento originales con comparación multiángulo;
-sin implementar. UI Workshop sigue planificado. ST01 permanece activo.
+tiene el piloto de extracción autorizado; emisores/materiales visuales aún pendientes.
+UI Workshop sigue planificado. ST01 permanece activo.
 
 **AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-pearl-give.md), [contrato](docs/briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
