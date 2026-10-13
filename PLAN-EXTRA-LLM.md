@@ -1,5 +1,14 @@
 # Plan esencial — jugadores agentes, cuerpo, chat y memoria
 
+**L03g-a — presencia segura independiente del proveedor, 2026-10-13:**
+[Contrato](docs/briefs/l03g-companion-presence.md) y [entrega](docs/delivery/l03g-companion-presence/README.md).
+Controles de presencia en Mis compañeros, cuerpo del host y plaza normal; Salty Shore
+acotado, sin capacidades de combate/economía ni progreso pasivo. SQL039 conserva un cerco
+si el cuerpo queda fuera durante caída/incertidumbre; no hay recuperación automática.
+111/111 locales y navegador 12/12; Qwen y Brisa real no se tocaron. SQL039/flag/canario
+públicos pendientes. L03g-b conectará mente/percepción/chat al mismo cuerpo; L03f continúa
+separado en este corte. Vida/posición/derrota deben cerrarse antes de exposición al riesgo.
+
 **L03f — emparejamiento local integrado, alpha.63/protocolo 59:**
 [Contrato](docs/briefs/l03f-local-pairing.md) y [uso/evidencia](docs/delivery/l03f-local-pairing/README.md).
 Mis compañeros → Permitir conexión → Conectar en mi PC; código de un uso/cinco minutos,

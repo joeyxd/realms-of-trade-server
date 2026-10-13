@@ -161,6 +161,7 @@ export class World {
   }
 
   despawn(e) {
+    this.residentPlayers?.delete(e);
     this.burns?.delete(e);
     this.chills.delete(e);
     this.ecs.destroy(e);
@@ -789,6 +790,7 @@ export class World {
     const xp = o.noXp ? 0 : Math.round(def.xp * tierXp), got = [];
     for (let p = 1; p < ecs.cap && xp; p++) {
       if (!ecs.alive[p] || !(ecs.mask[p] & C.PLAYER) || (ecs.mask[p] & C.BOT)) continue;
+      if (this.residentPlayers?.has(p)) continue; // Safe-port social bodies earn no passive rewards.
       if (p !== credit && Math.hypot(ecs.x[p] - ecs.x[e], ecs.z[p] - ecs.z[e]) > (def.boss ? 40 : 25)) continue;
       if (earn) gainXp(this, p, xp);
       got.push(p);
