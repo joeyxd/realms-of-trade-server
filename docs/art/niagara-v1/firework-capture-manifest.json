@@ -1,0 +1,1885 @@
+{
+  "schema": "st01b-firework-captured-reference-manifest-v1",
+  "status": "capture complete; not accepted, packed, registered, or runtime-mounted",
+  "quality_claim": "original Niagara source captured as a bounded 2D reference; no full AAA/runtime integration claim",
+  "engine": "UE5.8",
+  "automation_test": "Editor.Python.ST01_SplineVFX.test_st01b_firework_tight_60f",
+  "automation_result": "Success; TestExit Automation Test Queue Empty",
+  "source": {
+    "system_package": "C:/Unreal/MyProject/Content/NiagaraExamples/FX_Misc/NS_FireworkBurst.uasset",
+    "sha256_expected": "b23e30580f0f5d097c19d496c0d7685eb61da4882e224f876cd5d16346d438b0",
+    "sha256_actual": "b23e30580f0f5d097c19d496c0d7685eb61da4882e224f876cd5d16346d438b0",
+    "matches": true
+  },
+  "renderer_material_evidence": {
+    "evidence_file": "../material-blend-inspection/exact-renderer-blends-v2.json",
+    "active_renderer_count": 2,
+    "renderers": [
+      {
+        "object_path": "/Game/NiagaraExamples/FX_Misc/NS_FireworkBurst.NS_FireworkBurst:Burst_0.NiagaraSpriteRendererProperties_0",
+        "class": "NiagaraSpriteRendererProperties",
+        "material": "/Game/NiagaraExamples/Materials/MI_Fireworks.MI_Fireworks",
+        "base_material": "/Game/NiagaraExamples/Materials/MasterMaterials/M_Flare.M_Flare",
+        "blend_mode": "<BlendMode.BLEND_ADDITIVE: 3>"
+      },
+      {
+        "object_path": "/Game/NiagaraExamples/FX_Misc/NS_FireworkBurst.NS_FireworkBurst:Leaders_0.NiagaraSpriteRendererProperties_0",
+        "class": "NiagaraSpriteRendererProperties",
+        "material": "/Game/NiagaraExamples/Materials/MI_Fireworks.MI_Fireworks",
+        "base_material": "/Game/NiagaraExamples/Materials/MasterMaterials/M_Flare.M_Flare",
+        "blend_mode": "<BlendMode.BLEND_ADDITIVE: 3>"
+      }
+    ],
+    "all_active_renderers_additive": true
+  },
+  "capture": {
+    "raw_folder": ".",
+    "raw_frames": 60,
+    "resolution": [
+      1024,
+      1024
+    ],
+    "capture_source": "SCS_FINAL_COLOR_LDR",
+    "render_target_format": "RTF_RGBA8",
+    "background": "opaque black",
+    "directional_light_intensity": 50000.0,
+    "camera": {
+      "target": [
+        0.0,
+        0.0,
+        2250.0
+      ],
+      "bounds_extent": [
+        1000.0,
+        1000.0,
+        2750.0
+      ],
+      "location": [
+        1419.0,
+        -1892.0,
+        2959.5
+      ]
+    },
+    "calibration": {
+      "material": "/Game/_ST01B_Control/M_CaptureMagenta.M_CaptureMagenta",
+      "pixels_magenta": 17417,
+      "expected_minimum": 100,
+      "control_pass": true
+    },
+    "timeline": {
+      "reset_activate_once": true,
+      "pre_roll_editor_ticks": 3,
+      "absolute_age_offset_unverified": true,
+      "pause_before_first_advance": true,
+      "pause_before_every_capture_readback": true,
+      "cumulative_manual_ticks": 118,
+      "last_relative_seconds": 1.9666666666666666,
+      "last_delta_ticks": 2
+    },
+    "absolute_age_offset": "unknown: three editor readiness ticks before pause; actual Niagara age offset unverified",
+    "random_seed_offset": "not recorded",
+    "color_pipeline": {
+      "raw": "SceneCapture SCS_FINAL_COLOR_LDR into RGBA8 RT, original pixels captured over opaque black",
+      "tone_mapping": "UE5.8 final-color LDR path; default scene-capture view settings; no custom tone/exposure transform after capture",
+      "exposure": "no explicit exposure override recorded; retained engine/project defaults",
+      "light_fixture": "directional light intensity 50000; same LDR fixture for all 60 samples"
+    }
+  },
+  "temporal_union_rgb_gt4_bbox": [
+    261,
+    188,
+    739,
+    891
+  ],
+  "frame_bounds_safe_margin_pixels": {
+    "left": 261,
+    "top": 188,
+    "right": 285,
+    "bottom": 133
+  },
+  "postprocess": {
+    "schema": "firework-additive-alpha-postprocess-v1",
+    "source_capture": "SCS_FINAL_COLOR_LDR, original 1024x1024 RGBA8 with RGB captured over opaque black",
+    "source_renderer_evidence": "both active renderer links MI_Fireworks -> M_Flare BLEND_ADDITIVE; no smoke/translucency renderers",
+    "alpha_derivation": "decode source sRGB RGB to linear; alpha=max(linear RGB); straight foreground linear RGB=source linear RGB/alpha; encode straight RGB back to sRGB RGBA8. Used only for proven purely additive Firework.",
+    "color_mapping": "unchanged scene exposure/tone-mapped LDR RGB from original source captures; no additional tone/exposure transform",
+    "black_recomposition_error_linear_0_1": {
+      "max": 0.005174040794372559,
+      "mean": 3.6187428688410566e-05,
+      "channels": 188743680,
+      "method": "decode derived sRGB; multiply by quantized alpha; compare against original source RGB decoded to linear"
+    },
+    "derived_alpha_pixels_nonzero": 1195024,
+    "derived_alpha_pixels_partial": 1115306,
+    "derived_alpha_pixels_opaque": 79718,
+    "common_temporal_union_rgb_gt4_bbox": [
+      261,
+      188,
+      739,
+      891
+    ],
+    "common_crop_padding_pixels": 16,
+    "common_native_crop_xyxy": [
+      245,
+      172,
+      755,
+      907
+    ],
+    "native_crop_size": [
+      510,
+      735
+    ],
+    "desktop_tile_size": [
+      512,
+      512
+    ],
+    "desktop_art_size": [
+      355,
+      512
+    ],
+    "mobile_tile_size": [
+      128,
+      128
+    ],
+    "mobile_art_size": [
+      89,
+      128
+    ],
+    "scaling": "same crop rectangle and same uniform scale factor for every frame; crops retain 1:1 source pixels; desktop/mobile tile variants uniformly downsample the common crop, never upscale or recrop per frame",
+    "contact_sheets": [
+      "review_sheets/raw-on-black.jpg",
+      "review_sheets/derived-over-gray.jpg",
+      "review_sheets/derived-over-checker.jpg"
+    ],
+    "frames": [
+      {
+        "index": 0,
+        "relative_seconds": 0.0,
+        "raw_file": "firework_frame_00_relative_000000ms",
+        "derived_alpha_file": "derived_full/firework_00_0000ms.png",
+        "native_crop_file": "native_crop/firework_00_0000ms.png",
+        "desktop512_file": "desktop_tile512/firework_00_0000ms.png",
+        "mobile128_file": "mobile_tile128/firework_00_0000ms.png"
+      },
+      {
+        "index": 1,
+        "relative_seconds": 0.03333333333333333,
+        "raw_file": "firework_frame_01_relative_000033ms",
+        "derived_alpha_file": "derived_full/firework_01_0033ms.png",
+        "native_crop_file": "native_crop/firework_01_0033ms.png",
+        "desktop512_file": "desktop_tile512/firework_01_0033ms.png",
+        "mobile128_file": "mobile_tile128/firework_01_0033ms.png"
+      },
+      {
+        "index": 2,
+        "relative_seconds": 0.06666666666666667,
+        "raw_file": "firework_frame_02_relative_000066ms",
+        "derived_alpha_file": "derived_full/firework_02_0066ms.png",
+        "native_crop_file": "native_crop/firework_02_0066ms.png",
+        "desktop512_file": "desktop_tile512/firework_02_0066ms.png",
+        "mobile128_file": "mobile_tile128/firework_02_0066ms.png"
+      },
+      {
+        "index": 3,
+        "relative_seconds": 0.1,
+        "raw_file": "firework_frame_03_relative_000100ms",
+        "derived_alpha_file": "derived_full/firework_03_0100ms.png",
+        "native_crop_file": "native_crop/firework_03_0100ms.png",
+        "desktop512_file": "desktop_tile512/firework_03_0100ms.png",
+        "mobile128_file": "mobile_tile128/firework_03_0100ms.png"
+      },
+      {
+        "index": 4,
+        "relative_seconds": 0.13333333333333333,
+        "raw_file": "firework_frame_04_relative_000133ms",
+        "derived_alpha_file": "derived_full/firework_04_0133ms.png",
+        "native_crop_file": "native_crop/firework_04_0133ms.png",
+        "desktop512_file": "desktop_tile512/firework_04_0133ms.png",
+        "mobile128_file": "mobile_tile128/firework_04_0133ms.png"
+      },
+      {
+        "index": 5,
+        "relative_seconds": 0.16666666666666666,
+        "raw_file": "firework_frame_05_relative_000166ms",
+        "derived_alpha_file": "derived_full/firework_05_0166ms.png",
+        "native_crop_file": "native_crop/firework_05_0166ms.png",
+        "desktop512_file": "desktop_tile512/firework_05_0166ms.png",
+        "mobile128_file": "mobile_tile128/firework_05_0166ms.png"
+      },
+      {
+        "index": 6,
+        "relative_seconds": 0.2,
+        "raw_file": "firework_frame_06_relative_000200ms",
+        "derived_alpha_file": "derived_full/firework_06_0200ms.png",
+        "native_crop_file": "native_crop/firework_06_0200ms.png",
+        "desktop512_file": "desktop_tile512/firework_06_0200ms.png",
+        "mobile128_file": "mobile_tile128/firework_06_0200ms.png"
+      },
+      {
+        "index": 7,
+        "relative_seconds": 0.23333333333333334,
+        "raw_file": "firework_frame_07_relative_000233ms",
+        "derived_alpha_file": "derived_full/firework_07_0233ms.png",
+        "native_crop_file": "native_crop/firework_07_0233ms.png",
+        "desktop512_file": "desktop_tile512/firework_07_0233ms.png",
+        "mobile128_file": "mobile_tile128/firework_07_0233ms.png"
+      },
+      {
+        "index": 8,
+        "relative_seconds": 0.26666666666666666,
+        "raw_file": "firework_frame_08_relative_000266ms",
+        "derived_alpha_file": "derived_full/firework_08_0266ms.png",
+        "native_crop_file": "native_crop/firework_08_0266ms.png",
+        "desktop512_file": "desktop_tile512/firework_08_0266ms.png",
+        "mobile128_file": "mobile_tile128/firework_08_0266ms.png"
+      },
+      {
+        "index": 9,
+        "relative_seconds": 0.3,
+        "raw_file": "firework_frame_09_relative_000300ms",
+        "derived_alpha_file": "derived_full/firework_09_0300ms.png",
+        "native_crop_file": "native_crop/firework_09_0300ms.png",
+        "desktop512_file": "desktop_tile512/firework_09_0300ms.png",
+        "mobile128_file": "mobile_tile128/firework_09_0300ms.png"
+      },
+      {
+        "index": 10,
+        "relative_seconds": 0.3333333333333333,
+        "raw_file": "firework_frame_10_relative_000333ms",
+        "derived_alpha_file": "derived_full/firework_10_0333ms.png",
+        "native_crop_file": "native_crop/firework_10_0333ms.png",
+        "desktop512_file": "desktop_tile512/firework_10_0333ms.png",
+        "mobile128_file": "mobile_tile128/firework_10_0333ms.png"
+      },
+      {
+        "index": 11,
+        "relative_seconds": 0.36666666666666664,
+        "raw_file": "firework_frame_11_relative_000366ms",
+        "derived_alpha_file": "derived_full/firework_11_0366ms.png",
+        "native_crop_file": "native_crop/firework_11_0366ms.png",
+        "desktop512_file": "desktop_tile512/firework_11_0366ms.png",
+        "mobile128_file": "mobile_tile128/firework_11_0366ms.png"
+      },
+      {
+        "index": 12,
+        "relative_seconds": 0.4,
+        "raw_file": "firework_frame_12_relative_000400ms",
+        "derived_alpha_file": "derived_full/firework_12_0400ms.png",
+        "native_crop_file": "native_crop/firework_12_0400ms.png",
+        "desktop512_file": "desktop_tile512/firework_12_0400ms.png",
+        "mobile128_file": "mobile_tile128/firework_12_0400ms.png"
+      },
+      {
+        "index": 13,
+        "relative_seconds": 0.43333333333333335,
+        "raw_file": "firework_frame_13_relative_000433ms",
+        "derived_alpha_file": "derived_full/firework_13_0433ms.png",
+        "native_crop_file": "native_crop/firework_13_0433ms.png",
+        "desktop512_file": "desktop_tile512/firework_13_0433ms.png",
+        "mobile128_file": "mobile_tile128/firework_13_0433ms.png"
+      },
+      {
+        "index": 14,
+        "relative_seconds": 0.4666666666666667,
+        "raw_file": "firework_frame_14_relative_000466ms",
+        "derived_alpha_file": "derived_full/firework_14_0466ms.png",
+        "native_crop_file": "native_crop/firework_14_0466ms.png",
+        "desktop512_file": "desktop_tile512/firework_14_0466ms.png",
+        "mobile128_file": "mobile_tile128/firework_14_0466ms.png"
+      },
+      {
+        "index": 15,
+        "relative_seconds": 0.5,
+        "raw_file": "firework_frame_15_relative_000500ms",
+        "derived_alpha_file": "derived_full/firework_15_0500ms.png",
+        "native_crop_file": "native_crop/firework_15_0500ms.png",
+        "desktop512_file": "desktop_tile512/firework_15_0500ms.png",
+        "mobile128_file": "mobile_tile128/firework_15_0500ms.png"
+      },
+      {
+        "index": 16,
+        "relative_seconds": 0.5333333333333333,
+        "raw_file": "firework_frame_16_relative_000533ms",
+        "derived_alpha_file": "derived_full/firework_16_0533ms.png",
+        "native_crop_file": "native_crop/firework_16_0533ms.png",
+        "desktop512_file": "desktop_tile512/firework_16_0533ms.png",
+        "mobile128_file": "mobile_tile128/firework_16_0533ms.png"
+      },
+      {
+        "index": 17,
+        "relative_seconds": 0.5666666666666667,
+        "raw_file": "firework_frame_17_relative_000566ms",
+        "derived_alpha_file": "derived_full/firework_17_0566ms.png",
+        "native_crop_file": "native_crop/firework_17_0566ms.png",
+        "desktop512_file": "desktop_tile512/firework_17_0566ms.png",
+        "mobile128_file": "mobile_tile128/firework_17_0566ms.png"
+      },
+      {
+        "index": 18,
+        "relative_seconds": 0.6,
+        "raw_file": "firework_frame_18_relative_000600ms",
+        "derived_alpha_file": "derived_full/firework_18_0600ms.png",
+        "native_crop_file": "native_crop/firework_18_0600ms.png",
+        "desktop512_file": "desktop_tile512/firework_18_0600ms.png",
+        "mobile128_file": "mobile_tile128/firework_18_0600ms.png"
+      },
+      {
+        "index": 19,
+        "relative_seconds": 0.6333333333333333,
+        "raw_file": "firework_frame_19_relative_000633ms",
+        "derived_alpha_file": "derived_full/firework_19_0633ms.png",
+        "native_crop_file": "native_crop/firework_19_0633ms.png",
+        "desktop512_file": "desktop_tile512/firework_19_0633ms.png",
+        "mobile128_file": "mobile_tile128/firework_19_0633ms.png"
+      },
+      {
+        "index": 20,
+        "relative_seconds": 0.6666666666666666,
+        "raw_file": "firework_frame_20_relative_000666ms",
+        "derived_alpha_file": "derived_full/firework_20_0666ms.png",
+        "native_crop_file": "native_crop/firework_20_0666ms.png",
+        "desktop512_file": "desktop_tile512/firework_20_0666ms.png",
+        "mobile128_file": "mobile_tile128/firework_20_0666ms.png"
+      },
+      {
+        "index": 21,
+        "relative_seconds": 0.7,
+        "raw_file": "firework_frame_21_relative_000700ms",
+        "derived_alpha_file": "derived_full/firework_21_0700ms.png",
+        "native_crop_file": "native_crop/firework_21_0700ms.png",
+        "desktop512_file": "desktop_tile512/firework_21_0700ms.png",
+        "mobile128_file": "mobile_tile128/firework_21_0700ms.png"
+      },
+      {
+        "index": 22,
+        "relative_seconds": 0.7333333333333333,
+        "raw_file": "firework_frame_22_relative_000733ms",
+        "derived_alpha_file": "derived_full/firework_22_0733ms.png",
+        "native_crop_file": "native_crop/firework_22_0733ms.png",
+        "desktop512_file": "desktop_tile512/firework_22_0733ms.png",
+        "mobile128_file": "mobile_tile128/firework_22_0733ms.png"
+      },
+      {
+        "index": 23,
+        "relative_seconds": 0.7666666666666667,
+        "raw_file": "firework_frame_23_relative_000766ms",
+        "derived_alpha_file": "derived_full/firework_23_0766ms.png",
+        "native_crop_file": "native_crop/firework_23_0766ms.png",
+        "desktop512_file": "desktop_tile512/firework_23_0766ms.png",
+        "mobile128_file": "mobile_tile128/firework_23_0766ms.png"
+      },
+      {
+        "index": 24,
+        "relative_seconds": 0.8,
+        "raw_file": "firework_frame_24_relative_000800ms",
+        "derived_alpha_file": "derived_full/firework_24_0800ms.png",
+        "native_crop_file": "native_crop/firework_24_0800ms.png",
+        "desktop512_file": "desktop_tile512/firework_24_0800ms.png",
+        "mobile128_file": "mobile_tile128/firework_24_0800ms.png"
+      },
+      {
+        "index": 25,
+        "relative_seconds": 0.8333333333333334,
+        "raw_file": "firework_frame_25_relative_000833ms",
+        "derived_alpha_file": "derived_full/firework_25_0833ms.png",
+        "native_crop_file": "native_crop/firework_25_0833ms.png",
+        "desktop512_file": "desktop_tile512/firework_25_0833ms.png",
+        "mobile128_file": "mobile_tile128/firework_25_0833ms.png"
+      },
+      {
+        "index": 26,
+        "relative_seconds": 0.8666666666666667,
+        "raw_file": "firework_frame_26_relative_000866ms",
+        "derived_alpha_file": "derived_full/firework_26_0866ms.png",
+        "native_crop_file": "native_crop/firework_26_0866ms.png",
+        "desktop512_file": "desktop_tile512/firework_26_0866ms.png",
+        "mobile128_file": "mobile_tile128/firework_26_0866ms.png"
+      },
+      {
+        "index": 27,
+        "relative_seconds": 0.9,
+        "raw_file": "firework_frame_27_relative_000900ms",
+        "derived_alpha_file": "derived_full/firework_27_0900ms.png",
+        "native_crop_file": "native_crop/firework_27_0900ms.png",
+        "desktop512_file": "desktop_tile512/firework_27_0900ms.png",
+        "mobile128_file": "mobile_tile128/firework_27_0900ms.png"
+      },
+      {
+        "index": 28,
+        "relative_seconds": 0.9333333333333333,
+        "raw_file": "firework_frame_28_relative_000933ms",
+        "derived_alpha_file": "derived_full/firework_28_0933ms.png",
+        "native_crop_file": "native_crop/firework_28_0933ms.png",
+        "desktop512_file": "desktop_tile512/firework_28_0933ms.png",
+        "mobile128_file": "mobile_tile128/firework_28_0933ms.png"
+      },
+      {
+        "index": 29,
+        "relative_seconds": 0.9666666666666667,
+        "raw_file": "firework_frame_29_relative_000966ms",
+        "derived_alpha_file": "derived_full/firework_29_0966ms.png",
+        "native_crop_file": "native_crop/firework_29_0966ms.png",
+        "desktop512_file": "desktop_tile512/firework_29_0966ms.png",
+        "mobile128_file": "mobile_tile128/firework_29_0966ms.png"
+      },
+      {
+        "index": 30,
+        "relative_seconds": 1.0,
+        "raw_file": "firework_frame_30_relative_001000ms",
+        "derived_alpha_file": "derived_full/firework_30_1000ms.png",
+        "native_crop_file": "native_crop/firework_30_1000ms.png",
+        "desktop512_file": "desktop_tile512/firework_30_1000ms.png",
+        "mobile128_file": "mobile_tile128/firework_30_1000ms.png"
+      },
+      {
+        "index": 31,
+        "relative_seconds": 1.0333333333333334,
+        "raw_file": "firework_frame_31_relative_001033ms",
+        "derived_alpha_file": "derived_full/firework_31_1033ms.png",
+        "native_crop_file": "native_crop/firework_31_1033ms.png",
+        "desktop512_file": "desktop_tile512/firework_31_1033ms.png",
+        "mobile128_file": "mobile_tile128/firework_31_1033ms.png"
+      },
+      {
+        "index": 32,
+        "relative_seconds": 1.0666666666666667,
+        "raw_file": "firework_frame_32_relative_001066ms",
+        "derived_alpha_file": "derived_full/firework_32_1066ms.png",
+        "native_crop_file": "native_crop/firework_32_1066ms.png",
+        "desktop512_file": "desktop_tile512/firework_32_1066ms.png",
+        "mobile128_file": "mobile_tile128/firework_32_1066ms.png"
+      },
+      {
+        "index": 33,
+        "relative_seconds": 1.1,
+        "raw_file": "firework_frame_33_relative_001100ms",
+        "derived_alpha_file": "derived_full/firework_33_1100ms.png",
+        "native_crop_file": "native_crop/firework_33_1100ms.png",
+        "desktop512_file": "desktop_tile512/firework_33_1100ms.png",
+        "mobile128_file": "mobile_tile128/firework_33_1100ms.png"
+      },
+      {
+        "index": 34,
+        "relative_seconds": 1.1333333333333333,
+        "raw_file": "firework_frame_34_relative_001133ms",
+        "derived_alpha_file": "derived_full/firework_34_1133ms.png",
+        "native_crop_file": "native_crop/firework_34_1133ms.png",
+        "desktop512_file": "desktop_tile512/firework_34_1133ms.png",
+        "mobile128_file": "mobile_tile128/firework_34_1133ms.png"
+      },
+      {
+        "index": 35,
+        "relative_seconds": 1.1666666666666667,
+        "raw_file": "firework_frame_35_relative_001166ms",
+        "derived_alpha_file": "derived_full/firework_35_1166ms.png",
+        "native_crop_file": "native_crop/firework_35_1166ms.png",
+        "desktop512_file": "desktop_tile512/firework_35_1166ms.png",
+        "mobile128_file": "mobile_tile128/firework_35_1166ms.png"
+      },
+      {
+        "index": 36,
+        "relative_seconds": 1.2,
+        "raw_file": "firework_frame_36_relative_001200ms",
+        "derived_alpha_file": "derived_full/firework_36_1200ms.png",
+        "native_crop_file": "native_crop/firework_36_1200ms.png",
+        "desktop512_file": "desktop_tile512/firework_36_1200ms.png",
+        "mobile128_file": "mobile_tile128/firework_36_1200ms.png"
+      },
+      {
+        "index": 37,
+        "relative_seconds": 1.2333333333333334,
+        "raw_file": "firework_frame_37_relative_001233ms",
+        "derived_alpha_file": "derived_full/firework_37_1233ms.png",
+        "native_crop_file": "native_crop/firework_37_1233ms.png",
+        "desktop512_file": "desktop_tile512/firework_37_1233ms.png",
+        "mobile128_file": "mobile_tile128/firework_37_1233ms.png"
+      },
+      {
+        "index": 38,
+        "relative_seconds": 1.2666666666666666,
+        "raw_file": "firework_frame_38_relative_001266ms",
+        "derived_alpha_file": "derived_full/firework_38_1266ms.png",
+        "native_crop_file": "native_crop/firework_38_1266ms.png",
+        "desktop512_file": "desktop_tile512/firework_38_1266ms.png",
+        "mobile128_file": "mobile_tile128/firework_38_1266ms.png"
+      },
+      {
+        "index": 39,
+        "relative_seconds": 1.3,
+        "raw_file": "firework_frame_39_relative_001300ms",
+        "derived_alpha_file": "derived_full/firework_39_1300ms.png",
+        "native_crop_file": "native_crop/firework_39_1300ms.png",
+        "desktop512_file": "desktop_tile512/firework_39_1300ms.png",
+        "mobile128_file": "mobile_tile128/firework_39_1300ms.png"
+      },
+      {
+        "index": 40,
+        "relative_seconds": 1.3333333333333333,
+        "raw_file": "firework_frame_40_relative_001333ms",
+        "derived_alpha_file": "derived_full/firework_40_1333ms.png",
+        "native_crop_file": "native_crop/firework_40_1333ms.png",
+        "desktop512_file": "desktop_tile512/firework_40_1333ms.png",
+        "mobile128_file": "mobile_tile128/firework_40_1333ms.png"
+      },
+      {
+        "index": 41,
+        "relative_seconds": 1.3666666666666667,
+        "raw_file": "firework_frame_41_relative_001366ms",
+        "derived_alpha_file": "derived_full/firework_41_1366ms.png",
+        "native_crop_file": "native_crop/firework_41_1366ms.png",
+        "desktop512_file": "desktop_tile512/firework_41_1366ms.png",
+        "mobile128_file": "mobile_tile128/firework_41_1366ms.png"
+      },
+      {
+        "index": 42,
+        "relative_seconds": 1.4,
+        "raw_file": "firework_frame_42_relative_001400ms",
+        "derived_alpha_file": "derived_full/firework_42_1400ms.png",
+        "native_crop_file": "native_crop/firework_42_1400ms.png",
+        "desktop512_file": "desktop_tile512/firework_42_1400ms.png",
+        "mobile128_file": "mobile_tile128/firework_42_1400ms.png"
+      },
+      {
+        "index": 43,
+        "relative_seconds": 1.4333333333333333,
+        "raw_file": "firework_frame_43_relative_001433ms",
+        "derived_alpha_file": "derived_full/firework_43_1433ms.png",
+        "native_crop_file": "native_crop/firework_43_1433ms.png",
+        "desktop512_file": "desktop_tile512/firework_43_1433ms.png",
+        "mobile128_file": "mobile_tile128/firework_43_1433ms.png"
+      },
+      {
+        "index": 44,
+        "relative_seconds": 1.4666666666666666,
+        "raw_file": "firework_frame_44_relative_001466ms",
+        "derived_alpha_file": "derived_full/firework_44_1466ms.png",
+        "native_crop_file": "native_crop/firework_44_1466ms.png",
+        "desktop512_file": "desktop_tile512/firework_44_1466ms.png",
+        "mobile128_file": "mobile_tile128/firework_44_1466ms.png"
+      },
+      {
+        "index": 45,
+        "relative_seconds": 1.5,
+        "raw_file": "firework_frame_45_relative_001500ms",
+        "derived_alpha_file": "derived_full/firework_45_1500ms.png",
+        "native_crop_file": "native_crop/firework_45_1500ms.png",
+        "desktop512_file": "desktop_tile512/firework_45_1500ms.png",
+        "mobile128_file": "mobile_tile128/firework_45_1500ms.png"
+      },
+      {
+        "index": 46,
+        "relative_seconds": 1.5333333333333334,
+        "raw_file": "firework_frame_46_relative_001533ms",
+        "derived_alpha_file": "derived_full/firework_46_1533ms.png",
+        "native_crop_file": "native_crop/firework_46_1533ms.png",
+        "desktop512_file": "desktop_tile512/firework_46_1533ms.png",
+        "mobile128_file": "mobile_tile128/firework_46_1533ms.png"
+      },
+      {
+        "index": 47,
+        "relative_seconds": 1.5666666666666667,
+        "raw_file": "firework_frame_47_relative_001566ms",
+        "derived_alpha_file": "derived_full/firework_47_1566ms.png",
+        "native_crop_file": "native_crop/firework_47_1566ms.png",
+        "desktop512_file": "desktop_tile512/firework_47_1566ms.png",
+        "mobile128_file": "mobile_tile128/firework_47_1566ms.png"
+      },
+      {
+        "index": 48,
+        "relative_seconds": 1.6,
+        "raw_file": "firework_frame_48_relative_001600ms",
+        "derived_alpha_file": "derived_full/firework_48_1600ms.png",
+        "native_crop_file": "native_crop/firework_48_1600ms.png",
+        "desktop512_file": "desktop_tile512/firework_48_1600ms.png",
+        "mobile128_file": "mobile_tile128/firework_48_1600ms.png"
+      },
+      {
+        "index": 49,
+        "relative_seconds": 1.6333333333333333,
+        "raw_file": "firework_frame_49_relative_001633ms",
+        "derived_alpha_file": "derived_full/firework_49_1633ms.png",
+        "native_crop_file": "native_crop/firework_49_1633ms.png",
+        "desktop512_file": "desktop_tile512/firework_49_1633ms.png",
+        "mobile128_file": "mobile_tile128/firework_49_1633ms.png"
+      },
+      {
+        "index": 50,
+        "relative_seconds": 1.6666666666666667,
+        "raw_file": "firework_frame_50_relative_001666ms",
+        "derived_alpha_file": "derived_full/firework_50_1666ms.png",
+        "native_crop_file": "native_crop/firework_50_1666ms.png",
+        "desktop512_file": "desktop_tile512/firework_50_1666ms.png",
+        "mobile128_file": "mobile_tile128/firework_50_1666ms.png"
+      },
+      {
+        "index": 51,
+        "relative_seconds": 1.7,
+        "raw_file": "firework_frame_51_relative_001700ms",
+        "derived_alpha_file": "derived_full/firework_51_1700ms.png",
+        "native_crop_file": "native_crop/firework_51_1700ms.png",
+        "desktop512_file": "desktop_tile512/firework_51_1700ms.png",
+        "mobile128_file": "mobile_tile128/firework_51_1700ms.png"
+      },
+      {
+        "index": 52,
+        "relative_seconds": 1.7333333333333334,
+        "raw_file": "firework_frame_52_relative_001733ms",
+        "derived_alpha_file": "derived_full/firework_52_1733ms.png",
+        "native_crop_file": "native_crop/firework_52_1733ms.png",
+        "desktop512_file": "desktop_tile512/firework_52_1733ms.png",
+        "mobile128_file": "mobile_tile128/firework_52_1733ms.png"
+      },
+      {
+        "index": 53,
+        "relative_seconds": 1.7666666666666666,
+        "raw_file": "firework_frame_53_relative_001766ms",
+        "derived_alpha_file": "derived_full/firework_53_1766ms.png",
+        "native_crop_file": "native_crop/firework_53_1766ms.png",
+        "desktop512_file": "desktop_tile512/firework_53_1766ms.png",
+        "mobile128_file": "mobile_tile128/firework_53_1766ms.png"
+      },
+      {
+        "index": 54,
+        "relative_seconds": 1.8,
+        "raw_file": "firework_frame_54_relative_001800ms",
+        "derived_alpha_file": "derived_full/firework_54_1800ms.png",
+        "native_crop_file": "native_crop/firework_54_1800ms.png",
+        "desktop512_file": "desktop_tile512/firework_54_1800ms.png",
+        "mobile128_file": "mobile_tile128/firework_54_1800ms.png"
+      },
+      {
+        "index": 55,
+        "relative_seconds": 1.8333333333333333,
+        "raw_file": "firework_frame_55_relative_001833ms",
+        "derived_alpha_file": "derived_full/firework_55_1833ms.png",
+        "native_crop_file": "native_crop/firework_55_1833ms.png",
+        "desktop512_file": "desktop_tile512/firework_55_1833ms.png",
+        "mobile128_file": "mobile_tile128/firework_55_1833ms.png"
+      },
+      {
+        "index": 56,
+        "relative_seconds": 1.8666666666666667,
+        "raw_file": "firework_frame_56_relative_001866ms",
+        "derived_alpha_file": "derived_full/firework_56_1866ms.png",
+        "native_crop_file": "native_crop/firework_56_1866ms.png",
+        "desktop512_file": "desktop_tile512/firework_56_1866ms.png",
+        "mobile128_file": "mobile_tile128/firework_56_1866ms.png"
+      },
+      {
+        "index": 57,
+        "relative_seconds": 1.9,
+        "raw_file": "firework_frame_57_relative_001900ms",
+        "derived_alpha_file": "derived_full/firework_57_1900ms.png",
+        "native_crop_file": "native_crop/firework_57_1900ms.png",
+        "desktop512_file": "desktop_tile512/firework_57_1900ms.png",
+        "mobile128_file": "mobile_tile128/firework_57_1900ms.png"
+      },
+      {
+        "index": 58,
+        "relative_seconds": 1.9333333333333333,
+        "raw_file": "firework_frame_58_relative_001933ms",
+        "derived_alpha_file": "derived_full/firework_58_1933ms.png",
+        "native_crop_file": "native_crop/firework_58_1933ms.png",
+        "desktop512_file": "desktop_tile512/firework_58_1933ms.png",
+        "mobile128_file": "mobile_tile128/firework_58_1933ms.png"
+      },
+      {
+        "index": 59,
+        "relative_seconds": 1.9666666666666666,
+        "raw_file": "firework_frame_59_relative_001966ms",
+        "derived_alpha_file": "derived_full/firework_59_1966ms.png",
+        "native_crop_file": "native_crop/firework_59_1966ms.png",
+        "desktop512_file": "desktop_tile512/firework_59_1966ms.png",
+        "mobile128_file": "mobile_tile128/firework_59_1966ms.png"
+      }
+    ],
+    "background_compositing_limit": "The source is a single additive-only LDR RGB capture over black. Derived alpha preserves black-background RGB by construction and gives a linear-light additive-style approximation over other colors; it does not retain depth or occlusion, and arbitrary background behavior is not separately validated."
+  },
+  "frames": [
+    {
+      "index": 0,
+      "requested_relative_age_seconds": 0.0,
+      "manual_tick": 0,
+      "raw_file": "firework_frame_00_relative_000000ms",
+      "raw_sha256": "7ad1d9493e6b5116f641225175c891876ca043bd9c804d93ada1e499426d4414",
+      "raw_bytes": 225665,
+      "rgb_gt4_bbox": null,
+      "rgb_gt4_pixel_count": 0,
+      "derived_full_file": "derived_full/firework_00_0000ms.png",
+      "native_common_crop_file": "native_crop/firework_00_0000ms.png",
+      "native_sha256": "d5c31b106d0eb337a77825b3fd98c4d04ae64eb24826d0e618a2ea0c09c56480",
+      "desktop_tile512_file": "desktop_tile512/firework_00_0000ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_00_0000ms.png"
+    },
+    {
+      "index": 1,
+      "requested_relative_age_seconds": 0.03333333333333333,
+      "manual_tick": 2,
+      "raw_file": "firework_frame_01_relative_000033ms",
+      "raw_sha256": "7ad1d9493e6b5116f641225175c891876ca043bd9c804d93ada1e499426d4414",
+      "raw_bytes": 225665,
+      "rgb_gt4_bbox": null,
+      "rgb_gt4_pixel_count": 0,
+      "derived_full_file": "derived_full/firework_01_0033ms.png",
+      "native_common_crop_file": "native_crop/firework_01_0033ms.png",
+      "native_sha256": "d5c31b106d0eb337a77825b3fd98c4d04ae64eb24826d0e618a2ea0c09c56480",
+      "desktop_tile512_file": "desktop_tile512/firework_01_0033ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_01_0033ms.png"
+    },
+    {
+      "index": 2,
+      "requested_relative_age_seconds": 0.06666666666666667,
+      "manual_tick": 4,
+      "raw_file": "firework_frame_02_relative_000066ms",
+      "raw_sha256": "7ad1d9493e6b5116f641225175c891876ca043bd9c804d93ada1e499426d4414",
+      "raw_bytes": 225665,
+      "rgb_gt4_bbox": null,
+      "rgb_gt4_pixel_count": 0,
+      "derived_full_file": "derived_full/firework_02_0066ms.png",
+      "native_common_crop_file": "native_crop/firework_02_0066ms.png",
+      "native_sha256": "d5c31b106d0eb337a77825b3fd98c4d04ae64eb24826d0e618a2ea0c09c56480",
+      "desktop_tile512_file": "desktop_tile512/firework_02_0066ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_02_0066ms.png"
+    },
+    {
+      "index": 3,
+      "requested_relative_age_seconds": 0.1,
+      "manual_tick": 6,
+      "raw_file": "firework_frame_03_relative_000100ms",
+      "raw_sha256": "6e43725f22948f47d7639f6d9edd6baedb3e7bf640d7491dc82916c50ac143a6",
+      "raw_bytes": 225665,
+      "rgb_gt4_bbox": [
+        470,
+        837,
+        533,
+        891
+      ],
+      "rgb_gt4_pixel_count": 368,
+      "derived_full_file": "derived_full/firework_03_0100ms.png",
+      "native_common_crop_file": "native_crop/firework_03_0100ms.png",
+      "native_sha256": "82a0185bd5cf5ebb1925a5383e67510084792d14949b5a4f00429f4dc2d71890",
+      "desktop_tile512_file": "desktop_tile512/firework_03_0100ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_03_0100ms.png"
+    },
+    {
+      "index": 4,
+      "requested_relative_age_seconds": 0.13333333333333333,
+      "manual_tick": 8,
+      "raw_file": "firework_frame_04_relative_000133ms",
+      "raw_sha256": "dfe0217c94a898e7af65e5cac2526a0339c9a12f2285e08dc9878f1b5460a0fa",
+      "raw_bytes": 225665,
+      "rgb_gt4_bbox": [
+        468,
+        820,
+        539,
+        889
+      ],
+      "rgb_gt4_pixel_count": 670,
+      "derived_full_file": "derived_full/firework_04_0133ms.png",
+      "native_common_crop_file": "native_crop/firework_04_0133ms.png",
+      "native_sha256": "660481ef5f726ffa4068ac2b73f170c66197a7401ba3a11c8d8abfd6a077fb25",
+      "desktop_tile512_file": "desktop_tile512/firework_04_0133ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_04_0133ms.png"
+    },
+    {
+      "index": 5,
+      "requested_relative_age_seconds": 0.16666666666666666,
+      "manual_tick": 10,
+      "raw_file": "firework_frame_05_relative_000166ms",
+      "raw_sha256": "f643dc568b5ca058d800f1e07463bd90abb248e2c107a43464cbd6183351b66f",
+      "raw_bytes": 225665,
+      "rgb_gt4_bbox": [
+        466,
+        799,
+        542,
+        889
+      ],
+      "rgb_gt4_pixel_count": 1071,
+      "derived_full_file": "derived_full/firework_05_0166ms.png",
+      "native_common_crop_file": "native_crop/firework_05_0166ms.png",
+      "native_sha256": "f2e97723ddd86ee9c3b1daf1e3c6e7763cf7f681d410bd89c36d410a8a926396",
+      "desktop_tile512_file": "desktop_tile512/firework_05_0166ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_05_0166ms.png"
+    },
+    {
+      "index": 6,
+      "requested_relative_age_seconds": 0.2,
+      "manual_tick": 12,
+      "raw_file": "firework_frame_06_relative_000200ms",
+      "raw_sha256": "e2585cfc288350f8ec1ad978e28530cc5c9cc5adb744730502cd74560897cd7f",
+      "raw_bytes": 225665,
+      "rgb_gt4_bbox": [
+        465,
+        779,
+        548,
+        889
+      ],
+      "rgb_gt4_pixel_count": 1617,
+      "derived_full_file": "derived_full/firework_06_0200ms.png",
+      "native_common_crop_file": "native_crop/firework_06_0200ms.png",
+      "native_sha256": "875f19fe00fb91921fecdbabb455121c454415c61040b6654b243a6f65c071eb",
+      "desktop_tile512_file": "desktop_tile512/firework_06_0200ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_06_0200ms.png"
+    },
+    {
+      "index": 7,
+      "requested_relative_age_seconds": 0.23333333333333334,
+      "manual_tick": 14,
+      "raw_file": "firework_frame_07_relative_000233ms",
+      "raw_sha256": "79785fbb919187c095dbe1a3fa783678d69cb5f58bd293ccaa93117ebbb31038",
+      "raw_bytes": 310838,
+      "rgb_gt4_bbox": [
+        463,
+        759,
+        550,
+        889
+      ],
+      "rgb_gt4_pixel_count": 2137,
+      "derived_full_file": "derived_full/firework_07_0233ms.png",
+      "native_common_crop_file": "native_crop/firework_07_0233ms.png",
+      "native_sha256": "91a0472a9ea502c15bfc3a0280a18ac0eed646116abc522f4e900e090de56a56",
+      "desktop_tile512_file": "desktop_tile512/firework_07_0233ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_07_0233ms.png"
+    },
+    {
+      "index": 8,
+      "requested_relative_age_seconds": 0.26666666666666666,
+      "manual_tick": 16,
+      "raw_file": "firework_frame_08_relative_000266ms",
+      "raw_sha256": "8e859121da1e1e151fdbb43206bb31e2f8f363a232655e559c0c5db97963d0dd",
+      "raw_bytes": 315339,
+      "rgb_gt4_bbox": [
+        461,
+        739,
+        553,
+        889
+      ],
+      "rgb_gt4_pixel_count": 2699,
+      "derived_full_file": "derived_full/firework_08_0266ms.png",
+      "native_common_crop_file": "native_crop/firework_08_0266ms.png",
+      "native_sha256": "a42ffe0c7c6b6b8d555cbbcaafcef95f9c7c18fddab79fcc9d7989fd77590a66",
+      "desktop_tile512_file": "desktop_tile512/firework_08_0266ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_08_0266ms.png"
+    },
+    {
+      "index": 9,
+      "requested_relative_age_seconds": 0.3,
+      "manual_tick": 18,
+      "raw_file": "firework_frame_09_relative_000300ms",
+      "raw_sha256": "871806bf616fea13ed2c6322c0ed88cdb9c0b99218274da293ece81bf8794b64",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        459,
+        719,
+        555,
+        889
+      ],
+      "rgb_gt4_pixel_count": 3251,
+      "derived_full_file": "derived_full/firework_09_0300ms.png",
+      "native_common_crop_file": "native_crop/firework_09_0300ms.png",
+      "native_sha256": "8de416b194200d7b8f876b0335f449cd27a8d38a58665954d46dbe2c53e37349",
+      "desktop_tile512_file": "desktop_tile512/firework_09_0300ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_09_0300ms.png"
+    },
+    {
+      "index": 10,
+      "requested_relative_age_seconds": 0.3333333333333333,
+      "manual_tick": 20,
+      "raw_file": "firework_frame_10_relative_000333ms",
+      "raw_sha256": "4271ec7bbd0a616088ae1c330d11e6bbd80b85068c6aead4f17a20bafc534eec",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        457,
+        700,
+        557,
+        889
+      ],
+      "rgb_gt4_pixel_count": 3724,
+      "derived_full_file": "derived_full/firework_10_0333ms.png",
+      "native_common_crop_file": "native_crop/firework_10_0333ms.png",
+      "native_sha256": "0f3ea1311f2356bc858a287e28b46b71a06e8bfee4d07b0a7fe77f02039ac99c",
+      "desktop_tile512_file": "desktop_tile512/firework_10_0333ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_10_0333ms.png"
+    },
+    {
+      "index": 11,
+      "requested_relative_age_seconds": 0.36666666666666664,
+      "manual_tick": 22,
+      "raw_file": "firework_frame_11_relative_000366ms",
+      "raw_sha256": "09606b5ee8e6ea29f2d5c46fe245aa956966892b4ad712265d1dc485f38ceb68",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        456,
+        681,
+        559,
+        889
+      ],
+      "rgb_gt4_pixel_count": 4268,
+      "derived_full_file": "derived_full/firework_11_0366ms.png",
+      "native_common_crop_file": "native_crop/firework_11_0366ms.png",
+      "native_sha256": "7cfe1aa8738cfa0c99f413e30bcbd5b0ec261554f34c1256316c02fb04de5783",
+      "desktop_tile512_file": "desktop_tile512/firework_11_0366ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_11_0366ms.png"
+    },
+    {
+      "index": 12,
+      "requested_relative_age_seconds": 0.4,
+      "manual_tick": 24,
+      "raw_file": "firework_frame_12_relative_000400ms",
+      "raw_sha256": "5bde91e7d0ca4903102cf705c91aef8c98f12c298930e972fba8e6728e3d7726",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        454,
+        662,
+        561,
+        888
+      ],
+      "rgb_gt4_pixel_count": 4750,
+      "derived_full_file": "derived_full/firework_12_0400ms.png",
+      "native_common_crop_file": "native_crop/firework_12_0400ms.png",
+      "native_sha256": "9501d7c31aa4f98a08c0f008a4f4d5cbab464c41cdcc41fa39de1976f43c5511",
+      "desktop_tile512_file": "desktop_tile512/firework_12_0400ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_12_0400ms.png"
+    },
+    {
+      "index": 13,
+      "requested_relative_age_seconds": 0.43333333333333335,
+      "manual_tick": 26,
+      "raw_file": "firework_frame_13_relative_000433ms",
+      "raw_sha256": "bc9d715c4ee6c15f0bddb6bb47c9e70b104371f1a79175943409ec6df8241598",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        452,
+        644,
+        563,
+        883
+      ],
+      "rgb_gt4_pixel_count": 5185,
+      "derived_full_file": "derived_full/firework_13_0433ms.png",
+      "native_common_crop_file": "native_crop/firework_13_0433ms.png",
+      "native_sha256": "186ee1c30cd6f6bcef2dd0c8dd7c400ab26432d269c708768b6a6ba86dd136b2",
+      "desktop_tile512_file": "desktop_tile512/firework_13_0433ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_13_0433ms.png"
+    },
+    {
+      "index": 14,
+      "requested_relative_age_seconds": 0.4666666666666667,
+      "manual_tick": 28,
+      "raw_file": "firework_frame_14_relative_000466ms",
+      "raw_sha256": "e620bf123d4ce85d336268029782c6d28aa6151a4c05ac6ee116412a6e465881",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        451,
+        626,
+        566,
+        884
+      ],
+      "rgb_gt4_pixel_count": 5618,
+      "derived_full_file": "derived_full/firework_14_0466ms.png",
+      "native_common_crop_file": "native_crop/firework_14_0466ms.png",
+      "native_sha256": "c746be8f0695e60de058771f97b22ebd4e18d8240bb829a0610400dee6a9570b",
+      "desktop_tile512_file": "desktop_tile512/firework_14_0466ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_14_0466ms.png"
+    },
+    {
+      "index": 15,
+      "requested_relative_age_seconds": 0.5,
+      "manual_tick": 30,
+      "raw_file": "firework_frame_15_relative_000500ms",
+      "raw_sha256": "4934435b38af66dd4dff1745ff29053c085d4492daf23b8a733670d139cd96bc",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        449,
+        608,
+        568,
+        883
+      ],
+      "rgb_gt4_pixel_count": 6068,
+      "derived_full_file": "derived_full/firework_15_0500ms.png",
+      "native_common_crop_file": "native_crop/firework_15_0500ms.png",
+      "native_sha256": "2aa0548c7c66b17cd8c2318534f8bc62814aeaade3ea2877c931dfda3b073954",
+      "desktop_tile512_file": "desktop_tile512/firework_15_0500ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_15_0500ms.png"
+    },
+    {
+      "index": 16,
+      "requested_relative_age_seconds": 0.5333333333333333,
+      "manual_tick": 32,
+      "raw_file": "firework_frame_16_relative_000533ms",
+      "raw_sha256": "788fa7cbcf6f2aa1e0b9b905c63bd1c64a418ac9066ba16b073cf1eee94a2e27",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        446,
+        591,
+        570,
+        883
+      ],
+      "rgb_gt4_pixel_count": 6435,
+      "derived_full_file": "derived_full/firework_16_0533ms.png",
+      "native_common_crop_file": "native_crop/firework_16_0533ms.png",
+      "native_sha256": "3ff435c062c8f8dc91a7a8b6f68a2414f1b68ce7b545588447d012a5ed095d0e",
+      "desktop_tile512_file": "desktop_tile512/firework_16_0533ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_16_0533ms.png"
+    },
+    {
+      "index": 17,
+      "requested_relative_age_seconds": 0.5666666666666667,
+      "manual_tick": 34,
+      "raw_file": "firework_frame_17_relative_000566ms",
+      "raw_sha256": "5845e649519052bc4e3d469b8960cbc2ba693519a894bdcfd2661c73988f337a",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        444,
+        574,
+        572,
+        880
+      ],
+      "rgb_gt4_pixel_count": 6677,
+      "derived_full_file": "derived_full/firework_17_0566ms.png",
+      "native_common_crop_file": "native_crop/firework_17_0566ms.png",
+      "native_sha256": "0055c5f20c53cfe77ff8d44bdcebe06641298ccd61b265343b04197a9f6b6e01",
+      "desktop_tile512_file": "desktop_tile512/firework_17_0566ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_17_0566ms.png"
+    },
+    {
+      "index": 18,
+      "requested_relative_age_seconds": 0.6,
+      "manual_tick": 36,
+      "raw_file": "firework_frame_18_relative_000600ms",
+      "raw_sha256": "bb8d6aa5aafcbe900c367d1e2110aa272dda8994d005709bafc9a25edb1db88c",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        442,
+        557,
+        574,
+        875
+      ],
+      "rgb_gt4_pixel_count": 6826,
+      "derived_full_file": "derived_full/firework_18_0600ms.png",
+      "native_common_crop_file": "native_crop/firework_18_0600ms.png",
+      "native_sha256": "044a026e2ddec7cd4d18842104eed42e79bdd36de54f611605862f7fd7d608e6",
+      "desktop_tile512_file": "desktop_tile512/firework_18_0600ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_18_0600ms.png"
+    },
+    {
+      "index": 19,
+      "requested_relative_age_seconds": 0.6333333333333333,
+      "manual_tick": 38,
+      "raw_file": "firework_frame_19_relative_000633ms",
+      "raw_sha256": "dc1774e133b0629ba37fbe05ba8085e827b7936aab84954b56154a606d4d4cb7",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        439,
+        541,
+        575,
+        875
+      ],
+      "rgb_gt4_pixel_count": 6863,
+      "derived_full_file": "derived_full/firework_19_0633ms.png",
+      "native_common_crop_file": "native_crop/firework_19_0633ms.png",
+      "native_sha256": "597da4ba427f6360edb7e531a78f9e305c98177af623abe30604ad813a95081a",
+      "desktop_tile512_file": "desktop_tile512/firework_19_0633ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_19_0633ms.png"
+    },
+    {
+      "index": 20,
+      "requested_relative_age_seconds": 0.6666666666666666,
+      "manual_tick": 40,
+      "raw_file": "firework_frame_20_relative_000666ms",
+      "raw_sha256": "7c2ca95ec201fd185848ae9151359511657fbf6e17bf3b2d010c8c3ae846e638",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        437,
+        524,
+        577,
+        875
+      ],
+      "rgb_gt4_pixel_count": 6940,
+      "derived_full_file": "derived_full/firework_20_0666ms.png",
+      "native_common_crop_file": "native_crop/firework_20_0666ms.png",
+      "native_sha256": "ca875180f2bb4734954db57b92a23f788ef0c14e4032e9bb1a8b9f7bcdb80eaf",
+      "desktop_tile512_file": "desktop_tile512/firework_20_0666ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_20_0666ms.png"
+    },
+    {
+      "index": 21,
+      "requested_relative_age_seconds": 0.7,
+      "manual_tick": 42,
+      "raw_file": "firework_frame_21_relative_000700ms",
+      "raw_sha256": "3a11dcddaa37e5f22ea62ff091a130f0a4473cd988576447ebad0eb4b5481ab1",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        434,
+        509,
+        579,
+        858
+      ],
+      "rgb_gt4_pixel_count": 7030,
+      "derived_full_file": "derived_full/firework_21_0700ms.png",
+      "native_common_crop_file": "native_crop/firework_21_0700ms.png",
+      "native_sha256": "61266d8f4cc225def524f90ecbe3d9d4acc98cdfc71a9a5e1dbdbca9bf9c932c",
+      "desktop_tile512_file": "desktop_tile512/firework_21_0700ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_21_0700ms.png"
+    },
+    {
+      "index": 22,
+      "requested_relative_age_seconds": 0.7333333333333333,
+      "manual_tick": 44,
+      "raw_file": "firework_frame_22_relative_000733ms",
+      "raw_sha256": "e3490afa33590cfe63e84fd635c22a62321f07663922ddd4cc53b7d7e96fe286",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        431,
+        493,
+        581,
+        851
+      ],
+      "rgb_gt4_pixel_count": 7164,
+      "derived_full_file": "derived_full/firework_22_0733ms.png",
+      "native_common_crop_file": "native_crop/firework_22_0733ms.png",
+      "native_sha256": "ecd3245bde22c53fb6b80d1e8d298f23277df575c47544fb419c2cd98c9073f7",
+      "desktop_tile512_file": "desktop_tile512/firework_22_0733ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_22_0733ms.png"
+    },
+    {
+      "index": 23,
+      "requested_relative_age_seconds": 0.7666666666666667,
+      "manual_tick": 46,
+      "raw_file": "firework_frame_23_relative_000766ms",
+      "raw_sha256": "72057cfe7b04790e1cc9c546168a98e5b17a66f5560a72ba3f7cf018a6d6b965",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        429,
+        478,
+        583,
+        834
+      ],
+      "rgb_gt4_pixel_count": 7300,
+      "derived_full_file": "derived_full/firework_23_0766ms.png",
+      "native_common_crop_file": "native_crop/firework_23_0766ms.png",
+      "native_sha256": "d1ccd7ab9bdd8af49a5eec3a3555670bce7d8a233f71420c3068c192de5c73eb",
+      "desktop_tile512_file": "desktop_tile512/firework_23_0766ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_23_0766ms.png"
+    },
+    {
+      "index": 24,
+      "requested_relative_age_seconds": 0.8,
+      "manual_tick": 48,
+      "raw_file": "firework_frame_24_relative_000800ms",
+      "raw_sha256": "826b0b63926cd3ff27aadaae34af998448cfb3d580b8833597ff8ef2d53a4257",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        426,
+        464,
+        584,
+        813
+      ],
+      "rgb_gt4_pixel_count": 7388,
+      "derived_full_file": "derived_full/firework_24_0800ms.png",
+      "native_common_crop_file": "native_crop/firework_24_0800ms.png",
+      "native_sha256": "50504b50eada36e46f92a4bda15bb33282e174af2127dbd922943a8b63302fc2",
+      "desktop_tile512_file": "desktop_tile512/firework_24_0800ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_24_0800ms.png"
+    },
+    {
+      "index": 25,
+      "requested_relative_age_seconds": 0.8333333333333334,
+      "manual_tick": 50,
+      "raw_file": "firework_frame_25_relative_000833ms",
+      "raw_sha256": "881252f6b2e2be4b2e186fd57f167072595fe584e082d0d7ba54b94a0a143d02",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        424,
+        450,
+        586,
+        782
+      ],
+      "rgb_gt4_pixel_count": 7486,
+      "derived_full_file": "derived_full/firework_25_0833ms.png",
+      "native_common_crop_file": "native_crop/firework_25_0833ms.png",
+      "native_sha256": "84829ccbb817f215f7956086fc48667e2ad7ce14e8add36def5a5a44289b38f6",
+      "desktop_tile512_file": "desktop_tile512/firework_25_0833ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_25_0833ms.png"
+    },
+    {
+      "index": 26,
+      "requested_relative_age_seconds": 0.8666666666666667,
+      "manual_tick": 52,
+      "raw_file": "firework_frame_26_relative_000866ms",
+      "raw_sha256": "06ef9e584605f4cc40116961744c106101324e56388bf44dd7079d40e84efa3b",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        421,
+        435,
+        588,
+        782
+      ],
+      "rgb_gt4_pixel_count": 7500,
+      "derived_full_file": "derived_full/firework_26_0866ms.png",
+      "native_common_crop_file": "native_crop/firework_26_0866ms.png",
+      "native_sha256": "dbde6e3ed4d75bace92e22c8e5b14bbe7aac3bb4d55d46a4f753084aaa2689f9",
+      "desktop_tile512_file": "desktop_tile512/firework_26_0866ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_26_0866ms.png"
+    },
+    {
+      "index": 27,
+      "requested_relative_age_seconds": 0.9,
+      "manual_tick": 54,
+      "raw_file": "firework_frame_27_relative_000900ms",
+      "raw_sha256": "52e30efa67ea82b7b52d76570797e649d84983c581141c5715bf14fad96347ea",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        419,
+        422,
+        589,
+        778
+      ],
+      "rgb_gt4_pixel_count": 7491,
+      "derived_full_file": "derived_full/firework_27_0900ms.png",
+      "native_common_crop_file": "native_crop/firework_27_0900ms.png",
+      "native_sha256": "1791c62a2bd3abefb4bdda04dcd07643092e7be9fcbb771cb7f09db6c91750f3",
+      "desktop_tile512_file": "desktop_tile512/firework_27_0900ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_27_0900ms.png"
+    },
+    {
+      "index": 28,
+      "requested_relative_age_seconds": 0.9333333333333333,
+      "manual_tick": 56,
+      "raw_file": "firework_frame_28_relative_000933ms",
+      "raw_sha256": "440a41219ed276bc88e362f4fc0858d0daf00cb6ff4bd24d2e6329d989b3003b",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        417,
+        409,
+        591,
+        763
+      ],
+      "rgb_gt4_pixel_count": 7417,
+      "derived_full_file": "derived_full/firework_28_0933ms.png",
+      "native_common_crop_file": "native_crop/firework_28_0933ms.png",
+      "native_sha256": "7be0e0fda9d7c06edb748a0545fb12c45a569829058b0112a2dbdff70bb2a04a",
+      "desktop_tile512_file": "desktop_tile512/firework_28_0933ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_28_0933ms.png"
+    },
+    {
+      "index": 29,
+      "requested_relative_age_seconds": 0.9666666666666667,
+      "manual_tick": 58,
+      "raw_file": "firework_frame_29_relative_000966ms",
+      "raw_sha256": "eb5fac393832c8264a8910fce3f1e940bf1073dae4c0b07774e04acd1ef2b00e",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        414,
+        396,
+        592,
+        762
+      ],
+      "rgb_gt4_pixel_count": 7487,
+      "derived_full_file": "derived_full/firework_29_0966ms.png",
+      "native_common_crop_file": "native_crop/firework_29_0966ms.png",
+      "native_sha256": "638ba3c7423a316608b8e1c8d65c774054adfc2f5ded9c2d8528deee5040cc85",
+      "desktop_tile512_file": "desktop_tile512/firework_29_0966ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_29_0966ms.png"
+    },
+    {
+      "index": 30,
+      "requested_relative_age_seconds": 1.0,
+      "manual_tick": 60,
+      "raw_file": "firework_frame_30_relative_001000ms",
+      "raw_sha256": "065da9e7e2d53b1fd3139f2f552c8981f4f4e040ddc8ad6c9a9213cbadd7f7a7",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        412,
+        383,
+        594,
+        749
+      ],
+      "rgb_gt4_pixel_count": 7435,
+      "derived_full_file": "derived_full/firework_30_1000ms.png",
+      "native_common_crop_file": "native_crop/firework_30_1000ms.png",
+      "native_sha256": "b90bb5e0945ed31b5c6eb3396a8299e77ee5280623e5d89db21ea27aabaf2999",
+      "desktop_tile512_file": "desktop_tile512/firework_30_1000ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_30_1000ms.png"
+    },
+    {
+      "index": 31,
+      "requested_relative_age_seconds": 1.0333333333333334,
+      "manual_tick": 62,
+      "raw_file": "firework_frame_31_relative_001033ms",
+      "raw_sha256": "761b09dbf4238bac00c699464b44912ebefcf01b3db3a26ef0ee2e353dde982a",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        410,
+        371,
+        595,
+        733
+      ],
+      "rgb_gt4_pixel_count": 7446,
+      "derived_full_file": "derived_full/firework_31_1033ms.png",
+      "native_common_crop_file": "native_crop/firework_31_1033ms.png",
+      "native_sha256": "f2ce9e0a8283e3f63bc34a863975223f10b6ddb8f61df13f0da8ba7883d6c586",
+      "desktop_tile512_file": "desktop_tile512/firework_31_1033ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_31_1033ms.png"
+    },
+    {
+      "index": 32,
+      "requested_relative_age_seconds": 1.0666666666666667,
+      "manual_tick": 64,
+      "raw_file": "firework_frame_32_relative_001066ms",
+      "raw_sha256": "7eb56501ee95cc7dc80ac81c92b6b2b0640e50916509433209f787656723340d",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        408,
+        359,
+        597,
+        732
+      ],
+      "rgb_gt4_pixel_count": 7448,
+      "derived_full_file": "derived_full/firework_32_1066ms.png",
+      "native_common_crop_file": "native_crop/firework_32_1066ms.png",
+      "native_sha256": "b87c73418604365e14300ca887fe96f3cd80c0e63b7742f3c302f92a4ae357b4",
+      "desktop_tile512_file": "desktop_tile512/firework_32_1066ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_32_1066ms.png"
+    },
+    {
+      "index": 33,
+      "requested_relative_age_seconds": 1.1,
+      "manual_tick": 66,
+      "raw_file": "firework_frame_33_relative_001100ms",
+      "raw_sha256": "5ae714b41c45549f7afd89a57190a66099317af17d66f5e8e3c69b26b4792084",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        405,
+        347,
+        598,
+        711
+      ],
+      "rgb_gt4_pixel_count": 7506,
+      "derived_full_file": "derived_full/firework_33_1100ms.png",
+      "native_common_crop_file": "native_crop/firework_33_1100ms.png",
+      "native_sha256": "80210f1984b4764142d39efda0d19cd6c610a0d7fef158edd5d889be5440d668",
+      "desktop_tile512_file": "desktop_tile512/firework_33_1100ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_33_1100ms.png"
+    },
+    {
+      "index": 34,
+      "requested_relative_age_seconds": 1.1333333333333333,
+      "manual_tick": 68,
+      "raw_file": "firework_frame_34_relative_001133ms",
+      "raw_sha256": "1bec73e27cd9312c707b766d480b31f8e85402adb897673e4b2c8a33679960d2",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        403,
+        336,
+        600,
+        692
+      ],
+      "rgb_gt4_pixel_count": 7529,
+      "derived_full_file": "derived_full/firework_34_1133ms.png",
+      "native_common_crop_file": "native_crop/firework_34_1133ms.png",
+      "native_sha256": "b23987c5b3f2771c46192ba37095ebaee9fb46863d279d7b8e2cfdf38d55710d",
+      "desktop_tile512_file": "desktop_tile512/firework_34_1133ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_34_1133ms.png"
+    },
+    {
+      "index": 35,
+      "requested_relative_age_seconds": 1.1666666666666667,
+      "manual_tick": 70,
+      "raw_file": "firework_frame_35_relative_001166ms",
+      "raw_sha256": "ddda732f8fa0a08f8c1904a296205ca09ec4821125e84f8921a21dc8d1949be6",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        401,
+        322,
+        601,
+        678
+      ],
+      "rgb_gt4_pixel_count": 8556,
+      "derived_full_file": "derived_full/firework_35_1166ms.png",
+      "native_common_crop_file": "native_crop/firework_35_1166ms.png",
+      "native_sha256": "159c1a7bea9f90e9f511b62f4f448a4e46ab42d10096c7dd10a0d93400722f02",
+      "desktop_tile512_file": "desktop_tile512/firework_35_1166ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_35_1166ms.png"
+    },
+    {
+      "index": 36,
+      "requested_relative_age_seconds": 1.2,
+      "manual_tick": 72,
+      "raw_file": "firework_frame_36_relative_001200ms",
+      "raw_sha256": "75a721d654f3d5995600177892326129e6c284c7852dc299f8320df1690680ae",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        399,
+        315,
+        602,
+        672
+      ],
+      "rgb_gt4_pixel_count": 10995,
+      "derived_full_file": "derived_full/firework_36_1200ms.png",
+      "native_common_crop_file": "native_crop/firework_36_1200ms.png",
+      "native_sha256": "668bfe5182afb8a6c9641effa9dd7321c7fa5a0d9c041e0994e1644866fb3991",
+      "desktop_tile512_file": "desktop_tile512/firework_36_1200ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_36_1200ms.png"
+    },
+    {
+      "index": 37,
+      "requested_relative_age_seconds": 1.2333333333333334,
+      "manual_tick": 74,
+      "raw_file": "firework_frame_37_relative_001233ms",
+      "raw_sha256": "9dd9ee1d50cf0d395b928e45b4fd3a06225fb387630f1899d644b4e624c1842a",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        397,
+        306,
+        605,
+        671
+      ],
+      "rgb_gt4_pixel_count": 14835,
+      "derived_full_file": "derived_full/firework_37_1233ms.png",
+      "native_common_crop_file": "native_crop/firework_37_1233ms.png",
+      "native_sha256": "26d79fa03b49327cd138378b7bef4df7494ed94d7310e1fd2b4b2a35c3b37835",
+      "desktop_tile512_file": "desktop_tile512/firework_37_1233ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_37_1233ms.png"
+    },
+    {
+      "index": 38,
+      "requested_relative_age_seconds": 1.2666666666666666,
+      "manual_tick": 76,
+      "raw_file": "firework_frame_38_relative_001266ms",
+      "raw_sha256": "5f9767ad34d62993fded8258a96a3e093a29245170b2f461c6e794beb2bf6671",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        390,
+        296,
+        613,
+        661
+      ],
+      "rgb_gt4_pixel_count": 20102,
+      "derived_full_file": "derived_full/firework_38_1266ms.png",
+      "native_common_crop_file": "native_crop/firework_38_1266ms.png",
+      "native_sha256": "a4089c199f2835042daca8888e83dae6163e4988691a44d560b878bfbeb4f854",
+      "desktop_tile512_file": "desktop_tile512/firework_38_1266ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_38_1266ms.png"
+    },
+    {
+      "index": 39,
+      "requested_relative_age_seconds": 1.3,
+      "manual_tick": 78,
+      "raw_file": "firework_frame_39_relative_001300ms",
+      "raw_sha256": "2f84147b5c393cb7444a78332673135fcc536be7bc14e5f49dc009e47149163b",
+      "raw_bytes": 315909,
+      "rgb_gt4_bbox": [
+        380,
+        288,
+        623,
+        660
+      ],
+      "rgb_gt4_pixel_count": 26009,
+      "derived_full_file": "derived_full/firework_39_1300ms.png",
+      "native_common_crop_file": "native_crop/firework_39_1300ms.png",
+      "native_sha256": "80079228bc45549e71b87fbcf30084de4b29d121abd0cd71d75392dcfb4f61bb",
+      "desktop_tile512_file": "desktop_tile512/firework_39_1300ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_39_1300ms.png"
+    },
+    {
+      "index": 40,
+      "requested_relative_age_seconds": 1.3333333333333333,
+      "manual_tick": 80,
+      "raw_file": "firework_frame_40_relative_001333ms",
+      "raw_sha256": "dea91ba5458455fd1a0d500307557461f5eb000e15f229b195925de0eca08a44",
+      "raw_bytes": 436883,
+      "rgb_gt4_bbox": [
+        371,
+        279,
+        632,
+        652
+      ],
+      "rgb_gt4_pixel_count": 31570,
+      "derived_full_file": "derived_full/firework_40_1333ms.png",
+      "native_common_crop_file": "native_crop/firework_40_1333ms.png",
+      "native_sha256": "2b4ba385f8204793008a77f4a4a71f4d49b6b7afb25557b7f90e63aad3a3912e",
+      "desktop_tile512_file": "desktop_tile512/firework_40_1333ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_40_1333ms.png"
+    },
+    {
+      "index": 41,
+      "requested_relative_age_seconds": 1.3666666666666667,
+      "manual_tick": 82,
+      "raw_file": "firework_frame_41_relative_001366ms",
+      "raw_sha256": "c4177140e7e5bbffbe2bee3e0c0d26cff1668803e1147f22160ea95ae843e64d",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        362,
+        271,
+        642,
+        660
+      ],
+      "rgb_gt4_pixel_count": 36205,
+      "derived_full_file": "derived_full/firework_41_1366ms.png",
+      "native_common_crop_file": "native_crop/firework_41_1366ms.png",
+      "native_sha256": "6d636489edc9b338c4f16f2cba9eb678028547ea944192706453115f20703666",
+      "desktop_tile512_file": "desktop_tile512/firework_41_1366ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_41_1366ms.png"
+    },
+    {
+      "index": 42,
+      "requested_relative_age_seconds": 1.4,
+      "manual_tick": 84,
+      "raw_file": "firework_frame_42_relative_001400ms",
+      "raw_sha256": "a059b623ff8f18d205259caf735d6d27000f33fbbd0760ecc28c62b9491e1bd7",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        354,
+        264,
+        650,
+        668
+      ],
+      "rgb_gt4_pixel_count": 40200,
+      "derived_full_file": "derived_full/firework_42_1400ms.png",
+      "native_common_crop_file": "native_crop/firework_42_1400ms.png",
+      "native_sha256": "161168af73e074427ff328295d27223b01f31c0f7f2e7d8b8ad591848c303a21",
+      "desktop_tile512_file": "desktop_tile512/firework_42_1400ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_42_1400ms.png"
+    },
+    {
+      "index": 43,
+      "requested_relative_age_seconds": 1.4333333333333333,
+      "manual_tick": 86,
+      "raw_file": "firework_frame_43_relative_001433ms",
+      "raw_sha256": "32ba95a98bef6a428a99ddff0cbf4804b014e3060e10ad0c40f2819e4c64bfd2",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        346,
+        257,
+        658,
+        675
+      ],
+      "rgb_gt4_pixel_count": 44192,
+      "derived_full_file": "derived_full/firework_43_1433ms.png",
+      "native_common_crop_file": "native_crop/firework_43_1433ms.png",
+      "native_sha256": "954b79556c7abb9176d56cada638d459cf5abda4a28ce30e37630db69b1bca47",
+      "desktop_tile512_file": "desktop_tile512/firework_43_1433ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_43_1433ms.png"
+    },
+    {
+      "index": 44,
+      "requested_relative_age_seconds": 1.4666666666666666,
+      "manual_tick": 88,
+      "raw_file": "firework_frame_44_relative_001466ms",
+      "raw_sha256": "c17d1d6d247375ad72431d3617893bd026f9bf9eddf0047e9474cf1562a18b7e",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        339,
+        251,
+        666,
+        682
+      ],
+      "rgb_gt4_pixel_count": 46717,
+      "derived_full_file": "derived_full/firework_44_1466ms.png",
+      "native_common_crop_file": "native_crop/firework_44_1466ms.png",
+      "native_sha256": "639ee2db6374af7db80bf8607ad195b9e1ade5389137e7258f8ca3d253a7e594",
+      "desktop_tile512_file": "desktop_tile512/firework_44_1466ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_44_1466ms.png"
+    },
+    {
+      "index": 45,
+      "requested_relative_age_seconds": 1.5,
+      "manual_tick": 90,
+      "raw_file": "firework_frame_45_relative_001500ms",
+      "raw_sha256": "980c4d20ee1f3f0cd69ac6fba8ab005d852cab75b5a84f3e78f8f22944d51b2f",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        332,
+        244,
+        673,
+        689
+      ],
+      "rgb_gt4_pixel_count": 48034,
+      "derived_full_file": "derived_full/firework_45_1500ms.png",
+      "native_common_crop_file": "native_crop/firework_45_1500ms.png",
+      "native_sha256": "f21feb6826579d966b3df336d8bc5b6eb35f84ddae3cc4049380a6f5b8458146",
+      "desktop_tile512_file": "desktop_tile512/firework_45_1500ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_45_1500ms.png"
+    },
+    {
+      "index": 46,
+      "requested_relative_age_seconds": 1.5333333333333334,
+      "manual_tick": 92,
+      "raw_file": "firework_frame_46_relative_001533ms",
+      "raw_sha256": "40e66f998b31de3df494a44576ae1ceb37b0467842ab60e6b72428d71882d6f4",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        325,
+        238,
+        680,
+        695
+      ],
+      "rgb_gt4_pixel_count": 49206,
+      "derived_full_file": "derived_full/firework_46_1533ms.png",
+      "native_common_crop_file": "native_crop/firework_46_1533ms.png",
+      "native_sha256": "44d9aaa38e755d10dcc233b8923b400279d928d2c6e45cc45a733db4365733d7",
+      "desktop_tile512_file": "desktop_tile512/firework_46_1533ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_46_1533ms.png"
+    },
+    {
+      "index": 47,
+      "requested_relative_age_seconds": 1.5666666666666667,
+      "manual_tick": 94,
+      "raw_file": "firework_frame_47_relative_001566ms",
+      "raw_sha256": "d6accf25bfc835bbcfb44bd72c3e452a12de75763e4ffe934d75d9ab01983298",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        319,
+        233,
+        687,
+        701
+      ],
+      "rgb_gt4_pixel_count": 50544,
+      "derived_full_file": "derived_full/firework_47_1566ms.png",
+      "native_common_crop_file": "native_crop/firework_47_1566ms.png",
+      "native_sha256": "b60626308eabbaf043faafe67f3c517391c2b2b556101b074364d05453f3c203",
+      "desktop_tile512_file": "desktop_tile512/firework_47_1566ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_47_1566ms.png"
+    },
+    {
+      "index": 48,
+      "requested_relative_age_seconds": 1.6,
+      "manual_tick": 96,
+      "raw_file": "firework_frame_48_relative_001600ms",
+      "raw_sha256": "0845cea88a4295b6daf6451f07ef4f26b587feb2acda7ce05d0356aa8e31cd0f",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        313,
+        228,
+        693,
+        707
+      ],
+      "rgb_gt4_pixel_count": 51299,
+      "derived_full_file": "derived_full/firework_48_1600ms.png",
+      "native_common_crop_file": "native_crop/firework_48_1600ms.png",
+      "native_sha256": "f596d45c8178593648fdc98ecc6f084b5664be4e518e3b42e8b5f50cc0229f44",
+      "desktop_tile512_file": "desktop_tile512/firework_48_1600ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_48_1600ms.png"
+    },
+    {
+      "index": 49,
+      "requested_relative_age_seconds": 1.6333333333333333,
+      "manual_tick": 98,
+      "raw_file": "firework_frame_49_relative_001633ms",
+      "raw_sha256": "e2efbffee81145796eda9e3ba8939a593700495d9c6a83ee0868527f1e385ba4",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        307,
+        223,
+        698,
+        712
+      ],
+      "rgb_gt4_pixel_count": 51680,
+      "derived_full_file": "derived_full/firework_49_1633ms.png",
+      "native_common_crop_file": "native_crop/firework_49_1633ms.png",
+      "native_sha256": "b6372ed72502f9306d4a8747c83dcd21eb5c0df6bb31f0dbde7ecbe9eca8e2cd",
+      "desktop_tile512_file": "desktop_tile512/firework_49_1633ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_49_1633ms.png"
+    },
+    {
+      "index": 50,
+      "requested_relative_age_seconds": 1.6666666666666667,
+      "manual_tick": 100,
+      "raw_file": "firework_frame_50_relative_001666ms",
+      "raw_sha256": "d6e0840119d1057e542c28db9f9e98bc0ea041ae1dc7acbb1aa45b89b1ccc5a0",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        300,
+        218,
+        704,
+        718
+      ],
+      "rgb_gt4_pixel_count": 52611,
+      "derived_full_file": "derived_full/firework_50_1666ms.png",
+      "native_common_crop_file": "native_crop/firework_50_1666ms.png",
+      "native_sha256": "2f933afb466a32180d8c4a69b440003955d9f928047cc2f7aa0900dab5e2e99b",
+      "desktop_tile512_file": "desktop_tile512/firework_50_1666ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_50_1666ms.png"
+    },
+    {
+      "index": 51,
+      "requested_relative_age_seconds": 1.7,
+      "manual_tick": 102,
+      "raw_file": "firework_frame_51_relative_001700ms",
+      "raw_sha256": "dc2858294d670aac98c24bc0e2284dac5d52b979511654fefb1230e372ea5a3b",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        295,
+        214,
+        709,
+        723
+      ],
+      "rgb_gt4_pixel_count": 53435,
+      "derived_full_file": "derived_full/firework_51_1700ms.png",
+      "native_common_crop_file": "native_crop/firework_51_1700ms.png",
+      "native_sha256": "21f28e6dddeb2c43b2e850f78c768f3b1ac83fe6919b410ac7d78c0c250ccbdd",
+      "desktop_tile512_file": "desktop_tile512/firework_51_1700ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_51_1700ms.png"
+    },
+    {
+      "index": 52,
+      "requested_relative_age_seconds": 1.7333333333333334,
+      "manual_tick": 104,
+      "raw_file": "firework_frame_52_relative_001733ms",
+      "raw_sha256": "1c70ca6431666cd27e32e5a681ad3f184667247394995042bb7158765bbf45be",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        289,
+        210,
+        713,
+        727
+      ],
+      "rgb_gt4_pixel_count": 53839,
+      "derived_full_file": "derived_full/firework_52_1733ms.png",
+      "native_common_crop_file": "native_crop/firework_52_1733ms.png",
+      "native_sha256": "cf4f976c5d72f8a5648dd79c6dca45535a40ca37ef136bb9421b1a569649fd02",
+      "desktop_tile512_file": "desktop_tile512/firework_52_1733ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_52_1733ms.png"
+    },
+    {
+      "index": 53,
+      "requested_relative_age_seconds": 1.7666666666666666,
+      "manual_tick": 106,
+      "raw_file": "firework_frame_53_relative_001766ms",
+      "raw_sha256": "fb40f3ae48581c539bc6225159b94324e774931f9ae6a362d9302ba3cd29fd61",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        285,
+        206,
+        718,
+        732
+      ],
+      "rgb_gt4_pixel_count": 54083,
+      "derived_full_file": "derived_full/firework_53_1766ms.png",
+      "native_common_crop_file": "native_crop/firework_53_1766ms.png",
+      "native_sha256": "55cc20e34ed9b9cad7c856be62236cff6d216f2b9dccf9e45fcd34e89821cd94",
+      "desktop_tile512_file": "desktop_tile512/firework_53_1766ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_53_1766ms.png"
+    },
+    {
+      "index": 54,
+      "requested_relative_age_seconds": 1.8,
+      "manual_tick": 108,
+      "raw_file": "firework_frame_54_relative_001800ms",
+      "raw_sha256": "f683b955ebd57d097b1fc7ba9fee084d56a04dcf1b96019188d409d57d3cb1c1",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        280,
+        202,
+        722,
+        736
+      ],
+      "rgb_gt4_pixel_count": 53982,
+      "derived_full_file": "derived_full/firework_54_1800ms.png",
+      "native_common_crop_file": "native_crop/firework_54_1800ms.png",
+      "native_sha256": "f64eb4eda8c04924f3dfccdbb7d224c0824529325860297a931d200fc3583cbb",
+      "desktop_tile512_file": "desktop_tile512/firework_54_1800ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_54_1800ms.png"
+    },
+    {
+      "index": 55,
+      "requested_relative_age_seconds": 1.8333333333333333,
+      "manual_tick": 110,
+      "raw_file": "firework_frame_55_relative_001833ms",
+      "raw_sha256": "a829580f35806a3ea51606bdf2f4695c27eb0f2ec062e1f320835fa03f2cc32c",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        276,
+        199,
+        726,
+        740
+      ],
+      "rgb_gt4_pixel_count": 54357,
+      "derived_full_file": "derived_full/firework_55_1833ms.png",
+      "native_common_crop_file": "native_crop/firework_55_1833ms.png",
+      "native_sha256": "4568774eab71b3c8f5147851c5b0f0426822dd2ac7734d0ccb15a05472185599",
+      "desktop_tile512_file": "desktop_tile512/firework_55_1833ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_55_1833ms.png"
+    },
+    {
+      "index": 56,
+      "requested_relative_age_seconds": 1.8666666666666667,
+      "manual_tick": 112,
+      "raw_file": "firework_frame_56_relative_001866ms",
+      "raw_sha256": "d346500cc6b2f2f0f6db9cd45d84c1001a1dc41e8f94a72fc101663c41400dee",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        272,
+        196,
+        729,
+        744
+      ],
+      "rgb_gt4_pixel_count": 54487,
+      "derived_full_file": "derived_full/firework_56_1866ms.png",
+      "native_common_crop_file": "native_crop/firework_56_1866ms.png",
+      "native_sha256": "69db21b2da156b7dff6ec2c9822463f43c4053fa19edc32ea19f150c2a997275",
+      "desktop_tile512_file": "desktop_tile512/firework_56_1866ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_56_1866ms.png"
+    },
+    {
+      "index": 57,
+      "requested_relative_age_seconds": 1.9,
+      "manual_tick": 114,
+      "raw_file": "firework_frame_57_relative_001900ms",
+      "raw_sha256": "3aecfcd2789f65de88ff595c88eca58a8979cb7b5161c7775ce103badabdacce",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        268,
+        193,
+        733,
+        748
+      ],
+      "rgb_gt4_pixel_count": 54667,
+      "derived_full_file": "derived_full/firework_57_1900ms.png",
+      "native_common_crop_file": "native_crop/firework_57_1900ms.png",
+      "native_sha256": "5ef2438239c17f3298f220f6c40fb216688ca0b6766a7440a52ac07c6d77ed04",
+      "desktop_tile512_file": "desktop_tile512/firework_57_1900ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_57_1900ms.png"
+    },
+    {
+      "index": 58,
+      "requested_relative_age_seconds": 1.9333333333333333,
+      "manual_tick": 116,
+      "raw_file": "firework_frame_58_relative_001933ms",
+      "raw_sha256": "2c33bcbb5e7c086ac3e40d00b255bbb1feffdcb10e6b3a47cb206fac2e087a01",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        264,
+        191,
+        736,
+        752
+      ],
+      "rgb_gt4_pixel_count": 54995,
+      "derived_full_file": "derived_full/firework_58_1933ms.png",
+      "native_common_crop_file": "native_crop/firework_58_1933ms.png",
+      "native_sha256": "3e34b8889fde25e682d055144cf20a4215b61828693a011d2e7ff4582ada364b",
+      "desktop_tile512_file": "desktop_tile512/firework_58_1933ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_58_1933ms.png"
+    },
+    {
+      "index": 59,
+      "requested_relative_age_seconds": 1.9666666666666666,
+      "manual_tick": 118,
+      "raw_file": "firework_frame_59_relative_001966ms",
+      "raw_sha256": "645bec2bb331d51e8b2df4f7d0ea0eeb974cb01240a205054da798160651a3c3",
+      "raw_bytes": 439995,
+      "rgb_gt4_bbox": [
+        261,
+        188,
+        739,
+        755
+      ],
+      "rgb_gt4_pixel_count": 55059,
+      "derived_full_file": "derived_full/firework_59_1966ms.png",
+      "native_common_crop_file": "native_crop/firework_59_1966ms.png",
+      "native_sha256": "090ee45cda61dcd26eb9279c3e7c7babf17e84c813780a980697573c6d3d11dc",
+      "desktop_tile512_file": "desktop_tile512/firework_59_1966ms.png",
+      "mobile_tile128_file": "mobile_tile128/firework_59_1966ms.png"
+    }
+  ]
+}

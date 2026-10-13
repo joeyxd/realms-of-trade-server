@@ -1,0 +1,114 @@
+{
+  "id": "niagara-049badaf45e15fd6",
+  "atlasId": "component-3e468435ddbe1951-3x3-alpha",
+  "role": "source-texture",
+  "sourcePath": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\NS\\NS_Spline_ElectricLightning.uasset",
+  "sourceSha256": "049badaf45e15fd639051bbb1d785ba4eb7918a53222aaae9fe05359f69394a7",
+  "component": {
+    "textureSha256": "3e468435ddbe1951d5c563c763e19feb4ff14fe4dc37492703f289d232c16505",
+    "columns": 3,
+    "rows": 3,
+    "mapping": "original-alpha-to-white",
+    "name": "T_Vfx_Stamp_Electric_33"
+  },
+  "sourceBinding": {
+    "systemSha256": "049badaf45e15fd639051bbb1d785ba4eb7918a53222aaae9fe05359f69394a7",
+    "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_ElectricLightning.NS_Spline_ElectricLightning:Detail_5.NiagaraSpriteRendererProperties_0",
+    "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_Stamp_Electric_33_01",
+    "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Electric_33"
+  },
+  "frames": [
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-2fecab64fda3b2cc\\frame_000_source_0000.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-2fecab64fda3b2cc\\frame_001_source_0001.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-2fecab64fda3b2cc\\frame_002_source_0002.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-2fecab64fda3b2cc\\frame_003_source_0003.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-2fecab64fda3b2cc\\frame_004_source_0004.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-2fecab64fda3b2cc\\frame_005_source_0005.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-2fecab64fda3b2cc\\frame_006_source_0006.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-2fecab64fda3b2cc\\frame_007_source_0007.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-2fecab64fda3b2cc\\frame_008_source_0008.png"
+  ],
+  "duration": 2,
+  "worldWidth": 6,
+  "worldHeight": 6,
+  "desktopTile": 256,
+  "blend": "alpha",
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-2fecab64fda3b2cc",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_Electric_33.uasset",
+      "sha256": "3e468435ddbe1951d5c563c763e19feb4ff14fe4dc37492703f289d232c16505",
+      "bytes": 47237
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_Electric_33.png",
+      "sha256": "4d439ef0c8e9c51fb679130259b088fdfc667505da05751deb54d0b36568cd37",
+      "bytes": 36561,
+      "format": "PNG",
+      "width": 256,
+      "height": 256,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 3,
+      "rows": 3,
+      "cells": 9,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "original-alpha-to-white",
+    "mappingFormula": "RGB=white; A=native source alpha without remapping",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-049badaf45e15fd6",
+        "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_ElectricLightning",
+        "sourceBinding": {
+          "systemSha256": "049badaf45e15fd639051bbb1d785ba4eb7918a53222aaae9fe05359f69394a7",
+          "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_ElectricLightning.NS_Spline_ElectricLightning:Detail_5.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_Stamp_Electric_33_01",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Electric_33"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_ElectricLightning.NS_Spline_ElectricLightning:",
+          "matched": true
+        },
+        "parameterName": "baseTex"
+      }
+    ]
+  }
+}

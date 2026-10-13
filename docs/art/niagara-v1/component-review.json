@@ -1,0 +1,132 @@
+{
+  "schema": "marea.niagara-component-review/v1",
+  "reviewer": "root",
+  "at": "2026-10-13T04:13:39.434099+00:00",
+  "scope": "Original source components only; no complete Niagara system accepted.",
+  "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+  "rejected": {
+    "recipe-0724cfb177578c52": "10x5 renderer setting cuts the natural 10x6 source cells; actual system reference required."
+  },
+  "accepted": [
+    {
+      "recipeId": "recipe-0a5e1890731459ba",
+      "id": "component-eb5fe0f905f673b8-8x8-alpha",
+      "frames": 64,
+      "sourceTextureSha256": "eb5fe0f905f673b83fca336bc1e2145fd2c08f11501b3abbe9013f6a7afa43ff",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-eb5fe0f905f673b8-8x8-alpha.json"
+    },
+    {
+      "recipeId": "recipe-110287b7f03f7498",
+      "id": "component-8117bd91eb290326-8x1-alpha",
+      "frames": 8,
+      "sourceTextureSha256": "8117bd91eb290326d1c8dcfb4bb2d219e053ab23ac920304464f38db91e59cf4",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-8117bd91eb290326-8x1-alpha.json"
+    },
+    {
+      "recipeId": "recipe-1cba9d7469a29652",
+      "id": "component-bc703e63cd85d73c-8x8-alpha",
+      "frames": 64,
+      "sourceTextureSha256": "bc703e63cd85d73c5836fb01e1f3f2786bf6c7b4e5c3ec27d21f072f262eed76",
+      "desktopTile": 512,
+      "manifest": "docs/art/niagara-v1/component-bc703e63cd85d73c-8x8-alpha.json"
+    },
+    {
+      "recipeId": "recipe-2d4c30d1b345f448",
+      "id": "component-12ce65c60986b47a-8x8-alpha",
+      "frames": 64,
+      "sourceTextureSha256": "12ce65c60986b47a7d79fa8bfd2da0a9703106a58769a449e9a492247284042c",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-12ce65c60986b47a-8x8-alpha.json"
+    },
+    {
+      "recipeId": "recipe-2fecab64fda3b2cc",
+      "id": "component-3e468435ddbe1951-3x3-alpha",
+      "frames": 9,
+      "sourceTextureSha256": "3e468435ddbe1951d5c563c763e19feb4ff14fe4dc37492703f289d232c16505",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-3e468435ddbe1951-3x3-alpha.json"
+    },
+    {
+      "recipeId": "recipe-40abfaa92d054075",
+      "id": "component-26e09bd0f93cb620-7x7-luma",
+      "frames": 49,
+      "sourceTextureSha256": "26e09bd0f93cb620768268867f7887759315452bd5e9da4a7506da06e798a672",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-26e09bd0f93cb620-7x7-luma.json"
+    },
+    {
+      "recipeId": "recipe-7e1c530db9f2f8df",
+      "id": "component-f7736e0dfe565c2f-4x4-rgba",
+      "frames": 16,
+      "sourceTextureSha256": "f7736e0dfe565c2f523efab21ae24b0fbc4354d824c8ad1e69730d88821e2115",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-f7736e0dfe565c2f-4x4-rgba.json"
+    },
+    {
+      "recipeId": "recipe-89e7dc634823c9fb",
+      "id": "component-ee97ef90f7754523-8x8-alpha",
+      "frames": 64,
+      "sourceTextureSha256": "ee97ef90f775452373cf035eecb6cc276bd10f69c5fda12747ae61665f2c2c6d",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-ee97ef90f7754523-8x8-alpha.json"
+    },
+    {
+      "recipeId": "recipe-b8543465984ee6a1",
+      "id": "component-d7a5e783ffa8ee81-8x8-alpha",
+      "frames": 64,
+      "sourceTextureSha256": "d7a5e783ffa8ee81e49dcd903a9a63c02c3950a000ad504a99a93ec57552d640",
+      "desktopTile": 512,
+      "manifest": "docs/art/niagara-v1/component-d7a5e783ffa8ee81-8x8-alpha.json"
+    },
+    {
+      "recipeId": "recipe-ce800df9a9628c95",
+      "id": "component-3e0a757f3e8443eb-8x4-luma",
+      "frames": 32,
+      "sourceTextureSha256": "3e0a757f3e8443ebfc1644d98ecea09e9f225c684d588fb0f89afcfac9d0c410",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-3e0a757f3e8443eb-8x4-luma.json"
+    },
+    {
+      "recipeId": "recipe-d1b8904e485bf83d",
+      "id": "component-4866b9058807eeef-8x4-luma",
+      "frames": 32,
+      "sourceTextureSha256": "4866b9058807eeef9a3da577670e150c6606d5b8d38eaedffc8579bfc36e00d4",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-4866b9058807eeef-8x4-luma.json"
+    },
+    {
+      "recipeId": "recipe-dc094fba73f69da8",
+      "id": "component-1d5c64ec6742cb1b-8x4-luma",
+      "frames": 32,
+      "sourceTextureSha256": "1d5c64ec6742cb1b37e1237b96f4736cce439f661d64ca90467482cfb77288ab",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-1d5c64ec6742cb1b-8x4-luma.json"
+    },
+    {
+      "recipeId": "recipe-df3dfa2ce32b38da",
+      "id": "component-ecddb7ecffb46fb0-10x6-luma",
+      "frames": 60,
+      "sourceTextureSha256": "ecddb7ecffb46fb0c61d5c0bf9d8e0f7d74f8b25cd614cd1e7ddc2df0468f0ce",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-ecddb7ecffb46fb0-10x6-luma.json"
+    },
+    {
+      "recipeId": "recipe-e4b40c9ac3eef002",
+      "id": "component-dd710adffbd411cd-8x8-alpha",
+      "frames": 64,
+      "sourceTextureSha256": "dd710adffbd411cd04757b30db840fbd9e4db02cb5e9d40e649c4457d825bb4c",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-dd710adffbd411cd-8x8-alpha.json"
+    },
+    {
+      "recipeId": "recipe-f93c7523d11ee2ba",
+      "id": "component-7e5099cefb584032-8x8-alpha",
+      "frames": 64,
+      "sourceTextureSha256": "7e5099cefb58403225612a3d6e4763c633aa89caea3a7395ee6dc762dafe72aa",
+      "desktopTile": 256,
+      "manifest": "docs/art/niagara-v1/component-7e5099cefb584032-8x8-alpha.json"
+    }
+  ]
+}

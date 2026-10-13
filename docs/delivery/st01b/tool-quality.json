@@ -1,0 +1,61 @@
+{
+  "schema": "marea.st01b-tool-quality/v3",
+  "generatedAtUtc": "2026-10-13T04:46:00.926Z",
+  "repositoryHead": "fcd5160fc1ce97b7d18883a5bd99c59723d2211d",
+  "status": "current tool hashes and safety checks refreshed; runtime derivatives separately manifest-verified",
+  "tools": {
+    "tools/extract-niagara-subuv.py": {
+      "sha256": "b39edfa9c6d312a14e426f0fd190d8b08f7da579222f9de63a1550af3580a3af",
+      "bounds": {
+        "pngDimensionsBeforeDecode": true,
+        "exrDimensionsBeforeFfmpeg": true,
+        "sourceImageBytesMax": 134217728,
+        "dimensionsMax": 8192,
+        "pixelsMax": 16777216,
+        "exrDecodedPayloadBytesMax": 268435456,
+        "exrDecodedOutputLimitBytes": 268435456
+      },
+      "sampling": {
+        "method": "separable Catmull-Rom bicubic a=-0.5",
+        "cellBounds": "exact fractional source-pixel intervals",
+        "tapPolicy": "clamp to source pixel centers inside exact cell",
+        "syntheticAdjacentRedBlueBoundary": "pass",
+        "syntheticFractional7x7": {
+          "status": "pass",
+          "cells": 49,
+          "sourcePixels": [
+            2048,
+            2048
+          ]
+        }
+      },
+      "color": {
+        "pngOriginalRgba": "sRGB RGB and linear alpha retained",
+        "exrOriginalRgba": "linear RGB converted to sRGB before PNG storage; alpha retained linear"
+      }
+    },
+    "tools/pack-niagara-flipbook.py": {
+      "sha256": "ec9b9e1c45edce679d61fc2cb156606a041c51a64b4c3c28c062fd8c5c8823a9",
+      "outputRoot": "repository root derived from tool location; no arbitrary --root",
+      "componentAtlasID": "validated from exact texture SHA, grid, mapping, source-texture role",
+      "desktopTile": "supports 256 and 512; current component distribution {\"256\":13,\"512\":2}",
+      "preflight": {
+        "individualAndAggregateBytes": true,
+        "dimensionsAndPixels": true,
+        "duplicatePaths": true,
+        "beforeDecode": true
+      },
+      "replacement": "existing outputs rejected unless --replace-reviewed is supplied"
+    }
+  },
+  "verification": {
+    "pythonAstParse": "2/2 pass",
+    "cliHelp": "2/2 pass",
+    "syntheticAdjacentRedBlueBoundary": "pass",
+    "syntheticFractional7x7": "pass 49/49",
+    "runtimeAtlasManifestHashes": "32/32 match",
+    "gitDiffCheck": "pass; two unrelated line-ending warnings",
+    "componentBindingExactness": "157/160 candidate-chain records accepted and exact; 3 deferred"
+  },
+  "evidenceTextEncoding": "UTF-8 without BOM, LF; JSON formatting normalized before staging"
+}

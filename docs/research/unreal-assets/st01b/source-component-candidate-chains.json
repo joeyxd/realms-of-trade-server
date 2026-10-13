@@ -1,0 +1,3531 @@
+{
+  "schema": "marea.niagara-source-component-candidate-chains",
+  "version": 1,
+  "status": "extracted-unreviewed",
+  "accepted": false,
+  "runtimeRegistration": false,
+  "impactRegistration": false,
+  "timingBasis": "2-second editorial default per component preview; not Niagara system timing truth",
+  "exactOwnerProof": {
+    "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+    "rowsChecked": 160,
+    "errors": 0
+  },
+  "selectionStatus": "Root review chooses per-system candidates; no component is selected as the accepted runtime asset.",
+  "nativeImpactGuard": "Do not register a component for an impact system; native full capture owns that runtime path.",
+  "contactSheet": "source-component-candidate-contact-sheet.png",
+  "smoke1GridComparison": "smoke1-grid-configuration-comparison.png",
+  "qualityReport": "source-component-frame-quality.json",
+  "sourceComponents": [
+    {
+      "recipeId": "recipe-0724cfb177578c52",
+      "candidateAlias": "source-component-t-smoke-1-10x5-luminance-to-white-alpha",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1",
+      "component": {
+        "textureSha256": "ecddb7ecffb46fb0c61d5c0bf9d8e0f7d74f8b25cd614cd1e7ddc2df0468f0ce",
+        "columns": 10,
+        "rows": 5,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2560,
+        1536
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        307.2
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        307
+      ],
+      "rendererGridMatchesNaturalCellGrid": false,
+      "reviewFlags": [
+        "serialized 10x5 configuration does not match the 10x6 natural 256x256 cell grid; defer pending actual system capture"
+      ],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-0724cfb177578c52\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 50,
+          "framesWithNonemptyAlpha": 50,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 503653,
+          "alphaNonemptyPixelFraction": 0.15370269775390624,
+          "meanAlphaRange": [
+            0.03436141668581495,
+            0.055306468290441176
+          ],
+          "uniqueFramePixelHashCount": 50,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0005451725978477328,
+            0.01338656556372549
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-75ef4631f8a1cc52",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_ATTACK_3",
+          "sourceBinding": {
+            "systemSha256": "75ef4631f8a1cc5289adc3c70f6a09578bc1f7ec4a6b4d097da6ed72dd0957e0",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_ATTACK_3.NS_AOE_ATTACK_3:NE_Smoke_01.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_ATTACK_3.NS_AOE_ATTACK_3:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        },
+        {
+          "effectId": "niagara-82cf3f1b8ee55c9c",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Explosion_1",
+          "sourceBinding": {
+            "systemSha256": "82cf3f1b8ee55c9c4e0f1c49f41a62f67a5c76ee6bdc8eec1c5ad9f75ecb111f",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Explosion_1.NS_AOE_Explosion_1:NE_Smoke_01.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Explosion_1.NS_AOE_Explosion_1:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        },
+        {
+          "effectId": "niagara-b4dc3ae598ddee06",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Meteor_1",
+          "sourceBinding": {
+            "systemSha256": "b4dc3ae598ddee064438a0b0daf6b662b354858cb9512a6194f636bd23e7f905",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Meteor_1.NS_AOE_Meteor_1:NE_Smoke_01.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Meteor_1.NS_AOE_Meteor_1:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-0a5e1890731459ba",
+      "candidateAlias": "source-component-t-thinsmoke-fx-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Textures/T_ThinSmoke_FX",
+      "component": {
+        "textureSha256": "eb5fe0f905f673b83fca336bc1e2145fd2c08f11501b3abbe9013f6a7afa43ff",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        2048,
+        2048
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-0a5e1890731459ba\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 1777798,
+          "alphaNonemptyPixelFraction": 0.4238600730895996,
+          "meanAlphaRange": [
+            0.10139052447150736,
+            0.1558877982345282
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0022231756472120097,
+            0.0034981521905637254
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-3591c44b3dd94faa",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash",
+          "sourceBinding": {
+            "systemSha256": "3591c44b3dd94faa75f7c46bcc331829222471f481c491cf2653529bb6f8314d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:Muzzle_Smoke_4.NE_MuzzleFlash_Smoke.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Materials/Instances/MI_Flipbook_Smoke_Muzzle",
+            "texturePackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Textures/T_ThinSmoke_FX"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-3591c44b3dd94faa",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash",
+          "sourceBinding": {
+            "systemSha256": "3591c44b3dd94faa75f7c46bcc331829222471f481c491cf2653529bb6f8314d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:Muzzle_Smoke_4.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Materials/Instances/MI_Flipbook_Smoke_Muzzle",
+            "texturePackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Textures/T_ThinSmoke_FX"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-110287b7f03f7498",
+      "candidateAlias": "source-component-t-vfx-stamp-lightbeam-81-8x1-original-alpha-to-white",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Lightbeam_81",
+      "component": {
+        "textureSha256": "8117bd91eb290326d1c8dcfb4bb2d219e053ab23ac920304464f38db91e59cf4",
+        "columns": 8,
+        "rows": 1,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        512,
+        128
+      ],
+      "nativeSourceCellPixels": [
+        64.0,
+        128.0
+      ],
+      "recommendedNoUpscaleTile": [
+        64,
+        128
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-110287b7f03f7498\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 8,
+          "framesWithNonemptyAlpha": 8,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 162103,
+          "alphaNonemptyPixelFraction": 0.3091869354248047,
+          "meanAlphaRange": [
+            0.0069597431257659315,
+            0.16296703862208947
+          ],
+          "uniqueFramePixelHashCount": 8,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0020954356474034925,
+            0.008404974843941483
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-7970b1ee9b5555d3",
+          "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_Holy",
+          "sourceBinding": {
+            "systemSha256": "7970b1ee9b5555d324f690f61c2819fae7de0f01e0a54b840ab8f56d8a315f0f",
+            "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Holy.NS_Spline_Holy:Detail001_3.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_ParticleSubUVAdd_stamp_lightbeam_81",
+            "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Lightbeam_81"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_Holy.NS_Spline_Holy:",
+            "matched": true
+          },
+          "parameterName": "baseTex"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-1cba9d7469a29652",
+      "candidateAlias": "source-component-t-smoke-wispy-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_Smoke_Wispy",
+      "component": {
+        "textureSha256": "bc703e63cd85d73c5836fb01e1f3f2786bf6c7b4e5c3ec27d21f072f262eed76",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        4096,
+        4096
+      ],
+      "nativeSourceCellPixels": [
+        512.0,
+        512.0
+      ],
+      "recommendedNoUpscaleTile": [
+        512,
+        512
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-1cba9d7469a29652\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 934142,
+          "alphaNonemptyPixelFraction": 0.2227168083190918,
+          "meanAlphaRange": [
+            0.002148796530330882,
+            0.05469282561657476
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0005753012264476103,
+            0.006359728644875919
+          ]
+        },
+        {
+          "variant": "v3-native-512",
+          "manifest": ".scratch\\st01b-candidateframes-v3\\source-component-recipe-1cba9d7469a29652\\manifest.json",
+          "outputFrameSize": [
+            512,
+            512
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 3531320,
+          "alphaNonemptyPixelFraction": 0.21048307418823242,
+          "meanAlphaRange": [
+            0.002147839116115196,
+            0.05467375213024663
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0005755106608072917,
+            0.006488455978094363
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-8e2cf06e76c52ff1",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts",
+          "sourceBinding": {
+            "systemSha256": "8e2cf06e76c52ff12539e3e11873d1e10f159adc4eee7470ea1e2581b8a4384c",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:Smoke_1.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokeWispy_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_Smoke_Wispy"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-b8e32043bbbb1fbb",
+          "systemPackage": "/Game/NiagaraExamples/FX_Player/NS_Player_Electricity_Looping",
+          "sourceBinding": {
+            "systemSha256": "b8e32043bbbb1fbbe0208411bb42ad8d21ec07a90951d353b4e23a7b1b5b8484",
+            "rendererPath": "/Game/NiagaraExamples/FX_Player/NS_Player_Electricity_Looping.NS_Player_Electricity_Looping:Main_Element_0.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokeWispy_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_Smoke_Wispy"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Player/NS_Player_Electricity_Looping.NS_Player_Electricity_Looping:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-73f95137c75bbd34",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal",
+          "sourceBinding": {
+            "systemSha256": "73f95137c75bbd349f4b5891354ead189322bf3e148842d6fa979e914f70e5f6",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal.NS_Impact_Metal:Dust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokeWispy_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_Smoke_Wispy"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal.NS_Impact_Metal:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-2d4c30d1b345f448",
+      "candidateAlias": "source-component-t-smokepufflight-eoo-loop-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop",
+      "component": {
+        "textureSha256": "12ce65c60986b47a7d79fa8bfd2da0a9703106a58769a449e9a492247284042c",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        2048,
+        2048
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-2d4c30d1b345f448\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 2385142,
+          "alphaNonemptyPixelFraction": 0.568662166595459,
+          "meanAlphaRange": [
+            0.15134109796262254,
+            0.17046425015318628
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.001527883492264093,
+            0.0025995591107536766
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-11732df8948b0dd3",
+          "systemPackage": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Fire",
+          "sourceBinding": {
+            "systemSha256": "11732df8948b0dd302ffdf50f1c2cf3b2cce2662bd3c9dcff0b8124946046999",
+            "rendererPath": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Fire.NS_Footstep_Fire:Smoke_2.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Fire.NS_Footstep_Fire:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-11732df8948b0dd3",
+          "systemPackage": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Fire",
+          "sourceBinding": {
+            "systemSha256": "11732df8948b0dd302ffdf50f1c2cf3b2cce2662bd3c9dcff0b8124946046999",
+            "rendererPath": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Fire.NS_Footstep_Fire:Smoke_2.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Fire.NS_Footstep_Fire:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-3bb5faa88f7e305c",
+          "systemPackage": "/Game/NiagaraExamples/FX_Misc/NS_Fire",
+          "sourceBinding": {
+            "systemSha256": "3bb5faa88f7e305cb202b78d3d81a3b886dac3e940873ecbd3617b1b02f48ba1",
+            "rendererPath": "/Game/NiagaraExamples/FX_Misc/NS_Fire.NS_Fire:Smoke_2.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Misc/NS_Fire.NS_Fire:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-3bb5faa88f7e305c",
+          "systemPackage": "/Game/NiagaraExamples/FX_Misc/NS_Fire",
+          "sourceBinding": {
+            "systemSha256": "3bb5faa88f7e305cb202b78d3d81a3b886dac3e940873ecbd3617b1b02f48ba1",
+            "rendererPath": "/Game/NiagaraExamples/FX_Misc/NS_Fire.NS_Fire:Smoke_2.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Misc/NS_Fire.NS_Fire:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-6487c3f9c71772c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps",
+          "sourceBinding": {
+            "systemSha256": "6487c3f9c71772c5ea3d474006e382de2e3c370d793769a66e7f06b1c4a0530b",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps.NS_NDC_Footsteps:Smoke_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps.NS_NDC_Footsteps:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-6487c3f9c71772c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps",
+          "sourceBinding": {
+            "systemSha256": "6487c3f9c71772c5ea3d474006e382de2e3c370d793769a66e7f06b1c4a0530b",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps.NS_NDC_Footsteps:Smoke_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps.NS_NDC_Footsteps:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-6487c3f9c71772c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps",
+          "sourceBinding": {
+            "systemSha256": "6487c3f9c71772c5ea3d474006e382de2e3c370d793769a66e7f06b1c4a0530b",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps.NS_NDC_Footsteps:Smoke_1.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps.NS_NDC_Footsteps:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-6487c3f9c71772c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps",
+          "sourceBinding": {
+            "systemSha256": "6487c3f9c71772c5ea3d474006e382de2e3c370d793769a66e7f06b1c4a0530b",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps.NS_NDC_Footsteps:Smoke_1.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps.NS_NDC_Footsteps:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-7c5e7d214dbf74cb",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps_Fire",
+          "sourceBinding": {
+            "systemSha256": "7c5e7d214dbf74cb0db7e714059bd6eac2f50152607f75591998871dfe38c92c",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps_Fire.NS_NDC_Footsteps_Fire:Smoke_0.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps_Fire.NS_NDC_Footsteps_Fire:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-7c5e7d214dbf74cb",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps_Fire",
+          "sourceBinding": {
+            "systemSha256": "7c5e7d214dbf74cb0db7e714059bd6eac2f50152607f75591998871dfe38c92c",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps_Fire.NS_NDC_Footsteps_Fire:Smoke_0.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps_Fire.NS_NDC_Footsteps_Fire:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-8e2cf06e76c52ff1",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts",
+          "sourceBinding": {
+            "systemSha256": "8e2cf06e76c52ff12539e3e11873d1e10f159adc4eee7470ea1e2581b8a4384c",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:Smoke_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-8e2cf06e76c52ff1",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts",
+          "sourceBinding": {
+            "systemSha256": "8e2cf06e76c52ff12539e3e11873d1e10f159adc4eee7470ea1e2581b8a4384c",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:Smoke_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-8e2cf06e76c52ff1",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts",
+          "sourceBinding": {
+            "systemSha256": "8e2cf06e76c52ff12539e3e11873d1e10f159adc4eee7470ea1e2581b8a4384c",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:Smoke_1.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-8e2cf06e76c52ff1",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts",
+          "sourceBinding": {
+            "systemSha256": "8e2cf06e76c52ff12539e3e11873d1e10f159adc4eee7470ea1e2581b8a4384c",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:Smoke_1.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-8e2cf06e76c52ff1",
+          "systemPackage": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts",
+          "sourceBinding": {
+            "systemSha256": "8e2cf06e76c52ff12539e3e11873d1e10f159adc4eee7470ea1e2581b8a4384c",
+            "rendererPath": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:Smoke_1.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokeWispy_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts.NS_NDC_Impacts:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-b8e32043bbbb1fbb",
+          "systemPackage": "/Game/NiagaraExamples/FX_Player/NS_Player_Electricity_Looping",
+          "sourceBinding": {
+            "systemSha256": "b8e32043bbbb1fbbe0208411bb42ad8d21ec07a90951d353b4e23a7b1b5b8484",
+            "rendererPath": "/Game/NiagaraExamples/FX_Player/NS_Player_Electricity_Looping.NS_Player_Electricity_Looping:Main_Element_0.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokeWispy_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Player/NS_Player_Electricity_Looping.NS_Player_Electricity_Looping:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-f3ebb00ed4d70320",
+          "systemPackage": "/Game/NiagaraExamples/FX_Ribbons/NS_TeslaCoil",
+          "sourceBinding": {
+            "systemSha256": "f3ebb00ed4d70320e521c08eac6abc9e77d414907f66954e87d704c29840ce65",
+            "rendererPath": "/Game/NiagaraExamples/FX_Ribbons/NS_TeslaCoil.NS_TeslaCoil:Smoke_6.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive_Tesla",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Ribbons/NS_TeslaCoil.NS_TeslaCoil:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-f3ebb00ed4d70320",
+          "systemPackage": "/Game/NiagaraExamples/FX_Ribbons/NS_TeslaCoil",
+          "sourceBinding": {
+            "systemSha256": "f3ebb00ed4d70320e521c08eac6abc9e77d414907f66954e87d704c29840ce65",
+            "rendererPath": "/Game/NiagaraExamples/FX_Ribbons/NS_TeslaCoil.NS_TeslaCoil:Smoke_6.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive_Tesla",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Ribbons/NS_TeslaCoil.NS_TeslaCoil:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-69cab7e2295b9760",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke",
+          "sourceBinding": {
+            "systemSha256": "69cab7e2295b97601b1a23d0c847475ed012baacc87c9882b500713084985afc",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:ChimneySmoke_1.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-69cab7e2295b9760",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke",
+          "sourceBinding": {
+            "systemSha256": "69cab7e2295b97601b1a23d0c847475ed012baacc87c9882b500713084985afc",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:ChimneySmoke_1.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-69cab7e2295b9760",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke",
+          "sourceBinding": {
+            "systemSha256": "69cab7e2295b97601b1a23d0c847475ed012baacc87c9882b500713084985afc",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:ChimneySmoke_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-69cab7e2295b9760",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke",
+          "sourceBinding": {
+            "systemSha256": "69cab7e2295b97601b1a23d0c847475ed012baacc87c9882b500713084985afc",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:ChimneySmoke_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-69cab7e2295b9760",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke",
+          "sourceBinding": {
+            "systemSha256": "69cab7e2295b97601b1a23d0c847475ed012baacc87c9882b500713084985afc",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:ChimneySmoke_1.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-69cab7e2295b9760",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke",
+          "sourceBinding": {
+            "systemSha256": "69cab7e2295b97601b1a23d0c847475ed012baacc87c9882b500713084985afc",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:ChimneySmoke_1.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke.NS_Chimney_Smoke:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-3f0bca1125b49b34",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume",
+          "sourceBinding": {
+            "systemSha256": "3f0bca1125b49b34f18c7c378e748715c9202dd6d71f6664e1066888d46d8b67",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:SmokePlume_2.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-3f0bca1125b49b34",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume",
+          "sourceBinding": {
+            "systemSha256": "3f0bca1125b49b34f18c7c378e748715c9202dd6d71f6664e1066888d46d8b67",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:SmokePlume_2.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-3f0bca1125b49b34",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume",
+          "sourceBinding": {
+            "systemSha256": "3f0bca1125b49b34f18c7c378e748715c9202dd6d71f6664e1066888d46d8b67",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:SmokePlume_2.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-3f0bca1125b49b34",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume",
+          "sourceBinding": {
+            "systemSha256": "3f0bca1125b49b34f18c7c378e748715c9202dd6d71f6664e1066888d46d8b67",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:SmokePlume_2.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-3f0bca1125b49b34",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume",
+          "sourceBinding": {
+            "systemSha256": "3f0bca1125b49b34f18c7c378e748715c9202dd6d71f6664e1066888d46d8b67",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:SmokePlume_2.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-3f0bca1125b49b34",
+          "systemPackage": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume",
+          "sourceBinding": {
+            "systemSha256": "3f0bca1125b49b34f18c7c378e748715c9202dd6d71f6664e1066888d46d8b67",
+            "rendererPath": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:SmokePlume_2.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume.NS_Smoke_Plume:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-a3e1dd92df2aedc9",
+          "systemPackage": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Burst",
+          "sourceBinding": {
+            "systemSha256": "a3e1dd92df2aedc9eeae894bcad0cc04c894a743fdb8bbca68803da1a35dcade",
+            "rendererPath": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Burst.NS_Spark_Burst:Smoke_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Burst.NS_Spark_Burst:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-a3e1dd92df2aedc9",
+          "systemPackage": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Burst",
+          "sourceBinding": {
+            "systemSha256": "a3e1dd92df2aedc9eeae894bcad0cc04c894a743fdb8bbca68803da1a35dcade",
+            "rendererPath": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Burst.NS_Spark_Burst:Smoke_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Burst.NS_Spark_Burst:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-457bd83a1242294b",
+          "systemPackage": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous",
+          "sourceBinding": {
+            "systemSha256": "457bd83a1242294bcfdd550ee99ce5582a5cbf2eb6a092beccc7a01918be0221",
+            "rendererPath": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:Smoke_0.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-457bd83a1242294b",
+          "systemPackage": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous",
+          "sourceBinding": {
+            "systemSha256": "457bd83a1242294bcfdd550ee99ce5582a5cbf2eb6a092beccc7a01918be0221",
+            "rendererPath": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:Smoke_0.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-457bd83a1242294b",
+          "systemPackage": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous",
+          "sourceBinding": {
+            "systemSha256": "457bd83a1242294bcfdd550ee99ce5582a5cbf2eb6a092beccc7a01918be0221",
+            "rendererPath": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:Smoke_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-457bd83a1242294b",
+          "systemPackage": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous",
+          "sourceBinding": {
+            "systemSha256": "457bd83a1242294bcfdd550ee99ce5582a5cbf2eb6a092beccc7a01918be0221",
+            "rendererPath": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:Smoke_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-457bd83a1242294b",
+          "systemPackage": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous",
+          "sourceBinding": {
+            "systemSha256": "457bd83a1242294bcfdd550ee99ce5582a5cbf2eb6a092beccc7a01918be0221",
+            "rendererPath": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:Smoke_0.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-457bd83a1242294b",
+          "systemPackage": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous",
+          "sourceBinding": {
+            "systemSha256": "457bd83a1242294bcfdd550ee99ce5582a5cbf2eb6a092beccc7a01918be0221",
+            "rendererPath": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:Smoke_0.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous.NS_Spark_Continuous:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-17e66859968d089a",
+          "systemPackage": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Impact_Looping",
+          "sourceBinding": {
+            "systemSha256": "17e66859968d089a868c232fb1119b8d42f6dd28b52fb7d62a9679b5b5a3fe83",
+            "rendererPath": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Impact_Looping.NS_Spark_Impact_Looping:Smoke_6.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Impact_Looping.NS_Spark_Impact_Looping:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-17e66859968d089a",
+          "systemPackage": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Impact_Looping",
+          "sourceBinding": {
+            "systemSha256": "17e66859968d089a868c232fb1119b8d42f6dd28b52fb7d62a9679b5b5a3fe83",
+            "rendererPath": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Impact_Looping.NS_Spark_Impact_Looping:Smoke_6.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Impact_Looping.NS_Spark_Impact_Looping:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-286bbd2e79c54091",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete",
+          "sourceBinding": {
+            "systemSha256": "286bbd2e79c54091c4759f4cd813c31797b4bcda08bf28fd30db45525e13a35e",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete.NS_Impact_Concrete:Dust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete.NS_Impact_Concrete:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-286bbd2e79c54091",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete",
+          "sourceBinding": {
+            "systemSha256": "286bbd2e79c54091c4759f4cd813c31797b4bcda08bf28fd30db45525e13a35e",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete.NS_Impact_Concrete:Dust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete.NS_Impact_Concrete:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-286bbd2e79c54091",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete",
+          "sourceBinding": {
+            "systemSha256": "286bbd2e79c54091c4759f4cd813c31797b4bcda08bf28fd30db45525e13a35e",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete.NS_Impact_Concrete:Dust_0.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete.NS_Impact_Concrete:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-286bbd2e79c54091",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete",
+          "sourceBinding": {
+            "systemSha256": "286bbd2e79c54091c4759f4cd813c31797b4bcda08bf28fd30db45525e13a35e",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete.NS_Impact_Concrete:Dust_0.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete.NS_Impact_Concrete:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-111fdc6092605040",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass",
+          "sourceBinding": {
+            "systemSha256": "111fdc609260504007a2dffa945b3753211d465fe992a88a3fa83054b114bd29",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass.NS_Impact_Glass:NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass.NS_Impact_Glass:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-111fdc6092605040",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass",
+          "sourceBinding": {
+            "systemSha256": "111fdc609260504007a2dffa945b3753211d465fe992a88a3fa83054b114bd29",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass.NS_Impact_Glass:NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass.NS_Impact_Glass:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-111fdc6092605040",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass",
+          "sourceBinding": {
+            "systemSha256": "111fdc609260504007a2dffa945b3753211d465fe992a88a3fa83054b114bd29",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass.NS_Impact_Glass:NiagaraEmitter_1.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass.NS_Impact_Glass:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-111fdc6092605040",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass",
+          "sourceBinding": {
+            "systemSha256": "111fdc609260504007a2dffa945b3753211d465fe992a88a3fa83054b114bd29",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass.NS_Impact_Glass:NiagaraEmitter_1.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass.NS_Impact_Glass:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-73f95137c75bbd34",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal",
+          "sourceBinding": {
+            "systemSha256": "73f95137c75bbd349f4b5891354ead189322bf3e148842d6fa979e914f70e5f6",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal.NS_Impact_Metal:Dust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokeWispy_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal.NS_Impact_Metal:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-73f95137c75bbd34",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal",
+          "sourceBinding": {
+            "systemSha256": "73f95137c75bbd349f4b5891354ead189322bf3e148842d6fa979e914f70e5f6",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal.NS_Impact_Metal:Dust_0.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal.NS_Impact_Metal:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-73f95137c75bbd34",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal",
+          "sourceBinding": {
+            "systemSha256": "73f95137c75bbd349f4b5891354ead189322bf3e148842d6fa979e914f70e5f6",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal.NS_Impact_Metal:Dust_0.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal.NS_Impact_Metal:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-84608cc593f5ee8f",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood",
+          "sourceBinding": {
+            "systemSha256": "84608cc593f5ee8f5718a95e3a5ec06018d962bb2ff6868da511f234a17ff52a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood.NS_Impact_Wood:NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood.NS_Impact_Wood:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-84608cc593f5ee8f",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood",
+          "sourceBinding": {
+            "systemSha256": "84608cc593f5ee8f5718a95e3a5ec06018d962bb2ff6868da511f234a17ff52a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood.NS_Impact_Wood:NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8_Emissive",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood.NS_Impact_Wood:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-84608cc593f5ee8f",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood",
+          "sourceBinding": {
+            "systemSha256": "84608cc593f5ee8f5718a95e3a5ec06018d962bb2ff6868da511f234a17ff52a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood.NS_Impact_Wood:NiagaraEmitter_1.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood.NS_Impact_Wood:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-84608cc593f5ee8f",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood",
+          "sourceBinding": {
+            "systemSha256": "84608cc593f5ee8f5718a95e3a5ec06018d962bb2ff6868da511f234a17ff52a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood.NS_Impact_Wood:NiagaraEmitter_1.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_SmokePuffLight_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood.NS_Impact_Wood:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-3591c44b3dd94faa",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash",
+          "sourceBinding": {
+            "systemSha256": "3591c44b3dd94faa75f7c46bcc331829222471f481c491cf2653529bb6f8314d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:Muzzle_Smoke_4.NE_MuzzleFlash_Smoke.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Materials/Instances/MI_Flipbook_Smoke_Muzzle",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-3591c44b3dd94faa",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash",
+          "sourceBinding": {
+            "systemSha256": "3591c44b3dd94faa75f7c46bcc331829222471f481c491cf2653529bb6f8314d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:Muzzle_Smoke_4.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Materials/Instances/MI_Flipbook_Smoke_Muzzle",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-64b1a451b7c10432",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Trails/NS_RocketTrail",
+          "sourceBinding": {
+            "systemSha256": "64b1a451b7c104321a0b08ecb592a8c624dd5d36d411fc1dcd9740e97e0cb285",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Trails/NS_RocketTrail.NS_RocketTrail:RocketTrail_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_RocketTrail_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Trails/NS_RocketTrail.NS_RocketTrail:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-64b1a451b7c10432",
+          "systemPackage": "/Game/NiagaraExamples/FX_Weapons/Trails/NS_RocketTrail",
+          "sourceBinding": {
+            "systemSha256": "64b1a451b7c104321a0b08ecb592a8c624dd5d36d411fc1dcd9740e97e0cb285",
+            "rendererPath": "/Game/NiagaraExamples/FX_Weapons/Trails/NS_RocketTrail.NS_RocketTrail:RocketTrail_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_RocketTrail_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/Trails/NS_RocketTrail.NS_RocketTrail:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-2fecab64fda3b2cc",
+      "candidateAlias": "source-component-t-vfx-stamp-electric-33-3x3-original-alpha-to-white",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Electric_33",
+      "component": {
+        "textureSha256": "3e468435ddbe1951d5c563c763e19feb4ff14fe4dc37492703f289d232c16505",
+        "columns": 3,
+        "rows": 3,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        256,
+        256
+      ],
+      "nativeSourceCellPixels": [
+        85.33333333333333,
+        85.33333333333333
+      ],
+      "recommendedNoUpscaleTile": [
+        85,
+        85
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [
+        "v2-256: 3 frames have fully empty alpha"
+      ],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-2fecab64fda3b2cc\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 9,
+          "framesWithNonemptyAlpha": 6,
+          "framesWithEmptyAlpha": 3,
+          "alphaNonemptyPixelCount": 145247,
+          "alphaNonemptyPixelFraction": 0.2462548149956597,
+          "meanAlphaRange": [
+            0.0,
+            0.11287398992800245
+          ],
+          "uniqueFramePixelHashCount": 7,
+          "duplicateFrameCount": 2,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0,
+            0.029281017827052697
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-049badaf45e15fd6",
+          "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_ElectricLightning",
+          "sourceBinding": {
+            "systemSha256": "049badaf45e15fd639051bbb1d785ba4eb7918a53222aaae9fe05359f69394a7",
+            "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_ElectricLightning.NS_Spline_ElectricLightning:Detail_5.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_Stamp_Electric_33_01",
+            "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Electric_33"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_ElectricLightning.NS_Spline_ElectricLightning:",
+            "matched": true
+          },
+          "parameterName": "baseTex"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-40abfaa92d054075",
+      "candidateAlias": "source-component-t-vfx-stamp-watersplash-77-7x7-luminance-to-white-alpha",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_WaterSplash_77",
+      "component": {
+        "textureSha256": "26e09bd0f93cb620768268867f7887759315452bd5e9da4a7506da06e798a672",
+        "columns": 7,
+        "rows": 7,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2048,
+        2048
+      ],
+      "nativeSourceCellPixels": [
+        292.57142857142856,
+        292.57142857142856
+      ],
+      "recommendedNoUpscaleTile": [
+        292,
+        292
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [
+        "v2-256: 4 frames have fully empty alpha"
+      ],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-40abfaa92d054075\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 49,
+          "framesWithNonemptyAlpha": 45,
+          "framesWithEmptyAlpha": 4,
+          "alphaNonemptyPixelCount": 932075,
+          "alphaNonemptyPixelFraction": 0.29025175133529973,
+          "meanAlphaRange": [
+            0.0,
+            0.28213177849264703
+          ],
+          "uniqueFramePixelHashCount": 46,
+          "duplicateFrameCount": 3,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0,
+            0.03138601265701593
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-104efce88caa3644",
+          "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+          "sourceBinding": {
+            "systemSha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+            "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:Splash_7.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_WaterSplash_77_mask",
+            "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_WaterSplash_77"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:",
+            "matched": true
+          },
+          "parameterName": "baseTex"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate",
+      "priorWater49Comparison": {
+        "priorManifest": ".scratch\\st01b-subuv-previews\\recipe-b3c77161eb4332af\\manifest.json",
+        "oldFrames": 49,
+        "newFrames": 49,
+        "identicalFrameHashCount": 4,
+        "allFramesByteIdentical": false,
+        "status": "re-evaluated source candidate; replacement pending root visual review and explicit packer --replace-reviewed"
+      }
+    },
+    {
+      "recipeId": "recipe-7e1c530db9f2f8df",
+      "candidateAlias": "source-component-t-waterspark-4x4-original-rgba",
+      "texturePackage": "/Game/ArrowTrail/Texture/T_WaterSpark",
+      "component": {
+        "textureSha256": "f7736e0dfe565c2f523efab21ae24b0fbc4354d824c8ad1e69730d88821e2115",
+        "columns": 4,
+        "rows": 4,
+        "mapping": "original-rgba"
+      },
+      "sourceImageDimensions": [
+        1024,
+        1024
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 16,
+          "framesWithNonemptyAlpha": 16,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 145276,
+          "alphaNonemptyPixelFraction": 0.13854598999023438,
+          "meanAlphaRange": [
+            0.024731924019607842,
+            0.10338344199984681
+          ],
+          "uniqueFramePixelHashCount": 16,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.007296199424594057,
+            0.0359717425178079
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-3ccdf359dea4068d",
+          "systemPackage": "/Game/ArrowTrail/FX/NS_ArrowTrail_Water",
+          "sourceBinding": {
+            "systemSha256": "3ccdf359dea4068dc125768c3916fa38b542d8dd3840d316d881649cb172051f",
+            "rendererPath": "/Game/ArrowTrail/FX/NS_ArrowTrail_Water.NS_ArrowTrail_Water:Particle001_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/ArrowTrail/Material/MI_Instance/MI_WaterParticle",
+            "texturePackage": "/Game/ArrowTrail/Texture/T_WaterSpark"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/ArrowTrail/FX/NS_ArrowTrail_Water.NS_ArrowTrail_Water:",
+            "matched": true
+          },
+          "parameterName": "Texture"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-89e7dc634823c9fb",
+      "candidateAlias": "source-component-t-explosionroil-eoo-loop-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop",
+      "component": {
+        "textureSha256": "ee97ef90f775452373cf035eecb6cc276bd10f69c5fda12747ae61665f2c2c6d",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        2048,
+        2048
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-89e7dc634823c9fb\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 2009774,
+          "alphaNonemptyPixelFraction": 0.47916746139526367,
+          "meanAlphaRange": [
+            0.19965144138710172,
+            0.20277380849800858
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0024697546865425856,
+            0.004598026649624693
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:Explosion_1.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:Explosion_1.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:Explosion_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:Explosion_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:Explosion_1.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:Explosion_1.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:GroundDust_0.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:GroundDust_0.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-e7ecef29218810e1",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+          "sourceBinding": {
+            "systemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion.NS_Dirt_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:GroundDust_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:GroundDust_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:NiagaraEmitter_1.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:NiagaraEmitter_1.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:NiagaraEmitter_1.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-82042f9798750ba8",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "82042f9798750ba8249f38e838306d66100d4be660c6606a263242b8dbdb472a",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:NiagaraEmitter_1.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium.NS_Dirt_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:Explosion_1.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:Explosion_1.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:Explosion_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:Explosion_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:Explosion_1.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:Explosion_1.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:GroundDust_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:GroundDust_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-d4627aa3b4b7ff64",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "d4627aa3b4b7ff64bbb99d34f925afd79074c9896a5d06f16235fdb0147ae5cb",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small.NS_Dirt_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:GroundDust_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:GroundDust_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:NiagaraEmitter_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:NiagaraEmitter_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:NiagaraEmitter_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-dff068bf7369b929",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+          "sourceBinding": {
+            "systemSha256": "dff068bf7369b92903db2165e3c2e53222a8bb0f634bfb41dd9b02fe927389d9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:NiagaraEmitter_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion.NS_Explosion:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:GroundDust_0.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:GroundDust_0.NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:NiagaraEmitter_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:NiagaraEmitter_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:NiagaraEmitter_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-903607202c44f3c5",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+          "sourceBinding": {
+            "systemSha256": "903607202c44f3c502f4163af1faabf70c694ac8cb2a72baf0f1d324d3d466c8",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:NiagaraEmitter_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium.NS_Explosion_Medium:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:GroundDust_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:GroundDust_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:GroundDust_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:GroundDust_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:NiagaraEmitter_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:NiagaraEmitter_0.NiagaraEmitter_1.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:NiagaraEmitter_0.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:NiagaraEmitter_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Texture"
+        },
+        {
+          "effectId": "niagara-33e8e20325006312",
+          "systemPackage": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+          "sourceBinding": {
+            "systemSha256": "33e8e20325006312aeac692497fad70043ef545f46d95e9d13a8a19f874d04a9",
+            "rendererPath": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:NiagaraEmitter_0.NiagaraSpriteRendererProperties_2",
+            "materialPackage": "/Game/NiagaraExamples/Materials/MI_ExplosionRoil_8x8",
+            "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small.NS_Explosion_Small:",
+            "matched": true
+          },
+          "parameterName": "Emission/Occlusion/Opacity Atlas"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-b8543465984ee6a1",
+      "candidateAlias": "source-component-t-flowloop-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/ArrowTrail/Texture/T_FlowLoop",
+      "component": {
+        "textureSha256": "d7a5e783ffa8ee81e49dcd903a9a63c02c3950a000ad504a99a93ec57552d640",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        4096,
+        4096
+      ],
+      "nativeSourceCellPixels": [
+        512.0,
+        512.0
+      ],
+      "recommendedNoUpscaleTile": [
+        512,
+        512
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-b8543465984ee6a1\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 1260666,
+          "alphaNonemptyPixelFraction": 0.3005661964416504,
+          "meanAlphaRange": [
+            0.04629905551087623,
+            0.05602626426547181
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.002011272954005821,
+            0.0031470055673636643
+          ]
+        },
+        {
+          "variant": "v3-native-512",
+          "manifest": ".scratch\\st01b-candidateframes-v3\\source-component-recipe-b8543465984ee6a1\\manifest.json",
+          "outputFrameSize": [
+            512,
+            512
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 5050466,
+          "alphaNonemptyPixelFraction": 0.301031231880188,
+          "meanAlphaRange": [
+            0.04629749971277573,
+            0.05602494782092524
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.002020734899184283,
+            0.00315250695920458
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-16fc0b8630da2831",
+          "systemPackage": "/Game/ArrowTrail/FX/NS_ArrowTrail_Holy",
+          "sourceBinding": {
+            "systemSha256": "16fc0b8630da2831f843d796bd29a252b99e4cf529cec027df8725cf15c0a475",
+            "rendererPath": "/Game/ArrowTrail/FX/NS_ArrowTrail_Holy.NS_ArrowTrail_Holy:Particle001_1.NiagaraSpriteRendererProperties_1",
+            "materialPackage": "/Game/ArrowTrail/Material/MI_Instance/MI_Smoke",
+            "texturePackage": "/Game/ArrowTrail/Texture/T_FlowLoop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/ArrowTrail/FX/NS_ArrowTrail_Holy.NS_ArrowTrail_Holy:",
+            "matched": true
+          },
+          "parameterName": "Texture"
+        },
+        {
+          "effectId": "niagara-8e83e5d96c101971",
+          "systemPackage": "/Game/ArrowTrail/FX/NS_ArrowTrail_Ice",
+          "sourceBinding": {
+            "systemSha256": "8e83e5d96c101971c3083c314b0cdeb6d1f1805e76c540cbb4fb37df317cd742",
+            "rendererPath": "/Game/ArrowTrail/FX/NS_ArrowTrail_Ice.NS_ArrowTrail_Ice:Smoke_2.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/ArrowTrail/Material/MI_Instance/MI_Smoke",
+            "texturePackage": "/Game/ArrowTrail/Texture/T_FlowLoop"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/ArrowTrail/FX/NS_ArrowTrail_Ice.NS_ArrowTrail_Ice:",
+            "matched": true
+          },
+          "parameterName": "Texture"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-ce800df9a9628c95",
+      "candidateAlias": "source-component-t-flameuv-2-8x4-luminance-to-white-alpha",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_2",
+      "component": {
+        "textureSha256": "3e0a757f3e8443ebfc1644d98ecea09e9f225c684d588fb0f89afcfac9d0c410",
+        "columns": 8,
+        "rows": 4,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2048,
+        1024
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 32,
+          "framesWithNonemptyAlpha": 32,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 535467,
+          "alphaNonemptyPixelFraction": 0.25533056259155273,
+          "meanAlphaRange": [
+            0.07454905790441177,
+            0.09564956964231004
+          ],
+          "uniqueFramePixelHashCount": 32,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.005799013025620405,
+            0.008265162449257046
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-985a431dc6c0d1ca",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single",
+          "sourceBinding": {
+            "systemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_2",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_2"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-d1b8904e485bf83d",
+      "candidateAlias": "source-component-t-flameuv-1-8x4-luminance-to-white-alpha",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1",
+      "component": {
+        "textureSha256": "4866b9058807eeef9a3da577670e150c6606d5b8d38eaedffc8579bfc36e00d4",
+        "columns": 8,
+        "rows": 4,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2048,
+        1024
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-d1b8904e485bf83d\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 32,
+          "framesWithNonemptyAlpha": 32,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 436461,
+          "alphaNonemptyPixelFraction": 0.20812082290649414,
+          "meanAlphaRange": [
+            0.032908241421568625,
+            0.04489153693704044
+          ],
+          "uniqueFramePixelHashCount": 32,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.005282891965379902,
+            0.007035633161956188
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-97a82bae61b29237",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit",
+          "sourceBinding": {
+            "systemSha256": "97a82bae61b292371a78cadc6ffef2f7dcae3ea39ac0a9ccb6b5ed2ee57e18cf",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Flame_Basic_001.NE_Flame_Basic_001.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        },
+        {
+          "effectId": "niagara-6f01dad99e3f0e56",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2",
+          "sourceBinding": {
+            "systemSha256": "6f01dad99e3f0e56be37a9d01e8cf3f5ea689d199cdf31519f87b9e55a3fa40b",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2.NS_BasicHit_2:NE_Flame_Basic_001.NE_Flame_Basic_001.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2.NS_BasicHit_2:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        },
+        {
+          "effectId": "niagara-985a431dc6c0d1ca",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single",
+          "sourceBinding": {
+            "systemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NE_Flame_Basic_001.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        },
+        {
+          "effectId": "niagara-b0dd0dc3eab5e310",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Trail",
+          "sourceBinding": {
+            "systemSha256": "b0dd0dc3eab5e310fa10e6bb785665bff1304f1fbe3429c623d6eddf358217f0",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Trail.NS_Flame_Trail:NE_Flame_Basic.NiagaraEmitter_2.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Trail.NS_Flame_Trail:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-dc094fba73f69da8",
+      "candidateAlias": "source-component-t-fireball-8x4-luminance-to-white-alpha",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall",
+      "component": {
+        "textureSha256": "1d5c64ec6742cb1b37e1237b96f4736cce439f661d64ca90467482cfb77288ab",
+        "columns": 8,
+        "rows": 4,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2048,
+        1024
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-dc094fba73f69da8\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 32,
+          "framesWithNonemptyAlpha": 32,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 966730,
+          "alphaNonemptyPixelFraction": 0.46097278594970703,
+          "meanAlphaRange": [
+            0.07045162425321691,
+            0.08363102931602329
+          ],
+          "uniqueFramePixelHashCount": 32,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0012926438275505515,
+            0.002093371223000919
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-97a82bae61b29237",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit",
+          "sourceBinding": {
+            "systemSha256": "97a82bae61b292371a78cadc6ffef2f7dcae3ea39ac0a9ccb6b5ed2ee57e18cf",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Flame_Basic_001.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Fireball",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        },
+        {
+          "effectId": "niagara-b0dd0dc3eab5e310",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Trail",
+          "sourceBinding": {
+            "systemSha256": "b0dd0dc3eab5e310fa10e6bb785665bff1304f1fbe3429c623d6eddf358217f0",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Trail.NS_Flame_Trail:NE_Flame_Basic.NiagaraSpriteRendererProperties_5",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Fireball",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Trail.NS_Flame_Trail:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-df3dfa2ce32b38da",
+      "candidateAlias": "source-component-t-smoke-1-10x6-luminance-to-white-alpha",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1",
+      "component": {
+        "textureSha256": "ecddb7ecffb46fb0c61d5c0bf9d8e0f7d74f8b25cd614cd1e7ddc2df0468f0ce",
+        "columns": 10,
+        "rows": 6,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2560,
+        1536
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-df3dfa2ce32b38da\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 60,
+          "framesWithNonemptyAlpha": 60,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 605171,
+          "alphaNonemptyPixelFraction": 0.15390294392903645,
+          "meanAlphaRange": [
+            0.040650191961550244,
+            0.05232699525122549
+          ],
+          "uniqueFramePixelHashCount": 60,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0006528218587239583,
+            0.0011405047248391545
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-985a431dc6c0d1ca",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single",
+          "sourceBinding": {
+            "systemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NE_Smoke_Basic.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        },
+        {
+          "effectId": "niagara-985a431dc6c0d1ca",
+          "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single",
+          "sourceBinding": {
+            "systemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+            "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1",
+            "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:",
+            "matched": true
+          },
+          "parameterName": "SUBUV"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-e4b40c9ac3eef002",
+      "candidateAlias": "source-component-t-vfx-stamp-fog3-88-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88",
+      "component": {
+        "textureSha256": "dd710adffbd411cd04757b30db840fbd9e4db02cb5e9d40e649c4457d825bb4c",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        1024,
+        1024
+      ],
+      "nativeSourceCellPixels": [
+        128.0,
+        128.0
+      ],
+      "recommendedNoUpscaleTile": [
+        128,
+        128
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 697221,
+          "alphaNonemptyPixelFraction": 0.1662304401397705,
+          "meanAlphaRange": [
+            4.7870710784313725e-06,
+            0.027057602826286765
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            4.607555912990196e-06,
+            0.0024895013547411153
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-9781d6141b4a6cc6",
+          "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_Fire",
+          "sourceBinding": {
+            "systemSha256": "9781d6141b4a6cc65c3e020283d71fa056982d93d8a55d6dd6fdca7c90a4255c",
+            "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Fire.NS_Spline_Fire:Smoke_3.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+            "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_Fire.NS_Spline_Fire:",
+            "matched": true
+          },
+          "parameterName": "baseTex"
+        },
+        {
+          "effectId": "niagara-50d49867d962ab57",
+          "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_Frost",
+          "sourceBinding": {
+            "systemSha256": "50d49867d962ab57981fff52aca666d185371746f34b64b6ccbd09c4c582867e",
+            "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Frost.NS_Spline_Frost:Steam_11.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+            "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_Frost.NS_Spline_Frost:",
+            "matched": true
+          },
+          "parameterName": "baseTex"
+        },
+        {
+          "effectId": "niagara-1973010a33db29b3",
+          "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_Magic",
+          "sourceBinding": {
+            "systemSha256": "1973010a33db29b3fdf4422a7ad645b740fccb7825ebe7faabb7b40e17c7bac6",
+            "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Magic.NS_Spline_Magic:Smoke_3.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+            "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_Magic.NS_Spline_Magic:",
+            "matched": true
+          },
+          "parameterName": "baseTex"
+        },
+        {
+          "effectId": "niagara-453738c67c74eb2e",
+          "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_MiasmaBoil",
+          "sourceBinding": {
+            "systemSha256": "453738c67c74eb2e2f1a1bc6ca00fb709a44110aba79106abf74b03a775a7d3c",
+            "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_MiasmaBoil.NS_Spline_MiasmaBoil:Steam_11.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+            "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_MiasmaBoil.NS_Spline_MiasmaBoil:",
+            "matched": true
+          },
+          "parameterName": "baseTex"
+        },
+        {
+          "effectId": "niagara-104efce88caa3644",
+          "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+          "sourceBinding": {
+            "systemSha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+            "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:Steam_11.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+            "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:",
+            "matched": true
+          },
+          "parameterName": "baseTex"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    },
+    {
+      "recipeId": "recipe-f93c7523d11ee2ba",
+      "candidateAlias": "source-component-t-vfx-stamp-steam-88-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Steam_88",
+      "component": {
+        "textureSha256": "7e5099cefb58403225612a3d6e4763c633aa89caea3a7395ee6dc762dafe72aa",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        2048,
+        2048
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-f93c7523d11ee2ba\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 2450305,
+          "alphaNonemptyPixelFraction": 0.5841982364654541,
+          "meanAlphaRange": [
+            0.24646313237208947,
+            0.32913614908854166
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0020084156709558824,
+            0.0031650618010876227
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth",
+      "sourceComponents": [
+        {
+          "effectId": "niagara-453738c67c74eb2e",
+          "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_MiasmaBoil",
+          "sourceBinding": {
+            "systemSha256": "453738c67c74eb2e2f1a1bc6ca00fb709a44110aba79106abf74b03a775a7d3c",
+            "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_MiasmaBoil.NS_Spline_MiasmaBoil:Dark2_6.NiagaraSpriteRendererProperties_0",
+            "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_Steam_88",
+            "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Steam_88"
+          },
+          "rendererOwnerEvidence": {
+            "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+            "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_MiasmaBoil.NS_Spline_MiasmaBoil:",
+            "matched": true
+          },
+          "parameterName": "baseTex"
+        }
+      ],
+      "reviewStatus": "unaccepted-candidate"
+    }
+  ],
+  "deferredHighFidelityGrids": [
+    {
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_GroundFireRea_1111",
+      "grid": {
+        "columns": 11,
+        "rows": 11
+      },
+      "reason": "Defer: 11x11 grid has 121 source cells; bounded 64-frame selection loses source frames. Await a high-fidelity extraction path that preserves all 121 cells."
+    }
+  ]
+}

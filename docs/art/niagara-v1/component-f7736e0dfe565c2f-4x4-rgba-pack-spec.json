@@ -1,0 +1,128 @@
+{
+  "id": "niagara-3ccdf359dea4068d",
+  "atlasId": "component-f7736e0dfe565c2f-4x4-rgba",
+  "role": "source-texture",
+  "sourcePath": "C:\\Unreal\\MyProject\\Content\\ArrowTrail\\FX\\NS_ArrowTrail_Water.uasset",
+  "sourceSha256": "3ccdf359dea4068dc125768c3916fa38b542d8dd3840d316d881649cb172051f",
+  "component": {
+    "textureSha256": "f7736e0dfe565c2f523efab21ae24b0fbc4354d824c8ad1e69730d88821e2115",
+    "columns": 4,
+    "rows": 4,
+    "mapping": "original-rgba",
+    "name": "T_WaterSpark"
+  },
+  "sourceBinding": {
+    "systemSha256": "3ccdf359dea4068dc125768c3916fa38b542d8dd3840d316d881649cb172051f",
+    "rendererPath": "/Game/ArrowTrail/FX/NS_ArrowTrail_Water.NS_ArrowTrail_Water:Particle001_1.NiagaraSpriteRendererProperties_0",
+    "materialPackage": "/Game/ArrowTrail/Material/MI_Instance/MI_WaterParticle",
+    "texturePackage": "/Game/ArrowTrail/Texture/T_WaterSpark"
+  },
+  "frames": [
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_000_source_0000.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_001_source_0001.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_002_source_0002.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_003_source_0003.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_004_source_0004.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_005_source_0005.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_006_source_0006.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_007_source_0007.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_008_source_0008.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_009_source_0009.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_010_source_0010.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_011_source_0011.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_012_source_0012.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_013_source_0013.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_014_source_0014.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\frame_015_source_0015.png"
+  ],
+  "duration": 2,
+  "worldWidth": 6,
+  "worldHeight": 6,
+  "desktopTile": 256,
+  "blend": "alpha",
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-7e1c530db9f2f8df",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\ArrowTrail\\Texture\\T_WaterSpark.uasset",
+      "sha256": "f7736e0dfe565c2f523efab21ae24b0fbc4354d824c8ad1e69730d88821e2115",
+      "bytes": 685475
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\ArrowTrail\\Texture\\T_WaterSpark.png",
+      "sha256": "200cb5ec2207d31ee8c966b13b7ad97b939c0207d8a1e220a851871fab3a4252",
+      "bytes": 602128,
+      "format": "PNG",
+      "width": 1024,
+      "height": 1024,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 4,
+      "rows": 4,
+      "cells": 16,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "original-rgba",
+    "mappingFormula": "RGB and A retained from decoded source image; PNG sRGB RGB / linear alpha or EXR linear RGBA",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-3ccdf359dea4068d",
+        "systemPackage": "/Game/ArrowTrail/FX/NS_ArrowTrail_Water",
+        "sourceBinding": {
+          "systemSha256": "3ccdf359dea4068dc125768c3916fa38b542d8dd3840d316d881649cb172051f",
+          "rendererPath": "/Game/ArrowTrail/FX/NS_ArrowTrail_Water.NS_ArrowTrail_Water:Particle001_1.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/ArrowTrail/Material/MI_Instance/MI_WaterParticle",
+          "texturePackage": "/Game/ArrowTrail/Texture/T_WaterSpark"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/ArrowTrail/FX/NS_ArrowTrail_Water.NS_ArrowTrail_Water:",
+          "matched": true
+        },
+        "parameterName": "Texture"
+      }
+    ]
+  }
+}
