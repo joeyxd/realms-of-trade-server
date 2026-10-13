@@ -11,7 +11,8 @@ Se actualizan región/alfa/roadmap naval; siguiente corte A0-G1, sin cambio de m
 [Entrega](delivery/pickup-wood-uv/README.md). Proyección UV por cara sobre el GLB
 curvo, normales originales conservadas y recorte limpio del atlas existente.
 34/34 pruebas, Chrome local escritorio/móvil 2/2 y comparación visual inspeccionada.
-Alpha.69/protocolo 61 preparada; publicación pendiente de comprobación.
+Alpha.69/protocolo 61 publicada en `676833a`: actualizador 197/197, runtime 38 hashes
+y entrada pública escritorio/móvil 2/2 con 34 archivos HTTP exactos, cero errores.
 
 **ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
 [Entrega](delivery/st01c/DELIVERY.md), [plan autorizado](briefs/st01c-niagara-native-fidelity.md).

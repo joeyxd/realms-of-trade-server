@@ -9,7 +9,8 @@ Solo diseño: siguiente corte A0-G1, levantamiento/anclas. Sin terreno o gamepla
 
 **Troncos recogibles, 2026-10-13:** [corrección de veta](docs/delivery/pickup-wood-uv/README.md),
 proyección UV por cara y recorte propio del atlas; 34/34 pruebas y Chrome local 2/2.
-Alpha.69/protocolo 61 preparada, pendiente de verificación pública.
+Alpha.69/protocolo 61 publicada en `676833a`; actualizador 197/197, runtime 38 hashes
+y entrada pública 2/2 con 34 archivos HTTP exactos, cero errores.
 
 **ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
 [Entrega](docs/delivery/st01c/DELIVERY.md), [plan autorizado](docs/briefs/st01c-niagara-native-fidelity.md).

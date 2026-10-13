@@ -26,5 +26,14 @@ aislado y una copia cosmética temporal; no escribe inventarios ni mundo públic
 Las capturas antes/después usan la misma malla, material y cámara, cambiando solo
 las UV. Se conservan los originales GLB y la textura del autor.
 
-Preparado para alpha.69, protocolo 61 existente. Publicación pendiente de confirmar
-revisión activa, salud y entrada pública tras el actualizador habitual.
+Publicado como **alpha.69**, protocolo 61 existente, revisión
+`676833a0d58899dd4d122baa99e31dd3a842ed89`. El actualizador completó 197/197 pruebas
+antes del relevo. [Runtime](public/runtime.json): una autoridad saludable, 38 archivos
+iguales a Git y cero errores. [Entrada pública](public/acceptance.json): escritorio
+y móvil emulado 2/2, 34 archivos HTTP idénticos al código publicado, cero errores.
+La referencia Git de la sonda pública es `e75cb99`, cuyo único cambio posterior son
+los planes de región; el runtime comprobado sigue siendo `676833a`.
+
+El primer intento público móvil agotó la espera de carga inicial; la repetición
+completa pasó. La sonda ahora espera también el cierre del título y la transición
+de cámara antes de guardar las capturas de entrada. No se midieron FPS físicos.

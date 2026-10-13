@@ -49,6 +49,9 @@ try {
       await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.title-card')).opacity) > .99 && getComputedStyle(document.querySelector('#fade')).display === 'none');
       await page.locator('#btn-play').click({ force: true });
       await page.waitForFunction(() => __mn.client.joined && __mn.st.mode === 'playing', null, { timeout: 60000 });
+      await page.waitForFunction(() => document.querySelector('#title')?.hidden && !__mn.st.boarding
+        && __mn.input.enabled && !__mn.st.paused, null, { timeout: 60000 });
+      await page.waitForTimeout(2500); // Let the title-to-player camera blend finish before capturing the scene.
       result.joined = await page.evaluate(() => ({ joined: __mn.client.joined, errors: [...__mn.errors.entries()],
         torch: [...__mn.world.views.values()].some(view => view.personalLantern?.getObjectByName('model:item-antorcha-v1')),
         woodAtlas: __mn.world.resources.woodPaint.map === __mn.assets.texture('tex:raft-comic-v1') }));
@@ -56,6 +59,14 @@ try {
       assert.equal(result.joined.errors.length, 0); assert.equal(result.errors.length, 0);
       await page.screenshot({ path: path.join(out, spec.name + '-entry.png') });
       result.status = 'passed';
+    } catch (error) {
+      result.failure = String(error);
+      result.page = await page.evaluate(() => ({ url: location.href, ready: document.readyState,
+        button: document.querySelector('#btn-play')?.textContent, disabled: document.querySelector('#btn-play')?.disabled,
+        mode: window.__mn?.st.mode, assets: window.__mn?.assets.errors })).catch(() => null);
+      await page.screenshot({ path: path.join(out, spec.name + '-failure.png') }).catch(() => {});
+      await fs.writeFile(path.join(out, 'failure.json'), JSON.stringify(report, null, 2) + '\n');
+      throw error;
     } finally { await context.close(); }
   }
 } finally { await browser.close(); }
