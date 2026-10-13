@@ -281,7 +281,7 @@ try {
         world.rig.update = () => {};
         fixture.cameraPosition = camera.position.clone(); fixture.cameraQuaternion = camera.quaternion.clone();
         fixture.cameraUp = camera.up.clone(); fixture.cameraFov = camera.fov;
-        fixture.hud = document.querySelector('#hud'); fixture.hudOpacity = fixture.hud?.style.opacity || '';
+        fixture.hud = document.querySelector('#ui'); fixture.hudOpacity = fixture.hud?.style.opacity || '';
         if (fixture.hud) fixture.hud.style.opacity = '0';
         fixture.closeTarget = new THREE.Vector3((ps?.x ?? 0) + 7, (ps?.y ?? 0) + 1.2, ps?.z ?? 0);
         fixture.setCamera = (target) => {
@@ -289,7 +289,7 @@ try {
           camera.up.set(0, 1, 0); camera.lookAt(target); camera.fov = 30; camera.updateProjectionMatrix();
         };
         for (const object of group.children) object.visible = false;
-        torch.root.scale.setScalar(.82); torch.root.position.copy(fixture.closeTarget);
+        torch.root.scale.setScalar(.64); torch.root.position.copy(fixture.closeTarget);
         torch.root.visible = true; torch.setLantern(true, true); fixture.setCamera(fixture.closeTarget);
       });
       await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
@@ -433,7 +433,7 @@ try {
         const group = new THREE.Group(); group.name = 'qa-item-models-12-contact-sheet';
         const position = camera.position.clone(), quaternion = camera.quaternion.clone(), fov = camera.fov;
         const up = camera.up.clone();
-        const hud = document.querySelector('#hud'), hudOpacity = hud?.style.opacity || '';
+        const hud = document.querySelector('#ui'), hudOpacity = hud?.style.opacity || '';
         if (hud) hud.style.opacity = '0';
         const hadOwnUpdate = Object.prototype.hasOwnProperty.call(rig, 'update'), oldUpdate = rig.update;
         rig.update = () => {};

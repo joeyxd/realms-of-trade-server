@@ -15,7 +15,9 @@ balance por concretar; no altera ahora catálogos, botín ni costes de mochilas.
 Antorcha original portátil; resina/coco con presentación breve tras recibo aceptado,
 máximo ocho y sin nueva recogida. Troncos recogibles con atlas ilustrado de madera
 reutilizado. Nueve piezas de cocina/propuesta en biblioteca GM con carga bajo demanda.
-65/65 regresiones focales; aceptación visual y publicación se registran en la entrega.
+65/65 regresiones focales, 76/76 integración y Chrome local/público 2/2 cada uno.
+Alpha.67/protocolo 60 publicada en `a19f5e1`: 38 hashes de contenedor, 34 públicos,
+una autoridad saludable, cero errores y variantes reales 512/256. Fuentes confirmadas.
 Sin nueva receta, SQL o protocolo.
 
 **ST01b — biblioteca Niagara original, 2026-10-12, alpha.66/protocolo 60 publicada:**
