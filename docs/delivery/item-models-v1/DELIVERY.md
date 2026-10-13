@@ -64,7 +64,7 @@ La primera captura incluyó bordes del atlas y se corrigió a un recorte de tabl
 pintada; las capturas finales muestran el resultado revisado.
 
 Integración con Niagara alpha.66: [76/76 pruebas](integration.tap), conservando su
-biblioteca y checkpoint. El actualizador del VPS complet? 197/197 pruebas
+biblioteca y checkpoint. El actualizador del VPS completó 197/197 pruebas
 antes del relevo (registro `update-a19f5e15ac6b50a858ef76c1f66bbe0bfb68adff.log`). Publicado por el actualizador habitual como **alpha.67,
 protocolo 60**, revisión `a19f5e15ac6b50a858ef76c1f66bbe0bfb68adff`.
 [Contenedor activo](public/runtime.json): una autoridad saludable, 38 archivos
