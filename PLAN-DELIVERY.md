@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA01 A0-G1, 2026-10-13 — terreno real medido y reserva de Puerto Sol:**
+[Estudio/matriz](docs/world/a0-g1/README.md), [plano XZ](docs/world/a0-g1/terrain-survey.svg),
+[datos](docs/world/a0-g1/survey.json). Base 560/N561, 29 anclas y 206 recursos; S1/S2 dan
+169/305 u por centros a pie. Se recomienda extensión occidental para Sol, con reservas de
+servicios/camino/puerto; 810 u terrestres y 921 u costeros previstos, sin tiempos jugados.
+Generación repetida byte idéntica, cribado contra costa del runtime y SVG inspeccionado.
+Sin runtime/SQL/protocolo/geografía nueva activada. Sigue GM06a, contrato/prototipo privado.
+
 **AREA01 A0-P, 2026-10-13 — Bahía Ceniza lejana, ajuste aprobado del plano:**
 [Región y orden](PLAN-REGION-INICIAL.md), [plano actualizado](docs/world/region-inicial-v1.svg).
 Ceniza pasa a una expedición larga de mar abierto con combate naval antes de llegar.

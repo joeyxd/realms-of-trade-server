@@ -1,5 +1,13 @@
 # Modo GM para construir el mundo
 
+**AREA01 A0-G1, 2026-10-13 — entrada medida para GM06a:**
+[Levantamiento/matriz](docs/world/a0-g1/README.md) y [plano XZ](docs/world/a0-g1/terrain-survey.svg).
+La base 560/N561 y sus anclas siguen intactas. Se recomienda Sol en una extensión occidental
+con envelope X [-840,280], Z [-280,280], banda de unión censada y servicios reservados.
+GM06a debe cerrar costa, bounds/samplers, chunks, correspondencia GM y documentos legacy
+antes del prototipo privado. Las posiciones nuevas son propuestas; no hay geografía activada.
+El estudio no autoriza reinterpretar índices SQL031/033 ni rellenar toda la reserva visual.
+
 **AREA01 GM04d, 2026-10-11 — recursos funcionales publicados, alpha.63/protocolo 59:**
 [Contrato](docs/briefs/gm04d-functional-resources.md) y [entrega](docs/delivery/gm04d/DELIVERY.md).
 Recursos ofrece palmera talable y piedra recogible; ID estable, colocar/mover/duplicar/retirar,

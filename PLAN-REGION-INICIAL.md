@@ -2,6 +2,11 @@
 
 Fecha: 2026-10-13, hora de México. Corte documental **AREA01 / A0-P**.
 
+**A0-G1 cerrado, 2026-10-13:** [levantamiento y propuesta concreta de Sol](docs/world/a0-g1/README.md),
+[terreno medido](docs/world/a0-g1/terrain-survey.svg). Se compararon dos penínsulas reales;
+se recomienda una extensión occidental para conservar la escala del recorrido. Sus cotas/
+coordenadas nuevas aún son propuestas. Sigue **GM06a: contrato y prototipo privado de costa/bounds**.
+
 El autor autorizó diseñar la geografía antes de construir la conexión con Puerto Sol.
 Este documento concreta esa dirección con un plano provisional y una cola de trabajo.
 La relación entre los tres pueblos ya estaba acordada; la silueta, orientación, distancias
@@ -233,8 +238,8 @@ después se extiende el kit al pueblo. Ver [inventario](docs/research/unreal-ass
 | Corte | Entregable | Criterio para continuar |
 |---|---|---|
 | **A0-P — este documento** | Diseño de relaciones, plano, dependencias y propuestas diferenciadas | Documento/plano revisables; no modifica el mundo activo |
-| **A0-G1 — levantamiento y anclas** | Plano sobre terreno real con límites/cotas, huella de cada servicio, rutas existentes y candidato de Sol; matriz conservar/añadir/migrar | Ruta terrestre/costera trazable en el mismo marco; decidir si cabe en 560 u o qué extensión exacta necesita. Esta es la siguiente entrega |
-| **GM06a — contrato de costa, si hace falta** | Nueva tierra/costa o dominio acotado sobre base versionada; samplers, bordes, agua, navegación, mapas y borradores concordantes | Determinismo, costes de rejilla/chunks, continuidad de áreas previas y publicación/rollback comprobados antes de ampliar |
+| **A0-G1 — levantamiento y anclas, cerrado** | [Plano medido, inventario y matriz](docs/world/a0-g1/README.md); S1/S2 comparados con reserva S3 al oeste | Base 560 u medida; S3 recomienda bounds X [-840,280], Z [-280,280], mismo mercado `sol`. Expansión propuesta, sin activar |
+| **GM06a — siguiente, contrato de costa/bounds** | Nueva tierra/costa occidental sobre base versionada; samplers, bordes, agua, navegación, mapas y borradores concordantes, primero en prototipo privado | Determinismo, costes de rejilla/chunks, continuidad de áreas previas y publicación/rollback comprobados antes de ampliar |
 | **A0-G2 / A3a — terreno y accesos provisionales** | Relieves simples, camino, rampas, bahías, zona de maniobra y entrada de Sol; conservar funcionales existentes | Recorrer realmente a pie y en balsa; sin teletransportes de QA para aceptar la ruta. Cotas, colisión y noche comprobadas |
 | **A3b — Puerto Sol físico mínimo** | Mercado existente ligado a ancla real, plaza/muelle y servicio útil; llegada por tierra y costa | Mismo mercado/stock desde ambas entradas, distancia/permisos/reentrada; no duplicar economía |
 | **AREA07/08 — viaje comercial completo** | Cargar en origen, viajar, atracar, acceder a carga con permiso, vender/descargar, volver | Conservación y recibos M5, respuesta perdida y reinicio. No basta abrir el mercado de mochila en una parada |
@@ -265,5 +270,6 @@ reabre los sistemas que ya funcionan ni reemplaza las entregas paralelas de GM/A
 Documento y esquema de relaciones preparados el 2026-10-13. Las comprobaciones del corte
 se limitan a consistencia con planes/código, enlaces locales y lectura visual del SVG.
 No hay terreno nuevo, Puerto Sol caminable, migración, cambio de versión/protocolo o
-activación de contenido por este trabajo. La siguiente entrega es **A0-G1: medir y ubicar
-las anclas sobre la base real**, antes de programar GM06a o moldear el corredor.
+activación de contenido por este trabajo. Su continuación **A0-G1** ya tiene el
+[levantamiento cerrado](docs/world/a0-g1/README.md): base/anclas medidas, rutas geométricas
+y reserva occidental de Sol. El siguiente corte es **GM06a**, antes de moldear el corredor.

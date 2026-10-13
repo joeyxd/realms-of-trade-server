@@ -291,8 +291,11 @@ Puerto Sol aún necesita geografía/anclas físicas; este corte no acepta la rut
 El autor aclaró que todavía falta planear la forma del terreno y autorizó empezar por el diseño.
 [AREA01 A0-P](../../PLAN-REGION-INICIAL.md) concreta un esquema de región, ciudades, agua y rutas;
 la orientación y los tiempos son propuestas, no coordenadas ni trayectos aceptados.
-Sigue **A0-G1: levantamiento y anclas sobre el mapa real**. Después GM06 si hace falta crear costa,
-accesos/Puerto Sol físico con A3, y llegada/carga/descarga/retorno con AREA08. RNV08a continúa
+**A0-G1 ya está cerrado:** [levantamiento/matriz](../world/a0-g1/README.md),
+[plano medido](../world/a0-g1/terrain-survey.svg). Se recomienda extensión occidental para Sol;
+810 u de camino y 921 u de costa son previsiones geométricas parciales, sin tiempos jugados.
+Sigue **GM06a: contrato/prototipo privado de costa y bounds**, después accesos/Puerto Sol físico
+con A0-G2/A3 y llegada/carga/descarga/retorno con AREA08. RNV08a continúa
 como base de abastecimiento personal en una parada, con sus límites de bodega intactos.
 
 El autor aprobó el esquema y pidió alejar mucho Bahía Ceniza. El [plano actualizado](../world/region-inicial-v1.svg)

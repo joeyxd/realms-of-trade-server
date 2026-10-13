@@ -11,7 +11,12 @@ El autor pidió diseñar terreno y accesos antes de construir la ruta física a 
 dos pueblos en la isla inicial por camino/costa, rama de aventura a La Caldera, agua interior,
 Cala opcional y Ceniza en otra isla. Silueta, orientación y tiempos son propuestas por medir;
 las anclas funcionales y los IDs existentes se conservan. Es una entrega documental.
-Sigue **A0-G1: levantamiento y anclas sobre el terreno real**, antes de GM06/costa o A3/Puerto Sol.
+**A0-G1 cerrado, 2026-10-13:** [levantamiento](docs/world/a0-g1/README.md) y
+[plano medido](docs/world/a0-g1/terrain-survey.svg). Dos penínsulas existentes dan centros
+de 169/305 u, demasiado próximos para la escala terrestre prevista. Se recomienda Sol en
+extensión occidental, XZ (-720,100), bounds X [-840,280], Z [-280,280]; cifras de diseño,
+sin nuevo terreno activado. Sigue **GM06a**, contrato/prototipo privado de costa y bounds,
+antes de A0-G2/A3. Ceniza no entra en esta extensión.
 
 **Ajuste aprobado por el autor, 2026-10-13:** Bahía Ceniza estará mucho más lejos, tras una
 travesía de mar abierto con combate naval para llegar. Salty Shore–Sol conserva su escala

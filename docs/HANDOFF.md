@@ -1,5 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA01 A0-G1, 2026-10-13 — levantamiento cerrado; sigue GM06a:**
+[Estudio/matriz](world/a0-g1/README.md), [plano medido](world/a0-g1/terrain-survey.svg),
+[datos reproducibles](world/a0-g1/survey.json). Base `a7cf225`, 560/N561, 29 anclas y
+206 recursos actuales. Dos sitios existentes son cortos; se recomienda Sol en extensión
+occidental, XZ (-720,100), envelope X [-840,280], Z [-280,280], mismo mercado `sol`.
+810 u de camino/921 u de costa son previsiones parciales, sin recorrido jugado.
+Conservar llegada/Salty/fuente/Caldera/Cala/IDs; banda de conexión censada sin colocaciones.
+Primero contrato y prototipo privado de costa/bounds/compatibilidad GM06a; luego A0-G2/A3.
+Sin juego, SQL, versión/protocolo o geografía nueva activada. Ceniza sigue lejana y posterior a A6/D10.
+
 **AREA01 A0-P, 2026-10-13 — ajuste del autor: Ceniza mucho más lejos:**
 [Plan](../PLAN-REGION-INICIAL.md) y [plano](world/region-inicial-v1.svg).
 Mar abierto y combate desde el barco antes de llegar; duración/distancia por medir.
