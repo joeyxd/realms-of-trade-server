@@ -1,0 +1,24 @@
+{
+  "method": "same output transform; step120; RGB8; union max-channel>8; silhouette max-channel>32",
+  "acceptance": false,
+  "views": {
+    "front": {
+      "activePixels": 10880,
+      "activeRgbMae255": 6.0266850490196076,
+      "maskThreshold32IoU": 0.9830464604633105,
+      "maxChannelDifference255": 55.0
+    },
+    "oblique": {
+      "activePixels": 9671,
+      "activeRgbMae255": 7.370489091097094,
+      "maskThreshold32IoU": 0.9841105800284201,
+      "maxChannelDifference255": 63.0
+    },
+    "side": {
+      "activePixels": 10315,
+      "activeRgbMae255": 6.447503635482307,
+      "maskThreshold32IoU": 0.9866597590985624,
+      "maxChannelDifference255": 59.0
+    }
+  }
+}

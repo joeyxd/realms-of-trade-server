@@ -1,5 +1,10 @@
 # ST01c — viabilidad de extracción Niagara
 
+**Continuación, 2026-10-13:** [laboratorio de render y referencias ejecutadas](RENDER-LAB.md).
+Ya existe reproducción privada de atributos 3D observados con material traducido;
+la simulación propia y la equivalencia final siguen pendientes. El texto siguiente
+conserva el checkpoint anterior de extracción.
+
 El autor autorizó el piloto el 2026-10-13: avanzar gradualmente hacia una calidad cercana
 al original y reconsiderar antes de invertir en una réplica extensa. Este corte prueba
 la extracción directa de `NS_Flame_Single` de MyProject. **No contiene todavía un port

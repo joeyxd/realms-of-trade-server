@@ -1,6 +1,10 @@
 # ST01c — adaptador Niagara de partículas 3D
 
-**Estado: piloto de viabilidad autorizado por el autor, 2026-10-13; adaptación 3D aún no implementada.** No habilita sistemas en el juego ni cambia el registro de ST01b.
+**Estado, 2026-10-13: extracción y laboratorio privado de material con partículas 3D observadas.**
+[Referencia/comparación](../delivery/st01c/RENDER-LAB.md): ejecutar y fotografiar Unreal,
+reproducir sus atributos en Three y aislar el procesamiento de color. La simulación
+propia y la aceptación final siguen pendientes. No habilita sistemas en el juego ni
+cambia el registro de ST01b.
 
 El autor eligió avanzar por extracción directa y adaptación gradual, apuntando a una calidad
 cercana al original, y reconsiderar la ruta si exige un esfuerzo desproporcionado. Este primer

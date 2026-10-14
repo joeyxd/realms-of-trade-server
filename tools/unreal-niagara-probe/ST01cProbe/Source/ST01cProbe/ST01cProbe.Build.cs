@@ -10,6 +10,7 @@ public class ST01cProbe : ModuleRules
             "Core",
             "CoreUObject",
             "Engine",
+            "RenderCore",
             "Niagara",
             "NiagaraCore",
             "UnrealEd",

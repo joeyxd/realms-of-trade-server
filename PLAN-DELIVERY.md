@@ -27,7 +27,14 @@ proyección UV por cara y recorte propio del atlas; 34/34 pruebas y Chrome local
 Alpha.69/protocolo 61 publicada en `676833a`; actualizador 197/197, runtime 38 hashes
 y entrada pública 2/2 con 34 archivos HTTP exactos, cero errores.
 
-**ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
+**ST01c — laboratorio privado de material, 2026-10-13; simulación propia pendiente:**
+[Referencia y comparación](docs/delivery/st01c/RENDER-LAB.md): Unreal ejecutado, 241
+estados CPU, tres cámaras y reproducción de partículas 3D en Three con atlas originales.
+Comparación HDR cercana a 2 s, con igual presentación de color; no acepta color final
+de Unreal ni simulación equivalente. Sigue cerrar spawn/curvas y sustituir grabación
+por generador propio. Pruebas focales/browser, sin efecto habilitado o runtime del juego.
+
+**Checkpoint previo ST01c — extracción directa Niagara, 2026-10-13:**
 [Entrega](docs/delivery/st01c/DELIVERY.md), [plan autorizado](docs/briefs/st01c-niagara-native-fidelity.md).
 Piloto MyProject `NS_Flame_Single`: helper C++ y consultas UE5.8 NullRHI; dos renderers
 efectivos, 100 registros tipados/80 nombres, cotejo de bytes y cadenas por conexiones.

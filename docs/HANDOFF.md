@@ -31,7 +31,15 @@ curvo, normales originales conservadas y recorte limpio del atlas existente.
 Alpha.69/protocolo 61 publicada en `676833a`: actualizador 197/197, runtime 38 hashes
 y entrada pública escritorio/móvil 2/2 con 34 archivos HTTP exactos, cero errores.
 
-**ST01c — extracción directa Niagara, 2026-10-13; port visual pendiente:**
+**ST01c — laboratorio privado de material, 2026-10-13; sigue simulación propia:**
+[Entrega/comparación](delivery/st01c/RENDER-LAB.md). Referencias Unreal multiángulo y
+241 estados CPU; reproducción privada 3D en Three con atlas/material originales.
+El HDR a 2 s se compara bajo la misma presentación de color; el color final de Unreal
+y la simulación propia no están aceptados. Sigue resolver spawn/curvas y reemplazar
+la grabación por un generador. Sin runtime, catálogo, SQL, protocolo o activación nuevos.
+UI Workshop continúa solo en plan.
+
+**Checkpoint previo ST01c — extracción directa Niagara, 2026-10-13:**
 [Entrega](delivery/st01c/DELIVERY.md), [plan autorizado](briefs/st01c-niagara-native-fidelity.md).
 Piloto exacto MyProject `NS_Flame_Single`; consultas UE5.8 NullRHI y helper C++ compilado.
 Dos versiones/renderers efectivos, 100 registros tipados en ocho stores (80 nombres);

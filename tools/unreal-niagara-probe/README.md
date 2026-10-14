@@ -1,4 +1,4 @@
-# ST01c: read-only source probe
+# ST01c: isolated source and runtime probes
 
 This is an offline editor tool for the exact MyProject `NS_Flame_Single` pilot, not a
 Niagara renderer or an automatic Three.js converter. UE 5.8.0 and an installed C++
@@ -48,3 +48,40 @@ Declaration and definition records must not be counted as distinct active object
 
 See [the extraction delivery](../../docs/delivery/st01c/DELIVERY.md) for measured
 results and what remains before a visual port can be accepted.
+
+## Controlled runtime reference (2026-10-13)
+
+`ST01cRuntimeProbe` is a separate editor helper: it runs the exact CPU pilot in the
+scratch project, records particle attributes and changes determinism/seeds **in memory
+only** (6371/6372). It never saves an asset. `PrepareCapture` waits for asset compilation,
+forces residency of the two exact atlas textures, rebuilds the scene proxy and flushes
+pending render work. Without this preparation, early captures had missing render data
+or low-resolution streaming mips despite valid CPU particles.
+
+Copy the updated plugin into the isolated project and rebuild using the command above.
+Enable `PythonAutomationTest` as well as the existing plugins. Create the following
+local wrapper at `.scratch/unreal/Content/Python/test_st01c_reference.py`:
+
+```python
+import runpy
+runpy.run_path('C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/capture_reference.py')
+```
+
+Run with a **fresh** bounded name (the checked evidence uses `reference11` and
+`reference12`). The output stays under `.scratch/unreal`; don't use NullRHI here:
+
+```powershell
+& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -d3d11 -RenderOffscreen -unattended -nop4 -nosplash -nosound '-ExecCmds=Automation RunTests Editor.Python.ST01c_Pilot.test_st01c_reference' '-TestExit=Automation Test Queue Empty' -CaptureRun=reference13
+```
+
+The scheduler advances a single activation by 240 ticks at 1/60 s, pausing before any
+editor yield/readback/camera work. It writes 241 CPU states, an empty baseline, 15 LDR
+PNGs (five times × three cameras), three pre-tone-map SceneColor HDR files at 2 s and
+two atlas exports. Camera width is 400 cm, image size 512². The HDR export discards
+alpha; neither the LDR output nor the HDR files establish transparent-background parity.
+FinalColorLDR uses manual exposure, bloom 0 and disabled scene atmosphere/fog/cloud.
+
+`status:complete` means file generation succeeded, not visual acceptance. Verify the
+baseline, visible effect, source hashes and repeatability; compare with the
+[private Three.js lab](../niagara-native-lab/README.md). Engine launch success alone
+is insufficient (automation failures can still exit with status 0).
