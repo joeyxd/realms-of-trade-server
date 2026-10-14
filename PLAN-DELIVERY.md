@@ -1,5 +1,12 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**Niagara, 2026-10-14 — adaptación acumulativa solicitada por el autor:**
+[Diseño](docs/briefs/niagara-reusable-pipeline.md): cada familia aporta módulos compartidos,
+fixtures y fichas; los sistemas se ensamblan desde datos y capacidades versionadas, con
+ejecución determinista y diagnóstico explícito de lo que falta. Primero atlas/presupuesto
+del piloto; después extraer primitivas y demostrar reutilización en otra familia, antes
+de ampliar. El motor general/CLI sigue pendiente; este ajuste es de plan, sin runtime nuevo.
+
 **ST01c, 2026-10-14 — Filmic SDR del piloto contrastado:**
 [Entrega](docs/delivery/st01c/COLOR-LAB.md): fórmulas/matrices/LUT de UE5.8 desde
 fuentes fijadas, perfil neutro sin bloom/AA, target gamma 2,2 y exposición real 0/+1 EV.

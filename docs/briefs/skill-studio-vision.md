@@ -54,6 +54,19 @@ y [escalabilidad](https://dev.epicgames.com/documentation/en-us/unreal-engine/sc
 
 ## Contrato propuesto
 
+### Adaptación acumulativa — dirección del autor, 2026-10-14
+
+Cada efecto debe ampliar un núcleo común y aprovechar lo comprobado en los anteriores.
+El [plan de procesamiento Niagara](niagara-reusable-pipeline.md) fija extracción → IR
+declarativa → resolución de capacidades → ejecución por pasos → comparación → presupuesto
+→ catálogo. Versionar módulos, pruebas y fichas; dejar las diferencias del sistema en datos
+y añadir código solo para capacidades nuevas. Esto también prepara recetas que un agente
+pueda elegir y combinar sin reinterpretar imágenes en cada petición.
+
+El generador actual aún está especializado en fuego/humo. El registro general y sus APIs
+son diseño pendiente; primero sigue atlas/presupuesto de ST01c, después extracción de
+primitivas y una familia distinta que demuestre reutilización sin perder calidad.
+
 ### Catálogo legible por agentes — dirección del autor, 2026-10-13
 
 Preparar los metadatos mientras se porta cada efecto. El agente de autoría deberá poder

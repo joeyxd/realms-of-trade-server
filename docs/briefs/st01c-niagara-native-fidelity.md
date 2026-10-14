@@ -1,5 +1,11 @@
 # ST01c — adaptador Niagara de partículas 3D
 
+**Dirección del autor, 2026-10-14: aprendizaje acumulativo entre ports.**
+[Contrato de reutilización](niagara-reusable-pipeline.md): extraer módulos contrastados,
+IR/bindings por sistema y ejecución determinista; cada familia añade solo sus capacidades
+faltantes y protege las anteriores con regresión. Diseño pendiente, no compilador universal.
+La cola conserva atlas/presupuesto como siguiente corte y después una prueba de reutilización.
+
 **Estado, 2026-10-14: color Filmic SDR comprobado en perfil privado.**
 [Color](../delivery/st01c/COLOR-LAB.md): 96 muestras, dos exposiciones, tres cámaras
 y transformación de color separada del rasterizado. Sigue presupuesto/variantes

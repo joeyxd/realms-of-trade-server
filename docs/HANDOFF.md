@@ -1,5 +1,13 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Niagara, 2026-10-14 — dirección del autor: cada port alimenta el siguiente:**
+[Plan acumulativo](briefs/niagara-reusable-pipeline.md), enlazado desde ST01c y el taller.
+IR con procedencia, registro de módulos versionados, pasos deterministas y matriz de
+capacidades reutilizadas/nuevas/ausentes; pruebas y fichas se conservan entre familias.
+El piloto sigue especializado; el contrato general/CLI no está implementado. Próximo:
+atlas/presupuesto, luego extraer primitivas y probar reutilización con otra familia exacta.
+No cambia runtime ni acepta nuevos efectos; compositor e UI Workshop siguen en plan.
+
 **ST01c, 2026-10-14 — color controlado cerrado; sigue presupuesto/atlas:**
 [Entrega](delivery/st01c/COLOR-LAB.md), [ficha](delivery/st01c/effect-description.json).
 Filmic SDR desde fuentes UE5.8 fijadas, LUT32³ con cuantización 10 bits en contenedor
