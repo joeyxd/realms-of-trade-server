@@ -325,7 +325,6 @@ def run():
         _cleanup_actors()
 
 
-@AutomationScheduler.add_latent_command
 def capture_reference():
     try:
         yield from run()
@@ -339,3 +338,8 @@ def capture_reference():
         except Exception:
             pass
         raise
+
+
+# Share bounded capture utilities without scheduling the original experiment.
+if not globals().get('ST01C_LIBRARY_ONLY', False):
+    AutomationScheduler.add_latent_command(capture_reference)

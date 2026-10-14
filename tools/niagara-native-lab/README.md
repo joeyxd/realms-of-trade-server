@@ -89,3 +89,11 @@ Unreal está fijada solo en memoria para comparar; el asset fuente no era determ
 Sigue DepthFade con escena, color final y presupuesto por dispositivo, antes de integrar
 el piloto al taller. El generador está cotejado para la fixture; otras semillas y otros
 sistemas necesitan sus comparaciones específicas.
+# Profundidad del piloto
+
+`depth.html?run=depth02` compara las partículas nativas a 2 s con el mismo piloto
+Unreal en paredes/suelo opacos. Shader de profundidad en target independiente;
+referencias temporales `depth02`/`depth03`, sin capturas de partículas como entradas.
+Solo ortográfica privada: color final UE, texturas optimizadas y FPS físico pendientes.
+Ver [entrega](../../docs/delivery/st01c/DEPTH-LAB.md), `qa-depth.mjs`,
+`verify-depth.mjs` y `compare-depth.py` para evidencia y reproducción.

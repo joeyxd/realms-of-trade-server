@@ -1,5 +1,16 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01c, 2026-10-14 — DepthFade cerrado en escena privada; sigue color/presupuesto:**
+[Entrega](delivery/st01c/DEPTH-LAB.md), [ficha](delivery/st01c/effect-description.json).
+Nativo lee profundidad opaca en pase independiente; rampas de 25/50/100/150 cm
+contrastadas con UE dentro de 0,01 RGB lineal. Negativo/cero incluyen oclusión opaca.
+Dos ejecuciones idénticas (22 HDR cada una), 16/16 casos dentro de umbrales previos,
+11/11 CPU y navegador sin errores; escena vacía y tres modos previos conservados.
+Partículas/fuentes intactas, sin captura como entrada del generador. Capturas revisadas
+en escritorio y 390 px; FPS físico y perspectiva no aceptados. Color final UE y
+presupuesto/variantes de atlas preceden taller; compositor e UI Workshop siguen plan.
+Sin cambios de juego, SQL, protocolo ni nuevo registro jugable.
+
 **ST01c, 2026-10-13 — nacimientos y evolución locales; sigue profundidad/color/presupuesto:**
 [Entrega](delivery/st01c/NATIVE-LAB.md), [ficha actualizada](delivery/st01c/effect-description.json).
 Generador del piloto desde HLSL efectivo, curva y semilla; cero estados grabados como

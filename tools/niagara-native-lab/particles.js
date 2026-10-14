@@ -45,12 +45,27 @@ void main() {
 }`;
 const fragmentShader = `
 uniform sampler2D atlas;
+uniform sampler2D opaqueDepth;
+uniform vec2 depthSize;
+uniform vec2 nearFar;
+uniform bool orthographic;
+uniform bool depthFadeEnabled;
 varying vec2 atlasUv;
 varying vec4 tint;
+float viewDepth(float z) {
+  return orthographic ? mix(nearFar.x, nearFar.y, z)
+    : nearFar.x * nearFar.y / (nearFar.y - z * (nearFar.y - nearFar.x));
+}
 void main() {
   vec3 texel = texture2D(atlas, atlasUv).rgb;
-  gl_FragColor = vec4(texel * tint.rgb, clamp(texel.r * tint.a, 0.0, 1.0));
-  // No opaque geometry in this comparison: DepthFade is 1, as in the source view.
+  float fade = 1.0;
+  if (depthFadeEnabled) {
+    float sceneDepth = viewDepth(texture2D(opaqueDepth, gl_FragCoord.xy / depthSize).r);
+    // Source DepthFade: saturate((opaque view depth - fragment view depth) / 100 cm).
+    // Scene units are metres. This is axial separation, not Euclidean distance.
+    fade = clamp((sceneDepth - viewDepth(gl_FragCoord.z)) / 1.0, 0.0, 1.0);
+  }
+  gl_FragColor = vec4(texel * tint.rgb, clamp(texel.r * tint.a, 0.0, 1.0) * fade);
 }`;
 
 export class PilotParticles {
@@ -68,7 +83,9 @@ export class PilotParticles {
       }
       geometry.instanceCount = 0;
       const material = new THREE.ShaderMaterial({ vertexShader, fragmentShader,
-        uniforms: { atlas: { value: texture }, grid: { value: new THREE.Vector2(...(index ? [10, 6] : [8, 4])) } },
+        uniforms: { atlas: { value: texture }, grid: { value: new THREE.Vector2(...(index ? [10, 6] : [8, 4])) },
+          opaqueDepth: { value: texture }, depthSize: { value: new THREE.Vector2(512, 512) },
+          nearFar: { value: new THREE.Vector2(.01, 100) }, orthographic: { value: true }, depthFadeEnabled: { value: false } },
         transparent: true, toneMapped: false, depthWrite: false, depthTest: true, side: THREE.DoubleSide });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.frustumCulled = false;
@@ -77,6 +94,16 @@ export class PilotParticles {
       return mesh;
     });
     this.count = 0;
+  }
+  setDepth(texture, camera, width, height, enabled) {
+    for (const mesh of this.layers) {
+      const u = mesh.material.uniforms;
+      u.opaqueDepth.value = texture;
+      u.nearFar.value.set(camera.near, camera.far);
+      u.orthographic.value = camera.isOrthographicCamera === true;
+      u.depthSize.value.set(width, height);
+      u.depthFadeEnabled.value = enabled;
+    }
   }
   update(frame, visible = [true, true]) {
     validateFrame(frame);

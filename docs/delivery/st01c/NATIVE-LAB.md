@@ -1,5 +1,9 @@
 # ST01c — nacimientos y evolución desde fuente
 
+Checkpoint histórico del generador. El corte posterior de
+[profundidad](DEPTH-LAB.md) conserva este cálculo y añade contacto visual con
+superficies opacas en otra vista privada. Sus hashes/evidencia son independientes.
+
 2026-10-13. El mismo piloto ya genera sus partículas en JavaScript desde constantes,
 curva y semilla. El modo **Generador propio · mismo piloto** no lee estados iniciales
 ni listas de nacimientos. Llama y humo usan posiciones 3D independientes y los materiales

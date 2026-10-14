@@ -1,5 +1,14 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**ST01c, 2026-10-14 — contacto visual del piloto con suelo/paredes:**
+[Entrega](docs/delivery/st01c/DEPTH-LAB.md): shader de profundidad opaca separado,
+calibración positiva 25/50/100/150 cm dentro de 0,01 RGB lineal y oclusión frontal.
+Dos ejecuciones de 22 HDR idénticos; mismas partículas de la fixture anterior.
+16/16 casos bajo presentación ACES compartida, IoU mínimo 0,9825 y MAE máximo
+7,371/255; no es color final UE. 11/11 CPU y Chrome profundidad + tres modos previos,
+fuentes intactas y ficha textual actualizada. Solo laboratorio privado: sigue color
+final y presupuesto móvil antes de integrar al taller; demás sistemas siguen pendientes.
+
 **ST01c, 2026-10-13 — generador del piloto desde fuente, sin nacimientos grabados:**
 [Entrega](docs/delivery/st01c/NATIVE-LAB.md): dos referencias, 241 ticks/4.140 estados
 cada una; IDs/orden exactos, posición <0,000002 cm, alfa <0,000001, resto cotejado exacto.

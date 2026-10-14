@@ -286,7 +286,8 @@
   "limitations": [
     "Ficha experimental fuera del catálogo del juego; no habilita composición automática.",
     "El generador usa las ramas CPU efectivas del piloto; otros sistemas y otras semillas requieren sus comparaciones propias.",
-    "Faltan color final de Unreal, interacción de profundidad y presupuesto de dispositivo.",
+    "Profundidad comprobada solo en la escena ortográfica privada a 2 s; no implica colisión, perspectiva ni terreno del juego.",
+    "Faltan color final de Unreal y presupuesto de dispositivo.",
     "Revisar descripción y evidencia si cambian material, atlas, adaptador o controles."
   ],
   "evidence": [
@@ -297,9 +298,11 @@
     "native-values.json",
     "active-stack-audit.json",
     "NATIVE-LAB.md",
-    "native-checkpoint.json"
+    "native-checkpoint.json",
+    "DEPTH-LAB.md",
+    "depth-checkpoint.json"
   ],
-  "revision": 2,
+  "revision": 3,
   "adaptation": {
     "scope": "private-source-only-CPU-pilot",
     "nativeBirths": true,
@@ -312,6 +315,19 @@
     "privateSequenceSeconds": 8,
     "alternateSeedsComparedWithUnreal": false,
     "originalDeterminism": false,
-    "sourcePreset": "../../../tools/niagara-native-lab/pilot-source.json"
+    "sourcePreset": "../../../tools/niagara-native-lab/pilot-source.json",
+    "depthFade": {
+      "basis": "observed-and-source-verified",
+      "sourceDistanceCm": 100,
+      "formula": "clamped input opacity * saturate((opaque axial view depth - particle fragment axial view depth) / 100cm)",
+      "appearance": "Los bordes de llama y humo se desvanecen gradualmente cerca de superficies opacas; detrás de ellas quedan ocluidos. El material no cambia trayectoria ni vida y no añade colisión.",
+      "verifiedScope": "private orthographic lab; default pilot at 2s; three cameras, camera-aligned walls and oblique ground",
+      "positiveGapsCm": [25, 50, 100, 150],
+      "zeroNegativeCaseQualification": "Outputs include opaque occlusion; do not infer a separate measured alpha clamp branch.",
+      "editableSourceDistance": false,
+      "perspectiveVerified": false,
+      "gameWorldIntegration": false,
+      "evidence": ["depth-oblique.png", "depth-floor.png", "depth-floor-hard.png", "DEPTH-LAB.md"]
+    }
   }
 }

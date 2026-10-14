@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratorio Niagara · contacto con superficies</title><link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101820;color:#ecf0ee;font:16px system-ui}main{max-width:1300px;margin:auto;padding:24px}h1{font-size:26px;margin:4px 0}p{color:#b8c6cc;line-height:1.5}.bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:18px 0}button,select,input{font:inherit}button,select{color:#ecf0ee;background:#263943;border:1px solid #516a74;border-radius:6px;padding:8px 12px}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #f8c073}.stage{display:grid;grid-template-columns:1fr 1fr;gap:16px}.view{background:#050505;border:1px solid #384b53;border-radius:8px;overflow:hidden}.view>label{display:block;padding:12px;background:#1a2931}canvas,img{display:block;width:100%;aspect-ratio:1;object-fit:contain;touch-action:none}#status{color:#f8c073}@media(max-width:700px){main{padding:12px}.stage{grid-template-columns:1fr}h1{font-size:22px}}
+</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body><main><small>ST01c · Prueba privada</small><h1>Llama y humo al tocar el mundo</h1>
+<p>Acerca una superficie y observa cómo el efecto se desvanece al tocarla. Arrastra la vista derecha para girar alrededor del piloto.</p>
+<div class="bar"><label>Superficie <select id="surface"><option value="none">Escena vacía</option><option value="wall-25">Pared por delante · −25 cm</option><option value="wall0">Pared en el centro · 0 cm</option><option value="wall50" selected>Pared detrás · 50 cm</option><option value="wall150">Pared lejos · 150 cm</option><option value="floor">Suelo</option></select></label>
+<label>Cámara <select id="camera"><option value="front">Frontal</option><option value="oblique" selected>Oblicua</option><option value="side">Lateral</option></select></label><button id="reset">Restaurar comparación</button></div>
+<div class="bar"><label><input id="fade" type="checkbox" checked>Desvanecer al tocar</label><label><input id="flame" type="checkbox" checked>Llama</label><label><input id="smoke" type="checkbox" checked>Humo</label></div>
+<div class="stage"><div class="view"><label id="reference-label">Unreal · referencia a 2 s</label><img id="reference" alt="Referencia de Unreal con superficie"></div><div class="view"><label>Generador propio · contacto con superficies</label><canvas id="preview"></canvas></div></div>
+<p id="status">Cargando la comparación…</p><p>Ambas vistas presentan el RGB lineal con la misma curva ACES de Three.js. El color final de Unreal y el rendimiento en teléfono físico siguen pendientes. <a href="./index.html?run=reference11&amp;mode=native" style="color:#f8c073">Abrir el generador y sus ajustes</a>.</p>
+</main><script type="module" src="./depth-lab.js"></script></body></html>

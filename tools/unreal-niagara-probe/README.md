@@ -102,3 +102,25 @@ saves assets. Rebuild/copy the plugin as above, then use a fresh run:
 The accepted source preset uses the reviewed `compiled02` report/text hashes. CPU
 comparison data stays separate from these compiler inputs. The original pilot has
 determinism disabled; the exported fixture uses seeds 6371/6372 only for comparison.
+# Referencia de profundidad
+
+`capture_depth.py` usa utilidades de `capture_reference.py` con
+`ST01C_LIBRARY_ONLY=True`, sin programar la captura anterior. Crea materiales y
+planos transitorios en el proyecto privado; no guarda paquetes. Es el mismo
+piloto CPU a 2 s: tres cámaras y superficies conocidas (16 casos), más quad blanco
+para seis separaciones (22 HDR). Mantener una sola ejecución UE/GPU a la vez.
+
+Crear wrapper local `Content/Python/test_st01c_depth.py`:
+
+```python
+import runpy
+runpy.run_path('C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/capture_depth.py')
+```
+
+```powershell
+& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -d3d11 -RenderOffscreen -unattended -nop4 -nosplash -nosound '-ExecCmds=Automation RunTests Editor.Python.ST01c_Pilot.test_st01c_depth' '-TestExit=Automation Test Queue Empty' -DepthRun=depth04
+```
+
+Usar nombre fresco; `depth02`/`depth03` son evidencia aceptada. Ver
+[entrega y límites](../../docs/delivery/st01c/DEPTH-LAB.md); el código de salida
+de UE no sustituye la validación del reporte y de los píxeles.

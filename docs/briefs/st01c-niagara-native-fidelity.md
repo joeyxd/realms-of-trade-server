@@ -1,6 +1,11 @@
 # ST01c — adaptador Niagara de partículas 3D
 
-**Estado, 2026-10-13: generador local del piloto comprobado.**
+**Estado, 2026-10-14: profundidad del piloto comprobada en escena privada.**
+[Profundidad](../delivery/st01c/DEPTH-LAB.md): seis separaciones de calibración,
+16 casos del piloto y dos ejecuciones reproducibles. Sigue color final/presupuesto
+antes de integrar al taller; contacto visual no añade colisión a la simulación.
+
+**Checkpoint anterior, 2026-10-13: generador local del piloto comprobado.**
 [Nuevo checkpoint](../delivery/st01c/NATIVE-LAB.md): nacimientos y evolución desde fuente
 y semilla, sin estados grabados como entradas; 241 ticks de ambas referencias dentro
 de tolerancias. Sigue DepthFade/color final/presupuesto antes de integración al taller.
@@ -27,6 +32,23 @@ y revisamos el alcance antes de invertir en un port. La equivalencia visual requ
 referencias multiángulo y un prototipo 3D; la extracción por sí sola no la acepta.
 
 ## Objetivo
+
+**Contrato del corte de profundidad, cerrado (2026-10-14):** reutilizar el material
+extraído del piloto y la fórmula instalada de UE5.8, `opacidad × saturate((profundidad
+opaca − profundidad del fragmento) / 100 cm)`. Crear superficies negras temporales
+en la copia privada, sin guardar assets, y contrastar seis separaciones conocidas
+(-25, 0, 25, 50, 100 y 150 cm) con un quad blanco de calibración. Su RGB lineal central
+debe coincidir con el factor esperado dentro de 0,01, incluida oclusión frontal.
+En el piloto completo, capturar a 2 s tres cámaras con pared a -25/0/50/150 cm,
+escena vacía y suelo oblicuo; repetir una segunda ejecución y comprobar estados,
+geometría/cámaras y píxeles reproducibles. Antes de mirar resultados: IoU de máscara
+≥0,94 y diferencia RGB media ≤10/255 en la unión visible, usando la misma presentación
+ACES para ambos HDR. La calibración debe pasar además en el shader del navegador.
+La profundidad opaca se lee en un pase independiente; las partículas no escriben
+profundidad. El desvanecimiento sigue el eje de cámara, no distancia euclídea.
+Conservar los tres modos y la escena vacía anterior, permitir girar la cámara y
+comprobar liberación de recursos. Este corte no acepta color final UE, FPS físico,
+variantes de textura ni integración al taller; esos pasos siguen posteriores.
 
 **Contrato del corte de nacimientos locales, cerrado:** usar el HLSL efectivo compilado
 del mismo piloto para cerrar ramas de Sphere/Cylinder, inicialización y RNG de la
