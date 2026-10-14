@@ -1,6 +1,11 @@
 # ST01c — adaptador Niagara de partículas 3D
 
-**Estado, 2026-10-14: profundidad del piloto comprobada en escena privada.**
+**Estado, 2026-10-14: color Filmic SDR comprobado en perfil privado.**
+[Color](../delivery/st01c/COLOR-LAB.md): 96 muestras, dos exposiciones, tres cámaras
+y transformación de color separada del rasterizado. Sigue presupuesto/variantes
+de atlas antes del taller; bloom/grading libre/perspectiva no están aceptados.
+
+**Checkpoint anterior, 2026-10-14: profundidad del piloto comprobada en escena privada.**
 [Profundidad](../delivery/st01c/DEPTH-LAB.md): seis separaciones de calibración,
 16 casos del piloto y dos ejecuciones reproducibles. Sigue color final/presupuesto
 antes de integrar al taller; contacto visual no añade colisión a la simulación.
@@ -32,6 +37,24 @@ y revisamos el alcance antes de invertir en un port. La equivalencia visual requ
 referencias multiángulo y un prototipo 3D; la extracción por sí sola no la acepta.
 
 ## Objetivo
+
+**Contrato del corte de color, cerrado (2026-10-14):** reutilizar la cadena Filmic SDR
+instalada UE5.8 (matrices sRGB/AP1/AP0, expansión de gamut, corrección azul, glow/red,
+toe/shoulder y LUT logarítmica). Capturar una carta emisiva neutra de 48 muestras,
+incluyendo grises y colores HDR, con exposición manual 0 y +1 EV, sin bloom/grading
+externo. Registrar overrides, CVars y formato/gamma del target; conservar HDR,
+readback de muestras y PNG final por separado. Dos ejecuciones deben reproducir
+los bytes de imagen decodificados y valores (el contenedor PNG puede usar otra
+compresión lossless, como en las referencias anteriores). Antes de revisar resultados: muestras centrales
+del navegador contra PNG UE, diferencia máxima 4/255 y media ≤2/255 por exposición.
+La misma transformación aplicada al HDR UE debe dar MAE ≤2/255 y percentil 95 de
+error de canal ≤4/255 en la unión visible del piloto a 2 s (tres cámaras).
+El generador nativo completo debe conservar IoU ≥0,94 y MAE ≤10/255 con la imagen
+final de UE; no confundir ese gate con igualdad de textura/rasterizado. La fuente
+del color no puede ser una tabla ajustada a píxeles capturados: usar fórmulas,
+constantes y cuantización/interpolación de la LUT del motor. Mantener el modo
+anterior para comparación; controles con descripción textual. Perspectiva, bloom,
+grading arbitrario y presupuesto móvil físico siguen fuera de este corte.
 
 **Contrato del corte de profundidad, cerrado (2026-10-14):** reutilizar el material
 extraído del piloto y la fórmula instalada de UE5.8, `opacidad × saturate((profundidad

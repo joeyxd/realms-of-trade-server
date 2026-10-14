@@ -6,6 +6,7 @@
 
 class UNiagaraSystem;
 class UNiagaraComponent;
+class UTextureRenderTarget2D;
 
 // Editor-only, bounded observation of the isolated pilot. Never saves an asset.
 UCLASS()
@@ -24,4 +25,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="ST01c")
     static FString PrepareCapture(UNiagaraComponent* Component);
+
+    UFUNCTION(BlueprintCallable, Category="ST01c")
+    static FString ReadColorTarget(UNiagaraComponent* Component, UTextureRenderTarget2D* Target);
 };

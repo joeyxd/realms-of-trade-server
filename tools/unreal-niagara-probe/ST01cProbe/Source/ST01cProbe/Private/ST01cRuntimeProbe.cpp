@@ -15,6 +15,9 @@
 #include "AssetCompilingManager.h"
 #include "Engine/World.h"
 #include "Engine/Texture2D.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "TextureResource.h"
+#include "PixelFormat.h"
 #include "RenderingThread.h"
 
 namespace
@@ -229,4 +232,37 @@ FString UST01cRuntimeProbe::PrepareCapture(UNiagaraComponent* Component)
     Component->GetWorld()->SendAllEndOfFrameUpdates();
     FlushRenderingCommands();
     return TEXT("{\"prepared\":true}");
+}
+
+FString UST01cRuntimeProbe::ReadColorTarget(UNiagaraComponent* Component, UTextureRenderTarget2D* Target)
+{
+    if (!IsInGameThread() || !Component || !Allowed(Component->GetAsset()) || !Component->IsPaused())
+        return TEXT("{\"error\":\"paused scoped component required\"}");
+    if (!Target || Target->SizeX != 512 || Target->SizeY != 512)
+        return TEXT("{\"error\":\"512x512 render target required\"}");
+
+    const EPixelFormat PixelFormat = Target->GetFormat();
+    const FTextureRenderTargetResource* Resource = Target->GameThread_GetRenderTargetResource();
+    auto Result = MakeShared<FJsonObject>();
+    Result->SetStringField(TEXT("schema"), TEXT("st01c-color-target/v1"));
+    Result->SetStringField(TEXT("target"), Target->GetPathName());
+    Result->SetNumberField(TEXT("width"), Target->SizeX);
+    Result->SetNumberField(TEXT("height"), Target->SizeY);
+    Result->SetNumberField(TEXT("displayGamma"), Target->GetDisplayGamma());
+    Result->SetNumberField(TEXT("targetGamma"), Target->TargetGamma);
+    Result->SetBoolField(TEXT("forceLinearGamma"), Target->bForceLinearGamma);
+    Result->SetBoolField(TEXT("isSRGB"), Target->IsSRGB());
+    Result->SetNumberField(TEXT("pixelFormatValue"), static_cast<int32>(PixelFormat));
+    Result->SetStringField(TEXT("pixelFormat"), GPixelFormats[PixelFormat].Name);
+    // Match CreateLUTRenderTarget's SDR fallback, without reading the rendered LUT.
+    Result->SetNumberField(TEXT("sdrLutQuantizationBits"), UE::PixelFormat::HasCapabilities(PF_A2B10G10R10, EPixelFormatCapabilities::UAV) ? 10 : 8);
+    Result->SetBoolField(TEXT("resourceAvailable"), Resource != nullptr);
+    if (Resource)
+    {
+        Result->SetNumberField(TEXT("resourceDisplayGamma"), Resource->GetDisplayGamma());
+        Result->SetNumberField(TEXT("resourceDisplayOutputFormat"), static_cast<uint32>(Resource->GetDisplayOutputFormat()));
+        Result->SetNumberField(TEXT("resourceDisplayColorGamut"), static_cast<uint32>(Resource->GetDisplayColorGamut()));
+        Result->SetBoolField(TEXT("resourceSceneHDREnabled"), Resource->GetSceneHDREnabled());
+    }
+    return Encode(Result);
 }

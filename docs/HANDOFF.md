@@ -1,5 +1,18 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01c, 2026-10-14 — color controlado cerrado; sigue presupuesto/atlas:**
+[Entrega](delivery/st01c/COLOR-LAB.md), [ficha](delivery/st01c/effect-description.json).
+Filmic SDR desde fuentes UE5.8 fijadas, LUT32³ con cuantización 10 bits en contenedor
+half-float (256 KiB). Target gamma 2,2, estado de captura persistente para exposición
+0/+1 EV, HDR raw para evitar pérdida RGBE; sin bloom/AA/grading externo.
+96 muestras máximo 1/255; conversión aislada MAE <0,043/255; completo IoU ≥0,9801
+y MAE ≤7,838/255, máximos de canal 67/255. Dos referencias HDR/readback y PNG
+decodificado idénticos; contenedores PNG pueden diferir en compresión lossless.
+14/14 CPU, Chrome color/profundidad/nativo y capturas revisadas a 390 px.
+Mismas partículas/fuentes; sin runtime, SQL/protocolo o registro jugable nuevo.
+Sigue variantes de atlas y presupuesto antes de taller; FPS físico, bloom libre,
+perspectiva, compositor e UI Workshop conservan gates posteriores.
+
 **ST01c, 2026-10-14 — DepthFade cerrado en escena privada; sigue color/presupuesto:**
 [Entrega](delivery/st01c/DEPTH-LAB.md), [ficha](delivery/st01c/effect-description.json).
 Nativo lee profundidad opaca en pase independiente; rampas de 25/50/100/150 cm

@@ -11,7 +11,7 @@
 <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
 </head><body><main>
 <small>ST01c · Prueba privada</small><h1>Llama y humo, partícula por partícula</h1>
-<p>Referencia de Unreal y reconstrucción del material sobre partículas 3D. Gira la cámara arrastrando la vista derecha. <a href="./depth.html?run=depth02" style="color:#f8c073">Probar contacto con suelo y paredes</a>.</p>
+<p>Referencia de Unreal y reconstrucción del material sobre partículas 3D. Gira la cámara arrastrando la vista derecha. <a href="./depth.html?run=depth02" style="color:#f8c073">Contacto con superficies</a> · <a href="./color.html?run=color07" style="color:#f8c073">Comparar color final</a>.</p>
 <div class="bar"><label>Modo <select id="mode"><option value="observed">Partículas observadas</option><option value="update">Evolución local · nacimientos originales</option><option value="native">Generador propio · mismo piloto</option></select></label></div>
 <fieldset id="update-controls" hidden><legend>Ajustes del piloto</legend><p id="control-intro"></p><div id="control-fields"></div><div class="bar"><button id="reset-update">Restaurar valores originales</button></div><small id="control-note"></small></fieldset>
 <div class="bar"><button id="play">Reproducir</button><input id="time" type="range" min="1" max="240" value="120" step="1" aria-label="Tiempo"><output id="clock">2.00 s</output><select id="camera" aria-label="Cámara"><option value="front">Frontal</option><option value="oblique">Oblicua</option><option value="side">Lateral</option></select></div>

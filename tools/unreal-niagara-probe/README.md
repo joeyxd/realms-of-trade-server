@@ -1,5 +1,31 @@
 # ST01c: isolated source and runtime probes
 
+## Controlled Filmic SDR color
+
+`ReadColorTarget` requires a paused scoped pilot and a 512² target. It reads actual
+gamma, pixel format, inherited output format/gamut and preferred SDR LUT bit depth
+from RHI capability; it samples no LUT pixels. Copy/rebuild the plugin as below.
+`capture_color.py` creates a transient 48-patch emissive chart and captures the chart
+and pilot at 0/+1 EV. Explicit gamma2.2, persistent view state, neutral grading,
+bloom/AA off, log LUT32 and sub-byte dither; no source assets/configs saved.
+
+Create local wrapper `Content/Python/test_st01c_color.py`:
+
+```python
+import runpy
+runpy.run_path('C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/capture_color.py')
+```
+
+```powershell
+& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -d3d11 -RenderOffscreen -unattended -nop4 -nosplash -nosound '-ExecCmds=Automation RunTests Editor.Python.ST01c_Pilot.test_st01c_color' '-TestExit=Automation Test Queue Empty' -ColorRun=color09
+```
+
+Fresh run only. Accepted references `color07`/`color08` retain PNG, RGBE diagnostic,
+raw float16 little-endian RGBA and central readback/profile metadata. Compare decoded
+PNG pixels (lossless encoder streams can differ) and raw HDR separately. Platform
+query from `color05/color-platform.json` is a pure metadata input to the source preset.
+See [acceptance and limits](../../docs/delivery/st01c/COLOR-LAB.md).
+
 This is an offline editor tool for the exact MyProject `NS_Flame_Single` pilot, not a
 Niagara renderer or an automatic Three.js converter. UE 5.8.0 and an installed C++
 toolchain are required for the commandlet. The Python probes use editor scripting.

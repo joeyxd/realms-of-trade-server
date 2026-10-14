@@ -1,5 +1,8 @@
 # ST01c — desvanecimiento al tocar superficies
 
+Checkpoint histórico. El corte posterior de [color](COLOR-LAB.md) añade otra vista
+privada con Filmic SDR controlado; esta comparación conserva su presentación ACES.
+
 2026-10-14. La llama y el humo generados desde fuente ya leen la profundidad de
 suelo y paredes en un laboratorio privado. El piloto conserva atlas, colores,
 densidad y movimiento. [Abrir la comparación local](http://127.0.0.1:5197/tools/niagara-native-lab/depth.html?run=depth02).

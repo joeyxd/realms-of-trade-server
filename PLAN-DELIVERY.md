@@ -1,5 +1,15 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**ST01c, 2026-10-14 — Filmic SDR del piloto contrastado:**
+[Entrega](docs/delivery/st01c/COLOR-LAB.md): fórmulas/matrices/LUT de UE5.8 desde
+fuentes fijadas, perfil neutro sin bloom/AA, target gamma 2,2 y exposición real 0/+1 EV.
+96 muestras, máximo 1/255; transformación aislada MAE <0,043/255 y P95 = 0.
+Piloto completo: seis vistas/exposiciones, IoU ≥0,9801 y MAE ≤7,838/255, sin reclamar
+igualdad por píxel. Dos referencias con HDR/readback/PNG decodificado idénticos,
+14/14 CPU y navegador sin errores; ficha actualizada. LUT generada de 256 KiB,
+presupuesto físico/variantes e integración al taller siguen posteriores.
+Solo lab; sin SQL, protocolo o nuevos sistemas habilitados.
+
 **ST01c, 2026-10-14 — contacto visual del piloto con suelo/paredes:**
 [Entrega](docs/delivery/st01c/DEPTH-LAB.md): shader de profundidad opaca separado,
 calibración positiva 25/50/100/150 cm dentro de 0,01 RGB lineal y oclusión frontal.

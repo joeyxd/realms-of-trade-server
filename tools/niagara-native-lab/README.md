@@ -1,5 +1,13 @@
 # Laboratorio privado ST01c
 
+**Color controlado, 2026-10-14:** [entrega](../../docs/delivery/st01c/COLOR-LAB.md).
+Abrir `color.html?run=color07`: Filmic SDR de UE5.8 desde fórmulas y LUT generada,
+carta HDR y piloto a 0/+1 EV. Referencia FinalColorLDR con gamma 2,2 explícita;
+raw RGBA16F para aislar la transformación sin pérdida RGBE. No es bloom/grading libre,
+FPS móvil ni integración del juego. `verify-color.mjs`, `qa-color.mjs` y
+`compare-color.py` reproducen los controles. El preparador requiere fuentes del motor
+y `color05/color-platform.json` fijados, que solo contiene capacidades/gamma.
+
 El laboratorio traduce el material del piloto MyProject `NS_Flame_Single` a Three.js.
 Tiene tres modos: atributos observados, actualización desde nacimientos observados y
 generador local desde fuente/semilla. Este último cubre las ramas efectivas del piloto;
