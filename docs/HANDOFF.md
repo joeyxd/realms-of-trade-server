@@ -1,5 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01c, 2026-10-13 — nacimientos y evolución locales; sigue profundidad/color/presupuesto:**
+[Entrega](delivery/st01c/NATIVE-LAB.md), [ficha actualizada](delivery/st01c/effect-description.json).
+Generador del piloto desde HLSL efectivo, curva y semilla; cero estados grabados como
+entradas. Las dos referencias: 241 ticks/4.140 estados cada una, mismos IDs/orden;
+error máximo de posición 0,0000019 cm, alfa 0,0000009; resto de campos cotejados exactos.
+9/9 CPU, 7 grupos Chrome nuevo modo y regresión de los otros dos; semilla/emisión a 7 s.
+Fuentes intactas, solo lab privado. Semilla variante repetible local, aún sin cotejo UE
+de variantes; color final/DepthFade/FPS físico/taller pendientes. No amplía la biblioteca
+ni activa juego/SQL/protocolo. Fichas para futura autoría, compositor e UI Workshop siguen plan.
+
 **ST01c, 2026-10-13 — actualización local; sigue generador de nacimientos:**
 [Entrega](delivery/st01c/UPDATE-LAB.md), [ficha del efecto](delivery/st01c/effect-description.json).
 Nuevo modo del lab calcula edad/muerte, posición, alfa y SubUV desde 50 primeros estados

@@ -1,0 +1,235 @@
+{
+  "schema": "st01c-native-source/v1",
+  "sourceSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "emitterNames": [
+    "NE_Flame_Basic_001",
+    "NE_Smoke_Basic"
+  ],
+  "fixtureSeeds": [
+    6371,
+    6372
+  ],
+  "activationDeltaSeconds": 0.0001,
+  "rates": [
+    3.0,
+    10.0
+  ],
+  "vmReciprocalEstimates": [
+    0.333251953125,
+    0.0999755859375
+  ],
+  "flame": {
+    "size": [
+      120.0,
+      153.806
+    ],
+    "color": [
+      50.0,
+      9.72223,
+      0.972223,
+      1.0
+    ],
+    "colorRandomMin": [
+      0.7,
+      0.7,
+      0.7,
+      1
+    ],
+    "colorRandomMax": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "radiusCm": 0.192912,
+    "offsetCm": [
+      0.0,
+      0.0,
+      24.4857
+    ],
+    "lifetime": 1,
+    "radialPower": 0.333333,
+    "hemispheres": [
+      false,
+      false,
+      true
+    ]
+  },
+  "smoke": {
+    "size": [
+      100.0,
+      153.806
+    ],
+    "color": [
+      0.395833,
+      0.395833,
+      0.395833,
+      1.0
+    ],
+    "lifetime": 2.0,
+    "radiusCm": 23.9795,
+    "heightCm": 1.0,
+    "offsetCm": [
+      0.0,
+      0.0,
+      30.8862
+    ],
+    "velocityCm": [
+      0.0,
+      0.0,
+      81.2634
+    ],
+    "surfaceOnly": false,
+    "enableLatheProfile": false,
+    "orientationAxis": 2
+  },
+  "alphaCurve": {
+    "minTime": -0.004598,
+    "inverseRange": 0.994286,
+    "samples": [
+      1.011319,
+      1.010255,
+      1.007116,
+      1.001983,
+      0.994939,
+      0.986064,
+      0.97544,
+      0.963148,
+      0.94927,
+      0.933887,
+      0.917079,
+      0.89893,
+      0.879519,
+      0.858929,
+      0.83724,
+      0.814534,
+      0.790893,
+      0.766397,
+      0.741129,
+      0.715169,
+      0.688598,
+      0.661499,
+      0.633953,
+      0.60604,
+      0.577843,
+      0.549442,
+      0.520919,
+      0.492356,
+      0.463833,
+      0.435432,
+      0.407235,
+      0.379322,
+      0.351776,
+      0.324677,
+      0.298106,
+      0.272146,
+      0.246878,
+      0.222382,
+      0.198741,
+      0.176035,
+      0.154346,
+      0.133756,
+      0.114345,
+      0.096196,
+      0.079388,
+      0.064005,
+      0.050127,
+      0.037835,
+      0.027211,
+      0.018336,
+      0.011292,
+      0.006159,
+      0.00302,
+      0.001956
+    ],
+    "owner": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0.NiagaraGraph_0.NiagaraNodeInput_1.Scale Alpha.FloatCurve"
+  },
+  "provenance": {
+    "compiledRun": "compiled02",
+    "compiledReportSha256": "842837800b88ab940f644ffa1323dd1d2aecd3db3073bd88c05368a9ab527a58",
+    "scripts": [
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:SystemSpawnScript",
+        "usage": "SystemSpawnScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "00-SystemSpawnScript.hlsl",
+        "bytes": 14464,
+        "sha256": "9f8aa5b9865dae9819b326f22590c04f58cdc14efed8c0c1e6dde0607d4b903e"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:SystemUpdateScript",
+        "usage": "SystemUpdateScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "01-SystemUpdateScript.hlsl",
+        "bytes": 49767,
+        "sha256": "d6c2dd7f75f6bb409ca865ba57436dfacc2cc6cfa699da3e18365deb8647e122"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.SpawnScript",
+        "usage": "ParticleSpawnScriptInterpolated",
+        "compileStatus": "NCS_UpToDate",
+        "file": "02-ParticleSpawnScriptInterpolated.hlsl",
+        "bytes": 64900,
+        "sha256": "119c4e8f54f674bee26f76ea456cd7f7f8260a265442144240f39c4872e51e3b"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.UpdateScript",
+        "usage": "ParticleUpdateScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "03-ParticleUpdateScript.hlsl",
+        "bytes": 22759,
+        "sha256": "589f4990b07aff86aa179f74bf9d7254ed0abfe62eec64806ad6989836e5a7ce"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.EmitterSpawnScript",
+        "usage": "EmitterSpawnScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "04-EmitterSpawnScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.EmitterUpdateScript",
+        "usage": "EmitterUpdateScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "05-EmitterUpdateScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.SpawnScript",
+        "usage": "ParticleSpawnScriptInterpolated",
+        "compileStatus": "NCS_UpToDate",
+        "file": "06-ParticleSpawnScriptInterpolated.hlsl",
+        "bytes": 79450,
+        "sha256": "a625fb6ce173a2d9fe4713a2a475b0c8b1cac813f5c569fc848d3a6191ec4ce1"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.UpdateScript",
+        "usage": "ParticleUpdateScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "07-ParticleUpdateScript.hlsl",
+        "bytes": 25782,
+        "sha256": "92865d3b88ac31426adf4b5eaf57857c94e5d837a4ebd44ebb8a5c4a25a69a0d"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.EmitterSpawnScript",
+        "usage": "EmitterSpawnScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "08-EmitterSpawnScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.EmitterUpdateScript",
+        "usage": "EmitterUpdateScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "09-EmitterUpdateScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "sourceTextSha256": "d7d78b14338a081a2b2a0af6a86ded8faf4fe46072e2e0fc26e1b0fc90d7aa11",
+    "numericScope": "UE5.8 Win64 VectorVM reciprocal estimates for fixed rates 3/10; original seed mode nondeterministic; fixture seeds only."
+  }
+}

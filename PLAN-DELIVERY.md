@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**ST01c, 2026-10-13 — generador del piloto desde fuente, sin nacimientos grabados:**
+[Entrega](docs/delivery/st01c/NATIVE-LAB.md): dos referencias, 241 ticks/4.140 estados
+cada una; IDs/orden exactos, posición <0,000002 cm, alfa <0,000001, resto cotejado exacto.
+9/9 CPU, 7 grupos Chrome y regresión de ambos modos previos. Emisión continua local y
+semilla editable con ficha textual; las variantes no tienen comparación UE propia.
+Sin runtime de juego/SQL/protocolo/registro nuevo. Sigue DepthFade con escena, color
+final y presupuesto antes de integrar el piloto; aún no ampliar automáticamente los 916.
+
 **ST01c, 2026-10-13 — actualización local y catálogo preparado para autoría:**
 [Entrega](docs/delivery/st01c/UPDATE-LAB.md): vida/movimiento/alfa/SubUV calculados desde
 50 nacimientos observados; 241 ticks/4.140 estados por ejecución, dos referencias dentro

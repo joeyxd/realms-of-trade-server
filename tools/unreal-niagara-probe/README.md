@@ -85,3 +85,20 @@ FinalColorLDR uses manual exposure, bloom 0 and disabled scene atmosphere/fog/cl
 baseline, visible effect, source hashes and repeatability; compare with the
 [private Three.js lab](../niagara-native-lab/README.md). Engine launch success alone
 is insufficient (automation failures can still exit with status 0).
+
+## Effective compiled CPU pilot
+
+`ReadCompiledPilot` exposes the effective system and particle CPU HLSL after the
+in-memory fixture compilation. Emitter graphs are compiled into system scripts;
+their standalone translations can be empty and are recorded as such. It also reads
+the Win64 VectorVM reciprocal estimates for rates 3/10, without sampling particles.
+The helper requires the scratch project, exact pilot and CPU handle order; it never
+saves assets. Rebuild/copy the plugin as above, then use a fresh run:
+
+```powershell
+& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -run=pythonscript '-script=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/probe_compiled.py' -CompiledRun=compiled03 -unattended -nop4 -nosplash -nosound -NullRHI
+```
+
+The accepted source preset uses the reviewed `compiled02` report/text hashes. CPU
+comparison data stays separate from these compiler inputs. The original pilot has
+determinism disabled; the exported fixture uses seeds 6371/6372 only for comparison.

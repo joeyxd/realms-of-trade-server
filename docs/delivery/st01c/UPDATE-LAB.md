@@ -1,5 +1,8 @@
 # ST01c — evolución local y fichas para autoría
 
+Este documento conserva el checkpoint `ba0f4cc`. El [corte posterior](NATIVE-LAB.md)
+añade un generador desde fuente; no reescribe las entradas o pruebas históricas de este modo.
+
 2026-10-13. Laboratorio privado; sin alta nueva en el catálogo del juego.
 
 El modo **Evolución local · nacimientos originales** ya calcula en JavaScript vida,

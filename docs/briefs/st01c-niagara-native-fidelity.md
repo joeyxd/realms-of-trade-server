@@ -1,9 +1,11 @@
 # ST01c — adaptador Niagara de partículas 3D
 
-**Estado, 2026-10-13: material y actualización local; nacimientos todavía observados.**
-[Nuevo checkpoint](../delivery/st01c/UPDATE-LAB.md): evolución local contrastada en 241
-ticks de dos ejecuciones, controles privados y primera ficha textual para futura autoría.
-Sigue cerrar el generador de nacimientos; no habilita un efecto nuevo en el juego.
+**Estado, 2026-10-13: generador local del piloto comprobado.**
+[Nuevo checkpoint](../delivery/st01c/NATIVE-LAB.md): nacimientos y evolución desde fuente
+y semilla, sin estados grabados como entradas; 241 ticks de ambas referencias dentro
+de tolerancias. Sigue DepthFade/color final/presupuesto antes de integración al taller.
+El [checkpoint anterior](../delivery/st01c/UPDATE-LAB.md) conserva su diagnóstico desde
+nacimientos observados. No habilita un efecto nuevo en el juego.
 
 **Checkpoint anterior: extracción y laboratorio privado de material con partículas 3D observadas.**
 [Referencia/comparación](../delivery/st01c/RENDER-LAB.md): ejecutar y fotografiar Unreal,
@@ -26,7 +28,23 @@ referencias multiángulo y un prototipo 3D; la extracción por sí sola no la ac
 
 ## Objetivo
 
-**Siguiente experimento acotado, 2026-10-13:** separar nacimiento de evolución. Extraer
+**Contrato del corte de nacimientos locales, cerrado:** usar el HLSL efectivo compilado
+del mismo piloto para cerrar ramas de Sphere/Cylinder, inicialización y RNG de la
+fixture determinista. El generador recibe constantes/curva/semilla, sin estados de
+partículas ni una lista de nacimientos. Conservar los modos observado y actualización
+para diagnóstico. La activación pequeña de 0,0001 s y los estimadores numéricos de
+VectorVM se documentan por fuente; no deducirlos de una lista de tiempos capturados.
+
+Antes de ejecutar el verificador del nuevo modo: mismos IDs vivos y orden en los
+241 ticks de ambas referencias, error máximo 0,002 cm en posición, 0,00001 s en edad,
+0,00001 en alfa/RGB, 0,001 celdas SubUV y 0,001 cm de tamaño. Estas tolerancias acotan
+operaciones float32/trigonométricas de la fixture; no aceptan color final Unreal,
+DepthFade, móvil físico ni la biblioteca completa. Semillas distintas deben generar
+variantes repetibles conservando tiempos/densidad, y la emisión debe continuar más
+allá de los 4 s registrados hasta el límite privado de 8 s. Describir cada control
+nuevo en la ficha para la futura autoría por agente.
+
+**Contrato del checkpoint previo, actualización local:** separar nacimiento de evolución. Extraer
 una fixture compacta con el primer estado observado de cada identidad y su tick, y
 recalcular en JavaScript edad, muerte, posición, alfa y SubUV de los ticks posteriores.
 No usar los atributos de los frames siguientes como entradas del simulador. Comparar

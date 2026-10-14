@@ -2,13 +2,15 @@ import * as THREE from 'three';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { PilotParticles, toScene, validateFrame } from './particles.js';
 import { UpdateSimulation, CONTROL_SPEC } from './update-simulation.js';
+import { NativeSimulation, CONTROL_SPEC as NATIVE_CONTROLS } from './native-simulation.js';
+import { SOURCE_PRESET_SHA256 } from './source-identity.js';
 
 const $ = id => document.getElementById(id);
 const run = new URLSearchParams(location.search).get('run') || 'reference11';
 if (!/^[a-zA-Z0-9_-]{1,40}$/.test(run)) throw new Error('Invalid local capture name');
 const base = `/.scratch/unreal/${run}/`;
 const state = { ready: false, errors: [], playing: false, frame: 120, freeCamera: false, yaw: 0, pitch: 0,
-  mode: new URLSearchParams(location.search).get('mode') === 'update' ? 'update' : 'observed' };
+  mode: ['update', 'native'].includes(new URLSearchParams(location.search).get('mode')) ? new URLSearchParams(location.search).get('mode') : 'observed' };
 window.pilot = state;
 
 try {
@@ -22,7 +24,8 @@ try {
       '985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165' ||
       report.particle_samples?.length !== 241 || report.renderer_textures?.length !== 2 || report.images?.length !== 15)
     throw new Error('Incomplete or unexpected pilot capture');
-  let frames, simulation;
+  let frames, simulation, nativeSimulation;
+  const currentSimulation = () => state.mode === 'native' ? nativeSimulation : simulation;
   const readFrames = () => Promise.all(report.particle_samples.map((row, step) => {
     if (row.step !== step || row.file !== `particles/step_${String(step).padStart(4, '0')}.json`)
       throw new Error('Invalid sample sequence');
@@ -31,12 +34,28 @@ try {
   async function loadMode(mode) {
     if (mode === 'observed' && !frames) frames = await readFrames();
     if (mode === 'update' && !simulation) simulation = new UpdateSimulation(await read('update-fixture.json'));
+    if (mode === 'native' && !nativeSimulation) {
+      const r = await fetch('./pilot-source.json');
+      if (!r.ok) throw new Error(`Native source: HTTP ${r.status}`);
+      const bytes = await r.arrayBuffer();
+      const digest = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map(v => v.toString(16).padStart(2, '0')).join('');
+      if (digest !== SOURCE_PRESET_SHA256) throw new Error('Native source hash mismatch');
+      nativeSimulation = new NativeSimulation(JSON.parse(new TextDecoder().decode(bytes)));
+    }
     state.mode = mode;
     $('mode').value = mode;
-    $('time').max = mode === 'update' ? 480 : 240;
+    $('time').max = mode === 'observed' ? 240 : 480;
     $('time').value = Math.min(Number($('time').value), Number($('time').max));
-    $('update-controls').hidden = mode !== 'update';
-    $('preview-label').textContent = mode === 'update' ? 'Three.js · evolución calculada aquí' : 'Three.js · atributos 3D observados';
+    $('update-controls').hidden = mode === 'observed';
+    $('control-intro').textContent = mode === 'native'
+      ? 'Nacimientos, posiciones, tamaño, color, movimiento y vida se generan aquí desde las fórmulas del piloto. Rangos experimentales del laboratorio.'
+      : 'Vida, movimiento, desvanecimiento y atlas se calculan aquí. Los 50 nacimientos conservan sus tiempos y estados originales de Unreal. Rangos experimentales del laboratorio.';
+    $('control-note').textContent = mode === 'native'
+      ? 'La emisión local continúa hasta 8 s. Semilla 6371: misma fixture determinista de Unreal; otra semilla cambia la distribución.'
+      : 'El registro incluye nacimientos observados hasta los 4 s. La vista continúa hasta 8 s para ver cómo desaparecen las partículas.';
+    $('preview-label').textContent = mode === 'native' ? 'Three.js · generación y evolución local'
+      : mode === 'update' ? 'Three.js · evolución calculada aquí' : 'Three.js · atributos 3D observados';
+    if (mode !== 'observed') renderControls();
   }
   await loadMode(state.mode);
   const loader = new THREE.TextureLoader();
@@ -94,7 +113,7 @@ try {
         target.y + Math.sin(state.pitch) * d, target.z + Math.cos(state.yaw) * Math.cos(state.pitch) * d);
     } else camera.position.set(...toScene(reference.position_cm));
     camera.lookAt(target); camera.updateMatrixWorld();
-    const frame = state.mode === 'update' ? simulation.seek(state.frame) : frames[state.frame];
+    const frame = state.mode === 'observed' ? frames[state.frame] : currentSimulation().seek(state.frame);
     particles.update(frame, [$('flame').checked, $('smoke').checked]);
     state.particleSnapshot = frame;
     renderer.info.reset();
@@ -115,29 +134,31 @@ try {
     state.drawCalls = renderer.info.render.calls;
     state.triangles = renderer.info.render.triangles;
     state.textures = renderer.info.memory.textures;
-    $('status').textContent = `${particles.count} partículas · ${state.drawCalls} llamadas de dibujo · Referencia izquierda: ${(reference.step / 60).toFixed(2)} s${state.freeCamera ? ' · cámara libre a la derecha' : ''}${state.mode === 'update' ? ' · Nacimientos de Unreal; evolución local' : ''}${state.frame > 240 ? ' · fuera de los 4 s de referencia' : ''}`;
+    $('status').textContent = `${particles.count} partículas · ${state.drawCalls} llamadas de dibujo · Referencia izquierda: ${(reference.step / 60).toFixed(2)} s${state.freeCamera ? ' · cámara libre a la derecha' : ''}${state.mode === 'native' ? ' · Nacimientos y evolución locales' : state.mode === 'update' ? ' · Nacimientos de Unreal; evolución local' : ''}${state.frame > 240 ? ' · fuera de los 4 s de referencia' : ''}`;
   }
-  for (const [key, spec] of Object.entries(CONTROL_SPEC)) {
-    const wrapper = document.createElement('label'); wrapper.className = 'control';
-    const title = document.createElement('span'); title.textContent = spec.label;
-    const output = document.createElement('output'); output.textContent = `${spec.default} ${spec.unit}`;
-    const input = document.createElement('input'); input.type = 'range'; input.id = key;
-    input.min = spec.min; input.max = spec.max; input.step = spec.step; input.value = spec.default;
-    input.setAttribute('aria-label', spec.label);
-    const help = document.createElement('small'); help.id = `${key}-help`; help.textContent = spec.help;
-    input.setAttribute('aria-describedby', help.id);
-    wrapper.append(title, output, input, help); $('control-fields').append(wrapper);
-    input.oninput = () => {
-      output.textContent = `${input.value} ${spec.unit}`;
-      simulation.configure(Object.fromEntries(Object.keys(CONTROL_SPEC).map(k => [k, Number($(k).value)])));
-      draw();
-    };
+  function renderControls() {
+    $('control-fields').replaceChildren();
+    const specTable = state.mode === 'native' ? NATIVE_CONTROLS : CONTROL_SPEC;
+    for (const [key, spec] of Object.entries(specTable)) {
+      const wrapper = document.createElement('label'); wrapper.className = 'control';
+      const title = document.createElement('span'); title.textContent = spec.label;
+      const value = currentSimulation().options[key];
+      const output = document.createElement('output'); output.textContent = `${value} ${spec.unit}`;
+      const input = document.createElement('input'); input.type = 'range'; input.id = key;
+      input.min = spec.min; input.max = spec.max; input.step = spec.step; input.value = value;
+      input.setAttribute('aria-label', spec.label);
+      const help = document.createElement('small'); help.id = `${key}-help`; help.textContent = spec.help;
+      input.setAttribute('aria-describedby', help.id);
+      wrapper.append(title, output, input, help); $('control-fields').append(wrapper);
+      input.oninput = () => {
+        output.textContent = `${input.value} ${spec.unit}`;
+        currentSimulation().configure(Object.fromEntries(Object.keys(specTable).map(k => [k, Number($(k).value)])));
+        draw();
+      };
+    }
   }
   $('reset-update').onclick = () => {
-    for (const [key, spec] of Object.entries(CONTROL_SPEC)) {
-      $(key).value = spec.default; $(key).previousElementSibling.textContent = `${spec.default} ${spec.unit}`;
-    }
-    simulation.configure(); draw();
+    currentSimulation().configure(); renderControls(); draw();
   };
   $('mode').onchange = async () => {
     state.playing = false; $('play').textContent = 'Reproducir'; $('mode').disabled = true;

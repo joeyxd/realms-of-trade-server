@@ -4,6 +4,7 @@
 #include "NiagaraSystem.h"
 #include "NiagaraEmitter.h"
 #include "NiagaraEmitterHandle.h"
+#include "NiagaraScript.h"
 #include "NiagaraEmitterInstance.h"
 #include "NiagaraSystemInstance.h"
 #include "NiagaraSystemInstanceController.h"
@@ -85,6 +86,57 @@ FString UST01cRuntimeProbe::ConfigurePilot(UNiagaraSystem* System)
     System->RequestCompile(true);
     System->WaitForCompilationComplete(false, false);
     Result->SetArrayField(TEXT("emitters"), Rows);
+    return Encode(Result);
+}
+
+FString UST01cRuntimeProbe::ReadCompiledPilot(UNiagaraSystem* System)
+{
+    if (!Allowed(System) || System->GetEmitterHandles().Num() != 2)
+        return TEXT("{\"error\":\"pilot scope\"}");
+    TArray<UNiagaraScript*> Scripts = { System->GetSystemSpawnScript(), System->GetSystemUpdateScript() };
+    int32 Index = 0;
+    for (const FNiagaraEmitterHandle& Handle : System->GetEmitterHandles())
+    {
+        const TCHAR* Expected = Index++ == 0 ? TEXT("NE_Flame_Basic_001") : TEXT("NE_Smoke_Basic");
+        auto* Data = Handle.GetEmitterData();
+        if (Handle.GetName() != FName(Expected) || !Data || Data->SimTarget != ENiagaraSimTarget::CPUSim)
+            return TEXT("{\"error\":\"effective CPU pilot required\"}");
+        TArray<UNiagaraScript*> EmitterScripts;
+        Data->GetScripts(EmitterScripts, false, false);
+        Scripts.Append(EmitterScripts);
+    }
+    if (Scripts.Num() > 12) return TEXT("{\"error\":\"script bounds\"}");
+    auto Result = MakeShared<FJsonObject>();
+    Result->SetStringField(TEXT("schema"), TEXT("st01c-compiled-pilot/v1"));
+    Result->SetStringField(TEXT("system"), System->GetPathName());
+    // VectorVM's rcp opcode uses this backend estimate. These are arithmetic
+    // constants, not observed particle states or a reconstructed random stream.
+    TArray<TSharedPtr<FJsonValue>> Reciprocals;
+    for (float Rate : { 3.0f, 10.0f })
+    {
+        float Estimate;
+        VectorStoreFloat1(VectorReciprocalEstimate(VectorLoadFloat1(&Rate)), &Estimate);
+        auto Row = MakeShared<FJsonObject>();
+        Row->SetNumberField(TEXT("rate"), Rate);
+        Row->SetNumberField(TEXT("estimate"), Estimate);
+        Reciprocals.Add(MakeShared<FJsonValueObject>(Row));
+    }
+    Result->SetArrayField(TEXT("vmReciprocalEstimates"), Reciprocals);
+    TArray<TSharedPtr<FJsonValue>> Rows;
+    for (const UNiagaraScript* Script : Scripts)
+    {
+        if (!Script) return TEXT("{\"error\":\"missing script\"}");
+        const auto& VM = Script->GetVMExecutableData();
+        if (VM.LastHlslTranslation.Len() > 1048576)
+            return TEXT("{\"error\":\"translation bounds\"}");
+        auto Row = MakeShared<FJsonObject>();
+        Row->SetStringField(TEXT("path"), Script->GetPathName());
+        Row->SetStringField(TEXT("usage"), StaticEnum<ENiagaraScriptUsage>()->GetNameStringByValue(static_cast<int64>(Script->GetUsage())));
+        Row->SetStringField(TEXT("hlsl"), VM.LastHlslTranslation);
+        Row->SetStringField(TEXT("compileStatus"), StaticEnum<ENiagaraScriptCompileStatus>()->GetNameStringByValue(static_cast<int64>(VM.LastCompileStatus)));
+        Rows.Add(MakeShared<FJsonValueObject>(Row));
+    }
+    Result->SetArrayField(TEXT("scripts"), Rows);
     return Encode(Result);
 }
 

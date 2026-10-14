@@ -17,6 +17,9 @@ public:
     static FString ConfigurePilot(UNiagaraSystem* System);
 
     UFUNCTION(BlueprintCallable, Category="ST01c")
+    static FString ReadCompiledPilot(UNiagaraSystem* System);
+
+    UFUNCTION(BlueprintCallable, Category="ST01c")
     static FString ReadParticles(UNiagaraComponent* Component);
 
     UFUNCTION(BlueprintCallable, Category="ST01c")
