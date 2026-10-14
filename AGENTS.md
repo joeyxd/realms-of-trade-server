@@ -71,3 +71,8 @@
   los candidatos concretos que puedan ahorrar trabajo. Registrar la decisión de reutilización o descarte en el
   brief/informe del corte; no repetir el inventario completo ni recrear arte disponible sin revisar su encaje.
   Mantener las fuentes Unreal intactas y comprobar portabilidad, estilo y presupuesto móvil antes de integrar.
+- **Assets: seguir [docs/art/PROTOCOLO.md](docs/art/PROTOCOLO.md).** Buscar antes de crear
+  (`npm run assets:find -- <texto>`); una pieza = un ID kebab-case = una fila del catálogo de arte; nombres ASCII
+  con versión (`-v2`, nunca sobrescribir) y pareja `-mobile`; fuentes en `docs/art/<familia>/`, nada commiteado en
+  `materials/`, capturas de QA fuera de git. `npm run assets:check` debe pasar antes de cada commit que toque
+  `assets/`, `docs/art/`, `materials/` o los catálogos. `tools/asset-index/baseline.json` solo encoge.

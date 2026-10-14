@@ -1,7 +1,11 @@
 # Arte del puerto
 
-**Objetos, cocina y entregas Tripo:** abre [ARTE-Y-MODELOS.html](../../ARTE-Y-MODELOS.html)
-o la [guía única de iconos, referencias y meshes](ITEMS.md). Allí están las 17 piezas
+**Antes de añadir o mover cualquier asset: [PROTOCOLO.md](PROTOCOLO.md).** El índice completo de piezas,
+archivos y problemas es [ARTE-Y-MODELOS.html](../../ARTE-Y-MODELOS.html). No se commitea: se genera con
+`ARTE-Y-MODELOS.cmd` o `npm run assets:index`.
+
+**Objetos, cocina y entregas Tripo:** en ese índice (busca `objeto-`) o en la
+[guía única de iconos, referencias y meshes](ITEMS.md). Allí están las 17 piezas
 actuales, sus referencias y las carpetas para dejar los GLB.
 
 Este índice reúne los cortes locales de autoría visual. El plan general y sus gates están en

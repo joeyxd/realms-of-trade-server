@@ -5,7 +5,8 @@ preparados. Antorcha/resina/coco conectados al juego; nueve piezas disponibles c
 decoración en la biblioteca GM, con carga bajo demanda. [Entrega y pruebas](../delivery/item-models-v1/DELIVERY.md).
 Descargas conserva los originales; las versiones del juego están en `assets/models/items-v1/`.
 
-Abre **[ARTE-Y-MODELOS.html](../../ARTE-Y-MODELOS.html)** desde la raíz del proyecto.
+Abre **[ARTE-Y-MODELOS.html](../../ARTE-Y-MODELOS.html)** desde la raíz del proyecto (se genera con
+`ARTE-Y-MODELOS.cmd`; reglas en [PROTOCOLO.md](PROTOCOLO.md)).
 Es la galería única para buscar, ver el PNG, descargarlo para Tripo y localizar su carpeta de entrega.
 Las fuentes originales conservan sus rutas; la galería elige una referencia por objeto y evita repetir
 antorcha, resina y coco, que también estaban incluidos en el paquete de cocina.
@@ -64,5 +65,5 @@ El [catálogo de arte general](../../tools/art-catalog/README.md) sigue sirviend
 palmeras, materiales y otras familias. Esta galería reúne el trabajo inmediato de objetos y cocina.
 
 El índice editable es [items-index.json](items-index.json). Para actualizar la galería después de dejar
-modelos: `node tools/art-catalog/build-items-index.mjs`; detecta entregas en las carpetas y las marca
+modelos: `npm run assets:index` (o `ARTE-Y-MODELOS.cmd`); detecta entregas en las carpetas y las marca
 como recibidas, todavía por revisar.
