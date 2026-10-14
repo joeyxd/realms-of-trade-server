@@ -105,3 +105,14 @@ referencias temporales `depth02`/`depth03`, sin capturas de partículas como ent
 Solo ortográfica privada: color final UE, texturas optimizadas y FPS físico pendientes.
 Ver [entrega](../../docs/delivery/st01c/DEPTH-LAB.md), `qa-depth.mjs`,
 `verify-depth.mjs` y `compare-depth.py` para evidencia y reproducción.
+
+# Atlas y presupuesto, 2026-10-14
+
+`budget.html` prueba el par de atlas original y tres derivados lossless, solo una
+variante cargada por vista. `atlas-build.py --check` reproduce por celda, con fuente
+y receta fijadas; `qa-atlas.mjs`, `compare-atlas.py` y `check-atlas-repeat.py` contrastan
+secuencia/capas/profundidad y todos los fotogramas. [Entrega](../../docs/delivery/st01c/ATLAS-LAB.md).
+WebP completo ahorra 59,64 % de descarga con renders exactos; 128/64 px fallaron el
+gate de silueta y no se admiten. La memoria GPU sigue en 30,67 MiB estimados; selección
+automática conserva full y lo indica. Próximo experimento: compresión GPU a resolución
+completa, antes de presupuesto móvil físico y admisión al taller.

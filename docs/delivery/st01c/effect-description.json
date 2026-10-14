@@ -281,13 +281,43 @@
       "reference textures"
     ],
     "physicalMobileFps": null,
-    "acceptedMobileVariant": null
+    "acceptedMobileVariant": null,
+    "atlasBuildManifest": "../../../tools/niagara-native-lab/atlas-manifest.json",
+    "originalPngDownloadBytes": 1369043,
+    "selectedLosslessWebpBytes": 552514,
+    "automaticPrivateVariant": "full",
+    "atlasGpuMemoryReductionAccepted": false,
+    "atlasVariants": [
+      {
+        "id": "full",
+        "visualGatePassed": true,
+        "failedCases": 0,
+        "downloadBytes": 552514,
+        "rgba8MipEstimatedBytes": 32156324
+      },
+      {
+        "id": "half",
+        "visualGatePassed": false,
+        "failedCases": 49,
+        "downloadBytes": 210828,
+        "rgba8MipEstimatedBytes": 8039076
+      },
+      {
+        "id": "quarter",
+        "visualGatePassed": false,
+        "failedCases": 230,
+        "downloadBytes": 73678,
+        "rgba8MipEstimatedBytes": 2009764
+      }
+    ],
+    "variantMeaning": "WebP full conserva resoluci?n/p?xeles; los candidatos half/quarter quedan solo para diagn?stico. Memoria y FPS de tel?fono siguen pendientes."
   },
   "limitations": [
     "Ficha experimental fuera del catálogo del juego; no habilita composición automática.",
     "El generador usa las ramas CPU efectivas del piloto; otros sistemas y otras semillas requieren sus comparaciones propias.",
     "Profundidad comprobada solo en la escena ortográfica privada a 2 s; no implica colisión, perspectiva ni terreno del juego.",
     "Color Filmic SDR comprobado con perfil neutro privado a 2 s; faltan bloom, grading libre, perspectiva y presupuesto de dispositivo.",
+    "La reducci?n de resoluci?n fall? el gate de silueta; no seleccionarla como variante m?vil aceptada.",
     "Revisar descripción y evidencia si cambian material, atlas, adaptador o controles."
   ],
   "evidence": [
@@ -302,9 +332,11 @@
     "DEPTH-LAB.md",
     "depth-checkpoint.json",
     "COLOR-LAB.md",
-    "color-checkpoint.json"
+    "color-checkpoint.json",
+    "ATLAS-LAB.md",
+    "atlas-checkpoint.json"
   ],
-  "revision": 4,
+  "revision": 5,
   "adaptation": {
     "scope": "private-source-only-CPU-pilot",
     "nativeBirths": true,
@@ -322,20 +354,37 @@
       "basis": "source-derived-and-measured",
       "profile": "UE5.8 Filmic SDR sRGB; neutral grading; targetGamma2.2; bloom0; AA off",
       "appearance": "La curva comprime luz HDR en el núcleo brillante y conserva los bordes anaranjados; +1 EV ilumina y comprime más los colores hacia las altas luces. No crea partículas, aumenta densidad ni añade bloom.",
-      "lutSize": [32, 32, 32],
+      "lutSize": [
+        32,
+        32,
+        32
+      ],
       "lutQuantizationBits": 10,
       "browserContainer": "RGBA16F trilinear; generated from source equations, no rendered LUT copied",
       "generatedLutBytes": 262144,
       "sourcePreset": "../../../tools/niagara-native-lab/film-source.json",
-      "privateControl": {"key": "exposureEV", "values": [0, 1], "unit": "EV", "default": 0,
+      "privateControl": {
+        "key": "exposureEV",
+        "values": [
+          0,
+          1
+        ],
+        "unit": "EV",
+        "default": 0,
         "sourceBinding": "manual exposure compensation; multiply linear RGB by 2^EV before lookup",
-        "consequence": "Cambia brillo y compresión de altas luces; conserva simulación y arte."},
+        "consequence": "Cambia brillo y compresión de altas luces; conserva simulación y arte."
+      },
       "verifiedScope": "default pilot at 2s, front/oblique/side, 0/+1EV and 96 chart samples",
-      "isolatedTransferMaxMae255": 0.042110,
+      "isolatedTransferMaxMae255": 0.04211,
       "fullEffectPixelEquality": false,
       "bloomVerified": false,
       "gameWorldIntegration": false,
-      "evidence": ["COLOR-LAB.md", "color-checkpoint.json", "color-oblique.png", "color-chart-EV0.png"]
+      "evidence": [
+        "COLOR-LAB.md",
+        "color-checkpoint.json",
+        "color-oblique.png",
+        "color-chart-EV0.png"
+      ]
     },
     "depthFade": {
       "basis": "observed-and-source-verified",
@@ -343,12 +392,22 @@
       "formula": "clamped input opacity * saturate((opaque axial view depth - particle fragment axial view depth) / 100cm)",
       "appearance": "Los bordes de llama y humo se desvanecen gradualmente cerca de superficies opacas; detrás de ellas quedan ocluidos. El material no cambia trayectoria ni vida y no añade colisión.",
       "verifiedScope": "private orthographic lab; default pilot at 2s; three cameras, camera-aligned walls and oblique ground",
-      "positiveGapsCm": [25, 50, 100, 150],
+      "positiveGapsCm": [
+        25,
+        50,
+        100,
+        150
+      ],
       "zeroNegativeCaseQualification": "Outputs include opaque occlusion; do not infer a separate measured alpha clamp branch.",
       "editableSourceDistance": false,
       "perspectiveVerified": false,
       "gameWorldIntegration": false,
-      "evidence": ["depth-oblique.png", "depth-floor.png", "depth-floor-hard.png", "DEPTH-LAB.md"]
+      "evidence": [
+        "depth-oblique.png",
+        "depth-floor.png",
+        "depth-floor-hard.png",
+        "DEPTH-LAB.md"
+      ]
     }
   }
 }

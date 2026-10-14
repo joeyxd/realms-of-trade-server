@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01c, 2026-10-14 — atlas: descarga cerrada, memoria GPU pendiente:**
+[Entrega](delivery/st01c/ATLAS-LAB.md), [checkpoint](delivery/st01c/atlas-checkpoint.json).
+WebP lossless completo: 1.369.043→552.514 B (-59,64 %), mismos RGBA y 268 renders
+exactos del original. Dos runs/1.072 pares de imagen idénticos, 17 Node +5 Python,
+URLs/dimensiones reales y liberación en fallos. Los candidatos 128/64 px fallaron
+49/230 casos, no se admiten; full sigue a 30,67 MiB GPU estimados. UI lo indica.
+Sigue compresión GPU a resolución completa antes de cumplir memoria móvil/taller;
+FPS físico, compositor/UI y registro general no aceptados. Fuentes intactas, solo lab.
+
 **Niagara, 2026-10-14 — dirección del autor: cada port alimenta el siguiente:**
 [Plan acumulativo](briefs/niagara-reusable-pipeline.md), enlazado desde ST01c y el taller.
 IR con procedencia, registro de módulos versionados, pasos deterministas y matriz de

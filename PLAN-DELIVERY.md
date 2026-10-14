@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**ST01c, 2026-10-14 — atlas lossless y herramienta repetible de presupuesto:**
+[Entrega](docs/delivery/st01c/ATLAS-LAB.md): descarga -59,64 %, RGBA y 268 renders
+exactos del original; 1.072 pares repetidos iguales. 17/17 Node +5/5 Python y Chrome.
+Resoluciones menores fallan silueta y quedan descartadas. No cumple aún memoria
+móvil: full conserva 30,67 MiB estimados. Sigue probar compresión GPU a resolución
+completa con los mismos gates, antes de extraer núcleo/ampliar familias/integrar taller.
+Solo lab privado; sin runtime de juego, SQL o protocolo nuevos.
+
 **Niagara, 2026-10-14 — adaptación acumulativa solicitada por el autor:**
 [Diseño](docs/briefs/niagara-reusable-pipeline.md): cada familia aporta módulos compartidos,
 fixtures y fichas; los sistemas se ensamblan desde datos y capacidades versionadas, con

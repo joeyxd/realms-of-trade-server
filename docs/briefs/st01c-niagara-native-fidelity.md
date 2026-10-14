@@ -1,12 +1,18 @@
 # ST01c — adaptador Niagara de partículas 3D
 
+**Estado, 2026-10-14: transferencia lossless cerrada; memoria GPU pendiente.**
+[Atlas](../delivery/st01c/ATLAS-LAB.md): -59,64 % de descarga, 268 renders exactos
+frente al original y dos runs repetibles. Celdas 128/64 px fallan el gate de silueta
+y quedan como diagnóstico; automático conserva full, no una variante móvil admitida.
+Sigue compresión GPU a resolución completa y medición física antes del taller.
+
 **Dirección del autor, 2026-10-14: aprendizaje acumulativo entre ports.**
 [Contrato de reutilización](niagara-reusable-pipeline.md): extraer módulos contrastados,
 IR/bindings por sistema y ejecución determinista; cada familia añade solo sus capacidades
 faltantes y protege las anteriores con regresión. Diseño pendiente, no compilador universal.
 La cola conserva atlas/presupuesto como siguiente corte y después una prueba de reutilización.
 
-**Estado, 2026-10-14: color Filmic SDR comprobado en perfil privado.**
+**Checkpoint anterior, 2026-10-14: color Filmic SDR comprobado en perfil privado.**
 [Color](../delivery/st01c/COLOR-LAB.md): 96 muestras, dos exposiciones, tres cámaras
 y transformación de color separada del rasterizado. Sigue presupuesto/variantes
 de atlas antes del taller; bloom/grading libre/perspectiva no están aceptados.
@@ -43,6 +49,30 @@ y revisamos el alcance antes de invertir en un port. La equivalencia visual requ
 referencias multiángulo y un prototipo 3D; la extracción por sí sola no la acepta.
 
 ## Objetivo
+
+**Contrato del corte de atlas/presupuesto, iniciado (2026-10-14):** partir de las dos
+exportaciones exactas de `reference11`: `T_FlameUV_2` 2048×1024/8×4 y `T_Smoke_1`
+2560×1536/10×6, ambas sRGB. Crear WebP lossless completo y candidatos con celdas
+128/64 px, conservando RGB/R-opacidad, layout, tiempos, tamaños, cantidades y movimiento.
+Resamplear en luz lineal por celda; no mezclar fotogramas al reducir ni añadir gutters
+o cambiar UV como parte de esta prueba. Mantener fuentes fuera del bundle y verificar hashes.
+
+Antes de revisar candidatos: el WebP completo debe conservar todos los bytes RGBA
+decodificados y los renders de la textura original. Cada variante reducida debe mantener
+IoU de máscara ≥0,98, MAE RGB ≤2/255 y P95 de error de canal ≤6/255 respecto al atlas
+original en la unión visible (>8/255), con máscara >32/255. Probar secuencia, cámaras,
+capas y todos los fotogramas SubUV aislados a escala del sprite; además mantener el gate
+Filmic anterior contra UE a 2 s/0 y +1 EV. Casos vacíos deben seguir exactamente vacíos.
+Capturas inspeccionadas confirman ausencia de halos y pérdida de silueta. Si falla una
+variante, conservarla como diagnóstico y elegir una que pase; no relajar umbrales después.
+
+Registrar descarga real, dimensiones y URLs cargadas, estimación RGBA8 con mipmaps,
+LUT/targets por separado, partículas/draw calls y timings diagnósticos. La prueba privada
+selecciona una variante por dispositivo y libera recursos al cerrar/cambiar. Un candidato
+de celdas ≤128 px debe quedar bajo 8 MiB estimados para ambos atlas y reducir sus bytes
+de descarga frente a los PNG originales; no afirmar que WebP comprime almacenamiento GPU.
+Presupuesto físico/FPS de teléfono, perspectiva/bloom y admisión al taller permanecen
+gates separados. Constructor, recibo y comparación deben poder repetirse por otra familia.
 
 **Contrato del corte de color, cerrado (2026-10-14):** reutilizar la cadena Filmic SDR
 instalada UE5.8 (matrices sRGB/AP1/AP0, expansión de gamut, corrección azul, glow/red,
