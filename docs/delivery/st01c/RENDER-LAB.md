@@ -2,6 +2,9 @@
 
 **2026-10-13. Checkpoint privado; simulación propia y efecto del juego pendientes.**
 
+Continuación posterior: [evolución local y ficha descriptiva](UPDATE-LAB.md). Este documento
+y `render-checkpoint.json` conservan la evidencia de material del commit `09d92cf`.
+
 El piloto exacto MyProject `NS_Flame_Single` ya se ejecuta en Unreal 5.8 y sus partículas
 se dibujan por separado en Three.js. El laboratorio conserva los dos atlas originales,
 posiciones 3D, tamaños, color, rotación y fotograma SubUV. Permite reproducir cuatro

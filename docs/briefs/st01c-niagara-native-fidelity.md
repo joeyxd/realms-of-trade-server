@@ -1,6 +1,11 @@
 # ST01c — adaptador Niagara de partículas 3D
 
-**Estado, 2026-10-13: extracción y laboratorio privado de material con partículas 3D observadas.**
+**Estado, 2026-10-13: material y actualización local; nacimientos todavía observados.**
+[Nuevo checkpoint](../delivery/st01c/UPDATE-LAB.md): evolución local contrastada en 241
+ticks de dos ejecuciones, controles privados y primera ficha textual para futura autoría.
+Sigue cerrar el generador de nacimientos; no habilita un efecto nuevo en el juego.
+
+**Checkpoint anterior: extracción y laboratorio privado de material con partículas 3D observadas.**
 [Referencia/comparación](../delivery/st01c/RENDER-LAB.md): ejecutar y fotografiar Unreal,
 reproducir sus atributos en Three y aislar el procesamiento de color. La simulación
 propia y la aceptación final siguen pendientes. No habilita sistemas en el juego ni
@@ -20,6 +25,26 @@ y revisamos el alcance antes de invertir en un port. La equivalencia visual requ
 referencias multiángulo y un prototipo 3D; la extracción por sí sola no la acepta.
 
 ## Objetivo
+
+**Siguiente experimento acotado, 2026-10-13:** separar nacimiento de evolución. Extraer
+una fixture compacta con el primer estado observado de cada identidad y su tick, y
+recalcular en JavaScript edad, muerte, posición, alfa y SubUV de los ticks posteriores.
+No usar los atributos de los frames siguientes como entradas del simulador. Comparar
+todos los ticks contra la captura reservada para validación, por ID y capa. Esto prueba
+el subconjunto de actualización; el spawn/interpolación/RNG de Unreal sigue siendo una
+dependencia explícita de la fixture, no se declara generador nativo completo.
+
+Antes de revisar resultados se fija la comprobación: mismos IDs vivos en los 241 ticks;
+error máximo de posición 0,001 cm, edad 0,00001 s, alfa 0,00001 y SubUV 0,001 celdas en
+defaults. Son tolerancias numéricas de actualización de esta fixture, no aceptación
+artística ni equivalencia universal. Los cambios experimentales de velocidad/vida y
+parada de emisión se comparan como variantes propias, sin presentarlos como capturas UE.
+Conservar el modo observado y las pruebas de material existentes.
+
+La [visión de autoría](skill-studio-vision.md#catálogo-legible-por-agentes--dirección-del-autor-2026-10-13)
+añade fichas descriptivas durante cada port: apariencia, roles comprobados/propuestos,
+parámetros con unidades/consecuencias, presupuestos y evidencia versionada. El compositor
+y la creación de iconos siguen posteriores; ST01c documenta un primer ejemplo fuera del runtime.
 
 Acercar cada adaptación al Niagara original que permitan las fuentes y Three.js. Para un sistema seleccionado, portar sus emisores y materiales como una simulación de presentación 3D: conservar sus texturas y canales, capas, secuencia de spawn, vida, movimiento y silueta desde varias cámaras. La secuencia debe poder repetirse para comparar con Unreal. Si falta un módulo, textura o ajuste que cambie el resultado, el sistema sigue pendiente con ese motivo; no recibe un efecto genérico parecido.
 

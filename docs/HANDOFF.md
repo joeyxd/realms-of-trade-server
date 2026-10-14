@@ -1,5 +1,16 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01c, 2026-10-13 — actualización local; sigue generador de nacimientos:**
+[Entrega](delivery/st01c/UPDATE-LAB.md), [ficha del efecto](delivery/st01c/effect-description.json).
+Nuevo modo del lab calcula edad/muerte, posición, alfa y SubUV desde 50 primeros estados
+observados. Dos ejecuciones, 241 ticks/4.140 estados cada una dentro de tolerancias;
+5/5 CPU y Chrome ambos modos. Parámetros privados de velocidad/vida/parada comprobados.
+No declararlo un emisor nativo completo: faltan distribución, Lathe y spawn interpolado;
+después DepthFade/color final/presupuesto e integración. El autor pidió prever un agente
+de autoría: fichas legibles sin visión repetida, iconos/animaciones y composición por
+roles/anclas en ST02/ST03. Plan actualizado, compositor aún no implementado.
+Sin juego/SQL/protocolo/alta de catálogo nuevos; UI Workshop sigue solo planificado.
+
 **CH01, 2026-10-13 — personajes independientes, alpha.70/protocolo 62:**
 [Contrato](briefs/CH01-character-slots.md), [entrega](delivery/character-slots/README.md).
 Tres slots por cuenta; perfil histórico conservado con el mismo UUID, Bucanero nuevo con pistolas.

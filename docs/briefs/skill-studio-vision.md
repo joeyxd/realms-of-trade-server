@@ -54,6 +54,52 @@ y [escalabilidad](https://dev.epicgames.com/documentation/en-us/unreal-engine/sc
 
 ## Contrato propuesto
 
+### Catálogo legible por agentes — dirección del autor, 2026-10-13
+
+Preparar los metadatos mientras se porta cada efecto. El agente de autoría deberá poder
+buscar y combinar lo ya disponible sin volver a interpretar imágenes en cada petición.
+Ejemplo de intención: «tres habilidades de tierra: proyectil, enredar al objetivo y
+efecto sobre uno mismo». Esto se reserva para ST02/ST03; no sustituye el piloto ST01c
+ni activa ahora un creador de habilidades.
+
+Cada ficha versionada enlazará la identidad/hash del efecto, atlas, iconos y animaciones
+registrados. Incluirá descripción visual en lenguaje natural, etiquetas controladas y
+sinónimos: elemento/material, forma, colores, movimiento, densidad, silueta, inicio,
+bucle y desaparición. Una etiqueta tendrá procedencia (`observed`, `source` o `proposed`)
+y evidencia/revisión; el nombre de un archivo no acredita cómo se ve. Conservar cámara,
+tiempo, exposición y versión de la captura descrita. Si cambia el material, atlas o
+adaptador, revisar la ficha; no heredar automáticamente su aceptación anterior.
+
+La composición necesita roles y anclas **comprobados**, además de sugerencias separadas:
+carga, lanzamiento, proyectil/estela, impacto, envoltura de objetivo, aura propia y final;
+mano/cuerpo/arma/objetivo/punto del mundo/suelo. Registrar espacio, orientación, escala,
+eventos temporales, duración real, bucle, parada y agotamiento de partículas. Desconocido
+se representa explícitamente; no convertir una captura editorial de dos segundos en
+duración de la habilidad. Un atlas utilizable no equivale a un sistema completo portado.
+
+Cada control explica unidad, default, rango comprobado, paso, qué aspecto cambia y
+su coste o interacciones (por ejemplo, tasa × vida afecta partículas simultáneas).
+Distinguir entradas originales, controles derivados del editor y valores aún no editables.
+Incluir límites de capas/partículas, texturas y variantes, medidas por dispositivo y
+limitaciones; rendimiento desconocido no significa coste cero. El ejemplo del piloto
+vive en `docs/delivery/st01c/effect-description.json`, fuera del catálogo jugable.
+
+El futuro agente recuperará fichas compatibles, producirá un **borrador declarativo**
+con IDs/revisiones de efectos, icono, textos, animación, capas, anclas y eventos, y explicará
+qué reutilizó y qué falta. Si no existe un efecto o comportamiento compatible, lo señalará
+sin sustituirlo silenciosamente. Los iconos tendrán también motivo, silueta, paleta,
+legibilidad a tamaño pequeño y procedencia; generación/subida será un flujo separado.
+La primera revisión visual sigue siendo necesaria para catalogar y aceptar una variante;
+los metadatos reducen repeticiones, no garantizan el aspecto de toda combinación posible.
+
+«Enredar» visualmente no inmoviliza: proyectil/impacto, selección de objetivo, estados,
+daño, alcance y duración efectiva requieren plantillas validadas por el servidor.
+El agente de autoría no obtiene permisos GM por ser un compañero del juego. La receta
+debe superar esquema cerrado, compatibilidad, presupuesto, preview y aprobación de
+publicación; no contiene código, shaders o URLs arbitrarias. Mantener historial y rollback.
+
+### Documento de presentación
+
 Una definición versionada contiene identidad estable, textos/icono, referencias de animación,
 capas de efectos, enlaces a huesos/puntos y eventos temporales. Solo acepta tipos de efecto
 registrados y parámetros numéricos/colores/referencias validados; nunca JavaScript, GLSL,
@@ -82,9 +128,14 @@ publicación y SQL se decide al cerrar el contrato; este diseño no instala tabl
 2. **ST02 — biblioteca e iconos.** Variantes reutilizables, miniaturas, subir/generar/revisar
    iconos y ampliar los efectos concretos de Unreal convertidos y comparados. Clips solo con rig
    compatible o retargeting aceptado; sincronización con marcadores de animación.
+   Añadir búsqueda textual y fichas semánticas verificadas; conservar los lectores actuales
+   de `effectLibrary`/`skillDocument` y versionar cualquier nuevo documento de composición.
 3. **ST03 — componer habilidades/perlas nuevas.** Plantillas de proyectil, área, golpe,
    movilidad y buff; secuencia visual, comportamiento servidor validado y publicación.
-   Añadir tipos gradualmente, conservando compatibilidad y balance revisable.
+   Añadir tipos gradualmente, conservando compatibilidad y balance revisable. Incluir el
+   agente de autoría sobre ese mismo contrato: intención → recuperación de fichas →
+   borrador validado → preview → aprobación. Probar el ejemplo de tres habilidades de
+   tierra con fixtures, rechazo de IDs/parámetros incompatibles y capacidades ausentes.
 
 ## Aceptación antes de publicarlo
 

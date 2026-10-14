@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { PilotParticles, toScene, validateFrame } from './particles.js';
+import { UpdateSimulation, CONTROL_SPEC } from './update-simulation.js';
 
 const $ = id => document.getElementById(id);
 const run = new URLSearchParams(location.search).get('run') || 'reference11';
 if (!/^[a-zA-Z0-9_-]{1,40}$/.test(run)) throw new Error('Invalid local capture name');
 const base = `/.scratch/unreal/${run}/`;
-const state = { ready: false, errors: [], playing: false, frame: 120, freeCamera: false, yaw: 0, pitch: 0 };
+const state = { ready: false, errors: [], playing: false, frame: 120, freeCamera: false, yaw: 0, pitch: 0,
+  mode: new URLSearchParams(location.search).get('mode') === 'update' ? 'update' : 'observed' };
 window.pilot = state;
 
 try {
@@ -20,11 +22,23 @@ try {
       '985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165' ||
       report.particle_samples?.length !== 241 || report.renderer_textures?.length !== 2 || report.images?.length !== 15)
     throw new Error('Incomplete or unexpected pilot capture');
-  const frames = await Promise.all(report.particle_samples.map((row, step) => {
+  let frames, simulation;
+  const readFrames = () => Promise.all(report.particle_samples.map((row, step) => {
     if (row.step !== step || row.file !== `particles/step_${String(step).padStart(4, '0')}.json`)
       throw new Error('Invalid sample sequence');
     return read(row.file).then(validateFrame);
   }));
+  async function loadMode(mode) {
+    if (mode === 'observed' && !frames) frames = await readFrames();
+    if (mode === 'update' && !simulation) simulation = new UpdateSimulation(await read('update-fixture.json'));
+    state.mode = mode;
+    $('mode').value = mode;
+    $('time').max = mode === 'update' ? 480 : 240;
+    $('time').value = Math.min(Number($('time').value), Number($('time').max));
+    $('update-controls').hidden = mode !== 'update';
+    $('preview-label').textContent = mode === 'update' ? 'Three.js · evolución calculada aquí' : 'Three.js · atributos 3D observados';
+  }
+  await loadMode(state.mode);
   const loader = new THREE.TextureLoader();
   const textures = await Promise.all(report.renderer_textures.map(async row => {
     const texture = await loader.loadAsync(base + row.file);
@@ -80,7 +94,9 @@ try {
         target.y + Math.sin(state.pitch) * d, target.z + Math.cos(state.yaw) * Math.cos(state.pitch) * d);
     } else camera.position.set(...toScene(reference.position_cm));
     camera.lookAt(target); camera.updateMatrixWorld();
-    particles.update(frames[state.frame], [$('flame').checked, $('smoke').checked]);
+    const frame = state.mode === 'update' ? simulation.seek(state.frame) : frames[state.frame];
+    particles.update(frame, [$('flame').checked, $('smoke').checked]);
+    state.particleSnapshot = frame;
     renderer.info.reset();
     renderer.setRenderTarget(hdr);
     renderer.toneMapping = THREE.NoToneMapping;
@@ -99,8 +115,36 @@ try {
     state.drawCalls = renderer.info.render.calls;
     state.triangles = renderer.info.render.triangles;
     state.textures = renderer.info.memory.textures;
-    $('status').textContent = `${particles.count} partículas · ${state.drawCalls} llamadas de dibujo · Referencia izquierda: ${(reference.step / 60).toFixed(2)} s${state.freeCamera ? ' · cámara libre a la derecha' : ''}`;
+    $('status').textContent = `${particles.count} partículas · ${state.drawCalls} llamadas de dibujo · Referencia izquierda: ${(reference.step / 60).toFixed(2)} s${state.freeCamera ? ' · cámara libre a la derecha' : ''}${state.mode === 'update' ? ' · Nacimientos de Unreal; evolución local' : ''}${state.frame > 240 ? ' · fuera de los 4 s de referencia' : ''}`;
   }
+  for (const [key, spec] of Object.entries(CONTROL_SPEC)) {
+    const wrapper = document.createElement('label'); wrapper.className = 'control';
+    const title = document.createElement('span'); title.textContent = spec.label;
+    const output = document.createElement('output'); output.textContent = `${spec.default} ${spec.unit}`;
+    const input = document.createElement('input'); input.type = 'range'; input.id = key;
+    input.min = spec.min; input.max = spec.max; input.step = spec.step; input.value = spec.default;
+    input.setAttribute('aria-label', spec.label);
+    const help = document.createElement('small'); help.id = `${key}-help`; help.textContent = spec.help;
+    input.setAttribute('aria-describedby', help.id);
+    wrapper.append(title, output, input, help); $('control-fields').append(wrapper);
+    input.oninput = () => {
+      output.textContent = `${input.value} ${spec.unit}`;
+      simulation.configure(Object.fromEntries(Object.keys(CONTROL_SPEC).map(k => [k, Number($(k).value)])));
+      draw();
+    };
+  }
+  $('reset-update').onclick = () => {
+    for (const [key, spec] of Object.entries(CONTROL_SPEC)) {
+      $(key).value = spec.default; $(key).previousElementSibling.textContent = `${spec.default} ${spec.unit}`;
+    }
+    simulation.configure(); draw();
+  };
+  $('mode').onchange = async () => {
+    state.playing = false; $('play').textContent = 'Reproducir'; $('mode').disabled = true;
+    try { await loadMode($('mode').value); draw(); }
+    catch (error) { state.errors.push(String(error)); $('status').textContent = error.message; $('mode').value = state.mode; }
+    finally { $('mode').disabled = false; }
+  };
   $('play').onclick = () => { state.playing = !state.playing; $('play').textContent = state.playing ? 'Pausar' : 'Reproducir'; };
   for (const id of ['time', 'flame', 'smoke', 'exposure', 'tone']) $(id).oninput = draw;
   $('camera').onchange = () => { state.freeCamera = false; draw(); };
@@ -127,7 +171,7 @@ try {
     if (state.playing && last) {
       accumulator += Math.min((now - last) / 1000, .1);
       while (accumulator >= 1 / 60) {
-        $('time').value = Number($('time').value) % 240 + 1; accumulator -= 1 / 60;
+        $('time').value = Number($('time').value) % Number($('time').max) + 1; accumulator -= 1 / 60;
       }
       draw();
     }

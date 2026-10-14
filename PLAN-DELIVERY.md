@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**ST01c, 2026-10-13 — actualización local y catálogo preparado para autoría:**
+[Entrega](docs/delivery/st01c/UPDATE-LAB.md): vida/movimiento/alfa/SubUV calculados desde
+50 nacimientos observados; 241 ticks/4.140 estados por ejecución, dos referencias dentro
+de tolerancias. Controles privados, 5/5 CPU y Chrome ambos modos sin errores; generador
+de nacimientos aún pendiente. [Plan del taller](docs/briefs/skill-studio-vision.md) incorpora
+fichas textuales para que un agente componga habilidades/iconos en ST02/ST03; ejemplo
+del piloto con evidencia y límites. Sin runtime, catálogo jugable, SQL o protocolo nuevos.
+
 **CH01, 2026-10-13 — personajes independientes, alpha.70/protocolo 62:**
 [Contrato](docs/briefs/CH01-character-slots.md), [entrega](docs/delivery/character-slots/README.md).
 Tres slots por cuenta; perfil histórico conservado con el mismo UUID, Bucanero nuevo con pistolas.

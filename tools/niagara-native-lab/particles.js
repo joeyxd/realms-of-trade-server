@@ -1,11 +1,11 @@
-// Isolated renderer experiment. It consumes observed attributes, not Niagara bytecode.
+// Isolated renderer experiment. Observed or locally evolved attributes, never Niagara bytecode.
 import * as THREE from 'three';
 
 export const toScene = ([x, y, z]) => [y / 100, z / 100, -x / 100];
 const LIMIT = 512;
 const NAMES = ['NE_Flame_Basic_001', 'NE_Smoke_Basic'];
 export function validateFrame(frame) {
-  if (!frame || frame.schema !== 'st01c-cpu-frame/v1' || frame.emitters?.length !== 2 ||
+  if (!frame || !['st01c-cpu-frame/v1', 'st01c-update-frame/v1'].includes(frame.schema) || frame.emitters?.length !== 2 ||
       !Number.isFinite(frame.systemAge) || frame.systemAge < 0) throw new Error('Invalid observed frame');
   for (let index = 0; index < 2; index++) {
     const emitter = frame.emitters[index];

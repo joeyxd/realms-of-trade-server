@@ -1,0 +1,142 @@
+{
+  "schema": "marea.effect-description",
+  "version": 1,
+  "status": "private-pilot",
+  "catalogRegistration": false,
+  "id": "niagara-985a431dc6c0d1ca",
+  "source": {
+    "project": "MyProject",
+    "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single",
+    "sha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165"
+  },
+  "text": {
+    "locale": "es",
+    "name": "Llama compacta con humo ascendente",
+    "description": "Llama vertical y concentrada, de bordes anaranjados y núcleo amarillo muy luminoso; las lenguas cambian de forma mientras una columna tenue de humo oscuro asciende y se desvanece. Son dos capas de partículas independientes. No contiene una bola que viaje, una explosión ni un anillo alrededor del personaje.",
+    "basis": "observed",
+    "evidence": ["render-linear-front.png", "render-linear-oblique.png", "render-linear-side.png"],
+    "conditions": "2 s; cámara ortográfica; fondo negro; exposición 1 y ACES de Three aplicado a ambos RGB lineales. La descripción de color no acredita el tonemapper final de Unreal.",
+    "reviewed": "2026-10-13"
+  },
+  "tags": [
+    {"value": "fire", "basis": "observed"},
+    {"value": "flame", "basis": "observed"},
+    {"value": "smoke", "basis": "observed"},
+    {"value": "rising", "basis": "observed"},
+    {"value": "compact", "basis": "observed"},
+    {"value": "continuous-emission", "basis": "observed"}
+  ],
+  "aliases": ["fuego", "llama", "humo", "flame", "smoke"],
+  "composition": {
+    "verifiedRoles": [],
+    "verifiedAnchors": [],
+    "labPlacement": "isolated-world-origin; not a tested caster/target attachment",
+    "proposedRoles": ["stationary-fire", "burning-layer"],
+    "unsupportedAsIs": ["traveling-earth-projectile", "target-entanglement", "self-aura-ring"],
+    "note": "Las propuestas requieren integración y revisión de anclas, orientación y parada. Una capa de quemadura visual no concede un estado de daño.",
+    "gameplayBehavior": null,
+    "icon": null,
+    "animation": null
+  },
+  "layers": [
+    {
+      "id": "flame",
+      "emitter": "NE_Flame_Basic_001",
+      "material": "MI_Flame_2",
+      "atlas": "T_FlameUV_2",
+      "grid": [8, 4],
+      "facing": "FaceCamera",
+      "space": "world",
+      "ratePerSecond": 3,
+      "particleLifeSeconds": 1,
+      "movement": "Posición constante; animación de la forma por SubUV sobre cada partícula."
+    },
+    {
+      "id": "smoke",
+      "emitter": "NE_Smoke_Basic",
+      "material": "MI_Smoke_1",
+      "atlas": "T_Smoke_1",
+      "grid": [10, 6],
+      "facing": "FaceCameraPlane",
+      "space": "world",
+      "ratePerSecond": 10,
+      "particleLifeSeconds": 2,
+      "movement": "Ascenso vertical ~81,2634 cm/s y alfa que disminuye según una curva de edad normalizada."
+    }
+  ],
+  "material": {
+    "emission": "texture.RGB * particle.RGB",
+    "opacity": "clamp(texture.R * particle.A, 0, 1) * DepthFade",
+    "atlasSrgb": true,
+    "interpolateAtlasCells": false,
+    "depthFadeCm": 100,
+    "depthFadeExercised": false
+  },
+  "parameters": [
+    {
+      "key": "exposure", "kind": "editor-presentation", "unit": "multiplier",
+      "default": 1, "labRange": [0.1, 3], "step": 0.05,
+      "consequence": "Multiplica el RGB lineal ensamblado antes de presentar color. Aumentarlo aclara el núcleo y puede ocultar detalles; no cambia alfa, vida, densidad ni daño.",
+      "sourceBinding": null,
+      "verifiedScope": "observed-particle material lab"
+    },
+    {
+      "key": "smoke.verticalSpeed", "kind": "source-value", "unit": "cm/s",
+      "default": 81.26343536376953, "labRange": null, "step": null,
+      "sourceBinding": "Constants.NE_Smoke_Basic.AddVelocity.Velocity[2]",
+      "consequence": "Determina cuánto ascienden las partículas durante sus 2 s de vida. Modificarlo cambia altura y solapamiento, no su tasa de nacimiento.",
+      "verifiedScope": "source value and recorded default trajectory; editable range not yet accepted"
+    },
+    {
+      "key": "smoke.spawnRate", "kind": "source-value", "unit": "particles/s",
+      "default": 10, "labRange": null, "step": null,
+      "sourceBinding": "Constants.NE_Smoke_Basic.SpawnRate.SpawnRate",
+      "consequence": "Controla la frecuencia de nacimiento. Junto con la vida determina la ocupación y el solapamiento; requiere comprobar coste y composición antes de exponer un rango.",
+      "verifiedScope": "source default and recorded particle counts only"
+    },
+    {
+      "key": "smokeSpeed", "kind": "editor-evolution", "unit": "multiplier",
+      "default": 1, "labRange": [0, 2], "step": 0.05,
+      "sourceBinding": "multiplies observed initial smoke Velocity.Z; not a source user parameter",
+      "consequence": "Desde el primer estado observado cambia la velocidad de ascenso. Conserva la pequeña evolución previa al primer estado; no aumenta tasa, vida, alfa ni daño.",
+      "verifiedScope": "private update lab; experimental range, not a production variant"
+    },
+    {
+      "key": "smokeLife", "kind": "editor-evolution", "unit": "s",
+      "default": 2, "labRange": [0.25, 4], "step": 0.25,
+      "sourceBinding": "overrides observed lifetime from Constants.NE_Smoke_Basic.InitializeParticle.Lifetime",
+      "consequence": "Más vida alarga recorrido y ocupación; ralentiza el atlas y el alfa al cambiar la edad normalizada. No modifica el ritmo de nacimientos.",
+      "verifiedScope": "private update lab; experimental range, no physical mobile acceptance"
+    },
+    {
+      "key": "stopAt", "kind": "editor-evolution", "unit": "s",
+      "default": 4, "labRange": [0, 4], "step": 0.1,
+      "sourceBinding": null,
+      "consequence": "Descarta nacimientos posteriores al tiempo elegido y deja terminar las partículas existentes. El registro cubre 4 s; no describe el apagado nativo de Unreal.",
+      "verifiedScope": "private update lab; both layers"
+    }
+  ],
+  "timing": {
+    "sourceLoop": "infinite-duration",
+    "sourceObservedSeconds": 4,
+    "sourceShutdownVerified": false,
+    "atlasDurationIsSystemDuration": false
+  },
+  "budget": {
+    "observedParticleCountsAt2s": [3, 19],
+    "observedParticleCountsAt4s": [3, 20],
+    "normalDrawCalls": 3,
+    "textureDimensions": [[2048, 1024], [2560, 1536]],
+    "rgba8MipEstimatedMiB": 30.7,
+    "estimateExcludes": ["render targets", "reference textures"],
+    "physicalMobileFps": null,
+    "acceptedMobileVariant": null
+  },
+  "limitations": [
+    "Ficha experimental fuera del catálogo del juego; no habilita composición automática.",
+    "La descripción visual corresponde a los atributos capturados, no certifica un generador propio.",
+    "Faltan color final de Unreal, interacción de profundidad y presupuesto de dispositivo.",
+    "Revisar descripción y evidencia si cambian material, atlas, adaptador o controles."
+  ],
+  "evidence": ["RENDER-LAB.md", "render-checkpoint.json", "UPDATE-LAB.md", "update-checkpoint.json", "native-values.json", "active-stack-audit.json"]
+}
