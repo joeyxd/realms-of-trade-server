@@ -1,0 +1,265 @@
+{
+  "schema": "st01c-source-copy-audit/v1",
+  "originalRoot": "C:\\Unreal\\MyProject\\Content",
+  "files": [
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Flame_Basic_001.uasset",
+      "sha256": "c0b102604d3a572c4bb7e84a029eb23db4a3dc85ad5877c79f598a74e1e2ef56",
+      "bytes": 91403
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Smoke_Basic.uasset",
+      "sha256": "7a0e8477e0b10b1451166462c59ad1d32e671c6ed6e90317907a76bb2ca0ad4f",
+      "bytes": 87333
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.uasset",
+      "sha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+      "bytes": 668174
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_AdditiveScrollNiagara1.uasset",
+      "sha256": "6e86270259e2a8fb04a94435afb71cbd019e1d0cb67c7dbec71fbdf7166ce42d",
+      "bytes": 88143
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Basic_Hit.uasset",
+      "sha256": "f3f699a16167d1fc44240cf1c4f0b60e80c31578da3607f7c06e43887f05e4d7",
+      "bytes": 74032
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Basic_Particle_2.uasset",
+      "sha256": "9050e7381eab6eff053abe5a5a5c45aab13a0f95404129c6b3be6a04523a2a6f",
+      "bytes": 72471
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Fres_Trans.uasset",
+      "sha256": "d0ea845aa8d2fe82b5cb7b6aebedbaaf1f1c09fe20fc30f5309673f70a3ea997",
+      "bytes": 79294
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Gradient_Vert.uasset",
+      "sha256": "d1475678d7782f19c87a296a1d5e046a56d72dfd4383d2b4e9f946e8d8d5ce71",
+      "bytes": 81886
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Gradient_Vert2.uasset",
+      "sha256": "dcb46b662895490935832090dbc1c4dc22215c08cda362a18ed5f8abe416e049",
+      "bytes": 69062
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Gradient_Vert_Masked.uasset",
+      "sha256": "e23561679c67cb70bcd09fb7d6bad7cd672cab87cac35cba2b7a763d7bfdc861",
+      "bytes": 76678
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Ground.uasset",
+      "sha256": "442375c5dbc0306de32306312e5309ace54be5684eb54e681b5b1bd74d1a69cd",
+      "bytes": 84651
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Ground_Crack.uasset",
+      "sha256": "6e7d91ee8c75711f464b91f066be99cadd43a8c3ebdd500eec0ccf6e8702509f",
+      "bytes": 75919
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Ground_Crack_Masked.uasset",
+      "sha256": "ec5112f249b1475cfd67d025491e431ef9b97fe1772b00b612b84d5064eb0d7f",
+      "bytes": 79529
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Master_RadialBeam.uasset",
+      "sha256": "4c3c1f1063d04c817becf91b40773b384e54e3fe0ef05c383c253252db57d1fe",
+      "bytes": 73417
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Meteor.uasset",
+      "sha256": "18d480e46df8c685d70fc9b94ed57cacecd11a04e84bf3e664e97191c6b74a91",
+      "bytes": 96574
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_RadialGradient_1.uasset",
+      "sha256": "716311e29fe7a2aba6f452f2f0a500261ba3be301b8c320551cbdd53c192a624",
+      "bytes": 75296
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Ribbon.uasset",
+      "sha256": "dfd96306de7490c376ce6bf3125117e0f412ff9afa45162ff8fd06ab235ca0f4",
+      "bytes": 72083
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke.uasset",
+      "sha256": "a931cf8c9dc077689c739352110b40bb536daa8c517db583344c8e4f5d7e77e3",
+      "bytes": 76144
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke_01.uasset",
+      "sha256": "d14e35865f9961f713e4a7992bfea08be46bda3b587dd84e8e9b4b22cd8d928b",
+      "bytes": 74454
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Fireball.uasset",
+      "sha256": "0e3732622a3a0ab1ca8062e69be9cf786244c7a526e9951c5ba40e8cf54f9d25",
+      "bytes": 71669
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1.uasset",
+      "sha256": "14da8cbff4cfff879cfa54bf32908f717f36c25895d570d0111c1974c6b12ace",
+      "bytes": 70479
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_2.uasset",
+      "sha256": "a0e75141a84cfb6b1e0a613289d3677c5a373ca84f9f15fc78fe7b915a7c25e0",
+      "bytes": 72396
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_FlameAura_1.uasset",
+      "sha256": "a505e698b4c77064d695b2e2f7eed2d89f74f9d5e28d8f484867a3ccdf486a8c",
+      "bytes": 74454
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Fres_Trans.uasset",
+      "sha256": "a421eae4f5bd87f1aca8323f1bbb558df00c6e24346a5d5dd4ad31001f16db47",
+      "bytes": 68337
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Gradient_Vert.uasset",
+      "sha256": "c00a7fd635b99116f15ab58f877fc46941aa16a274bfd81d4914bcbd5951ffe9",
+      "bytes": 67040
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Ground_Crack_2.uasset",
+      "sha256": "d3c821ad4415c92a085511b887fd72f10a2a547accbfc8702cafeab563ddcb39",
+      "bytes": 71558
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Ground_Showscene.uasset",
+      "sha256": "0f93e75f2f7bd0a70aeff17bd397885d52c11433edfbd66f23bfd88186b37955",
+      "bytes": 87533
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Hit_1.uasset",
+      "sha256": "b009dfaf23645964831faeff5f3f8b1e5a2a312db3c8a42567eedc44a4eea90c",
+      "bytes": 72566
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Hit_2.uasset",
+      "sha256": "4a6fded3847cec07b3dbcc69a36faf9a133991ceebd7da94062e204e52ca9f76",
+      "bytes": 73533
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Radial_2.uasset",
+      "sha256": "8d1f0106d85baef3e77b1fc39835e1b47cd84a87a036d6e180dfa83f862a95d7",
+      "bytes": 66116
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1.uasset",
+      "sha256": "db4e20ffbdedb4716a9359dfc11258eb087caac23aa94efa4514340e32cd01c6",
+      "bytes": 71842
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Circle_1.uasset",
+      "sha256": "623e67b41945be9f8bc17e3ede12467a66478a292348133fbf3fceaadb7108e2",
+      "bytes": 267871
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall.uasset",
+      "sha256": "1d5c64ec6742cb1b37e1237b96f4736cce439f661d64ca90467482cfb77288ab",
+      "bytes": 645067
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Flame_Aura_1.uasset",
+      "sha256": "16e9a598c0fa4c5d4c618c3da1806a453bdea931e837c3af359584cfb7952aff",
+      "bytes": 2344488
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1.uasset",
+      "sha256": "4866b9058807eeef9a3da577670e150c6606d5b8d38eaedffc8579bfc36e00d4",
+      "bytes": 635421
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_2.uasset",
+      "sha256": "3e0a757f3e8443ebfc1644d98ecea09e9f225c684d588fb0f89afcfac9d0c410",
+      "bytes": 533071
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Gradient_1.uasset",
+      "sha256": "93f32c3e80433a7cbbe5deb9aa99f5719ad32a1e54da8bd514603b55c19edbde",
+      "bytes": 834853
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Gradient_Vertical.uasset",
+      "sha256": "e62747376f8d5f731b11d71f2f5d818804724e5b391a6599ad6d407104d06418",
+      "bytes": 15792
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Ground_Crack.uasset",
+      "sha256": "d7e4250127f10753b7e1c34ca62cbf784a96162643909bf25e703a8de6eef343",
+      "bytes": 375075
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Ground_Crack_2.uasset",
+      "sha256": "0825d6b0a1c54c31049915b8bcc744c93ce89eec835b109686bc245651738a52",
+      "bytes": 742022
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Ground_Crack_3.uasset",
+      "sha256": "3261f5cc498ffa3d652ad20b4bfded230cf767b5283582aaeb8fe5a573efdd21",
+      "bytes": 268700
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Hit_1.uasset",
+      "sha256": "fcd875836657eb20fe31d4e1d9ecf608562419a1e0b79b3745b4f39f4b12810a",
+      "bytes": 172554
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Hit_2.uasset",
+      "sha256": "e941159a8786c91393d7939dec4d70fece39ebed35a2939a3e169a0b213dd5e4",
+      "bytes": 229826
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Hit_Circle.uasset",
+      "sha256": "0835a472b1ba3d7f9205aec8cd6adf0f64f0b66c908efe3fd731bcc8ddef40b1",
+      "bytes": 192041
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Meteor_Ao.uasset",
+      "sha256": "7a3c6186f1cabdae90ea505f4caabcd88624293bf24dfcd4d73f4e424bb2a64b",
+      "bytes": 690622
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Meteor_basecolor.uasset",
+      "sha256": "d8ca8c7e138cebb9c5248cfc89053cfaaff0a8db7c6cf2985f36a055a14ddd0e",
+      "bytes": 1214862
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Meteor_normal.uasset",
+      "sha256": "70efb90f546c82f09b2ddc82ab57c9c32576346826aa45b4b4d6932306c126db",
+      "bytes": 13307215
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Noise10.uasset",
+      "sha256": "4b90524237733593de963088ba3253fa19d0019c3c909c55b6d795f9c18ff6ee",
+      "bytes": 1154712
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Radial_1.uasset",
+      "sha256": "c5a4737a21ca519105bf40b01a11668d4ebcf1e174fbc4789d9d80716a502200",
+      "bytes": 51341
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1.uasset",
+      "sha256": "ecddb7ecffb46fb0c61d5c0bf9d8e0f7d74f8b25cd614cd1e7ddc2df0468f0ce",
+      "bytes": 527011
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_SubUV.uasset",
+      "sha256": "a253ff0d14531466a09314eb63ac758ba16fa2db5edfc523565d4fd62ca6af16",
+      "bytes": 1331685
+    }
+  ],
+  "originalsAndCopiesChecked": 102,
+  "afterQueriesAllMatch": true,
+  "finalVerifiedProbeCopyHashesMatch": true,
+  "allOriginalAndTwoCopyHashesChecked": 153
+}

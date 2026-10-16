@@ -1,0 +1,65 @@
+{
+  "localAccepted": true,
+  "version": "0.6.0-alpha.28",
+  "protocol": 40,
+  "integrated": {
+    "passed": 650,
+    "failed": 0,
+    "path": "integrated.tap",
+    "serial": true
+  },
+  "release": {
+    "passed": 107,
+    "failed": 0,
+    "path": "release.tap",
+    "overlap": true
+  },
+  "browser": {
+    "footPort": 4,
+    "naval": 4,
+    "helmDeck": 2,
+    "physicalPerformanceClaim": false,
+    "representativeScreenshotsInspected": true,
+    "buttonBoundsAtLeast48": true
+  },
+  "limitations": {
+    "portableSessionOnly": true,
+    "fuel": false,
+    "newSQL": false,
+    "wallOcclusion": false,
+    "managedAgentToggle": false,
+    "authenticatedDurabilityClaim": false,
+    "openSeaHumanVoyage": false
+  },
+  "deployment": {
+    "status": "verified",
+    "observedAt": "2026-10-10T20:56:35Z",
+    "activeRevision": "9f23be355107ce0fdb783a5f68fd9cc93289cbda",
+    "image": "sha256:0813ca3ffaeb86b22ce09a311a9f7f956862e29d2178152a469467d424345f8e",
+    "containers": 1,
+    "imageReleasePassed": 107,
+    "timer": "active",
+    "evidence": "deployment.json",
+    "postSmoke": "post-smoke.json",
+    "publicBrowser": "public-browser.json",
+    "publicBrowserPassed": true,
+    "probeProcessExit": 0,
+    "probeBrowserCloseAwaited": true,
+    "concurrentPlayersObserved": 1,
+    "concurrentSocketsObserved": 2,
+    "portableAuthenticatedDurabilityClaim": false,
+    "newSQLOrFlagsApplied": false
+  },
+  "integration": {
+    "revision": "9f23be355107ce0fdb783a5f68fd9cc93289cbda",
+    "releasePassed": 107,
+    "releaseFailed": 0,
+    "release": "merged-release-final.tap",
+    "focusedPassed": 70,
+    "focusedFailed": 0,
+    "focused": "merged-integration.tap",
+    "journalPassed": 266,
+    "journal": "merged-journal.tap",
+    "overlappingSelections": true
+  }
+}

@@ -1,0 +1,508 @@
+TAP version 13
+# Subtest: recovery decision accepts only the fully idle durable failed-world state
+ok 1 - recovery decision accepts only the fully idle durable failed-world state
+  ---
+  duration_ms: 0.7968
+  type: 'test'
+  ...
+# Subtest: recovery stays closed around economic operations and pending profile or world writes
+ok 2 - recovery stays closed around economic operations and pending profile or world writes
+  ---
+  duration_ms: 0.2036
+  type: 'test'
+  ...
+# Subtest: HTTP probe accepts only a 200 JSON status contract
+ok 3 - HTTP probe accepts only a 200 JSON status contract
+  ---
+  duration_ms: 25.3867
+  type: 'test'
+  ...
+# Subtest: four persistent eligible probes request one graceful recovery and exit nonzero
+ok 4 - four persistent eligible probes request one graceful recovery and exit nonzero
+  ---
+  duration_ms: 1.0905
+  type: 'test'
+  ...
+# Subtest: a healthy or unrecognized probe resets the consecutive failure count
+ok 5 - a healthy or unrecognized probe resets the consecutive failure count
+  ---
+  duration_ms: 0.2673
+  type: 'test'
+  ...
+# Subtest: pending profiles, enabled staging, hung probes, and unknown state do not trigger recovery
+ok 6 - pending profiles, enabled staging, hung probes, and unknown state do not trigger recovery
+  ---
+  duration_ms: 0.2192
+  type: 'test'
+  ...
+# Subtest: a probe that never resolves cannot advance or fire the failure guard
+ok 7 - a probe that never resolves cannot advance or fire the failure guard
+  ---
+  duration_ms: 0.1702
+  type: 'test'
+  ...
+# Subtest: external shutdown closes polling, forwards termination, escalates, and preserves child exit code
+ok 8 - external shutdown closes polling, forwards termination, escalates, and preserves child exit code
+  ---
+  duration_ms: 0.1977
+  type: 'test'
+  ...
+# Subtest: a child that exits on its own keeps its exit status
+ok 9 - a child that exits on its own keeps its exit status
+  ---
+  duration_ms: 0.1743
+  type: 'test'
+  ...
+# Subtest: child launch error settles once with a nonzero code
+ok 10 - child launch error settles once with a nonzero code
+  ---
+  duration_ms: 0.1789
+  type: 'test'
+  ...
+# Subtest: a real child completes its SIGTERM drain before recovery exits nonzero
+ok 11 - a real child completes its SIGTERM drain before recovery exits nonzero
+  ---
+  duration_ms: 81.9142
+  type: 'test'
+  ...
+# Subtest: deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+ok 12 - deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+  ---
+  duration_ms: 367.1011
+  type: 'test'
+  ...
+# Subtest: commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+ok 13 - commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+  ---
+  duration_ms: 325.9361
+  type: 'test'
+  ...
+# Subtest: same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+ok 14 - same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+  ---
+  duration_ms: 270.4064
+  type: 'test'
+  ...
+# Subtest: same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+ok 15 - same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+  ---
+  duration_ms: 565.7166
+  type: 'test'
+  ...
+# Subtest: paused and malformed economic commands are denied without a receipt or authority fence
+ok 16 - paused and malformed economic commands are denied without a receipt or authority fence
+  ---
+  duration_ms: 237.4303
+  type: 'test'
+  ...
+# Subtest: ambiguous failed commit fences the host rather than reopening mutations
+ok 17 - ambiguous failed commit fences the host rather than reopening mutations
+  ---
+  duration_ms: 228.8399
+  type: 'test'
+  ...
+# Subtest: v3 economic receipts preserve workshop metadata and derived pack limits outside paid workshop edits
+ok 18 - v3 economic receipts preserve workshop metadata and derived pack limits outside paid workshop edits
+  ---
+  duration_ms: 11.2359
+  type: 'test'
+  ...
+# Subtest: memory economic operation commits profile, world and immutable receipt together; exact replay is historical
+ok 19 - memory economic operation commits profile, world and immutable receipt together; exact replay is historical
+  ---
+  duration_ms: 7.5465
+  type: 'test'
+  ...
+# Subtest: client operation IDs remain opaque strings and receipt UUID reuse requires the exact command
+ok 20 - client operation IDs remain opaque strings and receipt UUID reuse requires the exact command
+  ---
+  duration_ms: 4.8243
+  type: 'test'
+  ...
+# Subtest: terminal gameplay denial receives a durable receipt without changing candidate snapshots
+ok 21 - terminal gameplay denial receives a durable receipt without changing candidate snapshots
+  ---
+  duration_ms: 5.4854
+  type: 'test'
+  ...
+# Subtest: community contribution uses the same profile, world and receipt authority
+ok 22 - community contribution uses the same profile, world and receipt authority
+  ---
+  duration_ms: 2.7232
+  type: 'test'
+  ...
+# Subtest: ordinary world saves preserve committed community metadata while allowing unchanged snapshots
+ok 23 - ordinary world saves preserve committed community metadata while allowing unchanged snapshots
+  ---
+  duration_ms: 3.149
+  type: 'test'
+  ...
+# Subtest: simultaneous economic commits using one profile and world baseline admit one winner
+ok 24 - simultaneous economic commits using one profile and world baseline admit one winner
+  ---
+  duration_ms: 3.211
+  type: 'test'
+  ...
+# Subtest: stale profile or world CAS changes neither row and creates no receipt
+ok 25 - stale profile or world CAS changes neither row and creates no receipt
+  ---
+  duration_ms: 1.6249
+  type: 'test'
+  ...
+# Subtest: economic UUIDs share memory receipt and pending-intent namespaces with other M5 families
+ok 26 - economic UUIDs share memory receipt and pending-intent namespaces with other M5 families
+  ---
+  duration_ms: 6.7399
+  type: 'test'
+  ...
+# Subtest: economic snapshots cannot rewrite managed pearl ownership
+ok 27 - economic snapshots cannot rewrite managed pearl ownership
+  ---
+  duration_ms: 2.8395
+  type: 'test'
+  ...
+# Subtest: contract rejects open commands, foreign ACK routing, noncanonical profiles and oversized snapshots
+ok 28 - contract rejects open commands, foreign ACK routing, noncanonical profiles and oversized snapshots
+  ---
+  duration_ms: 11.9793
+  type: 'test'
+  ...
+# Subtest: contract enforces the host contribution ceiling and exact client operation ID ACK
+ok 29 - contract enforces the host contribution ceiling and exact client operation ID ACK
+  ---
+  duration_ms: 0.9487
+  type: 'test'
+  ...
+# Subtest: family ingress rejects accessors, wrong worlds and unsupported families before any journal or SQL write
+ok 30 - family ingress rejects accessors, wrong worlds and unsupported families before any journal or SQL write
+  ---
+  duration_ms: 376.69
+  type: 'test'
+  ...
+# Subtest: family lanes exclude another operation and normal snapshots until the boundary releases them
+ok 31 - family lanes exclude another operation and normal snapshots until the boundary releases them
+  ---
+  duration_ms: 336.4626
+  type: 'test'
+  ...
+# Subtest: invalidating a reserved UID after SQL commit fences without applying the obsolete callback
+ok 32 - invalidating a reserved UID after SQL commit fences without applying the obsolete callback
+  ---
+  duration_ms: 317.5295
+  type: 'test'
+  ...
+# Subtest: an unexpected world mutation while SQL is pending cannot be published by a prepared family
+ok 33 - an unexpected world mutation while SQL is pending cannot be published by a prepared family
+  ---
+  duration_ms: 298.6345
+  type: 'test'
+  ...
+# Subtest: a trusted adapter releasing its capability cannot leave the result pending or bypass the world fence
+ok 34 - a trusted adapter releasing its capability cannot leave the result pending or bypass the world fence
+  ---
+  duration_ms: 254.4292
+  type: 'test'
+  ...
+# Subtest: the opt-in composes one ready ground owner while defaults keep the legacy host
+ok 35 - the opt-in composes one ready ground owner while defaults keep the legacy host
+  ---
+  duration_ms: 615.7363
+  type: 'test'
+  ...
+# Subtest: opt-in fails closed for an absent clock or a resource tick outside that clock
+ok 36 - opt-in fails closed for an absent clock or a resource tick outside that clock
+  ---
+  duration_ms: 523.4195
+  type: 'test'
+  ...
+# Subtest: a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+ok 37 - a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+  ---
+  duration_ms: 272.3697
+  type: 'test'
+  ...
+# Subtest: coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+ok 38 - coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+  ---
+  duration_ms: 274.5356
+  type: 'test'
+  ...
+# Subtest: shutdown settles and drains a pending checkpoint before the final world flush
+ok 39 - shutdown settles and drains a pending checkpoint before the final world flush
+  ---
+  duration_ms: 262.4875
+  type: 'test'
+  ...
+# Subtest: the trusted opt-in rejects accessors and the separate agent-trade lane
+ok 40 - the trusted opt-in rejects accessors and the separate agent-trade lane
+  ---
+  duration_ms: 0.4473
+  type: 'test'
+  ...
+# Subtest: accounts-only ground hosts reject guest admission
+ok 41 - accounts-only ground hosts reject guest admission
+  ---
+  duration_ms: 229.9021
+  type: 'test'
+  ...
+# Subtest: replacing the installed beforeTick owner fences the world
+ok 42 - replacing the installed beforeTick owner fences the world
+  ---
+  duration_ms: 220.4453
+  type: 'test'
+  ...
+# Subtest: SQL023 adopts a current v3 world and GroundHost durably composes workshop, raft, and resource receipts
+ok 43 - SQL023 adopts a current v3 world and GroundHost durably composes workshop, raft, and resource receipts
+  ---
+  duration_ms: 6484.7505
+  type: 'test'
+  ...
+# Subtest: load is owner-scoped, sends no account/character selector and projects the exact catalog DTO
+ok 44 - load is owner-scoped, sends no account/character selector and projects the exact catalog DTO
+  ---
+  duration_ms: 2.541
+  type: 'test'
+  ...
+# Subtest: save emits whole-config CAS and accepts only exact durable next revision
+ok 45 - save emits whole-config CAS and accepts only exact durable next revision
+  ---
+  duration_ms: 0.7987
+  type: 'test'
+  ...
+# Subtest: client rejects configuration outside current owner characters, eligible catalog or ceilings
+ok 46 - client rejects configuration outside current owner characters, eligible catalog or ceilings
+  ---
+  duration_ms: 0.2623
+  type: 'test'
+  ...
+# Subtest: malformed catalog, character projection and extra response fields are ignored until timeout
+ok 47 - malformed catalog, character projection and extra response fields are ignored until timeout
+  ---
+  duration_ms: 28.1588
+  type: 'test'
+  ...
+# Subtest: wrong but well-shaped save ACK remains pending and times out as uncertain
+ok 48 - wrong but well-shaped save ACK remains pending and times out as uncertain
+  ---
+  duration_ms: 30.6311
+  type: 'test'
+  ...
+# Subtest: auth change and transport close fence late responses and clear private state
+ok 49 - auth change and transport close fence late responses and clear private state
+  ---
+  duration_ms: 0.3284
+  type: 'test'
+  ...
+# Subtest: conflict preserves the server head and unavailable does not claim a saved result
+ok 50 - conflict preserves the server head and unavailable does not claim a saved result
+  ---
+  duration_ms: 0.4239
+  type: 'test'
+  ...
+# Subtest: private wire catalog/head derive owner and never leak across guests, characters or other accounts
+ok 51 - private wire catalog/head derive owner and never leak across guests, characters or other accounts
+  ---
+  duration_ms: 647.3842
+  type: 'test'
+  ...
+# Subtest: two characters share one connection ceiling and atomic CAS head; metadata cannot mutate gameplay or resume
+ok 52 - two characters share one connection ceiling and atomic CAS head; metadata cannot mutate gameplay or resume
+  ---
+  duration_ms: 428.7668
+  type: 'test'
+  ...
+# Subtest: catalog eligibility, own character scope, explicit stop and exact schema gate saves
+ok 53 - catalog eligibility, own character scope, explicit stop and exact schema gate saves
+  ---
+  duration_ms: 433.3546
+  type: 'test'
+  ...
+# Subtest: timeout holds the account slot across sessions until real save settles and cannot deliver a late result
+ok 54 - timeout holds the account slot across sessions until real save settles and cannot deliver a late result
+  ---
+  duration_ms: 516.5332
+  type: 'test'
+  ...
+# Subtest: SQL readiness absent closes only inference configuration
+ok 55 - SQL readiness absent closes only inference configuration
+  ---
+  duration_ms: 310.9654
+  type: 'test'
+  ...
+# Subtest: USD parsing is exact with no implicit default, and catalog refuses URLs or secret fields
+ok 56 - USD parsing is exact with no implicit default, and catalog refuses URLs or secret fields
+  ---
+  duration_ms: 213.0645
+  type: 'test'
+  ...
+# Subtest: SQL028 is rerunnable, private, and readiness checks RLS, schema and grants
+ok 57 - SQL028 is rerunnable, private, and readiness checks RLS, schema and grants
+  ---
+  duration_ms: 1302.566
+  type: 'test'
+  ...
+# Subtest: SQL028 CAS isolates owners/worlds, exact immediate retry replays, and concurrent writers serialize
+ok 58 - SQL028 CAS isolates owners/worlds, exact immediate retry replays, and concurrent writers serialize
+  ---
+  duration_ms: 1020.3537
+  type: 'test'
+  ...
+# Subtest: SQL validator rejects malformed ceilings, duplicate/unsorted rows, missing references and unsafe models
+ok 59 - SQL validator rejects malformed ceilings, duplicate/unsorted rows, missing references and unsafe models
+  ---
+  duration_ms: 913.1904
+  type: 'test'
+  ...
+# Subtest: SQL028 configuration survives disk reopen and immediate retry after a lost reply
+ok 60 - SQL028 configuration survives disk reopen and immediate retry after a lost reply
+  ---
+  duration_ms: 2087.3801
+  type: 'test'
+  ...
+# Subtest: memory inference config store isolates accounts and worlds and supports exact CAS replay
+ok 61 - memory inference config store isolates accounts and worlds and supports exact CAS replay
+  ---
+  duration_ms: 4.1059
+  type: 'test'
+  ...
+# Subtest: memory inference config store admits one concurrent writer and rejects malformed configuration
+ok 62 - memory inference config store admits one concurrent writer and rejects malformed configuration
+  ---
+  duration_ms: 0.4532
+  type: 'test'
+  ...
+# Subtest: Supabase inference config store uses scoped RPCs and validates responses without leaking provider errors
+ok 63 - Supabase inference config store uses scoped RPCs and validates responses without leaking provider errors
+  ---
+  duration_ms: 0.9141
+  type: 'test'
+  ...
+# Subtest: open loads whole owner config and empty amount has no implicit default or save path
+ok 64 - open loads whole owner config and empty amount has no implicit default or save path
+  ---
+  duration_ms: 1.8859
+  type: 'test'
+  ...
+# Subtest: explicit shared USD ceilings and admitted per-character model serialize once as a whole config
+ok 65 - explicit shared USD ceilings and admitted per-character model serialize once as a whole config
+  ---
+  duration_ms: 2.2032
+  type: 'test'
+  ...
+# Subtest: no model is silently chosen and malformed or over-ceiling amounts cannot be submitted
+ok 66 - no model is silently chosen and malformed or over-ceiling amounts cannot be submitted
+  ---
+  duration_ms: 0.5778
+  type: 'test'
+  ...
+# Subtest: conflict preserves the draft and only explicit reload adopts server configuration
+ok 67 - conflict preserves the draft and only explicit reload adopts server configuration
+  ---
+  duration_ms: 1.5019
+  type: 'test'
+  ...
+# Subtest: uncertain save keeps the draft; logout destroys it and closes the subview
+ok 68 - uncertain save keeps the draft; logout destroys it and closes the subview
+  ---
+  duration_ms: 0.4291
+  type: 'test'
+  ...
+# Subtest: ES/EN labels, keyboard focus, Escape return, 44px touch targets and bounded one-scroll layout
+ok 69 - ES/EN labels, keyboard focus, Escape return, 44px touch targets and bounded one-scroll layout
+  ---
+  duration_ms: 0.3582
+  type: 'test'
+  ...
+# Subtest: loading and non-durable states never permit save
+ok 70 - loading and non-durable states never permit save
+  ---
+  duration_ms: 0.2653
+  type: 'test'
+  ...
+# Subtest: USD helpers preserve nanodollar precision and reject blanks, exponents and negative values
+ok 71 - USD helpers preserve nanodollar precision and reject blanks, exponents and negative values
+  ---
+  duration_ms: 0.1388
+  type: 'test'
+  ...
+# Subtest: serialization uses the same ASCII order as protocol validation for mixed reference ids
+ok 72 - serialization uses the same ASCII order as protocol validation for mixed reference ids
+  ---
+  duration_ms: 0.3879
+  type: 'test'
+  ...
+# Subtest: default signed saves restore and spoofed account fields never create stored profiles
+ok 73 - default signed saves restore and spoofed account fields never create stored profiles
+  ---
+  duration_ms: 392.9291
+  type: 'test'
+  ...
+# Subtest: trusted account profile loads before WELCOME and overrides an older signed save
+ok 74 - trusted account profile loads before WELCOME and overrides an older signed save
+  ---
+  duration_ms: 333.4523
+  type: 'test'
+  ...
+# Subtest: null identity keeps signed anonymous saves; resolver errors fail closed without secrets
+ok 75 - null identity keeps signed anonymous saves; resolver errors fail closed without secrets
+  ---
+  duration_ms: 457.5391
+  type: 'test'
+  ...
+# Subtest: identity verifier gets request context without retained credential headers
+ok 76 - identity verifier gets request context without retained credential headers
+  ---
+  duration_ms: 255.3115
+  type: 'test'
+  ...
+# Subtest: duplicate HELLO and pending admission respect capacity, then release it on close
+ok 77 - duplicate HELLO and pending admission respect capacity, then release it on close
+  ---
+  duration_ms: 241.7029
+  type: 'test'
+  ...
+# Subtest: same account has one authority and remains reserved through its final write
+ok 78 - same account has one authority and remains reserved through its final write
+  ---
+  duration_ms: 286.2774
+  type: 'test'
+  ...
+# Subtest: close cancels an unresolved load and shutdown does not wait for a stuck resolver
+ok 79 - close cancels an unresolved load and shutdown does not wait for a stuck resolver
+  ---
+  duration_ms: 630.1159
+  type: 'test'
+  ...
+# Subtest: write snapshots are isolated and serialized; shutdown awaits the final ECS/profile state
+ok 80 - write snapshots are isolated and serialized; shutdown awaits the final ECS/profile state
+  ---
+  duration_ms: 269.1398
+  type: 'test'
+  ...
+# Subtest: CAS conflict fences the session and reports failed shutdown without overwriting newer state
+ok 81 - CAS conflict fences the session and reports failed shutdown without overwriting newer state
+  ---
+  duration_ms: 265.7353
+  type: 'test'
+  ...
+# Subtest: join timeout releases capacity and unavailable stores never admit an empty replacement
+ok 82 - join timeout releases capacity and unavailable stores never admit an empty replacement
+  ---
+  duration_ms: 462.8914
+  type: 'test'
+  ...
+# Subtest: real WebSocket account path saves on shutdown and loads across two host instances
+ok 83 - real WebSocket account path saves on shutdown and loads across two host instances
+  ---
+  duration_ms: 730.1641
+  type: 'test'
+  ...
+1..83
+# tests 83
+# suites 0
+# pass 83
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 14507.7037

@@ -1,0 +1,10 @@
+{
+  "checkedOn": "2026-10-11 (America/Mexico_City)",
+  "runtimeRevision": "62490c819b7ac2cfd1559fcf23c0604f606c648d",
+  "version": "0.6.0-alpha.59",
+  "protocol": 58,
+  "command": "node --test tests/meals-core.test.mjs tests/meals-host.test.mjs tests/meals-panel.test.mjs tests/survival-core.test.mjs tests/overload.test.mjs tests/overload-integration.test.mjs",
+  "passed": 33,
+  "failed": 0,
+  "scope": "Local integration after the concurrent Buccaneer merge; counts overlap the previous SRV02 regression. No new gameplay source changes in this delivery."
+}

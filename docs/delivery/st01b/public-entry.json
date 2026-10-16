@@ -1,0 +1,24 @@
+{
+  "schema": "st01b-public-entry/v1",
+  "at": "2026-10-13T05:14:32.767Z",
+  "origin": "https://marea.62.171.136.148.sslip.io",
+  "scope": "Ordinary guest HELLO only; no input, command, authentication or durable author actions.",
+  "version": "0.6.0-alpha.66",
+  "checks": {
+    "health200": true,
+    "alpha66": true,
+    "welcome": true,
+    "profile": true,
+    "snapshot": true,
+    "protocol60": true,
+    "connectionClosed": true
+  },
+  "failure": null,
+  "after": {
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storageErrors": 0,
+    "unsaved": 0
+  }
+}

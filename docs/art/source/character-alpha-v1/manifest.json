@@ -1,0 +1,709 @@
+{
+  "schema": "character-alpha-catalog/v1",
+  "scope": "Isolated 2D fixed-view visual study; not saved game identity or rigged 3D",
+  "reference": "User Horizon Tides creator reference, 2026-10-08; images individually generated with built-in image_gen",
+  "canvas": {
+    "width": 1024,
+    "height": 1536
+  },
+  "backgrounds": [
+    {
+      "id": "harbor",
+      "label": "Puerto tropical",
+      "url": "/docs/art/source/character-alpha-v1/harbor-background-v1.png",
+      "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/harbor-background-v1.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "99ee28d0b1767a1f9e26c06b6f9901052d77f1892341b4f3f515444e4a3c157c"
+    }
+  ],
+  "bodies": [
+    {
+      "id": "male",
+      "label": "Explorador",
+      "base": {
+        "url": "/docs/art/source/character-alpha-v1/male-base-v1.png",
+        "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-base-v1.png",
+        "width": 1024,
+        "height": 1536,
+        "sha256": "957f35ac9973a1a0720cb0e12c72cbbc43b10bcc8891064973240f27c75c951a"
+      },
+      "master": {
+        "url": "/docs/art/source/character-alpha-v1/male-scout-master-v1.png",
+        "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-scout-master-v1.png",
+        "width": 1024,
+        "height": 1536,
+        "sha256": "ccba6952f37893d1e5c738564bd3b299d38dac3fceff0c758a9649f9c887704c"
+      },
+      "defaults": {
+        "hair": "scout",
+        "eyes": "amber",
+        "brows": "scout",
+        "mouth": "smile",
+        "top": "scout",
+        "bottom": "scout",
+        "boots": "scout",
+        "gloves": "scout",
+        "harness": "scout",
+        "goggles": "scout",
+        "pouch": "scout",
+        "rope": "scout"
+      },
+      "layers": {
+        "hair": [
+          {
+            "id": "scout",
+            "label": "Explorador",
+            "url": "/docs/art/source/character-alpha-v1/male-hair-scout-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-hair-scout-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "d55192bc8f69af6e77b60f47d3181755193ca034edd721d8768efb8ae82b1d14",
+            "sourceRect": [
+              316,
+              23,
+              395,
+              325
+            ],
+            "rect": [
+              0.380859375,
+              0.013671875,
+              0.25390625,
+              0.146484375
+            ]
+          },
+          {
+            "id": "swept",
+            "label": "Barrido",
+            "url": "/docs/art/source/character-alpha-v1/male-hair-swept-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-hair-swept-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "8cfca9f8deb2695cdce800d4045a5a939268e683ebbda5bdff324f9a5f09dc2c",
+            "sourceRect": [
+              147,
+              54,
+              810,
+              708
+            ],
+            "rect": [
+              0.39453125,
+              0.01171875,
+              0.236328125,
+              0.13671875
+            ]
+          }
+        ],
+        "eyes": [
+          {
+            "id": "amber",
+            "label": "Ámbar",
+            "url": "/docs/art/source/character-alpha-v1/male-eyes-amber-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-eyes-amber-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "663c3bcdf90cd9f85cf0fc29fe51eb782cbd81cbcb426ed8139061a83b5f931c",
+            "sourceRect": [
+              440,
+              277,
+              282,
+              119
+            ],
+            "rect": [
+              0.4912109375,
+              0.08723958333333333,
+              0.087890625,
+              0.0234375
+            ]
+          },
+          {
+            "id": "blue",
+            "label": "Océano",
+            "url": "/docs/art/source/character-alpha-v1/male-eyes-blue-v2.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-eyes-blue-v2.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "f169acdfe47bea3e081792e9473b5dfa53d0816174c9c02e1861bddfec30dce6",
+            "sourceRect": [
+              440,
+              277,
+              283,
+              119
+            ],
+            "rect": [
+              0.4912109375,
+              0.08723958333333333,
+              0.087890625,
+              0.0234375
+            ]
+          }
+        ],
+        "brows": [
+          {
+            "id": "scout",
+            "label": "Aventurero",
+            "url": "/docs/art/source/character-alpha-v1/male-brows-scout-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-brows-scout-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "d38138d66c39fc568ffdeb6b53a99138328eccb0eb20830e1626f3b3641c5013",
+            "sourceRect": [
+              199,
+              307,
+              656,
+              190
+            ],
+            "rect": [
+              0.48828125,
+              0.07682291666666667,
+              0.095703125,
+              0.018880208333333332
+            ]
+          }
+        ],
+        "mouth": [
+          {
+            "id": "smile",
+            "label": "Sonrisa",
+            "url": "/docs/art/source/character-alpha-v1/male-mouth-smile-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-mouth-smile-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "a32eefebc170bf77557009e34915e904003f44c14c606cb618c05606bab315b8",
+            "sourceRect": [
+              445,
+              337,
+              192,
+              124
+            ],
+            "rect": [
+              0.50390625,
+              0.119140625,
+              0.056640625,
+              0.020182291666666668
+            ]
+          }
+        ],
+        "beard": [
+          {
+            "id": "short",
+            "label": "Barba corta",
+            "url": "/docs/art/source/character-alpha-v1/male-beard-short-v2.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-beard-short-v2.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "92ab50768084face2a7d79531ae9ab4f67ae8e95f143e6f46018b7186bd7aee7",
+            "sourceRect": [
+              336,
+              170,
+              418,
+              358
+            ],
+            "rect": [
+              0.4541015625,
+              0.09830729166666667,
+              0.1220703125,
+              0.051432291666666664
+            ],
+            "mask": "base"
+          }
+        ],
+        "top": [
+          {
+            "id": "scout",
+            "label": "Camisa marfil",
+            "url": "/docs/art/source/character-alpha-v1/male-shirt-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-shirt-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "e0983468cc25a5c9e8ea8846fca7c2b6de5dfb376c2d0b6fa0b9291e9906694b",
+            "sourceRect": [
+              80,
+              175,
+              909,
+              562
+            ],
+            "rect": [
+              0.2216796875,
+              0.15690104166666666,
+              0.5400390625,
+              0.2506510416666667
+            ]
+          }
+        ],
+        "bottom": [
+          {
+            "id": "scout",
+            "label": "Pantalón remendado",
+            "url": "/docs/art/source/character-alpha-v1/male-breeches-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-breeches-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "d17562e16d2f9fdc3dbecd6d350ddc75059993f33080e982d7d99cdb1d6004d9",
+            "sourceRect": [
+              98,
+              188,
+              893,
+              1018
+            ],
+            "rect": [
+              0.2705078125,
+              0.3919270833333333,
+              0.466796875,
+              0.3463541666666667
+            ]
+          }
+        ],
+        "boots": [
+          {
+            "id": "scout",
+            "label": "Cuero y latón",
+            "url": "/docs/art/source/character-alpha-v1/male-boots-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/male-boots-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "df5fef680e5edc7dc8274c5b5b119436de3dcf669e7ec334cf4b3d0f81c554ab",
+            "sourceRect": [
+              22,
+              1028,
+              977,
+              408
+            ],
+            "rect": [
+              0.1357421875,
+              0.7688802083333334,
+              0.7275390625,
+              0.19140625
+            ]
+          }
+        ],
+        "gloves": [
+          {
+            "id": "scout",
+            "label": "Guantes de cubierta",
+            "url": "/docs/art/source/character-alpha-v1/scout-gloves-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/scout-gloves-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "861b437a540c3ee14c73edaaffef4639fe0167149f697448aaa1025ed89c82de",
+            "sourceRect": [
+              27,
+              426,
+              966,
+              659
+            ],
+            "rect": [
+              0.265625,
+              0.3736979166666667,
+              0.5068359375,
+              0.154296875
+            ]
+          }
+        ],
+        "harness": [
+          {
+            "id": "scout",
+            "label": "Explorador",
+            "url": "/docs/art/source/character-alpha-v1/scout-harness-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/scout-harness-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "e2d5942bf897f41cfb43f9e37899aaa05db4fa6c842d06fb2245bf147ef50b9d",
+            "sourceRect": [
+              168,
+              156,
+              715,
+              955
+            ],
+            "rect": [
+              0.27734375,
+              0.17903645833333334,
+              0.380859375,
+              0.2669270833333333
+            ]
+          }
+        ],
+        "goggles": [
+          {
+            "id": "scout",
+            "label": "Gafas de latón",
+            "url": "/docs/art/source/character-alpha-v1/scout-goggles-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/scout-goggles-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "5b72d5a2fc6a39906ea6a827af23ab1f543ce8fab9bf1753ce1f632786b9dd47",
+            "sourceRect": [
+              306,
+              99,
+              481,
+              211
+            ],
+            "rect": [
+              0.4365234375,
+              0.037760416666666664,
+              0.193359375,
+              0.06315104166666667
+            ]
+          }
+        ],
+        "pouch": [
+          {
+            "id": "scout",
+            "label": "Bolsa de herramientas",
+            "url": "/docs/art/source/character-alpha-v1/scout-pouch-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/scout-pouch-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "b174ed35dff71fe65a5a2097366a1eea25f54cd088f2461c6b15a401cd944d1c",
+            "sourceRect": [
+              220,
+              296,
+              689,
+              934
+            ],
+            "rect": [
+              0.5654296875,
+              0.3860677083333333,
+              0.1044921875,
+              0.10546875
+            ]
+          }
+        ],
+        "rope": [
+          {
+            "id": "scout",
+            "label": "Cuerda marinera",
+            "url": "/docs/art/source/character-alpha-v1/scout-rope-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/scout-rope-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "825bdd26dbb19df33a1d4b20831b9d0cfeccf907c54b86b8ddab5b49452e205b",
+            "sourceRect": [
+              475,
+              163,
+              406,
+              975
+            ],
+            "rect": [
+              0.5166015625,
+              0.4029947916666667,
+              0.0869140625,
+              0.12174479166666667
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "female",
+      "label": "Exploradora",
+      "base": {
+        "url": "/docs/art/source/character-alpha-v1/female-base-v1.png",
+        "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/female-base-v1.png",
+        "width": 1024,
+        "height": 1536,
+        "sha256": "1c6665b9570be3b572cf14237bc61eac3786083ef1cd3355b3600a8750b1afe8"
+      },
+      "master": {
+        "url": "/docs/art/source/character-alpha-v1/female-scout-master-v1.png",
+        "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/female-scout-master-v1.png",
+        "width": 1024,
+        "height": 1536,
+        "sha256": "0ea6cb33ce60d3a28f1e27289fb5bf5e446b3e90800babf76b4ec68aa78f07e4"
+      },
+      "defaults": {
+        "hair": "pony",
+        "eyes": "amber",
+        "brows": "scout",
+        "mouth": "smile",
+        "top": "scout",
+        "bottom": "scout",
+        "boots": "scout",
+        "gloves": "scout",
+        "harness": "scout",
+        "goggles": "scout",
+        "pouch": "scout",
+        "rope": "scout"
+      },
+      "layers": {
+        "hair": [
+          {
+            "id": "pony",
+            "label": "Coleta magenta",
+            "url": "/docs/art/source/character-alpha-v1/female-hair-pony-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/female-hair-pony-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "8868686376b1c3f3b00529fe0ebe9b84f2c86e7f48021c666c9c22ce825672e8",
+            "sourceRect": [
+              75,
+              19,
+              949,
+              848
+            ],
+            "rect": [
+              0.322265625,
+              0.0032552083333333335,
+              0.3154296875,
+              0.18229166666666666
+            ]
+          }
+        ],
+        "eyes": [
+          {
+            "id": "amber",
+            "label": "Ámbar",
+            "url": "/docs/art/source/character-alpha-v1/female-eyes-amber-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/female-eyes-amber-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "6f834c739801d63eb926e161cc6cab2945d33e06cb76533e1ac99a2ca99afa29",
+            "sourceRect": [
+              172,
+              449,
+              760,
+              278
+            ],
+            "rect": [
+              0.513671875,
+              0.09505208333333333,
+              0.0859375,
+              0.0234375
+            ]
+          }
+        ],
+        "brows": [
+          {
+            "id": "scout",
+            "label": "Aventurera",
+            "url": "/docs/art/source/character-alpha-v1/female-brows-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/female-brows-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "033a704d51733fb88ec6dcb57762cbb82a2cb68b7ff9b5ae8462b398797466a5",
+            "sourceRect": [
+              261,
+              436,
+              587,
+              165
+            ],
+            "rect": [
+              0.5078125,
+              0.083984375,
+              0.09375,
+              0.020182291666666668
+            ]
+          }
+        ],
+        "mouth": [
+          {
+            "id": "smile",
+            "label": "Sonrisa",
+            "url": "/docs/art/source/character-alpha-v1/female-mouth-smile-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/female-mouth-smile-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "27dee3c25bb036bfc4ac6534aebf7c045daa6bf82bb4d162dbe4d72c3266fe7e",
+            "sourceRect": [
+              486,
+              374,
+              220,
+              129
+            ],
+            "rect": [
+              0.5244140625,
+              0.125,
+              0.0517578125,
+              0.018880208333333332
+            ]
+          }
+        ],
+        "beard": [],
+        "top": [
+          {
+            "id": "scout",
+            "label": "Camisa marfil",
+            "url": "/docs/art/source/character-alpha-v1/female-shirt-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/female-shirt-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "ffefe91f1d3520c57c58d9994d2dc37911654e9c3c39be6110ba3ec2ea1da50b",
+            "sourceRect": [
+              38,
+              323,
+              973,
+              745
+            ],
+            "rect": [
+              0.24609375,
+              0.16080729166666666,
+              0.5029296875,
+              0.23111979166666666
+            ]
+          }
+        ],
+        "bottom": [
+          {
+            "id": "scout",
+            "label": "Pantalón remendado",
+            "url": "/docs/art/source/character-alpha-v1/female-breeches-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/female-breeches-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "16d672f9e3c4f1890b7f478bd8efae24d5f02553c75dfa17038bbd188bf75944",
+            "sourceRect": [
+              116,
+              221,
+              878,
+              1060
+            ],
+            "rect": [
+              0.296875,
+              0.3658854166666667,
+              0.4677734375,
+              0.375
+            ]
+          }
+        ],
+        "boots": [
+          {
+            "id": "scout",
+            "label": "Cuero y latón",
+            "url": "/docs/art/source/character-alpha-v1/female-boots-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/female-boots-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "07f0630135b23ef5cc1c0b492f7b0f12761060ac063ae29860e0ac5d94e6bf65",
+            "sourceRect": [
+              38,
+              995,
+              964,
+              441
+            ],
+            "rect": [
+              0.169921875,
+              0.7669270833333334,
+              0.720703125,
+              0.19856770833333334
+            ]
+          }
+        ],
+        "gloves": [
+          {
+            "id": "scout",
+            "label": "Guantes de cubierta",
+            "url": "/docs/art/source/character-alpha-v1/scout-gloves-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/scout-gloves-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "861b437a540c3ee14c73edaaffef4639fe0167149f697448aaa1025ed89c82de",
+            "sourceRect": [
+              27,
+              426,
+              966,
+              659
+            ],
+            "rect": [
+              0.2783203125,
+              0.349609375,
+              0.501953125,
+              0.17838541666666666
+            ]
+          }
+        ],
+        "harness": [
+          {
+            "id": "scout",
+            "label": "Explorador",
+            "url": "/docs/art/source/character-alpha-v1/scout-harness-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/scout-harness-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "e2d5942bf897f41cfb43f9e37899aaa05db4fa6c842d06fb2245bf147ef50b9d",
+            "sourceRect": [
+              168,
+              156,
+              715,
+              955
+            ],
+            "rect": [
+              0.294921875,
+              0.177734375,
+              0.3662109375,
+              0.24153645833333334
+            ]
+          }
+        ],
+        "goggles": [
+          {
+            "id": "scout",
+            "label": "Gafas de latón",
+            "url": "/docs/art/source/character-alpha-v1/scout-goggles-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/scout-goggles-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "5b72d5a2fc6a39906ea6a827af23ab1f543ce8fab9bf1753ce1f632786b9dd47",
+            "sourceRect": [
+              306,
+              99,
+              481,
+              211
+            ],
+            "rect": [
+              0.447265625,
+              0.041015625,
+              0.1875,
+              0.06510416666666667
+            ]
+          }
+        ],
+        "pouch": [
+          {
+            "id": "scout",
+            "label": "Bolsa de herramientas",
+            "url": "/docs/art/source/character-alpha-v1/scout-pouch-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/scout-pouch-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "b174ed35dff71fe65a5a2097366a1eea25f54cd088f2461c6b15a401cd944d1c",
+            "sourceRect": [
+              220,
+              296,
+              689,
+              934
+            ],
+            "rect": [
+              0.5791015625,
+              0.36328125,
+              0.0947265625,
+              0.10221354166666667
+            ]
+          }
+        ],
+        "rope": [
+          {
+            "id": "scout",
+            "label": "Cuerda marinera",
+            "url": "/docs/art/source/character-alpha-v1/scout-rope-v1.png",
+            "mobileUrl": "/docs/art/source/character-alpha-v1/mobile/scout-rope-v1.png",
+            "width": 1024,
+            "height": 1536,
+            "sha256": "825bdd26dbb19df33a1d4b20831b9d0cfeccf907c54b86b8ddab5b49452e205b",
+            "sourceRect": [
+              475,
+              163,
+              406,
+              975
+            ],
+            "rect": [
+              0.5244140625,
+              0.3795572916666667,
+              0.08984375,
+              0.12174479166666667
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

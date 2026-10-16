@@ -1,0 +1,772 @@
+{
+  "schemaVersion": 1,
+  "family": "town-wood-v1",
+  "generatedAt": "2026-10-08T03:10:30.195Z",
+  "generator": {
+    "script": "tools/prepare-town-materials.mjs",
+    "python": "Python 3.14.3",
+    "pillow": "12.2.0",
+    "resampler": "Pillow Lanczos; RGB processing without explicit gamma/colorspace conversion"
+  },
+  "recipe": {
+    "schemaVersion": 1,
+    "family": "town-wood-v1",
+    "sourceDirectory": "materials/references",
+    "pairs": [
+      {
+        "id": "planks",
+        "albedo": "Textura de tablas de madera estilizadas.png",
+        "normal": "Textura normal púrpura de tablones de madera.png"
+      },
+      {
+        "id": "patched",
+        "albedo": "Textura de tablas de madera parchada estilizadas.png",
+        "normal": "Textura Normal de tablas de madera parchada estilizadas.png"
+      },
+      {
+        "id": "floor",
+        "albedo": "piso de tablas juntas escalonadas, clavos y desgaste para el suelo.png",
+        "normal": "Normal piso de tablas juntas escalonadas, clavos y desgaste para el suelo.png"
+      },
+      {
+        "id": "beam",
+        "albedo": "Textura de Viga horizontal de madera estilizadas.png",
+        "normal": "Textura Normal de Viga horizontal de madera estilizadas.png"
+      },
+      {
+        "id": "timber",
+        "albedo": "Textura de madera solida (timber) estilizadas.png",
+        "normal": "Textura normal de madera solida (timber) estilizadas.png"
+      },
+      {
+        "id": "iron",
+        "albedo": "Textura Timber with iron reinforcement straps.png",
+        "normal": "Textura Normal Timber with iron reinforcement straps.png"
+      },
+      {
+        "id": "corner",
+        "albedo": "Textura de esquina exterior de madera estilizadas.png",
+        "normal": "Textura normal de esquina exterior de madera estilizadas.png"
+      },
+      {
+        "id": "door",
+        "albedo": "Textura de muro de madera con puerta cerrada estilizadas.png",
+        "normal": "Textura normal de muro de madera con puerta cerrada estilizadas.png"
+      },
+      {
+        "id": "window",
+        "albedo": "Textura de muro de madera con ventana estilizadas.png",
+        "normal": "Textura normal de muro de madera con ventana estilizadas.png"
+      }
+    ],
+    "tileOrder": [
+      {
+        "id": "planks",
+        "tile": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "patched",
+        "tile": 1,
+        "x": 1,
+        "y": 0
+      },
+      {
+        "id": "floor",
+        "tile": 2,
+        "x": 2,
+        "y": 0
+      },
+      {
+        "id": "beam",
+        "tile": 3,
+        "x": 3,
+        "y": 0
+      },
+      {
+        "id": "timber",
+        "tile": 4,
+        "x": 0,
+        "y": 1
+      },
+      {
+        "id": "iron",
+        "tile": 5,
+        "x": 1,
+        "y": 1
+      },
+      {
+        "id": "corner",
+        "tile": 6,
+        "x": 2,
+        "y": 1
+      },
+      {
+        "id": "door",
+        "tile": 7,
+        "x": 3,
+        "y": 1
+      },
+      {
+        "id": "window",
+        "tile": 8,
+        "x": 0,
+        "y": 2
+      }
+    ],
+    "previews": {
+      "directory": "docs/art/town-wood/town-wood-v1/previews",
+      "size": 512,
+      "format": "WebP",
+      "albedoQuality": 90,
+      "normalLossless": true
+    },
+    "atlases": [
+      {
+        "device": "desktop",
+        "atlas": [
+          2048,
+          2048
+        ],
+        "tile": [
+          512,
+          512
+        ],
+        "gutter": 16,
+        "content": [
+          480,
+          480
+        ]
+      },
+      {
+        "device": "mobile",
+        "atlas": [
+          1024,
+          1024
+        ],
+        "tile": [
+          256,
+          256
+        ],
+        "gutter": 8,
+        "content": [
+          240,
+          240
+        ]
+      }
+    ],
+    "processing": {
+      "input": "RGB; source alpha discarded so black window openings remain opaque black",
+      "resize": "Pillow Lanczos; paired albedo and normal maps use identical resize dimensions",
+      "albedo": "RGB WebP quality 90, no explicit gamma or colorspace transform",
+      "normal": "RGB lossless WebP, channel convention preserved, no gamma or colorspace transform",
+      "gutter": "duplicate each content edge pixel through all four gutters and corners",
+      "emptyTiles": {
+        "albedoRgb": [
+          255,
+          255,
+          255
+        ],
+        "normalRgb": [
+          128,
+          128,
+          255
+        ]
+      }
+    }
+  },
+  "sources": [
+    {
+      "path": "docs/art/source/town-wood-v1/textures/planks-albedo.png",
+      "source": "materials/references/Textura de tablas de madera estilizadas.png",
+      "bytes": 1935406,
+      "sha256": "7b4845461f6b4bebc11beb5dd905906eecf476e86af5bfd58579d11d936cd741",
+      "pairId": "planks",
+      "channel": "albedo",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/planks-normal.png",
+      "source": "materials/references/Textura normal púrpura de tablones de madera.png",
+      "bytes": 1902031,
+      "sha256": "d94447513f9a0b8cc59219cec52a538b2e813c81be8d26affacae24c2134c7b1",
+      "pairId": "planks",
+      "channel": "normal",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/patched-albedo.png",
+      "source": "materials/references/Textura de tablas de madera parchada estilizadas.png",
+      "bytes": 2142589,
+      "sha256": "c34ea495267c4f0d1bbc06de100597440ec04c6c6e5812b4ac194de026ae2dd9",
+      "pairId": "patched",
+      "channel": "albedo",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/patched-normal.png",
+      "source": "materials/references/Textura Normal de tablas de madera parchada estilizadas.png",
+      "bytes": 1965864,
+      "sha256": "8da87c6cc93f5273cc2f04f9d682564ca5a9185fd0e0f6e77c321752fad0b34a",
+      "pairId": "patched",
+      "channel": "normal",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/floor-albedo.png",
+      "source": "materials/references/piso de tablas juntas escalonadas, clavos y desgaste para el suelo.png",
+      "bytes": 2511115,
+      "sha256": "735ae83cc0d8f689f4455bdbdb8ebc71c60bd76b15dec18c5a3834506f6f2726",
+      "pairId": "floor",
+      "channel": "albedo",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/floor-normal.png",
+      "source": "materials/references/Normal piso de tablas juntas escalonadas, clavos y desgaste para el suelo.png",
+      "bytes": 2210017,
+      "sha256": "d7c3179c1b062fb56978fb5bb152001cbda52f33b85ac93ac365d2bf1b351e3a",
+      "pairId": "floor",
+      "channel": "normal",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/beam-albedo.png",
+      "source": "materials/references/Textura de Viga horizontal de madera estilizadas.png",
+      "bytes": 2137628,
+      "sha256": "5d83a342e2b67ea90415ffef255a5f0cad2a4b8a4293b92044263be82279cfdc",
+      "pairId": "beam",
+      "channel": "albedo",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/beam-normal.png",
+      "source": "materials/references/Textura Normal de Viga horizontal de madera estilizadas.png",
+      "bytes": 2137448,
+      "sha256": "c5b314cfb58f91835263a7db39b641dc8335025d1affadc3780f4a483c532e03",
+      "pairId": "beam",
+      "channel": "normal",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/timber-albedo.png",
+      "source": "materials/references/Textura de madera solida (timber) estilizadas.png",
+      "bytes": 1985488,
+      "sha256": "3b6767dc61768dc0860cee3cfad3a538684d53fd6174309324a96c9a57f4b826",
+      "pairId": "timber",
+      "channel": "albedo",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/timber-normal.png",
+      "source": "materials/references/Textura normal de madera solida (timber) estilizadas.png",
+      "bytes": 1856130,
+      "sha256": "2ba7c59c4596821ba2308c537d75bf910dcb2b8dd44b52daba242030cb48baf3",
+      "pairId": "timber",
+      "channel": "normal",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/iron-albedo.png",
+      "source": "materials/references/Textura Timber with iron reinforcement straps.png",
+      "bytes": 2086163,
+      "sha256": "778528e07f8025ac4712cf1838bef30be51781d621078fa513eb4bc7b3cb6f84",
+      "pairId": "iron",
+      "channel": "albedo",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/iron-normal.png",
+      "source": "materials/references/Textura Normal Timber with iron reinforcement straps.png",
+      "bytes": 2294544,
+      "sha256": "b6594eadcb19d5e46177c83dd89427cb6f8b318bed486793bcc4f8e2090df830",
+      "pairId": "iron",
+      "channel": "normal",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/corner-albedo.png",
+      "source": "materials/references/Textura de esquina exterior de madera estilizadas.png",
+      "bytes": 2063289,
+      "sha256": "b57deaad39ff4a288e962a376441c50f2e013865d2026d9860fe14dd4e48c992",
+      "pairId": "corner",
+      "channel": "albedo",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/corner-normal.png",
+      "source": "materials/references/Textura normal de esquina exterior de madera estilizadas.png",
+      "bytes": 1871606,
+      "sha256": "3d0dbc07d0613bbeb09716d53795425070d71c20d5fd1a14389455b4d6c73bf9",
+      "pairId": "corner",
+      "channel": "normal",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/door-albedo.png",
+      "source": "materials/references/Textura de muro de madera con puerta cerrada estilizadas.png",
+      "bytes": 2244693,
+      "sha256": "d23c57d892beeb6fa2ce168290c7bbadd88abaf8eedae0f64648c84184c78dd0",
+      "pairId": "door",
+      "channel": "albedo",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/door-normal.png",
+      "source": "materials/references/Textura normal de muro de madera con puerta cerrada estilizadas.png",
+      "bytes": 2096762,
+      "sha256": "242b9a02ee961cb58aa1c3a1331efd7e12025dbd455c417d412f317a2158885b",
+      "pairId": "door",
+      "channel": "normal",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/window-albedo.png",
+      "source": "materials/references/Textura de muro de madera con ventana estilizadas.png",
+      "bytes": 2307544,
+      "sha256": "c94f9fc63077c1ca99f82350a990c55c4fb221bbc72ea5386b0aa36e5023bd93",
+      "pairId": "window",
+      "channel": "albedo",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "docs/art/source/town-wood-v1/textures/window-normal.png",
+      "source": "materials/references/Textura normal de muro de madera con ventana estilizadas.png",
+      "bytes": 2139495,
+      "sha256": "7f56cb29a7c795051e6a9c9915c1403a948a5557d70b98522177d3e12e1a4721",
+      "pairId": "window",
+      "channel": "normal",
+      "width": 1254,
+      "height": 1254
+    }
+  ],
+  "derivatives": [
+    {
+      "id": "preview-planks-albedo",
+      "kind": "preview",
+      "pairId": "planks",
+      "channel": "albedo",
+      "path": "docs/art/town-wood/town-wood-v1/previews/planks-albedo-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 59890,
+      "sha256": "1d135ced27807a61e7019184dff161f0ba8a426920bd94021e4fd49d1d91472c",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 90,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-planks-normal",
+      "kind": "preview",
+      "pairId": "planks",
+      "channel": "normal",
+      "path": "docs/art/town-wood/town-wood-v1/previews/planks-normal-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 295408,
+      "sha256": "62510a89b6f8fad7853ee37ce359174a9d66a6cf21c49c6248fcc4c849149067",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-patched-albedo",
+      "kind": "preview",
+      "pairId": "patched",
+      "channel": "albedo",
+      "path": "docs/art/town-wood/town-wood-v1/previews/patched-albedo-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 73720,
+      "sha256": "47f007e8a2d5bba14381428dafdb06de440c8ab10b37d538ccbc2a9bacf51495",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 90,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-patched-normal",
+      "kind": "preview",
+      "pairId": "patched",
+      "channel": "normal",
+      "path": "docs/art/town-wood/town-wood-v1/previews/patched-normal-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 335126,
+      "sha256": "aeda6032d473ec2f029bd5e623cd88481ef44f816b6e2b3e4a3a91401f01ad50",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-floor-albedo",
+      "kind": "preview",
+      "pairId": "floor",
+      "channel": "albedo",
+      "path": "docs/art/town-wood/town-wood-v1/previews/floor-albedo-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 91578,
+      "sha256": "9d963adace67f762efe4c04a019444c345ae978c5625fdfdbffb79c1557e1d8f",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 90,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-floor-normal",
+      "kind": "preview",
+      "pairId": "floor",
+      "channel": "normal",
+      "path": "docs/art/town-wood/town-wood-v1/previews/floor-normal-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 355674,
+      "sha256": "fd41d008c1152f14974c61b6d0a1a7b528af7afef9b6970cf83788db95cecc3b",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-beam-albedo",
+      "kind": "preview",
+      "pairId": "beam",
+      "channel": "albedo",
+      "path": "docs/art/town-wood/town-wood-v1/previews/beam-albedo-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 66762,
+      "sha256": "74bf76af303591868be2905cbbc0a34185b24de6d76ce3c5c1cb288fd5050f7c",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 90,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-beam-normal",
+      "kind": "preview",
+      "pairId": "beam",
+      "channel": "normal",
+      "path": "docs/art/town-wood/town-wood-v1/previews/beam-normal-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 353946,
+      "sha256": "28a6ba40b8da3f3ee5b6f897feaa623533ed1e91cfb3d096d83e21b38eb92fe7",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-timber-albedo",
+      "kind": "preview",
+      "pairId": "timber",
+      "channel": "albedo",
+      "path": "docs/art/town-wood/town-wood-v1/previews/timber-albedo-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 61278,
+      "sha256": "e5126bec46dddbf6eaab984ba136baec2d2d10baa2d062449ef13b29e99d16a7",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 90,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-timber-normal",
+      "kind": "preview",
+      "pairId": "timber",
+      "channel": "normal",
+      "path": "docs/art/town-wood/town-wood-v1/previews/timber-normal-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 316970,
+      "sha256": "fea47b6e17346e7bdab3d982f9930e60ac5299a94228b17fd33a408c3ef2b8bb",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-iron-albedo",
+      "kind": "preview",
+      "pairId": "iron",
+      "channel": "albedo",
+      "path": "docs/art/town-wood/town-wood-v1/previews/iron-albedo-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 67446,
+      "sha256": "f3b65d4498e8afd37d5390f4cb127df467da18f380149111e08d3eb510bd68f9",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 90,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-iron-normal",
+      "kind": "preview",
+      "pairId": "iron",
+      "channel": "normal",
+      "path": "docs/art/town-wood/town-wood-v1/previews/iron-normal-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 397734,
+      "sha256": "3e8378f3a030a8d2d6d7ae38b5fef398ceb7ff59ef93c19e569547c3d68bd6e4",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-corner-albedo",
+      "kind": "preview",
+      "pairId": "corner",
+      "channel": "albedo",
+      "path": "docs/art/town-wood/town-wood-v1/previews/corner-albedo-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 68734,
+      "sha256": "8e3ba0663b11522cbc1d99d21b14723683853ccea04e07ee80609ec485094cb2",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 90,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-corner-normal",
+      "kind": "preview",
+      "pairId": "corner",
+      "channel": "normal",
+      "path": "docs/art/town-wood/town-wood-v1/previews/corner-normal-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 322446,
+      "sha256": "605737a8bcdbb0715b9a3df66e27e9af44a7397694cd70ccbefee5c156f170ce",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-door-albedo",
+      "kind": "preview",
+      "pairId": "door",
+      "channel": "albedo",
+      "path": "docs/art/town-wood/town-wood-v1/previews/door-albedo-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 82034,
+      "sha256": "3ce510cf69946a1ec0380a30f2e0f916d89966ca3152addb5050f0388cd28304",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 90,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-door-normal",
+      "kind": "preview",
+      "pairId": "door",
+      "channel": "normal",
+      "path": "docs/art/town-wood/town-wood-v1/previews/door-normal-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 359130,
+      "sha256": "43d8bf0ceca0a3e704b8fa9d799d12d2a5adf3d707b1f96ce0af8b6ccd681540",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-window-albedo",
+      "kind": "preview",
+      "pairId": "window",
+      "channel": "albedo",
+      "path": "docs/art/town-wood/town-wood-v1/previews/window-albedo-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 66300,
+      "sha256": "4e5258b5a34e1090280c7bd4c83dcc102d8bb09e60d54a28f6060500d955ac65",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 90,
+        "method": 6
+      }
+    },
+    {
+      "id": "preview-window-normal",
+      "kind": "preview",
+      "pairId": "window",
+      "channel": "normal",
+      "path": "docs/art/town-wood/town-wood-v1/previews/window-normal-512.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 307016,
+      "sha256": "986593c7608ccd178d5d9e5717c0bf04fba85e77f15ca217124e83a758bddfdf",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "method": 6
+      }
+    },
+    {
+      "id": "atlas-albedo-desktop",
+      "kind": "atlas",
+      "channel": "albedo",
+      "device": "desktop",
+      "path": "assets/textures/town-wood-v1/atlas-albedo-desktop.webp",
+      "width": 2048,
+      "height": 2048,
+      "tileSize": 512,
+      "contentSize": 480,
+      "gutter": 16,
+      "bytes": 578874,
+      "sha256": "60d8b81a9ebdb59d6eeb8d824747dbf98cf121d7b3a5a99ef72b5e07d0683692",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 90,
+        "method": 6
+      }
+    },
+    {
+      "id": "atlas-albedo-mobile",
+      "kind": "atlas",
+      "channel": "albedo",
+      "device": "mobile",
+      "path": "assets/textures/town-wood-v1/atlas-albedo-mobile.webp",
+      "width": 1024,
+      "height": 1024,
+      "tileSize": 256,
+      "contentSize": 240,
+      "gutter": 8,
+      "bytes": 171306,
+      "sha256": "3183e1746238df62e39f271628ba6e4d5353a04d499b91e0ddcdecd928ed8daf",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 90,
+        "method": 6
+      }
+    },
+    {
+      "id": "atlas-normal-desktop",
+      "kind": "atlas",
+      "channel": "normal",
+      "device": "desktop",
+      "path": "assets/textures/town-wood-v1/atlas-normal-desktop.webp",
+      "width": 2048,
+      "height": 2048,
+      "tileSize": 512,
+      "contentSize": 480,
+      "gutter": 16,
+      "bytes": 2834816,
+      "sha256": "030905006e5140c12abb373a248be8a5d0136bbc062c330a5cc150a1e6856076",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "method": 6
+      }
+    },
+    {
+      "id": "atlas-normal-mobile",
+      "kind": "atlas",
+      "channel": "normal",
+      "device": "mobile",
+      "path": "assets/textures/town-wood-v1/atlas-normal-mobile.webp",
+      "width": 1024,
+      "height": 1024,
+      "tileSize": 256,
+      "contentSize": 240,
+      "gutter": 8,
+      "bytes": 774780,
+      "sha256": "bb4b101d18c44a164a14d578a6fad321bda35ecce042915466552b52a08c4c42",
+      "format": "WEBP",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "method": 6
+      }
+    }
+  ],
+  "aggregateRuntimeBytes": 4359776
+}

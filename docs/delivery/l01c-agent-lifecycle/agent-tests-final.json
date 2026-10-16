@@ -1,0 +1,20 @@
+{
+  "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs",
+  "startedAt": null,
+  "finishedAt": null,
+  "resultRetrievedAt": "2026-10-08T11:26:57Z",
+  "timestampBasis": "Exact process start/end timestamps were not captured for this direct unified_exec invocation.",
+  "evidenceBasis": "Root reviewed both tool output chunks of unified_exec session 50082; final tool result exit code 0.",
+  "exitCode": 0,
+  "signal": null,
+  "error": null,
+  "tests": 97,
+  "pass": 96,
+  "fail": 0,
+  "skipped": 1,
+  "cancelled": 0,
+  "durationMs": 24727.5473,
+  "log": "agent-tests-final-tail.tap",
+  "logCompleteness": "Partial TAP: persisted final output chunk, tests 57-97 and final totals. Tests 1-56 were reviewed in the initial tool output but were not persisted.",
+  "testChange": "Wait for asynchronous receiver delivery in bounded chat retry test before asserting exactly one copy; retry/deduplication rules unchanged."
+}

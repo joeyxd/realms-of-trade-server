@@ -1,0 +1,14 @@
+{
+  "schema": "mn.starter-workshop.public.v1",
+  "at": "2026-10-11T02:17:18.441Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "mode": "full-workshop",
+  "protocol": 47,
+  "gameVersion": "0.6.0-alpha.39",
+  "checks": [],
+  "errors": [],
+  "pass": false,
+  "failure": "public health check failed",
+  "completedAt": "2026-10-11T02:17:19.064Z"
+}

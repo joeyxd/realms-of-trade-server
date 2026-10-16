@@ -1,0 +1,172 @@
+TAP version 13
+# Subtest: default pearl command still uses the existing immediate gameplay helper
+ok 1 - default pearl command still uses the existing immediate gameplay helper
+  ---
+  duration_ms: 489.4363
+  type: 'test'
+  ...
+# Subtest: without the common mount, give retains the existing bag-only gameplay route
+ok 2 - without the common mount, give retains the existing bag-only gameplay route
+  ---
+  duration_ms: 367.1581
+  type: 'test'
+  ...
+# Subtest: mounted false, true and async command decisions never fall through to a local pearl mutation
+ok 3 - mounted false, true and async command decisions never fall through to a local pearl mutation
+  ---
+  duration_ms: 323.0163
+  type: 'test'
+  ...
+# Subtest: command access rejection precedes the receipted dispatch hook
+ok 4 - command access rejection precedes the receipted dispatch hook
+  ---
+  duration_ms: 310.3089
+  type: 'test'
+  ...
+# Subtest: command hook receives frozen trusted plans and valid commands report dispatch, not helper success
+ok 5 - command hook receives frozen trusted plans and valid commands report dispatch, not helper success
+  ---
+  duration_ms: 415.5383
+  type: 'test'
+  ...
+# Subtest: unknown player, pearl and dev operations return false without consulting the hook
+ok 6 - unknown player, pearl and dev operations return false without consulting the hook
+  ---
+  duration_ms: 403.9837
+  type: 'test'
+  ...
+# Subtest: actor account reservation blocks a real tutorial helper with only private denial feedback
+ok 7 - actor account reservation blocks a real tutorial helper with only private denial feedback
+  ---
+  duration_ms: 298.9615
+  type: 'test'
+  ...
+# Subtest: actor profile UID and ledger-only UID lanes block scoped commands
+ok 8 - actor profile UID and ledger-only UID lanes block scoped commands
+  ---
+  duration_ms: 269.1536
+  type: 'test'
+  ...
+# Subtest: target account, target UID and forged target profile identity block pearl give before its helper
+ok 9 - target account, target UID and forged target profile identity block pearl give before its helper
+  ---
+  duration_ms: 303.7382
+  type: 'test'
+  ...
+# Subtest: a live guest client can be resolved as a pearl target without client-supplied account identity
+ok 10 - a live guest client can be resolved as a pearl target without client-supplied account identity
+  ---
+  duration_ms: 276.4613
+  type: 'test'
+  ...
+# Subtest: world commands stop on another account or unknown UID while actor scoped commands remain disjoint
+ok 11 - world commands stop on another account or unknown UID while actor scoped commands remain disjoint
+  ---
+  duration_ms: 293.7396
+  type: 'test'
+  ...
+# Subtest: world gate allows ordinary connected profiles and an in-flight account save task
+ok 12 - world gate allows ordinary connected profiles and an in-flight account save task
+  ---
+  duration_ms: 334.9042
+  type: 'test'
+  ...
+# Subtest: world gate denies representative real helpers before changing profile, economy or receipt caches
+ok 13 - world gate denies representative real helpers before changing profile, economy or receipt caches
+  ---
+  duration_ms: 330.5266
+  type: 'test'
+  ...
+# Subtest: global pearl gate rejects every queued lane map, held and fenced handles
+ok 14 - global pearl gate rejects every queued lane map, held and fenced handles
+  ---
+  duration_ms: 0.9823
+  type: 'test'
+  ...
+# Subtest: recovery and hydration barriers deny world commands before and after the queue becomes ready
+ok 15 - recovery and hydration barriers deny world commands before and after the queue becomes ready
+  ---
+  duration_ms: 0.3526
+  type: 'test'
+  ...
+# Subtest: global gate also rejects a pearl queue UID, and closed or failed sessions fail closed
+ok 16 - global gate also rejects a pearl queue UID, and closed or failed sessions fail closed
+  ---
+  duration_ms: 307.2619
+  type: 'test'
+  ...
+# Subtest: all dev world operations use the global plan; character operations stay actor scoped
+ok 17 - all dev world operations use the global plan; character operations stay actor scoped
+  ---
+  duration_ms: 347.5157
+  type: 'test'
+  ...
+# Subtest: direct command calls cannot bypass guards through a stale or forged client object
+ok 18 - direct command calls cannot bypass guards through a stale or forged client object
+  ---
+  duration_ms: 347.9361
+  type: 'test'
+  ...
+# Subtest: async command hooks and invalid hook configuration fail closed before helper mutation
+ok 19 - async command hooks and invalid hook configuration fail closed before helper mutation
+  ---
+  duration_ms: 459.7958
+  type: 'test'
+  ...
+# Subtest: commandDenied reaches only the player as the fixed localized Rewards toast without profile or UID data
+ok 20 - commandDenied reaches only the player as the fixed localized Rewards toast without profile or UID data
+  ---
+  duration_ms: 1.9347
+  type: 'test'
+  ...
+# Subtest: debug teleport obeys actor lanes while pause, ping and input messages remain available
+ok 21 - debug teleport obeys actor lanes while pause, ping and input messages remain available
+  ---
+  duration_ms: 312.5756
+  type: 'test'
+  ...
+# Subtest: real staging keeps local commands blocked after durable confirmation until manual drain
+ok 22 - real staging keeps local commands blocked after durable confirmation until manual drain
+  ---
+  duration_ms: 303.3238
+  type: 'test'
+  ...
+# Subtest: an equip that can succeed leaves gear and dirty scheduling intact until its account releases
+ok 23 - an equip that can succeed leaves gear and dirty scheduling intact until its account releases
+  ---
+  duration_ms: 300.2828
+  type: 'test'
+  ...
+# Subtest: a ready quest retains its reward, RNG and progress while blocked then grants once on a fresh command
+ok 24 - a ready quest retains its reward, RNG and progress while blocked then grants once on a fresh command
+  ---
+  duration_ms: 306.1435
+  type: 'test'
+  ...
+# Subtest: a real chest cannot consume drops, RNG or an unknown mint lane while another UID is reserved
+ok 25 - a real chest cannot consume drops, RNG or an unknown mint lane while another UID is reserved
+  ---
+  duration_ms: 314.0648
+  type: 'test'
+  ...
+# Subtest: dev mint and drop do no work across a foreign UID reservation; fresh mint proceeds after release
+ok 26 - dev mint and drop do no work across a foreign UID reservation; fresh mint proceeds after release
+  ---
+  duration_ms: 264.3453
+  type: 'test'
+  ...
+# Subtest: valid commerce and raft reads wait before caches or acknowledgements and remain usable after release
+ok 27 - valid commerce and raft reads wait before caches or acknowledgements and remain usable after release
+  ---
+  duration_ms: 237.3183
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8547.2139

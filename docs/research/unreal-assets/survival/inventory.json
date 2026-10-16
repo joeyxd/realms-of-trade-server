@@ -1,0 +1,170 @@
+{
+  "project": "SimpleMultiplayerSurvival",
+  "engine_association": "5.8",
+  "content_root": "Content",
+  "content_files": 1779,
+  "content_bytes": 2561311525,
+  "content_gib_decimal": 2.561,
+  "content_gib_binary": 2.385,
+  "packs": {
+    "BigNiagaraBundle": {
+      "files": 67,
+      "bytes": 129188757,
+      "extensions": {
+        ".uasset": 67
+      }
+    },
+    "Dreamrise_SMSK": {
+      "files": 334,
+      "bytes": 455387294,
+      "extensions": {
+        ".uasset": 332,
+        ".umap": 2
+      }
+    },
+    "NiagaraExamples": {
+      "files": 669,
+      "bytes": 1278142521,
+      "extensions": {
+        ".uasset": 667,
+        ".umap": 2
+      }
+    },
+    "Splash": {
+      "files": 2,
+      "bytes": 1398510,
+      "extensions": {
+        ".png": 2
+      }
+    },
+    "SwordTrailVFX": {
+      "files": 98,
+      "bytes": 172586250,
+      "extensions": {
+        ".uasset": 97,
+        ".umap": 1
+      }
+    },
+    "__ExternalActors__": {
+      "files": 1,
+      "bytes": 849,
+      "extensions": {
+        ".uasset": 1
+      }
+    },
+    "sA_Megapack_v1": {
+      "files": 608,
+      "bytes": 524607344,
+      "extensions": {
+        ".png": 44,
+        ".tga": 1,
+        ".uasset": 555,
+        ".umap": 8
+      }
+    }
+  },
+  "extensions": {
+    ".png": {
+      "files": 46,
+      "bytes": 27977761
+    },
+    ".tga": {
+      "files": 1,
+      "bytes": 786476
+    },
+    ".uasset": {
+      "files": 1719,
+      "bytes": 2519286417
+    },
+    ".umap": {
+      "files": 13,
+      "bytes": 13260871
+    }
+  },
+  "categories": {
+    "animation-candidate": {
+      "files": 66,
+      "bytes": 156454223
+    },
+    "audio-candidate": {
+      "files": 31,
+      "bytes": 27171035
+    },
+    "blueprint-logic": {
+      "files": 119,
+      "bytes": 22291584
+    },
+    "data-or-type-definition": {
+      "files": 14,
+      "bytes": 381717
+    },
+    "map-or-data": {
+      "files": 24,
+      "bytes": 19832588
+    },
+    "material-candidate": {
+      "files": 447,
+      "bytes": 152269157
+    },
+    "mesh-candidate": {
+      "files": 230,
+      "bytes": 163485886
+    },
+    "niagara-system-candidate": {
+      "files": 5,
+      "bytes": 7080431
+    },
+    "raster-image": {
+      "files": 47,
+      "bytes": 28764237
+    },
+    "skeletal-mesh-candidate": {
+      "files": 48,
+      "bytes": 120787818
+    },
+    "starter-map-actor": {
+      "files": 1,
+      "bytes": 849
+    },
+    "texture-candidate": {
+      "files": 145,
+      "bytes": 598385851
+    },
+    "unreal-map": {
+      "files": 2,
+      "bytes": 3148732
+    },
+    "unreal-package-unresolved": {
+      "files": 329,
+      "bytes": 914209642
+    },
+    "vfx-candidate": {
+      "files": 271,
+      "bytes": 347047775
+    }
+  },
+  "project_metadata": {
+    "uproject_bytes": 92,
+    "config_files": [
+      "DefaultEditor.ini",
+      "DefaultEngine.ini",
+      "DefaultGame.ini",
+      "DefaultInput.ini"
+    ],
+    "source_or_raw_asset_dirs": [],
+    "source_code_directories_present": false,
+    "plugins_declared_in_uproject": false
+  },
+  "scope": {
+    "included": "all regular files under Content, including map external actors if present",
+    "excluded_dirs": [
+      "DerivedDataCache",
+      "Intermediate",
+      "Saved",
+      "Binaries",
+      ".git"
+    ],
+    "no_engine_base_modules": true,
+    "no_content_exports_or_imports": true
+  }
+}

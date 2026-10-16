@@ -1,0 +1,89 @@
+{
+  "checkedAt": "2026-10-09T22:46:49.672Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "runtimeCommit": "5fa9658b5f2265bd1ea8c58b3e59722fcbe4603d",
+  "runtimeImage": "sha256:47fde459d5d2f9a43663f2f34b57c33d17ba7caf3b595903f64d2f6ba5ca1bb4",
+  "sourceArchiveSha256": "3f854879c111750b44181be2201bb8175ef472da0da68eefe19155419d17a3b3",
+  "routes": [
+    {
+      "route": "/health",
+      "status": 200
+    },
+    {
+      "route": "/",
+      "status": 200
+    },
+    {
+      "route": "/auth/sdk.js",
+      "status": 200
+    },
+    {
+      "route": "/src/net/protocol.js",
+      "status": 200
+    },
+    {
+      "route": "/styles/liveNavigation.css",
+      "status": 200
+    },
+    {
+      "route": "/.env",
+      "status": 404
+    },
+    {
+      "route": "/server/index.mjs",
+      "status": 404
+    },
+    {
+      "route": "/.git/config",
+      "status": 404
+    },
+    {
+      "route": "/.scratch/pc-host/session.json",
+      "status": 404
+    }
+  ],
+  "accounts": true,
+  "walletEnabled": false,
+  "status": {
+    "version": "0.6.0-alpha.16",
+    "players": 0,
+    "max": 4,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 388,
+        "errors": 0
+      }
+    }
+  },
+  "tested": [
+    "four public WSS guests with movement/chat",
+    "real account gather wood/stone and craft stone axe",
+    "Supabase profile save and restore after real orderly container restart",
+    "economic checkpoint restored at restart",
+    "public Chrome guest join and maps",
+    "private file paths return404"
+  ],
+  "limitations": [
+    "brief four-client sample only",
+    "not abrupt-crash or all-action atomicity proof",
+    "resource depletion is process local",
+    "durable pearl/death-drop gameplay and community contribution harness not mounted",
+    "email confirmation redirect allowlist still depends on Supabase configuration for this hostname"
+  ]
+}

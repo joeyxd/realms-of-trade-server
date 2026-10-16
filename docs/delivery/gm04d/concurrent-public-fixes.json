@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-12T05:46:31.511Z",
+  "upstream": "c146b08675d56870ddc9e579861cd9902c48c999",
+  "version": "0.6.0-alpha.63",
+  "protocol": 59,
+  "files": [
+    "tests/companion-pairing-client.test.mjs",
+    "tests/companion-pairing-network.test.mjs",
+    "tests/companion-pairing-ui.test.mjs",
+    "tests/paired-companion.test.mjs",
+    "tests/agent-network-client.test.mjs"
+  ],
+  "tests": 27,
+  "pass": 27,
+  "fail": 0,
+  "exitCode": 0
+}

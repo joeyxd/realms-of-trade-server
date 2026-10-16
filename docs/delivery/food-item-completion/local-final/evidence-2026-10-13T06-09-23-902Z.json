@@ -1,0 +1,446 @@
+{
+  "schema": "mn.srv02.special-meals.local.v1",
+  "generatedAt": "2026-10-13T06:09:23.902Z",
+  "purpose": "Exercise the real FreshwaterPanel DOM and freshwater stylesheet with a disposable local stub client.",
+  "scope": "Serial Chromium only; no game server, account, network service, or persistent player writes. Browser checks are visual/layout and client transport fixture evidence, not server authority acceptance.",
+  "viewports": [
+    {
+      "name": "desktop-es",
+      "locale": "es",
+      "width": 1280,
+      "height": 900,
+      "mobile": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "foodAtlasRequests": [
+        {
+          "path": "/assets/ui/kit/foods-v1.webp",
+          "status": 200
+        }
+      ],
+      "assertions": {
+        "panelBounds": {
+          "x": 804,
+          "y": 110,
+          "right": 1244,
+          "bottom": 790,
+          "width": 440,
+          "height": 680,
+          "scrollHeight": 1832,
+          "clientHeight": 678,
+          "documentWidth": 1280,
+          "viewportWidth": 1280,
+          "viewportHeight": 900
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "provisionDetailsDoNotConsumeAndStayOpen": true,
+        "immediateNutritionAndLifecycleExplained": true,
+        "foodArt": {
+          "icons": 14,
+          "urls": [
+            "url(\"http://127.0.0.1:59698/assets/ui/kit/foods-v1.webp\")"
+          ],
+          "dimensions": [
+            512,
+            512
+          ],
+          "outcomes": 3,
+          "ingredients": 5,
+          "foodButtons": 5
+        },
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 804,
+          "y": 110,
+          "right": 1244,
+          "bottom": 790,
+          "scrollTop": 1197,
+          "scrollHeight": 1875,
+          "clientHeight": 678,
+          "documentWidth": 1280
+        }
+      },
+      "screenshots": [
+        "desktop-es-2026-10-13T06-09-23-902Z-guide.png",
+        "desktop-es-2026-10-13T06-09-23-902Z-recipes.png",
+        "desktop-es-2026-10-13T06-09-23-902Z-top.png",
+        "desktop-es-2026-10-13T06-09-23-902Z-bottom.png"
+      ]
+    },
+    {
+      "name": "desktop-en",
+      "locale": "en",
+      "width": 1280,
+      "height": 900,
+      "mobile": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "foodAtlasRequests": [
+        {
+          "path": "/assets/ui/kit/foods-v1.webp",
+          "status": 200
+        }
+      ],
+      "assertions": {
+        "panelBounds": {
+          "x": 804,
+          "y": 110,
+          "right": 1244,
+          "bottom": 790,
+          "width": 440,
+          "height": 680,
+          "scrollHeight": 1765,
+          "clientHeight": 678,
+          "documentWidth": 1280,
+          "viewportWidth": 1280,
+          "viewportHeight": 900
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "provisionDetailsDoNotConsumeAndStayOpen": true,
+        "immediateNutritionAndLifecycleExplained": true,
+        "foodArt": {
+          "icons": 14,
+          "urls": [
+            "url(\"http://127.0.0.1:59698/assets/ui/kit/foods-v1.webp\")"
+          ],
+          "dimensions": [
+            512,
+            512
+          ],
+          "outcomes": 3,
+          "ingredients": 5,
+          "foodButtons": 5
+        },
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 804,
+          "y": 110,
+          "right": 1244,
+          "bottom": 790,
+          "scrollTop": 1146,
+          "scrollHeight": 1824,
+          "clientHeight": 678,
+          "documentWidth": 1280
+        }
+      },
+      "screenshots": [
+        "desktop-en-2026-10-13T06-09-23-902Z-guide.png",
+        "desktop-en-2026-10-13T06-09-23-902Z-recipes.png",
+        "desktop-en-2026-10-13T06-09-23-902Z-top.png",
+        "desktop-en-2026-10-13T06-09-23-902Z-bottom.png"
+      ]
+    },
+    {
+      "name": "mobile-es",
+      "locale": "es",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "foodAtlasRequests": [
+        {
+          "path": "/assets/ui/kit/foods-v1-mobile.webp",
+          "status": 200
+        }
+      ],
+      "assertions": {
+        "panelBounds": {
+          "x": 0,
+          "y": 236.328125,
+          "right": 390,
+          "bottom": 844,
+          "width": 390,
+          "height": 607.671875,
+          "scrollHeight": 1873,
+          "clientHeight": 606,
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "viewportHeight": 844
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "provisionDetailsDoNotConsumeAndStayOpen": true,
+        "immediateNutritionAndLifecycleExplained": true,
+        "foodArt": {
+          "icons": 14,
+          "urls": [
+            "url(\"http://127.0.0.1:59698/assets/ui/kit/foods-v1-mobile.webp\")"
+          ],
+          "dimensions": [
+            256,
+            256
+          ],
+          "outcomes": 3,
+          "ingredients": 5,
+          "foodButtons": 5
+        },
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 0,
+          "y": 236.328125,
+          "right": 390,
+          "bottom": 844,
+          "scrollTop": 1310,
+          "scrollHeight": 1916,
+          "clientHeight": 606,
+          "documentWidth": 390
+        }
+      },
+      "screenshots": [
+        "mobile-es-2026-10-13T06-09-23-902Z-guide.png",
+        "mobile-es-2026-10-13T06-09-23-902Z-recipes.png",
+        "mobile-es-2026-10-13T06-09-23-902Z-top.png",
+        "mobile-es-2026-10-13T06-09-23-902Z-bottom.png"
+      ]
+    },
+    {
+      "name": "mobile-en",
+      "locale": "en",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "foodAtlasRequests": [
+        {
+          "path": "/assets/ui/kit/foods-v1-mobile.webp",
+          "status": 200
+        }
+      ],
+      "assertions": {
+        "panelBounds": {
+          "x": 0,
+          "y": 236.328125,
+          "right": 390,
+          "bottom": 844,
+          "width": 390,
+          "height": 607.671875,
+          "scrollHeight": 1873,
+          "clientHeight": 606,
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "viewportHeight": 844
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "provisionDetailsDoNotConsumeAndStayOpen": true,
+        "immediateNutritionAndLifecycleExplained": true,
+        "foodArt": {
+          "icons": 14,
+          "urls": [
+            "url(\"http://127.0.0.1:59698/assets/ui/kit/foods-v1-mobile.webp\")"
+          ],
+          "dimensions": [
+            256,
+            256
+          ],
+          "outcomes": 3,
+          "ingredients": 5,
+          "foodButtons": 5
+        },
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 0,
+          "y": 236.328125,
+          "right": 390,
+          "bottom": 844,
+          "scrollTop": 1310,
+          "scrollHeight": 1916,
+          "clientHeight": 606,
+          "documentWidth": 390
+        }
+      },
+      "screenshots": [
+        "mobile-en-2026-10-13T06-09-23-902Z-guide.png",
+        "mobile-en-2026-10-13T06-09-23-902Z-recipes.png",
+        "mobile-en-2026-10-13T06-09-23-902Z-top.png",
+        "mobile-en-2026-10-13T06-09-23-902Z-bottom.png"
+      ]
+    },
+    {
+      "name": "mobile-rotated-es",
+      "locale": "es",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "rotated": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "foodAtlasRequests": [
+        {
+          "path": "/assets/ui/kit/foods-v1-mobile.webp",
+          "status": 200
+        }
+      ],
+      "assertions": {
+        "panelBounds": {
+          "x": 54.6015625,
+          "y": 392,
+          "right": 335.3984375,
+          "bottom": 832,
+          "width": 280.796875,
+          "height": 440,
+          "scrollHeight": 1821,
+          "clientHeight": 279,
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "viewportHeight": 844
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "provisionDetailsDoNotConsumeAndStayOpen": true,
+        "immediateNutritionAndLifecycleExplained": true,
+        "foodArt": {
+          "icons": 14,
+          "urls": [
+            "url(\"http://127.0.0.1:59698/assets/ui/kit/foods-v1-mobile.webp\")"
+          ],
+          "dimensions": [
+            256,
+            256
+          ],
+          "outcomes": 3,
+          "ingredients": 5,
+          "foodButtons": 5
+        },
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 54.6015625,
+          "y": 392,
+          "right": 335.3984375,
+          "bottom": 832,
+          "scrollTop": 1585,
+          "scrollHeight": 1864,
+          "clientHeight": 279,
+          "documentWidth": 390
+        }
+      },
+      "screenshots": [
+        "mobile-rotated-es-2026-10-13T06-09-23-902Z-guide.png",
+        "mobile-rotated-es-2026-10-13T06-09-23-902Z-recipes.png",
+        "mobile-rotated-es-2026-10-13T06-09-23-902Z-top.png",
+        "mobile-rotated-es-2026-10-13T06-09-23-902Z-bottom.png"
+      ]
+    },
+    {
+      "name": "mobile-rotated-en",
+      "locale": "en",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "rotated": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "foodAtlasRequests": [
+        {
+          "path": "/assets/ui/kit/foods-v1-mobile.webp",
+          "status": 200
+        }
+      ],
+      "assertions": {
+        "panelBounds": {
+          "x": 54.6015625,
+          "y": 392,
+          "right": 335.3984375,
+          "bottom": 832,
+          "width": 280.796875,
+          "height": 440,
+          "scrollHeight": 1755,
+          "clientHeight": 279,
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "viewportHeight": 844
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "provisionDetailsDoNotConsumeAndStayOpen": true,
+        "immediateNutritionAndLifecycleExplained": true,
+        "foodArt": {
+          "icons": 14,
+          "urls": [
+            "url(\"http://127.0.0.1:59698/assets/ui/kit/foods-v1-mobile.webp\")"
+          ],
+          "dimensions": [
+            256,
+            256
+          ],
+          "outcomes": 3,
+          "ingredients": 5,
+          "foodButtons": 5
+        },
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 54.6015625,
+          "y": 392,
+          "right": 335.3984375,
+          "bottom": 832,
+          "scrollTop": 1535,
+          "scrollHeight": 1814,
+          "clientHeight": 279,
+          "documentWidth": 390
+        }
+      },
+      "screenshots": [
+        "mobile-rotated-en-2026-10-13T06-09-23-902Z-guide.png",
+        "mobile-rotated-en-2026-10-13T06-09-23-902Z-recipes.png",
+        "mobile-rotated-en-2026-10-13T06-09-23-902Z-top.png",
+        "mobile-rotated-en-2026-10-13T06-09-23-902Z-bottom.png"
+      ]
+    }
+  ],
+  "failures": [],
+  "screenshots": [
+    "desktop-es-2026-10-13T06-09-23-902Z-guide.png",
+    "desktop-es-2026-10-13T06-09-23-902Z-recipes.png",
+    "desktop-es-2026-10-13T06-09-23-902Z-top.png",
+    "desktop-es-2026-10-13T06-09-23-902Z-bottom.png",
+    "desktop-en-2026-10-13T06-09-23-902Z-guide.png",
+    "desktop-en-2026-10-13T06-09-23-902Z-recipes.png",
+    "desktop-en-2026-10-13T06-09-23-902Z-top.png",
+    "desktop-en-2026-10-13T06-09-23-902Z-bottom.png",
+    "mobile-es-2026-10-13T06-09-23-902Z-guide.png",
+    "mobile-es-2026-10-13T06-09-23-902Z-recipes.png",
+    "mobile-es-2026-10-13T06-09-23-902Z-top.png",
+    "mobile-es-2026-10-13T06-09-23-902Z-bottom.png",
+    "mobile-en-2026-10-13T06-09-23-902Z-guide.png",
+    "mobile-en-2026-10-13T06-09-23-902Z-recipes.png",
+    "mobile-en-2026-10-13T06-09-23-902Z-top.png",
+    "mobile-en-2026-10-13T06-09-23-902Z-bottom.png",
+    "mobile-rotated-es-2026-10-13T06-09-23-902Z-guide.png",
+    "mobile-rotated-es-2026-10-13T06-09-23-902Z-recipes.png",
+    "mobile-rotated-es-2026-10-13T06-09-23-902Z-top.png",
+    "mobile-rotated-es-2026-10-13T06-09-23-902Z-bottom.png",
+    "mobile-rotated-en-2026-10-13T06-09-23-902Z-guide.png",
+    "mobile-rotated-en-2026-10-13T06-09-23-902Z-recipes.png",
+    "mobile-rotated-en-2026-10-13T06-09-23-902Z-top.png",
+    "mobile-rotated-en-2026-10-13T06-09-23-902Z-bottom.png"
+  ],
+  "completedAt": "2026-10-13T06:09:31.146Z"
+}

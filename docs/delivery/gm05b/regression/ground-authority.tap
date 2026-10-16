@@ -1,0 +1,86 @@
+TAP version 13
+# Subtest: GameHost resource transaction recovers and replays once after SIGKILL after-journal-prepare
+ok 1 - GameHost resource transaction recovers and replays once after SIGKILL after-journal-prepare
+  ---
+  duration_ms: 9518.5284
+  type: 'test'
+  ...
+# File-backed PGlite, actual GameHost command, SQL018/019 recovery, and process SIGKILL; reopen applies no migrations.
+# Subtest: GameHost resource transaction recovers and replays once after SIGKILL after-sql-commit
+ok 2 - GameHost resource transaction recovers and replays once after SIGKILL after-sql-commit
+  ---
+  duration_ms: 9272.7992
+  type: 'test'
+  ...
+# File-backed PGlite, actual GameHost command, SQL018/019 recovery, and process SIGKILL; reopen applies no migrations.
+# Subtest: SQL018/019 GameHost routes human operations and world checkpoints through one recovered authority
+ok 3 - SQL018/019 GameHost routes human operations and world checkpoints through one recovered authority
+  ---
+  duration_ms: 11341.5341
+  type: 'test'
+  ...
+# SQL001–021 service-role PGlite integration: commerce, cooperative logging, community contribution, artisan learning, checkpoint, lost response and restart replay.
+# Subtest: SQL018/019 GameHost durably places and removes a learned storage piece
+ok 4 - SQL018/019 GameHost durably places and removes a learned storage piece
+  ---
+  duration_ms: 6905.4752
+  type: 'test'
+  ...
+# SQL001–021 storage editor integration: one place and one removal, exact material/capacity deltas, and one SQL014/018/019 receipt each.
+# Subtest: the opt-in composes one ready ground owner while defaults keep the legacy host
+ok 5 - the opt-in composes one ready ground owner while defaults keep the legacy host
+  ---
+  duration_ms: 933.5973
+  type: 'test'
+  ...
+# Subtest: opt-in fails closed for an absent clock or a resource tick outside that clock
+ok 6 - opt-in fails closed for an absent clock or a resource tick outside that clock
+  ---
+  duration_ms: 1177.1798
+  type: 'test'
+  ...
+# Subtest: a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+ok 7 - a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+  ---
+  duration_ms: 542.8875
+  type: 'test'
+  ...
+# Subtest: coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+ok 8 - coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+  ---
+  duration_ms: 832.6442
+  type: 'test'
+  ...
+# Subtest: shutdown settles and drains a pending checkpoint before the final world flush
+ok 9 - shutdown settles and drains a pending checkpoint before the final world flush
+  ---
+  duration_ms: 456.8731
+  type: 'test'
+  ...
+# Subtest: the trusted opt-in rejects accessors and the separate agent-trade lane
+ok 10 - the trusted opt-in rejects accessors and the separate agent-trade lane
+  ---
+  duration_ms: 0.5879
+  type: 'test'
+  ...
+# Subtest: accounts-only ground hosts reject guest admission
+ok 11 - accounts-only ground hosts reject guest admission
+  ---
+  duration_ms: 553.9493
+  type: 'test'
+  ...
+# Subtest: replacing the installed beforeTick owner fences the world
+ok 12 - replacing the installed beforeTick owner fences the world
+  ---
+  duration_ms: 1024.8877
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 44234.1048

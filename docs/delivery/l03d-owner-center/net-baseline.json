@@ -1,0 +1,49 @@
+{
+    "baselineRevision":  "c9d3bbfeb3c32408cc7af7f850d87209d78d4971",
+    "test":  "tests/net.test.mjs",
+    "command":  [
+                    "node",
+                    "--test",
+                    "--test-concurrency=1",
+                    "--test-reporter=tap",
+                    "tests/net.test.mjs"
+                ],
+    "attempts":  [
+                     {
+                         "attempt":  1,
+                         "status":  "timed_out",
+                         "summary":  {
+                                         "tests":  2,
+                                         "pass":  1,
+                                         "fail":  0,
+                                         "cancelled":  1,
+                                         "skipped":  0,
+                                         "durationMs":  282352.687
+                                     },
+                         "failure":  {
+                                         "test":  "two players at 100 ms RTT: prediction holds, they see each other walk and swing",
+                                         "failureType":  "testTimeoutFailure",
+                                         "error":  "test timed out after 30000ms",
+                                         "code":  "ERR_TEST_FAILURE",
+                                         "reportedTestDurationMs":  98972.987
+                                     }
+                     },
+                     {
+                         "attempt":  2,
+                         "status":  "passed",
+                         "summary":  {
+                                         "tests":  2,
+                                         "pass":  2,
+                                         "fail":  0,
+                                         "cancelled":  0,
+                                         "skipped":  0,
+                                         "durationMs":  9340.023
+                                     }
+                     }
+                 ],
+    "tapFiles":  {
+                     "attempt1":  "net-baseline-attempt1.tap",
+                     "passingAttempt":  "net-baseline.tap"
+                 },
+    "interpretation":  "The baseline has one timeout under the delayed first run and passes on the second. This is insufficient to attribute the current revision failure to a regression or to baseline behavior."
+}

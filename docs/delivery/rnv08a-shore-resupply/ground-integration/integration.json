@@ -1,0 +1,24 @@
+﻿{
+    "capturedAt":  "2026-10-11T06:42:24.3828183Z",
+    "head":  "0e224a1f65e6f6354b1436c29adb2252c25815fc",
+    "command":  "node --test tests/ground-death-baseline.test.mjs tests/ground-death-automatic.test.mjs tests/ground-death-host.test.mjs tests/ground-death-drop.test.mjs tests/ground-death-process.test.mjs tests/ground-family-host.test.mjs tests/naval-shore-stop.test.mjs",
+    "files":  [
+                  "tests/ground-death-baseline.test.mjs",
+                  "tests/ground-death-automatic.test.mjs",
+                  "tests/ground-death-host.test.mjs",
+                  "tests/ground-death-drop.test.mjs",
+                  "tests/ground-death-process.test.mjs",
+                  "tests/ground-family-host.test.mjs",
+                  "tests/naval-shore-stop.test.mjs"
+              ],
+    "tests":  36,
+    "passed":  36,
+    "failed":  0,
+    "cancelled":  0,
+    "skipped":  0,
+    "todo":  0,
+    "durationMs":  79961.4128,
+    "tapFile":  "integration.tap",
+    "tapSha256":  "F782C2EF5C9F1827E2ACF8F97145AC57C65586A9A51B3A0D5B314A312A3AC3ED",
+    "result":  "passed"
+}

@@ -1,0 +1,13 @@
+✔ allowlisted session opens through bearer check without storing the token (6.8726ms)
+✔ guest and authenticated denied account cannot reach onOpen (1.0451ms)
+✔ sign-out during lazy editor open closes the editor after onOpen resolves (14.9283ms)
+✔ periodic revalidation revokes an active editor when capability disappears (16.0946ms)
+✔ a gameplay transition while the online permission check is pending cannot open the editor (6.2002ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 235.5176

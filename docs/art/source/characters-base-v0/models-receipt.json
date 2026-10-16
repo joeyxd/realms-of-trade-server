@@ -1,0 +1,184 @@
+{
+  "schema": "characters-base-v0/receipt-1",
+  "generatedBy": "tools/characters-base-v0/generate.mjs",
+  "sourceSha256": "009b7096fd85bade41ba64c9b4412363f10a16ec0dc4eb5eec251535e0a8725a",
+  "coordinateSystem": {
+    "up": "+Y",
+    "front": "+Z",
+    "characterLeft": "+X",
+    "units": "meters"
+  },
+  "pose": "arms relaxed down; A pose preview may rotate arms later",
+  "design": "stylized painted pirate-comic human base blockout; bald, neutral face, sleeveless modest top, short modest shorts, bare feet",
+  "rig": {
+    "bones": [
+      "body",
+      "hips",
+      "thighL",
+      "shinL",
+      "thighR",
+      "shinR",
+      "spine",
+      "chest",
+      "head",
+      "armL",
+      "foreL",
+      "armR",
+      "foreR",
+      "clothF",
+      "clothB"
+    ],
+    "parent": {
+      "hips": "body",
+      "thighL": "hips",
+      "shinL": "thighL",
+      "thighR": "hips",
+      "shinR": "thighR",
+      "spine": "hips",
+      "chest": "spine",
+      "head": "chest",
+      "armL": "chest",
+      "foreL": "armL",
+      "armR": "chest",
+      "foreR": "armR",
+      "clothF": "hips",
+      "clothB": "hips"
+    },
+    "vertexWeights": "up to 4 normalized weights per vertex"
+  },
+  "models": {
+    "male-base-v0.glb": {
+      "sha256": "b61d2cd29475e6cc198e90b314e8b5f9c8e8e97ebd58e07ac2cd1e703006b747",
+      "bytes": 444592,
+      "triangles": 9676,
+      "heightMeters": 1.865,
+      "bounds": [
+        0.015,
+        1.88
+      ],
+      "meshes": [
+        {
+          "name": "body_base",
+          "vertices": 3364,
+          "triangles": 6168
+        },
+        {
+          "name": "head_base",
+          "vertices": 649,
+          "triangles": 1204
+        },
+        {
+          "name": "eyes_base",
+          "vertices": 328,
+          "triangles": 480
+        },
+        {
+          "name": "base_top",
+          "vertices": 588,
+          "triangles": 1056
+        },
+        {
+          "name": "base_shorts",
+          "vertices": 412,
+          "triangles": 768
+        }
+      ],
+      "joints": [
+        "body",
+        "hips",
+        "thighL",
+        "shinL",
+        "thighR",
+        "shinR",
+        "spine",
+        "chest",
+        "head",
+        "armL",
+        "foreL",
+        "armR",
+        "foreR",
+        "clothF",
+        "clothB"
+      ],
+      "channels": [
+        "POSITION",
+        "NORMAL",
+        "COLOR_0",
+        "JOINTS_0",
+        "WEIGHTS_0"
+      ],
+      "skin": true,
+      "normalizedWeights": true
+    },
+    "female-base-v0.glb": {
+      "sha256": "9f1d4f507b68f5d16cfc91bc1faf11c88fd95dfeae168a882f90f9db0dba1e5c",
+      "bytes": 444608,
+      "triangles": 9676,
+      "heightMeters": 1.835,
+      "bounds": [
+        0.015,
+        1.85
+      ],
+      "meshes": [
+        {
+          "name": "body_base",
+          "vertices": 3364,
+          "triangles": 6168
+        },
+        {
+          "name": "head_base",
+          "vertices": 649,
+          "triangles": 1204
+        },
+        {
+          "name": "eyes_base",
+          "vertices": 328,
+          "triangles": 480
+        },
+        {
+          "name": "base_top",
+          "vertices": 588,
+          "triangles": 1056
+        },
+        {
+          "name": "base_shorts",
+          "vertices": 412,
+          "triangles": 768
+        }
+      ],
+      "joints": [
+        "body",
+        "hips",
+        "thighL",
+        "shinL",
+        "thighR",
+        "shinR",
+        "spine",
+        "chest",
+        "head",
+        "armL",
+        "foreL",
+        "armR",
+        "foreR",
+        "clothF",
+        "clothB"
+      ],
+      "channels": [
+        "POSITION",
+        "NORMAL",
+        "COLOR_0",
+        "JOINTS_0",
+        "WEIGHTS_0"
+      ],
+      "skin": true,
+      "normalizedWeights": true
+    }
+  },
+  "limitations": [
+    "Blockout v0 built from lofted parametric surfaces; silhouette and joints need visual review in the project viewer.",
+    "Neutral face and clothes are vertex-painted color regions; no textures, hair, beard, accessories, shoes, or animation clips.",
+    "Eyes are simple layered face-conforming color patches for rig blockout; production facial anatomy and expression detail need a later art pass.",
+    "A small number of intersecting loft surfaces remain at joins; review deformation around shoulders, hips, fingers, and feet before production use.",
+    "The 15-bone game hierarchy is reused, but this generator does not alter the runtime, importer, asset manifest, or profiles."
+  ]
+}

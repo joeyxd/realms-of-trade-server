@@ -1,0 +1,324 @@
+{
+  "generatedAt": "2026-10-11T16:47:47.889Z",
+  "expectedRevision": "f26aae2090d0a9edd8ed7229714db89192d52f80",
+  "sources": [
+    {
+      "file": "assets/manifest.json",
+      "sha256": "707e5dfab2689ed4f0efaf633d2a1923715676c885110383275fd2d51829bef8",
+      "bytes": 14597,
+      "matchesGit": true
+    },
+    {
+      "file": "src/data/meta.js",
+      "sha256": "5593a7372d625ddc7589c18c9c53897a12fdb6eaaeb208cd6931d2e7a76048dc",
+      "bytes": 253,
+      "matchesGit": true
+    },
+    {
+      "file": "src/render/characters.js",
+      "sha256": "d24d05f77f94ca31940cdf500c7f4d81b25910c8d5744f2567e79cd1958eef3f",
+      "bytes": 34958,
+      "matchesGit": true
+    },
+    {
+      "file": "src/render/charlooks.js",
+      "sha256": "9686ba87ea340ad6f9f6f5873f3de765f48f8bfee83b41e4a479265866120d3d",
+      "bytes": 65633,
+      "matchesGit": true
+    },
+    {
+      "file": "src/render/assets/manifest.js",
+      "sha256": "fb40776de2a0dcde6527238bede3128208b4ba2941397473831fdb2399778491",
+      "bytes": 10145,
+      "matchesGit": true
+    },
+    {
+      "file": "src/render/assets/registry.js",
+      "sha256": "33b1066a58fe3f960a175aa2ae6207b0fad1d94ec8b1b52d33918bf524845bd2",
+      "bytes": 12731,
+      "matchesGit": true
+    },
+    {
+      "file": "assets/models/buccaneer-v1-desktop.glb",
+      "sha256": "77dc25943805f9d4e76e968ee0bbcca8e252cd373f497f62a27f4e3a24869d15",
+      "bytes": 1612100,
+      "matchesGit": true
+    },
+    {
+      "file": "assets/models/buccaneer-v1-mobile.glb",
+      "sha256": "6f077a21b780c8eef9995b9b1239b48de0ebd5847047206029765758de6bf3ff",
+      "bytes": 1041024,
+      "matchesGit": true
+    },
+    {
+      "file": "assets/ui/portraits/buccaneer-v1-desktop.webp",
+      "sha256": "a21693be8b780b472a21e70615d29a7bc92f8205388ef093a52829b848d3a4f7",
+      "bytes": 290760,
+      "matchesGit": true
+    },
+    {
+      "file": "assets/ui/portraits/buccaneer-v1-mobile.webp",
+      "sha256": "aa2aea28968df268bae26963e06ca5fea421cf3ddf477fd2888d49587ce5de99",
+      "bytes": 82546,
+      "matchesGit": true
+    }
+  ],
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900,
+      "touch": false,
+      "errors": [],
+      "requests": [
+        "https://marea.62.171.136.148.sslip.io/assets/models/buccaneer-v1-desktop.glb",
+        "https://marea.62.171.136.148.sslip.io/assets/ui/portraits/buccaneer-v1-desktop.webp"
+      ],
+      "player": {
+        "online": true,
+        "skin": 2,
+        "imported": "char:buccaneer-v1",
+        "tris": 9280,
+        "assets": [
+          {
+            "id": "char:buccaneer-v1",
+            "kind": "char",
+            "src": "models/buccaneer-v1-desktop.glb",
+            "selectedSrc": "models/buccaneer-v1-desktop.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 9164,
+            "notes": []
+          },
+          {
+            "id": "tex:portrait-buccaneer-v1",
+            "kind": "tex",
+            "src": "ui/portraits/buccaneer-v1-desktop.webp",
+            "selectedSrc": "ui/portraits/buccaneer-v1-desktop.webp",
+            "state": "ok",
+            "error": "",
+            "tris": 0,
+            "notes": []
+          }
+        ],
+        "albedo": 1024,
+        "portrait": 512
+      },
+      "status": "passed"
+    },
+    {
+      "name": "mobile",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "errors": [],
+      "requests": [
+        "https://marea.62.171.136.148.sslip.io/assets/models/buccaneer-v1-mobile.glb",
+        "https://marea.62.171.136.148.sslip.io/assets/ui/portraits/buccaneer-v1-mobile.webp"
+      ],
+      "player": {
+        "online": true,
+        "skin": 2,
+        "imported": "char:buccaneer-v1",
+        "tris": 9280,
+        "assets": [
+          {
+            "id": "char:buccaneer-v1",
+            "kind": "char",
+            "src": "models/buccaneer-v1-desktop.glb",
+            "selectedSrc": "models/buccaneer-v1-mobile.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 9164,
+            "notes": []
+          },
+          {
+            "id": "tex:portrait-buccaneer-v1",
+            "kind": "tex",
+            "src": "ui/portraits/buccaneer-v1-desktop.webp",
+            "selectedSrc": "ui/portraits/buccaneer-v1-mobile.webp",
+            "state": "ok",
+            "error": "",
+            "tris": 0,
+            "notes": []
+          }
+        ],
+        "albedo": 512,
+        "portrait": 256
+      },
+      "status": "passed"
+    }
+  ],
+  "before": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.52",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 1171,
+    "uptime": 28,
+    "stepMs": 1.245,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2970,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "after": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.52",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 3622,
+    "uptime": 69,
+    "stepMs": 1.326,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": true,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2970,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 18,
+      "late": 6,
+      "trimmed": 0,
+      "clamped": 3,
+      "kbOut": 19107,
+      "kbIn": 17.6,
+      "dropped": 0
+    }
+  }
+}

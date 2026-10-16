@@ -1,0 +1,32 @@
+✔ every look builds valid skinned geometry within budget (419.048ms)
+✔ player looks are adult-proportioned (head ≤ 1/6 of the body, hats aside) (0.1816ms)
+✔ midnight preset removes global fill while retaining independent local-source controls (0.8488ms)
+✔ live gameplay follows the supplied server phase even when saved TOD says day (1.8011ms)
+✔ Caldera night keeps local fire strength without restoring global ambient or water fill (0.4821ms)
+✔ belt lantern mesh and light use the same yawed character-local anchor (1.1979ms)
+✔ portable source membership is stable while lit and disappears immediately when off (18.8312ms)
+✔ owner lamp always occupies a uniform slot at low, high, and ultra light budgets (1.3814ms)
+✔ character belt lantern stays attached and toggles its emissive core without rebuilding (34.1793ms)
+✔ button follows confirmed state and sends an explicit toggle without optimistic lighting (4.3934ms)
+✔ only matching private ACK clears pending; server state controls the button and feedback (0.3033ms)
+✔ retries the exact command once at one second and stops after the five second timeout (0.1921ms)
+✔ unjoin, replacement client, entity change, and death invalidate a pending command (0.2013ms)
+✔ button visibility obeys the supplied play-context callback and cleanup removes its DOM node (0.1892ms)
+✔ denials and successful extinguish feedback are localized (0.1913ms)
+✔ worldgen is deterministic (308.1384ms)
+✔ landmarks sit in the right zones (0.3673ms)
+✔ run speed reaches 6.5 u/s with acceleration (7.0378ms)
+✔ dash: 5.5 u in 0.22 s with i-frames, then charges and buffer (2.6089ms)
+✔ level 2 gets a second dash charge (1.5389ms)
+✔ the sea blocks movement beyond wading depth (7.61ms)
+✔ colliders are never penetrated (2.529ms)
+✔ the beach → village → path → arena route is walkable (16.1277ms)
+✔ client prediction matches the authoritative server exactly (530.1376ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1514.5325

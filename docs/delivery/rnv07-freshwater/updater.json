@@ -1,0 +1,1 @@
+{"priorSha256": "3e5e9ad641fb0dd45e88c571d3aaab136422c7acf154ae189a6370afda6d899d", "sha256": "9b4431cf07d8f9a6433e7b5f6792dbc095732877d38e2bc685d739027f1edb85", "priorTests": 14, "tests": 17, "addedTests": ["tests/freshwater-state.test.mjs", "tests/freshwater-host.test.mjs", "tests/freshwater-panel.test.mjs"], "otherSourcePreserved": true, "singleIdleAuthority": true}

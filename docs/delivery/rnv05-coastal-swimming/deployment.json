@@ -1,0 +1,75 @@
+{
+  "containers": 1,
+  "utc": "2026-10-10T23:54:54Z",
+  "active": "6a8653f36856d8fafc6936ad37407f0264afc802b915309eab0e9d57c6a9964e sha256:d7c9b49bd25cf8c5f87d4c2b3a49d83861b433f7460cd4e1f57e4f7679ef634c healthy 56155bbe990f8c1ec4f2072ac907318b5a42a678",
+  "command": "[\"node\",\"deploy/runtime.mjs\"]",
+  "status": {
+    "version": "0.6.0-alpha.36",
+    "content": {
+      "generation": 4,
+      "revisionId": null,
+      "switching": false
+    },
+    "players": 0,
+    "sockets": 0,
+    "tick": 3141,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "unsaved": 0,
+      "errors": 0,
+      "tickBlocked": false,
+      "combatDeaths": null,
+      "deathDrops": null,
+      "groundTransactions": null,
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "profileWrites": 0,
+      "worldWriting": false,
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1753,
+        "errors": 0
+      }
+    }
+  },
+  "public_health": 200,
+  "public_page": 200,
+  "validation": {
+    "revision": "56155bbe990f8c1ec4f2072ac907318b5a42a678",
+    "image_id": "sha256:d7c9b49bd25cf8c5f87d4c2b3a49d83861b433f7460cd4e1f57e4f7679ef634c",
+    "tests_passed": true
+  },
+  "offline_summary": [
+    "# tests 109",
+    "# pass 109",
+    "# fail 0",
+    "# skipped 0"
+  ],
+  "current": "/opt/marea-negra/releases/56155bbe990f8c1ec4f2072ac907318b5a42a678",
+  "timer": "active",
+  "service": "ExecMainStatus=0\nActiveState=activating",
+  "updater_sha256": "3e5e9ad641fb0dd45e88c571d3aaab136422c7acf154ae189a6370afda6d899d"
+}

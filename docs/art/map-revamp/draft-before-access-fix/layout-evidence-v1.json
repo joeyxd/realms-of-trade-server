@@ -1,0 +1,198 @@
+{
+  "family": "map-revamp-v1",
+  "seed": 99282957,
+  "domain": "Cala Calavera island terrain; deterministic map terrain only",
+  "terrainRevision": "island-terraces-v1",
+  "mapSpan": 255,
+  "before": {
+    "size": 400,
+    "half": 200,
+    "gridResolution": 1,
+    "gridN": 401,
+    "heightGridBytes": 643204,
+    "sampledDryCellsAbove0_65": 12127,
+    "runtime": {
+      "device": "desktop",
+      "phase": "before",
+      "size": 400,
+      "half": 200,
+      "gridResolution": 1,
+      "gridN": 401,
+      "gridBytes": 643204,
+      "terrainGeometry": {
+        "geometry": "2a1a3e69-bbe9-42e4-b2e0-8e6eec9419a8",
+        "triangles": 47882,
+        "bytes": 2807332
+      }
+    }
+  },
+  "after": {
+    "size": 560,
+    "half": 280,
+    "gridResolution": 1,
+    "gridN": 561,
+    "heightGridBytes": 1258884,
+    "sampledDryCellsAbove0_65": 19749,
+    "drylandAreaIncreasePercent": 62.851488,
+    "sampledDryCellsAbove0_2": 20279,
+    "spawnConnectedDryCellsAbove0_2": 20279,
+    "spawnConnectedPercent": 100,
+    "runtimeCaptures": [
+      {
+        "device": "desktop",
+        "phase": "after",
+        "size": 560,
+        "half": 280,
+        "gridResolution": 1,
+        "gridN": 561,
+        "gridBytes": 1258884,
+        "terrainGeometry": {
+          "geometry": "30821c88-cd50-46a8-9a91-01f72e6485d7",
+          "triangles": 64136,
+          "bytes": 4891272
+        }
+      },
+      {
+        "device": "mobile",
+        "phase": "after",
+        "size": 560,
+        "half": 280,
+        "gridResolution": 1,
+        "gridN": 561,
+        "gridBytes": 1258884,
+        "terrainGeometry": {
+          "geometry": "6a1dcdca-25b1-42c9-9ed1-f338c48d23cc",
+          "triangles": 64136,
+          "bytes": 4891272
+        }
+      },
+      {
+        "device": "low",
+        "phase": "after",
+        "size": 560,
+        "half": 280,
+        "gridResolution": 1,
+        "gridN": 561,
+        "gridBytes": 1258884,
+        "terrainGeometry": {
+          "geometry": "23f90f63-c1eb-402b-b86b-66369ad9f3ab",
+          "triangles": 64136,
+          "bytes": 4891272
+        }
+      },
+      {
+        "device": "portrait",
+        "phase": "after",
+        "size": 560,
+        "half": 280,
+        "gridResolution": 1,
+        "gridN": 561,
+        "gridBytes": 1258884,
+        "terrainGeometry": {
+          "geometry": "06f4c763-87b0-426c-a6c0-0b0c0c6a8863",
+          "triangles": 64136,
+          "bytes": 4891272
+        }
+      },
+      {
+        "device": "noassets",
+        "phase": "after",
+        "size": 560,
+        "half": 280,
+        "gridResolution": 1,
+        "gridN": 561,
+        "gridBytes": 1258884,
+        "terrainGeometry": {
+          "geometry": "5555315e-dabf-4722-b8a6-6d57146a7526",
+          "triangles": 64136,
+          "bytes": 4891272
+        }
+      }
+    ]
+  },
+  "cpuHeightGrids": {
+    "legacyBytes": 643204,
+    "revisedBytes": 1258884,
+    "combinedBytes": 1902088
+  },
+  "compatibility": {
+    "sourceHeightfieldMatchesBaselineBytes": true,
+    "props": {
+      "count": 1259,
+      "legacyIndexOrderAndAllNonYFieldsUnchanged": true,
+      "changedCount": 224,
+      "minYDelta": -1.3809240667071503,
+      "maxYDelta": 8.00248248775696
+    },
+    "resources": {
+      "count": 176,
+      "identitiesOrderAndXZUnchanged": true,
+      "changedCount": 51,
+      "minYDelta": -1.3011568532299673,
+      "maxYDelta": 5.679370194387096,
+      "benchXZUnchanged": true,
+      "benchYDelta": -0.024670323054854393
+    },
+    "unchangedMetadata": [
+      "colliders",
+      "npcs",
+      "enemySpawns",
+      "racks",
+      "checkpoints",
+      "dock",
+      "landmarks",
+      "cala"
+    ],
+    "hutTerraceHeights": [
+      10.399999618530273,
+      6.400000095367432,
+      2.4000000953674316,
+      2.4000000953674316,
+      10.399999618530273,
+      6.400000095367432
+    ],
+    "hutExpectedTerraceHeights": [
+      10.4,
+      6.4,
+      2.4,
+      2.4,
+      10.4,
+      6.4
+    ]
+  },
+  "runtimeTerrain": {
+    "beforeGpuBytes": 2807332,
+    "afterGpuBytes": 4891272,
+    "gpuBytesIncrease": 2083940,
+    "beforeTriangles": 47882,
+    "afterTriangles": 64136,
+    "gpuMetricsAcrossFiveCaptures": [
+      {
+        "device": "desktop",
+        "bytes": 4891272,
+        "triangles": 64136
+      },
+      {
+        "device": "mobile",
+        "bytes": 4891272,
+        "triangles": 64136
+      },
+      {
+        "device": "low",
+        "bytes": 4891272,
+        "triangles": 64136
+      },
+      {
+        "device": "portrait",
+        "bytes": 4891272,
+        "triangles": 64136
+      },
+      {
+        "device": "noassets",
+        "bytes": 4891272,
+        "triangles": 64136
+      }
+    ]
+  },
+  "scope": "Deterministic data and captured geometry accounting; these measurements are not FPS evidence."
+}

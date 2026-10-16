@@ -1,0 +1,137 @@
+{
+  "schema": "mn.torch-resin-coconut.public.v1",
+  "at": "2026-10-12T17:47:30.670Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "protocol": 60,
+  "gameVersion": "0.6.0-alpha.65",
+  "checks": [
+    {
+      "name": "public_tls_release_and_sql037_readiness",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.65",
+      "protocolVersion": 60,
+      "players": 0,
+      "foragingReady": true,
+      "torchRules": 2
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "timed_three_hit_palm_loot_and_exact_receipts",
+      "pass": true,
+      "palmId": "palm-98",
+      "finalNodeRevision": 4,
+      "loot": {
+        "resina": 1
+      },
+      "receiptCount": 3,
+      "replayHistorical": true
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "rejoin_preserves_exact_palm_yield",
+      "pass": true,
+      "goods": {
+        "resina": 1,
+        "tronco": 3
+      }
+    }
+  ],
+  "errors": [],
+  "candidatePalms": [
+    {
+      "id": "palm-131",
+      "revision": 1,
+      "distance": 20.42,
+      "expectedResin": false,
+      "expectedCoconut": false,
+      "route": "skipped_no_bonus"
+    },
+    {
+      "id": "palm-98",
+      "revision": 1,
+      "distance": 23.19,
+      "expectedResin": true,
+      "expectedCoconut": false,
+      "route": "reachable",
+      "routeCost": 15.2,
+      "routeVisited": 72
+    },
+    {
+      "id": "palm-68",
+      "revision": 1,
+      "distance": 23.56,
+      "expectedResin": false,
+      "expectedCoconut": false,
+      "route": "skipped_no_bonus"
+    }
+  ],
+  "navigation": {
+    "label": "nearby reachable palm",
+    "gap": 1.853,
+    "radius": 2.2,
+    "waypointCount": 1,
+    "routeVisited": 72
+  },
+  "yield": {
+    "palmId": "palm-98",
+    "finalNodeRevision": 4,
+    "qualities": [
+      0,
+      0,
+      0
+    ],
+    "logs": 3,
+    "loot": {
+      "resina": 1
+    },
+    "goods": {
+      "tronco": 3,
+      "resina": 1
+    }
+  },
+  "replay": {
+    "historical": true,
+    "sameAcknowledgement": true,
+    "unchangedGoods": true,
+    "tradeRevision": 1
+  },
+  "pass": true,
+  "cleanup": {
+    "deferred": false,
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 3,
+    "completedContributorPalmIds": [
+      "palm-98"
+    ],
+    "receiptPolicy": "economic receipts intentionally retained",
+    "receipts": [
+      {
+        "operationId": "e8968302-07e9-5cd0-ab6f-5333e6e0d0ce",
+        "opId": "torch_loot_3b12ab46-c2cd-4230-b29a-33341415e958",
+        "acknowledged": true,
+        "result": "accepted"
+      },
+      {
+        "operationId": "39f49001-bc67-595e-ae83-bf60ba7cff20",
+        "opId": "torch_loot_6be237f9-b357-4cd1-a153-fb7cf10e2e40",
+        "acknowledged": true,
+        "result": "accepted"
+      },
+      {
+        "operationId": "4f5e3cc7-0a1d-5842-a895-5bced080d938",
+        "opId": "torch_loot_c8506e51-7fe4-4269-b235-e96c72bc85cf",
+        "acknowledged": true,
+        "result": "accepted"
+      }
+    ]
+  },
+  "completedAt": "2026-10-12T17:47:58.995Z",
+  "durationMs": 28325
+}

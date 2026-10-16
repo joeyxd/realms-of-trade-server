@@ -1,0 +1,147 @@
+{
+  "schema": "mn.fire.public.v1",
+  "at": "2026-10-10T23:03:49.264Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "checks": [
+    {
+      "name": "public_health_and_release",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.34",
+      "protocolVersion": 43,
+      "realPlayers": 0,
+      "fireEnabled": true,
+      "fireReady": true,
+      "durable": true,
+      "accounts": true,
+      "worldReady": true
+    },
+    {
+      "name": "rendered_public_minimap",
+      "pass": true,
+      "selector": ".world-minimap canvas",
+      "visible": true,
+      "size": 192
+    },
+    {
+      "name": "normal_login_and_wss_admission",
+      "pass": true,
+      "transport": "ws",
+      "fireEnabled": true,
+      "protocolVersion": 43,
+      "gameVersion": "0.6.0-alpha.34",
+      "miniMapVisible": true
+    },
+    {
+      "name": "paid_hand_torch",
+      "pass": true,
+      "woodBefore": 2,
+      "woodAfter": 1,
+      "seconds": 1200,
+      "acknowledged": true,
+      "panelBounds": {
+        "x": 470,
+        "y": 197.5,
+        "width": 340,
+        "height": 325,
+        "top": 197.5,
+        "right": 810,
+        "bottom": 522.5,
+        "left": 470
+      },
+      "mapVisible": true
+    },
+    {
+      "name": "extinguish_and_relight_reuse_paid_fuel",
+      "pass": true,
+      "secondsOff": 1200,
+      "secondsRelit": 1200,
+      "woodRemaining": 1
+    },
+    {
+      "name": "paid_fuel_and_exact_wood_after_reload",
+      "pass": true,
+      "authBranch": "persisted-session",
+      "handheldLitAfterReload": false,
+      "remainingSecondsBeforeReload": 1200,
+      "reloadElapsedSeconds": 11,
+      "restoredSeconds": 1200,
+      "woodRemaining": 1,
+      "transport": "ws"
+    },
+    {
+      "name": "reload_relight_reuses_saved_fuel",
+      "pass": true,
+      "secondsBefore": 1200,
+      "secondsAfter": 1200,
+      "elapsedSeconds": 1,
+      "woodRemaining": 1
+    },
+    {
+      "name": "public_mapview_visible",
+      "pass": true,
+      "selector": "#mapview canvas",
+      "visible": true,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "name": "browser_clean",
+      "pass": true,
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "failedRequests": 0,
+      "websocket": true,
+      "expectedNonGmCapabilityDenials": 5
+    }
+  ],
+  "screenshots": [
+    "01-public-dark-minimap.png",
+    "02-public-fire-panel.png",
+    "03-public-hand-torch-lit.png",
+    "04-public-hand-torch-relit.png",
+    "05-public-hand-torch-reconnected.png",
+    "06-public-map.png"
+  ],
+  "errors": [],
+  "protocol": 43,
+  "gameVersion": "0.6.0-alpha.34",
+  "network": {
+    "consoleErrors": [],
+    "requestFailures": [],
+    "httpFailures": [],
+    "expectedDenials": [
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "status": 403
+      },
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "status": 403
+      },
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "status": 403
+      },
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "status": 403
+      },
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "status": 403
+      }
+    ],
+    "websockets": [
+      "wss://marea.62.171.136.148.sslip.io/ws",
+      "wss://marea.62.171.136.148.sslip.io/ws"
+    ]
+  },
+  "pass": true,
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 4,
+    "receiptPolicy": "operation receipts intentionally retained"
+  },
+  "completedAt": "2026-10-10T23:04:41.338Z"
+}

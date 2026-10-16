@@ -1,0 +1,111 @@
+{
+  "schema": "mn.torch-resin-coconut.public.v1",
+  "at": "2026-10-12T17:46:19.802Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "protocol": 60,
+  "gameVersion": "0.6.0-alpha.65",
+  "checks": [
+    {
+      "name": "public_tls_release_and_sql037_readiness",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.65",
+      "protocolVersion": 60,
+      "players": 0,
+      "foragingReady": true,
+      "torchRules": 2
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "candidatePalms": [
+    {
+      "id": "palm-116",
+      "revision": 4,
+      "distance": 16.91,
+      "expectedResin": false,
+      "expectedCoconut": true,
+      "route": "reachable",
+      "routeCost": 14.4,
+      "routeVisited": 108
+    },
+    {
+      "id": "palm-131",
+      "revision": 1,
+      "distance": 20.42,
+      "expectedResin": false,
+      "expectedCoconut": false,
+      "route": "skipped_no_bonus"
+    },
+    {
+      "id": "palm-98",
+      "revision": 1,
+      "distance": 23.19,
+      "expectedResin": true,
+      "expectedCoconut": false,
+      "route": "reachable",
+      "routeCost": 15.2,
+      "routeVisited": 72
+    }
+  ],
+  "navigation": {
+    "label": "nearby reachable palm",
+    "gap": 1.601,
+    "radius": 2.2,
+    "waypointCount": 1,
+    "routeVisited": 108
+  },
+  "yield": {
+    "palmId": "palm-116",
+    "finalNodeRevision": 7,
+    "qualities": [
+      0,
+      0,
+      0
+    ],
+    "logs": 3,
+    "loot": {
+      "coco": 1
+    },
+    "goods": {
+      "tronco": 3,
+      "coco": 1
+    }
+  },
+  "pass": false,
+  "failure": "bounded wait expired: replay left profile unchanged",
+  "cleanup": {
+    "deferred": false,
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 3,
+    "completedContributorPalmIds": [
+      "palm-116"
+    ],
+    "receiptPolicy": "economic receipts intentionally retained",
+    "receipts": [
+      {
+        "operationId": "c5e3e213-67dc-5f79-aabc-f1fb4e1c3db1",
+        "opId": "torch_loot_41dae212-7eee-44ec-9bb3-ac7899edb642",
+        "acknowledged": true,
+        "result": "accepted"
+      },
+      {
+        "operationId": "1bba0d9f-8a8c-5fad-aaea-37fdf47afb76",
+        "opId": "torch_loot_4764ebc2-caf3-4fa3-b710-3e260450f840",
+        "acknowledged": true,
+        "result": "accepted"
+      },
+      {
+        "operationId": "82322a11-3ab6-5982-aa73-5022ffe76bd3",
+        "opId": "torch_loot_d2315710-eb6b-403f-8cd9-518a383da9e9",
+        "acknowledged": true,
+        "result": "accepted"
+      }
+    ]
+  },
+  "completedAt": "2026-10-12T17:46:55.606Z",
+  "durationMs": 35804
+}

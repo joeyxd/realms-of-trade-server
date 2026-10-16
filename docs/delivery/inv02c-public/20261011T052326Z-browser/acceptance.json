@@ -1,0 +1,83 @@
+{
+  "schema": "mn.attributes.browser.v1",
+  "at": "2026-10-11T05:23:29.881Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "gameVersion": "0.6.0-alpha.46",
+  "protocolVersion": 52,
+  "checks": [
+    {
+      "name": "public_release_durable_attributes_ready",
+      "pass": true,
+      "version": "0.6.0-alpha.46",
+      "protocol": 52
+    },
+    {
+      "name": "disposable_level_three_bucket_profile_created",
+      "pass": true
+    },
+    {
+      "name": "visible_adopt_confirmed_in_profile_and_receipt",
+      "pass": true,
+      "rev": 1,
+      "attr": {
+        "v": 1,
+        "carga": 0,
+        "re": 0
+      },
+      "maxMass": 50,
+      "volume": 18,
+      "water": 3
+    },
+    {
+      "name": "visible_assign_confirmed_in_profile_and_receipt",
+      "pass": true,
+      "rev": 2,
+      "attr": {
+        "v": 1,
+        "carga": 1,
+        "re": 0
+      },
+      "maxMass": 55,
+      "volume": 18,
+      "water": 3
+    },
+    {
+      "name": "visible_reset_confirmed_in_profile_and_receipt",
+      "pass": true,
+      "rev": 3,
+      "attr": {
+        "v": 1,
+        "carga": 0,
+        "re": 1
+      },
+      "maxMass": 50,
+      "volume": 18,
+      "water": 3
+    },
+    {
+      "name": "browser_reconnect_preserves_reset_bucket_and_backpack",
+      "pass": true,
+      "attr": {
+        "v": 1,
+        "carga": 0,
+        "re": 1
+      },
+      "maxMass": 50,
+      "water": 3
+    }
+  ],
+  "screenshots": [
+    "01-desktop-es-adoption.png",
+    "02-desktop-es-assigned.png",
+    "03-portrait-en-reset-confirm.png",
+    "04-portrait-en-reset-saved.png",
+    "05-portrait-en-reconnected.png"
+  ],
+  "errors": [],
+  "pass": true,
+  "cleanup": {
+    "profileDeleted": true,
+    "authDeleted": true,
+    "receiptsRetained": 3
+  }
+}

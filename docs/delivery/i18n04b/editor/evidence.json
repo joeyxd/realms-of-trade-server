@@ -1,0 +1,24 @@
+{
+  "schema": "i18n04b-editor/v1",
+  "at": "2026-10-10T22:26:49.531Z",
+  "scope": "current GM02/GM03a/GM03b1 WorldEditor and IndexedDB; simulated local and remote failures; no credentials or gameplay host",
+  "checks": [
+    "initial status and toolbar switch ES/EN without draft changes or autosave",
+    "pending save changes language without duplicate writes; late conflict uses current locale",
+    "remote panel language selector persists globally; late CAS conflict rerenders without repeating the save",
+    "invalid import preserves draft and translates existing error without replay",
+    "pending model load and unknown external error switch safely without refetch",
+    "two real tabs keep newer IndexedDB draft on conflict and locale changes"
+  ],
+  "screenshots": [
+    "docs\\delivery\\i18n04b\\editor\\01-save-conflict-en.png",
+    "docs\\delivery\\i18n04b\\editor\\02-save-conflict-es.png",
+    "docs\\delivery\\i18n04b\\editor\\07-remote-conflict-es.png",
+    "docs\\delivery\\i18n04b\\editor\\08-remote-conflict-en.png",
+    "docs\\delivery\\i18n04b\\editor\\03-import-error-en.png",
+    "docs\\delivery\\i18n04b\\editor\\04-model-error-en.png",
+    "docs\\delivery\\i18n04b\\editor\\05-indexeddb-conflict-en.png",
+    "docs\\delivery\\i18n04b\\editor\\09-compact-conflict-es.png"
+  ],
+  "errors": []
+}

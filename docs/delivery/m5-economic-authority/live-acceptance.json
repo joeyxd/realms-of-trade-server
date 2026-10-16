@@ -1,0 +1,290 @@
+{
+  "schema": "mn.m5-economic-live.v1",
+  "target": "public-tls",
+  "phases": [
+    {
+      "phase": "before",
+      "checks": [
+        {
+          "check": "disposable account confirmed without email delivery",
+          "pass": true,
+          "at": "2026-10-10T05:11:01.515Z"
+        },
+        {
+          "check": "public Auth login and authenticated direct RPC denial verified",
+          "pass": true,
+          "at": "2026-10-10T05:11:02.177Z",
+          "phase": "before"
+        },
+        {
+          "check": "real account token admitted through public TLS WebSocket",
+          "pass": true,
+          "at": "2026-10-10T05:11:03.939Z",
+          "phase": "before",
+          "protocol": 32
+        },
+        {
+          "check": "disposable account confirmed without email delivery",
+          "pass": true,
+          "at": "2026-10-10T05:12:26.043Z"
+        },
+        {
+          "check": "public Auth login and authenticated direct RPC denial verified",
+          "pass": true,
+          "at": "2026-10-10T05:12:26.585Z",
+          "phase": "before"
+        },
+        {
+          "check": "real account token admitted through public TLS WebSocket",
+          "pass": true,
+          "at": "2026-10-10T05:12:28.512Z",
+          "phase": "before",
+          "protocol": 32
+        },
+        {
+          "check": "disposable account confirmed without email delivery",
+          "pass": true,
+          "at": "2026-10-10T05:14:01.070Z"
+        },
+        {
+          "check": "public Auth login and authenticated direct RPC denial verified",
+          "pass": true,
+          "at": "2026-10-10T05:14:01.657Z",
+          "phase": "before"
+        },
+        {
+          "check": "real account token admitted through public TLS WebSocket",
+          "pass": true,
+          "at": "2026-10-10T05:14:03.628Z",
+          "phase": "before",
+          "protocol": 32
+        },
+        {
+          "check": "wood gathered and three madera crafted within ordinary backpack capacity",
+          "pass": true,
+          "at": "2026-10-10T05:14:18.716Z",
+          "profileRevision": 4
+        },
+        {
+          "check": "one madera debited and credited to the shared community project",
+          "pass": true,
+          "at": "2026-10-10T05:14:19.591Z",
+          "projectVersion": 2
+        },
+        {
+          "check": "disposable account confirmed without email delivery",
+          "pass": true,
+          "at": "2026-10-10T05:20:42.274Z"
+        },
+        {
+          "check": "public Auth login and authenticated direct RPC denial verified",
+          "pass": true,
+          "at": "2026-10-10T05:20:42.830Z",
+          "phase": "before"
+        },
+        {
+          "check": "real account token admitted through public TLS WebSocket",
+          "pass": true,
+          "at": "2026-10-10T05:20:45.591Z",
+          "phase": "before",
+          "protocol": 32
+        },
+        {
+          "check": "wood gathered and three madera crafted within ordinary backpack capacity",
+          "pass": true,
+          "at": "2026-10-10T05:21:01.620Z",
+          "profileRevision": 4
+        },
+        {
+          "check": "one madera debited and credited to the shared community project",
+          "pass": true,
+          "at": "2026-10-10T05:21:02.497Z",
+          "projectVersion": 3
+        },
+        {
+          "check": "quoted one-unit sales funded one fruit and a raft supply while reserving one madera",
+          "pass": true,
+          "at": "2026-10-10T05:22:09.878Z",
+          "profileRevision": 17,
+          "maderaSales": 5
+        },
+        {
+          "check": "disposable account confirmed without email delivery",
+          "pass": true,
+          "at": "2026-10-10T05:23:21.422Z"
+        },
+        {
+          "check": "public Auth login and authenticated direct RPC denial verified",
+          "pass": true,
+          "at": "2026-10-10T05:23:22.078Z",
+          "phase": "before"
+        },
+        {
+          "check": "real account token admitted through public TLS WebSocket",
+          "pass": true,
+          "at": "2026-10-10T05:23:24.613Z",
+          "phase": "before",
+          "protocol": 32
+        },
+        {
+          "check": "wood gathered and three madera crafted within ordinary backpack capacity",
+          "pass": true,
+          "at": "2026-10-10T05:23:40.716Z",
+          "profileRevision": 4
+        },
+        {
+          "check": "one madera debited and credited to the shared community project",
+          "pass": true,
+          "at": "2026-10-10T05:23:41.920Z",
+          "projectVersion": 4
+        },
+        {
+          "check": "quoted one-unit sales funded one fruit and a raft supply while reserving one madera",
+          "pass": true,
+          "at": "2026-10-10T05:24:45.857Z",
+          "profileRevision": 17,
+          "maderaSales": 5
+        },
+        {
+          "check": "one madera deposited, one quoted madera supplied, then the deposited unit withdrawn at the public gangplank",
+          "pass": true,
+          "at": "2026-10-10T05:25:06.717Z",
+          "raftRevision": 4,
+          "transferRevision": 19
+        },
+        {
+          "check": "profile, world contribution, and exact economic receipts verified in durable rows",
+          "pass": true,
+          "at": "2026-10-10T05:25:08.511Z",
+          "profileVersion": 23,
+          "worldVersion": 555,
+          "receipts": 10
+        }
+      ]
+    },
+    {
+      "phase": "cleanup",
+      "checks": [
+        {
+          "check": "only disposable profile and Auth account removed; world contribution and receipts retained",
+          "pass": true,
+          "at": "2026-10-10T05:12:24.725Z"
+        },
+        {
+          "check": "only disposable profile and Auth account removed; world contribution and receipts retained",
+          "pass": true,
+          "at": "2026-10-10T05:13:59.475Z"
+        },
+        {
+          "check": "only disposable profile and Auth account removed; world contribution and receipts retained",
+          "pass": true,
+          "at": "2026-10-10T05:16:24.738Z"
+        },
+        {
+          "check": "only disposable profile and Auth account removed; world contribution and receipts retained",
+          "pass": true,
+          "at": "2026-10-10T05:23:11.751Z"
+        },
+        {
+          "check": "only disposable profile and Auth account removed; world contribution and receipts retained",
+          "pass": true,
+          "at": "2026-10-10T05:32:37.296Z"
+        }
+      ]
+    },
+    {
+      "phase": "reconnect",
+      "checks": [
+        {
+          "check": "public Auth login and authenticated direct RPC denial verified",
+          "pass": true,
+          "at": "2026-10-10T05:28:04.574Z",
+          "phase": "reconnect"
+        },
+        {
+          "check": "real account token admitted through public TLS WebSocket",
+          "pass": true,
+          "at": "2026-10-10T05:28:06.486Z",
+          "phase": "reconnect",
+          "protocol": 32
+        },
+        {
+          "check": "crafted inventory, raft cargo, and community project restored on reconnect",
+          "pass": true,
+          "at": "2026-10-10T05:28:07.059Z",
+          "profileVersion": 23,
+          "projectVersion": 4
+        },
+        {
+          "check": "exact reconnect retries replay receipts without another debit or historical rollback",
+          "pass": true,
+          "at": "2026-10-10T05:29:19.407Z",
+          "replayed": 10,
+          "profileVersion": 23,
+          "projectVersion": 4
+        }
+      ]
+    },
+    {
+      "phase": "after",
+      "checks": [
+        {
+          "check": "public Auth login and authenticated direct RPC denial verified",
+          "pass": true,
+          "at": "2026-10-10T05:30:41.535Z",
+          "phase": "after"
+        },
+        {
+          "check": "real account token admitted through public TLS WebSocket",
+          "pass": true,
+          "at": "2026-10-10T05:30:43.424Z",
+          "phase": "after",
+          "protocol": 32
+        },
+        {
+          "check": "public host restart observed between acceptance phases",
+          "pass": true,
+          "at": "2026-10-10T05:30:43.425Z",
+          "uptimeBefore": 840,
+          "uptimeAfter": 6
+        },
+        {
+          "check": "crafted inventory and community project restored after real host restart",
+          "pass": true,
+          "at": "2026-10-10T05:30:43.974Z",
+          "profileVersion": 23,
+          "projectVersion": 4
+        },
+        {
+          "check": "exact post-restart retries replay receipts without another debit or historical rollback",
+          "pass": true,
+          "at": "2026-10-10T05:31:59.031Z",
+          "replayed": 10,
+          "profileVersion": 23,
+          "projectVersion": 4
+        }
+      ]
+    }
+  ],
+  "acceptance": {
+    "publicEconomicCommands": true,
+    "durableProfileWorldReceipts": true,
+    "reconnectReplays": 10,
+    "controlledRestartReplays": 10,
+    "completedBeforeAt": "2026-10-10T05:25:08.511Z",
+    "reconnectAt": "2026-10-10T05:29:19.407Z",
+    "afterRestartAt": "2026-10-10T05:31:59.031Z",
+    "receiptCount": 10,
+    "profileVersion": 23,
+    "raftRevision": 4,
+    "projectVersion": 4,
+    "privateFixtureCleaned": true,
+    "acceptedServerRevision": "d24f782a779ed4e15d0ba72d2d3af346efb0382f"
+  },
+  "harnessCorrections": [
+    "Initial attempts were partial and are not complete acceptance runs.",
+    "Corrected the public WebSocket URL and separate resource-node/profile revisions.",
+    "Used ordinary small log hauls within backpack capacity and bounded collider-aware routes.",
+    "Treated autonomous fractional market stock at the immutable execution receipt rather than a later world autosave."
+  ]
+}

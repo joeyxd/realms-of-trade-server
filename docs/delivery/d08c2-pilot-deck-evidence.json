@@ -1,0 +1,354 @@
+{
+  "schema": "mn.delivery.v1",
+  "cut": "D08c.2",
+  "date": "2026-10-06",
+  "generatedAt": "2026-10-07T05:44:00.785Z",
+  "node": "v24.14.0",
+  "protocol": 17,
+  "mode": "opt-in isolated local pilot; default game remains off",
+  "regressionBase": "d47353bc4d0dd839288cf1e943f786df323163ae",
+  "lateM5CompatibilityBase": "39edbe8664f788b9ac5f2cf3a6d7bf44dbea5561",
+  "sourceHashes": [
+    {
+      "file": "src/client/gameClient.js",
+      "sha256": "5621e9601960639f166d696fa47e58fb3e6c92583f35c9fa9b1ca1d21cbe9654",
+      "bytes": 35859,
+      "isolatedSha256": "5621e9601960639f166d696fa47e58fb3e6c92583f35c9fa9b1ca1d21cbe9654"
+    },
+    {
+      "file": "src/client/navalPilotPrediction.js",
+      "sha256": "8050693194c19846dcbcf531073dcb8a8ab02780182e5c15f3107f1621e85996",
+      "bytes": 6850,
+      "isolatedSha256": "8050693194c19846dcbcf531073dcb8a8ab02780182e5c15f3107f1621e85996"
+    },
+    {
+      "file": "src/net/navalPilotServer.js",
+      "sha256": "21818b86cb55b8c62488c4c86a5ea0d987bf95bf8b067f1881799b3fbd59958f",
+      "bytes": 2891,
+      "isolatedSha256": "21818b86cb55b8c62488c4c86a5ea0d987bf95bf8b067f1881799b3fbd59958f"
+    },
+    {
+      "file": "src/net/protocol.js",
+      "sha256": "3241e8420b889b949da42d7076616aa9acce3a701b4733785c963781f35287ec",
+      "bytes": 3970,
+      "isolatedSha256": "3241e8420b889b949da42d7076616aa9acce3a701b4733785c963781f35287ec"
+    },
+    {
+      "file": "src/sim/world.js",
+      "sha256": "c722a85f2178eacc40a43cdcd2993fe544434e10010a8af32e6c7589cd4f244f",
+      "bytes": 39540,
+      "isolatedSha256": "c722a85f2178eacc40a43cdcd2993fe544434e10010a8af32e6c7589cd4f244f"
+    },
+    {
+      "file": "src/sim/raftGeometry.js",
+      "sha256": "f3076a48525fe23de6dcd5435a9462517d60f858c918e1aa6cbef6517382e2d6",
+      "bytes": 7645,
+      "isolatedSha256": "f3076a48525fe23de6dcd5435a9462517d60f858c918e1aa6cbef6517382e2d6"
+    },
+    {
+      "file": "src/sim/systems/rafts.js",
+      "sha256": "efc5690557e14299ad436b6166bd4ac562eb353b12b887ac1ae7a5cdc0ee6b82",
+      "bytes": 6851,
+      "isolatedSha256": "efc5690557e14299ad436b6166bd4ac562eb353b12b887ac1ae7a5cdc0ee6b82"
+    },
+    {
+      "file": "src/sim/naval/pilot.js",
+      "sha256": "58f0901d2c1fe5d2c3447d6adba054010484ed79e526fdba18f58a779f6fc4e8",
+      "bytes": 6613,
+      "isolatedSha256": "58f0901d2c1fe5d2c3447d6adba054010484ed79e526fdba18f58a779f6fc4e8"
+    },
+    {
+      "file": "src/sim/naval/pilotGeometry.js",
+      "sha256": "9cfc9fb9634949cc71be75652a45318d6c46bc126a5ece7b11f34d0c5a4e065a",
+      "bytes": 1951,
+      "isolatedSha256": "9cfc9fb9634949cc71be75652a45318d6c46bc126a5ece7b11f34d0c5a4e065a"
+    },
+    {
+      "file": "tools/naval-lab.mjs",
+      "sha256": "9cf3d62dfdad5594b1e6a056bf385dcf6aee64ea1be71ad2827bf1c7f8efc7b8",
+      "bytes": 6445,
+      "isolatedSha256": "9cf3d62dfdad5594b1e6a056bf385dcf6aee64ea1be71ad2827bf1c7f8efc7b8"
+    },
+    {
+      "file": "tools/naval-pilot/index.html",
+      "sha256": "3196d00c2bf4027b072cd965edf2d8abaed5857cec280c3f4a79bd850cc51072",
+      "bytes": 4082,
+      "isolatedSha256": "3196d00c2bf4027b072cd965edf2d8abaed5857cec280c3f4a79bd850cc51072"
+    },
+    {
+      "file": "tools/naval-pilot/style.css",
+      "sha256": "d79cdd5e572ff5e4805940c0659631f952a4000aecba86806772b5fe13edc063",
+      "bytes": 9995,
+      "isolatedSha256": "d79cdd5e572ff5e4805940c0659631f952a4000aecba86806772b5fe13edc063"
+    },
+    {
+      "file": "tools/naval-pilot/main.js",
+      "sha256": "3617f5393b617bc21482fddc8fe53e7231712cf2bbc8a86ce4ab4b961c56cf43",
+      "bytes": 23709,
+      "isolatedSha256": "3617f5393b617bc21482fddc8fe53e7231712cf2bbc8a86ce4ab4b961c56cf43"
+    },
+    {
+      "file": "tools/qa-naval-pilot.mjs",
+      "sha256": "94042174a8e394f734011895690d387e650fb7633487657e9986bc164ececb93",
+      "bytes": 16667
+    },
+    {
+      "file": "PROBAR-PILOTAJE.cmd",
+      "sha256": "14b63f3c926f87f8c9c2cb67823f9bbfb9185876ba3919b8636f0056ac90d785",
+      "bytes": 338
+    },
+    {
+      "file": "tests/naval-pilot-authority.test.mjs",
+      "sha256": "4625882fdb04e7161e9f99dff15b93df03b55cdc46d4f69ff7c5b9ff79881c79",
+      "bytes": 12286,
+      "isolatedSha256": "4625882fdb04e7161e9f99dff15b93df03b55cdc46d4f69ff7c5b9ff79881c79"
+    },
+    {
+      "file": "tests/naval-pilot-client.test.mjs",
+      "sha256": "f15813ff90b6420412767983f910c6c775ddc18e2437b41b09ff2713de90e185",
+      "bytes": 17108,
+      "isolatedSha256": "f15813ff90b6420412767983f910c6c775ddc18e2437b41b09ff2713de90e185"
+    },
+    {
+      "file": "tests/naval-pilot-geometry.test.mjs",
+      "sha256": "b777f6972c3acb3d0e4ffe9767b9d6ce74cbf26d43c3f92cdce3c6908ca9244f",
+      "bytes": 3160,
+      "isolatedSha256": "b777f6972c3acb3d0e4ffe9767b9d6ce74cbf26d43c3f92cdce3c6908ca9244f"
+    },
+    {
+      "file": "tests/naval-pilot-prediction.test.mjs",
+      "sha256": "9c81c0137feb1f74a559cd31a70c819c0fa904a173e2aa576ff9d1e476f4d095",
+      "bytes": 8146,
+      "isolatedSha256": "9c81c0137feb1f74a559cd31a70c819c0fa904a173e2aa576ff9d1e476f4d095"
+    },
+    {
+      "file": "tests/naval-lab-server.test.mjs",
+      "sha256": "9843edb47fa631b68fc11d18e9a94f95dfc91621dc3fa4b3269d4e2399bb6749",
+      "bytes": 5803,
+      "isolatedSha256": "9843edb47fa631b68fc11d18e9a94f95dfc91621dc3fa4b3269d4e2399bb6749"
+    }
+  ],
+  "regression": {
+    "files": [
+      "tests/combat.test.mjs",
+      "tests/naval-contact.test.mjs",
+      "tests/naval-damage-integration.test.mjs",
+      "tests/naval-handling.test.mjs",
+      "tests/naval-lab-camera.test.mjs",
+      "tests/naval-lab-clock.test.mjs",
+      "tests/naval-lab-feedback.test.mjs",
+      "tests/naval-lab-hud-state.test.mjs",
+      "tests/naval-lab-input.test.mjs",
+      "tests/naval-lab-look.test.mjs",
+      "tests/naval-lab-raft-skin.test.mjs",
+      "tests/naval-lab-reference-fx.test.mjs",
+      "tests/naval-lab-scenery.test.mjs",
+      "tests/naval-lab-server.test.mjs",
+      "tests/naval-lab-speed-feel.test.mjs",
+      "tests/naval-navigation.test.mjs",
+      "tests/naval-operational.test.mjs",
+      "tests/naval-structure.test.mjs",
+      "tests/naval-trial-authority.test.mjs",
+      "tests/naval-trial-body.test.mjs",
+      "tests/pearl-tick-access.test.mjs",
+      "tests/pearl-tick-effects.test.mjs",
+      "tests/raft-editor.test.mjs",
+      "tests/raft-input.test.mjs",
+      "tests/raft-materials.test.mjs",
+      "tests/raft-movement.test.mjs",
+      "tests/raft-production.test.mjs",
+      "tests/raft-production-server.test.mjs",
+      "tests/raft-renderer.test.mjs",
+      "tests/rafts.test.mjs",
+      "tests/rafts-store.test.mjs",
+      "tests/tattoos.test.mjs",
+      "tests/tattoos2.test.mjs",
+      "tests/world-host.test.mjs",
+      "tests/world-state.test.mjs",
+      "tests/naval-pilot-authority.test.mjs",
+      "tests/naval-pilot-client.test.mjs",
+      "tests/naval-pilot-geometry.test.mjs",
+      "tests/naval-pilot-prediction.test.mjs",
+      "tests/pearl-tick-apply.test.mjs"
+    ],
+    "tests": 301,
+    "pass": 301,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 82492.4136,
+    "exitCode": 0,
+    "logSha256": "bb8babe11870a5d0f7ff5b1f6816960cd8d631ea4873efcb47378b739a18a929",
+    "localLog": ".scratch/d08c2-qa-20261006/test-final.log",
+    "newPilotTests": {
+      "geometry": 4,
+      "prediction": 8,
+      "authority": 6,
+      "client": 8,
+      "total": 26
+    }
+  },
+  "lateM5Compatibility": {
+    "files": [
+      "tests/pearl-profile-snapshot.test.mjs",
+      "tests/pearl-tick-apply.test.mjs",
+      "tests/pearl-tick-access.test.mjs",
+      "tests/pearl-tick-effects.test.mjs",
+      "tests/world-host.test.mjs",
+      "tests/naval-pilot-client.test.mjs"
+    ],
+    "tests": 73,
+    "pass": 73,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 23895.9647,
+    "exitCode": 0,
+    "logSha256": "27dd9d8fc99a2465ece213990fd8387c420ef146e3a6e05f88d6c24428fda774",
+    "localLog": ".scratch/d08c2-qa-20261006/m5-integration.log",
+    "overlaidCommittedFiles": [
+      "server/host.mjs",
+      "server/pearlProfileSnapshot.mjs",
+      "server/pearlStaging.mjs",
+      "tests/pearl-profile-snapshot.test.mjs"
+    ],
+    "note": "Targeted follow-up after the 301-test pass; the complete 301-test pass was not rerun on this later commit."
+  },
+  "browser": {
+    "file": "docs/delivery/d08c2-pilot-deck/evidence.json",
+    "sha256": "5284e9a730181384c29deca882d9a016fbfb7ac4a1087833d7eece3fba40a13c",
+    "generatedAt": "2026-10-07T05:41:40.122Z",
+    "ok": true,
+    "isolatedBrowser": true,
+    "renderer": "Chrome headless SwiftShader",
+    "scenarios": [
+      {
+        "viewport": {
+          "name": "desktop-1280x800",
+          "width": 1280,
+          "height": 800,
+          "mobile": false
+        },
+        "inputMode": "Playwright keyboard events",
+        "pageErrors": [],
+        "consoleErrors": []
+      },
+      {
+        "viewport": {
+          "name": "mobile-portrait-390x844",
+          "width": 390,
+          "height": 844,
+          "mobile": true
+        },
+        "inputMode": "CDP-emulated trusted touch",
+        "pageErrors": [],
+        "consoleErrors": []
+      },
+      {
+        "viewport": {
+          "name": "mobile-landscape-844x390",
+          "width": 844,
+          "height": 390,
+          "mobile": true
+        },
+        "inputMode": "CDP-emulated trusted touch",
+        "pageErrors": [],
+        "consoleErrors": []
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "docs/delivery/d08c2-pilot-deck/desktop-1280x800-canvas-v1.png",
+        "bytes": 564682,
+        "sha256": "521e30967c4b913a986d13c46e048f6b884b3ca587008dae4f828d49e1030998"
+      },
+      {
+        "file": "docs/delivery/d08c2-pilot-deck/desktop-1280x800-ui-v1.png",
+        "bytes": 705059,
+        "sha256": "065e528f1acccbce93c7e584305409777ddfc24499cfcce565e9cefc67b64d73"
+      },
+      {
+        "file": "docs/delivery/d08c2-pilot-deck/desktop-house-canvas-v1.png",
+        "bytes": 555676,
+        "sha256": "7c006a5442f82580a6f03422486daf021b79af26a4f48d2fd6a05664f5c15890"
+      },
+      {
+        "file": "docs/delivery/d08c2-pilot-deck/mobile-landscape-844x390-canvas-v1.png",
+        "bytes": 236527,
+        "sha256": "9998e520057b44fcec32058b78579eb273b97b266a52054cc1bb0f48eeb1ec80"
+      },
+      {
+        "file": "docs/delivery/d08c2-pilot-deck/mobile-landscape-844x390-ui-v1.png",
+        "bytes": 327966,
+        "sha256": "383a774ea198ab497cc5458d6671b7d35613fdbd3319d538f77edbb7b6cdad90"
+      },
+      {
+        "file": "docs/delivery/d08c2-pilot-deck/mobile-portrait-390x844-canvas-v1.png",
+        "bytes": 165783,
+        "sha256": "6045369b1788cca58255f21704adb205214d2c45c87e85e988c66b78d6de41fb"
+      },
+      {
+        "file": "docs/delivery/d08c2-pilot-deck/mobile-portrait-390x844-ui-v1.png",
+        "bytes": 243119,
+        "sha256": "7fa0c8b5d69dfe4ace5d3e6bbdd823d22e5c3a12770b36e8d7129c61519f54a0"
+      }
+    ],
+    "assertions": [
+      "owner/pilot/raft same transform",
+      "real input ACK",
+      "focus loss sends neutral brake and ACK",
+      "leave ends trial and restores mooring",
+      "saved blueprint/profile/cargo/HP unchanged",
+      "desktop house 29 parts",
+      "no horizontal overflow",
+      "no asset or WebGL errors"
+    ],
+    "limitations": [
+      "Emulated touch devices only",
+      "No physical phone/GPU FPS acceptance",
+      "No WAN test",
+      "Audio code reused; no hardware listening acceptance"
+    ]
+  },
+  "isolation": {
+    "fixtureProfiles": "Synthetic disposable local profiles",
+    "checkout": "git archive plus owned mission sources; no .env, foreign dirty render/asset edits excluded",
+    "dependencies": "Existing project dependencies; Playwright installed only under ignored .scratch",
+    "mainEntry": "src/main.js preserved; future game activation must wire renderRafts and camera"
+  },
+  "remaining": [
+    "relative deck walking and passengers",
+    "continuous coastal contact and modular HP authority",
+    "M5/D09 gates for public voyages and disputed goods",
+    "human combined playtest"
+  ],
+  "publication": {
+    "pushed": false,
+    "deployed": false,
+    "publicNavigationActivated": false
+  },
+  "syntaxChecks": {
+    "files": [
+      "src/client/gameClient.js",
+      "src/client/navalPilotPrediction.js",
+      "src/net/navalPilotServer.js",
+      "src/net/protocol.js",
+      "src/sim/world.js",
+      "src/sim/raftGeometry.js",
+      "src/sim/systems/rafts.js",
+      "src/sim/naval/pilot.js",
+      "src/sim/naval/pilotGeometry.js",
+      "tools/naval-lab.mjs",
+      "tools/naval-pilot/main.js",
+      "tools/qa-naval-pilot.mjs",
+      "tests/naval-pilot-authority.test.mjs",
+      "tests/naval-pilot-client.test.mjs",
+      "tests/naval-pilot-geometry.test.mjs",
+      "tests/naval-pilot-prediction.test.mjs",
+      "tests/naval-lab-server.test.mjs"
+    ],
+    "exitCode": 0
+  }
+}

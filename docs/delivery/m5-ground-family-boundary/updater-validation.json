@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-10-11T03:28:23.612734+00:00",
+  "revision": "e4c5f0da669cbc2dc3cced850dad158e8a8ac1cc",
+  "counts": {
+    "tests": 109,
+    "pass": 109,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "scope": "Updater offline checks in the exact production Docker image before replacement."
+}

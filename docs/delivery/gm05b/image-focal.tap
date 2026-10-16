@@ -1,0 +1,232 @@
+TAP version 13
+# Subtest: projection keeps stable base data and builds a fresh indexed collision contract
+ok 1 - projection keeps stable base data and builds a fresh indexed collision contract
+  ---
+  duration_ms: 2320.122454
+  type: 'test'
+  ...
+# Subtest: null projection clones colliders and query results keep generated-map index semantics
+ok 2 - null projection clones colliders and query results keep generated-map index semantics
+  ---
+  duration_ms: 2171.028054
+  type: 'test'
+  ...
+# Subtest: base decoration override and hidden edit compile into exact projection without mutating document or props
+ok 3 - base decoration override and hidden edit compile into exact projection without mutating document or props
+  ---
+  duration_ms: 2261.575918
+  type: 'test'
+  ...
+# Subtest: in-place installation changes only collider list and query function
+ok 4 - in-place installation changes only collider list and query function
+  ---
+  duration_ms: 2197.294625
+  type: 'test'
+  ...
+# Subtest: route validation rejects only clearance losses against previously walkable routes
+ok 5 - route validation rejects only clearance losses against previously walkable routes
+  ---
+  duration_ms: 2814.477477
+  type: 'test'
+  ...
+# Subtest: a blocked part of the base route does not grandfather a new obstruction on its clear remainder
+ok 6 - a blocked part of the base route does not grandfather a new obstruction on its clear remainder
+  ---
+  duration_ms: 0.71873
+  type: 'test'
+  ...
+# Subtest: route clearance uses analytic segment-circle overlap for small obstacles between samples
+ok 7 - route clearance uses analytic segment-circle overlap for small obstacles between samples
+  ---
+  duration_ms: 0.348217
+  type: 'test'
+  ...
+# Subtest: v2 canonical shape stays unchanged, v3 requires terrain, and terrain validates exact canonical samples
+ok 8 - v2 canonical shape stays unchanged, v3 requires terrain, and terrain validates exact canonical samples
+  ---
+  duration_ms: 5.106271
+  type: 'test'
+  ...
+# Subtest: terrain compilation uses alternating mesh triangles, keeps source immutable, and projects walking/material queries
+ok 9 - terrain compilation uses alternating mesh triangles, keeps source immutable, and projects walking/material queries
+  ---
+  duration_ms: 5.037848
+  type: 'test'
+  ...
+# Subtest: changed samples protect their interpolation neighbors across the dry coast boundary
+ok 10 - changed samples protect their interpolation neighbors across the dry coast boundary
+  ---
+  duration_ms: 53.488219
+  type: 'test'
+  ...
+# Subtest: freshwater spring and its interpolation margin are rejected by client and server-shared sculpt policy
+ok 11 - freshwater spring and its interpolation margin are rejected by client and server-shared sculpt policy
+  ---
+  duration_ms: 105.891498
+  type: 'test'
+  ...
+# Subtest: all brushes produce atomic terrain documents and history undo/redo restores the exact sample set
+ok 12 - all brushes produce atomic terrain documents and history undo/redo restores the exact sample set
+  ---
+  duration_ms: 211.365972
+  type: 'test'
+  ...
+# Subtest: terrain moves editable base decorations as explicit overrides and stepMover walks the compiled slope
+ok 13 - terrain moves editable base decorations as explicit overrides and stepMover walks the compiled slope
+  ---
+  duration_ms: 119.457717
+  type: 'test'
+  ...
+# Subtest: stroke interpolation is continuous, non-mutating, and invalid gestures reject as a whole
+ok 14 - stroke interpolation is continuous, non-mutating, and invalid gestures reject as a whole
+  ---
+  duration_ms: 156.282009
+  type: 'test'
+  ...
+# Subtest: terrain v3 projects the movement sampler and resets to the exact v2 baseline
+ok 15 - terrain v3 projects the movement sampler and resets to the exact v2 baseline
+  ---
+  duration_ms: 2666.864801
+  type: 'test'
+  ...
+# Subtest: v2 documents retain their historical shape and projection without terrain fields
+ok 16 - v2 documents retain their historical shape and projection without terrain fields
+  ---
+  duration_ms: 2097.547423
+  type: 'test'
+  ...
+# Subtest: client publication and server save reject samples in protected ground
+ok 17 - client publication and server save reject samples in protected ground
+  ---
+  duration_ms: 2232.263452
+  type: 'test'
+  ...
+# Subtest: publication checks object support against the projected ground height
+ok 18 - publication checks object support against the projected ground height
+  ---
+  duration_ms: 1874.219159
+  type: 'test'
+  ...
+# Subtest: activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+ok 19 - activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+  ---
+  duration_ms: 1595.759934
+  type: 'test'
+  ...
+# Subtest: brush parameters provide stable defaults and enforce bounded values
+ok 20 - brush parameters provide stable defaults and enforce bounded values
+  ---
+  duration_ms: 3.629843
+  type: 'test'
+  ...
+# Subtest: circle, square, and ellipse weights have distinct footprints and rotated ellipses rotate
+ok 21 - circle, square, and ellipse weights have distinct footprints and rotated ellipses rotate
+  ---
+  duration_ms: 0.706125
+  type: 'test'
+  ...
+# Subtest: brush outlines represent shape, respect rotation, and stay within their radius
+ok 22 - brush outlines represent shape, respect rotation, and stay within their radius
+  ---
+  duration_ms: 1.206112
+  type: 'test'
+  ...
+# Subtest: stroke paths preserve legacy samples when bounded and reject oversized paths
+ok 23 - stroke paths preserve legacy samples when bounded and reject oversized paths
+  ---
+  duration_ms: 1.226524
+  type: 'test'
+  ...
+# Subtest: sculpt defaults preserve the prior circular footprint and reject invalid shape controls
+ok 24 - sculpt defaults preserve the prior circular footprint and reject invalid shape controls
+  ---
+  duration_ms: 248.979194
+  type: 'test'
+  ...
+# Subtest: sculpting a material-painted terrain keeps v2 materials and document version 4
+ok 25 - sculpting a material-painted terrain keeps v2 materials and document version 4
+  ---
+  duration_ms: 109.455469
+  type: 'test'
+  ...
+# Subtest: ramp remains a circular corridor when non-circular brush controls are supplied
+ok 26 - ramp remains a circular corridor when non-circular brush controls are supplied
+  ---
+  duration_ms: 101.181236
+  type: 'test'
+  ...
+# Subtest: painted v4 terrain draft saves, prepares, activates, loads for clients, admits matching peer, and rolls back
+ok 27 - painted v4 terrain draft saves, prepares, activates, loads for clients, admits matching peer, and rolls back
+  ---
+  duration_ms: 43681.670143
+  type: 'test'
+  ...
+# Subtest: v4 saves fail closed before the SQL save RPC when readiness is absent, stale, malformed, or unavailable
+ok 28 - v4 saves fail closed before the SQL save RPC when readiness is absent, stale, malformed, or unavailable
+  ---
+  duration_ms: 6.89817
+  type: 'test'
+  ...
+# Subtest: legacy v3 saves do not require the material readiness RPC
+ok 29 - legacy v3 saves do not require the material readiness RPC
+  ---
+  duration_ms: 1.746061
+  type: 'test'
+  ...
+# Subtest: v4 saves validate readiness first and preserve the exact pending operation identity and document
+ok 30 - v4 saves validate readiness first and preserve the exact pending operation identity and document
+  ---
+  duration_ms: 1.815847
+  type: 'test'
+  ...
+# Subtest: terrain material validator rejects invalid sums, ordering, and document-version mismatches
+ok 31 - terrain material validator rejects invalid sums, ordering, and document-version mismatches
+  ---
+  duration_ms: 4.578697
+  type: 'test'
+  ...
+# Subtest: paint and erase are deterministic, nonmutating, and undo/redo restore exact bytes
+ok 32 - paint and erase are deterministic, nonmutating, and undo/redo restore exact bytes
+  ---
+  duration_ms: 6.741531
+  type: 'test'
+  ...
+# Subtest: paint projection preserves height bytes, props, colliders, and resource layout
+ok 33 - paint projection preserves height bytes, props, colliders, and resource layout
+  ---
+  duration_ms: 36.498505
+  type: 'test'
+  ...
+# Subtest: material interpolation follows alternating terrain diagonals exactly
+ok 34 - material interpolation follows alternating terrain diagonals exactly
+  ---
+  duration_ms: 401.17945
+  type: 'test'
+  ...
+# Subtest: matching painted family stays continuous with the automatic residual
+ok 35 - matching painted family stays continuous with the automatic residual
+  ---
+  duration_ms: 1.626429
+  type: 'test'
+  ...
+# Subtest: safe dry material paint passes server draft validation and the spring interpolation margin is rejected
+ok 36 - safe dry material paint passes server draft validation and the spring interpolation margin is rejected
+  ---
+  duration_ms: 10.006585
+  type: 'test'
+  ...
+# Subtest: painting then sculpting preserves material samples in document v4
+ok 37 - painting then sculpting preserves material samples in document v4
+  ---
+  duration_ms: 59.274449
+  type: 'test'
+  ...
+1..37
+# tests 37
+# suites 0
+# pass 37
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 78265.146029

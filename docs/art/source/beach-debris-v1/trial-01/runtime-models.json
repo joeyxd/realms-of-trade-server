@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "cut": "S09",
+  "family": "beach-debris-v1",
+  "source": {
+    "file": "docs/art/source/beach-debris-v1/SM_Logs.geometry-export.glb",
+    "bytes": 13304,
+    "sha256": "26942a59a2be96c5520efe94a4f6b9609022c15f600695b7849fec634e320cea"
+  },
+  "geometrySha256": "d670931e2a291c6d17c2f8fee2635ea18898e21e728f6fb2ffbcda7daf620dd4",
+  "toolSha256": "bfbb5be9c51586603b9684b9a5d50a7c8c58c351e6c5a79d9b4db4f65a806241",
+  "models": [
+    {
+      "style": "branch",
+      "file": "assets/models/beach-debris-branch-v1.glb",
+      "bytes": 6612,
+      "sha256": "1852116094a977eaf67bce2c2f91c17c08f86dd9cd9a57545bea4884e9d4ceb1",
+      "triangles": 208,
+      "bounds": {
+        "min": [
+          -1.0032559633255005,
+          0,
+          -0.21083573997020721
+        ],
+        "max": [
+          0.9085729122161865,
+          0.3694644868373871,
+          0.2944195866584778
+        ]
+      },
+      "source": "native painted geometry"
+    },
+    {
+      "style": "log",
+      "file": "assets/models/beach-debris-log-v1.glb",
+      "bytes": 8424,
+      "sha256": "6a60cfac5d26f308b9e36c9736a56447ea8c0c843d87209b31f27229b7f98f8f",
+      "triangles": 132,
+      "bounds": {
+        "min": [
+          -0.6328923106193542,
+          0,
+          -0.75
+        ],
+        "max": [
+          0.6328923106193542,
+          0.4000000059604645,
+          0.75
+        ]
+      },
+      "source": "docs/art/source/beach-debris-v1/SM_Logs.geometry-export.glb"
+    },
+    {
+      "style": "planks",
+      "file": "assets/models/beach-debris-planks-v1.glb",
+      "bytes": 6084,
+      "sha256": "f2ad119435261a4a41b5ca70eb5649238631057bf387aa274fe6e11c93e97a81",
+      "triangles": 192,
+      "bounds": {
+        "min": [
+          -0.8593143820762634,
+          0,
+          -0.46664077043533325
+        ],
+        "max": [
+          1.0394985675811768,
+          0.13741464912891388,
+          0.4746295213699341
+        ]
+      },
+      "source": "native painted geometry"
+    }
+  ]
+}

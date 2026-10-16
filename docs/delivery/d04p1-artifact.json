@@ -1,0 +1,44 @@
+{
+  "sourceSha": "bfe377d648027c178823ccce9464ea81df027c79",
+  "version": "0.6.0-alpha.1",
+  "protocolVersion": 13,
+  "artifact": "dist/d04p1-bfe377d",
+  "fileCount": 131,
+  "bytes": 1526691,
+  "allFileHashesMatchReleaseManifest": true,
+  "sourceBlobFilesMatchCommittedTree": 130,
+  "generatedHtmlMatchesIndependentCommittedBuild": true,
+  "privateServerDocsTestsToolsExcluded": true,
+  "releaseManifestSha256": "31784b40bda389aaddd69962ee581d1320453671fcb64288a346bcec010b41a9",
+  "browserEvidence": "shots/review/d04p1/artifact-high-day/evidence.json",
+  "browserEvidenceSha256": "7df3dbc9e077c7e6e16d31b20c1f2a4173e53148d401b96ffec33527de66c9d6",
+  "stableIdOnReload": true,
+  "captures": [
+    {
+      "image": "shots/review/d04p1/artifact-high-day/overview.png",
+      "sha256": "74564d7a7312f79469b36b06c56af1a18729226a93b3a05cb1319db6666625ec",
+      "calls": 128,
+      "triangles": 228102,
+      "importedCrates": 1,
+      "views": 1
+    },
+    {
+      "image": "shots/review/d04p1/artifact-high-day/close.png",
+      "sha256": "0c2128ac99eeadbfcfe5784a7c0c96595fb471e7e11bc6ab7aef10f5b670a8f8",
+      "calls": 122,
+      "triangles": 224302,
+      "importedCrates": 1,
+      "views": 1
+    },
+    {
+      "image": "shots/review/d04p1/artifact-high-day/reconnect.png",
+      "sha256": "9370e3fb9bbfdcdd70aa76f1bb0d2d6d67c627e17580ca26f54da5e60dbb6b76",
+      "calls": 122,
+      "triangles": 224566,
+      "importedCrates": 1,
+      "views": 1
+    }
+  ],
+  "noFPSOrHardwareClaim": true,
+  "deployed": false
+}

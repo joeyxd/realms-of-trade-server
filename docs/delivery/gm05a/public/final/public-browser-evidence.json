@@ -1,0 +1,522 @@
+{
+  "schema": "gm05a-public-browser/v1",
+  "version": "0.6.0-alpha.45",
+  "production": true,
+  "simulatedAuth": false,
+  "localFixture": false,
+  "screenshots": [
+    "terrain-en-closeup-1440x900.png",
+    "terrain-en-closeup-844x390.png",
+    "terrain-es-closeup-1440x900.png",
+    "terrain-es-closeup-844x390.png",
+    "terrain-es-ramp-overview-1440x900.png"
+  ],
+  "checks": [
+    "public_guest_boot_and_gameplay_join",
+    "real_seed_has_five_policy_valid_strokes_on_existing_dry_ground",
+    "mouse_pointer_executes_raise_lower_flatten_smooth_and_two_click_ramp_as_real_history_edits",
+    "pending_autosave_completes_after_atomic_protected_rejection_without_erasing_error_status",
+    "escape_discards_the_preview_and_preserves_history",
+    "window_blur_discards_the_preview_without_history_commit",
+    "undo_redo_restores_exact_v3_sample_and_decoration_override_state",
+    "walk_preview_runs_over_the_ramp_and_uses_the_projected_ground_sampler",
+    "real_catalog_model_placement_uses_raised_draft_ground",
+    "spanish_english_narrow_closeup_and_ramp_overview_captures_saved",
+    "local_save_reopen_export_and_import_preserve_v3_while_fresh_v2_remains_legacy_shaped"
+  ],
+  "errors": [],
+  "seed": 99282957,
+  "site": [
+    {
+      "tool": "raise",
+      "x": -136,
+      "z": -144
+    },
+    {
+      "tool": "lower",
+      "x": -104,
+      "z": -144
+    },
+    {
+      "tool": "flatten",
+      "x": -176,
+      "z": -128
+    },
+    {
+      "tool": "smooth",
+      "x": -120,
+      "z": -120
+    },
+    {
+      "tool": "ramp",
+      "x": -192,
+      "z": -104
+    }
+  ],
+  "brushes": [
+    {
+      "tool": "raise",
+      "point": {
+        "x": -136,
+        "z": -144
+      },
+      "samples": 47
+    },
+    {
+      "tool": "lower",
+      "point": {
+        "x": -104,
+        "z": -144
+      },
+      "samples": 94
+    },
+    {
+      "tool": "flatten",
+      "point": {
+        "x": -176,
+        "z": -128
+      },
+      "samples": 141
+    },
+    {
+      "tool": "smooth",
+      "point": {
+        "x": -120,
+        "z": -120
+      },
+      "samples": 145
+    },
+    {
+      "tool": "ramp",
+      "point": {
+        "x": -192,
+        "z": -104
+      },
+      "samples": 256
+    }
+  ],
+  "runtime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.45",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 768,
+    "uptime": 20,
+    "stepMs": 1.34,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 4,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2240,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "guestGameplay": {
+    "joined": true,
+    "mode": "playing",
+    "hudVisible": true
+  },
+  "realAuth": {
+    "recoverySetupCancelled": true
+  },
+  "browserRuntime": {
+    "version": "0.6.0-alpha.45",
+    "protocolVersion": 51
+  },
+  "rampTerrace": {
+    "point": {
+      "x": -188,
+      "z": -104
+    },
+    "height": 4.585267066955566,
+    "baseHeight": 3.5852670669555664,
+    "samples": 192
+  },
+  "rampBeforeEndClick": {
+    "start": {
+      "x": 814.9305379539785,
+      "y": 466.5253735576005
+    },
+    "end": {
+      "x": 636.1636271139397,
+      "y": 418.9010420488937
+    },
+    "startElement": "game",
+    "endElement": "game",
+    "gameRect": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "top": 0,
+      "right": 1440,
+      "bottom": 900,
+      "left": 0
+    },
+    "point": {
+      "x": -196.10263865053264,
+      "z": -104.08980920003084
+    },
+    "points": [
+      {
+        "x": -188.0341505314886,
+        "z": -104.0398424480461
+      },
+      {
+        "x": -196.10263865053264,
+        "z": -104.08980920003084
+      }
+    ],
+    "pointerInside": true,
+    "cursorVisible": true,
+    "canvasRect": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "top": 0,
+      "right": 1440,
+      "bottom": 900,
+      "left": 0
+    }
+  },
+  "protectedPreflightCode": "protected_area",
+  "pendingSaveBeforeRejectedStroke": {
+    "point": {
+      "x": -136,
+      "z": -144
+    },
+    "dirty": true,
+    "timerPending": true,
+    "autosaveTimer": "QA-controlled 5000ms delay after a real edit; callback invokes the real saveNow()"
+  },
+  "delayedSaveAndProtectedRejection": {
+    "statusDuring": "Trazo bloqueado: mantén suelo seco y distancia de zonas protegidas, o reduce tamaño/altura. No se guardó ningún cambio.",
+    "statusAfterSave": "Trazo bloqueado: mantén suelo seco y distancia de zonas protegidas, o reduce tamaño/altura. No se guardó ningún cambio.",
+    "savedDocumentPreserved": true
+  },
+  "walkStartPositioning": "QA sets terrainInteraction.lastPoint to rampLow; gameplay movement remains real keyboard input",
+  "walkTrace": [
+    {
+      "x": -196,
+      "z": -104,
+      "y": 3.142394781112671,
+      "terrain": 3.142394781112671,
+      "base": 3.1563947200775146,
+      "high": 4.585267066955566,
+      "low": 3.5852670669555664
+    },
+    {
+      "x": -194.5166666666668,
+      "z": -104,
+      "y": 3.4109692454337845,
+      "terrain": 3.4109692454337845,
+      "base": 3.422152531146985
+    },
+    {
+      "x": -192.891666666667,
+      "z": -104,
+      "y": 3.705036421616813,
+      "terrain": 3.705036421616813,
+      "base": 3.565944697459534
+    },
+    {
+      "x": -191.15833333333387,
+      "z": -104,
+      "y": 4.0192831337450965,
+      "terrain": 4.0192831337450965,
+      "base": 3.586516418059662
+    },
+    {
+      "x": -189.53333333333407,
+      "z": -104,
+      "y": 4.313535912831491,
+      "terrain": 4.313535912831491,
+      "base": 3.5916027704874685
+    },
+    {
+      "x": -187.80000000000095,
+      "z": -104,
+      "y": 4.585104751586915,
+      "terrain": 4.585104751586915,
+      "base": 3.5835047245025717
+    },
+    {
+      "x": -186.06666666666783,
+      "z": -104,
+      "y": 4.585147094726562,
+      "terrain": 4.585147094726562,
+      "base": 3.5668805917104205
+    },
+    {
+      "x": -184.44166666666803,
+      "z": -104,
+      "y": 3.8950488209734084,
+      "terrain": 3.8950488209734084,
+      "base": 3.5699822326500854
+    },
+    {
+      "x": -182.7083333333349,
+      "z": -104,
+      "y": 3.9405439595374907,
+      "terrain": 3.9405439595374907,
+      "base": 3.9405439595374907
+    },
+    {
+      "x": -180.97500000000178,
+      "z": -104,
+      "y": 4.768373847006756,
+      "terrain": 4.768373847006756,
+      "base": 4.768373847006756
+    },
+    {
+      "x": -179.35000000000198,
+      "z": -104,
+      "y": 5.65487487316027,
+      "terrain": 5.65487487316027,
+      "base": 5.65487487316027
+    },
+    {
+      "x": -177.72500000000218,
+      "z": -104,
+      "y": 6.343983459472072,
+      "terrain": 6.343983459472072,
+      "base": 6.343983459472072
+    },
+    {
+      "x": -175.88333333333574,
+      "z": -104,
+      "y": 6.596680704752594,
+      "terrain": 6.596680704752594,
+      "base": 6.596680704752594
+    },
+    {
+      "x": -174.25833333333594,
+      "z": -104,
+      "y": 6.606534699598926,
+      "terrain": 6.606534699598926,
+      "base": 6.606534699598926
+    },
+    {
+      "x": -172.4166666666695,
+      "z": -104,
+      "y": 6.622633973757405,
+      "terrain": 6.622633973757405,
+      "base": 6.622633973757405
+    },
+    {
+      "x": -170.7916666666697,
+      "z": -104,
+      "y": 6.63003176450729,
+      "terrain": 6.63003176450729,
+      "base": 6.63003176450729
+    },
+    {
+      "x": -169.05833333333658,
+      "z": -104,
+      "y": 6.631114276250202,
+      "terrain": 6.631114276250202,
+      "base": 6.631114276250202
+    },
+    {
+      "x": -167.43333333333678,
+      "z": -104,
+      "y": 6.624436934789045,
+      "terrain": 6.624436934789045,
+      "base": 6.624436934789045
+    },
+    {
+      "x": -165.70000000000366,
+      "z": -104,
+      "y": 6.608918666839638,
+      "terrain": 6.608918666839638,
+      "base": 6.608918666839638
+    },
+    {
+      "x": -164.07500000000385,
+      "z": -104,
+      "y": 6.59263445138935,
+      "terrain": 6.59263445138935,
+      "base": 6.59263445138935
+    },
+    {
+      "x": -162.2333333333374,
+      "z": -104,
+      "y": 6.578627379735338,
+      "terrain": 6.578627379735338,
+      "base": 6.578627379735338
+    }
+  ],
+  "walkAcceptance": {
+    "startDistanceToRampLow": 0,
+    "rampCrossingSamples": 5,
+    "nearestHighEndpointDistance": 0.19999999999905071
+  },
+  "terracePlacement": {
+    "id": "gm-666fe66c-34be-48cf-b00a-de61c693537a",
+    "position": {
+      "x": -188,
+      "y": 4.585267066955566,
+      "z": -104
+    },
+    "projected": 4.585267066955566,
+    "base": 3.5852670669555664
+  },
+  "narrowRadiusInteraction": {
+    "en": [
+      4,
+      4.5
+    ],
+    "es": [
+      4.5,
+      5
+    ]
+  },
+  "publicChain": {
+    "schema": "gm05a-public-chain/v1",
+    "at": "2026-10-11T05:12:22.804Z",
+    "origin": "https://marea.62.171.136.148.sslip.io",
+    "expectedRuntime": {
+      "version": "0.6.0-alpha.45",
+      "protocolVersion": 51
+    },
+    "initial": {
+      "generation": 4,
+      "revisionId": null
+    },
+    "draft": {
+      "originalRevision": 23,
+      "originalDocumentSha256": "8c672093dfff687490f1723b907a761d075345789020d62fc47149e7b1638c6a",
+      "canaryRevision": 24,
+      "canaryDocumentSha256": "22a242677acf1d49ccef94d1e0281f248c6c5534f7f83a078c4b24dbdcef92ca",
+      "exactReplay": true,
+      "exactReload": true,
+      "sample": {
+        "index": 70841,
+        "x": -125,
+        "z": -154,
+        "deltaMm": 1000
+      }
+    },
+    "preparation": {
+      "revisionId": "73005afc3f627fe048e400a93847eb3b6cd51d2ae9bdc3d45a90a7e48bba6365",
+      "terrain": {
+        "gridSize": 561,
+        "sha256": "8c17383da5e0956405d31a628cc8dc82935d951945d17ec432de04d7860956ca"
+      },
+      "valid": true,
+      "registered": true
+    },
+    "activation": {
+      "operationId": "3d18005c-3bfe-4ab1-989a-515a52b10c9a",
+      "generation": 5,
+      "revisionId": "73005afc3f627fe048e400a93847eb3b6cd51d2ae9bdc3d45a90a7e48bba6365"
+    },
+    "browserPeer": {
+      "browser": {
+        "loaded": true,
+        "terrainHash": "8c17383da5e0956405d31a628cc8dc82935d951945d17ec432de04d7860956ca",
+        "height": 1.9244766235351562
+      },
+      "peer": {
+        "welcomed": true,
+        "content": {
+          "generation": 5,
+          "revisionId": "73005afc3f627fe048e400a93847eb3b6cd51d2ae9bdc3d45a90a7e48bba6365"
+        }
+      }
+    },
+    "rollback": {
+      "operationId": "b9272e7b-d0df-4366-b040-ef265cf36fe3",
+      "generation": 6,
+      "revisionId": null,
+      "verified": true
+    },
+    "draftRestore": {
+      "restored": true,
+      "operationId": "0273ce94-f575-4b8a-95df-5ee6e80f30b7",
+      "revision": 25,
+      "documentSha256": "8c672093dfff687490f1723b907a761d075345789020d62fc47149e7b1638c6a"
+    },
+    "failure": null,
+    "runtime": {
+      "version": "0.6.0-alpha.45",
+      "protocolVersion": 51,
+      "players": 0,
+      "sockets": 0
+    },
+    "cleanup": {
+      "activeRollbackVerified": true,
+      "draftRestored": true,
+      "retainedCanaryRevision": true
+    }
+  }
+}

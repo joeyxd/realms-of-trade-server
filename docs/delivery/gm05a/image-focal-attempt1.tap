@@ -1,0 +1,157 @@
+TAP version 13
+# Subtest: projection keeps stable base data and builds a fresh indexed collision contract
+ok 1 - projection keeps stable base data and builds a fresh indexed collision contract
+  ---
+  duration_ms: 2259.518446
+  type: 'test'
+  ...
+# Subtest: null projection clones colliders and query results keep generated-map index semantics
+ok 2 - null projection clones colliders and query results keep generated-map index semantics
+  ---
+  duration_ms: 1941.860651
+  type: 'test'
+  ...
+# Subtest: base decoration override and hidden edit compile into exact projection without mutating document or props
+ok 3 - base decoration override and hidden edit compile into exact projection without mutating document or props
+  ---
+  duration_ms: 2168.494602
+  type: 'test'
+  ...
+# Subtest: in-place installation changes only collider list and query function
+ok 4 - in-place installation changes only collider list and query function
+  ---
+  duration_ms: 2168.031906
+  type: 'test'
+  ...
+# Subtest: route validation rejects only clearance losses against previously walkable routes
+ok 5 - route validation rejects only clearance losses against previously walkable routes
+  ---
+  duration_ms: 2636.144056
+  type: 'test'
+  ...
+# Subtest: a blocked part of the base route does not grandfather a new obstruction on its clear remainder
+ok 6 - a blocked part of the base route does not grandfather a new obstruction on its clear remainder
+  ---
+  duration_ms: 1.012995
+  type: 'test'
+  ...
+# Subtest: route clearance uses analytic segment-circle overlap for small obstacles between samples
+ok 7 - route clearance uses analytic segment-circle overlap for small obstacles between samples
+  ---
+  duration_ms: 0.509861
+  type: 'test'
+  ...
+# Subtest: v2 canonical shape stays unchanged, v3 requires terrain, and terrain validates exact canonical samples
+ok 8 - v2 canonical shape stays unchanged, v3 requires terrain, and terrain validates exact canonical samples
+  ---
+  duration_ms: 7.349403
+  type: 'test'
+  ...
+# Subtest: terrain compilation uses alternating mesh triangles, keeps source immutable, and projects walking/material queries
+ok 9 - terrain compilation uses alternating mesh triangles, keeps source immutable, and projects walking/material queries
+  ---
+  duration_ms: 5.713491
+  type: 'test'
+  ...
+# Subtest: changed samples protect their interpolation neighbors across the dry coast boundary
+ok 10 - changed samples protect their interpolation neighbors across the dry coast boundary
+  ---
+  duration_ms: 27.183487
+  type: 'test'
+  ...
+# Subtest: freshwater spring and its interpolation margin are rejected by client and server-shared sculpt policy
+ok 11 - freshwater spring and its interpolation margin are rejected by client and server-shared sculpt policy
+  ---
+  duration_ms: 112.054462
+  type: 'test'
+  ...
+# Subtest: all brushes produce atomic terrain documents and history undo/redo restores the exact sample set
+ok 12 - all brushes produce atomic terrain documents and history undo/redo restores the exact sample set
+  ---
+  duration_ms: 218.335292
+  type: 'test'
+  ...
+# Subtest: terrain moves editable base decorations as explicit overrides and stepMover walks the compiled slope
+ok 13 - terrain moves editable base decorations as explicit overrides and stepMover walks the compiled slope
+  ---
+  duration_ms: 198.595701
+  type: 'test'
+  ...
+# Subtest: stroke interpolation is continuous, non-mutating, and invalid gestures reject as a whole
+ok 14 - stroke interpolation is continuous, non-mutating, and invalid gestures reject as a whole
+  ---
+  duration_ms: 42.980793
+  type: 'test'
+  ...
+# node:internal/modules/package_json_reader:314
+#   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+#         ^
+# Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'three' imported from /app/src/editor/walkPreview.js
+#     at Object.getPackageJSONURL (node:internal/modules/package_json_reader:314:9)
+#     at packageResolve (node:internal/modules/esm/resolve:772:81)
+#     at moduleResolve (node:internal/modules/esm/resolve:859:18)
+#     at defaultResolve (node:internal/modules/esm/resolve:989:11)
+#     at \#cachedDefaultResolve (node:internal/modules/esm/loader:747:20)
+#     at ModuleLoader.resolve (node:internal/modules/esm/loader:724:38)
+#     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:320:38)
+#     at ModuleJob._link (node:internal/modules/esm/module_job:182:49) {
+#   code: 'ERR_MODULE_NOT_FOUND'
+# }
+# Node.js v22.23.3
+# Subtest: tests/gm-publication-validation.test.mjs
+not ok 3 - tests/gm-publication-validation.test.mjs
+  ---
+  duration_ms: 280.719907
+  type: 'test'
+  location: '/app/tests/gm-publication-validation.test.mjs:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  signal: ~
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: terrain v3 projects the movement sampler and resets to the exact v2 baseline
+ok 16 - terrain v3 projects the movement sampler and resets to the exact v2 baseline
+  ---
+  duration_ms: 2876.409717
+  type: 'test'
+  ...
+# Subtest: v2 documents retain their historical shape and projection without terrain fields
+ok 17 - v2 documents retain their historical shape and projection without terrain fields
+  ---
+  duration_ms: 1888.649849
+  type: 'test'
+  ...
+# Subtest: client publication and server save reject samples in protected ground
+ok 18 - client publication and server save reject samples in protected ground
+  ---
+  duration_ms: 2377.025079
+  type: 'test'
+  ...
+# Subtest: publication checks object support against the projected ground height
+ok 19 - publication checks object support against the projected ground height
+  ---
+  duration_ms: 1754.374926
+  type: 'test'
+  ...
+# Subtest: activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+ok 20 - activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+  ---
+  duration_ms: 1930.985551
+  type: 'test'
+  ...
+# Subtest: terrain draft saves, prepares, activates, reloads exact heights, admits matching peer, and rolls back to legacy
+ok 21 - terrain draft saves, prepares, activates, reloads exact heights, admits matching peer, and rolls back to legacy
+  ---
+  duration_ms: 29356.943792
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 20
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 58100.588277

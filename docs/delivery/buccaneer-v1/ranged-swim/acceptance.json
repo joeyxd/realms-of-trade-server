@@ -1,0 +1,397 @@
+{
+  "generatedAt": "2026-10-11T20:44:08.449Z",
+  "sessions": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900,
+      "touch": false,
+      "errors": [],
+      "requests": [
+        "http://127.0.0.1:58343/assets/models/buccaneer-v1-desktop.glb"
+      ],
+      "checks": [
+        "new Bucanero starter equipment from authority",
+        "real primary/secondary input and independent hands",
+        "secondary fires instead of guard",
+        "contextual HUD/touch",
+        "moving bullet collision confirmed through real network",
+        "native 65-bone swim / one device GLB",
+        "loop without forward drift",
+        "water framing / shadow / depth",
+        "leaving water restores body and weapons",
+        "reentry / death / failed native fallback"
+      ],
+      "fires": [
+        {
+          "type": "fire",
+          "e": 26,
+          "seq": 185,
+          "hand": 1,
+          "x": -17.14396270530409,
+          "z": -13.951999669517104,
+          "dx": 0.9971253993876578,
+          "dz": -0.07576897713447153,
+          "elem": 0,
+          "me": true,
+          "predicted": true
+        },
+        {
+          "type": "fire",
+          "e": 26,
+          "seq": 198,
+          "hand": 1,
+          "x": -17.169382381990946,
+          "z": -13.996643157900733,
+          "dx": 0.9887135492783229,
+          "dz": -0.1498182815061682,
+          "elem": 0,
+          "me": true,
+          "predicted": true
+        },
+        {
+          "type": "fire",
+          "e": 26,
+          "seq": 211,
+          "hand": 1,
+          "x": -17.183780466024547,
+          "z": -14.018512004742215,
+          "dx": 0.9774186888152372,
+          "dz": -0.21131187083243236,
+          "elem": 0,
+          "me": true,
+          "predicted": true
+        },
+        {
+          "type": "fire",
+          "e": 26,
+          "seq": 221,
+          "hand": -1,
+          "x": -17.130252897752626,
+          "z": -13.431834155668918,
+          "dx": 0.9999113405756618,
+          "dz": 0.013315817217993024,
+          "secondary": 1,
+          "elem": 0,
+          "me": true,
+          "predicted": true
+        },
+        {
+          "type": "fire",
+          "e": 26,
+          "seq": 257,
+          "hand": -1,
+          "x": -17.137612799367524,
+          "z": -13.416061563305984,
+          "dx": 0.9989855812601691,
+          "dz": 0.04503119401350572,
+          "secondary": 1,
+          "elem": 0,
+          "me": true,
+          "predicted": true
+        }
+      ],
+      "hud": {
+        "l": "Pistola izquierda (mantener): disparo rápido. La bala puede interceptar proyectiles enemigos en vuelo",
+        "r": "Pistola derecha (mantener): disparo potente y lento. Intercepta balas enemigas; solo esta devuelve proyectiles pesados",
+        "touch": "Guardia (mantener)"
+      },
+      "intercept": [
+        {
+          "type": "parry",
+          "pid": 1,
+          "e": 26,
+          "seq": 339,
+          "x": -11.340052348124862,
+          "y": 5.7633703999818735,
+          "z": -13.85420415580035,
+          "tier": 2,
+          "heavy": 0,
+          "intercept": 1,
+          "elem": 0,
+          "me": true,
+          "fromServer": true
+        },
+        {
+          "type": "shot",
+          "sid": 8,
+          "pid": 1,
+          "key": 1,
+          "owner": 26,
+          "elem": 0,
+          "x": -11.340052348124862,
+          "y": 5.7633703999818735,
+          "z": -13.85420415580035,
+          "dx": 1,
+          "dy": 0,
+          "dz": -6.123233995736766e-17,
+          "speed": 8,
+          "dmg": 21,
+          "life": 2.5,
+          "r": 0.25200000000000006,
+          "ptype": 0,
+          "heavy": 0,
+          "seq": 339,
+          "homing": 0,
+          "cone": 0,
+          "me": true,
+          "fromServer": true
+        }
+      ],
+      "swimStart": {
+        "time": 1.3542000000000025,
+        "actionTime": 1.3542000000000025,
+        "bodyVisible": false,
+        "nativeVisible": true,
+        "bones": 65,
+        "width": 1024,
+        "root": [
+          118.2230477585011,
+          -0.8,
+          97.16664705006887
+        ],
+        "min": [
+          117.04608856348926,
+          -0.777211363343205,
+          96.37885305251089
+        ],
+        "max": [
+          119.08412347459203,
+          0.11282515063608445,
+          97.91877045074487
+        ],
+        "shadow": true,
+        "inNormalPass": true,
+        "state": 2
+      },
+      "swimLoop": {
+        "time": 8.224900000000016,
+        "actionTime": 2.5165665077209596,
+        "bodyVisible": false,
+        "nativeVisible": true,
+        "bones": 65,
+        "width": 1024,
+        "root": [
+          118.2230477585011,
+          -0.8,
+          97.16664705006887
+        ],
+        "min": [
+          117.38444169052028,
+          -0.9175152819548584,
+          96.69465687107382
+        ],
+        "max": [
+          119.09258940862368,
+          0.08461586261708298,
+          97.58471428042803
+        ],
+        "shadow": true,
+        "inNormalPass": true,
+        "state": 2
+      },
+      "lifecycle": {
+        "reentered": true,
+        "death": true,
+        "fallback": true
+      },
+      "passed": true
+    },
+    {
+      "name": "mobile",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "errors": [],
+      "requests": [
+        "http://127.0.0.1:58343/assets/models/buccaneer-v1-mobile.glb"
+      ],
+      "checks": [
+        "new Bucanero starter equipment from authority",
+        "real primary/secondary input and independent hands",
+        "secondary fires instead of guard",
+        "contextual HUD/touch",
+        "moving bullet collision confirmed through real network",
+        "native 65-bone swim / one device GLB",
+        "loop without forward drift",
+        "water framing / shadow / depth",
+        "leaving water restores body and weapons",
+        "reentry / death / failed native fallback"
+      ],
+      "fires": [
+        {
+          "type": "fire",
+          "e": 26,
+          "seq": 194,
+          "hand": 1,
+          "x": -17.124317414139686,
+          "z": -13.90983635814078,
+          "dx": 0.999557267962669,
+          "dz": 0.02975345463984098,
+          "elem": 0,
+          "me": true,
+          "predicted": true
+        },
+        {
+          "type": "fire",
+          "e": 26,
+          "seq": 207,
+          "hand": 1,
+          "x": -17.124317414139686,
+          "z": -13.90983635814078,
+          "dx": 0.9997077935299429,
+          "dz": 0.024172868168531564,
+          "elem": 0,
+          "me": true,
+          "predicted": true
+        },
+        {
+          "type": "fire",
+          "e": 26,
+          "seq": 220,
+          "hand": 1,
+          "x": -17.124317414139686,
+          "z": -13.90983635814078,
+          "dx": 0.9997349002985249,
+          "dz": 0.023024533113584284,
+          "elem": 0,
+          "me": true,
+          "predicted": true
+        },
+        {
+          "type": "fire",
+          "e": 26,
+          "seq": 233,
+          "hand": -1,
+          "x": -17.12832415377158,
+          "z": -13.436174896212018,
+          "dx": 0.9999917634384209,
+          "dz": 0.004058701186001828,
+          "secondary": 1,
+          "elem": 0,
+          "me": true,
+          "predicted": true
+        },
+        {
+          "type": "fire",
+          "e": 26,
+          "seq": 269,
+          "hand": -1,
+          "x": -17.12832415377158,
+          "z": -13.436174896212018,
+          "dx": 0.999999999997566,
+          "dz": -0.0000022063780561945404,
+          "secondary": 1,
+          "elem": 0,
+          "me": true,
+          "predicted": true
+        }
+      ],
+      "hud": {
+        "l": "Pistola izquierda (mantener): disparo rápido. La bala puede interceptar proyectiles enemigos en vuelo",
+        "r": "Pistola derecha (mantener): disparo potente y lento. Intercepta balas enemigas; solo esta devuelve proyectiles pesados",
+        "touch": "Disparo potente (mantener)"
+      },
+      "intercept": [
+        {
+          "type": "parry",
+          "pid": 2,
+          "e": 26,
+          "seq": 339,
+          "x": -11.454385881462851,
+          "y": 5.7633703999818735,
+          "z": -13.80556136197539,
+          "tier": 2,
+          "heavy": 0,
+          "intercept": 1,
+          "elem": 0,
+          "me": true,
+          "fromServer": true
+        },
+        {
+          "type": "shot",
+          "sid": 17,
+          "pid": 2,
+          "key": 2,
+          "owner": 26,
+          "elem": 0,
+          "x": -11.454385881462851,
+          "y": 5.7633703999818735,
+          "z": -13.80556136197539,
+          "dx": 1,
+          "dy": 0,
+          "dz": -6.123233995736766e-17,
+          "speed": 8,
+          "dmg": 21,
+          "life": 2.5,
+          "r": 0.25200000000000006,
+          "ptype": 0,
+          "heavy": 0,
+          "seq": 339,
+          "homing": 0,
+          "cone": 0,
+          "me": true,
+          "fromServer": true
+        }
+      ],
+      "swimStart": {
+        "time": 1.466399999999998,
+        "actionTime": 1.466399999999998,
+        "bodyVisible": false,
+        "nativeVisible": true,
+        "bones": 65,
+        "width": 512,
+        "root": [
+          118.2230477585011,
+          -0.8,
+          97.16664705006887
+        ],
+        "min": [
+          117.05698083441382,
+          -0.7755754529282869,
+          96.44029903533772
+        ],
+        "max": [
+          119.08894070340389,
+          0.10778753133597407,
+          97.97609410950199
+        ],
+        "shadow": true,
+        "inNormalPass": false,
+        "state": 2
+      },
+      "swimLoop": {
+        "time": 8.09979999999999,
+        "actionTime": 2.3914665077209385,
+        "bodyVisible": false,
+        "nativeVisible": true,
+        "bones": 65,
+        "width": 512,
+        "root": [
+          118.2230477585011,
+          -0.8,
+          97.16664705006887
+        ],
+        "min": [
+          117.3807577386545,
+          -0.9124743887360662,
+          96.70462446538025
+        ],
+        "max": [
+          119.10022569418183,
+          0.06888093640811788,
+          97.57510366356286
+        ],
+        "shadow": true,
+        "inNormalPass": false,
+        "state": 2
+      },
+      "lifecycle": {
+        "reentered": true,
+        "death": true,
+        "fallback": true
+      },
+      "passed": true
+    }
+  ]
+}

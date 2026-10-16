@@ -1,0 +1,129 @@
+{
+  "startedAt": "2026-10-07T21:06:35.054Z",
+  "cases": [
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1365,
+        "height": 768
+      },
+      "mobile": false,
+      "errors": [],
+      "textures": [
+        "/assets/textures/raft/wood-boards-v2.webp",
+        "/assets/textures/raft/wood-boards-v2-normal.webp",
+        "/assets/textures/raft/comic-materials-v1.webp"
+      ],
+      "status": "failed",
+      "approach": {},
+      "failure": "Error: normal UI walking exceeded steps toward gangplank\n    at walkTo (file:///C:/DEV/real%20of%20trade/realms-of-trade-server/tools/qa-live-navigation.mjs:56:9)\n    at async file:///C:/DEV/real%20of%20trade/realms-of-trade-server/tools/qa-live-navigation.mjs:105:35",
+      "diagnostics": {
+        "errors": [],
+        "joined": true,
+        "mode": "playing",
+        "paused": false,
+        "inputEnabled": true,
+        "chatTyping": false,
+        "ps": {
+          "x": 109.64642253120813,
+          "y": 0.6929525220685671,
+          "z": 94.19447999606132,
+          "f": 0.7805943262384654,
+          "vx": 0,
+          "vz": 0,
+          "st": 0,
+          "mag": 0,
+          "wade": 0,
+          "dashT": -1,
+          "dashes": 0,
+          "charges": 1,
+          "maxCharges": 1,
+          "recharge": 0,
+          "iframes": 0,
+          "hp": 100,
+          "maxHp": 100,
+          "dead": 0,
+          "deadT": 0,
+          "act": 0,
+          "actT": 216.15030000006414,
+          "atkStage": 0,
+          "atkT": 0,
+          "guardT": -1,
+          "guardSt": 60,
+          "catchN": 0,
+          "catchHv": 0,
+          "catchT": 216.15000000006415,
+          "riposte": 0,
+          "chain": 0,
+          "chainT": 315.1500000000464,
+          "level": 1,
+          "xp": 0,
+          "weapon": 0,
+          "cdQ": 0,
+          "cdE": 0,
+          "castK": 0,
+          "castT": 0,
+          "hurtInv": 0,
+          "stagger": 0,
+          "god": 0,
+          "potions": 2,
+          "potCd": 0,
+          "mastery": 17,
+          "guardMax": 60,
+          "skQ": 0,
+          "skE": 1,
+          "fmQ": 0,
+          "fmE": 0,
+          "rkQ": 1,
+          "rkE": 1,
+          "skG": 7,
+          "cdG": 0,
+          "elem": 0,
+          "chg": 0,
+          "empT": 0,
+          "cdr": 0
+        },
+        "transport": "ws",
+        "playerEntity": 26,
+        "playerRecord": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "f": 0,
+          "vx": 0,
+          "vz": 0,
+          "st": 0,
+          "mag": 0,
+          "wade": 0,
+          "dashes": 0,
+          "hp": 1,
+          "maxHp": 1,
+          "act": 0,
+          "actT": 0,
+          "lvl": 1,
+          "wpn": 0
+        },
+        "raft": {
+          "id": "aa147756-3e00-49a8-a3bf-6701538f20d1:r1",
+          "x": 124.82204313379856,
+          "z": 101.19511994389497,
+          "helm": {
+            "x": 3,
+            "y": 0,
+            "z": 1,
+            "f": 0
+          }
+        },
+        "naval": {
+          "active": false,
+          "ack": 0,
+          "seq": 0
+        },
+        "voyage": {
+          "active": false
+        },
+        "axes": null
+      }
+    }
+  ]
+}

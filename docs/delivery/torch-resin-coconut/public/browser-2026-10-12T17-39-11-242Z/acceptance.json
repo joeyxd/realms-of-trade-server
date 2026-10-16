@@ -1,0 +1,221 @@
+{
+  "schema": "mn.torch-resin-coconut.public-browser.v1",
+  "startedAt": "2026-10-12T17:39:11.758Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "gameVersion": "0.6.0-alpha.65",
+  "protocolVersion": 60,
+  "identity": "separate random disposable Supabase user per viewport; credentials redacted",
+  "scope": "normal Auth login and public WSS, exact hand-torch cost, localized responsive UI, coconut hydration, icon variants, durable profile reentry; no palm harvesting action",
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop-es",
+        "width": 1280,
+        "height": 720,
+        "touch": false,
+        "locale": "es"
+      },
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 567.625,
+          "actionTop": 580.859375,
+          "detailBottom": 660.71875,
+          "detailRight": 822.5625,
+          "mainRight": 841.84375,
+          "scrollHeight": 486,
+          "clientHeight": 486,
+          "viewportWidth": 1280,
+          "documentWidth": 1280,
+          "button": {
+            "x": 411.078125,
+            "y": 587.421875,
+            "right": 781.9375,
+            "bottom": 638.28125,
+            "width": 370.859375,
+            "height": 50.859375,
+            "disabled": false
+          }
+        },
+        "torch": {
+          "cost": {
+            "tronco": 2,
+            "resina": 1
+          },
+          "goodsAfter": {
+            "coco": 1,
+            "piedra": 2,
+            "tronco": 1
+          },
+          "fireRules": 2,
+          "durableReceipt": true,
+          "panelBounds": {
+            "x": 445,
+            "y": 140.1171875,
+            "right": 835,
+            "bottom": 579.8828125,
+            "width": 390,
+            "height": 439.765625,
+            "buttonWidth": 270,
+            "buttonHeight": 55.875,
+            "viewportWidth": 1280,
+            "viewportHeight": 720,
+            "documentWidth": 1280
+          }
+        },
+        "coconut": {
+          "hydBefore": 19.75694444444425,
+          "hydAfter": 44.68111111111128,
+          "hydGain": 24.924166666667027,
+          "durableReceipt": true
+        },
+        "icons": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1.webp",
+            "status": 200
+          }
+        ],
+        "rejoin": {
+          "goods": {
+            "piedra": 2,
+            "tronco": 1
+          },
+          "torchSeconds": 1200,
+          "torchLit": false,
+          "hyd": 44.66,
+          "profileVersion": 7
+        }
+      },
+      "screenshots": [
+        "desktop-es-axe-layout.png",
+        "desktop-es-torch-panel.png",
+        "desktop-es-torch-lit.png",
+        "desktop-es-coconut-inventory.png",
+        "desktop-es-coconut-consumed.png",
+        "desktop-es-rejoined.png"
+      ],
+      "status": "failed",
+      "network": {
+        "pageErrors": [],
+        "consoleErrors": [],
+        "httpErrors": [],
+        "expectedGmDenials": [
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          }
+        ],
+        "expectedGmAborts": [],
+        "failedRequests": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+            "error": "net::ERR_ABORTED"
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+            "error": "net::ERR_ABORTED"
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+            "error": "net::ERR_ABORTED"
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+            "error": "net::ERR_ABORTED"
+          }
+        ],
+        "websockets": [
+          "wss:",
+          "wss:"
+        ],
+        "iconResponses": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1.webp",
+            "status": 200
+          }
+        ]
+      },
+      "error": "failed browser requests\n+ actual - expected\n\n+ [\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   }\n+ ]\n- []\n",
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 2,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      }
+    },
+    {
+      "viewport": {
+        "name": "phone-landscape-en",
+        "width": 844,
+        "height": 390,
+        "touch": true,
+        "locale": "en"
+      },
+      "checks": {},
+      "screenshots": [],
+      "status": "failed",
+      "error": "bounded browser wait expired: phone-landscape-en client ready",
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 0,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      }
+    }
+  ],
+  "pass": false,
+  "preflight": {
+    "pass": true,
+    "gameVersion": "0.6.0-alpha.65",
+    "protocolVersion": 60,
+    "players": 0,
+    "sockets": 0,
+    "worldId": "marea-negra",
+    "foragingReady": true,
+    "fireRules": 2,
+    "economicPending": 0
+  },
+  "failure": "failed browser requests\n+ actual - expected\n\n+ [\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   }\n+ ]\n- []\n",
+  "completedAt": "2026-10-12T17:41:58.990Z"
+}

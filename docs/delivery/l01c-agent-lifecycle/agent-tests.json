@@ -1,0 +1,16 @@
+{
+  "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs",
+  "startedAt": "2026-10-08T11:16:19.019Z",
+  "finishedAt": "2026-10-08T11:18:22.878Z",
+  "exitCode": null,
+  "signal": "SIGTERM",
+  "error": "spawnSync C:\\Program Files\\nodejs\\node.exe ETIMEDOUT",
+  "tests": -1,
+  "pass": -1,
+  "fail": -1,
+  "skipped": -1,
+  "cancelled": -1,
+  "stderr": "",
+  "durationMs": -1,
+  "log": "agent-tests.tap"
+}

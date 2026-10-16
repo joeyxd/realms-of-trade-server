@@ -1,0 +1,340 @@
+{
+  "schemaVersion": 1,
+  "family": "palm-base-textures-v1",
+  "generator": {
+    "script": "tools/prepare-palm-base-textures.mjs",
+    "scriptSha256": "7b655c45d7d0e4c1246900819866b53c0082a5327f80e8186644ffd3fe4fb8d3",
+    "python": "Python 3.14.3",
+    "pillow": "12.2.0",
+    "resampler": "Pillow Lanczos; no gamma/color transform"
+  },
+  "sources": [
+    {
+      "id": "albedo",
+      "source": "materials/texturas pintadas a mano palmera.png",
+      "copy": "docs/art/source/palm-base-textures-v1/albedo.png",
+      "sha256": "8ab9ed41a605c33bea8a5d3e64961b252f623c61f5698726ed53457b9dfd968d",
+      "bytes": 3023857,
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "id": "normal",
+      "source": "materials/Atlas normal mapas de palmeras tropicales.png",
+      "copy": "docs/art/source/palm-base-textures-v1/normal.png",
+      "sha256": "a3e191a02dbf2cee7db2672a7e7f4bd2655abccda9089418bde487ebe4e968f1",
+      "bytes": 2918102,
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "tiles": [
+    {
+      "id": "leaf-small-a",
+      "crop": [
+        384,
+        746,
+        76,
+        137
+      ],
+      "seed": [
+        34,
+        54
+      ]
+    },
+    {
+      "id": "leaf-small-b",
+      "crop": [
+        680,
+        1024,
+        48,
+        117
+      ],
+      "seed": [
+        23,
+        63
+      ]
+    }
+  ],
+  "mask": {
+    "background": "low chroma (max-min < 18) and mean < 75 transparent",
+    "foreground": "chroma >= 18 or mean >= 75",
+    "selection": "8-connected foreground component containing tile seed",
+    "edgeInk": "2-pixel dilation",
+    "resizedAlpha": "Lanczos then binary threshold at 128",
+    "normalOutside": [
+      128,
+      128,
+      255
+    ],
+    "approval": "root inspected cropped leaf draft for local integration; heuristic alpha, not hand-painted"
+  },
+  "normalPairing": "same UV crops; visually registered only; bake not certified",
+  "uvLayout": {
+    "origin": "pixel top-left; TextureLoader flipY=true",
+    "order": [
+      "leaf-small-a",
+      "leaf-small-b"
+    ],
+    "tilesPerRow": 2,
+    "pc": {
+      "atlas": [
+        512,
+        256
+      ],
+      "tile": [
+        256,
+        256
+      ],
+      "content": 240,
+      "gutter": 8,
+      "offsets": [
+        [
+          0,
+          0
+        ],
+        [
+          0.5,
+          0
+        ]
+      ],
+      "inset": [
+        0.015625,
+        0.03125
+      ],
+      "span": [
+        0.46875,
+        0.9375
+      ]
+    },
+    "mobile": {
+      "atlas": [
+        256,
+        128
+      ],
+      "tile": [
+        128,
+        128
+      ],
+      "content": 120,
+      "gutter": 4,
+      "offsets": [
+        [
+          0,
+          0
+        ],
+        [
+          0.5,
+          0
+        ]
+      ],
+      "inset": [
+        0.015625,
+        0.03125
+      ],
+      "span": [
+        0.46875,
+        0.9375
+      ]
+    },
+    "crops": {
+      "leaf-small-a": [
+        384,
+        746,
+        76,
+        137
+      ],
+      "leaf-small-b": [
+        680,
+        1024,
+        48,
+        117
+      ]
+    }
+  },
+  "derivatives": [
+    {
+      "id": "albedo-pc",
+      "path": "assets/textures/palm-base-v1/albedo-pc.webp",
+      "dimensions": [
+        512,
+        256
+      ],
+      "mode": "RGBA",
+      "bytes": 11216,
+      "sha256": "e7db9c94eb7b77abe2105f3f4afc788518cd6e2a32c590ed9d8f430b5fff4dcf",
+      "encoding": "WebP quality 88",
+      "alphaProbes": {
+        "points": [
+          [
+            9,
+            9
+          ],
+          [
+            116,
+            103
+          ],
+          [
+            265,
+            9
+          ],
+          [
+            381,
+            138
+          ]
+        ],
+        "alpha": [
+          0,
+          255,
+          0,
+          255
+        ],
+        "labels": [
+          "leaf A background",
+          "leaf A seed",
+          "leaf B background",
+          "leaf B seed"
+        ]
+      }
+    },
+    {
+      "id": "normal-pc",
+      "path": "assets/textures/palm-base-v1/normal-pc.webp",
+      "dimensions": [
+        512,
+        256
+      ],
+      "mode": "RGBA",
+      "bytes": 63728,
+      "sha256": "96a829db2429b5aa1054c9e9261bf977f15108a5bc1977f2bb2b1e93ce99e279",
+      "encoding": "lossless WebP",
+      "alphaProbes": {
+        "points": [
+          [
+            9,
+            9
+          ],
+          [
+            116,
+            103
+          ],
+          [
+            265,
+            9
+          ],
+          [
+            381,
+            138
+          ]
+        ],
+        "alpha": [
+          0,
+          255,
+          0,
+          255
+        ],
+        "labels": [
+          "leaf A background",
+          "leaf A seed",
+          "leaf B background",
+          "leaf B seed"
+        ]
+      }
+    },
+    {
+      "id": "albedo-mobile",
+      "path": "assets/textures/palm-base-v1/albedo-mobile.webp",
+      "dimensions": [
+        256,
+        128
+      ],
+      "mode": "RGBA",
+      "bytes": 4892,
+      "sha256": "cf554d54c41ffdb75f5e6c610731b652f2639ec410b07ab8da0be639088802f9",
+      "encoding": "WebP quality 85",
+      "alphaProbes": {
+        "points": [
+          [
+            5,
+            5
+          ],
+          [
+            58,
+            51
+          ],
+          [
+            133,
+            5
+          ],
+          [
+            190,
+            69
+          ]
+        ],
+        "alpha": [
+          0,
+          255,
+          0,
+          255
+        ],
+        "labels": [
+          "leaf A background",
+          "leaf A seed",
+          "leaf B background",
+          "leaf B seed"
+        ]
+      }
+    },
+    {
+      "id": "normal-mobile",
+      "path": "assets/textures/palm-base-v1/normal-mobile.webp",
+      "dimensions": [
+        256,
+        128
+      ],
+      "mode": "RGBA",
+      "bytes": 25114,
+      "sha256": "eb8509dbd9f69da4b461b1c8b3989cb1cac1558c3d0ca1e1c4208e351e4cecc4",
+      "encoding": "lossless WebP",
+      "alphaProbes": {
+        "points": [
+          [
+            5,
+            5
+          ],
+          [
+            58,
+            51
+          ],
+          [
+            133,
+            5
+          ],
+          [
+            190,
+            69
+          ]
+        ],
+        "alpha": [
+          0,
+          255,
+          0,
+          255
+        ],
+        "labels": [
+          "leaf A background",
+          "leaf A seed",
+          "leaf B background",
+          "leaf B seed"
+        ]
+      }
+    }
+  ],
+  "aggregateRuntimeBytes": 104950
+}

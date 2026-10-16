@@ -1,0 +1,157 @@
+{
+  "milestone": "W02c-wallet-runtime",
+  "date": "2026-10-08",
+  "status": "implemented-opt-in-and-verified-locally",
+  "node": "v24.14.0",
+  "viem": "2.57.3",
+  "tests": [
+    {
+      "command": "node --test tests/web3-wallet-runtime.test.mjs tests/web3-wallet-readiness-sql.test.mjs",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "durationMs": 21274.366
+    },
+    {
+      "command": "node --test tests/web3-wallet-link.test.mjs tests/web3-wallet-http.test.mjs tests/web3-wallet-sql.test.mjs tests/web3-wallet-integration.test.mjs tests/web3-wallet-provider.test.mjs tests/web3-wallet-browser.test.mjs tests/web3-wallet-config.test.mjs tests/web3-asset-registry.test.mjs tests/web3-asset-registry-sql.test.mjs tests/web3-asset-registry-process.test.mjs tests/web3-asset-registry-boundary.test.mjs tests/web3-equipment-content.test.mjs tests/items.test.mjs tests/accounts-server.test.mjs tests/account-auth.test.mjs tests/server.test.mjs tests/store.test.mjs tests/world-state.test.mjs",
+      "passed": 130,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "durationMs": 25732.8686
+    }
+  ],
+  "verification": {
+    "startupDisabledByDefault": true,
+    "explicitConfigurationRequired": true,
+    "durableWalletStoreRequired": true,
+    "serviceClientSeparatedFromAuth": true,
+    "serviceFetchRespectsAbortAndRefusesRedirect": true,
+    "readonlyReadyBeforeWorldPreparationAndListener": true,
+    "readinessTimeoutMs": 10000,
+    "noAutomaticRetryOrMemoryFallback": true,
+    "exactReadyDTO": {
+      "version": 1
+    },
+    "sqlTableAndColumnACLsChecked": true,
+    "sqlRPCAccessAndHelperACLsChecked": true,
+    "readinessLeavesPendingAndCompletedRecordsUnchanged": true,
+    "localSignedHTTPLinkSurvivesPGliteReopen": true,
+    "isolatedEntrypointCopiesExcludeEnv": true,
+    "entrypointReadinessFailurePrecedesWorldRPC": true,
+    "windowsGracefulCloseUsesSignalHarness": true,
+    "utf8NoBom": true,
+    "syntaxAndWhitespaceChecked": true
+  },
+  "scope": {
+    "sdkSQL": "Real Supabase SDK over intercepted local RPCs and PGlite; wallet persistence only",
+    "httpFixtureGameStore": "memory; durable dependency marker supplied to wallet runtime fixture",
+    "entrypoint": "temporary checkout without .env; same server/index.mjs entrypoint; local HTTP stub for invalid readiness",
+    "wallet": "real EOA signature from public deterministic test key, no extension",
+    "browser": "not rerun; W02b UI sources unchanged",
+    "liveSupabase": false,
+    "liveSQLApplied": false,
+    "actualRepoEnvRead": false,
+    "actualRepoHostStartedOrRestarted": false,
+    "testnetOrRPC": false,
+    "tokensOrPayments": false,
+    "simulationProfileProtocolVersionChanged": false,
+    "commitPushOrDeployment": false
+  },
+  "previousSources": [
+    {
+      "path": "docs/delivery/w01-asset-registry-evidence.json",
+      "count": 10,
+      "unchanged": 10,
+      "changed": []
+    },
+    {
+      "path": "docs/delivery/w00-equipment-content-evidence.json",
+      "count": 7,
+      "unchanged": 7,
+      "changed": []
+    },
+    {
+      "path": "docs/delivery/w02b-wallet-browser-evidence.json",
+      "count": 20,
+      "unchanged": 15,
+      "changed": [
+        "server/index.mjs",
+        "PLAN-WEB3.md",
+        "PLAN-DELIVERY.md",
+        "DESIGN.md",
+        "docs/HANDOFF.md"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "server/web3/walletRuntime.mjs",
+      "bytes": 2874,
+      "sha256": "ce2b6872404ef7ae9a9886621f17370117b7849358a74785e2afc5660dda3d61"
+    },
+    {
+      "path": "server/web3/walletStore.mjs",
+      "bytes": 5799,
+      "sha256": "6ce7917a7828354b89cd7c23198d44a0dd200293cd3acffdd86abc196b6cc793"
+    },
+    {
+      "path": "server/index.mjs",
+      "bytes": 9972,
+      "sha256": "2217c6918588c9449768ef4a45e49b28c5571c5bf119e723a262f969f553cd44"
+    },
+    {
+      "path": "server/migrations/web3/003_wallet_readiness.sql",
+      "bytes": 7710,
+      "sha256": "eb4a50702dfad6323f022a37aec8f618dbb0e6f05e239fd51ba85b152a2390a4"
+    },
+    {
+      "path": "deploy/marea-negra.env.example",
+      "bytes": 1751,
+      "sha256": "a12dee9f775bf41274d4f85bceeb7b3c64b3ba7cfa86a3f2821f5eb4b3aab86c"
+    },
+    {
+      "path": "tests/web3-wallet-runtime.test.mjs",
+      "bytes": 23804,
+      "sha256": "e384e0d215ff5034596a0fa2d9f1120a2ebf4cbc6dc5e9f1fb90c0456c1595cf"
+    },
+    {
+      "path": "tests/web3-wallet-readiness-sql.test.mjs",
+      "bytes": 7592,
+      "sha256": "57fb6db722d7ae2e90c79b14c0ae23768f7603af1f2f8acdc05ba8211f725baa"
+    },
+    {
+      "path": "docs/briefs/w02c-wallet-runtime.md",
+      "bytes": 3144,
+      "sha256": "5ca49aa02060e5bd38dab012ccdba91e89680bb5f338295b300a31f4c2d71feb"
+    },
+    {
+      "path": "docs/delivery/w02c-wallet-runtime.md",
+      "bytes": 5403,
+      "sha256": "54b3512e788f17ea53ac9c33826c7fd17f29bea1c912fe4e79ccbbd3911d4c50"
+    },
+    {
+      "path": "PLAN-WEB3.md",
+      "bytes": 17774,
+      "sha256": "f75663d2c073d36af44760804ef9ae10e503e5e01d8878d918199e55469ab39c"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 72417,
+      "sha256": "9557f409ebf93c3dfbe7e167205147039e54ffc370136fb35408385996efec5f"
+    },
+    {
+      "path": "PLAN-DELIVERY.md",
+      "bytes": 60483,
+      "sha256": "20bd8887feb2b019721a3c2da050326cae669dd278ca749a3ddc58fe555bff73"
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "bytes": 97920,
+      "sha256": "13961bcf38629d97c5ec0887febe9801051e953623a17170a0814d239679345d"
+    }
+  ]
+}

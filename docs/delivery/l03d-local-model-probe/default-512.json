@@ -1,0 +1,86 @@
+{
+  "schema": "mn.local-inference.canary.v1",
+  "at": "2026-10-11T04:14:22.521Z",
+  "baseUrl": "http://127.0.0.1:8080/v1",
+  "modelId": "qwen3.8-flash-next-coder-iq1_m",
+  "apiKeyUsed": false,
+  "limits": {
+    "maxCalls": 3,
+    "maxOutputTokens": 512,
+    "timeoutMs": 30000,
+    "maxInputBytes": 16384,
+    "maxResponseBytes": 262144
+  },
+  "scope": "Synthetic local proposals only; no gameplay, player context, memory, ledger or production activation",
+  "state": "failed",
+  "steps": [
+    {
+      "name": "decision",
+      "state": "complete",
+      "transport": {
+        "ok": true,
+        "why": "ok",
+        "dispatched": true,
+        "usageKnown": true,
+        "usage": {
+          "inputTokens": 1263,
+          "outputTokens": 63,
+          "totalTokens": 1326,
+          "cachedInputTokens": 0,
+          "reasoningTokens": null
+        },
+        "responseId": "chatcmpl-e221d82fe3c64db29afd8d4a",
+        "reportedModel": "qwen3.8-flash-next-coder-iq1_m",
+        "finishReason": "stop",
+        "latencyMs": 6432,
+        "costNanoUsd": null,
+        "executionMayContinue": false
+      },
+      "pass": true,
+      "proposal": {
+        "type": "wait",
+        "args": {}
+      }
+    },
+    {
+      "name": "conversation",
+      "state": "complete",
+      "transport": {
+        "ok": false,
+        "why": "truncated",
+        "dispatched": true,
+        "usageKnown": true,
+        "usage": {
+          "inputTokens": 357,
+          "outputTokens": 512,
+          "totalTokens": 869,
+          "cachedInputTokens": 0,
+          "reasoningTokens": null
+        },
+        "responseId": "chatcmpl-9c66fd3f5d524a0a8f505f83",
+        "reportedModel": "qwen3.8-flash-next-coder-iq1_m",
+        "finishReason": "length",
+        "latencyMs": 18168,
+        "costNanoUsd": null,
+        "executionMayContinue": false
+      },
+      "pass": false
+    }
+  ],
+  "calls": 2,
+  "actionsExecuted": 0,
+  "chatsSent": 0,
+  "costNanoUsd": null,
+  "pass": false,
+  "transportState": {
+    "calls": 2,
+    "inFlight": false,
+    "uncertain": false
+  },
+  "knownUsage": {
+    "calls": 2,
+    "inputTokens": 1620,
+    "outputTokens": 575
+  },
+  "unknownCalls": 0
+}

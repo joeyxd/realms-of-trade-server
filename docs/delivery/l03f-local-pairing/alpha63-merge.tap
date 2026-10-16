@@ -1,0 +1,420 @@
+TAP version 13
+# Subtest: opt-in real WebSocket authority separates owner and character identity and denies unmapped or duplicate agents
+ok 1 - opt-in real WebSocket authority separates owner and character identity and denies unmapped or duplicate agents
+  ---
+  duration_ms: 458.001
+  type: 'test'
+  ...
+# Subtest: owner direct control and revoke dominate agent tasks; stale epoch and task revisions cannot return after resume
+ok 2 - owner direct control and revoke dominate agent tasks; stale epoch and task revisions cannot return after resume
+  ---
+  duration_ms: 629.8602
+  type: 'test'
+  ...
+# Subtest: agent authority gate requires authenticated identity resolution and a matching configured world
+ok 3 - agent authority gate requires authenticated identity resolution and a matching configured world
+  ---
+  duration_ms: 0.5027
+  type: 'test'
+  ...
+# Subtest: agent HELLO remains denied when the opt-in server gate is absent
+ok 4 - agent HELLO remains denied when the opt-in server gate is absent
+  ---
+  duration_ms: 230.189
+  type: 'test'
+  ...
+# Subtest: partial agent admission failure closes the managed socket and leaves no entity or active grant
+ok 5 - partial agent admission failure closes the managed socket and leaves no entity or active grant
+  ---
+  duration_ms: 236.6686
+  type: 'test'
+  ...
+# Subtest: a missing body capability blocks body tasks and protected buttons; agent sockets cannot dispatch CMD or naval messages
+ok 6 - a missing body capability blocks body tasks and protected buttons; agent sockets cannot dispatch CMD or naval messages
+  ---
+  duration_ms: 489.439
+  type: 'test'
+  ...
+# Subtest: PvE ATTACK carried from a late command is revalidated after merge if a live player enters range before the tick
+ok 7 - PvE ATTACK carried from a late command is revalidated after merge if a live player enters range before the tick
+  ---
+  duration_ms: 301.4973
+  type: 'test'
+  ...
+# Subtest: task and grant expiration are swept with the host timer stopped
+ok 8 - task and grant expiration are swept with the host timer stopped
+  ---
+  duration_ms: 5412.6268
+  type: 'test'
+  ...
+# Subtest: death invalidates an active grant, task, and queued input before any next tick
+ok 9 - death invalidates an active grant, task, and queued input before any next tick
+  ---
+  duration_ms: 466.1172
+  type: 'test'
+  ...
+# Subtest: disconnect retires its queue and a reentered agent receives a different grant
+ok 10 - disconnect retires its queue and a reentered agent receives a different grant
+  ---
+  duration_ms: 481.3345
+  type: 'test'
+  ...
+# Subtest: secure network client derives HTTPS Origin from the validated WSS endpoint
+ok 11 - secure network client derives HTTPS Origin from the validated WSS endpoint
+  ---
+  duration_ms: 2.7658
+  type: 'test'
+  ...
+# Subtest: guest handshake waits for a valid own snapshot and reports the real protocol identity
+ok 12 - guest handshake waits for a valid own snapshot and reports the real protocol identity
+  ---
+  duration_ms: 383.6682
+  type: 'test'
+  ...
+# Subtest: fixture and server sources stay partitioned and a lab cannot opt into server receipts
+ok 13 - fixture and server sources stay partitioned and a lab cannot opt into server receipts
+  ---
+  duration_ms: 0.9334
+  type: 'test'
+  ...
+# Subtest: normal input uses sequence and projectile tick; prediction and ACK cannot confirm movement
+ok 14 - normal input uses sequence and projectile tick; prediction and ACK cannot confirm movement
+  ---
+  duration_ms: 328.1864
+  type: 'test'
+  ...
+# Subtest: zero displacement and full ACK remain unknown until timeout without inventing a cause
+ok 15 - zero displacement and full ACK remain unknown until timeout without inventing a cause
+  ---
+  duration_ms: 240.464
+  type: 'test'
+  ...
+# Subtest: a failed flush preserves submitted uncertainty and stops without replaying an attack
+ok 16 - a failed flush preserves submitted uncertainty and stops without replaying an attack
+  ---
+  duration_ms: 261.1349
+  type: 'test'
+  ...
+# Subtest: invalid, unsupported, forbidden and wrong session orders emit no privileged command
+ok 17 - invalid, unsupported, forbidden and wrong session orders emit no privileged command
+  ---
+  duration_ms: 219.7958
+  type: 'test'
+  ...
+# Subtest: wrong protocol and missing or malformed own snapshots cannot become ready
+ok 18 - wrong protocol and missing or malformed own snapshots cannot become ready
+  ---
+  duration_ms: 727.4834
+  type: 'test'
+  ...
+# Subtest: old and malformed snapshots do not replace confirmed state or freshness
+ok 19 - old and malformed snapshots do not replace confirmed state or freshness
+  ---
+  duration_ms: 226.7107
+  type: 'test'
+  ...
+# Subtest: raw swing confirms only correlated attack execution, ignoring unrelated events
+ok 20 - raw swing confirms only correlated attack execution, ignoring unrelated events
+  ---
+  duration_ms: 327.6677
+  type: 'test'
+  ...
+# Subtest: despawn and numeric entity reuse retire an old target without another attack
+ok 21 - despawn and numeric entity reuse retire an old target without another attack
+  ---
+  duration_ms: 357.7395
+  type: 'test'
+  ...
+# Subtest: raw despawn and reused spawn cancel attack before any replacement snapshot arrives
+ok 22 - raw despawn and reused spawn cancel attack before any replacement snapshot arrives
+  ---
+  duration_ms: 712.477
+  type: 'test'
+  ...
+# Subtest: nearby human safety rejects PvE attack locally without claiming server policy
+ok 23 - nearby human safety rejects PvE attack locally without claiming server policy
+  ---
+  duration_ms: 389.9991
+  type: 'test'
+  ...
+# Subtest: a nearby human omitted by the visible entity cap still prevents PvE attack
+ok 24 - a nearby human omitted by the visible entity cap still prevents PvE attack
+  ---
+  duration_ms: 381.7821
+  type: 'test'
+  ...
+# Subtest: duplicate attacks do not pulse twice and cloning getters cannot alter live orders
+ok 25 - duplicate attacks do not pulse twice and cloning getters cannot alter live orders
+  ---
+  duration_ms: 524.3496
+  type: 'test'
+  ...
+# Subtest: owner stop and unexpected close neutralize the runner and preserve sent uncertainty
+ok 26 - owner stop and unexpected close neutralize the runner and preserve sent uncertainty
+  ---
+  duration_ms: 715.6193
+  type: 'test'
+  ...
+# Subtest: stop closes and retains uncertainty even if the final neutral flush throws
+ok 27 - stop closes and retains uncertainty even if the final neutral flush throws
+  ---
+  duration_ms: 365.6968
+  type: 'test'
+  ...
+# Subtest: agent without a verified map projection is refused by an active GM content identity
+ok 28 - agent without a verified map projection is refused by an active GM content identity
+  ---
+  duration_ms: 545.3385
+  type: 'test'
+  ...
+# Subtest: real guests occupy normal slots and another normal client observes confirmed movement
+ok 29 - real guests occupy normal slots and another normal client observes confirmed movement
+  ---
+  duration_ms: 1994.8301
+  type: 'test'
+  ...
+# Subtest: real guest walks with bounded inputs to the normal practice dummy and receives a server swing
+ok 30 - real guest walks with bounded inputs to the normal practice dummy and receives a server swing
+  ---
+  duration_ms: 2357.0439
+  type: 'test'
+  ...
+# Subtest: load, issue, and revoke use the authenticated pairing contract and private one-use code
+ok 31 - load, issue, and revoke use the authenticated pairing contract and private one-use code
+  ---
+  duration_ms: 2.7106
+  type: 'test'
+  ...
+# Subtest: malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+ok 32 - malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+  ---
+  duration_ms: 0.4715
+  type: 'test'
+  ...
+# Subtest: a small server clock lead accepts the code without displaying it beyond five minutes
+ok 33 - a small server clock lead accepts the code without displaying it beyond five minutes
+  ---
+  duration_ms: 0.762
+  type: 'test'
+  ...
+# Subtest: failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+ok 34 - failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+  ---
+  duration_ms: 0.4089
+  type: 'test'
+  ...
+# Subtest: account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+ok 35 - account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+  ---
+  duration_ms: 30.3883
+  type: 'test'
+  ...
+# Subtest: stale correlation is ignored and unsafe controller URLs are not retained
+ok 36 - stale correlation is ignored and unsafe controller URLs are not retained
+  ---
+  duration_ms: 0.4004
+  type: 'test'
+  ...
+# Subtest: pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+ok 37 - pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+  ---
+  duration_ms: 647.1948
+  type: 'test'
+  ...
+# Subtest: new code rotates pending code and active controller; owner disconnect invalidates pending code
+ok 38 - new code rotates pending code and active controller; owner disconnect invalidates pending code
+  ---
+  duration_ms: 521.3427
+  type: 'test'
+  ...
+# Subtest: expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+ok 39 - expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+  ---
+  duration_ms: 1028.2249
+  type: 'test'
+  ...
+# Subtest: durable owner stop invalidates a pending code and active paired session immediately
+ok 40 - durable owner stop invalidates a pending code and active paired session immediately
+  ---
+  duration_ms: 516.4765
+  type: 'test'
+  ...
+# Subtest: owner disconnect during paired profile I/O prevents late admission and welcome
+ok 41 - owner disconnect during paired profile I/O prevents late admission and welcome
+  ---
+  duration_ms: 539.5148
+  type: 'test'
+  ...
+# Subtest: missing durable prerequisites keep pairing unavailable without blocking creation
+ok 42 - missing durable prerequisites keep pairing unavailable without blocking creation
+  ---
+  duration_ms: 502.0345
+  type: 'test'
+  ...
+# Subtest: issue reports a missing creation and content changes invalidate claims and admitted sessions
+ok 43 - issue reports a missing creation and content changes invalidate claims and admitted sessions
+  ---
+  duration_ms: 620.5384
+  type: 'test'
+  ...
+# Subtest: pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+ok 44 - pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+  ---
+  duration_ms: 63.8319
+  type: 'test'
+  ...
+# Subtest: remote stop settles the runner and permits the same controller to pair again
+ok 45 - remote stop settles the runner and permits the same controller to pair again
+  ---
+  duration_ms: 32.0684
+  type: 'test'
+  ...
+# Subtest: stop during asynchronous document loading cancels setup before runner connect
+ok 46 - stop during asynchronous document loading cancels setup before runner connect
+  ---
+  duration_ms: 23.3646
+  type: 'test'
+  ...
+# Subtest: pairing fails closed for reused companion files with a different model policy
+ok 47 - pairing fails closed for reused companion files with a different model policy
+  ---
+  duration_ms: 29.3608
+  type: 'test'
+  ...
+# Subtest: claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+ok 48 - claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+  ---
+  duration_ms: 4.9237
+  type: 'test'
+  ...
+# Subtest: live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+ok 49 - live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+  ---
+  duration_ms: 1503.8541
+  type: 'test'
+  ...
+# Subtest: local model HTTP failure reports only a safe diagnostic and saves no reply or journal entry
+ok 50 - local model HTTP failure reports only a safe diagnostic and saves no reply or journal entry
+  ---
+  duration_ms: 745.4942
+  type: 'test'
+  ...
+# Subtest: stop during a local model request fences its late response and does not capture an exchange
+ok 51 - stop during a local model request fences its late response and does not capture an exchange
+  ---
+  duration_ms: 1369.8971
+  type: 'test'
+  ...
+# Subtest: the CLI validates options before prompting and accepts a pasted multi-character hex code
+ok 52 - the CLI validates options before prompting and accepts a pasted multi-character hex code
+  ---
+  duration_ms: 2.8073
+  type: 'test'
+  ...
+# Subtest: /health, /status and only the client files are served
+ok 53 - /health, /status and only the client files are served
+  ---
+  duration_ms: 414.9702
+  type: 'test'
+  ...
+# Subtest: two players join the same island, see each other move, and leaving despawns
+ok 54 - two players join the same island, see each other move, and leaving despawns
+  ---
+  duration_ms: 1528.3212
+  type: 'test'
+  ...
+# Subtest: a full instance and a wrong protocol version are refused politely
+ok 55 - a full instance and a wrong protocol version are refused politely
+  ---
+  duration_ms: 308.1023
+  type: 'test'
+  ...
+# Subtest: junk does not hurt the server: malformed messages close only that socket
+ok 56 - junk does not hurt the server: malformed messages close only that socket
+  ---
+  duration_ms: 620.4018
+  type: 'test'
+  ...
+# Subtest: names are cleaned: control characters, markup and length
+ok 57 - names are cleaned: control characters, markup and length
+  ---
+  duration_ms: 466.1705
+  type: 'test'
+  ...
+# Subtest: default signed saves restore and spoofed account fields never create stored profiles
+ok 58 - default signed saves restore and spoofed account fields never create stored profiles
+  ---
+  duration_ms: 371.3958
+  type: 'test'
+  ...
+# Subtest: trusted account profile loads before WELCOME and overrides an older signed save
+ok 59 - trusted account profile loads before WELCOME and overrides an older signed save
+  ---
+  duration_ms: 326.5685
+  type: 'test'
+  ...
+# Subtest: null identity keeps signed anonymous saves; resolver errors fail closed without secrets
+ok 60 - null identity keeps signed anonymous saves; resolver errors fail closed without secrets
+  ---
+  duration_ms: 452.057
+  type: 'test'
+  ...
+# Subtest: identity verifier gets request context without retained credential headers
+ok 61 - identity verifier gets request context without retained credential headers
+  ---
+  duration_ms: 237.1364
+  type: 'test'
+  ...
+# Subtest: duplicate HELLO and pending admission respect capacity, then release it on close
+ok 62 - duplicate HELLO and pending admission respect capacity, then release it on close
+  ---
+  duration_ms: 228.539
+  type: 'test'
+  ...
+# Subtest: same account has one authority and remains reserved through its final write
+ok 63 - same account has one authority and remains reserved through its final write
+  ---
+  duration_ms: 241.1087
+  type: 'test'
+  ...
+# Subtest: close cancels an unresolved load and shutdown does not wait for a stuck resolver
+ok 64 - close cancels an unresolved load and shutdown does not wait for a stuck resolver
+  ---
+  duration_ms: 564.6008
+  type: 'test'
+  ...
+# Subtest: write snapshots are isolated and serialized; shutdown awaits the final ECS/profile state
+ok 65 - write snapshots are isolated and serialized; shutdown awaits the final ECS/profile state
+  ---
+  duration_ms: 329.283
+  type: 'test'
+  ...
+# Subtest: CAS conflict fences the session and reports failed shutdown without overwriting newer state
+ok 66 - CAS conflict fences the session and reports failed shutdown without overwriting newer state
+  ---
+  duration_ms: 376.6015
+  type: 'test'
+  ...
+# Subtest: join timeout releases capacity and unavailable stores never admit an empty replacement
+ok 67 - join timeout releases capacity and unavailable stores never admit an empty replacement
+  ---
+  duration_ms: 758.0274
+  type: 'test'
+  ...
+# Subtest: real WebSocket account path saves on shutdown and loads across two host instances
+ok 68 - real WebSocket account path saves on shutdown and loads across two host instances
+  ---
+  duration_ms: 1150.9268
+  type: 'test'
+  ...
+1..68
+# tests 68
+# suites 0
+# pass 68
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 46793.37
+
+--- EXIT STATUS: 0 ---

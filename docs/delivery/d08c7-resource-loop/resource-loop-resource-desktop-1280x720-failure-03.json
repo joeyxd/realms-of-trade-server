@@ -1,0 +1,344 @@
+{
+  "generatedAt": "2026-10-08T02:02:47.160Z",
+  "purpose": "Server-owned coastal gather, wood crafting, raft editor use, save/reconnect and shared depletion.",
+  "harness": "fresh ephemeral GameHost per viewport; memory profile store; local Three.js/GSAP; browser contexts isolated; no .env or external storage.",
+  "setup": "QA fixture moves server ECS players to deterministic node, bench and helm positions; gather/craft/build actions themselves use the real keyboard/touch/UI and server protocol.",
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "resource-desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "failed",
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7-resource-loop\\resource-desktop-1280x720-00-fresh-world.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7-resource-loop\\resource-desktop-1280x720-failure.png"
+      ],
+      "errors": [],
+      "consoleErrors": [],
+      "gathers": [],
+      "serverLog": [
+        "[net] #1 connected (127.0.0.1) · sockets 1",
+        "[net] #2 connected (127.0.0.1) · sockets 2",
+        "[net] #2 left · players 1 · sockets 1",
+        "[net] #1 left · players 0 · sockets 0"
+      ],
+      "serverMessages": [
+        {
+          "id": 1,
+          "t": "hello",
+          "name": "Grumete730",
+          "v": 22,
+          "op": "",
+          "node": ""
+        },
+        {
+          "id": 2,
+          "t": "hello",
+          "name": "Resource Peer",
+          "v": 22,
+          "op": "",
+          "node": ""
+        },
+        {
+          "id": 2,
+          "t": "cmd",
+          "name": "",
+          "op": "gather",
+          "node": "coast-1"
+        },
+        {
+          "id": 1,
+          "t": "cmd",
+          "name": "",
+          "op": "gather",
+          "node": "coast-1"
+        }
+      ],
+      "websockets": [
+        {
+          "label": "owner",
+          "url": "ws://127.0.0.1:65374/ws",
+          "closed": false
+        }
+      ],
+      "resources": [
+        {
+          "id": "coast-1",
+          "kind": "wood",
+          "x": 105.54575969252762,
+          "y": 1.7241227474424363,
+          "z": 79.80062018727583,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-10",
+          "kind": "wood",
+          "x": 45.31857447286161,
+          "y": 2.639341838889398,
+          "z": -82.28909129677595,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-11",
+          "kind": "wood",
+          "x": 55.45322158987447,
+          "y": 2.2209544202915743,
+          "z": -74.02792226255272,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-12",
+          "kind": "stone",
+          "x": 65.05382386916237,
+          "y": 1.7588819783532914,
+          "z": -65.05382386916237,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-13",
+          "kind": "wood",
+          "x": 74.02792226255272,
+          "y": 1.693077144095066,
+          "z": -55.45322158987446,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-14",
+          "kind": "wood",
+          "x": 89.75777139801818,
+          "y": 3.21347007436484,
+          "z": -34.74748471002228,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-15",
+          "kind": "stone",
+          "x": 96.36203509410852,
+          "y": 3.5670678081098535,
+          "z": -23.84175767451812,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-16",
+          "kind": "wood",
+          "x": 102.0382797153959,
+          "y": 3.5477584171916767,
+          "z": -12.706421479377852,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-2",
+          "kind": "wood",
+          "x": 88.0259639390594,
+          "y": 1.1619416773569624,
+          "z": 102.20724324289841,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-3",
+          "kind": "stone",
+          "x": 101.12682011079231,
+          "y": 2.9143793809659755,
+          "z": 77.46118158518067,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-4",
+          "kind": "wood",
+          "x": 85.06267504307219,
+          "y": 2.578678204000939,
+          "z": 94.9809773386489,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-5",
+          "kind": "wood",
+          "x": 93.48465401061476,
+          "y": 3.358566719980865,
+          "z": 79.07279484440178,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-6",
+          "kind": "stone",
+          "x": 82.72323644097702,
+          "y": 2.1081057445760125,
+          "z": 99.39991692038421,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-7",
+          "kind": "wood",
+          "x": 95.82409261270993,
+          "y": 3.7173769002816472,
+          "z": 74.65385526266647,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-8",
+          "kind": "wood",
+          "x": 79.75994754498983,
+          "y": 2.6454455441798377,
+          "z": 92.1736510161347,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-9",
+          "kind": "stone",
+          "x": 34.747484710022285,
+          "y": 2.4946825022832533,
+          "z": -89.75777139801818,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        }
+      ],
+      "bench": {
+        "x": 98.73539398420614,
+        "y": 2.487394956150242,
+        "z": 84.11558472002913
+      },
+      "initial": {
+        "gold": 0,
+        "tradeRev": 0,
+        "pack": {},
+        "cap": 10
+      },
+      "wirePeer": {
+        "protocol": 22,
+        "entity": 28,
+        "scene": false,
+        "close": {
+          "code": 1000,
+          "reason": ""
+        }
+      },
+      "failure": "page.waitForFunction: Timeout 10000ms exceeded.\n    at runViewport (C:\\DEV\\real of trade\\realms-of-trade-server\\tools\\qa-resource-loop.mjs:169:18)\n    at async file:///C:/DEV/real%20of%20trade/realms-of-trade-server/tools/qa-resource-loop.mjs:257:32",
+      "hostDebug": {
+        "status": {
+          "players": 2,
+          "max": 2,
+          "sockets": 2,
+          "tick": 1294,
+          "uptime": 22,
+          "stepMs": 0.543,
+          "bots": 0,
+          "names": [
+            "Grumete730",
+            "Resource Peer"
+          ],
+          "errors": 0,
+          "storage": {
+            "kind": "memory",
+            "durable": false,
+            "accounts": false,
+            "errors": 0,
+            "unsaved": 0,
+            "tickBlocked": false,
+            "staging": null,
+            "startup": null,
+            "world": null
+          },
+          "net": {
+            "fill": 609,
+            "late": 0,
+            "trimmed": 0,
+            "clamped": 0,
+            "kbOut": 3100,
+            "kbIn": 89.2,
+            "dropped": 0
+          }
+        },
+        "sockets": [
+          1,
+          2
+        ],
+        "clients": [
+          {
+            "id": 1,
+            "entity": 26
+          },
+          {
+            "id": 2,
+            "entity": 28
+          }
+        ],
+        "serverMessages": [
+          {
+            "id": 1,
+            "t": "hello",
+            "name": "Grumete730",
+            "v": 22,
+            "op": "",
+            "node": ""
+          },
+          {
+            "id": 2,
+            "t": "hello",
+            "name": "Resource Peer",
+            "v": 22,
+            "op": "",
+            "node": ""
+          },
+          {
+            "id": 2,
+            "t": "cmd",
+            "name": "",
+            "op": "gather",
+            "node": "coast-1"
+          },
+          {
+            "id": 1,
+            "t": "cmd",
+            "name": "",
+            "op": "gather",
+            "node": "coast-1"
+          }
+        ]
+      },
+      "ownerDebug": {
+        "close": null,
+        "joined": true,
+        "mode": "playing",
+        "transport": 1
+      }
+    }
+  ],
+  "failures": [
+    "resource-desktop-1280x720: page.waitForFunction: Timeout 10000ms exceeded."
+  ],
+  "status": "failed",
+  "finishedAt": "2026-10-08T02:03:09.995Z"
+}

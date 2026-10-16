@@ -1,0 +1,214 @@
+{
+  "schema": "marea.niagara-web-derivative",
+  "version": 1,
+  "id": "niagara-97a82bae61b29237",
+  "atlasId": "component-1d5c64ec6742cb1b-8x4-luma",
+  "sourceSha256": "97a82bae61b292371a78cadc6ffef2f7dcae3ea39ac0a9ccb6b5ed2ee57e18cf",
+  "sourceFrames": [
+    "8d41df9af2b23e958de31ddb61f2b7f9312fd085facc86542571641337b2f105",
+    "aef61747a223935ca4f45a43b361aeee1ff28ab8d676ac66d03c57559e23a126",
+    "8e7330bce97a5e8db52688c726e191b7a0db20402d06fecf941c798f361faea4",
+    "b1d6c4fafceaae753221ef09b3152aaa9a92a642c4d9d2b8bfb73d539c97f67c",
+    "425db880c3c63e21b98ad3da6eb21d992439436d1955ec4c87c3c0ad53645623",
+    "9c5abd8d07596ef0f376859a0385853c0c4a6b09ac80cd2c65ce27d0ff1265e7",
+    "05c1aa7dc09d907e4ad7b2bc33da48c253e8588504f9c7a44aa3460e1ccecee7",
+    "3f9b1604cefbb8eaa2f79089d3f7958a739861ddf72e228aad44978cbc7d3de9",
+    "463b2c98033bad548195e9abfea1f617c5b9512b2ee6c215705f0a862103aa45",
+    "59134ebab45643d816530e69238bdc923b745471cd2001879c29d656d9943d68",
+    "e8232d9b929d9f704a9fe88fa6d2e4441ac0e129e8a23c8f13b6673e047f09ea",
+    "560e5de4aad327cce3a8e2f66db9629a47b44127060c6f915f9cafb248797cb5",
+    "b1b13e460cecca4978d213fc6c6d3d36104da409c50000631af38f2571f07bc9",
+    "4bba9f895e93c3e33e9f9cf312e0ddaa993333be197063433b32f77e402dbed8",
+    "b47a5eb9e81c49cb9983df91c9062a348d9ae7053b2fbf26e51014e9d35dd411",
+    "f514418c86b00a215af9cdb000363c104b8b87fdd6af9046b1c6caa646060120",
+    "e84bf3bcae2b52d1d209fa55fd107c0e39723a7ef61b4634bcb18b7c8327ffcf",
+    "688398e41726d43ad3c45863caaf8afd2fd90004895ca9e81b9208fc3f2ad7c2",
+    "e8db6faeeb973a4d7d0d8f247aca5e13319a425464132dabdf01433d0d0aa4e5",
+    "e522f3c5b0aacb2a200c277e2900ef71b8c4847c6666b7da2d979d602b13de20",
+    "49e55ca50e197f29d98a88ed123dc67a623b1ca2fa1fc13533e32d793ba02cbc",
+    "e8808c881bf4f123373bb0c6211635ef342e861d90d33ca3a02aa92d2d53eb6d",
+    "280bde8cebc0f4f20874853fab821229412e682ade6ac3c9f7d050446043c397",
+    "d3d0b3b7355f138c25e37c4f79fcf1e5dc5e89ce822234bbd6b62e1d837a3f9b",
+    "34592a8c19301e2d22f8507f5bf97a640327fb3af1b22ac41699acb09312f66e",
+    "607b9e5b98707a95e64764555b7e915e424685d0d6038ab9f0a372987b67d792",
+    "421dc14fee003b79192a4a5e1ae10dc8d8566db6c1e1c0cee50d07c44d6c5ea0",
+    "f6dacb2832180e41c1b98f2fd38548475a8b1e4c2d05275dedf3ec568d127dbe",
+    "fc7fad7b94dc59c40344eb500925a899fe44c9a432c0ce426973e0f91f4998f1",
+    "9ee40477bcfb24242636e49048f922e5cac3dbb7905de932ed7f862d64036403",
+    "271feac12436631451fea8f8ffd08291cd5a0e478c0d533ea8715d38712bd4af",
+    "c3f9199e2255211ad4a8029d6e7da58b41d4b04980bc56563cf861d82567e001"
+  ],
+  "files": {
+    "desktop": {
+      "url": "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-desktop.webp",
+      "bytes": 267166,
+      "sha256": "0c57edca524ea8fe223bb4a91a0cc8ed3010f1aa0b4d3f33bc362260ba774da4",
+      "width": 2048,
+      "height": 1024
+    },
+    "mobile": {
+      "url": "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-mobile.webp",
+      "bytes": 95472,
+      "sha256": "5d439862e41b84f38b1ff827a10283ee68a174374c4f79cabe2b3b56e7bee24b",
+      "width": 1024,
+      "height": 512
+    }
+  },
+  "derivative": {
+    "adapter": "flipbook-v1",
+    "role": "source-texture",
+    "atlas": {
+      "desktop": "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-desktop.webp",
+      "mobile": "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-mobile.webp"
+    },
+    "columns": 8,
+    "rows": 4,
+    "frames": 32,
+    "duration": 2,
+    "width": 6,
+    "height": 6,
+    "blend": "alpha",
+    "atlasId": "component-1d5c64ec6742cb1b-8x4-luma",
+    "component": {
+      "textureSha256": "1d5c64ec6742cb1b37e1237b96f4736cce439f661d64ca90467482cfb77288ab",
+      "columns": 8,
+      "rows": 4,
+      "mapping": "luminance-to-white-alpha",
+      "name": "T_FireBall"
+    },
+    "sourceBinding": {
+      "systemSha256": "97a82bae61b292371a78cadc6ffef2f7dcae3ea39ac0a9ccb6b5ed2ee57e18cf",
+      "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Flame_Basic_001.NiagaraSpriteRendererProperties_0",
+      "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Fireball",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall"
+    }
+  },
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-dc094fba73f69da8",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\Textures\\T_FireBall.uasset",
+      "sha256": "1d5c64ec6742cb1b37e1237b96f4736cce439f661d64ca90467482cfb77288ab",
+      "bytes": 645067
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\Textures\\T_FireBall.png",
+      "sha256": "6be3a6e443561c262ff7e992758059d01068da88b78254af3a6379d807be0a1c",
+      "bytes": 771107,
+      "format": "PNG",
+      "width": 2048,
+      "height": 1024,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 8,
+      "rows": 4,
+      "cells": 32,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "luminance-to-white-alpha",
+    "mappingFormula": "RGB=white; A=0.299R+0.587G+0.114B in source channel domain",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-97a82bae61b29237",
+        "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit",
+        "sourceBinding": {
+          "systemSha256": "97a82bae61b292371a78cadc6ffef2f7dcae3ea39ac0a9ccb6b5ed2ee57e18cf",
+          "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Flame_Basic_001.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Fireball",
+          "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:",
+          "matched": true
+        },
+        "parameterName": "SUBUV"
+      },
+      {
+        "effectId": "niagara-b0dd0dc3eab5e310",
+        "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Trail",
+        "sourceBinding": {
+          "systemSha256": "b0dd0dc3eab5e310fa10e6bb785665bff1304f1fbe3429c623d6eddf358217f0",
+          "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Trail.NS_Flame_Trail:NE_Flame_Basic.NiagaraSpriteRendererProperties_5",
+          "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Fireball",
+          "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Trail.NS_Flame_Trail:",
+          "matched": true
+        },
+        "parameterName": "SUBUV"
+      }
+    ]
+  },
+  "packing": {
+    "desktopTile": 256,
+    "mobileTile": 128,
+    "gutter": 2,
+    "oneAtlasVariantLoaded": true
+  },
+  "limitations": [
+    "Original SubUV texture only; the complete Niagara system is pending.",
+    "Playback duration is an editor default, not verified Niagara emitter timing.",
+    "Presentation controls do not modify Niagara emitter particle counts."
+  ]
+}

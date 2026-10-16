@@ -1,0 +1,36 @@
+{
+  "schema": "mn.special-meals.public.v1",
+  "startedAt": "2026-10-12T02:17:41.611Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "mode": "authenticated-disposable-profile",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "gameVersion": "0.6.0-alpha.59",
+  "protocolVersion": 58,
+  "checks": [
+    {
+      "name": "public_health_build_protocol_sql035_meals_readiness_and_idle_gate",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.59",
+      "protocolVersion": 58,
+      "specialMealsEnabled": true,
+      "realPlayers": 0
+    },
+    {
+      "name": "anonymous_meal_denied_without_receipt",
+      "pass": true
+    },
+    {
+      "name": "random_disposable_account_normal_password_login_and_exact_grog_cost_seed",
+      "pass": true
+    },
+    {
+      "name": "authenticated_status_and_bounded_grog_seed",
+      "pass": true
+    }
+  ],
+  "pass": false,
+  "scope": "grog cost, effect, timer, exact replay/collision, reload and reentry persistence; heat meals receive no fabricated proof",
+  "failure": "bounded wait expired: meal ACK grog-aa140e94773c47cfb4e4",
+  "cleanupFailure": "public host did not drain the QA session",
+  "completedAt": "2026-10-12T02:18:37.032Z"
+}

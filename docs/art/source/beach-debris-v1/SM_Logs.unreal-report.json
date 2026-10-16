@@ -1,0 +1,138 @@
+{
+  "case": "S09 beach-driftwood portability trial",
+  "dependencies": {
+    "allGameReferencesResolvableInStage": true,
+    "dependencyGraph": {
+      "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal": [
+        "/Game/Dreamrise_SMSK/Assets/Materials/M_Base",
+        "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+      ],
+      "/Game/Dreamrise_SMSK/Assets/Materials/M_Base": [
+        "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+      ],
+      "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Logs": [
+        "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal",
+        "/Script/NavigationSystem"
+      ],
+      "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette": [
+        "/Script/InterchangeEngine"
+      ]
+    },
+    "gameAssets": [
+      {
+        "class": "MaterialInstanceConstant",
+        "objectPath": "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal.MI_Base_Normal",
+        "package": "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal"
+      },
+      {
+        "class": "Material",
+        "objectPath": "/Game/Dreamrise_SMSK/Assets/Materials/M_Base.M_Base",
+        "package": "/Game/Dreamrise_SMSK/Assets/Materials/M_Base"
+      },
+      {
+        "class": "StaticMesh",
+        "objectPath": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Logs.SM_Logs",
+        "package": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Logs"
+      },
+      {
+        "class": "Texture2D",
+        "objectPath": "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette.T_ColorPalette",
+        "package": "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+      }
+    ],
+    "gamePackageCount": 4,
+    "gamePackages": [
+      "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal",
+      "/Game/Dreamrise_SMSK/Assets/Materials/M_Base",
+      "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Logs",
+      "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+    ],
+    "missingGameReferences": [],
+    "nonGameDependencies": [
+      "/Script/InterchangeEngine",
+      "/Script/NavigationSystem"
+    ],
+    "rootPackage": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Logs"
+  },
+  "engine": "UE 5.8 isolated project commandlet",
+  "errors": [],
+  "exportOptions": {
+    "bakeMode": "disabled",
+    "defaultLod": 0,
+    "renderMode": "NullRHI",
+    "shaderCompile": "disabled",
+    "sourceModel": false,
+    "uniformScale": 0.01,
+    "vertexColors": true
+  },
+  "glbBytes": 13304,
+  "glbInspection": {
+    "bytes": 13304,
+    "embeddedImages": 0,
+    "materials": [
+      {
+        "pbrMetallicRoughness": {}
+      }
+    ],
+    "meshPrimitiveCount": 1,
+    "primitives": [
+      {
+        "indexCount": 396,
+        "materialName": null,
+        "meshIndex": 0,
+        "positionCount": 180,
+        "primitiveIndex": 0,
+        "triangleCount": 132
+      }
+    ],
+    "triangleCountSummedAcrossPrimitives": 132,
+    "version": 2
+  },
+  "mesh": {
+    "asset": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Logs.SM_Logs",
+    "bounds": {
+      "dimensionsAtExportScaleMeters": {
+        "x": 0.42609630584716796,
+        "y": 0.5049393463134766,
+        "z": 0.3611238288879395
+      },
+      "dimensionsCm": {
+        "x": 42.6096305847168,
+        "y": 50.493934631347656,
+        "z": 36.112382888793945
+      },
+      "extentCm": {
+        "x": 21.3048152923584,
+        "y": 25.246967315673828,
+        "z": 18.056191444396973
+      },
+      "originCm": {
+        "x": 1.170755386352539,
+        "y": -0.4922027587890625,
+        "z": 6.8440656661987305
+      }
+    },
+    "class": "StaticMesh",
+    "lods": [
+      {
+        "lod": 0,
+        "sectionCount": 1,
+        "triangleCount": 132
+      }
+    ],
+    "materialReferences": [
+      {
+        "index": 0,
+        "material": "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal.MI_Base_Normal",
+        "slot": "MI_Base_Normal"
+      }
+    ],
+    "package": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Logs",
+    "sourceScale": "Unreal centimeters"
+  },
+  "objectPath": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Logs.SM_Logs",
+  "outputGlb": "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final\\out\\SM_Logs.glb",
+  "packagePath": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Logs",
+  "project": "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final",
+  "status": "exported"
+}

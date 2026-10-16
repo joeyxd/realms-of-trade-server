@@ -1,0 +1,55 @@
+{
+  "generatedAt": "2026-10-08T13:15:09.492Z",
+  "purpose": "Verify the optional route through the live GameHost snapshot and UI: start at berth, cross three ordered buoys, read a real telegraphed corsair salvo and its hit-or-dodge result, return, and dock through the normal command.",
+  "harness": "Fresh isolated ephemeral GameHost per viewport, real browser WebSocket and game UI, in-memory store, local Three.js/GSAP/font routes, Chrome WebGL renderer; no .env, SQL, external hosts, device or FPS claim.",
+  "fixture": "After helm mount and routeStart through the UI, QA wraps only world.navalRoute.plan for the owner and rebuilds each real candidate trial body at server-issued route points. This trusted relocation makes buoy and cannon acceptance deterministic; route snapshots, timing, shots, damage, ship HP, route commands, and dock completion remain server-owned. It does not claim unaided sailing/contact skill or physical-device performance.",
+  "expected": {
+    "buoys": 3,
+    "routeStatus": "complete",
+    "completionCommand": "normal navalPilot dock command",
+    "maximumDamagePerRun": 24,
+    "lootOrXp": false
+  },
+  "protocolVersion": 27,
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "naval-route-desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "failed",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [
+        {
+          "url": "http://127.0.0.1:58734/status",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "httpFailures": [],
+      "screenshots": [
+        "naval-route-desktop-1280x720-2026-10-08T13-15-09-492Z-failure-browser-join.png"
+      ],
+      "stage": "browser-join",
+      "error": "page.waitForFunction: Timeout 90000ms exceeded.\n    at openApp (C:\\DEV\\real of trade\\realms-of-trade-server\\tools\\qa-naval-route.mjs:84:14)\n    at async run (C:\\DEV\\real of trade\\realms-of-trade-server\\tools\\qa-naval-route.mjs:105:46)\n    at async file:///C:/DEV/real%20of%20trade/realms-of-trade-server/tools/qa-naval-route.mjs:214:33",
+      "final": {
+        "route": null,
+        "naval": null,
+        "voyage": null,
+        "clients": 0,
+        "hostLogs": [
+          "[net] #1 connected (127.0.0.1) · sockets 1",
+          "[net] #1 left · players 0 · sockets 0"
+        ]
+      }
+    }
+  ],
+  "failures": [
+    {
+      "viewport": "naval-route-desktop-1280x720",
+      "stage": "browser-join",
+      "error": "page.waitForFunction: Timeout 90000ms exceeded."
+    }
+  ]
+}

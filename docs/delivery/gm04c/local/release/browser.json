@@ -1,0 +1,226 @@
+{
+  "schema": "gm04c-browser/v1",
+  "at": "2026-10-11T17:25:05.999Z",
+  "version": "0.6.0-alpha.56",
+  "production": false,
+  "simulatedAuth": true,
+  "checks": [
+    "real_loaded_shrub_cost_and_private_brush",
+    "circle_preview_cancel_keeps_history",
+    "square_preview_cancel_keeps_history",
+    "ellipse_preview_cancel_keeps_history",
+    "stroke_commit_single_undo_redo_and_ids",
+    "private_save_reopen_exact_without_remote_write",
+    "palm_decorative_cost_and_english_controls",
+    "optimized_rock_file_savings_and_real_texture_dimensions",
+    "mobile_emulation_controls_and_loaded_model",
+    "no_remote_mutations_or_browser_render_errors"
+  ],
+  "screenshots": [
+    "preview-circle-es.png",
+    "preview-square-es.png",
+    "preview-ellipse-es.png",
+    "placed-shrubs-es.png",
+    "palm-controls-en.png",
+    "optimized-rock-en.png",
+    "mobile-scatter.png",
+    "mobile-controls.png"
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "networkFailures": [],
+  "remoteWrites": [],
+  "runtime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.56",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 0,
+    "uptime": 0,
+    "stepMs": 0,
+    "bots": 0,
+    "names": [],
+    "errors": 0,
+    "storage": {
+      "kind": "memory",
+      "durable": false,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": null,
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": false,
+        "ready": false,
+        "logging": false
+      },
+      "fire": {
+        "enabled": false,
+        "ready": false
+      },
+      "freshwater": {
+        "enabled": false,
+        "ready": false,
+        "canteen": false
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "workshop": {
+        "enabled": false,
+        "ready": false
+      },
+      "attributes": {
+        "enabled": false,
+        "ready": false
+      },
+      "companionCreation": {
+        "enabled": false,
+        "ready": false,
+        "pending": 0
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "shrub": {
+    "triangles": 424,
+    "primitives": 2,
+    "radius": 1.284956768087996,
+    "textures": [
+      {
+        "width": 512,
+        "height": 512
+      },
+      {
+        "width": 512,
+        "height": 512
+      }
+    ],
+    "textureBytes": 2796203,
+    "geometries": 2,
+    "materials": 2
+  },
+  "dragPoints": 5,
+  "previewIds": [
+    "gm-scatter-ce2de7f9-1884-4bfa-9cb6-9628be207d20",
+    "gm-scatter-9dc4b0a8-721d-4fb2-a418-c49bedc4117e",
+    "gm-scatter-5e9d49c3-e322-477a-b51b-a2374dd514a4",
+    "gm-scatter-3d132e8b-14b0-4096-a542-3bc55d6f11ef",
+    "gm-scatter-b3b521db-6441-4bf9-9514-a522db909889",
+    "gm-scatter-0126ae6a-9a13-43dc-9af0-758a81b287b8"
+  ],
+  "objectCount": 6,
+  "palm": {
+    "triangles": 1112,
+    "primitives": 2,
+    "radius": 4.2733061717115435,
+    "textures": [
+      {
+        "width": 1024,
+        "height": 1024
+      },
+      {
+        "width": 1024,
+        "height": 1024
+      }
+    ],
+    "textureBytes": 11184811,
+    "geometries": 2,
+    "materials": 2
+  },
+  "rock": {
+    "metrics": {
+      "triangles": 19469,
+      "primitives": 1,
+      "radius": 2.5,
+      "textures": [
+        {
+          "width": 1024,
+          "height": 1024
+        }
+      ],
+      "textureBytes": 5592406,
+      "geometries": 1,
+      "materials": 1
+    },
+    "stats": {
+      "triangles": 19469,
+      "bytes": 1546948,
+      "textures": 3,
+      "textureBytes": 792602,
+      "sourceBytes": 8836372,
+      "sourceTriangles": 19469,
+      "sourceSha256": "6e38f2f611fdb3afa0356b0a991f77c1ee777b99b81f0dc7f0af12b3c93baf4c",
+      "sha256": "f40e26c2711a0935cefbb9ba7ae441ef43fad6ca83f1b868811845bb53ea09fc",
+      "bounds": {
+        "min": [
+          -0.5000001,
+          0,
+          -0.4764072
+        ],
+        "max": [
+          0.5000001,
+          0.4551134,
+          0.4764072
+        ],
+        "size": [
+          1.0000001,
+          0.4551134,
+          0.9528143
+        ],
+        "fitSize": 4
+      }
+    }
+  },
+  "mobileModel": {
+    "triangles": 424,
+    "primitives": 2,
+    "radius": 1.284956768087996,
+    "textures": [
+      {
+        "width": 256,
+        "height": 256
+      },
+      {
+        "width": 256,
+        "height": 256
+      }
+    ],
+    "textureBytes": 699051,
+    "geometries": 2,
+    "materials": 2
+  },
+  "phase": "complete"
+}

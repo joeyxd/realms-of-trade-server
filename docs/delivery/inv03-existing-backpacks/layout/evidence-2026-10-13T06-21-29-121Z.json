@@ -1,0 +1,399 @@
+{
+  "schema": "mn.inv03.workshop-layout.local.v1",
+  "generatedAt": "2026-10-13T06:21:29.122Z",
+  "purpose": "Exercise the real WorkshopPanel and stage.js using a disposable local profile fixture.",
+  "scope": "Local DOM/layout only; no game host, account, public endpoint, or persistent player writes.",
+  "outputDirectory": "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\inv03-existing-backpacks\\layout",
+  "viewports": [
+    {
+      "name": "desktop-es",
+      "locale": "es",
+      "width": 1280,
+      "height": 900,
+      "mobile": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "initialBounds": {
+          "x": 425,
+          "y": 152.4609375,
+          "right": 855,
+          "bottom": 747.5390625,
+          "width": 430,
+          "height": 595.078125,
+          "scrollTop": 0,
+          "scrollHeight": 593,
+          "clientHeight": 593,
+          "documentWidth": 1280,
+          "documentHeight": 900,
+          "viewportWidth": 1280,
+          "viewportHeight": 900,
+          "stageWidth": 1280,
+          "stageHeight": 900,
+          "rotated": false,
+          "title": {
+            "x": 492,
+            "y": 184.2109375,
+            "width": 213.234375,
+            "height": 24,
+            "top": 184.2109375,
+            "right": 705.234375,
+            "bottom": 208.2109375,
+            "left": 492
+          },
+          "upgrade": {
+            "x": 453,
+            "y": 551.6015625,
+            "width": 374,
+            "height": 42,
+            "top": 551.6015625,
+            "right": 827,
+            "bottom": 593.6015625,
+            "left": 453
+          }
+        },
+        "scrolledBounds": {
+          "x": 425,
+          "y": 152.4609375,
+          "right": 855,
+          "bottom": 747.5390625,
+          "width": 430,
+          "height": 595.078125,
+          "scrollTop": 0,
+          "scrollHeight": 593,
+          "clientHeight": 593,
+          "documentWidth": 1280,
+          "documentHeight": 900,
+          "viewportWidth": 1280,
+          "viewportHeight": 900,
+          "stageWidth": 1280,
+          "stageHeight": 900,
+          "rotated": false,
+          "title": {
+            "x": 492,
+            "y": 184.2109375,
+            "width": 213.234375,
+            "height": 24,
+            "top": 184.2109375,
+            "right": 705.234375,
+            "bottom": 208.2109375,
+            "left": 492
+          },
+          "upgrade": {
+            "x": 453,
+            "y": 551.6015625,
+            "width": 374,
+            "height": 42,
+            "top": 551.6015625,
+            "right": 827,
+            "bottom": 593.6015625,
+            "left": 453
+          }
+        },
+        "localizedTierAndFundedUpgrade": true
+      },
+      "screenshots": [
+        "desktop-es-2026-10-13T06-21-29-121Z-before.png",
+        "desktop-es-2026-10-13T06-21-29-121Z-upgrade.png"
+      ]
+    },
+    {
+      "name": "desktop-en",
+      "locale": "en",
+      "width": 1280,
+      "height": 900,
+      "mobile": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "initialBounds": {
+          "x": 425,
+          "y": 149.2109375,
+          "right": 855,
+          "bottom": 750.7890625,
+          "width": 430,
+          "height": 601.578125,
+          "scrollTop": 0,
+          "scrollHeight": 600,
+          "clientHeight": 600,
+          "documentWidth": 1280,
+          "documentHeight": 900,
+          "viewportWidth": 1280,
+          "viewportHeight": 900,
+          "stageWidth": 1280,
+          "stageHeight": 900,
+          "rotated": false,
+          "title": {
+            "x": 491.53125,
+            "y": 179.7109375,
+            "width": 227.4375,
+            "height": 48,
+            "top": 179.7109375,
+            "right": 718.96875,
+            "bottom": 227.7109375,
+            "left": 491.53125
+          },
+          "upgrade": {
+            "x": 453,
+            "y": 569.8515625,
+            "width": 374,
+            "height": 42,
+            "top": 569.8515625,
+            "right": 827,
+            "bottom": 611.8515625,
+            "left": 453
+          }
+        },
+        "scrolledBounds": {
+          "x": 425,
+          "y": 149.2109375,
+          "right": 855,
+          "bottom": 750.7890625,
+          "width": 430,
+          "height": 601.578125,
+          "scrollTop": 0,
+          "scrollHeight": 600,
+          "clientHeight": 600,
+          "documentWidth": 1280,
+          "documentHeight": 900,
+          "viewportWidth": 1280,
+          "viewportHeight": 900,
+          "stageWidth": 1280,
+          "stageHeight": 900,
+          "rotated": false,
+          "title": {
+            "x": 491.53125,
+            "y": 179.7109375,
+            "width": 227.4375,
+            "height": 48,
+            "top": 179.7109375,
+            "right": 718.96875,
+            "bottom": 227.7109375,
+            "left": 491.53125
+          },
+          "upgrade": {
+            "x": 453,
+            "y": 569.8515625,
+            "width": 374,
+            "height": 42,
+            "top": 569.8515625,
+            "right": 827,
+            "bottom": 611.8515625,
+            "left": 453
+          }
+        },
+        "localizedTierAndFundedUpgrade": true
+      },
+      "screenshots": [
+        "desktop-en-2026-10-13T06-21-29-121Z-before.png",
+        "desktop-en-2026-10-13T06-21-29-121Z-upgrade.png"
+      ]
+    },
+    {
+      "name": "rotated-es",
+      "locale": "es",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "rotated": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "initialBounds": {
+          "x": 12,
+          "y": 207,
+          "right": 378,
+          "bottom": 637,
+          "width": 366,
+          "height": 430,
+          "scrollTop": 0,
+          "scrollHeight": 590,
+          "clientHeight": 364,
+          "documentWidth": 390,
+          "documentHeight": 844,
+          "viewportWidth": 390,
+          "viewportHeight": 844,
+          "stageWidth": 844,
+          "stageHeight": 390,
+          "rotated": true,
+          "title": {
+            "x": 322.25,
+            "y": 274,
+            "width": 24,
+            "height": 213.234375,
+            "top": 274,
+            "right": 346.25,
+            "bottom": 487.234375,
+            "left": 322.25
+          },
+          "upgrade": {
+            "x": -43.140625,
+            "y": 229,
+            "width": 42,
+            "height": 386,
+            "top": 229,
+            "right": -1.140625,
+            "bottom": 615,
+            "left": -43.140625
+          }
+        },
+        "scrolledBounds": {
+          "x": 12,
+          "y": 207,
+          "right": 378,
+          "bottom": 637,
+          "width": 366,
+          "height": 430,
+          "scrollTop": 217,
+          "scrollHeight": 590,
+          "clientHeight": 364,
+          "documentWidth": 390,
+          "documentHeight": 844,
+          "viewportWidth": 390,
+          "viewportHeight": 844,
+          "stageWidth": 844,
+          "stageHeight": 390,
+          "rotated": true,
+          "title": {
+            "x": 322.25,
+            "y": 274,
+            "width": 24,
+            "height": 213.234375,
+            "top": 274,
+            "right": 346.25,
+            "bottom": 487.234375,
+            "left": 322.25
+          },
+          "upgrade": {
+            "x": 173.859375,
+            "y": 229,
+            "width": 42,
+            "height": 386,
+            "top": 229,
+            "right": 215.859375,
+            "bottom": 615,
+            "left": 173.859375
+          }
+        },
+        "localizedTierAndFundedUpgrade": true
+      },
+      "screenshots": [
+        "rotated-es-2026-10-13T06-21-29-121Z-before.png",
+        "rotated-es-2026-10-13T06-21-29-121Z-upgrade.png"
+      ]
+    },
+    {
+      "name": "rotated-en",
+      "locale": "en",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "rotated": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "initialBounds": {
+          "x": 12,
+          "y": 207,
+          "right": 378,
+          "bottom": 637,
+          "width": 366,
+          "height": 430,
+          "scrollTop": 0,
+          "scrollHeight": 612,
+          "clientHeight": 364,
+          "documentWidth": 390,
+          "documentHeight": 844,
+          "viewportWidth": 390,
+          "viewportHeight": 844,
+          "stageWidth": 844,
+          "stageHeight": 390,
+          "rotated": true,
+          "title": {
+            "x": 299.5,
+            "y": 273.53125,
+            "width": 48,
+            "height": 227.4375,
+            "top": 273.53125,
+            "right": 347.5,
+            "bottom": 500.96875,
+            "left": 299.5
+          },
+          "upgrade": {
+            "x": -64.640625,
+            "y": 229,
+            "width": 42,
+            "height": 386,
+            "top": 229,
+            "right": -22.640625,
+            "bottom": 615,
+            "left": -64.640625
+          }
+        },
+        "scrolledBounds": {
+          "x": 12,
+          "y": 207,
+          "right": 378,
+          "bottom": 637,
+          "width": 366,
+          "height": 430,
+          "scrollTop": 239,
+          "scrollHeight": 612,
+          "clientHeight": 364,
+          "documentWidth": 390,
+          "documentHeight": 844,
+          "viewportWidth": 390,
+          "viewportHeight": 844,
+          "stageWidth": 844,
+          "stageHeight": 390,
+          "rotated": true,
+          "title": {
+            "x": 299.5,
+            "y": 273.53125,
+            "width": 48,
+            "height": 227.4375,
+            "top": 273.53125,
+            "right": 347.5,
+            "bottom": 500.96875,
+            "left": 299.5
+          },
+          "upgrade": {
+            "x": 174.359375,
+            "y": 229,
+            "width": 42,
+            "height": 386,
+            "top": 229,
+            "right": 216.359375,
+            "bottom": 615,
+            "left": 174.359375
+          }
+        },
+        "localizedTierAndFundedUpgrade": true
+      },
+      "screenshots": [
+        "rotated-en-2026-10-13T06-21-29-121Z-before.png",
+        "rotated-en-2026-10-13T06-21-29-121Z-upgrade.png"
+      ]
+    }
+  ],
+  "failures": [],
+  "screenshots": [
+    "desktop-es-2026-10-13T06-21-29-121Z-before.png",
+    "desktop-es-2026-10-13T06-21-29-121Z-upgrade.png",
+    "desktop-en-2026-10-13T06-21-29-121Z-before.png",
+    "desktop-en-2026-10-13T06-21-29-121Z-upgrade.png",
+    "rotated-es-2026-10-13T06-21-29-121Z-before.png",
+    "rotated-es-2026-10-13T06-21-29-121Z-upgrade.png",
+    "rotated-en-2026-10-13T06-21-29-121Z-before.png",
+    "rotated-en-2026-10-13T06-21-29-121Z-upgrade.png"
+  ],
+  "completedAt": "2026-10-13T06:21:32.972Z"
+}

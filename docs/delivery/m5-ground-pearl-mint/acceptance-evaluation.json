@@ -1,0 +1,39 @@
+{
+  "baseCommit": "ff45e496db25de14f3c8c5e7401821ff31f3c3b0",
+  "newTestsPassed": 16,
+  "newTests": [
+    "mint planning is detached and applies a fresh checked ground receipt with projected deadlines",
+    "uses the origin tick within the one tick capture window and rejects out of window candidates",
+    "rejects UID collisions and duplicate live profile ownership",
+    "cancels when profiles, RNG, or target geometry drift during the IO window",
+    "rejects replay and malformed receipts without applying; rolls back if publication throws",
+    "a fault after drop insertion rolls back the mint allocator, ledger and drop",
+    "rolled-pearl seam stays synchronous and does not intercept existing pearl drops",
+    "unmounted lootOnKill and openChest still insert rolled pearls immediately",
+    "real sentinel loot captures synchronously, retains its tick, commits SQL, then drains after same-tick death",
+    "two real mint routes in one tick publish only after both SQL receipts drain",
+    "closing with a captured mint before its first drain rejects flush without durable or local effects",
+    "closing after mint SQL commit fences the delayed apply and retains its current receipt",
+    "replacing afterTick while a mint receipt is retained rejects late application",
+    "mint ownership is explicit and closing or hook takeover prevents late authority use",
+    "actual sentinel pearl mint recovers exactly once after SIGKILL after-journal-prepare",
+    "actual sentinel pearl mint recovers exactly once after SIGKILL after-sql-commit"
+  ],
+  "regressionCounts": {
+    "tests": 1064,
+    "pass": 1063,
+    "fail": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "testFiles": 106,
+  "sourcesUnchanged": true,
+  "acceptedScope": "New pearl mint and common-ground composition; all 16 new cases pass and no new regression was found. This is not a claim that the whole cohort is green.",
+  "knownUnchangedUpstreamFailure": {
+    "test": "Cometa cannot rush through a collider or enter deep water",
+    "proof": "upstream-cometa.json",
+    "baseCommit": "fb4276f1273dec943a4fcc62c617b0c7e2bfe78c"
+  },
+  "runtimeChangesForKnownFailure": false
+}

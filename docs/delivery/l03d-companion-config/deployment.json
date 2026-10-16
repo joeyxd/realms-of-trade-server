@@ -1,0 +1,97 @@
+{
+  "schema": "mn.l03d.companion-config.deployment-snapshot.v1",
+  "at": "2026-10-11T00:00:22.515482+00:00",
+  "container": "marea-negra-alpha-marea-negra-alpha-1",
+  "revision": "f04cd7dca544efe343bed8ebc9971dbe74d32226",
+  "version": "0.6.0-alpha.36",
+  "image": "marea-negra:alpha-f04cd7dca544",
+  "imageId": "sha256:83c23f07e93407a4bd16238e4cc556cbe0dfcc5c29c1556c87fe2845669742a1",
+  "containerId": "c5b6b7182be11fbb66c9a05316c2f432769a318714add64666ced9ccef51aa05",
+  "running": true,
+  "health": "healthy",
+  "startedAt": "2026-10-10T23:57:42.266489687Z",
+  "oomKilled": false,
+  "currentRelease": "/opt/marea-negra/releases/f04cd7dca544efe343bed8ebc9971dbe74d32226",
+  "updateState": {},
+  "validation": {
+    "revision": "f04cd7dca544efe343bed8ebc9971dbe74d32226",
+    "image_id": "sha256:83c23f07e93407a4bd16238e4cc556cbe0dfcc5c29c1556c87fe2845669742a1",
+    "tests_passed": true
+  },
+  "offlineCounts": {
+    "tests": 109,
+    "pass": 109,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "authorities": [
+    "marea-negra-alpha-marea-negra-alpha-1"
+  ],
+  "timer": "active",
+  "scope": "Private durable SQL025 personality/goals metadata for already-bound account/character pairs. No provider/model, credentials, activation, or inference.",
+  "limits": [
+    "Public smoke verifies shipped source and guest denial only; it does not claim authenticated public save/load.",
+    "The fixture browser evidence is simulated-auth evidence; this capture does not inspect private configuration rows.",
+    "Gameplay durability remains represented by the existing M5 storage status and is not inferred from companion metadata."
+  ],
+  "expectedRevision": "f04cd7dca544efe343bed8ebc9971dbe74d32226",
+  "recordedAt": "2026-10-11T00:00:22.867Z",
+  "timerPausedAtCapture": false,
+  "publicStatus": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.36",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "workshop": {
+        "enabled": false,
+        "ready": false
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1759,
+        "errors": 0
+      }
+    }
+  }
+}

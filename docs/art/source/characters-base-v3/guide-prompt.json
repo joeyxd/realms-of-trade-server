@@ -1,0 +1,11 @@
+{
+  "schema": "character-guide-prompt/v1",
+  "tool": "built-in image_gen",
+  "transparentBackgroundRequested": true,
+  "prompt": "Use case: stylized-concept.\nAsset type: transparent-background artistic guide for two editable 3D modular game heads, male and female.\nReference images: the two supplied character base sheets are STYLE and anatomical direction references, not edit targets.\nCreate a polished pair of adult neutral bald character busts, male on the left and female on the right, front orthographic view, same apparent head size, complete heads including ears, neck and a little of plain ivory undershirt. Nothing cropped. No writing.\nMatch the maritime adventure/anime painterly concept style: confident dark fine ink contours, broad clean warm/cool hand-painted skin planes, expressive but relaxed medium-size almond brown eyes, restrained highlights, anatomical nose and lips, readable cheekbones. Male: broad lower jaw with soft square corners and broad rounded chin, defined slender nose bridge and small tip, substantial low brow ridge. Female: softer cheekbone/jaw transition and rounded chin, smaller nose, calm open medium-size almond eyes. Adult youthful proportions; no pointed elf chin or doll-like enormous eyes.\nBoth are completely bald, clean shaven, no eyelashes drawn as makeup, no tattoos/scars, no earrings, no goggles, no hats. Neutral closed mouth and calm brows, no smile. This is a sculpture and paint reference, not a UV texture, not a completed 3D model. Preserve uncluttered silhouettes with generous space between the two busts.\nBackground: actual transparent alpha, including space between heads and outside both busts; no scenery, no ground shadow, no checkerboard drawn into the image, no text or watermark.\nLighting: soft even studio illumination, enough plane separation for studying form without dramatic cast shadows.",
+  "referenceImages": [
+    "docs/art/source/characters-base-v0/male-concept-v1.png",
+    "docs/art/source/characters-base-v0/female-concept-v1.png"
+  ],
+  "scope": "Artistic head reference only; not a UV texture or 3D model"
+}

@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-08T13:29:06.409Z",
+  "baseline": "dependency-stability.json after interrupted attempt; this is a final comparison, not a pre/post snapshot of every suite",
+  "hashes": {
+    "src/client/gameClient.js": "b2b51b948f9e9270abccb990d3f79d0c6bfae08c817aa0236cee6ffa6cb8ffd2",
+    "src/net/protocol.js": "b6259aca8a755b364358007eb360c1634b1653be946a5b56cad8f52f9ade3456",
+    "src/net/wsTransport.js": "ab71cf2a0dd0e8387f91ce8b23da6c2cd6e2190bf09c5ecfa26ec61b32742f3b",
+    "src/net/lagLink.js": "311d7e4f8a7a8c72e1a73945d5e5458da5738a9eaa6adffd852b4c0e435e17bb",
+    "src/net/localServer.js": "c4d52abdc5ec8f9b48e1fbb904cd4ea502500cc7e53f98cd428dce8cd339b4fc",
+    "src/net/chatService.js": "bb1a5572752e9d616412114ceb6bc5ffbd7e006c1ea31ba06a9e84fa92010f18",
+    "src/sim/ecs.js": "8c91a0cb70da533421644c06ac9a684639d7a9aa311ef32f334c6db1e2ceba11",
+    "src/sim/worldgen.js": "294483d590e1711ce29735c67d6de0c66c571eed94d73974c68678dcf0375a0a",
+    "server/host.mjs": "8bac6990d566c9598c6f8803605beaeaa35896b99b9fab8f2ff662bf8221b70d",
+    "server/index.mjs": "2217c6918588c9449768ef4a45e49b28c5571c5bf119e723a262f969f553cd44"
+  },
+  "changesSinceBaseline": []
+}

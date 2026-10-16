@@ -1,0 +1,81 @@
+/* UI kit: the painted navy + orange-brush look shared by every panel (art direction: the author's crafting and
+   character references, docs/delivery/ui-kit-v1). Textures live in assets/ui/kit: the frame and brush are procedural
+   (tools/crafting-ui/textures.py), the icon atlases are painted (tools/crafting-ui/icons.py). One variant per device
+   class is loaded: the custom properties below are only fetched where a rule uses them. */
+:root {
+  --kit-navy: #0d1b2b; --kit-navy-2: #102335; --kit-deep: #07111c; --kit-plate: #0a1726e6;
+  --kit-line: #6f8fae; --kit-line-soft: #5f80a05c; --kit-line-faint: #5f80a030;
+  --kit-sky: #7db7e6; --kit-dim: #8fa8c1; --kit-text: #e9eef3; --kit-white: #fff;
+  --kit-orange: #f6a623; --kit-orange-l: #ffc35a; --kit-orange-d: #b86f0c; --kit-ok: #8fe06b; --kit-bad: #ff7d6b;
+  --kit-hp: #e2453c; --kit-stam: #4fb4ec; --kit-load: #f0b23a; --kit-xp: #f6a623;
+  --f-display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --f-body: 'Barlow Semi Condensed', 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --kit-frame: url("../assets/ui/kit/frame.webp");
+  --kit-brush: url("../assets/ui/kit/brush.webp");
+  --kit-brush-clean: url("../assets/ui/kit/brush-clean.webp");
+  --kit-items: url("../assets/ui/kit/items.webp");
+  --kit-gear: url("../assets/ui/kit/gear.webp");
+  --kit-misc: url("../assets/ui/kit/misc.webp");
+  --kit-foods: url("../assets/ui/kit/foods-v1.webp");
+}
+@media (pointer: coarse), (max-width: 760px) {
+  :root {
+    --kit-frame: url("../assets/ui/kit/frame-mobile.webp");
+    --kit-brush: url("../assets/ui/kit/brush-mobile.webp");
+    --kit-brush-clean: url("../assets/ui/kit/brush-clean-mobile.webp");
+    --kit-items: url("../assets/ui/kit/items-mobile.webp");
+    --kit-gear: url("../assets/ui/kit/gear-mobile.webp");
+    --kit-misc: url("../assets/ui/kit/misc-mobile.webp");
+    --kit-foods: url("../assets/ui/kit/foods-v1-mobile.webp");
+  }
+}
+
+/* Painted icons: one atlas cell picked by --ix / --iy (src/ui/kit.js atlasIcon). */
+.kit-ico { display: inline-block; background-repeat: no-repeat; background-size: calc(var(--cols) * 100%) calc(var(--rows) * 100%);
+  background-position: calc(var(--ix, 0) / (var(--cols) - 1) * 100%) calc(var(--iy, 0) / (var(--rows) - 1) * 100%); }
+.kit-ico[data-atlas="items"] { --cols: 6; --rows: 4; background-image: var(--kit-items); }
+.kit-ico[data-atlas="gear"] { --cols: 5; --rows: 4; background-image: var(--kit-gear); }
+.kit-ico[data-atlas="misc"] { --cols: 4; --rows: 4; background-image: var(--kit-misc); }
+.kit-item-art { display: inline-block; flex: 0 0 auto; background-repeat: no-repeat; background-position: center; background-size: contain; }
+.kit-item-art-resina { background-image: url("../assets/ui/kit/resina-v1.webp"); }
+.kit-item-art-coco { background-image: url("../assets/ui/kit/coco-v1.webp"); }
+@media (pointer: coarse), (max-width: 760px) {
+  .kit-item-art-resina { background-image: url("../assets/ui/kit/resina-v1-mobile.webp"); }
+  .kit-item-art-coco { background-image: url("../assets/ui/kit/coco-v1-mobile.webp"); }
+}
+
+.kit-ico[data-atlas="foods"] { --cols: 4; --rows: 4; background-image: var(--kit-foods); }
+
+/* A worn navy plate (9-slice: rough edge, hairline, rivets). Set --kit-edge for the border thickness. */
+.kit-plate { position: relative; box-sizing: border-box; border: var(--kit-edge, 16px) solid transparent;
+  border-image: var(--kit-frame) 48 fill / var(--kit-edge, 16px) round; filter: drop-shadow(0 8px 14px #000a); }
+@media (pointer: coarse), (max-width: 760px) { .kit-plate { border-image-slice: 24 fill; } }
+/* An inner panel: dark glass with a thin steel line. */
+.kit-inset { border: 1px solid var(--kit-line-soft); border-radius: 3px; background: linear-gradient(#0a1726d9, #0b1a29e6); box-shadow: inset 0 0 30px #0008; }
+/* Section heading: italic condensed caps in sky blue. */
+.kit-h { margin: 0; font: italic 600 1.15em / 1 var(--f-display); text-transform: uppercase; letter-spacing: .01em; color: var(--kit-sky); }
+.kit-title { margin: 0; font: italic 800 2em / .95 var(--f-display); text-transform: uppercase; color: #fff; text-shadow: 0 3px 0 #0009; }
+/* The orange brush stroke behind an active tab, a selected row or the main action. */
+.kit-brush { position: relative; isolation: isolate; }
+.kit-brush::before { content: ''; position: absolute; inset: -4px -14px; z-index: -1; border-style: solid; border-width: 0 32px;
+  border-image: var(--kit-brush-clean) 0 150 fill / 0 32px stretch; }
+/* Keycap. */
+.kit-key { display: inline-grid; place-items: center; min-width: 1.9em; height: 1.65em; padding: 0 .35em; box-sizing: border-box;
+  border: 1.5px solid #cfd9e2; border-radius: 4px; background: #121c26; color: #fff; font: 700 .8em / 1 var(--f-display); letter-spacing: .04em; box-shadow: 0 2px 0 #0008; }
+/* Item slot. */
+.kit-slot { position: relative; box-sizing: border-box; border: 1px solid #6f8fae99; border-radius: 4px; background: radial-gradient(ellipse at 50% 40%, #16304a, #0b1826 75%);
+  box-shadow: inset 0 0 0 1px #0007; }
+.kit-slot.is-empty { border-color: #5f80a055; background: #0a1522b3; }
+.kit-bar { height: 8px; border: 1px solid #5f80a066; border-radius: 5px; background: #07111c; overflow: hidden; }
+.kit-bar > i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6fb6ec, #a6dcff); }
+/* Shared, touch-readable reference for carried provisions and crafting materials. */
+.provision-guide { margin: 10px 0; padding: 8px 10px; border: 1px solid #7bb4aa55; border-radius: 8px; color: #dce9e5; font: 12px/1.4 system-ui,sans-serif; }
+.provision-guide > summary { min-height: 32px; padding: 6px 0; cursor: pointer; font-weight: 700; color: #f0dbab; }
+.provision-guide > summary:focus-visible { outline: 2px solid #f1d387; outline-offset: 2px; }
+.provision-guide ul { list-style: none; padding: 0; margin: 0; }
+.provision-guide li { padding: 10px 0; border-top: 1px solid #7bb4aa33; overflow-wrap: anywhere; }
+.provision-guide p { margin: 4px 0; }
+.provision-guide .provision-guide__icon { display: inline-block; flex: 0 0 32px; width: 32px; height: 32px; vertical-align: middle; margin-right: 6px; }
+.provision-guide article { display: flex; gap: 6px; align-items: flex-start; }
+.provision-guide article > div { min-width: 0; }
+.provision-guide h4 { margin: 0; font: 700 13px/1.4 system-ui,sans-serif; color: #f1eee3; }

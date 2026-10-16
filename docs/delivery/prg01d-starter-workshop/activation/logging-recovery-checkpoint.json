@@ -1,0 +1,48 @@
+{
+  "schema": "mn.starter-workshop.logging-checkpoint.v1",
+  "at": "2026-10-11T01:55:03.750410+00:00",
+  "sql026Verified": true,
+  "liveRevision": "8ce31ce442e8e6bffd430b80690f8441f44314fd",
+  "constructionChecksPassed": 33,
+  "fullCanaryPassed": false,
+  "currentFailure": "timing denial cannot preserve exact non-resource SQL world when ordinary economy ticks outpace the saved checkpoint",
+  "readonlyDiagnosis": "logging-baseline-diagnostic.json",
+  "runtimeFix": "checkpoint current economy through the existing world writer before a v3 palm gather reserves the tick gate",
+  "newSqlRequired": false,
+  "regression": {
+    "preFix": "same host SQL fixture fences, no ACK",
+    "postFix": {
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "covers": [
+        "durable timing denial",
+        "no log mint",
+        "historical replay",
+        "three successful server-timed hits after ordinary ticks",
+        "six logs and ten practice"
+      ]
+    }
+  },
+  "broaderSelection": {
+    "tests": 69,
+    "pass": 68,
+    "fail": 1,
+    "preExistingFailure": "ground-host-authority-sql: SQL018/019 GameHost durably places and removes a learned storage piece",
+    "preExistingVerifiedOn": "8ce31ce442e8e6bffd430b80690f8441f44314fd without the runtime change"
+  },
+  "liveMutationThisRootTurn": false,
+  "recoveryState": "pending single live owner; another independent session is preparing the same fix",
+  "evidenceFromOtherSession": [
+    {
+      "file": "public-c542b02f-1315-439b-9020-f0a69aacb5a9.json",
+      "sha256": "a2ccc414bad8a13b14bc227da1a9959daddafc6baabd5480068695454e23683a",
+      "source": "area17-market independent canary evidence; copied read-only without editing source"
+    },
+    {
+      "file": "public-7a949137-a098-4b6d-887d-a8600c11b303.json",
+      "sha256": "f035c530affad3a01cd9179fee9197bbfa19be983916c1a02941eef618ae59f9",
+      "source": "area17-market independent canary evidence; copied read-only without editing source"
+    }
+  ]
+}

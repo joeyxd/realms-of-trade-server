@@ -1,0 +1,267 @@
+{
+  "mission": "D08b.4",
+  "subject": "Navigation HUD evidence",
+  "generatedAt": "2026-10-06",
+  "scope": {
+    "sourceCommit": "a58ed804f8c25bfccfd8a1c8e80d62b617db9f0c",
+    "workingTreeClaim": "The selected HUD source files and test below match the source commit after LF normalization. This is not a claim that the full checkout is clean; concurrent dirty changes exist in assets/manifest.json, src/render/toon.js, and src/render/terrain.js, among other unrelated work.",
+    "unrelatedDirtyFileMetadata": [
+      {"path": "assets/manifest.json", "sizeBytes": 4044, "sha256": "ff8b3e4c45cd696868dca8040534f853d04657c9a2ac5e2c7f875c786c69d9f2"},
+      {"path": "src/render/toon.js", "sizeBytes": 26060, "sha256": "7458b43934a9d7110be770110c27ff1b66491b18980e7dc471acf869b84650dd"},
+      {"path": "src/render/terrain.js", "sizeBytes": 15329, "sha256": "dab262910bb36795bed814b4a4ab70206936fbde55806fa0d6b9e28a96c086c3"}
+    ],
+    "comparison": "SHA-256 over UTF-8 bytes after CRLF and lone-CR normalization to LF.",
+    "files": [
+      {
+        "path": "tools/naval-lab/index.html",
+        "sha256": "e7eece4e0b6e8101938f6b9c776a06ed2088c58d3cf78ef1cf2202a9e914d391",
+        "matchesSourceCommit": true
+      },
+      {
+        "path": "tools/naval-lab/main.js",
+        "sha256": "b031a71f7383a0648bbaccbe91f3956bfbe5de9b53ce890ededf0719b6ca2c86",
+        "matchesSourceCommit": true
+      },
+      {
+        "path": "tools/naval-lab/style.css",
+        "sha256": "3a2806e5626c5d86bdcafbc6a1c00e83d84e79291cc0ee590836f7a78bfdac74",
+        "matchesSourceCommit": true
+      },
+      {
+        "path": "tools/naval-lab/hud.js",
+        "sha256": "1de624c2f6ad0c6552e7f7c1b0be4b730757bb80170280f638972a5ea90a3e9f",
+        "matchesSourceCommit": true
+      },
+      {
+        "path": "tools/naval-lab/hud-state.js",
+        "sha256": "762ff86a9ab994852937bb25c4e79c2294da1982ccbe308cd2a4d6153aecf762",
+        "matchesSourceCommit": true
+      },
+      {
+        "path": "tests/naval-lab-hud-state.test.mjs",
+        "sha256": "1a5fcf3c4754411bc6a53387cbff8257a0b990901c5752157e37fa5cb237f615",
+        "matchesSourceCommit": true
+      }
+    ]
+  },
+  "automatedChecks": {
+    "reportedBy": "root agent; not rerun during evidence capture",
+    "result": "88/88 passing",
+    "files": 15,
+    "runtime": "Node v24.14.0",
+    "exitCode": 0,
+    "durationMs": 1020.4726,
+    "toolChunk": "fe23a0",
+    "coverageNote": "No full M5 suite was run."
+  },
+  "browserObservations": {
+    "reportedBy": "root agent; not independently repeated during evidence capture",
+    "pause": "Root explicitly checked mobile landscape and observed state and HUD unchanged over 500 ms while paused. The post-commit desktop final capture has the same tick 420 boost state afterward; it is not a separate timed pause measurement.",
+    "consoleErrors": [],
+    "visualReview": "Root inspected native-final.jpg and reported the roof and sails readable in the post-commit mobile-house capture.",
+    "interpretation": "These are reported browser observations, not a separately measured acceptance run by this evidence task."
+  },
+  "captures": {
+    "directory": "shots/naval-hud-20261006",
+    "preservation": "Original ignored capture files were read only and left in place.",
+    "metadataMethod": "ffprobe dimensions; SHA-256 and byte length from original file bytes; JPEG signature is the first three bytes in hex.",
+    "images": [
+      {
+        "file": "desktop-final-boost.jpg",
+        "stage": "post-commit final desktop boost state",
+        "width": 1280,
+        "height": 800,
+        "sizeBytes": 140154,
+        "signatureHex": "ffd8ff",
+        "sha256": "2e52126db1977f5be811057543f142e1dcc519d8520bf796daec3278075a4b85",
+        "snapshot": "desktop-final-boost.json"
+      },
+      {
+        "file": "mobile-landscape-boost.jpg",
+        "stage": "landscape boost; captured before the final caption and compact portrait CSS changes; landscape UI and state match the final capture",
+        "width": 844,
+        "height": 390,
+        "sizeBytes": 51677,
+        "signatureHex": "ffd8ff",
+        "sha256": "ee433125084eb22c0f850c12964909f73f39df8beefcd865cce7b29842fc3fdd",
+        "snapshot": "mobile-landscape-boost.json"
+      },
+      {
+        "file": "mobile-house.jpg",
+        "stage": "post-commit mobile portrait house fixture",
+        "width": 390,
+        "height": 844,
+        "sizeBytes": 51173,
+        "signatureHex": "ffd8ff",
+        "sha256": "525114273d4add54b0668e7839080b171801d0096fabc15ba2cac1960a6eb7d5",
+        "snapshot": "mobile-house.json"
+      },
+      {
+        "file": "native-final.jpg",
+        "stage": "post-commit native browser final capture; restored device-pixel ratio",
+        "width": 824,
+        "height": 798,
+        "devicePixelRatio": 1.5,
+        "sizeBytes": 101110,
+        "signatureHex": "ffd8ff",
+        "sha256": "adc8e969cbba0a8b81c1392ce2926808208b7f545403fc18d4db50bd31647bc5",
+        "snapshot": "native-final.json"
+      }
+    ],
+    "uiSnapshots": [
+      {
+        "file": "desktop-ui.json",
+        "viewport": [1280, 800],
+        "canvas": [940, 708],
+        "svgCount": 5,
+        "loadedRaftTextures": ["wood-boards-v2.webp", "wood-boards-v2-normal.webp"]
+      },
+      {
+        "file": "mobile-landscape-ui.json",
+        "viewport": [844, 390],
+        "canvas": [844, 220],
+        "svgCount": 5,
+        "loadedRaftTextures": ["wood-boards-v2-mobile.webp"]
+      },
+      {
+        "file": "mobile-portrait-ui.json",
+        "capturePair": "mobile-house.jpg/json (post-commit final house fixture; file retains portrait-ui name)",
+        "viewport": [390, 844],
+        "canvas": [390, 368.59375],
+        "svgCount": 5,
+        "loadedRaftTextures": ["wood-boards-v2-mobile.webp"]
+      },
+      {
+        "file": "native-final-ui.json",
+        "viewport": [824, 798],
+        "devicePixelRatio": 1.5,
+        "canvas": [484, 526],
+        "svgCount": 5,
+        "loadedRaftTextures": ["wood-boards-v2.webp", "wood-boards-v2-normal.webp"]
+      }
+    ],
+    "visualAssetBudget": "The HUD uses four fixed inline SVG illustrations plus the existing fifth speed-ink SVG. The UI snapshots show no new raster HUD loads; raft texture selection uses the existing mobile or desktop variants. These captures do not establish physical-device FPS, gamepad acceptance, or user acceptance."
+  },
+  "minimalSnapshots": {
+    "boost": {
+      "source": "desktop-final-boost.json and native-final.json",
+      "state": {
+        "tick": 420,
+        "x": 0.49581033645760114,
+        "z": 35.23332458403812,
+        "yaw": 0,
+        "vx": 0.22075106200495503,
+        "vz": 8.59300877615867,
+        "omega": 0
+      },
+      "activity": {
+        "boostUntil": 735,
+        "multiplier": 2.8,
+        "lastAttempt": 0,
+        "result": "perfect",
+        "resultUntil": 555
+      },
+      "hud": {
+        "speedText": "8.6",
+        "headingText": "000",
+        "windDegrees": 0,
+        "currentDegrees": 6.566741066342615,
+        "boostSeconds": 5.25,
+        "boostActive": true,
+        "loadPercent": 38,
+        "cargoMass": 0,
+        "cargoCount": 0,
+        "captureDisabled": true,
+        "gustText": "¡VELA CARGADA! 5.3 s",
+        "flowText": "CORRIENTE · 1.7 u/s",
+        "resultText": "¡PERFECTO! La vela ruge.",
+        "calloutText": "¡PERFECTO!",
+        "calloutTone": "gold",
+        "calloutDetail": "5.3 s"
+      },
+      "mobile": false,
+      "paused": true,
+      "raftSkin": {
+        "albedo": {"src": "/assets/textures/raft/wood-boards-v2.webp", "width": 1024, "height": 1024},
+        "normal": {"src": "/assets/textures/raft/wood-boards-v2-normal.webp", "width": 1024, "height": 1024},
+        "relief": "soft",
+        "mobile": false
+      }
+    },
+    "landscapeBoost": {
+      "source": "mobile-landscape-boost.json",
+      "state": {
+        "tick": 420,
+        "x": 0.49581033645760114,
+        "z": 35.23332458403812,
+        "yaw": 0,
+        "vx": 0.22075106200495503,
+        "vz": 8.59300877615867,
+        "omega": 0
+      },
+      "activity": {"boostUntil": 735, "multiplier": 2.8, "lastAttempt": 0, "result": "perfect", "resultUntil": 555},
+      "hud": {"speedText": "8.6", "headingText": "000", "boostSeconds": 5.25, "boostActive": true, "currentDegrees": 6.566741066342615, "loadPercent": 38, "cargoMass": 0, "cargoCount": 0, "calloutText": "¡PERFECTO!"},
+      "mobile": true,
+      "paused": true,
+      "raftSkin": {
+        "albedo": {"src": "/assets/textures/raft/wood-boards-v2-mobile.webp", "width": 512, "height": 512},
+        "normal": null,
+        "relief": "flat",
+        "mobile": true
+      }
+    },
+    "portraitHouse": {
+      "source": "mobile-house.json",
+      "state": {"tick": 0, "x": 0, "z": 0, "yaw": 0, "vx": 0, "vz": 0, "omega": 0},
+      "activity": {"boostUntil": 0, "multiplier": 1, "lastAttempt": -1, "result": "", "resultUntil": 0},
+      "hud": {"speedText": "0.0", "headingText": "000", "boostSeconds": 0, "boostActive": false, "loadPercent": 64, "cargoMass": 48, "cargoCount": 1},
+      "mobile": true,
+      "paused": true,
+      "raftSkin": {"albedo": {"src": "/assets/textures/raft/wood-boards-v2-mobile.webp", "width": 512, "height": 512}, "normal": null, "relief": "flat", "mobile": true}
+    },
+    "calmAfterWindChange": {
+      "source": "mobile-calm.json",
+      "worldStateComparisonSource": "desktop-final-boost.json",
+      "worldStateUnchanged": true,
+      "worldState": {"tick": 420, "x": 0.49581033645760114, "z": 35.23332458403812, "yaw": 0, "vx": 0.22075106200495503, "vz": 8.59300877615867, "omega": 0},
+      "activity": {"boostUntil": 0, "multiplier": 1, "lastAttempt": -1, "result": "", "resultUntil": 0},
+      "hud": {"windDegrees": null, "currentDegrees": null, "boostSeconds": 0, "boostActive": false, "captureDisabled": true, "gustText": "Sin ráfagas", "flowText": "Corrientes apagadas", "calloutText": ""},
+      "wind": {"id": "calm", "yaw": 0, "strength": 0},
+      "current": {"x": 0, "z": 0, "strength": 0},
+      "mobile": true,
+      "paused": true,
+      "raftSkin": {"albedo": {"src": "/assets/textures/raft/wood-boards-v2-mobile.webp", "width": 512, "height": 512}, "normal": null, "relief": "flat", "mobile": true}
+    },
+    "jettison": {
+      "beforeSource": "mobile-cargo-before.json",
+      "afterSource": "mobile-cargo-after.json",
+      "before": {
+        "state": {"tick": 0, "x": 0, "z": 0, "yaw": 0, "vx": 0, "vz": 0, "omega": 0},
+        "loadPercent": 80,
+        "cargoMass": 24,
+        "cargoCount": 1,
+        "fixtureCargoCount": 1,
+        "hullPose": {"x": -1.9333333333333333, "z": -1.9333333333333333, "y": 0.6235714285714286, "yaw": 0}
+      },
+      "after": {
+        "state": {"tick": 0, "x": -0.07619047619047614, "z": -0.07619047619047614, "yaw": 0, "vx": 0, "vz": 0, "omega": 0},
+        "loadPercent": 38,
+        "cargoMass": 0,
+        "cargoCount": 0,
+        "fixtureCargoCount": 0,
+        "hullPose": {"x": -1.9333333333333333, "z": -1.9333333333333333, "y": 0.6749999999999999, "yaw": 0}
+      },
+      "verification": "Snapshots are tick 0 before and after the synchronous jettison. Cargo count/mass and HUD cargo count reach zero; horizontal hull position and yaw remain identical under navalPose. Vertical pose changes with load, as calculated by navalPose."
+    }
+  },
+  "assetReuse": {
+    "fabSource": "C:/Unreal/ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/InventorySystem/JigSaw/Widgets/Images",
+    "confirmedAssets": [
+      {"file": "T_SlotFrame.uasset", "sizeBytes": 6129, "sha256": "a69329a9fc67555e77c66e6f1cd077b8edec1aa22b00525f42bc08f4bf84b6e6"},
+      {"file": "T_SlotBackG.uasset", "sizeBytes": 6459, "sha256": "36cd9932298fefb9e16e9acde50c45144692631dd37e1fc133f0399b0fd4d217"}
+    ],
+    "usage": "Confirmed candidates only; neither asset was exported nor previewed.",
+    "iconReuse": "The mastbolt SVG path matches the existing inline icon in src/ui/hud.js; the lab does not import that HUD module, which imports GSAP."
+  },
+  "issues": []
+}

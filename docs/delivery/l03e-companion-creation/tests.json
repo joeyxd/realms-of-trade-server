@@ -1,0 +1,20 @@
+{
+  "schema": "mn.companion-creation.tests.v1",
+  "sourceCommit": "d91bc6650888c19e172f5523a9c0370c6d846d46",
+  "runner": "node --test --test-concurrency=2",
+  "files": [
+    "tests/companion-creation-client.test.mjs",
+    "tests/companion-creation-network.test.mjs",
+    "tests/companion-creation-sql.test.mjs",
+    "tests/companion-creation-store.test.mjs",
+    "tests/companion-creation-ui.test.mjs",
+    "tests/companion-config-network.test.mjs",
+    "tests/companion-control-network.test.mjs",
+    "tests/inference-config-network.test.mjs",
+    "tests/companions-ui.test.mjs"
+  ],
+  "passed": 57,
+  "failed": 0,
+  "skipped": 0,
+  "durationMs": 28310.0732
+}

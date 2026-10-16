@@ -1,0 +1,95 @@
+{
+  "recordedAt": "2026-10-11T06:49:54.411Z",
+  "version": "0.6.0-alpha.50",
+  "protocol": 55,
+  "checks": [
+    "health_200",
+    "M5_economy_resources_healthy",
+    "published_protocol",
+    "ordinary_public_WSS_entry",
+    "world_snapshot",
+    "ordinary_profile"
+  ],
+  "count": 6,
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.50",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 3787,
+    "uptime": 80,
+    "stepMs": 1.249,
+    "bots": 3,
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 5,
+        "replays": 1
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2368,
+        "errors": 0
+      }
+    }
+  },
+  "content": {
+    "generation": 8,
+    "revisionId": null
+  },
+  "scope": "Public read-only health, current content identity and ordinary guest entry; no durable gameplay action, GM activation or common GameHost/pearl/death activation."
+}

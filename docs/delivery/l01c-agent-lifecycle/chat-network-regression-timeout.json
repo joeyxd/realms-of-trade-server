@@ -1,0 +1,20 @@
+{
+  "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs",
+  "startedAt": "2026-10-08T11:32:41.6116144Z",
+  "finishedAt": "2026-10-08T11:44:26.9905353Z",
+  "exitCode": 1,
+  "log": "chat-network-regression-timeout.tap",
+  "tests": null,
+  "pass": null,
+  "fail": null,
+  "skipped": null,
+  "cancelled": null,
+  "durationMs": null,
+  "complete": false,
+  "observed": {
+    "passedCases": 19,
+    "timedOutCases": 1,
+    "timeoutCase": "two players at 100 ms RTT: prediction holds, they see each other walk and swing"
+  },
+  "termination": "Root terminated this owned test process tree after the timed-out test left its interval/host open; no final TAP totals."
+}

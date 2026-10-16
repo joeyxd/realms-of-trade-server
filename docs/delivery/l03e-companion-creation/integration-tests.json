@@ -1,0 +1,17 @@
+{
+  "schema": "mn.companion-creation.integration-tests.v1",
+  "sourceCommit": "239eb68",
+  "runner": "node --test --test-concurrency=2",
+  "files": [
+    "tests/companion-creation-network.test.mjs",
+    "tests/companion-config-network.test.mjs",
+    "tests/companion-control-network.test.mjs",
+    "tests/inference-config-network.test.mjs"
+  ],
+  "passed": 21,
+  "failed": 0,
+  "skipped": 0,
+  "durationMs": 7174.6945,
+  "overlapsWith": "tests.json",
+  "note": "Recheck after concurrent alpha.57 character presentation and pearl mint integration; counts overlap with the 57-case focal suite."
+}

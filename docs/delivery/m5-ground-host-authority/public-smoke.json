@@ -1,0 +1,77 @@
+{
+  "recordedAt": "2026-10-10T22:04:49.780Z",
+  "version": "0.6.0-alpha.30",
+  "protocol": 41,
+  "checks": [
+    "health_200",
+    "M5_economy_resources_healthy",
+    "published_protocol",
+    "ordinary_public_WSS_entry",
+    "world_snapshot",
+    "ordinary_profile"
+  ],
+  "count": 6,
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.30",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 3437,
+    "uptime": 60,
+    "stepMs": 1.71,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1590,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "scope": "Public read-only health and ordinary guest entry; no durable gameplay action or common GameHost activation."
+}

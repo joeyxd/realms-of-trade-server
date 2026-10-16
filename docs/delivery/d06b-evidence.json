@@ -1,0 +1,828 @@
+{
+  "id": "D06b",
+  "date": "2026-10-05",
+  "status": "local-desktop-accepted-mobile-pending",
+  "version": "0.6.0-alpha.4",
+  "protocol": 16,
+  "sourceCommit": "5b253a43add406e8f9bcfa881ab428b52234184f",
+  "integrationBase": "312747d",
+  "sourceHashes": [
+    {
+      "path": "package.json",
+      "normalization": "LF",
+      "sha256": "0e3d060468833870bc7138ad5105a8e8aee4acae71601ba3cca797f7775e6170"
+    },
+    {
+      "path": "package-lock.json",
+      "normalization": "LF",
+      "sha256": "d7111c86c3ff3cdf87a1d9d8e3f8f7255df53a8b7b8ff9f2f970f9c0076deaa4"
+    },
+    {
+      "path": "server/host.mjs",
+      "normalization": "LF",
+      "sha256": "ad37a19f432a812402e3d51158b12d606d9ad1a08eca41587913fae34010feb5"
+    },
+    {
+      "path": "src/client/gameClient.js",
+      "normalization": "LF",
+      "sha256": "c1429ee241140dc6b02cac9164a8ee6ff931d209722195a0c505f632c7614cf3"
+    },
+    {
+      "path": "src/data/meta.js",
+      "normalization": "LF",
+      "sha256": "1cbd4d6be8a7a0751162fdee7189c1fae22720e35f40e573b57e6cf5e7116709"
+    },
+    {
+      "path": "src/data/raftEditor.js",
+      "normalization": "LF",
+      "sha256": "6324aca3778a2acca14f4385e96cfae1d762764c65ed000204c7cbf25ba16c16"
+    },
+    {
+      "path": "src/main.js",
+      "normalization": "LF",
+      "sha256": "70e9aed6be2d8ebd5e5a87a060828af14bbddb38b1c3fc0012e4cb19bd8a5a60"
+    },
+    {
+      "path": "src/net/localServer.js",
+      "normalization": "LF",
+      "sha256": "b5e83035c799be50a9ab9b5e6c5a79836e22502445cde6d11f2e953f32d81825"
+    },
+    {
+      "path": "src/net/protocol.js",
+      "normalization": "LF",
+      "sha256": "782c8a7ae25f12bd16337173808c440409613ed1b61b8fcdebb93c120d56d84f"
+    },
+    {
+      "path": "src/render/rafts.js",
+      "normalization": "LF",
+      "sha256": "221868009ed962a55ea6cc23df4b55ccfed15a846f76476261785324edc96a0e"
+    },
+    {
+      "path": "src/sim/economy/economy.js",
+      "normalization": "LF",
+      "sha256": "1f180f36e99301189874a80fb83c799821623e17096dbbfb6256170edfa8a14c"
+    },
+    {
+      "path": "src/sim/economy/raft.js",
+      "normalization": "LF",
+      "sha256": "4129a14aa5d7a0551792169e4be1bba647bb0db9d9ec2f24c88a24b569d8d580"
+    },
+    {
+      "path": "src/sim/economy/raftProduction.js",
+      "normalization": "LF",
+      "sha256": "1eb5e03dd99d78c5538a03216bcc88dcc4c955d0800da3fed4f412bc38c0564a"
+    },
+    {
+      "path": "src/sim/systems/commerce.js",
+      "normalization": "LF",
+      "sha256": "015be87531cd58bb40b7a9880a38935706ee04d7b83405469ac11897aa0b9fc3"
+    },
+    {
+      "path": "src/sim/systems/raftEditor.js",
+      "normalization": "LF",
+      "sha256": "fc4803a2ddc7083c4d51390187b28892f2ab574d0d38ddc6da20db17ea4a2ade"
+    },
+    {
+      "path": "src/sim/systems/raftProduction.js",
+      "normalization": "LF",
+      "sha256": "264a49835eb6a2aa650e9b1f1cf33ec3b5324272679e341e79e561a7c07fc39a"
+    },
+    {
+      "path": "src/ui/commerce.js",
+      "normalization": "LF",
+      "sha256": "9683482752c049165208ab436472b79590f1d4dfc27b0da0b7ba1911c169b77b"
+    },
+    {
+      "path": "src/ui/raftEditor.js",
+      "normalization": "LF",
+      "sha256": "daa07035276dac2e7bf7090c778e11825d499aa0f29cf5e5559a8f5d19030e43"
+    },
+    {
+      "path": "styles/commerce.css",
+      "normalization": "LF",
+      "sha256": "ee35b88fcefe41dd15002ed2847ae810d31bd519fa1ce0ff85b6e86b11240a8b"
+    },
+    {
+      "path": "tests/raft-production.test.mjs",
+      "normalization": "LF",
+      "sha256": "0af07711b8154b43fb8c2fd78915dfd44288f145a27a93088b40aa842d17d833"
+    },
+    {
+      "path": "tests/raft-production-server.test.mjs",
+      "normalization": "LF",
+      "sha256": "f8d10123e3da43d7a5358d94129d7d8498e03e4b6f97514e4bdcd6e9b5649c67"
+    },
+    {
+      "path": "tests/raft-renderer.test.mjs",
+      "normalization": "LF",
+      "sha256": "d36ca78190c27a61e3fa9f1011810d2e489d4801560512567d72a02903255957"
+    },
+    {
+      "path": "tests/world-state.test.mjs",
+      "normalization": "LF",
+      "sha256": "4badee946f206b1a50211808563d384c88955eeae495aea113cf45c1a85deb06"
+    },
+    {
+      "path": "tools/look-raft-production.mjs",
+      "normalization": "LF",
+      "sha256": "4d9571b8cedd39862e815b54ff9e8bfd9fa87e29fe8d887d77d3f9d6d278cc05"
+    }
+  ],
+  "tests": {
+    "commit": "5b253a43add406e8f9bcfa881ab428b52234184f",
+    "testFiles": 63,
+    "exitCode": 0,
+    "log": ".scratch/d06b-regression-pinned.log",
+    "total": 547,
+    "passed": 547,
+    "failed": 0,
+    "skipped": 0,
+    "concurrency": 2,
+    "timeoutPerFileMs": 60000,
+    "durationMs": 103066.1125,
+    "logSha256": "ff747ed21d77e5de781e5475295f0fcfcdf5be18b39fd68b71c202ffd8bce071",
+    "directed": {
+      "passed": 23,
+      "failed": 0
+    },
+    "newCases": 16
+  },
+  "desktop": {
+    "accepted": true,
+    "viewport": {
+      "width": 1280,
+      "height": 720,
+      "phone": false,
+      "portrait": false,
+      "dpr": 1
+    },
+    "physicalDevice": false,
+    "fpsClaim": false,
+    "fixture": "Isolated starter, gold1000; 2 wood/1 iron in pack and3 cloth in hold. Net/grill built through UI; extra2wood/1iron paid in editor. QA-only Worker hook advances actual economy in5s steps, never directly grants production goods.",
+    "captureBase": "1b5c2faa440564b7c9538aaaeb8b311423fe7828",
+    "screenshotCount": 12,
+    "screenshotsInspected": [
+      {
+        "name": "00-starter",
+        "path": "shots/review/d06b/desktop-v6/00-starter.png",
+        "bytes": 908797,
+        "sha256": "9a2f77a0eb26efc27e859adc49fc05dc990d1363522c3e9125d6cd2e0154ac0f"
+      },
+      {
+        "name": "preview-net",
+        "path": "shots/review/d06b/desktop-v6/preview-net.png",
+        "bytes": 867693,
+        "sha256": "a67c21f1a29709442554ee74677bb3df95226b9f3ac6f71d417034369f794426"
+      },
+      {
+        "name": "preview-grill",
+        "path": "shots/review/d06b/desktop-v6/preview-grill.png",
+        "bytes": 872142,
+        "sha256": "c4f0342e0bec6eba76fd5dac8de38de584208426611501f6bd496f5003e41d96"
+      },
+      {
+        "name": "01-built-net-grill",
+        "path": "shots/review/d06b/desktop-v6/01-built-net-grill.png",
+        "bytes": 927596,
+        "sha256": "d7d84b0de6d6d7de33447d60f2058f1dea9fffcb70401589af9d15f2ace414ba"
+      },
+      {
+        "name": "02-working-net-waiting-grill",
+        "path": "shots/review/d06b/desktop-v6/02-working-net-waiting-grill.png",
+        "bytes": 851700,
+        "sha256": "03f631c172c0adc19b90338c882da7e4c8c240c7d2de5eff87d60d981d17ad06"
+      },
+      {
+        "name": "03-fractional-work",
+        "path": "shots/review/d06b/desktop-v6/03-fractional-work.png",
+        "bytes": 851218,
+        "sha256": "1678bea6468791dfe438aec183348160f29ac25f49f222cafcd1ae4828407830"
+      },
+      {
+        "name": "04-restored-fraction",
+        "path": "shots/review/d06b/desktop-v6/04-restored-fraction.png",
+        "bytes": 842461,
+        "sha256": "2c2a3c50482d368daf43a364b6d8929a532ecbb3c7952787ecf514d235cc91e6"
+      },
+      {
+        "name": "05-first-fish",
+        "path": "shots/review/d06b/desktop-v6/05-first-fish.png",
+        "bytes": 858218,
+        "sha256": "7884d4a54596f02a94bfbcab06ed6d2f733810d9219cd1332ede5a37463dca03"
+      },
+      {
+        "name": "06-grill-started",
+        "path": "shots/review/d06b/desktop-v6/06-grill-started.png",
+        "bytes": 863122,
+        "sha256": "57d41bf8683451c16e515f63c7800b42a34dc92098ef5e3f21427b4f9565b8df"
+      },
+      {
+        "name": "07-first-grill-lot",
+        "path": "shots/review/d06b/desktop-v6/07-first-grill-lot.png",
+        "bytes": 863287,
+        "sha256": "ecb6b2d2c051c8fcada5ddf58f4dfdc5a8e24e2ec492da13e185060fbc08c7e1"
+      },
+      {
+        "name": "08-full-hold",
+        "path": "shots/review/d06b/desktop-v6/08-full-hold.png",
+        "bytes": 864323,
+        "sha256": "396c1c24163ea3716e3e67efa4066b2cede98a6e717be01710e0a90978abb96f"
+      },
+      {
+        "name": "09-resumed-after-withdrawal",
+        "path": "shots/review/d06b/desktop-v6/09-resumed-after-withdrawal.png",
+        "bytes": 854399,
+        "sha256": "b95ebc057a6729c179784fd7f2442fba6f9fc13b876f597a00eb4cac620ccc87"
+      }
+    ],
+    "evidencePath": "shots/review/d06b/desktop-v6/evidence.json",
+    "evidenceSha256": "141aa26961db0938618007c81714f1f6b3c6f933154f8e0277f02ebc0f75824b",
+    "actions": [
+      {
+        "name": "00-starter",
+        "state": {
+          "gold": 1000,
+          "tradeRev": 0,
+          "shipRev": 1,
+          "pack": {
+            "cap": 10,
+            "goods": {
+              "madera": 2,
+              "hierro": 1
+            }
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "lona": 3
+            }
+          },
+          "work": {},
+          "errors": []
+        }
+      },
+      {
+        "name": "preview-net",
+        "state": {
+          "gold": 1000,
+          "tradeRev": 0,
+          "shipRev": 1,
+          "pack": {
+            "cap": 10,
+            "goods": {
+              "madera": 2,
+              "hierro": 1
+            }
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "lona": 3
+            }
+          },
+          "work": {},
+          "errors": []
+        }
+      },
+      {
+        "name": "build-net",
+        "before": {},
+        "after": {}
+      },
+      {
+        "name": "buy-madera",
+        "before": {
+          "gold": 1000,
+          "tradeRev": 0,
+          "shipRev": 2,
+          "pack": {
+            "cap": 10,
+            "goods": {
+              "hierro": 1
+            }
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {}
+          },
+          "work": {},
+          "errors": []
+        },
+        "after": {
+          "gold": 995,
+          "tradeRev": 0,
+          "shipRev": 3,
+          "pack": {
+            "cap": 10,
+            "goods": {
+              "hierro": 1
+            }
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "madera": 1
+            }
+          },
+          "work": {},
+          "errors": []
+        }
+      },
+      {
+        "name": "buy-madera",
+        "before": {
+          "gold": 995,
+          "tradeRev": 0,
+          "shipRev": 3,
+          "pack": {
+            "cap": 10,
+            "goods": {
+              "hierro": 1
+            }
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "madera": 1
+            }
+          },
+          "work": {},
+          "errors": []
+        },
+        "after": {
+          "gold": 990,
+          "tradeRev": 0,
+          "shipRev": 4,
+          "pack": {
+            "cap": 10,
+            "goods": {
+              "hierro": 1
+            }
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "madera": 2
+            }
+          },
+          "work": {},
+          "errors": []
+        }
+      },
+      {
+        "name": "buy-hierro",
+        "before": {
+          "gold": 990,
+          "tradeRev": 0,
+          "shipRev": 4,
+          "pack": {
+            "cap": 10,
+            "goods": {
+              "hierro": 1
+            }
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "madera": 2
+            }
+          },
+          "work": {},
+          "errors": []
+        },
+        "after": {
+          "gold": 961,
+          "tradeRev": 0,
+          "shipRev": 5,
+          "pack": {
+            "cap": 10,
+            "goods": {
+              "hierro": 2
+            }
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "madera": 2
+            }
+          },
+          "work": {},
+          "errors": []
+        }
+      },
+      {
+        "name": "preview-grill",
+        "state": {
+          "gold": 961,
+          "tradeRev": 0,
+          "shipRev": 5,
+          "pack": {
+            "cap": 10,
+            "goods": {
+              "hierro": 2
+            }
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "madera": 2
+            }
+          },
+          "work": {},
+          "errors": []
+        }
+      },
+      {
+        "name": "build-grill",
+        "before": {},
+        "after": {}
+      },
+      {
+        "name": "01-built-net-grill",
+        "state": {
+          "gold": 961,
+          "tradeRev": 0,
+          "shipRev": 6,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {}
+          },
+          "work": {},
+          "errors": []
+        }
+      },
+      {
+        "name": "normal-worker-clock",
+        "before": {
+          "gold": 961,
+          "tradeRev": 0,
+          "shipRev": 6,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {}
+          },
+          "work": {},
+          "errors": []
+        },
+        "natural": {
+          "gold": 961,
+          "tradeRev": 0,
+          "shipRev": 6,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {}
+          },
+          "work": {
+            "[\"net\",1,0,0,0]": 0.0625
+          },
+          "errors": []
+        }
+      },
+      {
+        "name": "02-working-net-waiting-grill",
+        "state": {
+          "gold": 961,
+          "tradeRev": 0,
+          "shipRev": 6,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {}
+          },
+          "work": {
+            "[\"net\",1,0,0,0]": 0.0625
+          },
+          "errors": []
+        }
+      },
+      {
+        "name": "03-fractional-work",
+        "state": {
+          "gold": 961,
+          "tradeRev": 0,
+          "shipRev": 6,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {}
+          },
+          "work": {
+            "[\"net\",1,0,0,0]": 0.4375
+          },
+          "errors": []
+        }
+      },
+      {
+        "name": "04-restored-fraction",
+        "state": {
+          "gold": 961,
+          "tradeRev": 0,
+          "shipRev": 6,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {}
+          },
+          "work": {
+            "[\"net\",1,0,0,0]": 0.4375
+          },
+          "errors": []
+        }
+      },
+      {
+        "name": "05-first-fish",
+        "state": {
+          "gold": 961,
+          "tradeRev": 1,
+          "shipRev": 7,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "pescado": 1
+            }
+          },
+          "work": {
+            "[\"net\",1,0,0,0]": 0.15625
+          },
+          "errors": []
+        }
+      },
+      {
+        "name": "06-grill-started",
+        "state": {
+          "gold": 961,
+          "tradeRev": 2,
+          "shipRev": 8,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "pescado": 2
+            }
+          },
+          "work": {
+            "[\"net\",1,0,0,0]": 0.15625,
+            "[\"grill\",0,1,0,0]": 0.1875
+          },
+          "errors": []
+        }
+      },
+      {
+        "name": "07-first-grill-lot",
+        "state": {
+          "gold": 961,
+          "tradeRev": 4,
+          "shipRev": 10,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "galleta": 2,
+              "pescado": 1
+            }
+          },
+          "work": {
+            "[\"net\",1,0,0,0]": 0.15625
+          },
+          "errors": []
+        }
+      },
+      {
+        "name": "08-full-hold",
+        "state": {
+          "gold": 961,
+          "tradeRev": 9,
+          "shipRev": 15,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "galleta": 6
+            }
+          },
+          "work": {},
+          "errors": []
+        }
+      },
+      {
+        "name": "full-hold-freezes",
+        "full": {
+          "gold": 961,
+          "tradeRev": 9,
+          "shipRev": 15,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "galleta": 6
+            }
+          },
+          "work": {},
+          "errors": []
+        },
+        "still": {
+          "gold": 961,
+          "tradeRev": 9,
+          "shipRev": 15,
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "galleta": 6
+            }
+          },
+          "work": {},
+          "errors": []
+        }
+      },
+      {
+        "name": "09-resumed-after-withdrawal",
+        "state": {
+          "gold": 961,
+          "tradeRev": 11,
+          "shipRev": 17,
+          "pack": {
+            "cap": 10,
+            "goods": {
+              "galleta": 2
+            }
+          },
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "galleta": 4,
+              "pescado": 1
+            }
+          },
+          "work": {},
+          "errors": []
+        }
+      }
+    ],
+    "savedWork": {
+      "[\"net\",1,0,0,0]": 0.4375
+    },
+    "restoredWork": {
+      "[\"net\",1,0,0,0]": 0.4375
+    },
+    "final": {
+      "gold": 961,
+      "tradeRev": 11,
+      "shipRev": 17,
+      "pack": {
+        "cap": 10,
+        "goods": {
+          "galleta": 2
+        }
+      },
+      "hold": {
+        "cap": 6,
+        "goods": {
+          "galleta": 4,
+          "pescado": 1
+        }
+      },
+      "work": {},
+      "errors": []
+    },
+    "atlas": {
+      "width": 1024,
+      "height": 1024
+    },
+    "textureRequests": [
+      "/assets/textures/raft/comic-materials-v1.webp",
+      "/assets/textures/raft/comic-materials-v1.webp",
+      "/assets/textures/raft/comic-materials-v1.webp"
+    ],
+    "pageErrors": [],
+    "requestFailures": [
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+        "error": "net::ERR_FAILED"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+        "error": "net::ERR_FAILED"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+        "error": "net::ERR_FAILED"
+      }
+    ],
+    "renderScheduling": "Normal Worker/input/frame ticks for construction and initial work; then QA-only Worker pauses the world, services commands, and advances the actual economy in5s slices. Render draws only at screenshots, near-camera fade off.",
+    "scope": "Workspace visual acceptance; client unchanged afterwards. Host restoration fix and QA scroll follow-up validated separately."
+  },
+  "mobile": {
+    "accepted": false,
+    "landscape": {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "evidencePath": "shots/review/d06b/mobile/evidence.json",
+      "completedThrough": "net preview; action below scroll prevented placement"
+    },
+    "portrait": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "executed": false
+    },
+    "harnessFollowUp": "scrollIntoViewIfNeeded before UI taps, not rerun",
+    "blocker": {
+      "action": "launch corrected mobile Chrome QA",
+      "reason": "automatic approval review unavailable: usage limit",
+      "riskEvaluated": false,
+      "bypassed": false
+    },
+    "physicalDevice": false,
+    "fpsClaim": false
+  },
+  "unrealReuse": "docs/research/unreal-assets/D06B-REUSE.md",
+  "newAssetExports": 0,
+  "unrealSourcesModified": false,
+  "release": {
+    "status": "verified-local",
+    "path": "dist/0.6.0-alpha.4-5b253a43add4",
+    "sourceSha": "5b253a43add406e8f9bcfa881ab428b52234184f",
+    "version": "0.6.0-alpha.4",
+    "protocolVersion": 16,
+    "fileCount": 144,
+    "bytes": 2125502,
+    "allFileHashesVerified": true,
+    "modulesMatchCommittedSource": 45,
+    "embeddedCssFilesVerified": 7,
+    "atlas": {
+      "desktop": {
+        "path": "assets/textures/raft/comic-materials-v1.webp",
+        "bytes": 308536,
+        "sha256": "8fd911b1f4c3e64d8a2a2f812c9b85cc82b86c9d562f71eeb8447e6204fa3a54"
+      },
+      "mobile": {
+        "path": "assets/textures/raft/comic-materials-v1-mobile.webp",
+        "bytes": 82878,
+        "sha256": "464486d6ff3f108b6c9e0593bbb95dc9697fa1ac8907afa1225f1909cae6f719"
+      }
+    },
+    "manifest": {
+      "path": "dist/0.6.0-alpha.4-5b253a43add4/release.json",
+      "bytes": 22740,
+      "sha256": "1785ff3b2923e3114c339b33b276748bbdf741d8880195439421899a1e81bc73"
+    },
+    "independentProofPath": ".scratch/d06b-release-result.json",
+    "independentProofSha256": "55b88143d430aa30c3a621fcc4a16e462334e1b1879c1ca0cee5e1547be9bc7c",
+    "published": false
+  },
+  "hostRestarted": false,
+  "pushed": false,
+  "published": false,
+  "limitations": [
+    "Mobile D06b acceptance pending",
+    "No physical device or FPS acceptance",
+    "M6 P4 water/hammock/lights remain open",
+    "No offline production",
+    "No public durable cargo custody or joint profile/world transaction"
+  ],
+  "next": "Close D06b mobile; then D08 handling bay, bounded Unreal review first."
+}

@@ -1,0 +1,163 @@
+{
+  "v": 1,
+  "cut": "W02h",
+  "generatedAt": "2026-10-08T21:59:18.715Z",
+  "status": "locally-tested-and-public-rpc-diagnostic-observed",
+  "runtime": {
+    "node": "v24.14.0",
+    "platform": "win32"
+  },
+  "local": {
+    "command": "node --test tests/web3-amoy-check.test.mjs tools/web3-evm-lab/reader-evm.test.mjs tests/web3-erc1155-reader.test.mjs tests/web3-edition-read-cli.test.mjs tests/web3-erc721-reader.test.mjs tests/web3-token-read-cli.test.mjs tests/web3-wallet-preflight.test.mjs",
+    "tests": 58,
+    "pass": 58,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "newTests": 9,
+    "regressionTests": 49,
+    "durationMs": 3485.3461,
+    "syntaxPassed": true,
+    "utf8NoBomWhitespacePassed": true,
+    "localLinksChecked": 373,
+    "sourceHashesVerified": 18
+  },
+  "publicRpc": {
+    "artifact": "docs/delivery/w02h-amoy-rpc-live.json",
+    "endpoint": "https://polygon-amoy.drpc.org",
+    "startedAt": "2026-10-08T21:55:49.417Z",
+    "finishedAt": "2026-10-08T21:55:52.700Z",
+    "exitCode": 0,
+    "report": {
+      "v": 1,
+      "chainId": 80002,
+      "observedBlock": {
+        "number": "0x2f5f764",
+        "hash": "0x6a29ea4ed8b0a4c4cbc56cae3034b4c4baedcb07ac7a8e82f2accd18ffd17b47",
+        "parentHash": "0x3e95bfa4ff4bb220417356ec61385febed1055d5217c844bebf36b6bdc53651a",
+        "timestamp": "0x6ac8116a"
+      },
+      "checks": {
+        "hashSelectorsAccepted": true,
+        "identityEcho": true,
+        "blockStable": true
+      },
+      "finalityVerified": false
+    },
+    "totalExternalRequests": 10,
+    "sequenceExternalRequests": 5,
+    "preliminaryExternalRequests": 5
+  },
+  "limits": {
+    "selectorFormatAcceptanceOnly": true,
+    "identityIsStateIndependent": true,
+    "invalidNoncanonicalHashRejectionVerified": false,
+    "archiveHistoryVerified": false,
+    "fullEIP1898ConformanceVerified": false,
+    "rpcHonestyVerified": false,
+    "finalityVerified": false,
+    "availabilitySlaVerified": false,
+    "nftContractVerified": false,
+    "signedTransactions": 0,
+    "broadcastTransactions": 0,
+    "gasPaid": 0,
+    "newDependencies": false,
+    "providerSelected": false,
+    "realEnvRead": false,
+    "realEnvModified": false,
+    "sqlApplied": false,
+    "supabaseLive": false,
+    "hostStarted": false,
+    "gamePermissions": false,
+    "walletExtension": false,
+    "publicContractDeploy": false,
+    "publicTokenMint": false,
+    "openSeaVerified": false,
+    "payments": false,
+    "newUI": false,
+    "gitCommitPush": false,
+    "deployed": false
+  },
+  "sources": {
+    "server/web3/amoyRpcProbe.mjs": {
+      "bytes": 1966,
+      "sha256": "5b7a500e58d9fad02ffe29cd52f0236d47b8946d2ed90de7bc3d22c6f750d8bc"
+    },
+    "tools/web3-amoy-check.mjs": {
+      "bytes": 1295,
+      "sha256": "14ecda6902dd65ecf80ebba6e75c4646d19efa191f7be5a1bcacd91f9e163916"
+    },
+    "tests/web3-amoy-check.test.mjs": {
+      "bytes": 13307,
+      "sha256": "c30c10e1c051929460a1bea598eab6ef5006bfebe6b4670bb693c06c8cb724eb"
+    },
+    "docs/briefs/w02h-amoy-rpc-check.md": {
+      "bytes": 1905,
+      "sha256": "1f3e9c2f897b1fd669edd55922481ef9c4b2dc2bd55c4a2584e20067b36f954f"
+    },
+    "docs/delivery/w02h-amoy-rpc-check.md": {
+      "bytes": 5109,
+      "sha256": "4a8457cd6df2679b5c0e44e5c31c5d3ce446bab98c7e88ddc072a5c0b39edc2d"
+    },
+    "docs/delivery/w02h-amoy-rpc-live.json": {
+      "bytes": 1203,
+      "sha256": "e3026e3827e18449b17060206d646952bdb8be8e53a7626efc171dc2a83b94ba"
+    },
+    "PLAN-WEB3.md": {
+      "bytes": 24228,
+      "sha256": "6713e918442861c13721475df489f8a305b76b46395b88ef835e60736aae4597"
+    },
+    "PLAN-DELIVERY.md": {
+      "bytes": 73306,
+      "sha256": "be1f8f9dc473d99c7224fbcbdb9f134a8511eb3e861fb4f72e999635dc5d1514"
+    },
+    "DESIGN.md": {
+      "bytes": 76571,
+      "sha256": "9de647461a1e71aeeed03bb88b91b667aa2a9f5f17dbfbb9655e7fed89d436a9"
+    },
+    "docs/HANDOFF.md": {
+      "bytes": 113017,
+      "sha256": "550c346b8d88a33dd77cbfaf10bc13772b792747907a5bfa7c415a9abcd5b88e"
+    },
+    "server/web3/rpcTransport.mjs": {
+      "bytes": 4667,
+      "sha256": "b43c4f24da50d2e958c6c7e89c7ca70e41fb984330daa05b24bdd80c82076458"
+    },
+    "server/web3/rpcProbe.mjs": {
+      "bytes": 630,
+      "sha256": "c4f4cb9c14cef0ab142517cf47dc77e374a23991e7acb89a2502e656ba0bd129"
+    },
+    "tools/web3-evm-lab/reader-evm.test.mjs": {
+      "bytes": 18798,
+      "sha256": "ba3df718d11959a236b768835a59450b562b17081ac4d95521c4ddb2ccca5aad"
+    },
+    "tests/web3-erc1155-reader.test.mjs": {
+      "bytes": 15936,
+      "sha256": "f77f81a62987ff3d44df6f70e6c9aafc971b0ba9dc71ef0510adcdd7c3874d7a"
+    },
+    "tests/web3-edition-read-cli.test.mjs": {
+      "bytes": 8269,
+      "sha256": "902dad4295892c2f4f3f5b32a07d2f56a5460a1027cebc6a1d5fc0290e7f7beb"
+    },
+    "tests/web3-erc721-reader.test.mjs": {
+      "bytes": 16263,
+      "sha256": "64bc760592af7f6742685a5132d2bfcc89e4a65445948c64687eb7d8c512ee3d"
+    },
+    "tests/web3-token-read-cli.test.mjs": {
+      "bytes": 7346,
+      "sha256": "8e784f20917751fd4ab128876cfef02bf7df67dcc5842cacc9a2a05ab0f7223b"
+    },
+    "tests/web3-wallet-preflight.test.mjs": {
+      "bytes": 15733,
+      "sha256": "0c072a4fa94f872fc2d23ef9b38b4fdde8fb0c04bff928f682454fc64e00097d"
+    }
+  },
+  "primarySources": [
+    "https://docs.polygon.technology/pos/reference/rpc-endpoints",
+    "https://eips.ethereum.org/EIPS/eip-1898",
+    "https://ethereum.github.io/yellowpaper/paper.pdf",
+    "https://github.com/0xPolygon/bor/blob/develop/core/vm/contracts.go"
+  ],
+  "independentReview": "Luna reviewed source, tests, scope and evidence; ambiguous Amoy status row corrected by principal"
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "mn.companion-pairing.public.v1",
+  "at": "2026-10-12T05:27:28.023Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "gameVersion": "0.6.0-alpha.60",
+  "sourceVersion": "0.6.0-alpha.60",
+  "protocolVersion": 59,
+  "world": "marea-negra",
+  "production": true,
+  "publicWss": true,
+  "localModelStub": true,
+  "realModelCalls": false,
+  "checks": [
+    {
+      "name": "public_alpha_auth_SQL034_SQL027_pairing_and_content_ready",
+      "pass": true
+    },
+    {
+      "name": "marked_verified_canary_account_starts_without_game_profile",
+      "pass": true
+    },
+    {
+      "name": "authenticated_owner_joined_public_WSS_with_current_content",
+      "pass": true
+    },
+    {
+      "name": "public_WSS_created_Brisa_as_stopped_SQL034_canary",
+      "pass": true
+    },
+    {
+      "name": "pair_load_registered_chat_only_owner_and_SQL027_resume_committed",
+      "pass": true
+    },
+    {
+      "name": "registry_absent_then_exact_canary_profiles_and_auth_deleted",
+      "pass": true
+    }
+  ],
+  "errors": [
+    "The expression evaluated to a falsy value:\n\n  assert.ok(Number.isSafeInteger(issued.expiresAtMs) && issued.expiresAtMs > Date.now() &&\n"
+  ],
+  "acceptancePass": true,
+  "cleanupPending": false,
+  "cleanupComplete": true,
+  "pass": true,
+  "pairedNameBaselineCount": 0,
+  "created": {
+    "characterId": "1e514978-bedf-4c23-a8a5-d20f154ed239",
+    "creationId": "3f3da5f6-d518-435b-9668-0af82bc8167e",
+    "name": "Brisa",
+    "controlStoppedInitially": true
+  },
+  "canaryRetained": {
+    "account": true,
+    "ownerProfile": true,
+    "characterProfile": false,
+    "creationRecord": true,
+    "ownerSocketClosed": true,
+    "runnerStopped": false,
+    "canarySocketsClosed": true,
+    "profilesStable": true
+  },
+  "cleanup": {
+    "markerMatched": true,
+    "registryAbsentBeforeProfileDelete": true,
+    "ownerProfileDeleted": true,
+    "characterProfileDeleted": true,
+    "authDeleted": true
+  },
+  "resume": {
+    "acceptancePass": true,
+    "at": "2026-10-12T05:30:59.751Z"
+  }
+}

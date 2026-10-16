@@ -1,0 +1,346 @@
+TAP version 13
+# Subtest: refresh projects a validated owner response and stop uses the displayed epoch
+ok 1 - refresh projects a validated owner response and stop uses the displayed epoch
+  ---
+  duration_ms: 2.8178
+  type: 'test'
+  ...
+# Subtest: logout/account switch clears rows and late response cannot restore them
+ok 2 - logout/account switch clears rows and late response cannot restore them
+  ---
+  duration_ms: 0.2976
+  type: 'test'
+  ...
+# Subtest: logout and relogin to the same account cannot reuse the old gameplay binding
+ok 3 - logout and relogin to the same account cannot reuse the old gameplay binding
+  ---
+  duration_ms: 0.2094
+  type: 'test'
+  ...
+# Subtest: timeout is bounded and does not retry; transport close clears projection
+ok 4 - timeout is bounded and does not retry; transport close clears projection
+  ---
+  duration_ms: 20.2585
+  type: 'test'
+  ...
+# Subtest: account session mismatch and loss of joined state reject requests and late results
+ok 5 - account session mismatch and loss of joined state reject requests and late results
+  ---
+  duration_ms: 0.4411
+  type: 'test'
+  ...
+# Subtest: server errors use fixed safe copy and malformed projections are ignored
+ok 6 - server errors use fixed safe copy and malformed projections are ignored
+  ---
+  duration_ms: 0.3844
+  type: 'test'
+  ...
+# Subtest: stale stop retains a valid safe projection then deliberately refreshes
+ok 7 - stale stop retains a valid safe projection then deliberately refreshes
+  ---
+  duration_ms: 0.5497
+  type: 'test'
+  ...
+# Subtest: stale-control refresh queued before logout cannot target a later session
+ok 8 - stale-control refresh queued before logout cannot target a later session
+  ---
+  duration_ms: 0.3754
+  type: 'test'
+  ...
+# Subtest: offline provisioned companion can still be stopped with nullable baseline epoch
+ok 9 - offline provisioned companion can still be stopped with nullable baseline epoch
+  ---
+  duration_ms: 0.3435
+  type: 'test'
+  ...
+# Subtest: durable stop and resume use the confirmed revision and resume requires a durable stopped row
+ok 10 - durable stop and resume use the confirmed revision and resume requires a durable stopped row
+  ---
+  duration_ms: 2.0694
+  type: 'test'
+  ...
+# Subtest: durable projection rejects malformed heads and blocks mutations while pending or unavailable
+ok 11 - durable projection rejects malformed heads and blocks mutations while pending or unavailable
+  ---
+  duration_ms: 26.3897
+  type: 'test'
+  ...
+# Subtest: durable stop can reconcile an unconfirmed effective local latch and timeout requires an explicit read
+ok 12 - durable stop can reconcile an unconfirmed effective local latch and timeout requires an explicit read
+  ---
+  duration_ms: 14.8907
+  type: 'test'
+  ...
+# Subtest: durable conflict and authorization errors use bounded codes, while legacy rows stay stop-only
+ok 13 - durable conflict and authorization errors use bounded codes, while legacy rows stay stop-only
+  ---
+  duration_ms: 0.4067
+  type: 'test'
+  ...
+# Subtest: logout fences a pending durable resume and requires a fresh gameplay binding
+ok 14 - logout fences a pending durable resume and requires a fresh gameplay binding
+  ---
+  duration_ms: 0.2802
+  type: 'test'
+  ...
+# Subtest: well-shaped but unconfirmed durable acknowledgements are ignored until uncertain timeout
+ok 15 - well-shaped but unconfirmed durable acknowledgements are ignored until uncertain timeout
+  ---
+  duration_ms: 45.4679
+  type: 'test'
+  ...
+# Subtest: owner list is private, bounded and available as an honest empty state when controls are off
+ok 16 - owner list is private, bounded and available as an honest empty state when controls are off
+  ---
+  duration_ms: 551.7881
+  type: 'test'
+  ...
+# Subtest: two authenticated owners see only their configured characters, never grants/tasks or another account
+ok 17 - two authenticated owners see only their configured characters, never grants/tasks or another account
+  ---
+  duration_ms: 414.2436
+  type: 'test'
+  ...
+# Subtest: stop fences queued input and old epoch, stays idempotent, and refuses to stop a new session from stale UI
+ok 18 - stop fences queued input and old epoch, stays idempotent, and refuses to stop a new session from stale UI
+  ---
+  duration_ms: 328.647
+  type: 'test'
+  ...
+# Subtest: a null baseline cannot stop a newly connected character
+ok 19 - a null baseline cannot stop a newly connected character
+  ---
+  duration_ms: 271.6406
+  type: 'test'
+  ...
+# Subtest: owner can stop a configured character that has never been admitted with its null baseline
+ok 20 - owner can stop a configured character that has never been admitted with its null baseline
+  ---
+  duration_ms: 266.7141
+  type: 'test'
+  ...
+# Subtest: signed-out and offline snapshots discard companion rows and language changes update labels
+ok 21 - signed-out and offline snapshots discard companion rows and language changes update labels
+  ---
+  duration_ms: 2.2399
+  type: 'test'
+  ...
+# Subtest: stop is single-flight, keeps rows visible while pending, and never renders callback errors
+ok 22 - stop is single-flight, keeps rows visible while pending, and never renders callback errors
+  ---
+  duration_ms: 1.1765
+  type: 'test'
+  ...
+# Subtest: unconfigured or inactive rows have no stop action and refresh errors use fixed copy
+ok 23 - unconfigured or inactive rows have no stop action and refresh errors use fixed copy
+  ---
+  duration_ms: 0.4674
+  type: 'test'
+  ...
+# Subtest: panel visibility callback fires only on transitions and stopped is distinct from offline
+ok 24 - panel visibility callback fires only on transitions and stopped is distinct from offline
+  ---
+  duration_ms: 0.364
+  type: 'test'
+  ...
+# Subtest: ready has a truthful label, setup note persists, and known error codes use fixed localized copy
+ok 25 - ready has a truthful label, setup note persists, and known error codes use fixed localized copy
+  ---
+  duration_ms: 0.3216
+  type: 'test'
+  ...
+# Subtest: modal keyboard flow traps Tab at both ends while native traversal and Escape remain available
+ok 26 - modal keyboard flow traps Tab at both ends while native traversal and Escape remain available
+  ---
+  duration_ms: 1.6819
+  type: 'test'
+  ...
+# Subtest: dialog portals to the stage UI and the HUD toggle opens and closes it
+ok 27 - dialog portals to the stage UI and the HUD toggle opens and closes it
+  ---
+  duration_ms: 0.5305
+  type: 'test'
+  ...
+# Subtest: refresh focus moves to close before the refresh button becomes disabled
+ok 28 - refresh focus moves to close before the refresh button becomes disabled
+  ---
+  duration_ms: 0.5015
+  type: 'test'
+  ...
+# Subtest: durable stop is distinguished from the local latch and owner resume keeps focus and explains reconnection
+ok 29 - durable stop is distinguished from the local latch and owner resume keeps focus and explains reconnection
+  ---
+  duration_ms: 2.6941
+  type: 'test'
+  ...
+# Subtest: pending, unavailable, and malformed durable control never show stop or resume actions
+ok 30 - pending, unavailable, and malformed durable control never show stop or resume actions
+  ---
+  duration_ms: 0.5129
+  type: 'test'
+  ...
+# Subtest: an unconfirmed local stop offers separate confirm-stop and allow-connection actions; revision zero is only the default
+ok 31 - an unconfirmed local stop offers separate confirm-stop and allow-connection actions; revision zero is only the default
+  ---
+  duration_ms: 0.5576
+  type: 'test'
+  ...
+# Subtest: UI normalization preserves pending operation and character for durable controls
+ok 32 - UI normalization preserves pending operation and character for durable controls
+  ---
+  duration_ms: 0.2122
+  type: 'test'
+  ...
+# Subtest: load is owner-scoped, sends no account/character selector and projects the exact catalog DTO
+ok 33 - load is owner-scoped, sends no account/character selector and projects the exact catalog DTO
+  ---
+  duration_ms: 4.4349
+  type: 'test'
+  ...
+# Subtest: save emits whole-config CAS and accepts only exact durable next revision
+ok 34 - save emits whole-config CAS and accepts only exact durable next revision
+  ---
+  duration_ms: 1.6014
+  type: 'test'
+  ...
+# Subtest: client rejects configuration outside current owner characters, eligible catalog or ceilings
+ok 35 - client rejects configuration outside current owner characters, eligible catalog or ceilings
+  ---
+  duration_ms: 0.4294
+  type: 'test'
+  ...
+# Subtest: malformed catalog, character projection and extra response fields are ignored until timeout
+ok 36 - malformed catalog, character projection and extra response fields are ignored until timeout
+  ---
+  duration_ms: 29.7695
+  type: 'test'
+  ...
+# Subtest: wrong but well-shaped save ACK remains pending and times out as uncertain
+ok 37 - wrong but well-shaped save ACK remains pending and times out as uncertain
+  ---
+  duration_ms: 30.9751
+  type: 'test'
+  ...
+# Subtest: auth change and transport close fence late responses and clear private state
+ok 38 - auth change and transport close fence late responses and clear private state
+  ---
+  duration_ms: 0.4468
+  type: 'test'
+  ...
+# Subtest: conflict preserves the server head and unavailable does not claim a saved result
+ok 39 - conflict preserves the server head and unavailable does not claim a saved result
+  ---
+  duration_ms: 0.5671
+  type: 'test'
+  ...
+# Subtest: private wire catalog/head derive owner and never leak across guests, characters or other accounts
+ok 40 - private wire catalog/head derive owner and never leak across guests, characters or other accounts
+  ---
+  duration_ms: 786.265
+  type: 'test'
+  ...
+# Subtest: two characters share one connection ceiling and atomic CAS head; metadata cannot mutate gameplay or resume
+ok 41 - two characters share one connection ceiling and atomic CAS head; metadata cannot mutate gameplay or resume
+  ---
+  duration_ms: 502.9785
+  type: 'test'
+  ...
+# Subtest: catalog eligibility, own character scope, explicit stop and exact schema gate saves
+ok 42 - catalog eligibility, own character scope, explicit stop and exact schema gate saves
+  ---
+  duration_ms: 470.7112
+  type: 'test'
+  ...
+# Subtest: timeout holds the account slot across sessions until real save settles and cannot deliver a late result
+ok 43 - timeout holds the account slot across sessions until real save settles and cannot deliver a late result
+  ---
+  duration_ms: 547.6923
+  type: 'test'
+  ...
+# Subtest: SQL readiness absent closes only inference configuration
+ok 44 - SQL readiness absent closes only inference configuration
+  ---
+  duration_ms: 485.3255
+  type: 'test'
+  ...
+# Subtest: USD parsing is exact with no implicit default, and catalog refuses URLs or secret fields
+ok 45 - USD parsing is exact with no implicit default, and catalog refuses URLs or secret fields
+  ---
+  duration_ms: 428.6478
+  type: 'test'
+  ...
+# Subtest: an owner without connections sees availability instead of an amount-only setup form
+ok 46 - an owner without connections sees availability instead of an amount-only setup form
+  ---
+  duration_ms: 2.5541
+  type: 'test'
+  ...
+# Subtest: catalog withdrawal preserves saved selections and unsaved edits as read-only until availability returns
+ok 47 - catalog withdrawal preserves saved selections and unsaved edits as read-only until availability returns
+  ---
+  duration_ms: 1.9555
+  type: 'test'
+  ...
+# Subtest: even an account-only saved config remains inspectable without a catalog
+ok 48 - even an account-only saved config remains inspectable without a catalog
+  ---
+  duration_ms: 0.3432
+  type: 'test'
+  ...
+# Subtest: explicit shared USD ceilings and admitted per-character model serialize once as a whole config
+ok 49 - explicit shared USD ceilings and admitted per-character model serialize once as a whole config
+  ---
+  duration_ms: 2.2509
+  type: 'test'
+  ...
+# Subtest: no model is silently chosen and malformed or over-ceiling amounts cannot be submitted
+ok 50 - no model is silently chosen and malformed or over-ceiling amounts cannot be submitted
+  ---
+  duration_ms: 0.6317
+  type: 'test'
+  ...
+# Subtest: conflict preserves the draft and only explicit reload adopts server configuration
+ok 51 - conflict preserves the draft and only explicit reload adopts server configuration
+  ---
+  duration_ms: 0.9012
+  type: 'test'
+  ...
+# Subtest: uncertain save keeps the draft; logout destroys it and closes the subview
+ok 52 - uncertain save keeps the draft; logout destroys it and closes the subview
+  ---
+  duration_ms: 0.5359
+  type: 'test'
+  ...
+# Subtest: ES/EN labels, keyboard focus, Escape return, 44px touch targets and bounded one-scroll layout
+ok 53 - ES/EN labels, keyboard focus, Escape return, 44px touch targets and bounded one-scroll layout
+  ---
+  duration_ms: 0.4192
+  type: 'test'
+  ...
+# Subtest: loading and non-durable states never permit save
+ok 54 - loading and non-durable states never permit save
+  ---
+  duration_ms: 0.3748
+  type: 'test'
+  ...
+# Subtest: USD helpers preserve nanodollar precision and reject blanks, exponents and negative values
+ok 55 - USD helpers preserve nanodollar precision and reject blanks, exponents and negative values
+  ---
+  duration_ms: 0.2389
+  type: 'test'
+  ...
+# Subtest: serialization uses the same ASCII order as protocol validation for mixed reference ids
+ok 56 - serialization uses the same ASCII order as protocol validation for mixed reference ids
+  ---
+  duration_ms: 0.4615
+  type: 'test'
+  ...
+1..56
+# tests 56
+# suites 0
+# pass 56
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4071.1295

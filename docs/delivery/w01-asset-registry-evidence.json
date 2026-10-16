@@ -1,0 +1,90 @@
+{
+  "milestone": "W01",
+  "date": "2026-10-07",
+  "status": "implemented-and-verified-locally",
+  "node": "v24.14.0",
+  "tests": [
+    {
+      "command": "node --test tests/web3-asset-registry.test.mjs tests/web3-asset-registry-sql.test.mjs tests/web3-asset-registry-process.test.mjs tests/web3-asset-registry-boundary.test.mjs",
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0
+    },
+    {
+      "command": "node --test tests/store.test.mjs tests/store-sql.test.mjs tests/store-host.test.mjs tests/pearl-operations.test.mjs tests/death-storage.test.mjs",
+      "passed": 56,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0
+    }
+  ],
+  "verification": {
+    "sdk": "Supabase SDK against local PGlite",
+    "recoveryProcesses": 3,
+    "coexistence": "M5 SQL001-010 plus optional W01 migration",
+    "fullCheckoutSuite": false,
+    "remoteSupabase": false,
+    "postgresMultiConnectionContention": false,
+    "liveMigrationApplied": false,
+    "wallets": false,
+    "onchainTokens": false,
+    "payments": false,
+    "mountedInGame": false,
+    "published": false
+  },
+  "files": [
+    {
+      "path": "server/web3/assetContract.mjs",
+      "bytes": 8197,
+      "sha256": "07844055f6d167b94cbe526952d869b950bbc42129eb65adf97930621a46db98"
+    },
+    {
+      "path": "server/web3/assetRegistry.mjs",
+      "bytes": 6057,
+      "sha256": "759ee0a55588aeef32aba58a603abbcdd270d4c3c3e7c2833cbd48e79a09aa83"
+    },
+    {
+      "path": "server/migrations/web3/001_asset_registry.sql",
+      "bytes": 25905,
+      "sha256": "c9a872ebf89aa64a7d10e0c38433b37fc4b8a8922dca76e050ef9b975023e575"
+    },
+    {
+      "path": "docs/briefs/w01-asset-registry.md",
+      "bytes": 7054,
+      "sha256": "24b8c0abab55dbfc9411dab9776954a97404ec52603fdf233293cb4c9e0138ba"
+    },
+    {
+      "path": "tests/web3-asset-registry.test.mjs",
+      "bytes": 9212,
+      "sha256": "db1b4382d49ead9853366552d6db46d35f30eb0df230ae135685ee6aff4729f9"
+    },
+    {
+      "path": "tests/web3-asset-registry-sql.test.mjs",
+      "bytes": 17540,
+      "sha256": "2afa24367f750c1c56c55dabcb576c82f1ed953809fb2c268cb7d2a6d732b3df"
+    },
+    {
+      "path": "tests/web3-asset-registry-process.test.mjs",
+      "bytes": 1558,
+      "sha256": "f9b4916508c69b6b1d6d51c9bf6db1ef18a5ccece55a7f85beb5f75b35dde454"
+    },
+    {
+      "path": "tests/web3-asset-registry-boundary.test.mjs",
+      "bytes": 3417,
+      "sha256": "243f39cb1260459dc431427775d6931f048fffbb6b9914b6fac44d6e2a1508da"
+    },
+    {
+      "path": "tests/helpers/web3-asset-registry-sql.mjs",
+      "bytes": 3464,
+      "sha256": "ef45df3d69ec646b68530f56cb03ab062fd35bbbfea58d99eff9d32aac3a5cf2"
+    },
+    {
+      "path": "tests/helpers/web3-asset-registry-process.mjs",
+      "bytes": 2233,
+      "sha256": "96ed6347f584e65392197dd64b8f24f21ccd8afc0990ee9e527d2b5592b18b8d"
+    }
+  ]
+}

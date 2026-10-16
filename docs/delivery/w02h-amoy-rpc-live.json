@@ -1,0 +1,43 @@
+{
+  "v": 1,
+  "cut": "W02h",
+  "startedAt": "2026-10-08T21:55:49.417Z",
+  "finishedAt": "2026-10-08T21:55:52.700Z",
+  "endpoint": "https://polygon-amoy.drpc.org",
+  "endpointUse": "one-off public read-only diagnostic; no runtime/provider selection",
+  "chainId": 80002,
+  "command": "node tools/web3-amoy-check.mjs --check",
+  "exitCode": 0,
+  "stderrEmpty": true,
+  "report": {
+    "v": 1,
+    "chainId": 80002,
+    "observedBlock": {
+      "number": "0x2f5f764",
+      "hash": "0x6a29ea4ed8b0a4c4cbc56cae3034b4c4baedcb07ac7a8e82f2accd18ffd17b47",
+      "parentHash": "0x3e95bfa4ff4bb220417356ec61385febed1055d5217c844bebf36b6bdc53651a",
+      "timestamp": "0x6ac8116a"
+    },
+    "checks": {
+      "hashSelectorsAccepted": true,
+      "identityEcho": true,
+      "blockStable": true
+    },
+    "finalityVerified": false
+  },
+  "successfulSequenceRequests": 5,
+  "methods": [
+    "eth_chainId",
+    "eth_getBlockByNumber",
+    "eth_getCode",
+    "eth_call",
+    "eth_getBlockByNumber"
+  ],
+  "preliminaryReadOnlyRequests": 5,
+  "totalExternalRpcRequestsThisCut": 10,
+  "signedTransactions": 0,
+  "broadcastTransactions": 0,
+  "gasPaid": 0,
+  "nftContractVerified": false,
+  "finalityVerified": false
+}

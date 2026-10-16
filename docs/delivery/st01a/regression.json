@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-12T15:42:47.799Z",
+  "base": "8fa8f58478310d9c39fa06e39bbabaf81a6ed9d3",
+  "concurrency": 1,
+  "files": [
+    "tests/skill-presentation.test.mjs",
+    "tests/skill-preview.test.mjs",
+    "tests/gm-editor-entry.test.mjs",
+    "tests/characters.test.mjs",
+    "tests/character-swim.test.mjs",
+    "tests/character-reaction.test.mjs",
+    "tests/buccaneer-character.test.mjs",
+    "tests/gm-editor-rendering.test.mjs"
+  ],
+  "tests": 29,
+  "pass": 29,
+  "fail": 0,
+  "exitCode": 0
+}

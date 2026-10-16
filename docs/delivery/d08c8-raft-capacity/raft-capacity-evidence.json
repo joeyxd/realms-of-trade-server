@@ -1,0 +1,2931 @@
+{
+  "generatedAt": "2026-10-08T02:58:40.139Z",
+  "purpose": "Verify owner-authoritative raft carrying capacity across cargo UI, editor preview and the live naval HUD.",
+  "harness": "One fresh ephemeral GameHost + memory store per viewport; local Three.js/GSAP routes; normal/default Chrome renderer; isolated browser data; no .env, SQL, external hosts or persistent storage.",
+  "fixture": "After a fresh guest joins, the QA fixture adds hierro:1, lona:1 and madera:1 to the owner pack, preserving gold and all other profile fields. Expected initial pack is 5 uV / 7 uM for hierro+lona, plus 3 uV / 3 uM of build-only madera. The UI transfers hierro to the hold and spends the fixture madera on one railing. Fixture goods are not rewards or a persistence claim.",
+  "protocolVersion": 23,
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "capacity-desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-desktop-1280x720-00-owner-capacity.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-desktop-1280x720-01-cargo-panel.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-desktop-1280x720-02-editor-capacity-preview.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-desktop-1280x720-03-sailing-capacity-hud.png"
+      ],
+      "protocolVersion": 23,
+      "initialGold": 0,
+      "fixture": {
+        "packAdds": {
+          "hierro": 1,
+          "lona": 1,
+          "madera": 1
+        },
+        "goldPreserved": true,
+        "shipId": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+        "anchor": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        },
+        "initialGoodsOnly": {
+          "ironCanvasVolume": 5,
+          "ironCanvasMass": 7,
+          "buildWoodVolume": 3,
+          "buildWoodMass": 3
+        },
+        "cameraSnapForAcceptance": true
+      },
+      "initial": {
+        "state": {
+          "gold": 0,
+          "tradeRev": 1,
+          "pack": {
+            "hierro": 1,
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+          "shipRev": 1,
+          "hold": {},
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+            "raftRev": 1,
+            "tradeRev": 1,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 0,
+            "packMass": 10,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 8,
+            "packFree": 2,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "authoritativeCapacity": {
+          "dryMass": 21,
+          "holdMass": 0,
+          "packMass": 10,
+          "cargoMass": 10,
+          "totalMass": 31,
+          "buoyancy": 56,
+          "cargoMax": 35,
+          "freeMass": 25,
+          "overMass": 0,
+          "holdVolume": 0,
+          "holdCap": 6,
+          "packVolume": 8,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 1,
+          "tradeRev": 1
+        }
+      },
+      "cargoPanel": {
+        "panel": {
+          "x": 796,
+          "y": 22.703125,
+          "right": 1266,
+          "bottom": 702,
+          "width": 470,
+          "height": 679.296875,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "body": {
+          "x": 798,
+          "y": 129.84375,
+          "right": 1264,
+          "bottom": 610.8125,
+          "width": 466,
+          "height": 480.96875,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "card": {
+          "x": 811,
+          "y": 140.84375,
+          "right": 1251,
+          "bottom": 271.125,
+          "width": 440,
+          "height": 130.28125,
+          "display": "grid",
+          "visibility": "visible"
+        },
+        "text": "Lista para cargar\nPuerto · masa / espacio\nPORTE ESTIMADO\n25 / 35 uM libres\nBODEGA\n6 / 6 uV libres\nNave 21 · bodega 0 · mochila 10 uM\nMochila 8 / 10 uV · estimaciÃ³n por flotaciÃ³n",
+        "progress": [
+          {
+            "max": 35,
+            "value": 25,
+            "label": "PORTE ESTIMADO\n25 / 35 uM libres"
+          },
+          {
+            "max": 6,
+            "value": 6,
+            "label": "BODEGA\n6 / 6 uV libres"
+          }
+        ]
+      },
+      "transfer": {
+        "action": "real cargo UI deposit",
+        "good": "hierro",
+        "quantity": 1,
+        "forecast": "Mueves 1 Hierro: 6 uM · 3 uV. Tras mover: bodega 3/6 uV · mochila 5/10 uV. La carga sigue pesando 10 uM.",
+        "before": {
+          "gold": 0,
+          "tradeRev": 1,
+          "pack": {
+            "hierro": 1,
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+          "shipRev": 1,
+          "hold": {},
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+            "raftRev": 1,
+            "tradeRev": 1,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 0,
+            "packMass": 10,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 8,
+            "packFree": 2,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "after": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+          "shipRev": 2,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+            "raftRev": 2,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 4,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 5,
+            "packFree": 5,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "authoritativeCapacity": {
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 4,
+          "cargoMass": 10,
+          "totalMass": 31,
+          "buoyancy": 56,
+          "cargoMax": 35,
+          "freeMass": 25,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 5,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 2,
+          "tradeRev": 2
+        }
+      },
+      "editorCamera": {
+        "look": {
+          "x": 0.018151852759798425,
+          "z": -0.006228628767954187
+        },
+        "blend": false,
+        "mode": "iso",
+        "fixtureSnap": true
+      },
+      "editorPreview": {
+        "target": {
+          "x": 0,
+          "z": 1,
+          "level": 0,
+          "dir": 0
+        },
+        "proposed": [
+          "railing",
+          0,
+          1,
+          0,
+          0
+        ],
+        "text": "ACTUAL · CONFIRMADO\nTu balsa\n25 libres uM · nave 21 uM · bodega 3/6 uV\nVISTA PREVIA TRAS COLOCAR\nCon la pieza\n27 libres uM · nave 22 uM · bodega 3/6 uV\nIncluye la pieza y los materiales que usarÃ¡s.\nPorte estimado por flotaciÃ³n.",
+        "rect": {
+          "x": 972,
+          "y": 328,
+          "right": 1254,
+          "bottom": 426.5,
+          "width": 282,
+          "height": 98.5
+        },
+        "actual": {
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 4,
+          "cargoMass": 10,
+          "totalMass": 31,
+          "buoyancy": 56,
+          "cargoMax": 35,
+          "freeMass": 25,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 5,
+          "packCap": 10
+        },
+        "predicted": {
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packCap": 10
+        },
+        "observedForecast": {
+          "before": {
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 4,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 5,
+            "packFree": 5,
+            "packCap": 10
+          },
+          "after": {
+            "dryMass": 22,
+            "holdMass": 6,
+            "packMass": 1,
+            "cargoMass": 7,
+            "totalMass": 29,
+            "buoyancy": 56,
+            "cargoMax": 34,
+            "freeMass": 27,
+            "overMass": 0,
+            "load": 0.5178571428571429,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 2,
+            "packFree": 8,
+            "packCap": 10
+          },
+          "state": "valid"
+        },
+        "attempts": [
+          {
+            "cell": [
+              0,
+              1
+            ],
+            "screen": {
+              "x": 535.3088550279306,
+              "y": 490.81085082526965
+            },
+            "inside": true,
+            "hit": "game",
+            "target": {
+              "x": 0,
+              "z": 1,
+              "level": 0,
+              "dir": 0
+            },
+            "actionDisabled": false,
+            "preview": "ACTUAL · CONFIRMADO\nTu balsa\n25 libres uM · nave 21 uM · bodega 3/6 uV\nVISTA PREVIA TRAS COLOCAR\nCon la pieza\n27 libres uM · nave 22 uM · bodega 3/6 uV\nIncluye la pieza y los materiales que usarÃ¡s.\nPorte estimado por flotaciÃ³n.",
+            "forecast": {
+              "before": {
+                "dryMass": 21,
+                "holdMass": 6,
+                "packMass": 4,
+                "cargoMass": 10,
+                "totalMass": 31,
+                "buoyancy": 56,
+                "cargoMax": 35,
+                "freeMass": 25,
+                "overMass": 0,
+                "load": 0.5535714285714286,
+                "holdVolume": 3,
+                "holdFree": 3,
+                "holdCap": 6,
+                "packVolume": 5,
+                "packFree": 5,
+                "packCap": 10
+              },
+              "after": {
+                "dryMass": 22,
+                "holdMass": 6,
+                "packMass": 1,
+                "cargoMass": 7,
+                "totalMass": 29,
+                "buoyancy": 56,
+                "cargoMax": 34,
+                "freeMass": 27,
+                "overMass": 0,
+                "load": 0.5178571428571429,
+                "holdVolume": 3,
+                "holdFree": 3,
+                "holdCap": 6,
+                "packVolume": 2,
+                "packFree": 8,
+                "packCap": 10
+              },
+              "state": "valid"
+            },
+            "rect": {
+              "x": 972,
+              "y": 328,
+              "right": 1254,
+              "bottom": 426.5,
+              "width": 282,
+              "height": 98.5
+            }
+          }
+        ]
+      },
+      "editorCommitInteraction": {
+        "method": "freshly projected mouse pointerdown on valid cell",
+        "screen": {
+          "x": 536.1091129195057,
+          "y": 491.1416183355911
+        },
+        "target": {
+          "x": 0,
+          "z": 1,
+          "level": 0,
+          "dir": 0
+        },
+        "projection": {
+          "screen": {
+            "x": 536.1091129195057,
+            "y": 491.1416183355911
+          },
+          "raft": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "yaw": 0.9097531579442095
+          },
+          "camera": {
+            "x": 136.9177715947343,
+            "y": 16.382896509547884,
+            "z": 108.90338427767216
+          },
+          "stage": {
+            "w": 1280,
+            "h": 720,
+            "rotated": false
+          }
+        },
+        "reprojected": {
+          "target": {
+            "x": 0,
+            "z": 1,
+            "level": 0,
+            "dir": 0
+          },
+          "disabled": false,
+          "status": "Casilla 0, 1 · nivel 0 · Norte · Lugar vÃ¡lido",
+          "recordRev": 2,
+          "shipRev": 2
+        }
+      },
+      "editorAction": {
+        "ack": {
+          "type": "raftEdit",
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        "send": {
+          "type": "raft",
+          "op": "place",
+          "id": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+          "expectedRev": 2,
+          "opId": "bd05508c-ba21-4577-8b0f-7e8c2dd845c5",
+          "piece": [
+            "railing",
+            0,
+            1,
+            0,
+            0
+          ]
+        },
+        "pending": {
+          "id": "bd05508c-ba21-4577-8b0f-7e8c2dd845c5",
+          "expectedRev": 2,
+          "op": "place",
+          "message": {
+            "type": "raft",
+            "op": "place",
+            "id": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+            "expectedRev": 2,
+            "opId": "bd05508c-ba21-4577-8b0f-7e8c2dd845c5",
+            "piece": [
+              "railing",
+              0,
+              1,
+              0,
+              0
+            ]
+          },
+          "sentAt": 12309.100000000559,
+          "ack": true,
+          "resultRev": 3
+        },
+        "status": "Casilla 0, 1 · nivel 0 · Norte · Esperando snapshot e inventarioâ€¦ · Servidor aceptÃ³; esperando el plano actualizadoâ€¦",
+        "disabled": true,
+        "profile": 1
+      },
+      "editorAck": {
+        "type": "raftEdit",
+        "op": "place",
+        "ok": true,
+        "why": "",
+        "rev": 3
+      },
+      "placement": {
+        "before": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+          "shipRev": 2,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+            "raftRev": 2,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 4,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 5,
+            "packFree": 5,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "after": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1
+          },
+          "packCap": 10,
+          "shipId": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+          "shipRev": 3,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "railing",
+              0,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+            "raftRev": 3,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 22,
+            "holdMass": 6,
+            "packMass": 1,
+            "cargoMass": 7,
+            "totalMass": 29,
+            "buoyancy": 56,
+            "cargoMax": 34,
+            "freeMass": 27,
+            "overMass": 0,
+            "load": 0.5178571428571429,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 2,
+            "packFree": 8,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "authoritativeCapacity": {
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 3,
+          "tradeRev": 2
+        }
+      },
+      "savedProfileBlobBytes": 1374,
+      "reentry": {
+        "profileAndBlueprintRestored": true,
+        "state": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1
+          },
+          "packCap": 10,
+          "shipId": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+          "shipRev": 3,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "railing",
+              0,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+            "raftRev": 3,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 22,
+            "holdMass": 6,
+            "packMass": 1,
+            "cargoMass": 7,
+            "totalMass": 29,
+            "buoyancy": 56,
+            "cargoMax": 34,
+            "freeMass": 27,
+            "overMass": 0,
+            "load": 0.5178571428571429,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 2,
+            "packFree": 8,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        }
+      },
+      "navalHud": {
+        "capacity": {
+          "id": "b171dc99-481d-4a3e-b52f-5b67a07e5da5:r1",
+          "raftRev": 3,
+          "tradeRev": 2,
+          "mode": "sailing",
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "load": 0.5178571428571429,
+          "holdVolume": 3,
+          "holdFree": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packFree": 8,
+          "packCap": 10
+        },
+        "loadText": "Porte libre 27.0 uM · bodega 3/6 uV",
+        "mode": "sailing",
+        "loadRect": {
+          "x": 689.203125,
+          "y": 65.5,
+          "right": 835.203125,
+          "bottom": 76.75,
+          "width": 146,
+          "height": 11.25
+        },
+        "hudVisible": true,
+        "viewportTouch": false,
+        "authoritativeCapacity": {
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packCap": 10,
+          "mode": "sailing",
+          "raftRev": 3,
+          "tradeRev": 2
+        }
+      }
+    },
+    {
+      "name": "capacity-mobile-844x390",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-mobile-844x390-00-owner-capacity.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-mobile-844x390-01-cargo-panel.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-mobile-844x390-02-editor-capacity-preview.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-mobile-844x390-03-sailing-capacity-hud.png"
+      ],
+      "protocolVersion": 23,
+      "initialGold": 0,
+      "fixture": {
+        "packAdds": {
+          "hierro": 1,
+          "lona": 1,
+          "madera": 1
+        },
+        "goldPreserved": true,
+        "shipId": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+        "anchor": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        },
+        "initialGoodsOnly": {
+          "ironCanvasVolume": 5,
+          "ironCanvasMass": 7,
+          "buildWoodVolume": 3,
+          "buildWoodMass": 3
+        },
+        "cameraSnapForAcceptance": true
+      },
+      "initial": {
+        "state": {
+          "gold": 0,
+          "tradeRev": 1,
+          "pack": {
+            "hierro": 1,
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+          "shipRev": 1,
+          "hold": {},
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+            "raftRev": 1,
+            "tradeRev": 1,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 0,
+            "packMass": 10,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 8,
+            "packFree": 2,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "authoritativeCapacity": {
+          "dryMass": 21,
+          "holdMass": 0,
+          "packMass": 10,
+          "cargoMass": 10,
+          "totalMass": 31,
+          "buoyancy": 56,
+          "cargoMax": 35,
+          "freeMass": 25,
+          "overMass": 0,
+          "holdVolume": 0,
+          "holdCap": 6,
+          "packVolume": 8,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 1,
+          "tradeRev": 1
+        }
+      },
+      "cargoPanel": {
+        "panel": {
+          "x": 360,
+          "y": 4,
+          "right": 830,
+          "bottom": 386,
+          "width": 470,
+          "height": 382,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "body": {
+          "x": 362,
+          "y": 88,
+          "right": 828,
+          "bottom": 317,
+          "width": 466,
+          "height": 229,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "card": {
+          "x": 375,
+          "y": 94,
+          "right": 815,
+          "bottom": 224.28125,
+          "width": 440,
+          "height": 130.28125,
+          "display": "grid",
+          "visibility": "visible"
+        },
+        "text": "Lista para cargar\nPuerto · masa / espacio\nPORTE ESTIMADO\n25 / 35 uM libres\nBODEGA\n6 / 6 uV libres\nNave 21 · bodega 0 · mochila 10 uM\nMochila 8 / 10 uV · estimaciÃ³n por flotaciÃ³n",
+        "progress": [
+          {
+            "max": 35,
+            "value": 25,
+            "label": "PORTE ESTIMADO\n25 / 35 uM libres"
+          },
+          {
+            "max": 6,
+            "value": 6,
+            "label": "BODEGA\n6 / 6 uV libres"
+          }
+        ]
+      },
+      "transfer": {
+        "action": "real cargo UI deposit",
+        "good": "hierro",
+        "quantity": 1,
+        "forecast": "Mueves 1 Hierro: 6 uM · 3 uV. Tras mover: bodega 3/6 uV · mochila 5/10 uV. La carga sigue pesando 10 uM.",
+        "before": {
+          "gold": 0,
+          "tradeRev": 1,
+          "pack": {
+            "hierro": 1,
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+          "shipRev": 1,
+          "hold": {},
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+            "raftRev": 1,
+            "tradeRev": 1,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 0,
+            "packMass": 10,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 8,
+            "packFree": 2,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "after": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+          "shipRev": 2,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+            "raftRev": 2,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 4,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 5,
+            "packFree": 5,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "authoritativeCapacity": {
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 4,
+          "cargoMass": 10,
+          "totalMass": 31,
+          "buoyancy": 56,
+          "cargoMax": 35,
+          "freeMass": 25,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 5,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 2,
+          "tradeRev": 2
+        }
+      },
+      "editorCamera": {
+        "look": {
+          "x": 0.017714582662005835,
+          "z": -0.008520489268663773
+        },
+        "blend": false,
+        "mode": "iso",
+        "fixtureSnap": true
+      },
+      "editorPreview": {
+        "target": {
+          "x": 0,
+          "z": 1,
+          "level": 0,
+          "dir": 0
+        },
+        "proposed": [
+          "railing",
+          0,
+          1,
+          0,
+          0
+        ],
+        "text": "ACTUAL · CONFIRMADO\nTu balsa\n25 libres uM · nave 21 uM · bodega 3/6 uV\nVISTA PREVIA TRAS COLOCAR\nCon la pieza\n27 libres uM · nave 22 uM · bodega 3/6 uV\nIncluye la pieza y los materiales que usarÃ¡s.\nPorte estimado por flotaciÃ³n.",
+        "rect": {
+          "x": 570,
+          "y": 265,
+          "right": 830,
+          "bottom": 374.75,
+          "width": 260,
+          "height": 109.75
+        },
+        "actual": {
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 4,
+          "cargoMass": 10,
+          "totalMass": 31,
+          "buoyancy": 56,
+          "cargoMax": 35,
+          "freeMass": 25,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 5,
+          "packCap": 10
+        },
+        "predicted": {
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packCap": 10
+        },
+        "observedForecast": {
+          "before": {
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 4,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 5,
+            "packFree": 5,
+            "packCap": 10
+          },
+          "after": {
+            "dryMass": 22,
+            "holdMass": 6,
+            "packMass": 1,
+            "cargoMass": 7,
+            "totalMass": 29,
+            "buoyancy": 56,
+            "cargoMax": 34,
+            "freeMass": 27,
+            "overMass": 0,
+            "load": 0.5178571428571429,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 2,
+            "packFree": 8,
+            "packCap": 10
+          },
+          "state": "valid"
+        },
+        "attempts": [
+          {
+            "cell": [
+              0,
+              1
+            ],
+            "screen": {
+              "x": 365.3087508104939,
+              "y": 265.91837143728077
+            },
+            "inside": true,
+            "hit": "game",
+            "target": {
+              "x": 0,
+              "z": 1,
+              "level": 0,
+              "dir": 0
+            },
+            "actionDisabled": false,
+            "preview": "ACTUAL · CONFIRMADO\nTu balsa\n25 libres uM · nave 21 uM · bodega 3/6 uV\nVISTA PREVIA TRAS COLOCAR\nCon la pieza\n27 libres uM · nave 22 uM · bodega 3/6 uV\nIncluye la pieza y los materiales que usarÃ¡s.\nPorte estimado por flotaciÃ³n.",
+            "forecast": {
+              "before": {
+                "dryMass": 21,
+                "holdMass": 6,
+                "packMass": 4,
+                "cargoMass": 10,
+                "totalMass": 31,
+                "buoyancy": 56,
+                "cargoMax": 35,
+                "freeMass": 25,
+                "overMass": 0,
+                "load": 0.5535714285714286,
+                "holdVolume": 3,
+                "holdFree": 3,
+                "holdCap": 6,
+                "packVolume": 5,
+                "packFree": 5,
+                "packCap": 10
+              },
+              "after": {
+                "dryMass": 22,
+                "holdMass": 6,
+                "packMass": 1,
+                "cargoMass": 7,
+                "totalMass": 29,
+                "buoyancy": 56,
+                "cargoMax": 34,
+                "freeMass": 27,
+                "overMass": 0,
+                "load": 0.5178571428571429,
+                "holdVolume": 3,
+                "holdFree": 3,
+                "holdCap": 6,
+                "packVolume": 2,
+                "packFree": 8,
+                "packCap": 10
+              },
+              "state": "valid"
+            },
+            "rect": {
+              "x": 570,
+              "y": 265,
+              "right": 830,
+              "bottom": 374.75,
+              "width": 260,
+              "height": 109.75
+            }
+          }
+        ]
+      },
+      "editorCommitInteraction": {
+        "method": "freshly projected touch on cell, then tap Colocar",
+        "screen": {
+          "x": 365.6931917770247,
+          "y": 266.03125745764413
+        },
+        "target": {
+          "x": 0,
+          "z": 1,
+          "level": 0,
+          "dir": 0
+        },
+        "projection": {
+          "screen": {
+            "x": 365.6931917770247,
+            "y": 266.03125745764413
+          },
+          "raft": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "yaw": 0.9097531579442095
+          },
+          "camera": {
+            "x": 136.91859002656332,
+            "y": 16.382896509547884,
+            "z": 108.90276750043117
+          },
+          "stage": {
+            "w": 844,
+            "h": 390,
+            "rotated": false
+          }
+        }
+      },
+      "editorAction": {
+        "ack": {
+          "type": "raftEdit",
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        "send": {
+          "type": "raft",
+          "op": "place",
+          "id": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+          "expectedRev": 2,
+          "opId": "1c3d00ca-8d9d-4bef-be7a-28333b24c1e4",
+          "piece": [
+            "railing",
+            0,
+            1,
+            0,
+            0
+          ]
+        },
+        "pending": null,
+        "status": "Casilla 0, 1 · nivel 0 · Norte · Plano confirmado por snapshot.",
+        "disabled": true,
+        "profile": 1
+      },
+      "editorAck": {
+        "type": "raftEdit",
+        "op": "place",
+        "ok": true,
+        "why": "",
+        "rev": 3
+      },
+      "placement": {
+        "before": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+          "shipRev": 2,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+            "raftRev": 2,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 4,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 5,
+            "packFree": 5,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "after": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1
+          },
+          "packCap": 10,
+          "shipId": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+          "shipRev": 3,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "railing",
+              0,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+            "raftRev": 3,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 22,
+            "holdMass": 6,
+            "packMass": 1,
+            "cargoMass": 7,
+            "totalMass": 29,
+            "buoyancy": 56,
+            "cargoMax": 34,
+            "freeMass": 27,
+            "overMass": 0,
+            "load": 0.5178571428571429,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 2,
+            "packFree": 8,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "authoritativeCapacity": {
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 3,
+          "tradeRev": 2
+        }
+      },
+      "savedProfileBlobBytes": 1374,
+      "reentry": {
+        "profileAndBlueprintRestored": true,
+        "state": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1
+          },
+          "packCap": 10,
+          "shipId": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+          "shipRev": 3,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "railing",
+              0,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+            "raftRev": 3,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 22,
+            "holdMass": 6,
+            "packMass": 1,
+            "cargoMass": 7,
+            "totalMass": 29,
+            "buoyancy": 56,
+            "cargoMax": 34,
+            "freeMass": 27,
+            "overMass": 0,
+            "load": 0.5178571428571429,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 2,
+            "packFree": 8,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        }
+      },
+      "navalHud": {
+        "capacity": {
+          "id": "04cc3161-66f9-447f-9294-5cd74949ea64:r1",
+          "raftRev": 3,
+          "tradeRev": 2,
+          "mode": "sailing",
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "load": 0.5178571428571429,
+          "holdVolume": 3,
+          "holdFree": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packFree": 8,
+          "packCap": 10
+        },
+        "loadText": "Porte libre 27.0 uM · Puerto 0 m",
+        "mode": "sailing",
+        "loadRect": {
+          "x": 42,
+          "y": 130.9375,
+          "right": 215.6875,
+          "bottom": 142.9375,
+          "width": 173.6875,
+          "height": 12
+        },
+        "hudVisible": true,
+        "viewportTouch": true,
+        "authoritativeCapacity": {
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packCap": 10,
+          "mode": "sailing",
+          "raftRev": 3,
+          "tradeRev": 2
+        }
+      }
+    },
+    {
+      "name": "capacity-portrait-390x844",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-portrait-390x844-00-owner-capacity.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-portrait-390x844-01-cargo-panel.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-portrait-390x844-02-editor-capacity-preview.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c8-raft-capacity\\capacity-portrait-390x844-03-sailing-capacity-hud.png"
+      ],
+      "protocolVersion": 23,
+      "initialGold": 0,
+      "fixture": {
+        "packAdds": {
+          "hierro": 1,
+          "lona": 1,
+          "madera": 1
+        },
+        "goldPreserved": true,
+        "shipId": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+        "anchor": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        },
+        "initialGoodsOnly": {
+          "ironCanvasVolume": 5,
+          "ironCanvasMass": 7,
+          "buildWoodVolume": 3,
+          "buildWoodMass": 3
+        },
+        "cameraSnapForAcceptance": true
+      },
+      "initial": {
+        "state": {
+          "gold": 0,
+          "tradeRev": 1,
+          "pack": {
+            "hierro": 1,
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+          "shipRev": 1,
+          "hold": {},
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+            "raftRev": 1,
+            "tradeRev": 1,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 0,
+            "packMass": 10,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 8,
+            "packFree": 2,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "authoritativeCapacity": {
+          "dryMass": 21,
+          "holdMass": 0,
+          "packMass": 10,
+          "cargoMass": 10,
+          "totalMass": 31,
+          "buoyancy": 56,
+          "cargoMax": 35,
+          "freeMass": 25,
+          "overMass": 0,
+          "holdVolume": 0,
+          "holdCap": 6,
+          "packVolume": 8,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 1,
+          "tradeRev": 1
+        }
+      },
+      "cargoPanel": {
+        "panel": {
+          "x": 4,
+          "y": 360,
+          "right": 386,
+          "bottom": 830,
+          "width": 382,
+          "height": 470,
+          "display": "flex",
+          "visibility": "visible"
+        },
+        "body": {
+          "x": 73,
+          "y": 362,
+          "right": 302,
+          "bottom": 828,
+          "width": 229,
+          "height": 466,
+          "display": "block",
+          "visibility": "visible"
+        },
+        "card": {
+          "x": 165.71875,
+          "y": 375,
+          "right": 296,
+          "bottom": 815,
+          "width": 130.28125,
+          "height": 440,
+          "display": "grid",
+          "visibility": "visible"
+        },
+        "text": "Lista para cargar\nPuerto · masa / espacio\nPORTE ESTIMADO\n25 / 35 uM libres\nBODEGA\n6 / 6 uV libres\nNave 21 · bodega 0 · mochila 10 uM\nMochila 8 / 10 uV · estimaciÃ³n por flotaciÃ³n",
+        "progress": [
+          {
+            "max": 35,
+            "value": 25,
+            "label": "PORTE ESTIMADO\n25 / 35 uM libres"
+          },
+          {
+            "max": 6,
+            "value": 6,
+            "label": "BODEGA\n6 / 6 uV libres"
+          }
+        ]
+      },
+      "transfer": {
+        "action": "real cargo UI deposit",
+        "good": "hierro",
+        "quantity": 1,
+        "forecast": "Mueves 1 Hierro: 6 uM · 3 uV. Tras mover: bodega 3/6 uV · mochila 5/10 uV. La carga sigue pesando 10 uM.",
+        "before": {
+          "gold": 0,
+          "tradeRev": 1,
+          "pack": {
+            "hierro": 1,
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+          "shipRev": 1,
+          "hold": {},
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+            "raftRev": 1,
+            "tradeRev": 1,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 0,
+            "packMass": 10,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 8,
+            "packFree": 2,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "after": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+          "shipRev": 2,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+            "raftRev": 2,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 4,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 5,
+            "packFree": 5,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "authoritativeCapacity": {
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 4,
+          "cargoMass": 10,
+          "totalMass": 31,
+          "buoyancy": 56,
+          "cargoMax": 35,
+          "freeMass": 25,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 5,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 2,
+          "tradeRev": 2
+        }
+      },
+      "editorCamera": {
+        "look": {
+          "x": 0.0171520627446502,
+          "z": -0.008952125618296378
+        },
+        "blend": false,
+        "mode": "iso",
+        "fixtureSnap": true
+      },
+      "editorPreview": {
+        "target": {
+          "x": 0,
+          "z": 1,
+          "level": 0,
+          "dir": 0
+        },
+        "proposed": [
+          "railing",
+          0,
+          1,
+          0,
+          0
+        ],
+        "text": "ACTUAL · CONFIRMADO\nTu balsa\n25 libres uM · nave 21 uM · bodega 3/6 uV\nVISTA PREVIA TRAS COLOCAR\nCon la pieza\n27 libres uM · nave 22 uM · bodega 3/6 uV\nIncluye la pieza y los materiales que usarÃ¡s.\nPorte estimado por flotaciÃ³n.",
+        "rect": {
+          "x": 15.25,
+          "y": 570,
+          "right": 125,
+          "bottom": 830,
+          "width": 109.75,
+          "height": 260
+        },
+        "actual": {
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 4,
+          "cargoMass": 10,
+          "totalMass": 31,
+          "buoyancy": 56,
+          "cargoMax": 35,
+          "freeMass": 25,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 5,
+          "packCap": 10
+        },
+        "predicted": {
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packCap": 10
+        },
+        "observedForecast": {
+          "before": {
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 4,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 5,
+            "packFree": 5,
+            "packCap": 10
+          },
+          "after": {
+            "dryMass": 22,
+            "holdMass": 6,
+            "packMass": 1,
+            "cargoMass": 7,
+            "totalMass": 29,
+            "buoyancy": 56,
+            "cargoMax": 34,
+            "freeMass": 27,
+            "overMass": 0,
+            "load": 0.5178571428571429,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 2,
+            "packFree": 8,
+            "packCap": 10
+          },
+          "state": "valid"
+        },
+        "attempts": [
+          {
+            "cell": [
+              0,
+              1
+            ],
+            "screen": {
+              "x": 124.07305252194169,
+              "y": 365.2864246918561
+            },
+            "inside": true,
+            "hit": "game",
+            "target": {
+              "x": 0,
+              "z": 1,
+              "level": 0,
+              "dir": 0
+            },
+            "actionDisabled": false,
+            "preview": "ACTUAL · CONFIRMADO\nTu balsa\n25 libres uM · nave 21 uM · bodega 3/6 uV\nVISTA PREVIA TRAS COLOCAR\nCon la pieza\n27 libres uM · nave 22 uM · bodega 3/6 uV\nIncluye la pieza y los materiales que usarÃ¡s.\nPorte estimado por flotaciÃ³n.",
+            "forecast": {
+              "before": {
+                "dryMass": 21,
+                "holdMass": 6,
+                "packMass": 4,
+                "cargoMass": 10,
+                "totalMass": 31,
+                "buoyancy": 56,
+                "cargoMax": 35,
+                "freeMass": 25,
+                "overMass": 0,
+                "load": 0.5535714285714286,
+                "holdVolume": 3,
+                "holdFree": 3,
+                "holdCap": 6,
+                "packVolume": 5,
+                "packFree": 5,
+                "packCap": 10
+              },
+              "after": {
+                "dryMass": 22,
+                "holdMass": 6,
+                "packMass": 1,
+                "cargoMass": 7,
+                "totalMass": 29,
+                "buoyancy": 56,
+                "cargoMax": 34,
+                "freeMass": 27,
+                "overMass": 0,
+                "load": 0.5178571428571429,
+                "holdVolume": 3,
+                "holdFree": 3,
+                "holdCap": 6,
+                "packVolume": 2,
+                "packFree": 8,
+                "packCap": 10
+              },
+              "state": "valid"
+            },
+            "rect": {
+              "x": 15.25,
+              "y": 570,
+              "right": 125,
+              "bottom": 830,
+              "width": 109.75,
+              "height": 260
+            }
+          }
+        ]
+      },
+      "editorCommitInteraction": {
+        "method": "freshly projected touch on cell, then tap Colocar",
+        "screen": {
+          "x": 123.96726072375714,
+          "y": 365.68927838779217
+        },
+        "target": {
+          "x": 0,
+          "z": 1,
+          "level": 0,
+          "dir": 0
+        },
+        "projection": {
+          "screen": {
+            "x": 123.96726072375714,
+            "y": 365.68927838779217
+          },
+          "raft": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "yaw": 0.9097531579442095
+          },
+          "camera": {
+            "x": 136.9186336214292,
+            "y": 16.382896509547884,
+            "z": 108.90264497486686
+          },
+          "stage": {
+            "w": 844,
+            "h": 390,
+            "rotated": true
+          }
+        }
+      },
+      "editorAction": {
+        "ack": {
+          "type": "raftEdit",
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        "send": {
+          "type": "raft",
+          "op": "place",
+          "id": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+          "expectedRev": 2,
+          "opId": "0e8abbab-fd41-4e57-af64-f4e76215c1fe",
+          "piece": [
+            "railing",
+            0,
+            1,
+            0,
+            0
+          ]
+        },
+        "pending": null,
+        "status": "Casilla 0, 1 · nivel 0 · Norte · Plano confirmado por snapshot.",
+        "disabled": true,
+        "profile": 1
+      },
+      "editorAck": {
+        "type": "raftEdit",
+        "op": "place",
+        "ok": true,
+        "why": "",
+        "rev": 3
+      },
+      "placement": {
+        "before": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1,
+            "madera": 1
+          },
+          "packCap": 10,
+          "shipId": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+          "shipRev": 2,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+            "raftRev": 2,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 4,
+            "cargoMass": 10,
+            "totalMass": 31,
+            "buoyancy": 56,
+            "cargoMax": 35,
+            "freeMass": 25,
+            "overMass": 0,
+            "load": 0.5535714285714286,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 5,
+            "packFree": 5,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "after": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1
+          },
+          "packCap": 10,
+          "shipId": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+          "shipRev": 3,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "railing",
+              0,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+            "raftRev": 3,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 22,
+            "holdMass": 6,
+            "packMass": 1,
+            "cargoMass": 7,
+            "totalMass": 29,
+            "buoyancy": 56,
+            "cargoMax": 34,
+            "freeMass": 27,
+            "overMass": 0,
+            "load": 0.5178571428571429,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 2,
+            "packFree": 8,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        },
+        "authoritativeCapacity": {
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 3,
+          "tradeRev": 2
+        }
+      },
+      "savedProfileBlobBytes": 1374,
+      "reentry": {
+        "profileAndBlueprintRestored": true,
+        "state": {
+          "gold": 0,
+          "tradeRev": 2,
+          "pack": {
+            "lona": 1
+          },
+          "packCap": 10,
+          "shipId": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+          "shipRev": 3,
+          "hold": {
+            "hierro": 1
+          },
+          "holdCap": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "railing",
+              0,
+              1,
+              0,
+              0
+            ]
+          ],
+          "snapshotCapacity": {
+            "id": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+            "raftRev": 3,
+            "tradeRev": 2,
+            "mode": "port",
+            "dryMass": 22,
+            "holdMass": 6,
+            "packMass": 1,
+            "cargoMass": 7,
+            "totalMass": 29,
+            "buoyancy": 56,
+            "cargoMax": 34,
+            "freeMass": 27,
+            "overMass": 0,
+            "load": 0.5178571428571429,
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 2,
+            "packFree": 8,
+            "packCap": 10
+          },
+          "publicRaftLeaksCargo": false,
+          "errors": []
+        }
+      },
+      "navalHud": {
+        "capacity": {
+          "id": "f933098c-a2aa-45a7-bd75-e86d58b598b2:r1",
+          "raftRev": 3,
+          "tradeRev": 2,
+          "mode": "sailing",
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "load": 0.5178571428571429,
+          "holdVolume": 3,
+          "holdFree": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packFree": 8,
+          "packCap": 10
+        },
+        "loadText": "Porte libre 27.0 uM · Puerto 0 m",
+        "mode": "sailing",
+        "loadRect": {
+          "x": 247.0625,
+          "y": 42,
+          "right": 259.0625,
+          "bottom": 215.6875,
+          "width": 12,
+          "height": 173.6875
+        },
+        "hudVisible": true,
+        "viewportTouch": true,
+        "authoritativeCapacity": {
+          "dryMass": 22,
+          "holdMass": 6,
+          "packMass": 1,
+          "cargoMass": 7,
+          "totalMass": 29,
+          "buoyancy": 56,
+          "cargoMax": 34,
+          "freeMass": 27,
+          "overMass": 0,
+          "holdVolume": 3,
+          "holdCap": 6,
+          "packVolume": 2,
+          "packCap": 10,
+          "mode": "sailing",
+          "raftRev": 3,
+          "tradeRev": 2
+        }
+      }
+    }
+  ],
+  "failures": [],
+  "finishedAt": "2026-10-08T02:59:19.118Z",
+  "status": "passed",
+  "previousAttempts": [
+    "An earlier failed placement run exposed combat mouse-look moving the construction grid; production now suppresses that aim while the editor is active. The final run waited for neutral camera look and recomputed the valid cell projection before real pointer/touch input.",
+    "An earlier naval attempt used a host seed different from GAME.seed, so the client correctly rejected the coast snapshot. Final QA uses GAME.seed; no coast-seed validation was relaxed.",
+    "A first HUD read occurred before the DOM rendered the already-confirmed sailing capacity. Final QA waits for visible load text and the applicable desktop or touch gauge."
+  ]
+}

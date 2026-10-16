@@ -1,0 +1,113 @@
+{
+  "recordedAt": "2026-10-12T15:47:59.973125+00:00",
+  "expectedRevision": "8fa8f58478310d9c39fa06e39bbabaf81a6ed9d3",
+  "revision": "8fa8f58478310d9c39fa06e39bbabaf81a6ed9d3",
+  "matches": true,
+  "container": "b0a27cb2b6c1",
+  "imageId": "sha256:989f480a32688d54d8e3527c6e72c0c4e13307fe544dcc4e147f9e4c21910cab",
+  "healthy": "healthy",
+  "startedAt": "2026-10-12T06:04:40.181260939Z",
+  "timer": "active",
+  "updater": "inactive",
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.63",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 2094873,
+    "uptime": 34991,
+    "stepMs": 1.099,
+    "bots": 3,
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true,
+        "meals": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "companionPairing": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 4358,
+        "errors": 0
+      }
+    }
+  },
+  "offlineImageValidation": {
+    "revision": "8fa8f58478310d9c39fa06e39bbabaf81a6ed9d3",
+    "image_id": "sha256:989f480a32688d54d8e3527c6e72c0c4e13307fe544dcc4e147f9e4c21910cab",
+    "tests_passed": true
+  },
+  "dormantAPI": {
+    "session": true,
+    "contract": true,
+    "journal": true,
+    "recovery": true,
+    "groundHost": true,
+    "adoption": true,
+    "node": "v22.23.3"
+  }
+}

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#181c1a">
+  <link rel="icon" href="data:,">
+  <title>Bitácora de arte · Marea Negra</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar" aria-label="Biblioteca de arte">
+    <a class="brand" href="#"><span class="brand-mark" aria-hidden="true">✳</span><span>MAREA NEGRA<small>ESTUDIO DE ARTE</small></span></a>
+    <div class="nav-label">BIBLIOTECA</div>
+    <nav id="category-nav" aria-label="Categorías"></nav>
+    <div class="sidebar-footer"><span class="live-dot"></span> Catálogo del proyecto<small>Imágenes, archivos y progreso<br>guardados en esta carpeta.</small></div>
+  </aside>
+
+  <main>
+    <header class="topbar"><span>ISLA → PUERTO TROPICAL</span><div><span id="save-indicator" role="status">Conectando…</span><a class="button subtle" href="/api/export" download="catalogo-arte.json">Exportar catálogo ↗</a></div></header>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy"><div class="eyebrow">LA DIRECCIÓN DE ARTE, PIEZA A PIEZA</div><h1 id="page-title">Bitácora de arte<span>del puerto.</span></h1><p>Formas expresivas. Superficies pintadas. Tinta con carácter.<br>Una lista compartida para llevar cada pieza hasta el juego.</p><div class="style-tags"><span>ILUSTRADO MODERNO</span><span>LECTURA TIPO SPRITE</span><span>TINTA + COLOR</span></div></div>
+      <div class="hero-art"><img id="hero-image" alt="Balsa actual con atlas de madera, lona y herrajes ilustrados" hidden><div class="hero-art-fallback" aria-hidden="true">✳</div><div class="hero-caption"><span>BASE ACTUAL</span><strong>Madera · lona · cuerda</strong><small>El primer lenguaje compartido del kit.</small></div></div>
+    </section>
+
+    <section class="workflow" aria-label="Flujo por pieza"><span><b>01</b> Referencia visual</span><i aria-hidden="true">→</i><span><b>02</b> Archivos reales</span><i aria-hidden="true">→</i><span><b>03</b> Colocar y revisar</span><i aria-hidden="true">→</i><span><b>04</b> Aplicado en juego</span></section>
+
+    <section class="summary" aria-label="Progreso del catálogo">
+      <div><small>PIEZAS EN LA LISTA</small><strong id="count-total">—</strong></div>
+      <div><small>CON REFERENCIA</small><strong id="count-reference">—</strong></div>
+      <div><small>ARCHIVOS PREPARADOS</small><strong id="count-prepared">—</strong></div>
+      <div class="summary-applied"><small>APLICADAS EN JUEGO</small><strong id="count-applied">—</strong><div class="progress-track"><span id="progress-bar"></span></div></div>
+    </section>
+
+    <section class="library" aria-labelledby="library-title">
+      <div class="section-heading"><div><div class="eyebrow">BIBLIOTECA DE PRODUCCIÓN</div><h2 id="library-title">Todas las piezas <span id="visible-count"></span></h2></div><button id="next-piece" class="button primary" type="button">Siguiente pieza <span aria-hidden="true">↗</span></button></div>
+      <div class="toolbar"><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Buscar arena, palmera, madera…" aria-label="Buscar piezas"></label><select id="state-filter" aria-label="Filtrar por estado"><option value="all">Todos los estados</option><option value="pending">Pendiente</option><option value="reference">Referencia</option><option value="prepared">Archivos preparados</option><option value="applied">Aplicado en juego</option></select><select id="kind-filter" aria-label="Filtrar por tipo"><option value="all">Materiales + objetos</option><option value="material">Materiales</option><option value="object">Objetos</option><option value="prefab">Conjuntos</option><option value="system">Efectos y sistemas</option></select><button id="reset-filters" class="button subtle" type="button" hidden>Limpiar filtros</button></div>
+      <div class="table-heading" aria-hidden="true"><span>PIEZA / VARIANTES</span><span>REFERENCIA VISUAL</span><span>ARCHIVOS</span><span>PROGRESO</span><span></span></div>
+      <div id="rows" class="catalog-rows" aria-live="polite"><div class="empty-state">Cargando la biblioteca…</div></div>
+    </section>
+
+    <footer class="page-footer"><span>Una pieza, una referencia, un destino claro.</span><a href="/files/PLAN-VISUAL-PORT.md">Ver ruta visual ↗</a></footer>
+  </main>
+
+  <dialog id="piece-dialog" aria-labelledby="piece-title">
+    <form method="dialog" class="dialog-close"><button aria-label="Cerrar ficha" title="Cerrar ficha">×</button></form>
+    <div class="piece-header"><div class="eyebrow" id="piece-category"></div><h2 id="piece-title"></h2><p id="piece-description"></p><div id="piece-variants" class="variants"></div></div>
+    <div class="piece-body">
+      <div class="piece-left"><div id="piece-gallery" class="piece-gallery"></div><section class="upload-panel"><h3>Añadir imagen o archivo</h3><p>Selecciona la fila y el tipo de archivo. Cada entrega queda guardada con su propia versión.</p><label for="file-role">Tipo de entrega</label><select id="file-role"><option value="reference">Referencia de arte</option><option value="albedo">Albedo / color</option><option value="normal">Normal</option><option value="roughness">Roughness</option><option value="metallic">Metallic</option><option value="ao">Oclusión / AO</option><option value="mask">Máscara de material</option><option value="opacity">Alfa / recorte</option><option value="emissive">Emisión</option><option value="model">Modelo 3D</option><option value="mobile">Variante móvil</option><option value="source">Fuente editable / paquete</option><option value="preview">Vista previa</option><option value="evidence">Captura o informe de aplicación</option></select><label class="drop-zone" id="drop-zone" for="file-input"><span aria-hidden="true">＋</span><strong>Elegir archivos o arrastrarlos aquí</strong><small>Imágenes, modelos, mapas y fuentes · hasta 128 MB por archivo</small></label><input id="file-input" type="file" multiple accept=".png,.jpg,.jpeg,.webp,.glb,.gltf,.bin,.ktx2,.json,.blend,.fbx,.obj,.mtl,.zip,.psd,.tif,.tiff,.exr,.md,.txt" hidden><div id="upload-status" role="status"></div></section><section class="file-section"><h3>Archivos de la pieza <span id="piece-file-count"></span></h3><div id="piece-files"></div></section></div>
+      <div class="piece-right"><section class="edit-panel"><h3>Seguimiento</h3><label for="piece-state">Estado</label><select id="piece-state"><option value="pending">Pendiente</option><option value="reference">Referencia visual</option><option value="prepared">Archivos preparados</option><option value="applied">Aplicado en juego</option></select><p class="field-help" id="state-help"></p><label for="piece-next">Siguiente paso</label><textarea id="piece-next" rows="3" maxlength="3000"></textarea><label for="piece-notes">Notas de arte y aplicación</label><textarea id="piece-notes" rows="6" maxlength="12000" placeholder="Qué cambiar, qué conservar y dónde colocarlo…"></textarea><button id="save-piece" class="button primary full-width" type="button">Guardar ficha</button><div id="piece-save-status" role="status"></div></section><section class="destination-panel"><h3>Destino en el juego</h3><ul id="piece-destination"></ul><p>Con los archivos preparados, integramos esta pieza en su destino y añadimos la captura del resultado.</p><button id="copy-brief" class="button subtle full-width" type="button">Copiar ficha de integración ↗</button><button id="download-brief" class="text-button" type="button">Descargar ficha .txt</button></section><section><h3>Aplicación registrada</h3><div id="piece-evidence"></div></section></div>
+    </div>
+  </dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

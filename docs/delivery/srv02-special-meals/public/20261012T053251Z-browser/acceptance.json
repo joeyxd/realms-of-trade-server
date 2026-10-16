@@ -1,0 +1,232 @@
+{
+  "schema": "mn.special-meals.browser-public.v1",
+  "startedAt": "2026-10-12T05:32:55.726Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "gameVersion": "0.6.0-alpha.62",
+  "protocolVersion": 59,
+  "identity": "random disposable Supabase user; credentials redacted",
+  "checks": [
+    {
+      "name": "public_build_protocol_sql035_meals_readiness_and_idle_gate",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.62",
+      "protocolVersion": 59,
+      "worldId": "marea-negra"
+    },
+    {
+      "name": "marked_disposable_level_three_profile_seeded_with_bounded_recipe_ingredients",
+      "pass": true
+    },
+    {
+      "name": "real_panel_localized_desktop_es_recipe_and_visible_heat_block",
+      "pass": true,
+      "bounds": {
+        "x": 804,
+        "y": 20,
+        "right": 1244,
+        "bottom": 700,
+        "width": 440,
+        "height": 680,
+        "viewportWidth": 1280,
+        "viewportHeight": 720,
+        "documentWidth": 1280,
+        "scrollHeight": 1215,
+        "clientHeight": 678,
+        "scrollTop": 390
+      }
+    },
+    {
+      "name": "browser_clicked_grog_cost_effect_timer_trade_revision_saved_profile_and_receipt",
+      "pass": true,
+      "tradeRev": 1,
+      "initialReceiptTicks": 54000,
+      "savedMealTicks": 54000,
+      "dispatchAttempts": 2,
+      "uniqueCommands": 1,
+      "receiptRetained": true,
+      "profileVersion": 5,
+      "sat": 44.88,
+      "hyd": 74.82
+    },
+    {
+      "name": "real_panel_localized_desktop_en_recipe_and_visible_heat_block",
+      "pass": true,
+      "bounds": {
+        "x": 804,
+        "y": 20,
+        "right": 1244,
+        "bottom": 700,
+        "width": 440,
+        "height": 680,
+        "viewportWidth": 1280,
+        "viewportHeight": 720,
+        "documentWidth": 1280,
+        "scrollHeight": 1256,
+        "clientHeight": 678,
+        "scrollTop": 373
+      }
+    },
+    {
+      "name": "reload_and_authenticated_reentry_keep_saved_grog_active_without_recharging",
+      "pass": true,
+      "tradeRev": 1,
+      "mealTicksAfterReentry": 53760
+    },
+    {
+      "name": "real_panel_localized_mobile_es_recipe_and_visible_heat_block",
+      "pass": true,
+      "bounds": {
+        "x": 54.6015625,
+        "y": 392,
+        "right": 335.3984375,
+        "bottom": 832,
+        "width": 280.796875,
+        "height": 440,
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "documentWidth": 390,
+        "scrollHeight": 1280,
+        "clientHeight": 279,
+        "scrollTop": 658
+      }
+    },
+    {
+      "name": "real_panel_localized_mobile_en_recipe_and_visible_heat_block",
+      "pass": true,
+      "bounds": {
+        "x": 54.6015625,
+        "y": 392,
+        "right": 335.3984375,
+        "bottom": 832,
+        "width": 280.796875,
+        "height": 440,
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "documentWidth": 390,
+        "scrollHeight": 1246,
+        "clientHeight": 279,
+        "scrollTop": 718
+      }
+    },
+    {
+      "name": "mobile_touch_reentry_sees_same_persisted_active_meal",
+      "pass": true
+    },
+    {
+      "name": "real_panel_localized_mobile-landscape_es_recipe_and_visible_heat_block",
+      "pass": true,
+      "bounds": {
+        "x": 378.6875,
+        "y": 12,
+        "right": 818.6875,
+        "bottom": 378,
+        "width": 440,
+        "height": 366,
+        "viewportWidth": 844,
+        "viewportHeight": 390,
+        "documentWidth": 844,
+        "scrollHeight": 1291,
+        "clientHeight": 364,
+        "scrollTop": 736
+      }
+    },
+    {
+      "name": "real_panel_localized_mobile-landscape_en_recipe_and_visible_heat_block",
+      "pass": true,
+      "bounds": {
+        "x": 378.6875,
+        "y": 12,
+        "right": 818.6875,
+        "bottom": 378,
+        "width": 440,
+        "height": 366,
+        "viewportWidth": 844,
+        "viewportHeight": 390,
+        "documentWidth": 844,
+        "scrollHeight": 1256,
+        "clientHeight": 364,
+        "scrollTop": 718
+      }
+    },
+    {
+      "name": "public_network_only_expected_non_gm_session_denials",
+      "pass": true,
+      "expectedGmDenials": 7
+    }
+  ],
+  "screenshots": [
+    "desktop-es-heat-block.png",
+    "desktop-es-grog-recipe.png",
+    "desktop-es-grog-active.png",
+    "desktop-en-heat-block.png",
+    "desktop-en-grog-recipe.png",
+    "desktop-es-reentry-active.png",
+    "mobile-es-heat-block.png",
+    "mobile-es-grog-recipe.png",
+    "mobile-en-heat-block.png",
+    "mobile-en-grog-recipe.png",
+    "mobile-landscape-es-heat-block.png",
+    "mobile-landscape-es-grog-recipe.png",
+    "mobile-landscape-en-heat-block.png",
+    "mobile-landscape-en-grog-recipe.png"
+  ],
+  "errors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 403 ()",
+    "Failed to load resource: the server responded with a status of 403 ()",
+    "Failed to load resource: the server responded with a status of 403 ()",
+    "Failed to load resource: the server responded with a status of 403 ()",
+    "Failed to load resource: the server responded with a status of 403 ()",
+    "Failed to load resource: the server responded with a status of 403 ()",
+    "Failed to load resource: the server responded with a status of 403 ()"
+  ],
+  "httpErrors": [
+    {
+      "status": 403,
+      "origin": "https://marea.62.171.136.148.sslip.io",
+      "path": "/api/gm/session"
+    },
+    {
+      "status": 403,
+      "origin": "https://marea.62.171.136.148.sslip.io",
+      "path": "/api/gm/session"
+    },
+    {
+      "status": 403,
+      "origin": "https://marea.62.171.136.148.sslip.io",
+      "path": "/api/gm/session"
+    },
+    {
+      "status": 403,
+      "origin": "https://marea.62.171.136.148.sslip.io",
+      "path": "/api/gm/session"
+    },
+    {
+      "status": 403,
+      "origin": "https://marea.62.171.136.148.sslip.io",
+      "path": "/api/gm/session"
+    },
+    {
+      "status": 403,
+      "origin": "https://marea.62.171.136.148.sslip.io",
+      "path": "/api/gm/session"
+    },
+    {
+      "status": 403,
+      "origin": "https://marea.62.171.136.148.sslip.io",
+      "path": "/api/gm/session"
+    }
+  ],
+  "pass": true,
+  "scope": "authenticated public water/provisions UI, one durable grog operation, localized desktop/mobile views, heat-block presentation, reload and reentry; no live heat or cooker proof",
+  "cleanup": {
+    "markedAuthAndExactProfileRemoved": true,
+    "retainedEconomicReceipts": 1,
+    "dispatchedUniqueCommands": 1,
+    "verifiedReceipts": 1,
+    "unverifiedRetainedReceipts": 0,
+    "uncommittedDispatches": 0,
+    "receiptPolicy": "immutable economic receipts retained"
+  },
+  "completedAt": "2026-10-12T05:34:07.800Z"
+}

@@ -1,0 +1,96 @@
+{
+  "schema": "gm05a-deployment/v1",
+  "at": "2026-10-11T05:04:46.664268+00:00",
+  "release": "ea982f8e5326308aed6ba0ab9a6bee447ee22a59",
+  "image": "sha256:a856c1f62408174ebe4b7c15e7c52a8fa68001a11e13a0a39e8119a0a52297e4",
+  "imageRevision": "ea982f8e5326308aed6ba0ab9a6bee447ee22a59",
+  "container": "ee5f352d4fa9717102425289d674fa6e9a497a4e02fea907ee5066c96a724f52",
+  "running": true,
+  "health": "healthy",
+  "contentMount": "/opt/marea-negra/content",
+  "content": {
+    "version": 1,
+    "worldId": "marea-negra",
+    "generation": 4,
+    "revisionId": null
+  },
+  "retainedRevisions": 4,
+  "receipts": 4,
+  "lock": {
+    "inode": 98077,
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0o660"
+  },
+  "updaterSha256": "9b4431cf07d8f9a6433e7b5f6792dbc095732877d38e2bc685d739027f1edb85",
+  "updaterService": "inactive",
+  "timer": "active",
+  "public": {
+    "health": 200,
+    "version": "0.6.0-alpha.45",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2227,
+        "errors": 0
+      }
+    },
+    "content": {
+      "generation": 4,
+      "revisionId": null
+    }
+  }
+}

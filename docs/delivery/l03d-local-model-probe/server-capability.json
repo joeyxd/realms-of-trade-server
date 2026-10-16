@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-11T04:15:56.726Z",
+  "status": 200,
+  "server": "BaseHTTP/0.6 Python/3.14.5",
+  "hasChatTemplate": true,
+  "enableThinkingInTemplate": true,
+  "reasoningInTemplate": true,
+  "hasDefaultSettings": true
+}

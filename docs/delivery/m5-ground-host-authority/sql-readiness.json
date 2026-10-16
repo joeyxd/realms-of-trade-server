@@ -1,0 +1,84 @@
+{
+  "revision": "bd51e14f20566d0ebf787238ca311bd7b7c73d13",
+  "image": "marea-negra:alpha-bd51e14f2056",
+  "imageId": "sha256:3d7304fdd9c2ca56cad8b179fbea0f3a97424c653bd5557b9ae7e88873b1a734",
+  "containerHealthy": "healthy",
+  "startedAt": "2026-10-10T21:30:52.876323012Z",
+  "updateTimer": "active",
+  "updateService": "inactive",
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.29",
+    "players": 0,
+    "max": 4,
+    "tick": 1461,
+    "uptime": 27,
+    "errors": 0
+  },
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0,
+    "tickBlocked": false,
+    "world": {
+      "id": "marea-negra",
+      "ready": true,
+      "failed": false,
+      "version": 1555,
+      "errors": 0
+    }
+  },
+  "rpc": {
+    "mn_ground_transactions_ready": {
+      "ok": true,
+      "version": 1,
+      "errorCode": null,
+      "errorStatus": null
+    },
+    "mn_ground_transaction_journal_ready": {
+      "ok": true,
+      "version": 1,
+      "errorCode": null,
+      "errorStatus": null
+    },
+    "mn_gm_drafts_ready": {
+      "ok": true,
+      "version": 1,
+      "errorCode": null,
+      "errorStatus": null
+    },
+    "mn_artisan_operations_ready": {
+      "ok": true,
+      "version": 1,
+      "errorCode": null,
+      "errorStatus": null
+    }
+  },
+  "recordedAt": "2026-10-10T21:31:41.9307711Z",
+  "runtimeCapabilities": {
+    "economic": {
+      "enabled": true,
+      "pending": 0,
+      "failed": false,
+      "completed": 0,
+      "replays": 0
+    },
+    "resources": {
+      "enabled": true,
+      "ready": true,
+      "logging": true
+    },
+    "artisan": {
+      "enabled": false,
+      "ready": false
+    },
+    "world": {
+      "id": "marea-negra",
+      "ready": true,
+      "failed": false,
+      "version": 1555,
+      "errors": 0
+    }
+  }
+}

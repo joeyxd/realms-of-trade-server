@@ -1,0 +1,190 @@
+TAP version 13
+# Subtest: N opens the hand fuel panel while empty, and confirmed snapshots label torch duration
+ok 1 - N opens the hand fuel panel while empty, and confirmed snapshots label torch duration
+  ---
+  duration_ms: 7.682155
+  type: 'test'
+  ...
+# Subtest: fueled hand torch sends exact immutable fire set command and waits for confirmation
+ok 2 - fueled hand torch sends exact immutable fire set command and waits for confirmation
+  ---
+  duration_ms: 9.902881
+  type: 'test'
+  ...
+# Subtest: fire command retries exact request once, times out, and denial feedback is localized
+ok 3 - fire command retries exact request once, times out, and denial feedback is localized
+  ---
+  duration_ms: 1.532676
+  type: 'test'
+  ...
+# Subtest: owner-only raft interaction opens fire panel for the nearest supported fixture kind
+ok 4 - owner-only raft interaction opens fire panel for the nearest supported fixture kind
+  ---
+  duration_ms: 3.403925
+  type: 'test'
+  ...
+# Subtest: fuelled fixture prompts from confirmed fire rows and still opens its station panel
+ok 5 - fuelled fixture prompts from confirmed fire rows and still opens its station panel
+  ---
+  duration_ms: 1.274269
+  type: 'test'
+  ...
+# Subtest: legacy lantern path remains unchanged when fire feature flag is absent
+ok 6 - legacy lantern path remains unchanged when fire feature flag is absent
+  ---
+  duration_ms: 6.812768
+  type: 'test'
+  ...
+# Subtest: paid hand fuel is replay-safe, lit state is public, and simulation expiry clears the public flame
+ok 7 - paid hand fuel is replay-safe, lit state is public, and simulation expiry clears the public flame
+  ---
+  duration_ms: 2878.895817
+  type: 'test'
+  ...
+# Subtest: no wood denies fuel without changing profile, and missing fire readiness blocks host startup
+ok 8 - no wood denies fuel without changing profile, and missing fire readiness blocks host startup
+  ---
+  duration_ms: 4437.073639
+  type: 'test'
+  ...
+# Subtest: hand torch fuel load debits exactly one madera and increments both bounded revisions
+ok 9 - hand torch fuel load debits exactly one madera and increments both bounded revisions
+  ---
+  duration_ms: 10.445753
+  type: 'test'
+  ...
+# Subtest: set settles elapsed fire time by flooring remaining fuel and never spends wood
+ok 10 - set settles elapsed fire time by flooring remaining fuel and never spends wood
+  ---
+  duration_ms: 1.941753
+  type: 'test'
+  ...
+# Subtest: raft fuel uses only the owner profile and matching living condition identity
+ok 11 - raft fuel uses only the owner profile and matching living condition identity
+  ---
+  duration_ms: 3.559477
+  type: 'test'
+  ...
+# Subtest: malformed fire state and unauthorized profile deltas are rejected
+ok 12 - malformed fire state and unauthorized profile deltas are rejected
+  ---
+  duration_ms: 5.34905
+  type: 'test'
+  ...
+# Subtest: hand slot has one visual fuel slot and sends an immutable one-wood craft-and-light intent
+ok 13 - hand slot has one visual fuel slot and sends an immutable one-wood craft-and-light intent
+  ---
+  duration_ms: 13.661925
+  type: 'test'
+  ...
+# Subtest: confirmed fire state controls load and toggle buttons; only one pending command is allowed
+ok 14 - confirmed fire state controls load and toggle buttons; only one pending command is allowed
+  ---
+  duration_ms: 1.946149
+  type: 'test'
+  ...
+# Subtest: station uses pack plus raft hold as available stock and emits its stable composite key tuple
+ok 15 - station uses pack plus raft hold as available stock and emits its stable composite key tuple
+  ---
+  duration_ms: 1.211791
+  type: 'test'
+  ...
+# Subtest: retry sends the exact same request once and times out without changing confirmed fuel
+ok 16 - retry sends the exact same request once and times out without changing confirmed fuel
+  ---
+  duration_ms: 0.808046
+  type: 'test'
+  ...
+# Subtest: denials localize server recovery reasons and session changes reset the active request
+ok 17 - denials localize server recovery reasons and session changes reset the active request
+  ---
+  duration_ms: 1.26655
+  type: 'test'
+  ...
+# Subtest: English labels, disabled-world guard, active-only Escape, and dispose lifecycle
+ok 18 - English labels, disabled-world guard, active-only Escape, and dispose lifecycle
+  ---
+  duration_ms: 1.041086
+  type: 'test'
+  ...
+# Subtest: hot locale refresh translates pending and acknowledged status without resending the command
+ok 19 - hot locale refresh translates pending and acknowledged status without resending the command
+  ---
+  duration_ms: 3.30874
+  type: 'test'
+  ...
+# Subtest: unlit grill reports fuel and preserves recipe progress and ingredients
+ok 20 - unlit grill reports fuel and preserves recipe progress and ingredients
+  ---
+  duration_ms: 6.543007
+  type: 'test'
+  ...
+# Subtest: expired grill fuel stops production without losing partial work or consuming fish
+ok 21 - expired grill fuel stops production without losing partial work or consuming fish
+  ---
+  duration_ms: 1.445281
+  type: 'test'
+  ...
+# Subtest: a lit grill resumes saved work and production does not debit another fire unit
+ok 22 - a lit grill resumes saved work and production does not debit another fire unit
+  ---
+  duration_ms: 3.473754
+  type: 'test'
+  ...
+# Subtest: central durations define one loaded unit for each private fire kind
+ok 23 - central durations define one loaded unit for each private fire kind
+  ---
+  duration_ms: 3.817268
+  type: 'test'
+  ...
+# Subtest: legacy omission reads as empty while malformed and future versions fail closed
+ok 24 - legacy omission reads as empty while malformed and future versions fail closed
+  ---
+  duration_ms: 4.488836
+  type: 'test'
+  ...
+# Subtest: load is one unit, refuses occupied slots, and does not extract wood automatically
+ok 25 - load is one unit, refuses occupied slots, and does not extract wood automatically
+  ---
+  duration_ms: 1.28347
+  type: 'test'
+  ...
+# Subtest: active-time countdown floors, pauses cleanly, and resumes without free fuel
+ok 26 - active-time countdown floors, pauses cleanly, and resumes without free fuel
+  ---
+  duration_ms: 1.185102
+  type: 'test'
+  ...
+# Subtest: an exhausted flame cannot relight; loading then creates a fresh unlit unit
+ok 27 - an exhausted flame cannot relight; loading then creates a fresh unlit unit
+  ---
+  duration_ms: 0.905351
+  type: 'test'
+  ...
+# Subtest: stable composite keys are bounded, detached, and prototype-safe
+ok 28 - stable composite keys are bounded, detached, and prototype-safe
+  ---
+  duration_ms: 8.635028
+  type: 'test'
+  ...
+# Subtest: invalid clocks and timestamps from the future fail instead of using wall time
+ok 29 - invalid clocks and timestamps from the future fail instead of using wall time
+  ---
+  duration_ms: 0.81088
+  type: 'test'
+  ...
+# Subtest: same command replay is effect-free and revision limits refuse mutations
+ok 30 - same command replay is effect-free and revision limits refuse mutations
+  ---
+  duration_ms: 0.514706
+  type: 'test'
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9207.702782

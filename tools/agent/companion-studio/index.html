@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Compañero local · Marea Negra</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <a class="brand" href="#inicio"><span class="brand-mark" aria-hidden="true">✦</span><span>MAREA NEGRA <small>COMPAÑERO LOCAL</small></span></a>
+      <div class="top-meta"><span id="connection" class="pill muted" role="status">Esperando acceso</span><button id="refresh" class="quiet-button" type="button" disabled>Actualizar</button></div>
+    </header>
+
+    <section class="intro" id="inicio">
+      <div><p class="eyebrow">UN ALIADO PARA TU TRAVESÍA</p><h1>Prepara a quien<br><em>navegará contigo.</em></h1><p class="lede">Ponle nombre, oficio y carácter. Tú eliges cuándo inicia y puedes detenerlo cuando quieras.</p><p class="subtle">Esta prueba usa un mundo local temporal. Su memoria permanece en este equipo.</p></div>
+      <div class="scope-card"><span class="card-label">COMPAÑERO LOCAL</span><strong id="companion-name">Aún sin crear</strong><span id="scope-detail" class="subtle">Vinculado a este panel local.</span><span id="game-status" class="freshness">Juego: sin conexión confirmada</span></div>
+    </section>
+
+    <section id="notice" class="notice" role="status" aria-live="polite" hidden></section>
+
+    <section id="wizard" class="panel wizard" aria-labelledby="wizard-title">
+      <div class="wizard-heading"><div><p class="eyebrow">NUEVO COMPAÑERO</p><h2 id="wizard-title">Arma su historia</h2></div><span id="step-count" class="pill muted">Paso 1 de 4</span></div>
+      <ol class="steps" aria-label="Pasos de creación"><li class="current" data-step-indicator="0">Identidad</li><li data-step-indicator="1">Carácter</li><li data-step-indicator="2">Modelo local</li><li data-step-indicator="3">Revisión</li></ol>
+      <form id="create-form" novalidate>
+        <section class="wizard-step" data-step="0" aria-labelledby="identity-title">
+          <h3 id="identity-title">¿Quién llega al puerto?</h3>
+          <p class="step-help">Su memoria comienza vacía. Las conversaciones confirmadas se guardan en este equipo y puedes capturar un momento manualmente.</p>
+          <div class="field-grid"><label>Nombre<input id="name" name="name" maxlength="16" autocomplete="off" required placeholder="Ej. Brisa"></label><label>Oficio<select id="role" name="role" required><option value="sailor">Marinero</option><option value="marine">Infante de marina</option><option value="builder">Constructor</option><option value="harvester">Recolector</option><option value="resident">Residente de Salty Shore</option></select></label></div>
+          <fieldset class="look-field"><legend>Aspecto</legend><div id="looks" class="looks" role="radiogroup" aria-label="Aspecto del compañero"></div></fieldset>
+        </section>
+
+        <section class="wizard-step" data-step="1" aria-labelledby="personality-title" hidden>
+          <h3 id="personality-title">Dale su propio carácter</h3>
+          <label>Estilo de personalidad<select id="personality" name="personality"></select></label>
+          <fieldset class="traits-field"><legend>Rasgos <small>Elige hasta tres</small></legend><div id="traits" class="traits"></div></fieldset>
+          <div class="inline-actions"><button id="randomize" class="button secondary" type="button">✦ Sorpréndeme</button><span class="subtle">Revisa la combinación antes de crear.</span></div>
+        </section>
+
+        <section class="wizard-step" data-step="2" aria-labelledby="model-title" hidden>
+          <h3 id="model-title">Elige el modelo local</h3>
+          <p class="step-help">La conexión se queda en este equipo. No hace falta una clave de proveedor.</p>
+          <div class="field-grid"><label>Servidor compatible<input id="baseUrl" name="baseUrl" type="url" required value="http://127.0.0.1:8080/v1" autocomplete="url"></label><label>Modelo local<select id="modelId" name="modelId" required><option value="server_default">Modelo del servidor local</option><option value="local-model">local-model</option></select></label></div>
+          <div class="field-grid"><label>Modo de razonamiento<select id="thinkingMode" name="thinkingMode"><option value="server_default">Predeterminado del servidor</option><option value="disabled">Sin razonamiento extendido</option></select></label><label>Llamadas máximas<input id="maxCalls" name="maxCalls" type="number" min="1" max="8" step="1" value="8" required></label><label>Tokens máximos<input id="maxTokens" name="maxTokens" type="number" min="32768" max="1000000" step="1" value="200000" required></label></div>
+          <p class="meter-note">El consumo se informa en unidades locales. El costo monetario queda como desconocido.</p>
+        </section>
+
+        <section class="wizard-step" data-step="3" aria-labelledby="review-title" hidden>
+          <h3 id="review-title">Todo listo para zarpar</h3>
+          <dl id="review" class="review-grid"></dl>
+          <p class="step-help">Tu compañero quedará detenido hasta que elijas iniciarlo.</p>
+        </section>
+        <div class="wizard-actions"><button id="previous" class="button secondary" type="button" disabled>Volver</button><span id="draft-state" class="subtle" role="status"></span><button id="next" class="button primary" type="button">Continuar</button><button id="create" class="button primary" type="submit" hidden>Crear compañero</button></div>
+      </form>
+    </section>
+
+    <section id="workspace" hidden>
+      <section class="section-heading"><div><p class="eyebrow">01 / COMPAÑERO</p><h2>En cubierta</h2></div><span id="runner-badge" class="pill muted">Sin estado</span></section>
+      <section class="workspace-grid">
+        <article class="panel status-panel"><div class="panel-top"><div><span class="card-label">ESTADO LOCAL</span><h3 id="runner-state">Detenido</h3></div><span id="identity-summary" class="subtle"></span></div><p id="runner-summary" class="subtle">El juego solo se marcará conectado cuando el servidor lo confirme.</p><div class="status-actions"><button id="start" class="button primary" type="button" disabled>Iniciar</button><button id="stop" class="button secondary" type="button" disabled>Detener</button><button id="reenter" class="button secondary" type="button" disabled>Volver a entrar</button></div></article>
+        <article class="panel usage-panel"><span class="card-label">USO LOCAL</span><div class="usage-grid"><div class="usage"><span>Confirmado</span><strong id="confirmed">—</strong></div><div class="usage held"><span>Reservado</span><strong id="held">—</strong></div><div class="usage unknown"><span>Sin resolver</span><strong id="unresolved">—</strong></div></div><p id="usage-note" class="meter-note">Costo monetario: desconocido.</p><p id="budget-note" class="subtle"></p></article>
+      </section>
+
+      <p><a id="open-world" class="quiet-button world-link" target="_blank" rel="noopener noreferrer" hidden>Ver mundo local</a></p>
+      <section class="section-heading"><div><p class="eyebrow">02 / CONVERSACIÓN</p><h2 id="conversation-title">Habla con tu compañero</h2></div><button id="remember" class="quiet-button" type="button" disabled>Guardar recuerdo</button></section>
+      <section class="panel conversation-panel"><div id="transcript" class="transcript" aria-live="polite"><p class="empty-state">Los mensajes aparecerán cuando el servidor los confirme.</p></div><form id="chat-form" class="chat-form"><label class="visually-hidden" for="chat-input">Mensaje</label><textarea id="chat-input" maxlength="280" rows="2" placeholder="Escribe un mensaje (280 caracteres)…" required></textarea><button id="send" class="button primary" type="submit" disabled>Enviar</button></form><div class="conversation-foot"><span id="chat-status" class="subtle" role="status"></span><span id="chat-count" class="subtle">0 / 280</span><button id="remember-inline" class="quiet-button" type="button" disabled>Recordar este momento</button></div></section>
+
+      <section class="section-heading"><div><p class="eyebrow">03 / CONTINUIDAD</p><h2 id="continuity-title">Lo que conserva del viaje</h2><p class="subtle">Los intercambios confirmados se guardan automáticamente en un episodio breve, sin llamar al modelo.</p></div><span id="continuity-capture" class="pill muted">Captura automática: activa</span></section>
+      <section class="panel continuity-panel" aria-labelledby="continuity-title">
+        <div class="continuity-overview">
+          <div class="context-card"><div class="panel-top"><div><span class="card-label">CONTEXTO MEDIDO</span><strong id="context-value">Aún sin medir</strong></div><span id="context-pressure" class="pill muted">Sin lectura</span></div>
+            <div class="meter-track" role="meter" aria-label="Uso del contexto transmitido" aria-valuemin="0" aria-valuemax="65536" aria-valuenow="0"><span id="context-meter"></span></div>
+            <p id="context-detail" class="subtle">La próxima consulta medirá el payload completo con salida y margen reservados.</p>
+          </div>
+          <div class="continuity-actions"><button id="context-refresh" class="button secondary" type="button" disabled>Refrescar contexto</button><p id="context-refresh-status" class="subtle" role="status">Relee los archivos y cancela la consulta anterior. Conserva la sesión, la cuota y los pendientes.</p></div>
+        </div>
+        <div class="continuity-history" aria-label="Actividad reciente de continuidad">
+          <div><span class="card-label">ÚLTIMA CAPTURA</span><p id="capture-detail" class="subtle">Sin capturas registradas.</p></div>
+          <div><span class="card-label">ÚLTIMO REFRESCO</span><p id="refresh-detail" class="subtle">Sin refrescos registrados.</p></div>
+          <div><span class="card-label">ÚLTIMO RESUMEN</span><p id="summary-detail" class="subtle">Sin resúmenes registrados.</p></div>
+        </div>
+        <div class="episode-heading"><div><span class="card-label">EPISODIOS CONSERVADOS</span><p id="episode-count" class="subtle">Elige hasta ocho episodios para resumir.</p></div><button id="summarize-episodes" class="button primary" type="button" disabled>Resumir seleccionados</button></div>
+        <div id="episode-list" class="episode-list"><p class="empty-state">Los episodios aparecerán cuando se guarde actividad.</p></div>
+        <label class="auto-compact"><input id="auto-compact" type="checkbox"><span><strong>Permitir un resumen automático</strong><small>Opt-in de esta sesión. Consume la misma cuota; cada intento manual también cuenta de forma conservadora. Los episodios originales se conservan. Se desactiva al reiniciar el proceso.</small></span></label>
+        <p id="auto-compact-budget" class="meter-note">El resumen automático está desactivado.</p>
+      </section>
+
+      <section class="section-heading"><div><p class="eyebrow">04 / BITÁCORA</p><h2>Sus archivos</h2></div><button id="files-refresh" class="quiet-button" type="button" disabled>Actualizar archivos</button></section>
+      <section class="panel files-panel"><div id="file-tabs" class="tabs" role="tablist" aria-label="Archivos del compañero"></div><div class="file-toolbar"><strong id="file-name">Aún sin archivos</strong><button id="export-file" class="quiet-button" type="button" disabled>Exportar archivo</button></div><pre id="file-content" class="file-content" role="tabpanel" aria-live="polite">El contenido aparecerá cuando esté disponible.</pre><p id="file-meta" class="subtle"></p></section>
+    </section>
+    <footer><span>MAREA NEGRA · Control local del compañero</span><span>Estado y mensajes confirmados por el servidor</span></footer>
+  </main>
+</body>
+</html>

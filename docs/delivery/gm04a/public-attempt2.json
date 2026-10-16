@@ -1,0 +1,22 @@
+{
+  "schema": "gm04a-browser/v1",
+  "version": "0.6.0-alpha.40",
+  "at": "2026-10-11T02:24:14.913Z",
+  "simulatedAuth": false,
+  "production": true,
+  "checks": [],
+  "screenshots": [],
+  "errors": [
+    "acceptance_failure:Error:Cannot find module 'C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\pilot-browser\\node_modules\\playwright\\index.mjs' imported from C:\\DEV\\real of trade\\gm-editor-first\\tools\\qa-gm04a.mjs"
+  ],
+  "assetRequests": [],
+  "runtimeBefore": {
+    "version": "0.6.0-alpha.40",
+    "protocolVersion": null,
+    "content": {
+      "generation": 4,
+      "revisionId": null
+    }
+  },
+  "phase": "browser_import_and_launch"
+}

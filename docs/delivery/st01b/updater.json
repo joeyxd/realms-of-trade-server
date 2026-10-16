@@ -1,0 +1,24 @@
+{
+  "schema": "marea.st01b-updater-evidence/v1",
+  "observedAtUtc": "2026-10-13T05:14:32.587Z",
+  "revision": "739e1b2bb55b4d74592d3d2b04c9b870c7de47ac",
+  "imageId": "sha256:2c229aac5800c0f3802a916f0acbab48acc373f2b5154c53381cd88d9b1724af",
+  "completed": true,
+  "validated": true,
+  "tests": {
+    "count": 197,
+    "passed": 197,
+    "failed": 0,
+    "durationMs": 502875.814525
+  },
+  "evidence": {
+    "marker": "/opt/marea-negra/ops/validated-739e1b2bb55b4d74592d3d2b04c9b870c7de47ac.json",
+    "log": "/opt/marea-negra/ops/update-739e1b2bb55b4d74592d3d2b04c9b870c7de47ac.log",
+    "logMtimeLocal": "2026-10-13 07:06:04 +0200",
+    "systemJournal": [
+      "updated 739e1b2bb55b4d74592d3d2b04c9b870c7de47ac",
+      "already current: 739e1b2bb55b4d74592d3d2b04c9b870c7de47ac"
+    ]
+  },
+  "noCredentialsRead": true
+}

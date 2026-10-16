@@ -1,0 +1,8 @@
+# Preserve checksum-bound source archives and review evidence byte for byte.
+docs/art/** -text
+docs/delivery/** -text
+# Keep runtime-pilot code hashes stable across Windows/Linux checkouts.
+tools/niagara-native-lab/** text eol=lf
+tools/unreal-niagara-probe/capture_reference.py text eol=lf
+tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/*/ST01cRuntimeProbe.* text eol=lf
+tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/ST01cProbe.Build.cs text eol=lf

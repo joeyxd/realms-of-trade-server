@@ -1,0 +1,736 @@
+{
+  "generatedAt": "2026-10-13T05:16:25.501Z",
+  "sourceDirectory": "C:\\Users\\xxajx\\Downloads",
+  "selection": "12 most recently modified *.glb files",
+  "assets": [
+    {
+      "source": "amber gemstone 3d model.glb",
+      "modified": "2026-10-13T03:36:36.917Z",
+      "fileBytes": 2506676,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 454,
+      "triangles": 472,
+      "bounds": [
+        0.9848,
+        0.9344,
+        0.6002
+      ],
+      "materials": [
+        "tripo_material_dd075ee0-9f33-4f5e-ac9a-f4571658b570"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_material_dd075ee0-9f33-4f5e-ac9a-f4571658b570",
+          "mode": "triangles",
+          "indices": 1416
+        }
+      ],
+      "images": [
+        {
+          "name": "amber+gemstone+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 670879,
+          "dimensions": "2048×2048",
+          "preview": "texture-01-1.jpg"
+        },
+        {
+          "name": "amber+gemstone+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 219861,
+          "dimensions": "2048×2048",
+          "preview": "texture-01-2.jpg"
+        },
+        {
+          "name": "amber+gemstone+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/png",
+          "bytes": 1593671,
+          "dimensions": "2048×2048",
+          "preview": "texture-01-3.png"
+        }
+      ],
+      "extensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "binBytes": 2504608
+    },
+    {
+      "source": "wooden club 3d model.glb",
+      "modified": "2026-10-13T03:36:24.153Z",
+      "fileBytes": 3405724,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 523,
+      "triangles": 498,
+      "bounds": [
+        0.6036,
+        0.9737,
+        0.7837
+      ],
+      "materials": [
+        "tripo_material_ad594df3-7169-4947-9b6a-9e573c582a6c"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_material_ad594df3-7169-4947-9b6a-9e573c582a6c",
+          "mode": "triangles",
+          "indices": 1494
+        }
+      ],
+      "images": [
+        {
+          "name": "wooden+club+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 866409,
+          "dimensions": "2048×2048",
+          "preview": "texture-02-1.jpg"
+        },
+        {
+          "name": "wooden+club+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 424019,
+          "dimensions": "2048×2048",
+          "preview": "texture-02-2.jpg"
+        },
+        {
+          "name": "wooden+club+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/png",
+          "bytes": 2090514,
+          "dimensions": "2048×2048",
+          "preview": "texture-02-3.png"
+        }
+      ],
+      "extensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "binBytes": 3403660
+    },
+    {
+      "source": "coconut 3d model.glb",
+      "modified": "2026-10-13T03:36:08.761Z",
+      "fileBytes": 2383848,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 548,
+      "triangles": 402,
+      "bounds": [
+        0.7798,
+        0.7954,
+        0.9681
+      ],
+      "materials": [
+        "tripo_material_caccc252-07dc-4820-af6f-e807f3561730"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_material_caccc252-07dc-4820-af6f-e807f3561730",
+          "mode": "triangles",
+          "indices": 1206
+        }
+      ],
+      "images": [
+        {
+          "name": "coconut+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 689218,
+          "dimensions": "2048×2048",
+          "preview": "texture-03-1.jpg"
+        },
+        {
+          "name": "coconut+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 347620,
+          "dimensions": "2048×2048",
+          "preview": "texture-03-2.jpg"
+        },
+        {
+          "name": "coconut+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/png",
+          "bytes": 1322597,
+          "dimensions": "2048×2048",
+          "preview": "texture-03-3.png"
+        }
+      ],
+      "extensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "binBytes": 2381800
+    },
+    {
+      "source": "lime 3d model.glb",
+      "modified": "2026-10-13T03:35:44.340Z",
+      "fileBytes": 1729188,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 555,
+      "triangles": 664,
+      "bounds": [
+        0.97,
+        0.7467,
+        0.7208
+      ],
+      "materials": [
+        "tripo_material_0f2b8c48-4108-4d25-8d87-7d6a838ba9e7"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_material_0f2b8c48-4108-4d25-8d87-7d6a838ba9e7",
+          "mode": "triangles",
+          "indices": 1992
+        }
+      ],
+      "images": [
+        {
+          "name": "lime+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 500644,
+          "dimensions": "2048×2048",
+          "preview": "texture-04-1.jpg"
+        },
+        {
+          "name": "lime+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 288933,
+          "dimensions": "2048×2048",
+          "preview": "texture-04-2.jpg"
+        },
+        {
+          "name": "lime+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/png",
+          "bytes": 911839,
+          "dimensions": "2048×2048",
+          "preview": "texture-04-3.png"
+        }
+      ],
+      "extensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "binBytes": 1727148
+    },
+    {
+      "source": "chili powder sack 3d model.glb",
+      "modified": "2026-10-13T03:35:21.357Z",
+      "fileBytes": 2864884,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 613,
+      "triangles": 635,
+      "bounds": [
+        0.9842,
+        0.8756,
+        0.9195
+      ],
+      "materials": [
+        "tripo_material_e817f048-f5bd-4169-9a54-a7b4b347147f"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_material_e817f048-f5bd-4169-9a54-a7b4b347147f",
+          "mode": "triangles",
+          "indices": 1905
+        }
+      ],
+      "images": [
+        {
+          "name": "chili+powder+sack+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 828442,
+          "dimensions": "2048×2048",
+          "preview": "texture-05-1.jpg"
+        },
+        {
+          "name": "chili+powder+sack+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 416523,
+          "dimensions": "2048×2048",
+          "preview": "texture-05-2.jpg"
+        },
+        {
+          "name": "chili+powder+sack+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/png",
+          "bytes": 1590599,
+          "dimensions": "2048×2048",
+          "preview": "texture-05-3.png"
+        }
+      ],
+      "extensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "binBytes": 2862804
+    },
+    {
+      "source": "wooden beer mug 3d model.glb",
+      "modified": "2026-10-13T03:35:00.042Z",
+      "fileBytes": 2580424,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 683,
+      "triangles": 692,
+      "bounds": [
+        0.9822,
+        0.8016,
+        0.8076
+      ],
+      "materials": [
+        "tripo_material_12836e16-e992-4322-8c18-786808a46dd2"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_material_12836e16-e992-4322-8c18-786808a46dd2",
+          "mode": "triangles",
+          "indices": 2076
+        }
+      ],
+      "images": [
+        {
+          "name": "wooden+beer+mug+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 674176,
+          "dimensions": "2048×2048",
+          "preview": "texture-06-1.jpg"
+        },
+        {
+          "name": "wooden+beer+mug+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 464632,
+          "dimensions": "2048×2048",
+          "preview": "texture-06-2.jpg"
+        },
+        {
+          "name": "wooden+beer+mug+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/png",
+          "bytes": 1409402,
+          "dimensions": "2048×2048",
+          "preview": "texture-06-3.png"
+        }
+      ],
+      "extensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "binBytes": 2578372
+    },
+    {
+      "source": "orange striped fish 3d model.glb",
+      "modified": "2026-10-13T03:34:35.109Z",
+      "fileBytes": 3701420,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 688,
+      "triangles": 670,
+      "bounds": [
+        0.9789,
+        0.5001,
+        0.3554
+      ],
+      "materials": [
+        "tripo_material_136f309f-9312-4609-adac-678ef4ffadf4"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_material_136f309f-9312-4609-adac-678ef4ffadf4",
+          "mode": "triangles",
+          "indices": 2010
+        }
+      ],
+      "images": [
+        {
+          "name": "orange+striped+fish+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 979435,
+          "dimensions": "2048×2048",
+          "preview": "texture-07-1.jpg"
+        },
+        {
+          "name": "orange+striped+fish+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 346466,
+          "dimensions": "2048×2048",
+          "preview": "texture-07-2.jpg"
+        },
+        {
+          "name": "orange+striped+fish+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/png",
+          "bytes": 2343376,
+          "dimensions": "2048×2048",
+          "preview": "texture-07-3.png"
+        }
+      ],
+      "extensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "binBytes": 3699336
+    },
+    {
+      "source": "bread loaf 3d model.glb",
+      "modified": "2026-10-13T03:33:37.593Z",
+      "fileBytes": 3009504,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 692,
+      "triangles": 628,
+      "bounds": [
+        0.9785,
+        0.4275,
+        0.9663
+      ],
+      "materials": [
+        "tripo_material_fd536291-161b-41f9-8173-eb45895e3581"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_material_fd536291-161b-41f9-8173-eb45895e3581",
+          "mode": "triangles",
+          "indices": 1884
+        }
+      ],
+      "images": [
+        {
+          "name": "bread+loaf+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 817798,
+          "dimensions": "2048×2048",
+          "preview": "texture-08-1.jpg"
+        },
+        {
+          "name": "bread+loaf+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 441160,
+          "dimensions": "2048×2048",
+          "preview": "texture-08-2.jpg"
+        },
+        {
+          "name": "bread+loaf+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/png",
+          "bytes": 1718816,
+          "dimensions": "2048×2048",
+          "preview": "texture-08-3.png"
+        }
+      ],
+      "extensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "binBytes": 3007456
+    },
+    {
+      "source": "blue ceramic vase 3d model.glb",
+      "modified": "2026-10-13T03:33:18.883Z",
+      "fileBytes": 1891520,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 551,
+      "triangles": 628,
+      "bounds": [
+        0.7533,
+        0.9786,
+        0.7557
+      ],
+      "materials": [
+        "tripo_material_2e922187-b430-4e3e-95f0-1070b065f118"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_material_2e922187-b430-4e3e-95f0-1070b065f118",
+          "mode": "triangles",
+          "indices": 1884
+        }
+      ],
+      "images": [
+        {
+          "name": "blue+ceramic+vase+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 496021,
+          "dimensions": "2048×2048",
+          "preview": "texture-09-1.jpg"
+        },
+        {
+          "name": "blue+ceramic+vase+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 357441,
+          "dimensions": "2048×2048",
+          "preview": "texture-09-2.jpg"
+        },
+        {
+          "name": "blue+ceramic+vase+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/png",
+          "bytes": 1010804,
+          "dimensions": "2048×2048",
+          "preview": "texture-09-3.png"
+        }
+      ],
+      "extensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "binBytes": 1889440
+    },
+    {
+      "source": "rice+sack+3d+model.glb",
+      "modified": "2026-10-13T03:32:41.029Z",
+      "fileBytes": 621008,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 648,
+      "triangles": 658,
+      "bounds": [
+        0.9763,
+        0.8019,
+        0.8012
+      ],
+      "materials": [
+        "tripo_mat_30ada640-0b09-46fb-9b6b-e853280fced0"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_mat_30ada640-0b09-46fb-9b6b-e853280fced0",
+          "mode": "triangles",
+          "indices": 1974
+        }
+      ],
+      "images": [
+        {
+          "name": "rice_sack_3d_model_normal",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 102920,
+          "dimensions": "1024×1024",
+          "preview": "texture-10-1.jpg"
+        },
+        {
+          "name": "rice_sack_3d_model_basecolor",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 326908,
+          "dimensions": "1024×1024",
+          "preview": "texture-10-2.jpg"
+        },
+        {
+          "name": "rice_sack_3d_model_rm",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 164646,
+          "dimensions": "1024×1024",
+          "preview": "texture-10-3.jpg"
+        }
+      ],
+      "extensions": [],
+      "binBytes": 619160
+    },
+    {
+      "source": "bamboo stalk 3d model.glb",
+      "modified": "2026-10-13T03:31:52.132Z",
+      "fileBytes": 2394944,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 612,
+      "triangles": 684,
+      "bounds": [
+        0.2314,
+        0.4309,
+        0.9825
+      ],
+      "materials": [
+        "tripo_material_be13d86d-3cf3-488c-bdc0-e0da7d4818d5"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_material_be13d86d-3cf3-488c-bdc0-e0da7d4818d5",
+          "mode": "triangles",
+          "indices": 2052
+        }
+      ],
+      "images": [
+        {
+          "name": "bamboo+stalk+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 650042,
+          "dimensions": "2048×2048",
+          "preview": "texture-11-1.jpg"
+        },
+        {
+          "name": "bamboo+stalk+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 295466,
+          "dimensions": "2048×2048",
+          "preview": "texture-11-2.jpg"
+        },
+        {
+          "name": "bamboo+stalk+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/png",
+          "bytes": 1419574,
+          "dimensions": "2048×2048",
+          "preview": "texture-11-3.png"
+        }
+      ],
+      "extensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "binBytes": 2392880
+    },
+    {
+      "source": "herb bundle 3d model.glb",
+      "modified": "2026-10-13T03:31:32.432Z",
+      "fileBytes": 2305592,
+      "generator": "Tripo",
+      "meshes": 1,
+      "vertices": 829,
+      "triangles": 547,
+      "bounds": [
+        0.9048,
+        0.5945,
+        0.9292
+      ],
+      "materials": [
+        "tripo_material_c7df6a94-3f5e-4fe4-a311-58da85c4c80c"
+      ],
+      "primitives": [
+        {
+          "material": "tripo_material_c7df6a94-3f5e-4fe4-a311-58da85c4c80c",
+          "mode": "triangles",
+          "indices": 1641
+        }
+      ],
+      "images": [
+        {
+          "name": "herb+bundle+3d+model_basecolor.jpg",
+          "roles": [
+            "base color"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 630782,
+          "dimensions": "2048×2048",
+          "preview": "texture-12-1.jpg"
+        },
+        {
+          "name": "herb+bundle+3d+model_rm.jpg",
+          "roles": [
+            "metallic/roughness"
+          ],
+          "mime": "image/jpeg",
+          "bytes": 674640,
+          "dimensions": "2048×2048",
+          "preview": "texture-12-2.jpg"
+        },
+        {
+          "name": "herb+bundle+3d+model_normal.png",
+          "roles": [
+            "normal"
+          ],
+          "mime": "image/png",
+          "bytes": 965021,
+          "dimensions": "2048×2048",
+          "preview": "texture-12-3.png"
+        }
+      ],
+      "extensions": [
+        "KHR_materials_volume",
+        "FB_ngon_encoding"
+      ],
+      "binBytes": 2303540
+    }
+  ]
+}

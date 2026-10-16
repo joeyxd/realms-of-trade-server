@@ -1,0 +1,1651 @@
+{
+  "engine": "5.8.0",
+  "project": "survival",
+  "scan_roots": [
+    "/Game"
+  ],
+  "scan_method": "AssetRegistry scan_paths_synchronous then get_assets_by_path; no asset loading",
+  "scan_ok": true,
+  "asset_count": 1731,
+  "niagara_system_count": 230,
+  "niagara_systems": [
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Dimension",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace/Effects/NS_Dimension",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6F8BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hyper_Jump",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace/Effects/NS_Hyper_Jump",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6F53C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hyperspace",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace/Effects/NS_Hyperspace",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6F83C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Jet",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace/Effects/NS_Jet",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6F4BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Portal",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace/Effects/NS_Portal",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6F3BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Portal_2",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace/Effects/NS_Portal_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6F2BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Relativistic_Jet",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace/Effects/NS_Relativistic_Jet",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6F23C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Warp_Tunnel",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace/Effects/NS_Warp_Tunnel",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6F1BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_FirePortal",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace2/Effects/NS_FirePortal",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6F13C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_RingOfOmnipotence",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace2/Effects/NS_RingOfOmnipotence",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6F0BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Shining",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace2/Effects/NS_Shining",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6F03C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Speed_Flower",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace2/Effects/NS_Speed_Flower",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6EF3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_SpiralGalaxy",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace2/Effects/NS_SpiralGalaxy",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6EEBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Vase",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace2/Effects/NS_Vase",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6EE3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Four_Jets",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace3/Effects/NS_Four_Jets",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6ED3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Ribbon_Spiral",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace3/Effects/NS_Ribbon_Spiral",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6ECBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Ribbon_Spiral2",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace3/Effects/NS_Ribbon_Spiral2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6EC3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Singularity",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace3/Effects/NS_Singularity",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6EBBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Sphere_of_Fireworks",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace3/Effects/NS_Sphere_of_Fireworks",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6EB3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Sprite_Engine",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace3/Effects/NS_Sprite_Engine",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6EABC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Sprouts_of_the_Universe",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace3/Effects/NS_Sprouts_of_the_Universe",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6EA3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Sprouts_of_the_Universe_Up",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace3/Effects/NS_Sprouts_of_the_Universe_Up",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E9BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Worm-Hole",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace3/Effects/NS_Worm-Hole",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E93C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_ActiveWormhole",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace4/Effects/NS_ActiveWormhole",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E8BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_CenterOfMass",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace4/Effects/NS_CenterOfMass",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E83C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_CenterOfMass2",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace4/Effects/NS_CenterOfMass2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E7BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_InfinityClock2",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace4/Effects/NS_InfinityClock2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E73C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_InfinityClock5",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace4/Effects/NS_InfinityClock5",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E6BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_MobiusStrip",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace4/Effects/NS_MobiusStrip",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E63C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_MobiusStrip2",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace4/Effects/NS_MobiusStrip2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E5BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Orion",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace4/Effects/NS_Orion",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E53C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Orion2",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace4/Effects/NS_Orion2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E43C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_StreamsOfEnergy2",
+      "package": "/Game/BigNiagaraBundle/NiagaraAbstractSpace4/Effects/NS_StreamsOfEnergy2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E33C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_FantasyRingsBlack",
+      "package": "/Game/BigNiagaraBundle/NiagaraBlackAndWhite/NiagaraSystems/Black/NS_FantasyRingsBlack",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E23C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_WhirpoolBlack",
+      "package": "/Game/BigNiagaraBundle/NiagaraBlackAndWhite/NiagaraSystems/Black/NS_WhirpoolBlack",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E1BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_DreamStreamSingleWhite",
+      "package": "/Game/BigNiagaraBundle/NiagaraBlackAndWhite/NiagaraSystems/White/NS_DreamStreamSingleWhite",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E13C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_FantasyRingsWhite",
+      "package": "/Game/BigNiagaraBundle/NiagaraBlackAndWhite/NiagaraSystems/White/NS_FantasyRingsWhite",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E0BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_WhirlpoolWhite",
+      "package": "/Game/BigNiagaraBundle/NiagaraBlackAndWhite/NiagaraSystems/White/NS_WhirlpoolWhite",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E03C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AbstractFigure",
+      "package": "/Game/BigNiagaraBundle/NiagaraEffectMix4/Effects/NS_AbstractFigure",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68B3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_ActiveAtom",
+      "package": "/Game/BigNiagaraBundle/NiagaraEffectMix4/Effects/NS_ActiveAtom",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68BBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Jets",
+      "package": "/Game/BigNiagaraBundle/NiagaraEffectMix4/Effects/NS_Jets",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68CBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_NiagaraSplash",
+      "package": "/Game/BigNiagaraBundle/NiagaraEffectMix4/Effects/NS_NiagaraSplash",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68ABC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_RelativisticJet",
+      "package": "/Game/BigNiagaraBundle/NiagaraEffectMix4/Effects/NS_RelativisticJet",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68DBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Rings",
+      "package": "/Game/BigNiagaraBundle/NiagaraEffectMix4/Effects/NS_Rings",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68E3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_VortexDoubleTorus",
+      "package": "/Game/BigNiagaraBundle/NiagaraEffectMix4/Effects/NS_VortexDoubleTorus",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68F3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Atom",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_Atom",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68FBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Brain",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_Brain",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68A3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_CityHologramm",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_CityHologramm",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A688BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_CylindrDecor",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_CylindrDecor",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6893C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_DNA",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_DNA",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A687BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Earth",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_Earth",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6873C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_HologramCylinder",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_HologramCylinder",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A686BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_HologramCylindrBig",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_HologramCylindrBig",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6853C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Landcape",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_Landcape",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A685BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_ParticlesCloud",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_ParticlesCloud",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A684BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_SolarSystem",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_SolarSystem",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A683BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_SolarSystemWithOrbits",
+      "package": "/Game/BigNiagaraBundle/NiagaraHologramPack/Effects/NS_SolarSystemWithOrbits",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A682BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Dirt_Explosion",
+      "package": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A660BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Dirt_Explosion_Medium",
+      "package": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Medium",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6783C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Dirt_Explosion_Small",
+      "package": "/Game/NiagaraExamples/FX_Explosions/NS_Dirt_Explosion_Small",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6B3BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Explosion",
+      "package": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6243C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Explosion_Medium",
+      "package": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Medium",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A623BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Explosion_Small",
+      "package": "/Game/NiagaraExamples/FX_Explosions/NS_Explosion_Small",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6263C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Footstep_Bubbles",
+      "package": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Bubbles",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6A43C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Footstep_Fire",
+      "package": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Fire",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6A3BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Footstep_Gravel",
+      "package": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_Gravel",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A62C3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Footstep_LW",
+      "package": "/Game/NiagaraExamples/FX_Footstep/NS_Footstep_LW",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A62BBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Marker_Location",
+      "package": "/Game/NiagaraExamples/FX_Markers/NS_Marker_Location",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A634BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Marker_Target",
+      "package": "/Game/NiagaraExamples/FX_Markers/NS_Marker_Target",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6333C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Boundary",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_Boundary",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A637BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Boundary_Box",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_Boundary_Box",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6383C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Boundary_Cylinder",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_Boundary_Cylinder",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A63A3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Boundary_Sphere",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_Boundary_Sphere",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A63ABC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Bubble_Burst",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_Bubble_Burst",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A638BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Fire",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_Fire",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A63CBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_FireworkBurst",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_FireworkBurst",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A63C3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_HitDissolve",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_HitDissolve",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A63D3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_SkeletalMeshBones_Burst",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_SkeletalMeshBones_Burst",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A63BBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_SkeletalMeshBones_Loop",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_SkeletalMeshBones_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A63DBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_SkeletalMeshTris_Burst",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_SkeletalMeshTris_Burst",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A641BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_SkeletalMeshTris_Loop",
+      "package": "/Game/NiagaraExamples/FX_Misc/NS_SkeletalMeshTris_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A640BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_NDC_Footsteps",
+      "package": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6413C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_NDC_Footsteps_Bubbles",
+      "package": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps_Bubbles",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6443C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_NDC_Footsteps_Fire",
+      "package": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Footsteps_Fire",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A644BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_NDC_Impacts",
+      "package": "/Game/NiagaraExamples/FX_NDC/NS_NDC_Impacts",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A645BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Pickup_Idle",
+      "package": "/Game/NiagaraExamples/FX_PickUp/NS_Pickup_Idle",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6463C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Pickup_Spawn",
+      "package": "/Game/NiagaraExamples/FX_PickUp/NS_Pickup_Spawn",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A647BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Pickup_Success",
+      "package": "/Game/NiagaraExamples/FX_PickUp/NS_Pickup_Success",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6473C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Pickup_Timeout",
+      "package": "/Game/NiagaraExamples/FX_PickUp/NS_Pickup_Timeout",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6483C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Player_Buff_Looping",
+      "package": "/Game/NiagaraExamples/FX_Player/NS_Player_Buff_Looping",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A648BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Player_DeBuff_Looping",
+      "package": "/Game/NiagaraExamples/FX_Player/NS_Player_DeBuff_Looping",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6493C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Player_Electricity_Looping",
+      "package": "/Game/NiagaraExamples/FX_Player/NS_Player_Electricity_Looping",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A649BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Player_Teleport_In",
+      "package": "/Game/NiagaraExamples/FX_Player/NS_Player_Teleport_In",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A64B3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Player_Teleport_Out",
+      "package": "/Game/NiagaraExamples/FX_Player/NS_Player_Teleport_Out",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A64C3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Weapon_Buff_Looping",
+      "package": "/Game/NiagaraExamples/FX_Player/NS_Weapon_Buff_Looping",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A64BBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Weapon_DeBuff_Looping",
+      "package": "/Game/NiagaraExamples/FX_Player/NS_Weapon_DeBuff_Looping",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A64D3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_TeslaCoil",
+      "package": "/Game/NiagaraExamples/FX_Ribbons/NS_TeslaCoil",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A64E3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Dino_Tri_Loop",
+      "package": "/Game/NiagaraExamples/FX_SkeletalMesh/NS_Dino_Tri_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6503C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Dino_Tris_Color_Burst",
+      "package": "/Game/NiagaraExamples/FX_SkeletalMesh/NS_Dino_Tris_Color_Burst",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A64F3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Chimney_Smoke",
+      "package": "/Game/NiagaraExamples/FX_Smoke/NS_Chimney_Smoke",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A64FBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Smoke_Plume",
+      "package": "/Game/NiagaraExamples/FX_Smoke/NS_Smoke_Plume",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A650BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Spark_Burst",
+      "package": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Burst",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6513C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Spark_Continuous",
+      "package": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Continuous",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A652BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Spark_Impact_Looping",
+      "package": "/Game/NiagaraExamples/FX_Sparks/NS_Spark_Impact_Looping",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A653BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Impact_Concrete",
+      "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Concrete",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A655BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Impact_Glass",
+      "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Glass",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6563C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Impact_Metal",
+      "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Metal",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A656BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Impact_Wood",
+      "package": "/Game/NiagaraExamples/FX_Weapons/Impacts/NS_Impact_Wood",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6583C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_MuzzleFlash",
+      "package": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65EBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_BulletTracer",
+      "package": "/Game/NiagaraExamples/FX_Weapons/Trails/NS_BulletTracer",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6673C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_RocketTrail",
+      "package": "/Game/NiagaraExamples/FX_Weapons/Trails/NS_RocketTrail",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6683C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_SimpleRibbonTrail",
+      "package": "/Game/NiagaraExamples/FX_Weapons/Trails/NS_SimpleRibbonTrail",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A668BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_SubUV_Utilities",
+      "package": "/Game/NiagaraExamples/Materials/Reference/NS_SubUV_Utilities",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A602BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_ExplosionRoil",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/ExplosionRoil/NS_ExplosionRoil",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6B33C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_TestSprite",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/NS_TestSprite",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A631BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_SmokePuffLight",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/SmokePuffLight/NS_SmokePuffLight",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6253C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Coin_Shower",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Coin_Shower",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A62B3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_CoinBurst",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_CoinBurst",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A62ABC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_CoinBurst2",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_CoinBurst2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6A7BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Energy_1",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Energy_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6A63C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Energy_2",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Energy_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6A53C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Healing_1",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Healing_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6A4BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Healing_2",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Healing_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6A3BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Healing_3",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Healing_3",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6A43C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Magic_1",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Magic_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A62C3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Magic_2",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Magic_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A62EBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Pickup_1",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Pickup_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A62BBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Pickup_2",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Pickup_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A62DBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Pickup_3",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Pickup_3",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A62E3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Pickup_4",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Pickup_4",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6313C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Pickup_5",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Pickup_5",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6303C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Shield",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Shield",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A62F3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Shield_2",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Shield_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A62FBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Shield_3",
+      "package": "/Game/sA_Megapack_v1/sA_PickupSet_1/Fx/NiagaraSystems/NS_Shield_3",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A634BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Hit",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65A3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit2",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Hit2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A658BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit3",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Hit3",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65B3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit4",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Hit4",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65ABC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit5",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Hit5",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65BBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit6",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Hit6",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65CBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit7",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Hit7",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65C3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Muzzle",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Muzzle",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65DBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Muzzle_2",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Muzzle_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65EBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Muzzle_3",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Muzzle_3",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65FBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Muzzle_4",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Muzzle_4",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65D3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Muzzle_5",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Muzzle_5",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65E3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Muzzle_6",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Muzzle_6",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65F3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Muzzle_7",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Muzzle_7",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6613C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Projectile1_Small",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Projectile1_Small",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6603C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Projectile2_Small",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Projectile2_Small",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A661BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Projectile3_Small",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Projectile3_Small",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A662BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Projectile4_Small",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Projectile4_Small",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6623C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Projectile5",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Projectile5",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A663BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Projectile6",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Projectile6",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6633C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Projectile7",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Fx/Niagara_Systems/NS_Projectile7",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6643C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Energy_1",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Energy_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68F3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Energy_2",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Energy_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68E3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Energy_3",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Energy_3",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68EBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Energy_4",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Energy_4",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68ABC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Energy_5",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Energy_5",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68DBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit_1",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Hit_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68CBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit_2",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Hit_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A68BBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit_3",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Hit_3",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E03C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit_4",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Hit_4",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E13C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit_5",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Hit_5",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E1BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Ray_1",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Ray_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E23C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Ray_2",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Ray_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E3BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Ray_3",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Ray_3",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E4BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Ray_4",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Ray_4",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E5BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Ray_5",
+      "package": "/Game/sA_Megapack_v1/sA_Rayvfx/Fx/NiagaraSystems/NS_Ray_5",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6E6BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AR_Muzzleflash_1_INFINITE",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_AR_Muzzleflash_1_INFINITE",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A682BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AR_Muzzleflash_1_ONCE",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_AR_Muzzleflash_1_ONCE",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6813C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AR_Muzzleflash_2_INFINITE",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_AR_Muzzleflash_2_INFINITE",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6913C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AR_Muzzleflash_2_ONCE",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_AR_Muzzleflash_2_ONCE",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A690BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_BulletTrail_1",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_BulletTrail_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6823C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_BulletTrail_1_b",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_BulletTrail_1_b",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6943C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_BulletTrail_2",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_BulletTrail_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A691BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_BulletTrail_3",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_BulletTrail_3",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6933C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Energy_Muzzleflash_1_INFINITE",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_Energy_Muzzleflash_1_INFINITE",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6963C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_ENERGY_Muzzleflash_2_ONCE",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_ENERGY_Muzzleflash_2_ONCE",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A693BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Explossion",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_Explossion",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A696BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_GRENADE_RibbonTrail",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_GRENADE_RibbonTrail",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A680BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Impact_1",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_Impact_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A697BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Impact_2",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_Impact_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A695BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_ROCKET_Muzzle",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_ROCKET_Muzzle",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6973C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_ROCKET_Trail",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_ROCKET_Trail",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A698BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_SNIPER_Muzzle",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/FX/NiagaraSystems/NS_SNIPER_Muzzle",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6983C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Aoe",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Fx/NiagaraSystems/NS_Aoe",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A664BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Cast",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Fx/NiagaraSystems/NS_Cast",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6A23C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Energy",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Fx/NiagaraSystems/NS_Energy",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6A33C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Hit_Ray",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Fx/NiagaraSystems/NS_Hit_Ray",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6643C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Projectile",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Fx/NiagaraSystems/NS_Projectile",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A663BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Projectile_Hit",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Fx/NiagaraSystems/NS_Projectile_Hit",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6623C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Ray",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Fx/NiagaraSystems/NS_Ray",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A662BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Thorn_2",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Fx/NiagaraSystems/NS_Thorn_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6613C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Thorn_3",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Fx/NiagaraSystems/NS_Thorn_3",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65F3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Thorn_Projectile",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Fx/NiagaraSystems/NS_Thorn_Projectile",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A65E3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Thorns_1",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Fx/NiagaraSystems/NS_Thorns_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6603C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AOE_Attack_1",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Attack_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6CB3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AOE_Attack_1_InfMode",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Attack_1_InfMode",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6C93C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AOE_Attack_2",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Attack_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6CA3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AOE_Attack_2_WallMode",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Attack_2_WallMode",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6C13C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AOE_ATTACK_3",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_ATTACK_3",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6C4BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AOE_Explosion_1",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Explosion_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6C2BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_AOE_Meteor_1",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Meteor_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6C23C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_ArrowAttack",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_ArrowAttack",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6C1BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Aura",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Aura",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BFBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_BasicHit",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6C0BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_BasicHit_2",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BEBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Flame_Single",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6C03C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Flame_Trail",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Trail",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BDBC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_RibbonTrail",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_RibbonTrail",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BE3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_01",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_01",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A631BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_02",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_02",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A660BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_03",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_03",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6B43C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_04",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_04",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6B33C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_05",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_05",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6783C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_06",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_06",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6243C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_07",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_07",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6263C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_08",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_08",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6B3BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_09",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_09",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6273C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_10",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_10",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A623BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_11",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_11",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A625BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_12",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_12",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6253C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_13",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_13",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6B0BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_14",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_14",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A624BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_15",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_15",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6B13C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_16",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_16",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A628BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_17",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_17",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6B03C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Trail_18",
+      "package": "/Game/SwordTrailVFX/VFX/NS_Trail_18",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6283C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    }
+  ],
+  "texture_candidate_count": 41,
+  "texture_candidates": [
+    {
+      "class": "Texture2D",
+      "name": "T_ThinSmoke_FX",
+      "package": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Textures/T_ThinSmoke_FX",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A665BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "ExplosionDecalMasks",
+      "package": "/Game/NiagaraExamples/Textures/Decals/ExplosionDecalMasks",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A613BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_Explosion_EOO",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_Explosion_EOO",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A606BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_Explosion_Normals",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_Explosion_Normals",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6063C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_ExplosionBurst_EOO_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionBurst_EOO_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A60C3C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_ExplosionBurst_Normals_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionBurst_Normals_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A60ABC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_ExplosionRoil_EOO_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A60BBC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_ExplosionRoil_Normals_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_Normals_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A609BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_ExplosionWide_EOO",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionWide_EOO",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6093C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_ExplosionWide_Normals",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionWide_Normals",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A607BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_FireBall_EOO_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_FireBall_EOO_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6053C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_FireBall_Normals_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_FireBall_Normals_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6033C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_FireRoil_EOO_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_FireRoil_EOO_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6043C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_FireRoil_Normals_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_FireRoil_Normals_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A601BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_Smoke_Wispy",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_Smoke_Wispy",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BDBC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_Smoke_Wispy_Normals",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_Smoke_Wispy_Normals",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BEBC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_SmokePuff_EOO_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuff_EOO_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6B83C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_SmokePuff_Normals_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuff_Normals_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BB3C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_SmokePuffLight_EOO_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A600BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_SmokePuffLight_Normals_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_Normals_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BA3C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_SmokeRoil_EOO_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokeRoil_EOO_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BBBC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_SmokeRoil_Normals_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokeRoil_Normals_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BCBC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_SmokeTrail_EOO_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokeTrail_EOO_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BD3C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_SmokeTrail_Normals_Loop",
+      "package": "/Game/NiagaraExamples/Textures/Sprites/T_SmokeTrail_Normals_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6BE3C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "NS_ExplosionRoil_BakedAtlas_Alpha",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/ExplosionRoil/NS_ExplosionRoil_BakedAtlas_Alpha",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6783C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "NS_ExplosionRoil_BakedAtlas_Emissive",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/ExplosionRoil/NS_ExplosionRoil_BakedAtlas_Emissive",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6243C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "NS_ExplosionRoil_BakedAtlas_Normals",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/ExplosionRoil/NS_ExplosionRoil_BakedAtlas_Normals",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6B3BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "NS_ExplosionRoil_BakedAtlas_Occlusion",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/ExplosionRoil/NS_ExplosionRoil_BakedAtlas_Occlusion",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6263C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_ExplosionRoil_EOO_Loop",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/ExplosionRoil/T_ExplosionRoil_EOO_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A623BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_ExplosionRoil_Normals_Loop",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/ExplosionRoil/T_ExplosionRoil_Normals_Loop",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6273C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "NS_SmokePuffLight_BakedAtlas_Emissive",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/SmokePuffLight/NS_SmokePuffLight_BakedAtlas_Emissive",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A625BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "NS_SmokePuffLight_BakedAtlas_Normals",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/SmokePuffLight/NS_SmokePuffLight_BakedAtlas_Normals",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A624BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "NS_SmokePuffLight_BakedAtlas_Occlusion",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/SmokePuffLight/NS_SmokePuffLight_BakedAtlas_Occlusion",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6B0BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "NS_SmokePuffLight_BakedAtlas_Smoke_2048_RGB",
+      "package": "/Game/NiagaraExamples/Utilities/SpriteGeneration/SmokePuffLight/NS_SmokePuffLight_BakedAtlas_Smoke_2048_RGB",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A628BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_Smoke_SubUV",
+      "package": "/Game/sA_Megapack_v1/sA_Projectilevfx/Vfx/Materials/Textures/T_Smoke_SubUV",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A69ABC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_Smoke00_SubUV",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/Materials/Textures/T_Smoke00_SubUV",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A6A13C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_Smoke_SubUV",
+      "package": "/Game/sA_Megapack_v1/sA_ShootingVfxPack/Materials/Textures/T_Smoke_SubUV",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A67BBC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_Smoke_SubUV",
+      "package": "/Game/sA_Megapack_v1/sA_SkillSet_1/Materials/Textures/T_Smoke_SubUV",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A63CBC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_FireBall",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A60CBC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_Smoke_1",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A618BC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_Smoke_SubUV",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_SubUV",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x0000022A96A61A3C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    }
+  ],
+  "class_counts_of_interest": {
+    "NiagaraSystem": 230,
+    "Texture2D": 366,
+    "NiagaraParameterCollection": 1,
+    "NiagaraEffectType": 5,
+    "NiagaraEmitter": 77,
+    "NiagaraDataChannelAsset": 2,
+    "NiagaraScript": 3
+  }
+}

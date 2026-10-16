@@ -1,0 +1,101 @@
+{
+  "recordedAt": "2026-10-11T06:37:26.802319+00:00",
+  "expectedRevision": "5ff828f362683436111137bd67c87c331ff2c9fa",
+  "revision": "0a2dfc0b6b8a9797f756b42e7b1d51a972393dd5",
+  "matches": false,
+  "container": "0d0823302a62",
+  "imageId": "sha256:dd62a49baaed2c76400509bb5bed563e486a474b21504e91ba378e8404df246a",
+  "healthy": "healthy",
+  "startedAt": "2026-10-11T06:31:40.830208311Z",
+  "timer": "active",
+  "updater": "activating",
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.48",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 19808,
+    "uptime": 342,
+    "stepMs": 1.14,
+    "bots": 3,
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2344,
+        "errors": 0
+      }
+    }
+  },
+  "offlineImageValidation": {
+    "revision": "0a2dfc0b6b8a9797f756b42e7b1d51a972393dd5",
+    "image_id": "sha256:dd62a49baaed2c76400509bb5bed563e486a474b21504e91ba378e8404df246a",
+    "tests_passed": true
+  },
+  "dormantAPI": {
+    "session": true,
+    "contract": true,
+    "journal": true,
+    "recovery": true,
+    "groundHost": true,
+    "adoption": true,
+    "node": "v22.23.3"
+  }
+}

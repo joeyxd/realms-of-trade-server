@@ -1,0 +1,904 @@
+TAP version 13
+# Subtest: canteen vessel data is strict, bounded, and counted in cargo
+ok 1 - canteen vessel data is strict, bounded, and counted in cargo
+  ---
+  duration_ms: 4.4892
+  type: 'test'
+  ...
+# Subtest: canteen commands have exact shape and allow only documented sources and amounts
+ok 2 - canteen commands have exact shape and allow only documented sources and amounts
+  ---
+  duration_ms: 1.5426
+  type: 'test'
+  ...
+# Subtest: crafting and refilling preserves the existing bucket while transferring water exactly once
+ok 3 - crafting and refilling preserves the existing bucket while transferring water exactly once
+  ---
+  duration_ms: 3.7131
+  type: 'test'
+  ...
+# Subtest: barrel refill conserves water and advances the ship revision
+ok 4 - barrel refill conserves water and advances the ship revision
+  ---
+  duration_ms: 1.7184
+  type: 'test'
+  ...
+# Subtest: canteen-first crafting leaves legacy bucket operations and vessel order intact
+ok 5 - canteen-first crafting leaves legacy bucket operations and vessel order intact
+  ---
+  duration_ms: 0.7554
+  type: 'test'
+  ...
+# Subtest: drink consumes one unit, clamps hydration, rejects full or empty state, and checks revisions
+ok 6 - drink consumes one unit, clamps hydration, rejects full or empty state, and checks revisions
+  ---
+  duration_ms: 1.2133
+  type: 'test'
+  ...
+# Subtest: eating consumes one existing food and restores the profile meters without healing
+ok 7 - eating consumes one existing food and restores the profile meters without healing
+  ---
+  duration_ms: 0.5318
+  type: 'test'
+  ...
+# Subtest: resource gather and craft contracts accept exact fields and preserve helper acknowledgement extras
+ok 8 - resource gather and craft contracts accept exact fields and preserve helper acknowledgement extras
+  ---
+  duration_ms: 21.2181
+  type: 'test'
+  ...
+# Subtest: resource command schemas and revision/count bounds are strict
+ok 9 - resource command schemas and revision/count bounds are strict
+  ---
+  duration_ms: 6.2502
+  type: 'test'
+  ...
+# Subtest: resource world state is mandatory for resource commands and strictly checked
+ok 10 - resource world state is mandatory for resource commands and strictly checked
+  ---
+  duration_ms: 15.3773
+  type: 'test'
+  ...
+# Subtest: community and resources can coexist in an economic world snapshot
+ok 11 - community and resources can coexist in an economic world snapshot
+  ---
+  duration_ms: 2.5392
+  type: 'test'
+  ...
+# Subtest: memory storage accepts logical checkpoint advances but rejects rewinds and ordinary node changes
+ok 12 - memory storage accepts logical checkpoint advances but rejects rewinds and ordinary node changes
+  ---
+  duration_ms: 23.7383
+  type: 'test'
+  ...
+# Subtest: v3 economic receipts preserve workshop metadata and derived pack limits outside paid workshop edits
+ok 13 - v3 economic receipts preserve workshop metadata and derived pack limits outside paid workshop edits
+  ---
+  duration_ms: 28.9345
+  type: 'test'
+  ...
+# Subtest: memory economic operation commits profile, world and immutable receipt together; exact replay is historical
+ok 14 - memory economic operation commits profile, world and immutable receipt together; exact replay is historical
+  ---
+  duration_ms: 24.2111
+  type: 'test'
+  ...
+# Subtest: client operation IDs remain opaque strings and receipt UUID reuse requires the exact command
+ok 15 - client operation IDs remain opaque strings and receipt UUID reuse requires the exact command
+  ---
+  duration_ms: 12.9903
+  type: 'test'
+  ...
+# Subtest: terminal gameplay denial receives a durable receipt without changing candidate snapshots
+ok 16 - terminal gameplay denial receives a durable receipt without changing candidate snapshots
+  ---
+  duration_ms: 11.162
+  type: 'test'
+  ...
+# Subtest: community contribution uses the same profile, world and receipt authority
+ok 17 - community contribution uses the same profile, world and receipt authority
+  ---
+  duration_ms: 7.6588
+  type: 'test'
+  ...
+# Subtest: ordinary world saves preserve committed community metadata while allowing unchanged snapshots
+ok 18 - ordinary world saves preserve committed community metadata while allowing unchanged snapshots
+  ---
+  duration_ms: 9.8761
+  type: 'test'
+  ...
+# Subtest: simultaneous economic commits using one profile and world baseline admit one winner
+ok 19 - simultaneous economic commits using one profile and world baseline admit one winner
+  ---
+  duration_ms: 10.7374
+  type: 'test'
+  ...
+# Subtest: stale profile or world CAS changes neither row and creates no receipt
+ok 20 - stale profile or world CAS changes neither row and creates no receipt
+  ---
+  duration_ms: 7.2448
+  type: 'test'
+  ...
+# Subtest: economic UUIDs share memory receipt and pending-intent namespaces with other M5 families
+ok 21 - economic UUIDs share memory receipt and pending-intent namespaces with other M5 families
+  ---
+  duration_ms: 20.7362
+  type: 'test'
+  ...
+# Subtest: economic snapshots cannot rewrite managed pearl ownership
+ok 22 - economic snapshots cannot rewrite managed pearl ownership
+  ---
+  duration_ms: 7.4709
+  type: 'test'
+  ...
+# Subtest: contract rejects open commands, foreign ACK routing, noncanonical profiles and oversized snapshots
+ok 23 - contract rejects open commands, foreign ACK routing, noncanonical profiles and oversized snapshots
+  ---
+  duration_ms: 27.4304
+  type: 'test'
+  ...
+# Subtest: contract enforces the host contribution ceiling and exact client operation ID ACK
+ok 24 - contract enforces the host contribution ceiling and exact client operation ID ACK
+  ---
+  duration_ms: 1.6843
+  type: 'test'
+  ...
+# Subtest: N opens the hand fuel panel while empty, and confirmed snapshots label torch duration
+ok 25 - N opens the hand fuel panel while empty, and confirmed snapshots label torch duration
+  ---
+  duration_ms: 4.0588
+  type: 'test'
+  ...
+# Subtest: fueled hand torch sends exact immutable fire set command and waits for confirmation
+ok 26 - fueled hand torch sends exact immutable fire set command and waits for confirmation
+  ---
+  duration_ms: 7.057
+  type: 'test'
+  ...
+# Subtest: fire command retries exact request once, times out, and denial feedback is localized
+ok 27 - fire command retries exact request once, times out, and denial feedback is localized
+  ---
+  duration_ms: 1.0185
+  type: 'test'
+  ...
+# Subtest: owner-only raft interaction opens fire panel for the nearest supported fixture kind
+ok 28 - owner-only raft interaction opens fire panel for the nearest supported fixture kind
+  ---
+  duration_ms: 3.0719
+  type: 'test'
+  ...
+# Subtest: fuelled fixture prompts from confirmed fire rows and still opens its station panel
+ok 29 - fuelled fixture prompts from confirmed fire rows and still opens its station panel
+  ---
+  duration_ms: 0.3897
+  type: 'test'
+  ...
+# Subtest: legacy lantern path remains unchanged when fire feature flag is absent
+ok 30 - legacy lantern path remains unchanged when fire feature flag is absent
+  ---
+  duration_ms: 1.5803
+  type: 'test'
+  ...
+# Subtest: fractional accumulated economy clocks use the same quantized seconds for JS and SQL receipts
+ok 31 - fractional accumulated economy clocks use the same quantized seconds for JS and SQL receipts
+  ---
+  duration_ms: 4779.1032
+  type: 'test'
+  ...
+# Subtest: paid hand fuel is replay-safe, lit state is public, and simulation expiry clears the public flame
+ok 32 - paid hand fuel is replay-safe, lit state is public, and simulation expiry clears the public flame
+  ---
+  duration_ms: 1246.3496
+  type: 'test'
+  ...
+# Subtest: no wood denies fuel without changing profile, and missing fire readiness blocks host startup
+ok 33 - no wood denies fuel without changing profile, and missing fire readiness blocks host startup
+  ---
+  duration_ms: 1694.549
+  type: 'test'
+  ...
+# Subtest: hand torch fuel load debits exactly one madera and increments both bounded revisions
+ok 34 - hand torch fuel load debits exactly one madera and increments both bounded revisions
+  ---
+  duration_ms: 7.0759
+  type: 'test'
+  ...
+# Subtest: set settles elapsed fire time by flooring remaining fuel and never spends wood
+ok 35 - set settles elapsed fire time by flooring remaining fuel and never spends wood
+  ---
+  duration_ms: 1.1115
+  type: 'test'
+  ...
+# Subtest: raft fuel uses only the owner profile and matching living condition identity
+ok 36 - raft fuel uses only the owner profile and matching living condition identity
+  ---
+  duration_ms: 2.5643
+  type: 'test'
+  ...
+# Subtest: malformed fire state and unauthorized profile deltas are rejected
+ok 37 - malformed fire state and unauthorized profile deltas are rejected
+  ---
+  duration_ms: 6.5178
+  type: 'test'
+  ...
+# Subtest: new hand torch shows both inputs and sends an immutable versioned fuel intent
+ok 38 - new hand torch shows both inputs and sends an immutable versioned fuel intent
+  ---
+  duration_ms: 11.702
+  type: 'test'
+  ...
+# Subtest: confirmed fire state controls load and toggle buttons; only one pending command is allowed
+ok 39 - confirmed fire state controls load and toggle buttons; only one pending command is allowed
+  ---
+  duration_ms: 2.9703
+  type: 'test'
+  ...
+# Subtest: station uses pack plus raft hold as available stock and emits its stable composite key tuple
+ok 40 - station uses pack plus raft hold as available stock and emits its stable composite key tuple
+  ---
+  duration_ms: 2.1451
+  type: 'test'
+  ...
+# Subtest: retry sends the exact same request once and times out without changing confirmed fuel
+ok 41 - retry sends the exact same request once and times out without changing confirmed fuel
+  ---
+  duration_ms: 1.5985
+  type: 'test'
+  ...
+# Subtest: denials localize server recovery reasons and session changes reset the active request
+ok 42 - denials localize server recovery reasons and session changes reset the active request
+  ---
+  duration_ms: 1.8525
+  type: 'test'
+  ...
+# Subtest: English labels, disabled-world guard, active-only Escape, and dispose lifecycle
+ok 43 - English labels, disabled-world guard, active-only Escape, and dispose lifecycle
+  ---
+  duration_ms: 1.7409
+  type: 'test'
+  ...
+# Subtest: hot locale refresh translates pending and acknowledged status without resending the command
+ok 44 - hot locale refresh translates pending and acknowledged status without resending the command
+  ---
+  duration_ms: 1.7633
+  type: 'test'
+  ...
+# Subtest: an open fire panel redraws immediately on the global locale event and unsubscribes on dispose
+ok 45 - an open fire panel redraws immediately on the global locale event and unsubscribes on dispose
+  ---
+  duration_ms: 1.333
+  type: 'test'
+  ...
+# Subtest: unmarked historical worlds keep the one-plank hand torch UI and command contract
+ok 46 - unmarked historical worlds keep the one-plank hand torch UI and command contract
+  ---
+  duration_ms: 0.7438
+  type: 'test'
+  ...
+# Subtest: central durations define one loaded unit for each private fire kind
+ok 47 - central durations define one loaded unit for each private fire kind
+  ---
+  duration_ms: 6.6125
+  type: 'test'
+  ...
+# Subtest: legacy omission reads as empty while malformed and future versions fail closed
+ok 48 - legacy omission reads as empty while malformed and future versions fail closed
+  ---
+  duration_ms: 3.1368
+  type: 'test'
+  ...
+# Subtest: load is one unit, refuses occupied slots, and does not extract wood automatically
+ok 49 - load is one unit, refuses occupied slots, and does not extract wood automatically
+  ---
+  duration_ms: 1.2949
+  type: 'test'
+  ...
+# Subtest: active-time countdown floors, pauses cleanly, and resumes without free fuel
+ok 50 - active-time countdown floors, pauses cleanly, and resumes without free fuel
+  ---
+  duration_ms: 0.9348
+  type: 'test'
+  ...
+# Subtest: an exhausted flame cannot relight; loading then creates a fresh unlit unit
+ok 51 - an exhausted flame cannot relight; loading then creates a fresh unlit unit
+  ---
+  duration_ms: 0.917
+  type: 'test'
+  ...
+# Subtest: stable composite keys are bounded, detached, and prototype-safe
+ok 52 - stable composite keys are bounded, detached, and prototype-safe
+  ---
+  duration_ms: 5.7938
+  type: 'test'
+  ...
+# Subtest: invalid clocks and timestamps from the future fail instead of using wall time
+ok 53 - invalid clocks and timestamps from the future fail instead of using wall time
+  ---
+  duration_ms: 0.6914
+  type: 'test'
+  ...
+# Subtest: same command replay is effect-free and revision limits refuse mutations
+ok 54 - same command replay is effect-free and revision limits refuse mutations
+  ---
+  duration_ms: 0.3809
+  type: 'test'
+  ...
+# Subtest: craft, fill and decant use immutable exact commands and wait for authoritative profile changes
+ok 55 - craft, fill and decant use immutable exact commands and wait for authoritative profile changes
+  ---
+  duration_ms: 12.9781
+  type: 'test'
+  ...
+# Subtest: barrel transfer clamps to available water/capacity and disables distant, broken, empty, full, and no-bucket cases
+ok 56 - barrel transfer clamps to available water/capacity and disables distant, broken, empty, full, and no-bucket cases
+  ---
+  duration_ms: 5.8817
+  type: 'test'
+  ...
+# Subtest: retry is the same command once; timeout preserves uncertain pending state until final acknowledgement
+ok 57 - retry is the same command once; timeout preserves uncertain pending state until final acknowledgement
+  ---
+  duration_ms: 1.1423
+  type: 'test'
+  ...
+# Subtest: session reset clears uncertainty; gathering is localized and Escape closes only the open panel
+ok 58 - session reset clears uncertainty; gathering is localized and Escape closes only the open panel
+  ---
+  duration_ms: 1.0029
+  type: 'test'
+  ...
+# Subtest: copy is bilingual, source/range guards are clear, and no bucket creation shortcut appears
+ok 59 - copy is bilingual, source/range guards are clear, and no bucket creation shortcut appears
+  ---
+  duration_ms: 0.9311
+  type: 'test'
+  ...
+# Subtest: coconut appears as an edible good and sends the normal eat command
+ok 60 - coconut appears as an edible good and sends the normal eat command
+  ---
+  duration_ms: 1.4656
+  type: 'test'
+  ...
+# Subtest: vessel decoder is strict and missing legacy state stays empty
+ok 61 - vessel decoder is strict and missing legacy state stays empty
+  ---
+  duration_ms: 6.2843
+  type: 'test'
+  ...
+# Subtest: container mass and volume include the reusable bucket and its water
+ok 62 - container mass and volume include the reusable bucket and its water
+  ---
+  duration_ms: 1.4469
+  type: 'test'
+  ...
+# Subtest: commands have an exact bounded shape
+ok 63 - commands have an exact bounded shape
+  ---
+  duration_ms: 3.3378
+  type: 'test'
+  ...
+# Subtest: craft, fill, deposit, withdraw and decant conserve water without mutating input
+ok 64 - craft, fill, deposit, withdraw and decant conserve water without mutating input
+  ---
+  duration_ms: 13.2722
+  type: 'test'
+  ...
+# Subtest: full, empty, stale, owner, condition, room and revision-limit refusals are atomic
+ok 65 - full, empty, stale, owner, condition, room and revision-limit refusals are atomic
+  ---
+  duration_ms: 4.5737
+  type: 'test'
+  ...
+# Subtest: profile vessel validation preserves valid broken barrel contents and rejects mismatched identities
+ok 66 - profile vessel validation preserves valid broken barrel contents and rejects mismatched identities
+  ---
+  duration_ms: 0.7636
+  type: 'test'
+  ...
+# Subtest: valid cooperative final hit atomically commits the two contributor profiles and receipt
+ok 67 - valid cooperative final hit atomically commits the two contributor profiles and receipt
+  ---
+  duration_ms: 1754.0397
+  type: 'test'
+  ...
+# Subtest: memory contract rejects omitted contributors, fabricated practice, ACK count and cooldowns atomically
+ok 68 - memory contract rejects omitted contributors, fabricated practice, ACK count and cooldowns atomically
+  ---
+  duration_ms: 7651.6368
+  type: 'test'
+  ...
+# Subtest: reusing a committed cycle under a fresh operation ID cannot award it again
+ok 69 - reusing a committed cycle under a fresh operation ID cannot award it again
+  ---
+  duration_ms: 1103.4236
+  type: 'test'
+  ...
+# Subtest: one stale beneficiary CAS leaves every profile, world and receipt untouched
+ok 70 - one stale beneficiary CAS leaves every profile, world and receipt untouched
+  ---
+  duration_ms: 1075.2741
+  type: 'test'
+  ...
+# Subtest: legacy null-cycle deadline is rejected and omitted progress survives partial hits and denial
+ok 71 - legacy null-cycle deadline is rejected and omitted progress survives partial hits and denial
+  ---
+  duration_ms: 838.6767
+  type: 'test'
+  ...
+# Subtest: pilot v2 progression is preserved by the cooperative award and participant contract
+ok 72 - pilot v2 progression is preserved by the cooperative award and participant contract
+  ---
+  duration_ms: 976.4165
+  type: 'test'
+  ...
+# Subtest: timing upgrade creates v3 ledgers and keeps legacy partial trees uncredited
+ok 73 - timing upgrade creates v3 ledgers and keeps legacy partial trees uncredited
+  ---
+  duration_ms: 7.1162
+  type: 'test'
+  ...
+# Subtest: v3 authoritative proof accumulates perfect quality and determines three-to-six log yield
+ok 74 - v3 authoritative proof accumulates perfect quality and determines three-to-six log yield
+  ---
+  duration_ms: 30.0694
+  type: 'test'
+  ...
+# Subtest: v3 palm hits require an authoritative proof and reject forged quality
+ok 75 - v3 palm hits require an authoritative proof and reject forged quality
+  ---
+  duration_ms: 6.8175
+  type: 'test'
+  ...
+# Subtest: renders every carried good, volume, mass, and tier-one utility tools
+ok 76 - renders every carried good, volume, mass, and tier-one utility tools
+  ---
+  duration_ms: 4.3771
+  type: 'test'
+  ...
+# Subtest: lists all catalog goods with positive counts and marks pending presentation quantities
+ok 77 - lists all catalog goods with positive counts and marks pending presentation quantities
+  ---
+  duration_ms: 4.1346
+  type: 'test'
+  ...
+# Subtest: supports English labels and a projected pack without changing saved inventory
+ok 78 - supports English labels and a projected pack without changing saved inventory
+  ---
+  duration_ms: 1.5729
+  type: 'test'
+  ...
+# Subtest: English inventory has names for the new resin and coconut goods
+ok 79 - English inventory has names for the new resin and coconut goods
+  ---
+  duration_ms: 0.6183
+  type: 'test'
+  ...
+# Subtest: carry metadata supplies mass limit and strength; each item exposes both dimensions
+ok 80 - carry metadata supplies mass limit and strength; each item exposes both dimensions
+  ---
+  duration_ms: 0.5845
+  type: 'test'
+  ...
+# Subtest: empty packs and unowned tools have localized empty states
+ok 81 - empty packs and unowned tools have localized empty states
+  ---
+  duration_ms: 0.5515
+  type: 'test'
+  ...
+# Subtest: reusable bucket remains visible when empty and counts water mass once
+ok 82 - reusable bucket remains visible when empty and counts water mass once
+  ---
+  duration_ms: 1.6308
+  type: 'test'
+  ...
+# Subtest: confirmed gathering commits profile and resource-node state through the M5 receipt
+ok 83 - confirmed gathering commits profile and resource-node state through the M5 receipt
+  ---
+  duration_ms: 1035.8664
+  type: 'test'
+  ...
+# Subtest: crafting a stone axe consumes materials once, persists the tool, and exact replay does not debit again
+ok 84 - crafting a stone axe consumes materials once, persists the tool, and exact replay does not debit again
+  ---
+  duration_ms: 859.0827
+  type: 'test'
+  ...
+# Subtest: partial palm work persists node revision and hits without granting logs until the final hit
+ok 85 - partial palm work persists node revision and hits without granting logs until the final hit
+  ---
+  duration_ms: 651.4618
+  type: 'test'
+  ...
+# Subtest: a second host restores node progress and inventory from the same store without respawning it
+ok 86 - a second host restores node progress and inventory from the same store without respawning it
+  ---
+  duration_ms: 1127.1071
+  type: 'test'
+  ...
+# Subtest: resource cooldown resumes with the same logical remainder after a long offline period
+ok 87 - resource cooldown resumes with the same logical remainder after a long offline period
+  ---
+  duration_ms: 1112.1989
+  type: 'test'
+  ...
+# Subtest: lost resource commit reply stays behind the tick gate until the exact receipt is recovered
+ok 88 - lost resource commit reply stays behind the tick gate until the exact receipt is recovered
+  ---
+  duration_ms: 465.2059
+  type: 'test'
+  ...
+# Subtest: two accounts contending for one node can produce only one gather result
+ok 89 - two accounts contending for one node can produce only one gather result
+  ---
+  duration_ms: 505.8989
+  type: 'test'
+  ...
+# Subtest: guest gathering is denied and a reused opId cannot be rebound to another resource request
+ok 90 - guest gathering is denied and a reused opId cannot be rebound to another resource request
+  ---
+  duration_ms: 615.4933
+  type: 'test'
+  ...
+# Subtest: collection feels immediate at 500ms RTT without changing saved or simulation inventory
+ok 91 - collection feels immediate at 500ms RTT without changing saved or simulation inventory
+  ---
+  duration_ms: 4.7942
+  type: 'test'
+  ...
+# Subtest: different nodes can be collected while the first response is delayed; the same node cannot
+ok 92 - different nodes can be collected while the first response is delayed; the same node cannot
+  ---
+  duration_ms: 0.8473
+  type: 'test'
+  ...
+# Subtest: a denial restores the world view and inventory while preserving unrelated confirmed goods
+ok 93 - a denial restores the world view and inventory while preserving unrelated confirmed goods
+  ---
+  duration_ms: 1.1199
+  type: 'test'
+  ...
+# Subtest: a lost response rolls back only the preview and retries the exact receipt without new feedback
+ok 94 - a lost response rolls back only the preview and retries the exact receipt without new feedback
+  ---
+  duration_ms: 0.785
+  type: 'test'
+  ...
+# Subtest: tool swings respond locally but only the server grants final harvest materials
+ok 95 - tool swings respond locally but only the server grants final harvest materials
+  ---
+  duration_ms: 1.014
+  type: 'test'
+  ...
+# Subtest: full bags, send failures and disconnects leave no speculative materials
+ok 96 - full bags, send failures and disconnects leave no speculative materials
+  ---
+  duration_ms: 1.0185
+  type: 'test'
+  ...
+# Subtest: pending collections stay bounded and block crafting with a stale canonical revision
+ok 97 - pending collections stay bounded and block crafting with a stale canonical revision
+  ---
+  duration_ms: 1.1255
+  type: 'test'
+  ...
+# Subtest: legacy acknowledgements and PROFILE-before-ACK reconcile without granting a second copy
+ok 98 - legacy acknowledgements and PROFILE-before-ACK reconcile without granting a second copy
+  ---
+  duration_ms: 0.531
+  type: 'test'
+  ...
+# Subtest: confirmed collections stay visible while canonical updates are late
+ok 99 - confirmed collections stay visible while canonical updates are late
+  ---
+  duration_ms: 0.5641
+  type: 'test'
+  ...
+# Subtest: a successful late acknowledgement restores its preview until canonical updates arrive
+ok 100 - a successful late acknowledgement restores its preview until canonical updates arrive
+  ---
+  duration_ms: 0.677
+  type: 'test'
+  ...
+# Subtest: enabled palm loot is versioned on gather and its acknowledged bonus toast appears once
+ok 101 - enabled palm loot is versioned on gather and its acknowledged bonus toast appears once
+  ---
+  duration_ms: 4.8923
+  type: 'test'
+  ...
+# Subtest: two players race for one resource; shared depletion and exact replay cannot duplicate goods
+ok 102 - two players race for one resource; shared depletion and exact replay cannot duplicate goods
+  ---
+  duration_ms: 18.6744
+  type: 'test'
+  ...
+# Subtest: rejects malformed and extra fields without coercion
+ok 103 - rejects malformed and extra fields without coercion
+  ---
+  duration_ms: 3.629
+  type: 'test'
+  ...
+# Subtest: denies far, dead, moving, attacking, dashing, water, dock, and deck actions
+ok 104 - denies far, dead, moving, attacking, dashing, water, dock, and deck actions
+  ---
+  duration_ms: 2.7879
+  type: 'test'
+  ...
+# Subtest: gathering remains available while a non-aboard player is naval-locked
+ok 105 - gathering remains available while a non-aboard player is naval-locked
+  ---
+  duration_ms: 2.2996
+  type: 'test'
+  ...
+# Subtest: gathering requires calm, a live player entity, and a node revision below the cap
+ok 106 - gathering requires calm, a live player entity, and a node revision below the cap
+  ---
+  duration_ms: 3.4369
+  type: 'test'
+  ...
+# Subtest: gather capacity keeps maxMass and rejects a stone heavier than the remaining pack allowance
+ok 107 - gather capacity keeps maxMass and rejects a stone heavier than the remaining pack allowance
+  ---
+  duration_ms: 2.1214
+  type: 'test'
+  ...
+# Subtest: logging aim retry reuses the exact request and a correlated denial clears pending UI state
+ok 108 - logging aim retry reuses the exact request and a correlated denial clears pending UI state
+  ---
+  duration_ms: 1.6874
+  type: 'test'
+  ...
+# Subtest: craft requires calm, bench proximity, and no naval lock; pack mutation conserves units
+ok 109 - craft requires calm, bench proximity, and no naval lock; pack mutation conserves units
+  ---
+  duration_ms: 2.735
+  type: 'test'
+  ...
+# Subtest: full pack, revision conflicts and save preflight are atomic
+ok 110 - full pack, revision conflicts and save preflight are atomic
+  ---
+  duration_ms: 3.3537
+  type: 'test'
+  ...
+# Subtest: cooldown and respawn use world ticks; receipt window is bounded and clearable on detach
+ok 111 - cooldown and respawn use world ticks; receipt window is bounded and clearable on detach
+  ---
+  duration_ms: 2.57
+  type: 'test'
+  ...
+# Subtest: keeps only the newest 64 operation receipts per player
+ok 112 - keeps only the newest 64 operation receipts per player
+  ---
+  duration_ms: 2.2978
+  type: 'test'
+  ...
+# Subtest: bench crafting rejects missing materials, full output capacity, and revision overflow
+ok 113 - bench crafting rejects missing materials, full output capacity, and revision overflow
+  ---
+  duration_ms: 1.6503
+  type: 'test'
+  ...
+# Subtest: rest and active foot/swim/aboard commands drain at the approved rates
+ok 114 - rest and active foot/swim/aboard commands drain at the approved rates
+  ---
+  duration_ms: 755.1431
+  type: 'test'
+  ...
+# Subtest: death and disabled survival freeze meters; offline has no stepping path
+ok 115 - death and disabled survival freeze meters; offline has no stepping path
+  ---
+  duration_ms: 1296.4038
+  type: 'test'
+  ...
+# Subtest: profile field is strict and sanitizer rejects malformed present fields
+ok 116 - profile field is strict and sanitizer rejects malformed present fields
+  ---
+  duration_ms: 3.7718
+  type: 'test'
+  ...
+# Subtest: meter restore updates maxima without healing and preserves an explicit full field
+ok 117 - meter restore updates maxima without healing and preserves an explicit full field
+  ---
+  duration_ms: 709.8867
+  type: 'test'
+  ...
+# Subtest: respawn sets both meters to 50 and profile capture agrees with live meters
+ok 118 - respawn sets both meters to 50 and profile capture agrees with live meters
+  ---
+  duration_ms: 568.438
+  type: 'test'
+  ...
+# Subtest: client HUD reports the same penalized stamina maximum as combat
+ok 119 - client HUD reports the same penalized stamina maximum as combat
+  ---
+  duration_ms: 555.5912
+  type: 'test'
+  ...
+# Subtest: crafting UI language follows the locale source even when document.lang is stale
+ok 120 - crafting UI language follows the locale source even when document.lang is stale
+  ---
+  duration_ms: 17.3744
+  type: 'test'
+  ...
+# Subtest: the torch is a real hand recipe: two logs and resin from the pack, no output goods, one load
+ok 121 - the torch is a real hand recipe: two logs and resin from the pack, no output goods, one load
+  ---
+  duration_ms: 2.8038
+  type: 'test'
+  ...
+# Subtest: crafting the torch sends the fire panel intent and resolves on the matching fire event
+ok 122 - crafting the torch sends the fire panel intent and resolves on the matching fire event
+  ---
+  duration_ms: 75.6598
+  type: 'test'
+  ...
+# Subtest: a burning torch, missing resin or a world without fire block the torch with a clear reason
+ok 123 - a burning torch, missing resin or a world without fire block the torch with a clear reason
+  ---
+  duration_ms: 4.4317
+  type: 'test'
+  ...
+# Subtest: the fire panel shows both log and resin cards and links to torch crafting when short
+ok 124 - the fire panel shows both log and resin cards and links to torch crafting when short
+  ---
+  duration_ms: 4.1233
+  type: 'test'
+  ...
+# Subtest: projectiles light their surroundings with free slots only, nearest first
+ok 125 - projectiles light their surroundings with free slots only, nearest first
+  ---
+  duration_ms: 982.8807
+  type: 'test'
+  ...
+# Subtest: projectile lights never take the slots of the ranked static lights
+ok 126 - projectile lights never take the slots of the ranked static lights
+  ---
+  duration_ms: 842.7111
+  type: 'test'
+  ...
+# Subtest: capability snapshot advertises versioned rules and enabled host rejects unversioned commands
+ok 127 - capability snapshot advertises versioned rules and enabled host rejects unversioned commands
+  ---
+  duration_ms: 1037.4765
+  type: 'test'
+  ...
+# Subtest: torch capability fails closed when its SQL readiness check is unavailable
+ok 128 - torch capability fails closed when its SQL readiness check is unavailable
+  ---
+  duration_ms: 681.5739
+  type: 'test'
+  ...
+# Subtest: marked final palm receipt grants exact drops once and versioned torch spends two logs plus resin
+ok 129 - marked final palm receipt grants exact drops once and versioned torch spends two logs plus resin
+  ---
+  duration_ms: 1152.1906
+  type: 'test'
+  ...
+# Subtest: coconut hydration is capped, durable across restart, and receipt replay consumes only once
+ok 130 - coconut hydration is capped, durable across restart, and receipt replay consumes only once
+  ---
+  duration_ms: 1322.5538
+  type: 'test'
+  ...
+# Subtest: disabled capability retains unversioned one-plank hand torch and no palm drops
+ok 131 - disabled capability retains unversioned one-plank hand torch and no palm drops
+  ---
+  duration_ms: 1618.6
+  type: 'test'
+  ...
+# Subtest: stable ASCII rolls use strict chance thresholds and stay near authored rates across node IDs
+ok 132 - stable ASCII rolls use strict chance thresholds and stay near authored rates across node IDs
+  ---
+  duration_ms: 14.4626
+  type: 'test'
+  ...
+# Subtest: only a successful final palm hit grants and receipts the independently rolled bonus goods
+ok 133 - only a successful final palm hit grants and receipts the independently rolled bonus goods
+  ---
+  duration_ms: 3.7712
+  type: 'test'
+  ...
+# Subtest: bonus capacity denial on the final hit leaves the node, pack, revision, and dirty set untouched
+ok 134 - bonus capacity denial on the final hit leaves the node, pack, revision, and dirty set untouched
+  ---
+  duration_ms: 1.6913
+  type: 'test'
+  ...
+# Subtest: harvest bonus calculation does not consume world RNG state
+ok 135 - harvest bonus calculation does not consume world RNG state
+  ---
+  duration_ms: 1.8046
+  type: 'test'
+  ...
+# Subtest: hand torch spends two logs and one resin for 20 minutes while raft fires keep one plank fuel
+ok 136 - hand torch spends two logs and one resin for 20 minutes while raft fires keep one plank fuel
+  ---
+  duration_ms: 3.5693
+  type: 'test'
+  ...
+# Subtest: local fire authority gates new solo worlds but still replays historical one-plank receipts
+ok 137 - local fire authority gates new solo worlds but still replays historical one-plank receipts
+  ---
+  duration_ms: 3.4642
+  type: 'test'
+  ...
+# Subtest: local resource authority requires lootRules only on enabled palms and preserves stored legacy receipts
+ok 138 - local resource authority requires lootRules only on enabled palms and preserves stored legacy receipts
+  ---
+  duration_ms: 0.8214
+  type: 'test'
+  ...
+# Subtest: coco has the requested trade dimensions and restores 25 hydration through the normal food path
+ok 139 - coco has the requested trade dimensions and restores 25 hydration through the normal food path
+  ---
+  duration_ms: 2.9835
+  type: 'test'
+  ...
+# Subtest: two logs make one board; batch crafting consumes exact inputs and advances one revision
+ok 140 - two logs make one board; batch crafting consumes exact inputs and advances one revision
+  ---
+  duration_ms: 9.2449
+  type: 'test'
+  ...
+# Subtest: exact batch replay does not debit twice; quantity reuse is denied and omitted n equals one
+ok 141 - exact batch replay does not debit twice; quantity reuse is denied and omitted n equals one
+  ---
+  duration_ms: 4.2968
+  type: 'test'
+  ...
+# Subtest: batch schema rejects invalid n values and gather cannot carry n
+ok 142 - batch schema rejects invalid n values and gather cannot carry n
+  ---
+  duration_ms: 2.6845
+  type: 'test'
+  ...
+# Subtest: insufficient materials, stale revision, preflight false or throw leave profile and side effects untouched
+ok 143 - insufficient materials, stale revision, preflight false or throw leave profile and side effects untouched
+  ---
+  duration_ms: 4.6317
+  type: 'test'
+  ...
+# Subtest: final output volume overflow rejects the entire batch
+ok 144 - final output volume overflow rejects the entire batch
+  ---
+  duration_ms: 3.8956
+  type: 'test'
+  ...
+# Subtest: craft rejects dead, low-health, combat, distant, and naval-locked actions
+ok 145 - craft rejects dead, low-health, combat, distant, and naval-locked actions
+  ---
+  duration_ms: 3.1599
+  type: 'test'
+  ...
+# Subtest: only the first of two distinct requests at the same revision can craft
+ok 146 - only the first of two distinct requests at the same revision can craft
+  ---
+  duration_ms: 2.9539
+  type: 'test'
+  ...
+# Subtest: pure workbench preview agrees with server batch input, output, and pack-space limits
+ok 147 - pure workbench preview agrees with server batch input, output, and pack-space limits
+  ---
+  duration_ms: 2.37
+  type: 'test'
+  ...
+# Subtest: workbench preview and server agree when a recipe would exceed the pack mass limit
+ok 148 - workbench preview and server agree when a recipe would exceed the pack mass limit
+  ---
+  duration_ms: 1.9418
+  type: 'test'
+  ...
+# Subtest: LocalServer HMAC batch craft acknowledges, saves, replays once, and reloads exact profile state
+ok 149 - LocalServer HMAC batch craft acknowledges, saves, replays once, and reloads exact profile state
+  ---
+  duration_ms: 1860.1142
+  type: 'test'
+  ...
+1..149
+# tests 149
+# suites 0
+# pass 149
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 57177.8842

@@ -1,0 +1,608 @@
+{
+  "schema": "l01c-agent-lifecycle-verification/v1",
+  "status": "local_software_verified",
+  "generatedAt": "2026-10-08T13:31:27.792Z",
+  "checkout": {
+    "initialHead": "342c026f3ffcfdd958f8507c688ebe4ac43c5440",
+    "finalHead": "342c026f3ffcfdd958f8507c688ebe4ac43c5440",
+    "sharedDirty": true,
+    "missionCommit": null,
+    "hashBasis": "Final working files after tests and documentation; shared checkout is not an immutable test snapshot."
+  },
+  "protocol": {
+    "version": 27,
+    "changedByMission": false
+  },
+  "agentTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs",
+    "startedAt": null,
+    "finishedAt": null,
+    "resultRetrievedAt": "2026-10-08T11:26:57Z",
+    "timestampBasis": "Exact process start/end timestamps were not captured for this direct unified_exec invocation.",
+    "evidenceBasis": "Root reviewed both tool output chunks of unified_exec session 50082; final tool result exit code 0.",
+    "exitCode": 0,
+    "signal": null,
+    "error": null,
+    "tests": 97,
+    "pass": 96,
+    "fail": 0,
+    "skipped": 1,
+    "cancelled": 0,
+    "durationMs": 24727.5473,
+    "log": "agent-tests-final-tail.tap",
+    "logCompleteness": "Partial TAP: persisted final output chunk, tests 57-97 and final totals. Tests 1-56 were reviewed in the initial tool output but were not persisted.",
+    "testChange": "Wait for asynchronous receiver delivery in bounded chat retry test before asserting exactly one copy; retry/deduplication rules unchanged."
+  },
+  "regressionTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs",
+    "startedAt": "2026-10-08T13:28:35.649Z",
+    "finishedAt": "2026-10-08T13:28:50.381Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 20,
+    "pass": 20,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 14620.2422,
+    "stderr": "",
+    "log": "chat-network-regression.tap"
+  },
+  "rootReview": {
+    "runtimeRead": true,
+    "newTestsRead": true,
+    "finalSuitesExecuted": true,
+    "rawTapReviewed": true,
+    "newCases": 9,
+    "deathBasis": "trusted wire fixtures for death event and own HP=0 snapshot",
+    "realNetwork": "Ordinary local WebSocket guests: slot release and reentry, observer sees player; fresh body stays idle with no old input replay; host errors=0.",
+    "cli": "Real local guest CLI: sent move -> stop -> inspect -> explicit reentry; same file hashes, archived uncertainty in bounded context, stale IDs/scopes rejected; no inference or spend.",
+    "preliminaryAttempt": "Worker observed immediate fresh admission can fail before host frees old slot. Final network test waits for host status count; runtime reports failure without automatic retry.",
+    "finalAgentTap": "Root reviewed both direct tool chunks; only tests 57-97 and totals are persisted in agent-tests-final-tail.tap.",
+    "testFixes": [
+      "Wait for actual asynchronous receiver delivery before asserting one deduplicated chat copy.",
+      "Early network teardown and abortable loop, preserving 30000 ms timeout and all assertions."
+    ],
+    "reviewers": "Root runtime/tests/evidence read; Luna read-only contract and teardown review."
+  },
+  "limits": {
+    "authority": "local_runner_only",
+    "characterContinuity": "new_guest_body",
+    "archiveDurability": "process_only",
+    "serverQueueRevocation": "unproven",
+    "noAutomaticRetryOrResume": true,
+    "inferenceCalls": 0,
+    "gameSpendingEnabled": false,
+    "publication": false,
+    "newVisualAcceptance": false,
+    "fullGameSuiteExecuted": false,
+    "skipReason": "Windows symlink creation EPERM, not counted as pass"
+  },
+  "checks": {
+    "utf8Files": 39,
+    "replacementCharacters": 0,
+    "trailingWhitespaceFiles": 0,
+    "focusedRelativeLinks": 43,
+    "directionRows": 22,
+    "launchModality": "D-A3 Propuesto; por acordar",
+    "scopedGitDiffCheck": "passed; LF/CRLF normalization warnings only",
+    "cleanup": "Final normal suites exited naturally. Temporary 1000 ms network timeout copy also exited naturally with expected cancellation; copy removed. Prior owned timed-out network process tree was terminated after missing teardown caused it to stay open.",
+    "badEncoding": [],
+    "replacementCharacterFiles": [],
+    "trailingWhitespacePaths": [],
+    "missingLinks": [],
+    "directionIds": [
+      "L00a",
+      "L00b",
+      "L00c",
+      "L00d",
+      "L01a",
+      "L01b",
+      "L01c",
+      "L02a",
+      "L02b",
+      "L02c",
+      "L03a",
+      "L03b",
+      "L03c",
+      "L04a",
+      "L04b",
+      "L05a",
+      "L05b",
+      "L06a",
+      "L06b",
+      "L06c",
+      "L06d",
+      "L06e"
+    ],
+    "launchModalityUnchanged": true
+  },
+  "artifacts": [
+    {
+      "path": "DESIGN.md",
+      "bytes": 74201,
+      "sha256": "75f499ce39b6cd883a8321a99d64a4b9977c9f38fd2f0ff10b10bdeeafcc3832"
+    },
+    {
+      "path": "PLAN-DELIVERY.md",
+      "bytes": 64099,
+      "sha256": "47c3965819e9bf6245cce5e98a9ef120772e09ce97891f5b7e8eaaea4ae26698"
+    },
+    {
+      "path": "PLAN-EXTRA-LLM.md",
+      "bytes": 53323,
+      "sha256": "3afbdd92d2eeb91c520f61422571d12a47480a0c64e6f1375b200846d3c27e6f"
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "bytes": 102297,
+      "sha256": "8e66b844720076cb7b3fddbcf5f280e64d8ced96f0e3e8b4fbf8c1ef99acfc9e"
+    },
+    {
+      "path": "docs/agents/chat-runner.md",
+      "bytes": 5079,
+      "sha256": "ebca20b423f6d4fb3c6c172d70f1fe8f8dac9dce809ef2e5b82ea3e835ae69b7"
+    },
+    {
+      "path": "docs/agents/interface-v1.md",
+      "bytes": 15808,
+      "sha256": "1fa01a43626bdf6347c8e163fa037874653ef48b04990f09f6422cb75815a1e5"
+    },
+    {
+      "path": "docs/agents/lifecycle-runner.md",
+      "bytes": 4852,
+      "sha256": "0219e3db2690fb37ddd17063971c3749332bcd2b82b5596a9bfb7c8353e9ecd2"
+    },
+    {
+      "path": "docs/agents/network-runner.md",
+      "bytes": 6816,
+      "sha256": "7ac58348f9f280bc2ed624cba4e3af51f65da09da392af4acbceb335e125676f"
+    },
+    {
+      "path": "docs/briefs/l01c-agent-lifecycle.md",
+      "bytes": 1995,
+      "sha256": "c01711ca3e7d59e3df6c6b372e592aac58776693688dd33fe8fc19f7c75906b1"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle.md",
+      "bytes": 7306,
+      "sha256": "7ca0512629672d57679b57abb7d80a07eadefcc82d14b46598d5600a80af399e"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/agent-tests-admission-timeout.json",
+      "bytes": 704,
+      "sha256": "c8116d8a9b783e6331ebff223418286e1f78fdf3c7a851550d5a4b7049def14d"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/agent-tests-admission-timeout.tap",
+      "bytes": 22976,
+      "sha256": "edf25f2d6d2912434dd4919d5848c263314399408f392b45dd2cc53d9853f9d8"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/agent-tests-final-tail.tap",
+      "bytes": 9862,
+      "sha256": "a4d379d739f1f0e936651d6196c769f198ae8ef3a34757eecfcd00532f05c884"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/agent-tests-final.json",
+      "bytes": 1254,
+      "sha256": "e1685be64988f5567aa82078bcdf2c9f1645bd2006c9ce6398f4b3b94367cba1"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/agent-tests-interrupted.json",
+      "bytes": 754,
+      "sha256": "9ec728d48506f4d1ba46504f621eb2921b4192ffccd0a6b9e1bf893716b42060"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/agent-tests-interrupted.tap",
+      "bytes": 1311,
+      "sha256": "98d5b5518c7ebe8e2de16fdaccd5fc2936ee53e5e8787fb6dff439fd839026a9"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/agent-tests.json",
+      "bytes": 742,
+      "sha256": "b99a838cab946b0ddb14a6070887bae7a4dc9e5aaa471085dfa559083b6cd6aa"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/agent-tests.tap",
+      "bytes": 1311,
+      "sha256": "98d5b5518c7ebe8e2de16fdaccd5fc2936ee53e5e8787fb6dff439fd839026a9"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/chat-network-regression-interrupted.json",
+      "bytes": 527,
+      "sha256": "e4a141e02dbbf19511a03a4f20ef13162b94230920460ec4d985fbbda00d2c27"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/chat-network-regression-interrupted.tap",
+      "bytes": 4101,
+      "sha256": "84defb1df940ac81182218e286b6e5986b2e310662079d37f767afa6923e1e5e"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/chat-network-regression-timeout.json",
+      "bytes": 761,
+      "sha256": "c4cbbd8003b3f9c73abecab82aa3d285a862ec3edd7c1c3019ea4c1faeffae94"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/chat-network-regression-timeout.tap",
+      "bytes": 4944,
+      "sha256": "94b0d38530e5df9b2a88b950f12e5cb337320b82698b1071f3fc23e7b564c298"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/chat-network-regression.json",
+      "bytes": 442,
+      "sha256": "8c2a2416d756d98955c07a6794f39e0312e4dcb3aa3af84918b31812b3cbcc68"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/chat-network-regression.tap",
+      "bytes": 4728,
+      "sha256": "287ae12f74fea38894d079059b44efe9b07aa8e44d7838b1a9b3e59cae30ffce"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/dependency-final-check.json",
+      "bytes": 1182,
+      "sha256": "588535667e50088440020343fa5a2ac79a4566eb9b8c2f737ba64ee2f0800005"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/dependency-stability-admission-timeout.json",
+      "bytes": 2161,
+      "sha256": "4c7c14912c33dff4ef907e696789b2bf59128b82c783429b26225ed2674c3626"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/dependency-stability.json",
+      "bytes": 2180,
+      "sha256": "e1049f0a9f3161923788870eb2c390ec4adf99186c389420e61caea543225ab6"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/net-cleanup-abort.json",
+      "bytes": 654,
+      "sha256": "184a8477814e9e78e412411785ec989d7af6da96686b1b3243403869fa0626ae"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/net-cleanup-abort.tap",
+      "bytes": 585,
+      "sha256": "b2788d73b8949a540a45585976fbaa1d0ec77927c723f19cba4f59e44dd1ea0f"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/net-cleanup-tests.json",
+      "bytes": 385,
+      "sha256": "291c47e8131dbd706d44a581653a5fd1200987d46755f8a830110f25c53304e1"
+    },
+    {
+      "path": "docs/delivery/l01c-agent-lifecycle/net-cleanup-tests.tap",
+      "bytes": 637,
+      "sha256": "0d0fce9ac22e8679608a58f59c0ef4298bd7bf6056c30fb8ed4f96d0dde16675"
+    },
+    {
+      "path": "tests/agent-chat.test.mjs",
+      "bytes": 18367,
+      "sha256": "29117cbc51f9d8e730c3ef1412a4dedbaca2fc9ae57a83fb0c952d0d36e76b31"
+    },
+    {
+      "path": "tests/agent-lifecycle-runner.test.mjs",
+      "bytes": 8077,
+      "sha256": "01af218b484c42239f2ed9ba459b3c0d3853456d05cab9cebe50da73c2797101"
+    },
+    {
+      "path": "tests/agent-lifecycle.test.mjs",
+      "bytes": 19861,
+      "sha256": "b3521b2514f5076eb85fe2f3ba4a00da98a76de8c2e5a61496081529c1751db6"
+    },
+    {
+      "path": "tests/net.test.mjs",
+      "bytes": 6937,
+      "sha256": "8bfc03032c4df82f66690fdf7cd8e24701914fef6a5a2e017204e4037fa16b89"
+    },
+    {
+      "path": "tools/agent/network-client.mjs",
+      "bytes": 18409,
+      "sha256": "306f6f04c11e4d478be85dd810f29c6e735f89d005ec96ed621d279ecfbf3ba6"
+    },
+    {
+      "path": "tools/agent/network-runner.mjs",
+      "bytes": 6732,
+      "sha256": "3d5cc0219e02532a3380c53df7dc87261ac21f8554b6ca914dd02b8045e421fe"
+    },
+    {
+      "path": "tools/agent/run.mjs",
+      "bytes": 8779,
+      "sha256": "458572e52df03f0b41ae92c0b08c5ddca974a99090a0e7cade7397245d0c44a2"
+    },
+    {
+      "path": "tools/agent/session.mjs",
+      "bytes": 9498,
+      "sha256": "d4d98c3da88e453b31ad0ed72ad7b25b5a0e18d7d85ec49f5854bee71eaa7bfd"
+    }
+  ],
+  "checkedLinks": [
+    {
+      "source": "docs/briefs/l01c-agent-lifecycle.md",
+      "target": "../research/unreal-assets/CANDIDATES.csv"
+    },
+    {
+      "source": "docs/agents/lifecycle-runner.md",
+      "target": "../../tools/agent/network-runner.mjs"
+    },
+    {
+      "source": "docs/agents/lifecycle-runner.md",
+      "target": "network-runner.md"
+    },
+    {
+      "source": "docs/agents/lifecycle-runner.md",
+      "target": "chat-runner.md"
+    },
+    {
+      "source": "docs/agents/lifecycle-runner.md",
+      "target": "../delivery/l01c-agent-lifecycle.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "chat-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "chat-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "../delivery/l01a-agent-network.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "../delivery/l01b-agent-chat.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/chat-runner.md",
+      "target": "network-runner.md"
+    },
+    {
+      "source": "docs/agents/chat-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/chat-runner.md",
+      "target": "../delivery/l01b-agent-chat.md"
+    },
+    {
+      "source": "docs/agents/chat-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../briefs/l00-agent-interface.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../PLAN-EXTRA-LLM.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../tools/agent/fixtures/personality.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../tools/agent/fixtures/objectives.json"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../tools/agent/fixtures/memory.jsonl"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "chat-runner.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "network-runner.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "../../tools/agent/network-runner.mjs"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "../agents/lifecycle-runner.md"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle/agent-tests-final.json"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle/agent-tests-final-tail.tap"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle/chat-network-regression.tap"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle/chat-network-regression.json"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "../../tests/agent-lifecycle.test.mjs"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "../../tests/agent-lifecycle-runner.test.mjs"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle-verification.json"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle/agent-tests-admission-timeout.json"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle/agent-tests-interrupted.json"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "../../tests/agent-chat.test.mjs"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle/chat-network-regression-interrupted.json"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle/chat-network-regression-timeout.json"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "../../tests/net.test.mjs"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle/net-cleanup-tests.json"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle/net-cleanup-abort.json"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "l01c-agent-lifecycle/dependency-final-check.json"
+    },
+    {
+      "source": "docs/delivery/l01c-agent-lifecycle.md",
+      "target": "../briefs/l01c-agent-lifecycle.md"
+    }
+  ],
+  "next": "L02a",
+  "verificationAttempts": {
+    "agentAdmissionTimeout": {
+      "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs",
+      "startedAt": "2026-10-08T11:14:44.427Z",
+      "finishedAt": "2026-10-08T11:15:15.798Z",
+      "exitCode": 1,
+      "signal": null,
+      "error": null,
+      "tests": 97,
+      "pass": 95,
+      "fail": 1,
+      "skipped": 1,
+      "cancelled": 0,
+      "stderr": "",
+      "durationMs": 31130.1014,
+      "log": "agent-tests-admission-timeout.tap"
+    },
+    "agentInterrupted": {
+      "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs",
+      "startedAt": "2026-10-08T11:16:19.019Z",
+      "finishedAt": "2026-10-08T11:18:22.878Z",
+      "exitCode": null,
+      "signal": "SIGTERM",
+      "error": "spawnSync C:\\Program Files\\nodejs\\node.exe ETIMEDOUT",
+      "tests": -1,
+      "pass": -1,
+      "fail": -1,
+      "skipped": -1,
+      "cancelled": -1,
+      "stderr": "",
+      "durationMs": -1,
+      "log": "agent-tests-interrupted.tap"
+    },
+    "regressionInterrupted": {
+      "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs",
+      "startedAt": "2026-10-08T11:28:39.373Z",
+      "finishedAt": "2026-10-08T11:29:24.639Z",
+      "exitCode": null,
+      "signal": "SIGTERM",
+      "error": "spawnSync C:\\Program Files\\nodejs\\node.exe ETIMEDOUT",
+      "tests": -1,
+      "pass": -1,
+      "fail": -1,
+      "skipped": -1,
+      "cancelled": -1,
+      "stderr": "",
+      "durationMs": -1,
+      "log": "chat-network-regression-interrupted.tap"
+    },
+    "regressionTimeout": {
+      "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs",
+      "startedAt": "2026-10-08T11:32:41.6116144Z",
+      "finishedAt": "2026-10-08T11:44:26.9905353Z",
+      "exitCode": 1,
+      "log": "chat-network-regression-timeout.tap",
+      "tests": null,
+      "pass": null,
+      "fail": null,
+      "skipped": null,
+      "cancelled": null,
+      "durationMs": null,
+      "complete": false,
+      "observed": {
+        "passedCases": 19,
+        "timedOutCases": 1,
+        "timeoutCase": "two players at 100 ms RTT: prediction holds, they see each other walk and swing"
+      },
+      "termination": "Root terminated this owned test process tree after the timed-out test left its interval/host open; no final TAP totals."
+    },
+    "netIsolated": {
+      "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/net.test.mjs",
+      "startedAt": "2026-10-08T13:28:07.198Z",
+      "finishedAt": "2026-10-08T13:28:15.388Z",
+      "exitCode": 0,
+      "signal": null,
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 8089.1628,
+      "stderr": "",
+      "log": "net-cleanup-tests.tap"
+    },
+    "netAbortExercise": {
+      "command": "node --test --test-concurrency=1 --test-reporter=tap --test-name-pattern=two players at 100 ms RTT tests/.l01c-net-abort-17c7eb2c-00e9-4f7c-b429-d0236587cd0c.mjs",
+      "source": "tests/net.test.mjs",
+      "transformation": "Temporary untracked copy changes only the first test timeout from 30000 to 1000 ms; same setup, loop, teardown and assertions. Copy removed after child exit.",
+      "startedAt": "2026-10-08T13:29:39.695Z",
+      "finishedAt": "2026-10-08T13:29:41.889Z",
+      "elapsedMs": 2194,
+      "exitCode": 1,
+      "signal": null,
+      "expectedTimeoutObserved": true,
+      "naturalProcessExit": true,
+      "stderr": "",
+      "log": "net-cleanup-abort.tap"
+    }
+  },
+  "dependencyFinalCheck": {
+    "checkedAt": "2026-10-08T13:29:06.409Z",
+    "baseline": "dependency-stability.json after interrupted attempt; this is a final comparison, not a pre/post snapshot of every suite",
+    "hashes": {
+      "src/client/gameClient.js": "b2b51b948f9e9270abccb990d3f79d0c6bfae08c817aa0236cee6ffa6cb8ffd2",
+      "src/net/protocol.js": "b6259aca8a755b364358007eb360c1634b1653be946a5b56cad8f52f9ade3456",
+      "src/net/wsTransport.js": "ab71cf2a0dd0e8387f91ce8b23da6c2cd6e2190bf09c5ecfa26ec61b32742f3b",
+      "src/net/lagLink.js": "311d7e4f8a7a8c72e1a73945d5e5458da5738a9eaa6adffd852b4c0e435e17bb",
+      "src/net/localServer.js": "c4d52abdc5ec8f9b48e1fbb904cd4ea502500cc7e53f98cd428dce8cd339b4fc",
+      "src/net/chatService.js": "bb1a5572752e9d616412114ceb6bc5ffbd7e006c1ea31ba06a9e84fa92010f18",
+      "src/sim/ecs.js": "8c91a0cb70da533421644c06ac9a684639d7a9aa311ef32f334c6db1e2ceba11",
+      "src/sim/worldgen.js": "294483d590e1711ce29735c67d6de0c66c571eed94d73974c68678dcf0375a0a",
+      "server/host.mjs": "8bac6990d566c9598c6f8803605beaeaa35896b99b9fab8f2ff662bf8221b70d",
+      "server/index.mjs": "2217c6918588c9449768ef4a45e49b28c5571c5bf119e723a262f969f553cd44"
+    },
+    "changesSinceBaseline": []
+  }
+}

@@ -1,0 +1,7 @@
+# Caddy in front of the game server: HTTPS (automatic Let's Encrypt) and WebSockets (wss://) with no extra config.
+#   sudo cp deploy/Caddyfile /etc/caddy/Caddyfile && sudo systemctl reload caddy
+# Replace the domain; point its DNS A record at the box first.
+juego.example.com {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:5173
+}

@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "family": "port-cargo-v1",
+  "policy": "Exact props.js copied before S17; exact final after sources. --check verifies historical files only.",
+  "sources": [
+    {
+      "phase": "before",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/port-cargo-v1/before/props.source.js",
+      "bytes": 36535,
+      "sha256": "b4e61d6af9d4a521abfc9cbe4c5ae95fa6e276938d3f5013542427dcaf014d7b"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/port-cargo-v1/final/after/props.js",
+      "bytes": 36920,
+      "sha256": "074ee9fcae4ea2bca704bb44553d43cb86e814aab77fbd7133a371b83fcbd3fa"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/portCargo.js",
+      "snapshot": "docs/art/source/port-cargo-v1/final/after/portCargo.js",
+      "bytes": 3604,
+      "sha256": "38cd9dd262688eb7eff3bf19626ed0cfe6995f87cd816813ae8bb784ca94cc03"
+    },
+    {
+      "phase": "after",
+      "source": "tests/port-cargo.test.mjs",
+      "snapshot": "docs/art/source/port-cargo-v1/final/after/port-cargo.test.mjs",
+      "bytes": 12242,
+      "sha256": "684ada05604584637c13dac833162d24bae203e7b150d0eeaef50e0ed9b16b75"
+    },
+    {
+      "phase": "after",
+      "source": "tools/qa-port-cargo.playwright.js",
+      "snapshot": "docs/art/source/port-cargo-v1/final/after/qa-port-cargo.playwright.js",
+      "bytes": 7751,
+      "sha256": "a439dfbb278951d19d93803f762dd4c35b50b03e23fe3822891ce4c8f07d84b6"
+    },
+    {
+      "phase": "after",
+      "source": "tools/prepare-port-cargo-sources.mjs",
+      "snapshot": "docs/art/source/port-cargo-v1/final/after/prepare-port-cargo-sources.mjs",
+      "bytes": 3722,
+      "sha256": "e158a206e8cbb827408bf9d1c8d24993ca7709c82050cbc59cc2a40767585583"
+    },
+    {
+      "phase": "after",
+      "source": "tools/register-port-cargo-catalog.mjs",
+      "snapshot": "docs/art/source/port-cargo-v1/final/after/register-port-cargo-catalog.mjs",
+      "bytes": 17469,
+      "sha256": "ae775780cef10fd3e7b318517abe4068c8a6c2c1d7900737a655db9a2f509f34"
+    },
+    {
+      "phase": "after",
+      "source": "tools/verify-port-cargo-catalog.mjs",
+      "snapshot": "docs/art/source/port-cargo-v1/final/after/verify-port-cargo-catalog.mjs",
+      "bytes": 6246,
+      "sha256": "7abb21114268c0e7f9e4cb2be5e861db677aef2c00817c2ea913c044636e552b"
+    }
+  ],
+  "reusedAssets": [
+    {
+      "id": "tex:town-wood-albedo-v1",
+      "path": "assets/textures/town-wood-v1/atlas-albedo-desktop.webp",
+      "bytes": 578874,
+      "sha256": "60d8b81a9ebdb59d6eeb8d824747dbf98cf121d7b3a5a99ef72b5e07d0683692"
+    },
+    {
+      "id": "tex:town-wood-albedo-v1",
+      "path": "assets/textures/town-wood-v1/atlas-albedo-mobile.webp",
+      "bytes": 171306,
+      "sha256": "3183e1746238df62e39f271628ba6e4d5353a04d499b91e0ddcdecd928ed8daf"
+    },
+    {
+      "id": "tex:town-wood-normal-v1",
+      "path": "assets/textures/town-wood-v1/atlas-normal-desktop.webp",
+      "bytes": 2834816,
+      "sha256": "030905006e5140c12abb373a248be8a5d0136bbc062c330a5cc150a1e6856076"
+    },
+    {
+      "id": "tex:town-wood-normal-v1",
+      "path": "assets/textures/town-wood-v1/atlas-normal-mobile.webp",
+      "bytes": 774780,
+      "sha256": "bb4b101d18c44a164a14d578a6fad321bda35ecce042915466552b52a08c4c42"
+    },
+    {
+      "id": "prop:storage-crate",
+      "path": "assets/models/prop-storage-crate.glb",
+      "bytes": 51684,
+      "sha256": "916814feae7a2068b47b292439873d64f717cdc8b3821a6f6b2d906cf1293273"
+    }
+  ]
+}

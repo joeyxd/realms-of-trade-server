@@ -1,0 +1,27 @@
+{
+  "schema": "st01c-atlas-source/v1",
+  "sourceSystemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "inputs": [
+    {
+      "id": "flame",
+      "file": ".scratch/unreal/reference11/textures/T_FlameUV_2.png",
+      "sha256": "cd44ef0de6222e9ce7b0185099f07bf2763c33190f716c45fa06083ba08e9d86",
+      "dimensions": [2048, 1024],
+      "grid": [8, 4],
+      "srgb": true
+    },
+    {
+      "id": "smoke",
+      "file": ".scratch/unreal/reference11/textures/T_Smoke_1.png",
+      "sha256": "6e6020de9e807fc9fd96bae1f8c376b4c6793a08644512e77bf6c79e44e99442",
+      "dimensions": [2560, 1536],
+      "grid": [10, 6],
+      "srgb": true
+    }
+  ],
+  "variants": [
+    { "id": "full", "cellSize": 256 },
+    { "id": "half", "cellSize": 128 },
+    { "id": "quarter", "cellSize": 64 }
+  ]
+}

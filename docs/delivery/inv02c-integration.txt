@@ -1,0 +1,40 @@
+✔ attribute commands remain unavailable by default and do not create a receipt (382.5674ms)
+✔ missing attribute SQL readiness prevents world admission (308.3003ms)
+✔ explicit adoption initializes level-one legacy profiles without inventing points (284.8641ms)
+✔ adoption preserves a legacy carry-less profile and its goods while installing the baseline (279.3721ms)
+✔ level-three assignment and free reset preserve every carried good (325.8413ms)
+✔ M5 host adopts, assigns, and resets a bucket-carrying profile with durable water-preserving receipts (304.0003ms)
+✔ deferred commit and lost reply do not ACK early; identical retry replays the exact receipt (323.5387ms)
+✔ same operation identity cannot be rebound to a different attribute command (296.0996ms)
+✔ stale expectedRev is receipted as a no-op conflict and exact retry replays it (382.1895ms)
+✔ restart loads adopted attributes and historical replay does not restore an old profile (559.1485ms)
+✔ unreadable uncertain commit fences attribute mutations without ACK (276.3389ms)
+✔ v3 shared Tala award preserves an adopted offline beneficiary through receipt and reconnect (437.7962ms)
+✔ attribute receipts are private client events and never combat feedback (354.4808ms)
+✔ attribute capability starts closed and is replaced on every welcome including solo (299.0298ms)
+✔ host announces attributes only to an admitted authenticated human with the flag enabled (262.4804ms)
+✔ host disables attribute controls on an unactivated installation (237.0475ms)
+✔ paid bucket, interrupted gathering, exact fill retry and reconnect preserve water (470.9653ms)
+✔ fill rechecks the real account mutation gate after its asynchronous receipt lookup (330.8787ms)
+✔ authenticated gathering cancels on damage, combat, cast, and dash without a receipt or water (247.326ms)
+✔ guest/disabled/missing SQL readiness deny freshwater without modifying inventory (695.7767ms)
+✔ ACK waits for receipt; lost storage response reconciles without paying twice (256.4448ms)
+✔ paid raft barrel binds stable part identity, conserves transfers and refuses filled removal (376.4134ms)
+✔ ordinary host stays unmounted; mount requires recovered GHA owner and empty tick-zero server (3666.2701ms)
+✔ startup hydrates durable ground pearl rows after recovery and uses durable-to-local zero clock anchor (3640.81ms)
+✔ SQL current death-drop rows are checked but fail closed before host startup installs any rows (3791.6445ms)
+✔ authenticated pickup waits for common SQL receipt and applies once at boundary with session/profile CAS (4500.7425ms)
+✔ pickup rejects early, distant and full receivers without a family journal operation (3924.8437ms)
+✔ automatic return then restart hydration maps current row version into the next pickup (4966.8655ms)
+✔ rejoin at a checkpoint retains hydrated source without replaying an old world snapshot (4268.6199ms)
+✔ disconnecting the pickup receiver while SQL is pending fences apply (3875.5625ms)
+✔ shutdown after SQL commit but before the prepared receipt drain never applies pickup (3706.5593ms)
+✔ replacing the GHA before mounting cannot install or activate lifecycle ownership (4374.1014ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 49923.299

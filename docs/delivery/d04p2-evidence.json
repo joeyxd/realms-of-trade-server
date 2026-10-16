@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "delivery": "D04 P2 / M6 P2",
+  "date": "2026-10-05",
+  "status": "Accepted local software integration; not published or a physical-device performance acceptance.",
+  "initialBase": "640246246a5b9b8d6a12bbace6b8f7f8948029a3",
+  "integrationBase": "d028a42a8c361802bedad043962445d2221a972f",
+  "protocolVersion": 13,
+  "gameVersion": "0.6.0-alpha.1",
+  "sourceHashes": [
+    {
+      "path": "src/sim/raftGeometry.js",
+      "bytes": 7611,
+      "sha256": "a5b3c395fb50534feeef5e498d563768a0525eba1faf6c7749848ebf22d0341a"
+    },
+    {
+      "path": "src/sim/world.js",
+      "bytes": 38700,
+      "sha256": "6e9ea8681544e58aa444231fbadaaacaa9bc18ba5c98ea64b6843f915b0c38d2"
+    },
+    {
+      "path": "src/sim/systems/movement.js",
+      "bytes": 9524,
+      "sha256": "360d0b6bf66cbbf0d858a0a9a29797bcf57f1488d79d69331d4276ea6c6b61af"
+    },
+    {
+      "path": "src/sim/systems/rafts.js",
+      "bytes": 6518,
+      "sha256": "8b8ac4e1107d0ec0380aeabc410b6bf42d83a620f6fe33c2b2a753ec77e8b181"
+    },
+    {
+      "path": "src/sim/systems/skills.js",
+      "bytes": 39108,
+      "sha256": "e5bc6f8d4bbf66df69eb73a4116b98451a6b8cd5b70b8b0c95991453805956b4"
+    },
+    {
+      "path": "src/client/gameClient.js",
+      "bytes": 32070,
+      "sha256": "00f63221133f085caffe0c8b500f42eef3ceb17c7fba58935a02b2604c42cf07"
+    },
+    {
+      "path": "src/main.js",
+      "bytes": 71848,
+      "sha256": "4b841f45d993bf4853baa462b85f53c73189ac576bb27db20d4bc5ac43dd1120"
+    },
+    {
+      "path": "src/render/scene.js",
+      "bytes": 19117,
+      "sha256": "71ec5503a9161e226de7dc3deb0262ec7af9de8e577f07be01b320b9fb318fec"
+    },
+    {
+      "path": "src/render/rafts.js",
+      "bytes": 29935,
+      "sha256": "2f664b2d1ef56d4634aa3af8b71e74407f51b2ecd6ddd00cd11ed40cd013a5b8"
+    },
+    {
+      "path": "tests/raft-movement.test.mjs",
+      "bytes": 22218,
+      "sha256": "e1397f7d3b9748c2d1786f42913da401f56ced62c233d9d21fd846603074aa7c"
+    },
+    {
+      "path": "tools/look-raft-walk.mjs",
+      "bytes": 32308,
+      "sha256": "e93769d04fff8aca4b7a58bc3b11ca5ebc7c2c4282e04d6d72935d354cebac16"
+    }
+  ],
+  "regression": {
+    "command": "node --test --test-concurrency=2 --test-timeout=60000 tests/*.test.mjs",
+    "total": 383,
+    "passed": 383,
+    "failed": 0,
+    "localLog": {
+      "path": "shots/review/d04p2/regression-final.log",
+      "bytes": 77056,
+      "sha256": "216b7ac96203cef73535e090616097b7e0c5ef02870f58c7c3721e2237a9fdd0"
+    }
+  },
+  "finalTargeted": {
+    "command": "node --test tests/raft-movement.test.mjs",
+    "passed": 14,
+    "failed": 0,
+    "localLog": {
+      "path": "shots/review/d04p2/targeted-final.log",
+      "bytes": 3020,
+      "sha256": "9baa7e3b38c58473e36771fd896e4ecc6cd337466481d12f5d0caff68d91c616"
+    },
+    "note": "The non-leap stale-target assertion was strengthened after the full run; runtime code was unchanged."
+  },
+  "browserFollowup": "The later disconnect-during-Abordaje rescue fix changes no rendering or traversal geometry and is covered by actual LocalServer gameplay regressions.",
+  "browserCases": [
+    {
+      "name": "desktop-final",
+      "rawEvidence": {
+        "path": "shots/review/d04p2/desktop-final/evidence.json",
+        "bytes": 26683,
+        "sha256": "f6556f2c93453fc5dc6f251107b3e8dd5df5a7d46017784de23fe22df0b9ea8f"
+      },
+      "baseAtLaunch": "640246246a5b9b8d6a12bbace6b8f7f8948029a3",
+      "workingTree": true,
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "dpr": 1,
+        "phone": false,
+        "quality": "high",
+        "tod": "day"
+      },
+      "transport": "Local WorkerTransport only; no online server.",
+      "input": {
+        "desktop": "Playwright keyboard WASD/Space through Input key handlers",
+        "mobile": "Playwright pointer drag over .joy-zone and touch Dash button",
+        "positionInjection": "one debug teleport to dock before traversal only",
+        "mobileJoystickUsed": false,
+        "actualMovementInputsUsed": true
+      },
+      "fixture": {
+        "partCount": 17,
+        "validated": true,
+        "onlineWorldUntouched": true,
+        "normalStarterFoundationCount": 4
+      },
+      "atlas": {
+        "registry": {
+          "id": "tex:raft-comic-v1",
+          "kind": "tex",
+          "src": "textures/raft/comic-materials-v1.webp",
+          "selectedSrc": "textures/raft/comic-materials-v1.webp",
+          "state": "ok",
+          "error": "",
+          "tris": 0,
+          "notes": []
+        },
+        "image": {
+          "width": 1024,
+          "height": 1024
+        },
+        "expectedTextureSrc": "textures/raft/comic-materials-v1.webp",
+        "requestURLs": [
+          "/assets/textures/raft/comic-materials-v1.webp",
+          "/assets/textures/raft/comic-materials-v1.webp"
+        ]
+      },
+      "diagnostics": {
+        "pageErrors": [],
+        "consoleErrors": [
+          "Failed to load resource: net::ERR_FAILED",
+          "Failed to load resource: net::ERR_FAILED",
+          "Failed to load resource: net::ERR_FAILED"
+        ],
+        "gameErrors": []
+      },
+      "consoleNote": "External Google font requests are deliberately aborted by the harness; generic ERR_FAILED messages were not individually attributed by URL.",
+      "ascentY": 3.3200000000000003,
+      "descentY": 0.72,
+      "maxSampledPredictionError": 0,
+      "finalPredictionError": 0,
+      "finalSurface": "deck",
+      "screenshots": [
+        {
+          "name": "starter-current-gangplank",
+          "path": "shots/review/d04p2/desktop-final/starter-current-gangplank.png",
+          "bytes": 964628,
+          "sha256": "05abd72ce9146fe9e03314bb1da1e4d499a826e622cfbfcd4ea6d1f73c60c3f1"
+        },
+        {
+          "name": "before-entry-on-dock",
+          "path": "shots/review/d04p2/desktop-final/before-entry-on-dock.png",
+          "bytes": 1094373,
+          "sha256": "220577a86e7ed7b9f4ce28739b861168d78f82c4c6a14bddad0ba9588fcc4159"
+        },
+        {
+          "name": "on-gangplank",
+          "path": "shots/review/d04p2/desktop-final/on-gangplank.png",
+          "bytes": 1132306,
+          "sha256": "74d0dc087c63c21cefc6e877d06b13fc39b297747f9e020c29ca0e9b524fd5e5"
+        },
+        {
+          "name": "on-raft-deck",
+          "path": "shots/review/d04p2/desktop-final/on-raft-deck.png",
+          "bytes": 1131728,
+          "sha256": "dccffa4a0258482a013eddc992518ac7802765d4f97839de8865d296b5ecf5ba"
+        },
+        {
+          "name": "stairs-lower-landing",
+          "path": "shots/review/d04p2/desktop-final/stairs-lower-landing.png",
+          "bytes": 1127663,
+          "sha256": "5341dc0b58ace4135fe7e66d1fbf42c0d219c4cecd5bd503e080b6b930d23b00"
+        },
+        {
+          "name": "upstairs",
+          "path": "shots/review/d04p2/desktop-final/upstairs.png",
+          "bytes": 1056766,
+          "sha256": "a75578c92b83d5cd64b23a241a27195a3bf1b3235fb9a4670664dfee0f6cdab7"
+        },
+        {
+          "name": "back-on-dock",
+          "path": "shots/review/d04p2/desktop-final/back-on-dock.png",
+          "bytes": 1137050,
+          "sha256": "e5f92088650eb1a1175723ee2fcd0c1f4fef10811a8b297d95573e4e796227c8"
+        },
+        {
+          "name": "wall-block",
+          "path": "shots/review/d04p2/desktop-final/wall-block.png",
+          "bytes": 1041763,
+          "sha256": "523ea6bb99756973610ef8d93b8276f142d031348f632dc05aa60796c3a3ccff"
+        },
+        {
+          "name": "gap-dash-block",
+          "path": "shots/review/d04p2/desktop-final/gap-dash-block.png",
+          "bytes": 1002938,
+          "sha256": "930d749d92b2976e28fbb468c8eda87097b80ff1ae753ea5322eba7e63cf2819"
+        }
+      ],
+      "inspectedByPrincipal": true,
+      "renderScheduling": "Fixed input, frame updates and Worker remain active; GPU draw occurs at screenshots to keep SwiftShader from dropping input pulses.",
+      "softwareQA": {
+        "visualOnly": true,
+        "fpsOrHardwareClaim": false,
+        "physicalDeviceTest": false,
+        "humanAcceptanceClaim": false
+      }
+    },
+    {
+      "name": "mobile-accepted",
+      "rawEvidence": {
+        "path": "shots/review/d04p2/mobile-accepted/evidence.json",
+        "bytes": 26744,
+        "sha256": "1598472aec546fb0f447ab21abe43b1a6ee12ad6cba59cb32ee9c7df44a2f8a1"
+      },
+      "baseAtLaunch": "640246246a5b9b8d6a12bbace6b8f7f8948029a3",
+      "workingTree": true,
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "phone": true,
+        "quality": "low",
+        "tod": "day"
+      },
+      "transport": "Local WorkerTransport only; no online server.",
+      "input": {
+        "desktop": "Playwright keyboard WASD/Space through Input key handlers",
+        "mobile": "Playwright pointer drag over .joy-zone and touch Dash button",
+        "positionInjection": "one debug teleport to dock before traversal only",
+        "mobileJoystickUsed": true,
+        "actualMovementInputsUsed": true
+      },
+      "fixture": {
+        "partCount": 17,
+        "validated": true,
+        "onlineWorldUntouched": true,
+        "normalStarterFoundationCount": 4
+      },
+      "atlas": {
+        "registry": {
+          "id": "tex:raft-comic-v1",
+          "kind": "tex",
+          "src": "textures/raft/comic-materials-v1.webp",
+          "selectedSrc": "textures/raft/comic-materials-v1-mobile.webp",
+          "state": "ok",
+          "error": "",
+          "tris": 0,
+          "notes": []
+        },
+        "image": {
+          "width": 512,
+          "height": 512
+        },
+        "expectedTextureSrc": "textures/raft/comic-materials-v1-mobile.webp",
+        "requestURLs": [
+          "/assets/textures/raft/comic-materials-v1-mobile.webp",
+          "/assets/textures/raft/comic-materials-v1-mobile.webp"
+        ]
+      },
+      "diagnostics": {
+        "pageErrors": [],
+        "consoleErrors": [
+          "Failed to load resource: net::ERR_FAILED",
+          "Failed to load resource: net::ERR_FAILED",
+          "Failed to load resource: net::ERR_FAILED"
+        ],
+        "gameErrors": []
+      },
+      "consoleNote": "External Google font requests are deliberately aborted by the harness; generic ERR_FAILED messages were not individually attributed by URL.",
+      "ascentY": 3.3200000000000003,
+      "descentY": 0.72,
+      "maxSampledPredictionError": 0,
+      "finalPredictionError": 0,
+      "finalSurface": "deck",
+      "screenshots": [
+        {
+          "name": "starter-current-gangplank",
+          "path": "shots/review/d04p2/mobile-accepted/starter-current-gangplank.png",
+          "bytes": 217377,
+          "sha256": "cc5f7c8b434bfcb08a7818a00f069551ac7cc630f45e20cc669d5d625ab59ad9"
+        },
+        {
+          "name": "before-entry-on-dock",
+          "path": "shots/review/d04p2/mobile-accepted/before-entry-on-dock.png",
+          "bytes": 270332,
+          "sha256": "3a8668f175b33934e82eb38ce1460a1819a77b7c2f5b1d4eb52a672015cbba4d"
+        },
+        {
+          "name": "on-gangplank",
+          "path": "shots/review/d04p2/mobile-accepted/on-gangplank.png",
+          "bytes": 254917,
+          "sha256": "4b77f596e9b06938c0fcf6aa1bb1aee517a9e585c863e174b05db7f19e580c5b"
+        },
+        {
+          "name": "on-raft-deck",
+          "path": "shots/review/d04p2/mobile-accepted/on-raft-deck.png",
+          "bytes": 257391,
+          "sha256": "0ddf43e2c683d9a36f8bc914cfff102473c9d51aa8e9816b803011ff86fad368"
+        },
+        {
+          "name": "stairs-lower-landing",
+          "path": "shots/review/d04p2/mobile-accepted/stairs-lower-landing.png",
+          "bytes": 272415,
+          "sha256": "40265ffd40ffa90e1d16b1633371218eba6eb454a0a9588dd5efdd001f926c9f"
+        },
+        {
+          "name": "upstairs",
+          "path": "shots/review/d04p2/mobile-accepted/upstairs.png",
+          "bytes": 259197,
+          "sha256": "b31ab340fc6a34f593bdd4cb3d9a22859503e675b0981482ce6e1c84bd01198d"
+        },
+        {
+          "name": "back-on-dock",
+          "path": "shots/review/d04p2/mobile-accepted/back-on-dock.png",
+          "bytes": 257707,
+          "sha256": "001aa0cfa002abc7a9b3e261cc43dc003d1d1db4cae32fa43b3785fce553c0e6"
+        },
+        {
+          "name": "wall-block",
+          "path": "shots/review/d04p2/mobile-accepted/wall-block.png",
+          "bytes": 251562,
+          "sha256": "5cbf30ae5340e829117eec66397efbda432062077e555355085a0f8fdc518536"
+        },
+        {
+          "name": "gap-dash-block",
+          "path": "shots/review/d04p2/mobile-accepted/gap-dash-block.png",
+          "bytes": 229011,
+          "sha256": "3044ffcac97e7fdf954831812f8f236e5eb2cce5e90c297a702ea605bfa08fcc"
+        }
+      ],
+      "inspectedByPrincipal": true,
+      "renderScheduling": "Fixed input, frame updates and Worker remain active; GPU draw occurs at screenshots to keep SwiftShader from dropping input pulses.",
+      "softwareQA": {
+        "visualOnly": true,
+        "fpsOrHardwareClaim": false,
+        "physicalDeviceTest": false,
+        "humanAcceptanceClaim": false
+      }
+    }
+  ],
+  "assetDecision": {
+    "crate": "Already integrated FAB GLB + procedural fallback.",
+    "modularKit": "No ready modular build kit identified by the existing Unreal inventory.",
+    "repairBench": "Candidate for D06 workshop export/fit test.",
+    "hut": "Whole prefab candidate for later M8 land home.",
+    "buildHammer": "Blueprint strings are a UX reference; behavior must be implemented in game JavaScript.",
+    "sourceUnrealProjectsChanged": false,
+    "newAssetsImported": false,
+    "sourcePresenceVerified": {
+      "date": "2026-10-05",
+      "readOnly": true,
+      "files": [
+        "SM_StoragePart_03.uasset",
+        "SM_RepairBench.uasset",
+        "SM_SmallWoodeHut.uasset",
+        "BP_Holdable_BuildHammer.uasset"
+      ],
+      "allPresent": true
+    }
+  },
+  "limitations": [
+    "Only adjacent prototype berths have a gangplank; remote berth 2+ access remains open.",
+    "Doors stay closed; ladders, detailed furniture collision and combat across heights are not accepted.",
+    "No building editor, moving deck, sailing, wind or persistent naval losses.",
+    "No physical phone/GPU or sustained FPS measurement; GPU drawing was scheduled at screenshots.",
+    "Active public PC host was not restarted or accepted with matching client/server simulation; a coordinated update is required before online acceptance."
+  ],
+  "next": "D05 authoritative editor; see docs/briefs/d05-raft-editor.md."
+}

@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-11T03:24:11.283658+00:00",
+  "revision": "6c42e849a05a140296751daf88110c536eb4b07e",
+  "files": [
+    {
+      "path": "styles/hud.css",
+      "status": 200,
+      "gitSha256": "3482c6fb057a3b81ae4ffa478266a6a624082cfa45ecd8febd3b12002aa036e4",
+      "publicSha256": "3482c6fb057a3b81ae4ffa478266a6a624082cfa45ecd8febd3b12002aa036e4",
+      "matches": true
+    },
+    {
+      "path": "styles/minimap.css",
+      "status": 200,
+      "gitSha256": "d052d9119892194a0318d40603d68f733e9e5bfd6dcad2bde50ca9ffad18b007",
+      "publicSha256": "d052d9119892194a0318d40603d68f733e9e5bfd6dcad2bde50ca9ffad18b007",
+      "matches": true
+    },
+    {
+      "path": "src/data/attributes.js",
+      "status": 200,
+      "gitSha256": "8c33d4ef08491367ad024032708d26c8433e5caf466a50296e407b2e2a9f7a04",
+      "publicSha256": "8c33d4ef08491367ad024032708d26c8433e5caf466a50296e407b2e2a9f7a04",
+      "matches": true
+    },
+    {
+      "path": "src/sim/systems/attributePlan.js",
+      "status": 200,
+      "gitSha256": "fe381039a26096dd3d18e867290389861a46890a46730f80f16cd5c1a7a05f13",
+      "publicSha256": "fe381039a26096dd3d18e867290389861a46890a46730f80f16cd5c1a7a05f13",
+      "matches": true
+    }
+  ],
+  "pass": true
+}

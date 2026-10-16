@@ -1,0 +1,42 @@
+{
+  "revision": "cd5df250d6c99061a8ad5c0f8f5f692e86d32829",
+  "image": "marea-negra:alpha-cd5df250d6c9",
+  "imageId": "sha256:ea028cc249a3a6ee773479d1d7c314e04781ffeef779624e8b6ebce8f46b45cd",
+  "version": "0.6.0-alpha.57",
+  "players": 1,
+  "sockets": 1,
+  "errors": 0,
+  "idleAndDurable": false,
+  "unsaved": 0,
+  "storageErrors": 0,
+  "freshwater": {
+    "enabled": true,
+    "ready": true,
+    "canteen": true
+  },
+  "economic": {
+    "enabled": true,
+    "pending": 0,
+    "failed": false,
+    "completed": 0,
+    "replays": 0
+  },
+  "sql035": {
+    "installed": false,
+    "version": null,
+    "errorCode": "PGRST202"
+  },
+  "updater": "inactive",
+  "deploymentDeferred": true,
+  "checkedAt": "2026-10-11T20:35:26.281890+00:00",
+  "candidateRevision": "12c7339fac0df8f1bced146a52e0eee9aca803be",
+  "publicHealth": {
+    "status": 200,
+    "body": "ok"
+  },
+  "updaterInstallation": {
+    "installedUpdaterSha256": "446266218a7a04733351be65d46ffec4b9ded963ff7a81a83c557e9a08fda89a",
+    "testSelection": 194,
+    "backupPreserved": true
+  }
+}

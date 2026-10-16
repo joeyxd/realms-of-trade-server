@@ -1,0 +1,59 @@
+.artisan-trigger {
+  position: absolute; z-index: 45; right: max(14px, var(--safe-r, 0px)); bottom: max(66px, calc(var(--safe-b, 0px) + 48px));
+  min-height: 42px; padding: 0 15px; border: 1px solid #d5ad70; border-radius: 8px;
+  color: #fbefd6; background: linear-gradient(#805c36, #493625); box-shadow: 0 8px 22px #0009;
+  font: 900 13px system-ui, sans-serif; pointer-events: auto; cursor: pointer; touch-action: manipulation;
+}
+.artisan-panel {
+  position: absolute; z-index: 48; right: max(14px, var(--safe-r, 0px)); bottom: max(18px, var(--safe-b, 0px));
+  width: min(400px, calc(100cqw - 28px)); max-height: min(590px, calc(100cqh - 28px)); display: flex; flex-direction: column;
+  overflow: hidden; pointer-events: auto; color: #f5ead4; border: 2px solid #b78c5e; border-radius: 12px;
+  background: linear-gradient(145deg, #403327f7, #202321fa 72%); box-shadow: 0 18px 55px #000b, inset 0 0 0 1px #edc9911b;
+  font: 13px/1.4 system-ui, sans-serif; text-shadow: 0 1px #0008;
+}
+.artisan-head { display: flex; align-items: center; gap: 11px; padding: 13px 15px 11px; border-bottom: 1px solid #d4aa6445; background: linear-gradient(100deg, #63472dab, #392e27a8); }
+.artisan-mark { flex: 0 0 35px; width: 35px; height: 35px; display: grid; place-items: center; border: 1px solid #edc99188; border-radius: 9px; color: #f4d49a; background: #b9824524; font: 700 17px Georgia, serif; }
+.artisan-head > div:nth-child(2) { display: grid; flex: 1; gap: 2px; min-width: 0; }
+.artisan-head small { color: #ddb982; font-size: 9px; font-weight: 900; letter-spacing: .16em; }
+.artisan-head h2 { margin: 0; color: #fff0d1; font: 900 20px/1.15 Georgia, serif; }
+.artisan-head [data-close] { flex: 0 0 36px; width: 36px; min-height: 36px; border: 1px solid #b9956b70; border-radius: 7px; background: #392f27; color: #f8e7c8; font: 24px/1 system-ui, sans-serif; cursor: pointer; }
+.artisan-body { min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 12px 14px 14px; scrollbar-color: #806343 #24211d; }
+.artisan-body > p:first-child { margin: 0 0 10px; color: #e6d8c1; font-size: 11px; }
+.artisan-card { padding: 10px 11px; margin: 8px 0; border: 1px solid #b796674c; border-radius: 9px; background: #211e1bb8; }
+.artisan-row { display: flex; justify-content: space-between; gap: 8px; color: #e3d3ba; font-size: 11px; }
+.artisan-row span, .artisan-stock span { color: #f2d499; font-weight: 900; font-variant-numeric: tabular-nums; }
+.artisan-project { min-height: 20px; margin: 6px 0; color: #dac9ad; font-size: 11px; }
+.artisan-spec { color: #f0d4a3; font-size: 10px; font-weight: 800; }
+.artisan-track { height: 8px; overflow: hidden; border: 1px solid #755b3e; border-radius: 8px; background: #171614; }
+.artisan-track i { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #bd7948, #f0c66e); transition: width .18s ease-out; }
+.artisan-stock { display: flex; justify-content: space-between; gap: 8px; color: #e3d3ba; font-size: 11px; }
+.artisan-status { min-height: 32px; margin: 8px 1px 4px; color: #f0d99e; font-size: 10px; }
+.artisan-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.artisan-actions button, .artisan-retry { min-height: 40px; border: 1px solid #d2a95c; border-radius: 7px; color: #fff2d7; background: linear-gradient(#805c36, #5a422a); font: 900 11px system-ui, sans-serif; cursor: pointer; touch-action: manipulation; }
+.artisan-actions .artisan-learn { grid-column: 1 / -1; border-color: #e0bd76; background: linear-gradient(#9a7040, #6c4d2e); }
+.artisan-actions .artisan-refresh { border-color: #826e57; color: #e6d8c3; background: linear-gradient(#4b4237, #302d29); }
+.artisan-retry { width: 100%; margin: 2px 0 7px; }
+.artisan-trigger:focus-visible, .artisan-panel button:focus-visible { outline: 2px solid #f2d499; outline-offset: 2px; }
+.artisan-trigger[hidden], .artisan-panel[hidden], .artisan-retry[hidden] { display: none; }
+.artisan-panel button:disabled { cursor: not-allowed; opacity: .48; }
+.artisan-panel button:not(:disabled):hover, .artisan-trigger:hover { filter: brightness(1.12); }
+.learning-artisan .actionbar, .learning-artisan .tracker, .learning-artisan .prompt { visibility: hidden; }
+.wb-head:has(> .community-trigger) { display: grid; grid-template-columns: 35px repeat(4, minmax(0, 1fr)) 36px; gap: 7px 8px; }
+.wb-head:has(> .community-trigger) > .wb-mark { grid-column: 1; grid-row: 1; }
+.wb-head:has(> .community-trigger) > .wb-heading { grid-column: 2 / 6; grid-row: 1; }
+.wb-head:has(> .community-trigger) > .wb-close { grid-column: 6; grid-row: 1; }
+.wb-head:has(> .community-trigger) > .community-trigger:nth-child(4) { grid-column: 1 / 4; grid-row: 2; width: 100%; min-width: 0; }
+.wb-head:has(> .community-trigger) > .community-trigger:nth-child(5) { grid-column: 4 / 7; grid-row: 2; width: 100%; min-width: 0; }
+@container stage (max-width: 700px) {
+  .artisan-trigger { right: max(7px, var(--safe-r, 0px)); bottom: max(54px, calc(var(--safe-b, 0px) + 42px)); min-height: 38px; }
+  .artisan-panel { right: max(7px, var(--safe-r, 0px)); bottom: max(7px, var(--safe-b, 0px)); width: min(390px, calc(100cqw - 14px)); max-height: calc(100cqh - 14px); }
+  .artisan-head { padding: 9px 11px 8px; }
+  .artisan-body { padding: 8px 9px 9px; }
+}
+@container stage (max-height: 470px) {
+  .artisan-panel { max-height: calc(100cqh - 8px); bottom: max(4px, var(--safe-b, 0px)); }
+  .artisan-head { padding-top: 6px; padding-bottom: 5px; }
+  .artisan-mark { width: 29px; height: 29px; flex-basis: 29px; }
+  .artisan-head h2 { font-size: 17px; }
+  .artisan-body { padding-top: 6px; padding-bottom: 7px; }
+}

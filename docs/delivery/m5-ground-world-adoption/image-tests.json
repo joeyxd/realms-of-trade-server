@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-10T22:57:03.837526+00:00",
+  "revision": "9266c40f367dfa1a8aa1e786b57a23fcb8e4898c",
+  "imageId": "sha256:14ae83fab1550f1f9a327866f2e2ef206ccf59876ef9d8ed72e6e1ea9d178a79",
+  "counts": {
+    "tests": 11,
+    "pass": 11,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "scope": "Eleven adoption contract/transport tests in the exact production image, isolated network, no live credentials or SQL. Mock RPC fixtures are not durability evidence."
+}

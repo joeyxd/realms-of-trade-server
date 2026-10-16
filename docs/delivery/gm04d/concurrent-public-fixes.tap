@@ -1,0 +1,172 @@
+TAP version 13
+# Subtest: secure network client derives HTTPS Origin from the validated WSS endpoint
+ok 1 - secure network client derives HTTPS Origin from the validated WSS endpoint
+  ---
+  duration_ms: 2.4516
+  type: 'test'
+  ...
+# Subtest: load, issue, and revoke use the authenticated pairing contract and private one-use code
+ok 2 - load, issue, and revoke use the authenticated pairing contract and private one-use code
+  ---
+  duration_ms: 2.4626
+  type: 'test'
+  ...
+# Subtest: malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+ok 3 - malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+  ---
+  duration_ms: 0.3231
+  type: 'test'
+  ...
+# Subtest: a small server clock lead accepts the code without displaying it beyond five minutes
+ok 4 - a small server clock lead accepts the code without displaying it beyond five minutes
+  ---
+  duration_ms: 0.5637
+  type: 'test'
+  ...
+# Subtest: failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+ok 5 - failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+  ---
+  duration_ms: 0.3355
+  type: 'test'
+  ...
+# Subtest: account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+ok 6 - account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+  ---
+  duration_ms: 40.5591
+  type: 'test'
+  ...
+# Subtest: stale correlation is ignored and unsafe controller URLs are not retained
+ok 7 - stale correlation is ignored and unsafe controller URLs are not retained
+  ---
+  duration_ms: 0.3138
+  type: 'test'
+  ...
+# Subtest: pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+ok 8 - pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+  ---
+  duration_ms: 668.2645
+  type: 'test'
+  ...
+# Subtest: new code rotates pending code and active controller; owner disconnect invalidates pending code
+ok 9 - new code rotates pending code and active controller; owner disconnect invalidates pending code
+  ---
+  duration_ms: 536.6455
+  type: 'test'
+  ...
+# Subtest: expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+ok 10 - expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+  ---
+  duration_ms: 1037.9824
+  type: 'test'
+  ...
+# Subtest: durable owner stop invalidates a pending code and active paired session immediately
+ok 11 - durable owner stop invalidates a pending code and active paired session immediately
+  ---
+  duration_ms: 524.7726
+  type: 'test'
+  ...
+# Subtest: owner disconnect during paired profile I/O prevents late admission and welcome
+ok 12 - owner disconnect during paired profile I/O prevents late admission and welcome
+  ---
+  duration_ms: 534.9458
+  type: 'test'
+  ...
+# Subtest: missing durable prerequisites keep pairing unavailable without blocking creation
+ok 13 - missing durable prerequisites keep pairing unavailable without blocking creation
+  ---
+  duration_ms: 447.3417
+  type: 'test'
+  ...
+# Subtest: issue reports a missing creation and content changes invalidate claims and admitted sessions
+ok 14 - issue reports a missing creation and content changes invalidate claims and admitted sessions
+  ---
+  duration_ms: 574.4476
+  type: 'test'
+  ...
+# Subtest: opens by loading pairing state and explains allow-first, one-use privacy, and the local CLI guide
+ok 15 - opens by loading pairing state and explains allow-first, one-use privacy, and the local CLI guide
+  ---
+  duration_ms: 1.1839
+  type: 'test'
+  ...
+# Subtest: only explicit user actions issue or revoke and code has copy plus visible expiry controls
+ok 16 - only explicit user actions issue or revoke and code has copy plus visible expiry controls
+  ---
+  duration_ms: 14.3115
+  type: 'test'
+  ...
+# Subtest: revoke stays available for an enabled connection without a local code and reload recovers uncertain state
+ok 17 - revoke stays available for an enabled connection without a local code and reload recovers uncertain state
+  ---
+  duration_ms: 0.3254
+  type: 'test'
+  ...
+# Subtest: language switching, disconnect reset, and back preserve parent-owned close flow
+ok 18 - language switching, disconnect reset, and back preserve parent-owned close flow
+  ---
+  duration_ms: 0.8413
+  type: 'test'
+  ...
+# Subtest: pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+ok 19 - pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+  ---
+  duration_ms: 63.0732
+  type: 'test'
+  ...
+# Subtest: remote stop settles the runner and permits the same controller to pair again
+ok 20 - remote stop settles the runner and permits the same controller to pair again
+  ---
+  duration_ms: 30.7328
+  type: 'test'
+  ...
+# Subtest: stop during asynchronous document loading cancels setup before runner connect
+ok 21 - stop during asynchronous document loading cancels setup before runner connect
+  ---
+  duration_ms: 24.4128
+  type: 'test'
+  ...
+# Subtest: pairing fails closed for reused companion files with a different model policy
+ok 22 - pairing fails closed for reused companion files with a different model policy
+  ---
+  duration_ms: 28.731
+  type: 'test'
+  ...
+# Subtest: claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+ok 23 - claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+  ---
+  duration_ms: 4.7491
+  type: 'test'
+  ...
+# Subtest: live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+ok 24 - live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+  ---
+  duration_ms: 1351.9779
+  type: 'test'
+  ...
+# Subtest: local model HTTP failure reports only a safe diagnostic and saves no reply or journal entry
+ok 25 - local model HTTP failure reports only a safe diagnostic and saves no reply or journal entry
+  ---
+  duration_ms: 677.5345
+  type: 'test'
+  ...
+# Subtest: stop during a local model request fences its late response and does not capture an exchange
+ok 26 - stop during a local model request fences its late response and does not capture an exchange
+  ---
+  duration_ms: 881.466
+  type: 'test'
+  ...
+# Subtest: the CLI validates options before prompting and accepts a pasted multi-character hex code
+ok 27 - the CLI validates options before prompting and accepts a pasted multi-character hex code
+  ---
+  duration_ms: 0.8678
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8876.1516

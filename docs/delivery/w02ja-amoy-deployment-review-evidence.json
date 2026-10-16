@@ -1,0 +1,244 @@
+{
+  "v": 1,
+  "cut": "W02j-a",
+  "clientDate": "2026-10-08",
+  "recordedAtUtc": "2026-10-09T04:59:05.310Z",
+  "status": "implemented-and-verified-locally; no-public-simulation-signing-or-deployment",
+  "local": {
+    "command": "node --test tools/web3-evm-lab/amoy-deployment.test.mjs tools/web3-evm-lab/amoy-pilot.test.mjs tools/web3-evm-lab/reader-evm.test.mjs tests/web3-amoy-check.test.mjs tests/web3-erc1155-reader.test.mjs tests/web3-edition-read-cli.test.mjs tests/web3-erc721-reader.test.mjs tests/web3-token-read-cli.test.mjs tests/web3-wallet-preflight.test.mjs",
+    "exitCode": 0,
+    "tests": 78,
+    "pass": 78,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "newTests": 10,
+    "regressionTests": 68,
+    "durationMs": 27681.6304,
+    "checks": [
+      "exact-creation-bytecode-and-ABI-constructor",
+      "independent-explicit-deployer-and-mint-operator",
+      "deterministic-EIP55-public-addresses",
+      "strict-input-no-proxy-traps-or-getter-invocation",
+      "SHA256-artifact-and-keccak256-bytecode",
+      "expected-runtime-matches-local-EthereumJS",
+      "CLI-minimal-env-and-isolated-dummy-env-ignored",
+      "fixed-errors-no-secret-or-path-output",
+      "altered-and-missing-isolated-artifact-rejected",
+      "source-artifact-unchanged",
+      "temporary-recursive-cleanup-containment"
+    ],
+    "sourceFilesUtf8NoBomOrTrailingWhitespace": 31,
+    "localMarkdownLinksChecked": 417
+  },
+  "preparation": {
+    "targetChainId": 80002,
+    "chainIdHex": "0x13882",
+    "constructorArgument": "explicit nonzero immutable mintOperator",
+    "artifactMustMatchFreshRecompile": true,
+    "creationBytes": 4591,
+    "creationDataBytesWithConstructor": 4623,
+    "runtimeBytes": 3904,
+    "immutableGroups": 1,
+    "immutableSpans": 2,
+    "immutableSpanBytes": 32,
+    "transactionKeys": [
+      "chainId",
+      "from",
+      "data",
+      "value"
+    ],
+    "value": "0x0",
+    "operatorProvidedByAuthor": false,
+    "deployerProvidedByAuthor": false,
+    "syntheticAddressesOnlyInTests": true,
+    "reportNetworkVerified": false,
+    "reportSigned": false,
+    "reportBroadcast": false,
+    "reportDeployed": false
+  },
+  "review": {
+    "workerModelConfigured": "gpt-6-luna",
+    "workerInitialTests": 9,
+    "principalAddedIsolatedArtifactFailuresAndReviewedInputsDataRuntime": true,
+    "workerFinalReadOnlyReview": "no-material-finding; offline/live and visual/gameplay boundaries preserved"
+  },
+  "productDirection": {
+    "approved": "modular-equipment-editor-first; catalog-parts-can-affect-authoritative-stats",
+    "firstFamily": "sable; small compatible catalog",
+    "separate": [
+      "design-or-blueprint",
+      "recipe-materials-profession",
+      "crafted-instance"
+    ],
+    "later": [
+      "GLB-import",
+      "text-or-image-generation",
+      "bounded-sculpting-painting",
+      "deformable-armor"
+    ],
+    "status": "documented-future-direction; no-new-editor-parts-recipes-or-UGC-service",
+    "walletOptional": true,
+    "exactRecipesStatsCostsProbabilitiesLicensesNotFinalized": true,
+    "deliveryQueueChanged": false
+  },
+  "limits": {
+    "publicRpcCalls": 0,
+    "signedTransactions": 0,
+    "broadcastTransactions": 0,
+    "gasPaid": 0,
+    "rpcSimulationPerformed": false,
+    "publicGasEstimatePerformed": false,
+    "walletConfigured": false,
+    "publicDeployment": false,
+    "publicMintOrTransfer": false,
+    "gameRights": false,
+    "finalityVerified": false,
+    "contractAudit": false,
+    "realEnvReadOrModified": false,
+    "newDependencies": false,
+    "lockChanged": false,
+    "rootPackageChanged": false,
+    "sqlApplied": false,
+    "hostOrFrontendChanged": false,
+    "gameSimulationProfilesProtocolChanged": false,
+    "providerSelected": false,
+    "artworkGeneratedOrImported": false,
+    "unrealSourcesChanged": false,
+    "supabaseLive": false,
+    "openSeaOrPayments": false,
+    "gitPublishOrDeploy": false
+  },
+  "sources": {
+    "tools/web3-evm-lab/amoyDeployment.mjs": {
+      "bytes": 4517,
+      "sha256": "3d316001fa257ed96bb6017fb04eccba54c36639ab2d58c8b3920519d0c58650"
+    },
+    "tools/web3-evm-lab/prepare-amoy-deployment.mjs": {
+      "bytes": 1392,
+      "sha256": "fbb3725a4110f61e55ab46c81de162bb64d0de5f718b36fd394c6603b42b633f"
+    },
+    "tools/web3-evm-lab/amoy-deployment.test.mjs": {
+      "bytes": 15260,
+      "sha256": "b4badd3d3f1846af5cd9a3ebd7d051c83e26cb0ba2522f1f8c85f313b061ea2c"
+    },
+    "tools/web3-evm-lab/package.json": {
+      "bytes": 780,
+      "sha256": "e7a151730de91fe76ad803e8ce8aba804dbcd1ec886ccf8fe735bd3b5d7ead32"
+    },
+    "tools/web3-evm-lab/package-lock.json": {
+      "bytes": 22423,
+      "sha256": "cabb6ac555871bfdb094efe9f5f41d714c14dc74bbec717052ae32743d7ce373"
+    },
+    "tools/web3-evm-lab/README.md": {
+      "bytes": 5379,
+      "sha256": "9ac53683c22d76f15b7b711544680dd621ff7d55470f52a04f7fd87ec14eddc0"
+    },
+    "tools/web3-evm-lab/amoyPilotBuild.mjs": {
+      "bytes": 3059,
+      "sha256": "07f40e7c4f062d2c0cf70ee861f5b2b0241d08911f83e8d2f9a9cef708ae8320"
+    },
+    "tools/web3-evm-lab/build-amoy-pilot.mjs": {
+      "bytes": 1668,
+      "sha256": "db7b407a0d966d8868df6684d45503efaa4d6d036a8443d1e65c644aa2987a64"
+    },
+    "tools/web3-evm-lab/contracts/AmoyReader721Pilot.sol": {
+      "bytes": 1403,
+      "sha256": "2b510196e10235b05530fc508e4fe93dc381476a439d3225aad7255fb6dd7c0a"
+    },
+    "tools/web3-evm-lab/artifacts/amoy-reader-721.json": {
+      "bytes": 199573,
+      "sha256": "88f69094b6b0958e44c74f0b200a9f647394ef066be385f7200036f5826356e3"
+    },
+    "tools/web3-evm-lab/evmFixture.mjs": {
+      "bytes": 11610,
+      "sha256": "0e403935988930890154ad3d0395a28e99f96784d8274386539f178e73a90240"
+    },
+    "tools/web3-evm-lab/amoy-pilot.test.mjs": {
+      "bytes": 22272,
+      "sha256": "0175dcb085933b0277e84be696e4c0e164416c927558c71f7e69f7db90547e83"
+    },
+    "tools/web3-evm-lab/reader-evm.test.mjs": {
+      "bytes": 18798,
+      "sha256": "ba3df718d11959a236b768835a59450b562b17081ac4d95521c4ddb2ccca5aad"
+    },
+    "tests/web3-amoy-check.test.mjs": {
+      "bytes": 13307,
+      "sha256": "c30c10e1c051929460a1bea598eab6ef5006bfebe6b4670bb693c06c8cb724eb"
+    },
+    "tests/web3-erc1155-reader.test.mjs": {
+      "bytes": 15936,
+      "sha256": "f77f81a62987ff3d44df6f70e6c9aafc971b0ba9dc71ef0510adcdd7c3874d7a"
+    },
+    "tests/web3-edition-read-cli.test.mjs": {
+      "bytes": 8269,
+      "sha256": "902dad4295892c2f4f3f5b32a07d2f56a5460a1027cebc6a1d5fc0290e7f7beb"
+    },
+    "tests/web3-erc721-reader.test.mjs": {
+      "bytes": 16263,
+      "sha256": "64bc760592af7f6742685a5132d2bfcc89e4a65445948c64687eb7d8c512ee3d"
+    },
+    "tests/web3-token-read-cli.test.mjs": {
+      "bytes": 7346,
+      "sha256": "8e784f20917751fd4ab128876cfef02bf7df67dcc5842cacc9a2a05ab0f7223b"
+    },
+    "tests/web3-wallet-preflight.test.mjs": {
+      "bytes": 15733,
+      "sha256": "0c072a4fa94f872fc2d23ef9b38b4fdde8fb0c04bff928f682454fc64e00097d"
+    },
+    "server/web3/erc721Reader.mjs": {
+      "bytes": 3875,
+      "sha256": "1e81265f3a4a0253267308452c51702e8213ea2e88c616a409ed31ceb733b1c9"
+    },
+    "server/web3/erc1155Reader.mjs": {
+      "bytes": 4141,
+      "sha256": "538b2dd31bdad1d0471a5b2dacbb7c850d41bf6030c03d7a99c068b6e21983cd"
+    },
+    "server/web3/rpcTransport.mjs": {
+      "bytes": 4667,
+      "sha256": "b43c4f24da50d2e958c6c7e89c7ca70e41fb984330daa05b24bdd80c82076458"
+    },
+    "tools/web3-token-read.mjs": {
+      "bytes": 1556,
+      "sha256": "140aa767e133028f406dd244579624db87e3181417202b9a6ed5e616754502f3"
+    },
+    "tools/web3-edition-read.mjs": {
+      "bytes": 1643,
+      "sha256": "b6173deb16f8580c5b4a99e6b427978a06e1a59b5ee6218489a1820bfa99218b"
+    },
+    "PLAN-WEB3.md": {
+      "bytes": 29603,
+      "sha256": "bb7fdf4985788bf6e656f4562f1299300778f89093f5c9597f2bf563052e430b"
+    },
+    "DESIGN.md": {
+      "bytes": 80705,
+      "sha256": "92487435f1b7d013ff0c5bafc36b9687249c72e45c1f7c8ebb176e5617533c48"
+    },
+    "PLAN-DELIVERY.md": {
+      "bytes": 79509,
+      "sha256": "350dff7550e3c8078360d44c158e6d45a13331eefefd6539726a66eefaca2bb9"
+    },
+    "docs/HANDOFF.md": {
+      "bytes": 120262,
+      "sha256": "ede522aa3d792d40877f57e922714e07a59b3c7da7842808e5cdc0ff2f04071b"
+    },
+    "docs/briefs/w05-modular-equipment-direction.md": {
+      "bytes": 6867,
+      "sha256": "504d637a76b8ed433de3b08ccd833be0d7dfd1ffddbd183a9b19bfe4145c282d"
+    },
+    "docs/briefs/w02ja-amoy-deployment-review.md": {
+      "bytes": 3011,
+      "sha256": "d8dc483937981bea6ddc7ef8e7b84fa3620ea83b8fc98a0a828a87ca4d854c44"
+    },
+    "docs/delivery/w02ja-amoy-deployment-review.md": {
+      "bytes": 6636,
+      "sha256": "18116fa8dc14bbc672c1b9b475a264ced63dd1e9a47807e6b3c065debb1796de"
+    }
+  },
+  "references": [
+    "https://viem.sh/docs/contract/encodeDeployData",
+    "https://viem.sh/docs/utilities/getAddress",
+    "https://docs.polygon.technology/pos/reference/rpc-endpoints"
+  ]
+}

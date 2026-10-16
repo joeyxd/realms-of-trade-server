@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-11T00:40:44.806Z",
+  "failedReceiptAbsent": true,
+  "candidateWhy": "",
+  "persistedCredit": true,
+  "persistedKitCount": 1,
+  "raftId": {
+    "length": 39,
+    "containsColon": true,
+    "acceptedByHostPattern": true
+  },
+  "exactCandidateValidator": false,
+  "identifierControlValidator": true,
+  "profileVersion": 13,
+  "worldVersion": 1822
+}

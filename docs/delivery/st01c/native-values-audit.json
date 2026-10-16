@@ -1,0 +1,324 @@
+{
+  "schema": "st01c-native-values-audit/v1",
+  "inputs": {
+    "probeJson": "C:\\DEV\\real of trade\\st01c-native\\.scratch\\unreal\\native-values02.json",
+    "systemT3d": "C:\\DEV\\real of trade\\st01c-native\\.scratch\\unreal\\probe01\\system.t3d",
+    "systemT3dSha256Computed": "d7d78b14338a081a2b2a0af6a86ded8faf4fe46072e2e0fc26e1b0fc90d7aa11",
+    "systemT3dSha256InProbeManifest": "d7d78b14338a081a2b2a0af6a86ded8faf4fe46072e2e0fc26e1b0fc90d7aa11",
+    "systemT3dHashMatchesManifest": true,
+    "sourceSystemSha256Expected": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+    "commandletShaValidation": "external-only; commandlet does not hash the uasset",
+    "freshSourceCopyHashCheckedHere": false
+  },
+  "system": {
+    "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single",
+    "engineVersion": "5.8.0-55116800+++UE5+Release-5.8",
+    "emitterHandleCount": 2
+  },
+  "emitterVersionAndRenderers": [
+    {
+      "handleOrder": 0,
+      "name": "NE_Flame_Basic_001",
+      "enabled": true,
+      "handleRequestedVersion": "00000000-0000-0000-0000-000000000000",
+      "versioningEnabled": false,
+      "exposedVersion": "5f99d80a-2bf5-f86c-597e-4ea5a1fcf1ae",
+      "resolvedVersion": "5f99d80a-2bf5-f86c-597e-4ea5a1fcf1ae",
+      "graphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraScriptSource_0",
+      "activeRendererCount": 1,
+      "activeRenderers": [
+        {
+          "order": 0,
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraSpriteRendererProperties_0",
+          "classPath": "/Script/Niagara.NiagaraSpriteRendererProperties",
+          "enabled": true,
+          "materialPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_2.MI_Flame_2",
+          "subImageSize": [
+            8,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "handleOrder": 1,
+      "name": "NE_Smoke_Basic",
+      "enabled": true,
+      "handleRequestedVersion": "00000000-0000-0000-0000-000000000000",
+      "versioningEnabled": false,
+      "exposedVersion": "e0cc0084-5927-1bf0-c833-3ccaea80ab69",
+      "resolvedVersion": "e0cc0084-5927-1bf0-c833-3ccaea80ab69",
+      "graphSourceObjectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraScriptSource_0",
+      "activeRendererCount": 1,
+      "activeRenderers": [
+        {
+          "order": 0,
+          "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraSpriteRendererProperties_0",
+          "classPath": "/Script/Niagara.NiagaraSpriteRendererProperties",
+          "enabled": true,
+          "materialPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1.MI_Smoke_1",
+          "subImageSize": [
+            10,
+            6
+          ]
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "emitterHandles": 2,
+    "scriptsEnumerated": 8,
+    "scriptStoreValueOccurrences": 100,
+    "uniqueNamesGlobal": 80,
+    "uniqueNamesByEmitter": {
+      "NE_Flame_Basic_001": 41,
+      "NE_Smoke_Basic": 39
+    },
+    "occurrencesByEmitter": {
+      "NE_Flame_Basic_001": 51,
+      "NE_Smoke_Basic": 49
+    },
+    "namesAppearingMoreThanOnce": 20,
+    "repeatOccurrencesBeyondFirst": 20,
+    "opaqueOccurrences": 0
+  },
+  "scriptStores": [
+    {
+      "emitter": "NE_Flame_Basic_001",
+      "usage": "ParticleSpawnScriptInterpolated",
+      "usageId": "00000000-0000-0000-0000-000000000000",
+      "scriptPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.SpawnScript",
+      "parameterOccurrences": 31,
+      "matchingT3dStore": true
+    },
+    {
+      "emitter": "NE_Flame_Basic_001",
+      "usage": "ParticleUpdateScript",
+      "usageId": "00000000-0000-0000-0000-000000000000",
+      "scriptPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.UpdateScript",
+      "parameterOccurrences": 10,
+      "matchingT3dStore": true
+    },
+    {
+      "emitter": "NE_Flame_Basic_001",
+      "usage": "EmitterSpawnScript",
+      "usageId": "00000000-0000-0000-0000-000000000000",
+      "scriptPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.EmitterSpawnScript",
+      "parameterOccurrences": 0,
+      "matchingT3dStore": false
+    },
+    {
+      "emitter": "NE_Flame_Basic_001",
+      "usage": "EmitterUpdateScript",
+      "usageId": "00000000-0000-0000-0000-000000000000",
+      "scriptPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.EmitterUpdateScript",
+      "parameterOccurrences": 10,
+      "matchingT3dStore": true
+    },
+    {
+      "emitter": "NE_Smoke_Basic",
+      "usage": "ParticleSpawnScriptInterpolated",
+      "usageId": "00000000-0000-0000-0000-000000000000",
+      "scriptPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.SpawnScript",
+      "parameterOccurrences": 29,
+      "matchingT3dStore": true
+    },
+    {
+      "emitter": "NE_Smoke_Basic",
+      "usage": "ParticleUpdateScript",
+      "usageId": "00000000-0000-0000-0000-000000000000",
+      "scriptPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.UpdateScript",
+      "parameterOccurrences": 10,
+      "matchingT3dStore": true
+    },
+    {
+      "emitter": "NE_Smoke_Basic",
+      "usage": "EmitterSpawnScript",
+      "usageId": "00000000-0000-0000-0000-000000000000",
+      "scriptPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.EmitterSpawnScript",
+      "parameterOccurrences": 0,
+      "matchingT3dStore": false
+    },
+    {
+      "emitter": "NE_Smoke_Basic",
+      "usage": "EmitterUpdateScript",
+      "usageId": "00000000-0000-0000-0000-000000000000",
+      "scriptPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.EmitterUpdateScript",
+      "parameterOccurrences": 10,
+      "matchingT3dStore": true
+    }
+  ],
+  "usageOccurrences": {
+    "ParticleSpawnScriptInterpolated": 60,
+    "ParticleUpdateScript": 20,
+    "EmitterUpdateScript": 20
+  },
+  "decoderCounts": {
+    "FVector3f": 23,
+    "NiagaraFloat": 47,
+    "FLinearColor": 2,
+    "FVector4f": 6,
+    "NiagaraBool": 4,
+    "FQuat4f": 4,
+    "NiagaraInt32": 14
+  },
+  "decoderCountsByEmitter": {
+    "NE_Flame_Basic_001": {
+      "FVector3f": 11,
+      "NiagaraFloat": 24,
+      "FLinearColor": 1,
+      "FVector4f": 4,
+      "NiagaraBool": 2,
+      "FQuat4f": 2,
+      "NiagaraInt32": 7
+    },
+    "NE_Smoke_Basic": {
+      "FVector3f": 12,
+      "NiagaraFloat": 23,
+      "NiagaraInt32": 7,
+      "FLinearColor": 1,
+      "FVector4f": 2,
+      "NiagaraBool": 2,
+      "FQuat4f": 2
+    }
+  },
+  "typeNamePathSizeCounts": [
+    {
+      "typeName": "LinearColor",
+      "typePath": "/Script/CoreUObject.LinearColor",
+      "byteSize": 16,
+      "occurrences": 2
+    },
+    {
+      "typeName": "NiagaraBool",
+      "typePath": "/Script/Niagara.NiagaraBool",
+      "byteSize": 4,
+      "occurrences": 4
+    },
+    {
+      "typeName": "NiagaraFloat",
+      "typePath": "/Script/Niagara.NiagaraFloat",
+      "byteSize": 4,
+      "occurrences": 47
+    },
+    {
+      "typeName": "NiagaraInt32",
+      "typePath": "/Script/Niagara.NiagaraInt32",
+      "byteSize": 4,
+      "occurrences": 14
+    },
+    {
+      "typeName": "Quat4f",
+      "typePath": "/Script/CoreUObject.Quat4f",
+      "byteSize": 16,
+      "occurrences": 4
+    },
+    {
+      "typeName": "Vector3f",
+      "typePath": "/Script/CoreUObject.Vector3f",
+      "byteSize": 12,
+      "occurrences": 23
+    },
+    {
+      "typeName": "Vector4f",
+      "typePath": "/Script/CoreUObject.Vector4f",
+      "byteSize": 16,
+      "occurrences": 6
+    }
+  ],
+  "indexDiagnosticMappings": [
+    {
+      "registeredTypeIndexDiagnostic": 99,
+      "canonicalTypes": [
+        {
+          "typeName": "NiagaraFloat",
+          "typePath": "/Script/Niagara.NiagaraFloat",
+          "byteSize": 4
+        }
+      ]
+    },
+    {
+      "registeredTypeIndexDiagnostic": 101,
+      "canonicalTypes": [
+        {
+          "typeName": "NiagaraInt32",
+          "typePath": "/Script/Niagara.NiagaraInt32",
+          "byteSize": 4
+        }
+      ]
+    },
+    {
+      "registeredTypeIndexDiagnostic": 104,
+      "canonicalTypes": [
+        {
+          "typeName": "Vector3f",
+          "typePath": "/Script/CoreUObject.Vector3f",
+          "byteSize": 12
+        }
+      ]
+    },
+    {
+      "registeredTypeIndexDiagnostic": 105,
+      "canonicalTypes": [
+        {
+          "typeName": "Vector4f",
+          "typePath": "/Script/CoreUObject.Vector4f",
+          "byteSize": 16
+        }
+      ]
+    },
+    {
+      "registeredTypeIndexDiagnostic": 106,
+      "canonicalTypes": [
+        {
+          "typeName": "LinearColor",
+          "typePath": "/Script/CoreUObject.LinearColor",
+          "byteSize": 16
+        }
+      ]
+    },
+    {
+      "registeredTypeIndexDiagnostic": 108,
+      "canonicalTypes": [
+        {
+          "typeName": "Quat4f",
+          "typePath": "/Script/CoreUObject.Quat4f",
+          "byteSize": 16
+        }
+      ]
+    },
+    {
+      "registeredTypeIndexDiagnostic": 111,
+      "canonicalTypes": [
+        {
+          "typeName": "NiagaraBool",
+          "typePath": "/Script/Niagara.NiagaraBool",
+          "byteSize": 4
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "rawHexByteLengthEqualsReportedTypeSize": true,
+    "decodedValueRecomputedFromRawHexFailures": [],
+    "selectedScriptT3dStoreMatches": 100,
+    "selectedScriptT3dIndexMatches": 100,
+    "selectedScriptT3dUnmatchedNameOffset": [],
+    "selectedScriptT3dMismatches": [],
+    "multipleT3dCandidates": [],
+    "registryIndexConflictsWithinThisOutput": []
+  },
+  "readOnlySourceIoReview": {
+    "exactLoad": "The helper calls LoadObject<UNiagaraSystem> once on its hardcoded exact pilot object path, then iterates that loaded system only.",
+    "selectedScripts": "For each handle it uses Handle.GetInstance()/GetEmitterData(), then Data->GetScripts(Scripts,false,false), and reads only each returned script RapidIterationParameters store with ReadParameterVariables/GetParameterData. This is per-script rapid-iteration data, not all exposed/system/emitter parameter stores, all graph pin defaults, module DataInterface/curve contents, or a full parameter universe.",
+    "writes": "The only explicit application write in the commandlet source is FFileHelper::SaveStringToFile to the required -Output JSON path. No SavePackage, asset save, RequestCompile, Compile, Niagara simulation/world, renderer, RHI, or GPU call exists in the commandlet source. Package loading can still perform normal in-memory UObject PostLoad work; this source review does not certify wider engine startup behavior.",
+    "identity": "Probe JSON only carries the expected source package SHA as provenance and explicitly says the commandlet did not hash it. Parent must validate the fresh copy/final hashes."
+  },
+  "interpretationLimits": [
+    "These are 100 rapid-iteration parameter occurrences across 8 script stores, not 100 unique names or all source parameters. There are 80 unique parameter names globally: 41 in flame and 39 in smoke; each emitter has 10 names occurring in two script usages.",
+    "The 100 active-script name+offset+byte slices and registered indices matched the corresponding selected embedded script objects in system.t3d; independent raw-byte decoding of every typed record matched the helper JSON. This corroborates serialized buffer extraction and the helper?s supported-type decoding, not simulation semantics.",
+    "RegisteredTypeIndex remains a process-specific diagnostic slot; do not use as a durable schema ID or parser lookup.",
+    "No claim is made about graph parser completeness, module execution order, curve semantics, inheritance presentation in Niagara editor stack, rendered output, timeline, Three.js quality, or equivalence."
+  ],
+  "reviewResult": "All audited records were internally size-consistent; all 100 matched T3D selected-script ParameterData bytes and available type indices; all decoded supported values recomputed from raw bytes without mismatch. Source package identity remains an external parent validation."
+}

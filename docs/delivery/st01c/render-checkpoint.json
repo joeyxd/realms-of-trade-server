@@ -1,0 +1,436 @@
+{
+  "schema": "st01c-observed-render-checkpoint/v1",
+  "date": "2026-10-13",
+  "acceptance": "private observed-attribute render experiment only; native simulation, original final color, world integration and physical-device performance pending",
+  "engine": "5.8.0-55116800+++UE5+Release-5.8",
+  "system": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single",
+  "sourceSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "captureRuns": [
+    "reference11",
+    "reference12"
+  ],
+  "settings": {
+    "fixed_dt_seconds": 0.016666666666666666,
+    "steps": 240,
+    "duration_seconds": 4.0,
+    "image_steps": [
+      30,
+      60,
+      120,
+      180,
+      240
+    ],
+    "views": [
+      "front",
+      "oblique",
+      "side"
+    ],
+    "resolution": [
+      512,
+      512
+    ],
+    "projection": "orthographic",
+    "orthographic_width_cm": 400.0,
+    "target_cm": [
+      0.0,
+      0.0,
+      100.0
+    ],
+    "camera_distance_cm": 500.0,
+    "capture_source": "FinalColorLDR",
+    "background": "black opaque",
+    "show_only": "pilot Niagara actor",
+    "exposure": "manual 0 bias, physical camera exposure disabled; bloom 0"
+  },
+  "seedConfiguration": {
+    "available": true,
+    "result": {
+      "system": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single",
+      "overrideScope": "in-memory comparison fixture only; originals not saved",
+      "warmupTime": 0,
+      "warmupTicks": 0,
+      "sourceEnums": [
+        {
+          "path": "/Niagara/Enums/ENiagaraSUbUVAnimationMode.ENiagaraSUbUVAnimationMode",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "Linear"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "Random"
+            },
+            {
+              "token": "ENiagaraSUbUVAnimationMode_MAX",
+              "label": "ENiagara SUb UVAnimation Mode MAX"
+            }
+          ]
+        },
+        {
+          "path": "/Niagara/Enums/ENiagaraEmitterLifeCycleMode.ENiagaraEmitterLifeCycleMode",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "System"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "Self"
+            },
+            {
+              "token": "ENiagaraEmitterLifeCycleMode_MAX",
+              "label": "ENiagara Emitter Life Cycle Mode MAX"
+            }
+          ]
+        },
+        {
+          "path": "/Niagara/Enums/ENiagara_EmitterStateOptions.ENiagara_EmitterStateOptions",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "Infinite"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "Once"
+            },
+            {
+              "token": "NewEnumerator2",
+              "label": "Multiple"
+            },
+            {
+              "token": "ENiagara_MAX",
+              "label": "ENiagara MAX"
+            }
+          ]
+        },
+        {
+          "path": "/Niagara/Enums/ENiagara_InfiniteLoopDuration.ENiagara_InfiniteLoopDuration",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "Fixed"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "Infinite"
+            },
+            {
+              "token": "ENiagara_MAX",
+              "label": "ENiagara MAX"
+            }
+          ]
+        },
+        {
+          "path": "/Niagara/Enums/ENiagaraEmitterScalabilityMode_Limited.ENiagaraEmitterScalabilityMode_Limited",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "System"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "Self"
+            },
+            {
+              "token": "ENiagaraEmitterScalabilityMode_MAX",
+              "label": "ENiagara Emitter Scalability Mode MAX"
+            }
+          ]
+        },
+        {
+          "path": "/Niagara/Enums/ENiagaraScaleColorMode.ENiagaraScaleColorMode",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "RGB and Alpha Separately"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "RGBA Together"
+            },
+            {
+              "token": "NewEnumerator2",
+              "label": "RGBA Linear Color Curve"
+            },
+            {
+              "token": "ENiagaraScaleColorMode_MAX",
+              "label": "ENiagara Scale Color Mode MAX"
+            }
+          ]
+        }
+      ],
+      "emitters": [
+        {
+          "name": "NE_Flame_Basic_001",
+          "originalDeterminism": false,
+          "originalSeed": 0,
+          "fixtureSeed": 6371
+        },
+        {
+          "name": "NE_Smoke_Basic",
+          "originalDeterminism": false,
+          "originalSeed": 0,
+          "fixtureSeed": 6372
+        }
+      ]
+    }
+  },
+  "counts": {
+    "simulation_steps": 240,
+    "image_frames_expected": 15,
+    "image_frames_written": 15,
+    "particle_steps_expected": 241,
+    "particle_steps_written": 241
+  },
+  "originalAndCopyHashesVerified": 51,
+  "repeat": {
+    "cpuFramesIdentical": 241,
+    "hdrFilesByteIdentical": 3,
+    "ldrDecodedPixelDifferences": [
+      {
+        "file": "t0000_front.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0030_front.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0030_oblique.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0030_side.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0060_front.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0060_oblique.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0060_side.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0120_front.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0120_oblique.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0120_side.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0180_front.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0180_oblique.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0180_side.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0240_front.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0240_oblique.png",
+        "maxChannelDifference": 0.0
+      },
+      {
+        "file": "t0240_side.png",
+        "maxChannelDifference": 0.0
+      }
+    ],
+    "pngBinaryHashesMayDiffer": "PNG metadata is not used as pixel equality"
+  },
+  "baselines": {
+    "rgbMax": 1,
+    "visiblePixelsGt16": 0
+  },
+  "captureRetries": [
+    [
+      30,
+      "front",
+      2
+    ]
+  ],
+  "referenceFiles": [
+    {
+      "file": "frames/t0000_front.png",
+      "sha256": "0e8a0d9885f224713cac8486deb699f1f16ba155f0528a4ba2e23d2e7a74ad16"
+    },
+    {
+      "file": "frames/t0030_front.png",
+      "sha256": "56acc4b627d8325bdec159000ce5f228d350a5c7cf11f1db7b4cbb08efbd72bc"
+    },
+    {
+      "file": "frames/t0030_oblique.png",
+      "sha256": "dcc693408f902d6b44e787050b1d2baf59f162708bc29cebef02b2e6d9354b70"
+    },
+    {
+      "file": "frames/t0030_side.png",
+      "sha256": "a5056e790d5cf7bce2fa3eacd450c4a2ad99060d0393087e7f2812cc26c0bec6"
+    },
+    {
+      "file": "frames/t0060_front.png",
+      "sha256": "fffe6ca300be1b49c9a2b181d304dba5b9a0a8148555b9c307ab34e675661872"
+    },
+    {
+      "file": "frames/t0060_oblique.png",
+      "sha256": "b90e417ee50897e55b81493e12d53e25d8368517a8bd086390d23f120b1afb4b"
+    },
+    {
+      "file": "frames/t0060_side.png",
+      "sha256": "1aa70757b30aa45eefd22d46624705d7a786068bca5df0e775c84dd6aeaa982a"
+    },
+    {
+      "file": "frames/t0120_front.png",
+      "sha256": "841f1c898dfed99e5b48be3af4888904e028512ae4b9c06df302460805340985"
+    },
+    {
+      "file": "frames/t0120_oblique.png",
+      "sha256": "c6ea1d0bdca3f95c460f0702df65e881de2b2759ff76fac6805bd2d4ef0ad01b"
+    },
+    {
+      "file": "frames/t0120_side.png",
+      "sha256": "b664c6f7fb4475e981f2929804d2b6a580b5ca4b46a71aeb1fec70c19123bbc2"
+    },
+    {
+      "file": "frames/t0180_front.png",
+      "sha256": "e52bb74895e9fceaf5e62a0f42175f6d70d1cab3418b544113ab60c875667b8a"
+    },
+    {
+      "file": "frames/t0180_oblique.png",
+      "sha256": "74903cc272396213457c127eff3375497f6b7c052c6c00393ec1bfc6d67bf88e"
+    },
+    {
+      "file": "frames/t0180_side.png",
+      "sha256": "08dffb87d6d92f5ceb56ff474943430f34203c21f3b0bda226dadf35910fb0f6"
+    },
+    {
+      "file": "frames/t0240_front.png",
+      "sha256": "ded10ebd312d9fea61483b95929842b3b93f48d9810d9d37087b8a67cc143026"
+    },
+    {
+      "file": "frames/t0240_oblique.png",
+      "sha256": "eba643c6d9106cd94cbfa163f93f54fb4f7acee161b88ba6a2aa43fc4baca2a5"
+    },
+    {
+      "file": "frames/t0240_side.png",
+      "sha256": "9e613b1e9222e902b96fddd9d2540dcb56b4466b488b2fd40133324aaeb61f35"
+    },
+    {
+      "file": "frames/t0120_front_linear.hdr",
+      "sha256": "48dcc69d62f09a1421c6c5aeb93c1bc896b8fe5105f4bad81bb8c28f4e4e856d"
+    },
+    {
+      "file": "frames/t0120_oblique_linear.hdr",
+      "sha256": "406a65f07d61bdfef162a5a4e8a5bf4d28e9d3316104464e86f5978b132efb41"
+    },
+    {
+      "file": "frames/t0120_side_linear.hdr",
+      "sha256": "dac4f2c058013537e14cd8dcc5c3eedffa9f5c159c0191ec38b0c7c4bc0580a0"
+    }
+  ],
+  "atlasExports": [
+    {
+      "asset": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_2",
+      "file": "textures/T_FlameUV_2.png",
+      "width": 2048,
+      "height": 1024,
+      "srgb": true,
+      "source_copy_package_sha256": "3e0a757f3e8443ebfc1644d98ecea09e9f225c684d588fb0f89afcfac9d0c410",
+      "sha256": "cd44ef0de6222e9ce7b0185099f07bf2763c33190f716c45fa06083ba08e9d86"
+    },
+    {
+      "asset": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1",
+      "file": "textures/T_Smoke_1.png",
+      "width": 2560,
+      "height": 1536,
+      "srgb": true,
+      "source_copy_package_sha256": "ecddb7ecffb46fb0c61d5c0bf9d8e0f7d74f8b25cd614cd1e7ddc2df0468f0ce",
+      "sha256": "6e6020de9e807fc9fd96bae1f8c376b4c6793a08644512e77bf6c79e44e99442"
+    }
+  ],
+  "codeHashes": {
+    "tools/unreal-niagara-probe/capture_reference.py": "411c0a2d32d959555626be4ff47c0f2cb3cf3e0f55e4ed7053ee93936d04cb99",
+    "tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/Private/ST01cRuntimeProbe.cpp": "1da231247a83089d124a35ffde79c8fe8d9df62704265e1d124d8f9161b7ff52",
+    "tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/Public/ST01cRuntimeProbe.h": "d074814be93096bc1c70445dd9b3b64f90a0ce1a5e42d9fbaf41aadc2f0e3d39",
+    "tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/ST01cProbe.Build.cs": "726b5bd59faeb636fbf9b74f665e6f51588ee379c4c9b0dd86e9b6538bc37992",
+    "tools/niagara-native-lab/particles.js": "fb7381500dc7ce9e8008e835280e4b904b26e936d257612fa7d970872206fa28",
+    "tools/niagara-native-lab/lab.js": "2e2e96fac87efdba56884a29232c2ab06ad01b4cd718477393dd5b2f887ee181",
+    "tools/niagara-native-lab/qa.mjs": "9dde879386ba27de41c4324874c7e678ffa8bdc925664e0c91114a801bf02d1a",
+    "tools/niagara-native-lab/compare.py": "b0f46192975a7dcc8e56216d16fb35719fe0a8c1e0e9f63ee5f0ca6971433726",
+    "tools/niagara-native-lab/index.html": "c61b3e30bbf6f66fa6f14c7928d533306a95522d411732f9e2b5e7e0a70fe888"
+  },
+  "browserQA": {
+    "initial": {
+      "ready": true,
+      "errors": [],
+      "count": 22,
+      "draws": 3,
+      "textures": 3
+    },
+    "results": [
+      {
+        "check": "orbit-changes-render",
+        "okay": true
+      },
+      {
+        "check": "smoke-only",
+        "count": 19
+      },
+      {
+        "check": "both-hidden",
+        "count": 0
+      },
+      {
+        "check": "play-advances",
+        "frame": 144
+      },
+      {
+        "check": "mobile-no-overflow",
+        "okay": true
+      },
+      {
+        "check": "disposed",
+        "memory": {
+          "geometries": 0,
+          "textures": 0
+        }
+      }
+    ],
+    "errors": []
+  },
+  "browserRequests": {
+    "methods": [
+      "GET"
+    ],
+    "scope": "localhost"
+  },
+  "renderStats": {
+    "normalDrawCalls": 3,
+    "sameOutputComparisonDrawCalls": 4,
+    "particlesAt2Seconds": 22,
+    "particlesAt3And4Seconds": 23
+  },
+  "rawEvidenceRoot": ".scratch/unreal",
+  "browserEvidenceRoot": ".scratch/browser-lab",
+  "compiledHelperCopy": {
+    "sha256": "a2f117c8a7f1b03c9d850754bb0e6d4ff81afe831db7ee89dbb892d7b57ae33a",
+    "matchesVersionedSourceIgnoringOnlyCRLF": true
+  }
+}

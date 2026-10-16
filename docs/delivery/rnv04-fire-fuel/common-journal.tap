@@ -1,0 +1,47 @@
+▶ storage lesson requires the completed community project, logging practice, and carried materials
+  ✔ unfinished community project (613.2345ms)
+  ✔ logging practice below threshold (517.2316ms)
+  ✔ missing carried materials (389.5199ms)
+  ✔ successful personal teaching spends wood once (405.9725ms)
+✔ storage lesson requires the completed community project, logging practice, and carried materials (1927.5835ms)
+✔ lost learning commit response is reconciled and its historical replay cannot undo newer progress (741.2974ms)
+✔ artisan readiness failure prevents host admission (509.2431ms)
+✔ artisan commands and new storage remain disabled when the opt-in flag is off (468.8967ms)
+✔ enabled artisan rejects guests and malformed raw learn commands before writing receipts (540.0932ms)
+▶ economic receipt validation rejects forged artisan baseline and profile effect
+  ✔ forged before (474.1204ms)
+  ✔ forged profile (459.2122ms)
+✔ economic receipt validation rejects forged artisan baseline and profile effect (933.9908ms)
+✔ new raft storage is denied before learning, then paid and committed after the personal lesson (1433.8049ms)
+✔ storage placement emits no early ACK while its M5 commit is held (1594.5633ms)
+✔ confirmed storage survives host restart and an unlearned legacy owner can still use and remove it (1851.3478ms)
+✔ SQL021 learns raft storage once, retains the exact before/profile/world receipt and replays it (4982.4287ms)
+✔ SQL021 rejects forged learning deltas and leaves profile, world, and receipt unchanged (6991.789ms)
+✔ SQL021 rejects incomplete carpentry, ineligible practice, wrong project revision, and already learned state (2111.8478ms)
+✔ SQL021 keeps old economic receipts valid and the new readiness RPC service-only (1744.381ms)
+✔ SQL021 accepts and replays exact storage placement deltas, rejects unrelated ship edits (1547.5382ms)
+✔ fire paid operation commits through the optional ground journal and shared SQL receipt (3723.7463ms)
+✔ GameHost resource transaction recovers and replays once after SIGKILL after-journal-prepare (8097.2255ms)
+ℹ File-backed PGlite, actual GameHost command, SQL018/019 recovery, and process SIGKILL; reopen applies no migrations.
+✔ GameHost resource transaction recovers and replays once after SIGKILL after-sql-commit (7588.5155ms)
+ℹ File-backed PGlite, actual GameHost command, SQL018/019 recovery, and process SIGKILL; reopen applies no migrations.
+✔ SQL018/019 GameHost routes human operations and world checkpoints through one recovered authority (10398.6545ms)
+ℹ SQL001–021 service-role PGlite integration: commerce, cooperative logging, community contribution, artisan learning, checkpoint, lost response and restart replay.
+✔ SQL018/019 GameHost durably places and removes a learned storage piece (5615.8242ms)
+ℹ SQL001–021 storage editor integration: one place and one removal, exact material/capacity deltas, and one SQL014/018/019 receipt each.
+✔ the opt-in composes one ready ground owner while defaults keep the legacy host (1489.0958ms)
+✔ opt-in fails closed for an absent clock or a resource tick outside that clock (1045.6804ms)
+✔ a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain (610.4839ms)
+✔ coalesced world snapshots keep the common boundary reserved until every checkpoint drains (784.6467ms)
+✔ shutdown settles and drains a pending checkpoint before the final world flush (690.9609ms)
+✔ the trusted opt-in rejects accessors and the separate agent-trade lane (0.9778ms)
+✔ accounts-only ground hosts reject guest admission (434.9339ms)
+✔ replacing the installed beforeTick owner fences the world (486.4715ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 74376.1892

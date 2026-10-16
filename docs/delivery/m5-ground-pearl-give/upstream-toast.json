@@ -1,0 +1,30 @@
+{
+  "startedAt": "2026-10-12T17:05:21.340579+00:00",
+  "finishedAt": "2026-10-12T17:05:31.257146+00:00",
+  "revision": "6f997cef0ead6756e448a83ac4434b9c10e890ea",
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "--test-name-pattern=commandDenied reaches only",
+    "tests/pearl-command-access.test.mjs"
+  ],
+  "testFiles": 1,
+  "exitCode": 1,
+  "counts": {
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "sourcesUnchanged": true,
+  "sha256": {
+    "tests/pearl-command-access.test.mjs": "1ce872fb683ba7a4acfcf63ab9ffd3923228b7ef5c1538c1cad4ceda884c14ad",
+    "tests/ground-pearl-command-route.test.mjs": "e1b599504c06b25a4fa6557f0d614f54b507dc4db7fede525cf134443c50bca5",
+    "src/ui/rewards.js": "24dd515b2f58c4b685ccee6c01dde1c37905a5915a9c0c4df9ad08640870f819",
+    "src/i18n/adventure.js": "ae9672fc9ae16b67685afec97e4bcc52e0c64dc1dac41fb10bc1d0069f977ff6"
+  },
+  "scope": "Unmodified upstream control for the pre-existing localized commandDenied HTML mismatch."
+}

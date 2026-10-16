@@ -1,0 +1,39 @@
+✔ preparation authenticates GM users and enforces method, content type, and exact body shape (105.558ms)
+✔ preparation derives owner and world, reloads the same saved head before and after build, and never saves (18.8569ms)
+✔ expected revision conflict skips build and releases exclusion for the next valid request (15.9489ms)
+✔ head changing during build returns conflict and does not publish a stale result (8.1978ms)
+✔ build errors are sanitized and draft GET remains available (10.5516ms)
+✔ only one build runs at once and concurrent preparation returns gm_preparation_busy (19.3545ms)
+✔ timeout retains the build lock until underlying work settles, then permits a new build (71.8681ms)
+✔ publication readiness failure blocks only prepare while draft reads remain available (11.8657ms)
+✔ abort after loading the head prevents compilation (63.5936ms)
+✔ painted v4 terrain draft saves, prepares, activates, loads for clients, admits matching peer, and rolls back (14591.1503ms)
+✔ v4 saves fail closed before the SQL save RPC when readiness is absent, stale, malformed, or unavailable (1.9875ms)
+✔ legacy v3 saves do not require the material readiness RPC (0.3651ms)
+✔ v4 saves validate readiness first and preserve the exact pending operation identity and document (0.3283ms)
+✔ terrain material validator rejects invalid sums, ordering, and document-version mismatches (1.5291ms)
+✔ paint and erase are deterministic, nonmutating, and undo/redo restore exact bytes (1.816ms)
+✔ paint projection preserves height bytes, props, colliders, and resource layout (9.6223ms)
+✔ material interpolation follows alternating terrain diagonals exactly (66.8583ms)
+✔ matching painted family stays continuous with the automatic residual (0.4653ms)
+✔ safe dry material paint passes server draft validation and the spring interpolation margin is rejected (2.4796ms)
+✔ painting then sculpting preserves material samples in document v4 (6.8522ms)
+✔ legacy host keeps death persistence and common family composition unmounted by default (352.5971ms)
+✔ GM content switching excludes a ready host with common death authorities mounted (3270.5948ms)
+✔ Cala fatal commits the whole captured death, but applies and publishes only on the next host boundary (3993.4915ms)
+✔ exterior zero-pearl fatal keeps the safe-zone death result without generating loot (3037.6372ms)
+✔ death current rows hydrate after restart; an ordinary drop can be picked and another expired under the same owner (4819.5517ms)
+✔ fatal input inside a real server step neutralizes the remainder of its queued commands (4043.2851ms)
+✔ fatal deaths from one terminal tick serialize profile and PK versions (4268.6208ms)
+✔ a killer who dies later in the same terminal tick transfers the killer role serially (4255.4572ms)
+✔ disconnect after SQL commit but before beforeTick fences death without local apply (4152.4893ms)
+✔ close after SQL commit but before apply preserves the local pre-death snapshot (4171.2234ms)
+✔ apply failure after SQL commit restores the local death projection and fences the host (4687.7585ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 58543.5149

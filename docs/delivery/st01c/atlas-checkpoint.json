@@ -1,0 +1,790 @@
+{
+  "schema": "st01c-atlas-checkpoint/v1",
+  "date": "2026-10-14",
+  "sourceSystemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "status": "transfer-accepted-gpu-memory-pending",
+  "implementation": "private lab only; no new game effect, SQL or protocol",
+  "sourceInputs": [
+    {
+      "bytes": 654386,
+      "decodedRgbaSha256": "ef5c19227fd76c2c2caf8ff3a5f0cd4668f3ca30a33f96bebf39aeca970e555b",
+      "dimensions": [
+        2048,
+        1024
+      ],
+      "file": ".scratch/unreal/reference11/textures/T_FlameUV_2.png",
+      "grid": [
+        8,
+        4
+      ],
+      "id": "flame",
+      "sha256": "cd44ef0de6222e9ce7b0185099f07bf2763c33190f716c45fa06083ba08e9d86",
+      "srgb": true,
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_2",
+      "packageSha256": "3e0a757f3e8443ebfc1644d98ecea09e9f225c684d588fb0f89afcfac9d0c410"
+    },
+    {
+      "bytes": 714657,
+      "decodedRgbaSha256": "e8f683fa681a8baeb742e4f2c74382581e3bc15c00016d3682cdce40cf24d177",
+      "dimensions": [
+        2560,
+        1536
+      ],
+      "file": ".scratch/unreal/reference11/textures/T_Smoke_1.png",
+      "grid": [
+        10,
+        6
+      ],
+      "id": "smoke",
+      "sha256": "6e6020de9e807fc9fd96bae1f8c376b4c6793a08644512e77bf6c79e44e99442",
+      "srgb": true,
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1",
+      "packageSha256": "ecddb7ecffb46fb0c61d5c0bf9d8e0f7d74f8b25cd614cd1e7ddc2df0468f0ce"
+    }
+  ],
+  "thresholdsBeforeReview": {
+    "mae255": 2,
+    "p95Channel255": 6,
+    "maskIoU32": 0.98,
+    "ueMae255": 10,
+    "ueIoU32": 0.94
+  },
+  "sourcePngDownloadBytes": 1369043,
+  "selectedLosslessWebpBytes": 552514,
+  "downloadReductionPercent": 59.642319488869234,
+  "variants": [
+    {
+      "id": "full",
+      "visualGatePassed": true,
+      "comparedOriginalRenders": 268,
+      "failures": 0,
+      "failedCaseKinds": {
+        "pilot": 0,
+        "layer": 0,
+        "depth": 0,
+        "cell": 0
+      },
+      "maxMae255": 0.0,
+      "maxP95Channel255": 0.0,
+      "minimumMaskIoU32": 1.0,
+      "worstMaskCase": {
+        "kind": "pilot",
+        "tick": 0,
+        "view": "front",
+        "bias": 0,
+        "layer": "both",
+        "surface": "none",
+        "cell": false,
+        "frame": 0,
+        "file": "case-000.png"
+      },
+      "ueCases": [
+        {
+          "view": "front",
+          "bias": 0,
+          "mae255": 6.912346051880935,
+          "p95Channel255": 28.0,
+          "maskIoU32": 0.9823437091289563,
+          "max255": 58.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "front",
+          "bias": 1,
+          "mae255": 4.750866528022183,
+          "p95Channel255": 22.0,
+          "maskIoU32": 0.9801756885090218,
+          "max255": 57.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "oblique",
+          "bias": 0,
+          "mae255": 7.837088204038257,
+          "p95Channel255": 35.0,
+          "maskIoU32": 0.983533716675379,
+          "max255": 67.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "oblique",
+          "bias": 1,
+          "mae255": 5.363281030313256,
+          "p95Channel255": 27.0,
+          "maskIoU32": 0.9858993465550843,
+          "max255": 66.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "side",
+          "bias": 0,
+          "mae255": 6.926099348534202,
+          "p95Channel255": 31.0,
+          "maskIoU32": 0.9845630559916274,
+          "max255": 61.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "side",
+          "bias": 1,
+          "mae255": 4.8745717183345665,
+          "p95Channel255": 25.0,
+          "maskIoU32": 0.9846643859856081,
+          "max255": 64.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        }
+      ],
+      "selected": [
+        {
+          "bytes": 277976,
+          "cellSize": 256,
+          "decodedRgbaSha256": "ef5c19227fd76c2c2caf8ff3a5f0cd4668f3ca30a33f96bebf39aeca970e555b",
+          "dimensions": [
+            2048,
+            1024
+          ],
+          "file": "full-flame.webp",
+          "grid": [
+            8,
+            4
+          ],
+          "id": "full",
+          "inputId": "flame",
+          "mipRgba8Bytes": 11184812,
+          "sha256": "cc80a1d651f272f13a99f49b85a10415907a6a6b3abb138a42e27ffcba558a0d",
+          "url": "/.scratch/atlas-build/v1/full-flame.webp"
+        },
+        {
+          "bytes": 274538,
+          "cellSize": 256,
+          "decodedRgbaSha256": "e8f683fa681a8baeb742e4f2c74382581e3bc15c00016d3682cdce40cf24d177",
+          "dimensions": [
+            2560,
+            1536
+          ],
+          "file": "full-smoke.webp",
+          "grid": [
+            10,
+            6
+          ],
+          "id": "full",
+          "inputId": "smoke",
+          "mipRgba8Bytes": 20971512,
+          "sha256": "b9890532ed794b80a0501098a3a80c79b3a0da5d7ac885eccd509fdb07e61ec1",
+          "url": "/.scratch/atlas-build/v1/full-smoke.webp"
+        }
+      ],
+      "stats": {
+        "calls": 3,
+        "triangles": 46,
+        "particles": 22,
+        "textures": 6,
+        "atlasDownloadBytes": 552514,
+        "atlasMipRgba8Bytes": 32156324,
+        "lutBytes": 262144,
+        "targetEstimatedBytes": 5242880,
+        "submitMilliseconds": 0.5,
+        "projectedQuadAreaScreenRatio": 2.1506011168143817
+      },
+      "diagnosticBenchmark": {
+        "cpuStepP50Ms": 0,
+        "cpuStepP95Ms": 0,
+        "submitP95Ms": 0.3999999985098839,
+        "gpuMilliseconds": 0.154218,
+        "disjoint": false,
+        "device": {
+          "webgl2": true,
+          "maxTextureSize": 16384,
+          "gpuTimerAvailable": true,
+          "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+        }
+      }
+    },
+    {
+      "id": "half",
+      "visualGatePassed": false,
+      "comparedOriginalRenders": 268,
+      "failures": 49,
+      "failedCaseKinds": {
+        "pilot": 0,
+        "layer": 1,
+        "depth": 0,
+        "cell": 48
+      },
+      "maxMae255": 0.8817857891427374,
+      "maxP95Channel255": 3.0,
+      "minimumMaskIoU32": 0.7333333333333333,
+      "worstMaskCase": {
+        "kind": "cell",
+        "tick": 120,
+        "view": "front",
+        "bias": 0,
+        "layer": "smoke",
+        "surface": "none",
+        "cell": true,
+        "frame": 33,
+        "file": "case-214.png"
+      },
+      "ueCases": [
+        {
+          "view": "front",
+          "bias": 0,
+          "mae255": 6.906525750712968,
+          "p95Channel255": 28.0,
+          "maskIoU32": 0.9828735782455222,
+          "max255": 57.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "front",
+          "bias": 1,
+          "mae255": 4.7289386070049275,
+          "p95Channel255": 22.0,
+          "maskIoU32": 0.9796015180265655,
+          "max255": 54.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "oblique",
+          "bias": 0,
+          "mae255": 7.827936440528011,
+          "p95Channel255": 35.0,
+          "maskIoU32": 0.9841954022988506,
+          "max255": 65.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "oblique",
+          "bias": 1,
+          "mae255": 5.340191118605959,
+          "p95Channel255": 27.0,
+          "maskIoU32": 0.9856766357281999,
+          "max255": 70.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "side",
+          "bias": 0,
+          "mae255": 6.9159717985221345,
+          "p95Channel255": 31.0,
+          "maskIoU32": 0.9854864016736402,
+          "max255": 61.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "side",
+          "bias": 1,
+          "mae255": 4.856059361480751,
+          "p95Channel255": 25.0,
+          "maskIoU32": 0.9849127769919849,
+          "max255": 61.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        }
+      ],
+      "selected": [
+        {
+          "bytes": 104472,
+          "cellSize": 128,
+          "decodedRgbaSha256": "9a3c0d25690e7b1a6bddda122a186aa1e20ddba72d92e0f3763646c202cbf545",
+          "dimensions": [
+            1024,
+            512
+          ],
+          "file": "half-flame.webp",
+          "grid": [
+            8,
+            4
+          ],
+          "id": "half",
+          "inputId": "flame",
+          "mipRgba8Bytes": 2796204,
+          "sha256": "a22cdc776dd1d62977e4ebb8c06febf10663a99e702d7a17c3ff80e271212ad4",
+          "url": "/.scratch/atlas-build/v1/half-flame.webp"
+        },
+        {
+          "bytes": 106356,
+          "cellSize": 128,
+          "decodedRgbaSha256": "f5071f4c501f5e06f715c13a335faa697521d0b09a6be9fd32efe22ba5607710",
+          "dimensions": [
+            1280,
+            768
+          ],
+          "file": "half-smoke.webp",
+          "grid": [
+            10,
+            6
+          ],
+          "id": "half",
+          "inputId": "smoke",
+          "mipRgba8Bytes": 5242872,
+          "sha256": "92146ad4f999d4912749d915637c4f4a36d876e84e82a1391c277adc0df82f05",
+          "url": "/.scratch/atlas-build/v1/half-smoke.webp"
+        }
+      ],
+      "stats": {
+        "calls": 3,
+        "triangles": 46,
+        "particles": 22,
+        "textures": 6,
+        "atlasDownloadBytes": 210828,
+        "atlasMipRgba8Bytes": 8039076,
+        "lutBytes": 262144,
+        "targetEstimatedBytes": 5242880,
+        "submitMilliseconds": 0.5,
+        "projectedQuadAreaScreenRatio": 2.1506011168143817
+      },
+      "diagnosticBenchmark": {
+        "cpuStepP50Ms": 0,
+        "cpuStepP95Ms": 0,
+        "submitP95Ms": 0.30000000074505806,
+        "gpuMilliseconds": 0.121145,
+        "disjoint": false,
+        "device": {
+          "webgl2": true,
+          "maxTextureSize": 16384,
+          "gpuTimerAvailable": true,
+          "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+        }
+      }
+    },
+    {
+      "id": "quarter",
+      "visualGatePassed": false,
+      "comparedOriginalRenders": 268,
+      "failures": 230,
+      "failedCaseKinds": {
+        "pilot": 51,
+        "layer": 8,
+        "depth": 9,
+        "cell": 162
+      },
+      "maxMae255": 6.402760777913777,
+      "maxP95Channel255": 20.0,
+      "minimumMaskIoU32": 0.0,
+      "worstMaskCase": {
+        "kind": "cell",
+        "tick": 120,
+        "view": "front",
+        "bias": 0,
+        "layer": "smoke",
+        "surface": "none",
+        "cell": true,
+        "frame": 33,
+        "file": "case-214.png"
+      },
+      "ueCases": [
+        {
+          "view": "front",
+          "bias": 0,
+          "mae255": 8.157371636123493,
+          "p95Channel255": 31.0,
+          "maskIoU32": 0.9728337839577701,
+          "max255": 100.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "front",
+          "bias": 1,
+          "mae255": 5.979656455315443,
+          "p95Channel255": 26.0,
+          "maskIoU32": 0.9642607683352735,
+          "max255": 120.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "oblique",
+          "bias": 0,
+          "mae255": 9.102228732865962,
+          "p95Channel255": 37.0,
+          "maskIoU32": 0.9719830355995374,
+          "max255": 107.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "oblique",
+          "bias": 1,
+          "mae255": 6.611472041756899,
+          "p95Channel255": 30.0,
+          "maskIoU32": 0.9697072072072072,
+          "max255": 125.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "side",
+          "bias": 0,
+          "mae255": 8.195026571743709,
+          "p95Channel255": 34.0,
+          "maskIoU32": 0.9731155132492925,
+          "max255": 114.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        },
+        {
+          "view": "side",
+          "bias": 1,
+          "mae255": 6.1426562837984,
+          "p95Channel255": 29.0,
+          "maskIoU32": 0.9719127205199629,
+          "max255": 134.0,
+          "pixelsEqual": false,
+          "emptyPreserved": true,
+          "accepted": true
+        }
+      ],
+      "selected": [
+        {
+          "bytes": 37546,
+          "cellSize": 64,
+          "decodedRgbaSha256": "6c166be0fb66f7c49a7d0a9d6cc601fb1ded3c2467dad0583baa125a223e3527",
+          "dimensions": [
+            512,
+            256
+          ],
+          "file": "quarter-flame.webp",
+          "grid": [
+            8,
+            4
+          ],
+          "id": "quarter",
+          "inputId": "flame",
+          "mipRgba8Bytes": 699052,
+          "sha256": "05807d7e2c880b3b034534436901075ea1c9596bac200a672c77fc7611fb0e6f",
+          "url": "/.scratch/atlas-build/v1/quarter-flame.webp"
+        },
+        {
+          "bytes": 36132,
+          "cellSize": 64,
+          "decodedRgbaSha256": "4177dbe68af2652045371dd5f0deff1cfe786adb9889d4e7ff5dfe4e957c60f7",
+          "dimensions": [
+            640,
+            384
+          ],
+          "file": "quarter-smoke.webp",
+          "grid": [
+            10,
+            6
+          ],
+          "id": "quarter",
+          "inputId": "smoke",
+          "mipRgba8Bytes": 1310712,
+          "sha256": "8630c4fd4c5abad26ce392e6eb9c6c3864e7bc5ee0c97f3a9f0a6ff6482f116d",
+          "url": "/.scratch/atlas-build/v1/quarter-smoke.webp"
+        }
+      ],
+      "stats": {
+        "calls": 3,
+        "triangles": 46,
+        "particles": 22,
+        "textures": 6,
+        "atlasDownloadBytes": 73678,
+        "atlasMipRgba8Bytes": 2009764,
+        "lutBytes": 262144,
+        "targetEstimatedBytes": 5242880,
+        "submitMilliseconds": 0.5,
+        "projectedQuadAreaScreenRatio": 2.1506011168143817
+      },
+      "diagnosticBenchmark": {
+        "cpuStepP50Ms": 0,
+        "cpuStepP95Ms": 0,
+        "submitP95Ms": 0.30000000074505806,
+        "gpuMilliseconds": 0.121354,
+        "disjoint": false,
+        "device": {
+          "webgl2": true,
+          "maxTextureSize": 16384,
+          "gpuTimerAvailable": true,
+          "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+        }
+      }
+    }
+  ],
+  "repeat": {
+    "schema": "st01c-atlas-repeat/v1",
+    "runs": [
+      "budget01",
+      "budget02"
+    ],
+    "comparedImages": 1072,
+    "allDecodedPixelsEqual": true,
+    "corpusHashes": [
+      {
+        "variant": "source",
+        "decodedRgbaCorpusSha256": "3bff6c5f34f1de385bcb744cb580c9cc11e5f68dca1f0c6bc0f2809632271052"
+      },
+      {
+        "variant": "full",
+        "decodedRgbaCorpusSha256": "3bff6c5f34f1de385bcb744cb580c9cc11e5f68dca1f0c6bc0f2809632271052"
+      },
+      {
+        "variant": "half",
+        "decodedRgbaCorpusSha256": "4738b55397103e71ff9eabc8506f5557598c1e71ace4e0a5ef0ed05306be6d1c"
+      },
+      {
+        "variant": "quarter",
+        "decodedRgbaCorpusSha256": "8ebf30055acc2d4b0c987506092770da248e742e82a1e4abddd8295b9dd490ff"
+      }
+    ]
+  },
+  "browserChecks": {
+    "normalRuns": 2,
+    "rendersPerVariantPerRun": 268,
+    "totalImagesAcrossRuns": 2144,
+    "oneSelectedPairOnly": true,
+    "noCapturedParticleInput": true,
+    "normalRuntimeErrors": [],
+    "automaticSelection": [
+      {
+        "automatic": true,
+        "mobile": false,
+        "variant": "full",
+        "selected": [
+          {
+            "bytes": 277976,
+            "cellSize": 256,
+            "decodedRgbaSha256": "ef5c19227fd76c2c2caf8ff3a5f0cd4668f3ca30a33f96bebf39aeca970e555b",
+            "dimensions": [
+              2048,
+              1024
+            ],
+            "file": "full-flame.webp",
+            "grid": [
+              8,
+              4
+            ],
+            "id": "full",
+            "inputId": "flame",
+            "mipRgba8Bytes": 11184812,
+            "sha256": "cc80a1d651f272f13a99f49b85a10415907a6a6b3abb138a42e27ffcba558a0d",
+            "url": "/.scratch/atlas-build/v1/full-flame.webp"
+          },
+          {
+            "bytes": 274538,
+            "cellSize": 256,
+            "decodedRgbaSha256": "e8f683fa681a8baeb742e4f2c74382581e3bc15c00016d3682cdce40cf24d177",
+            "dimensions": [
+              2560,
+              1536
+            ],
+            "file": "full-smoke.webp",
+            "grid": [
+              10,
+              6
+            ],
+            "id": "full",
+            "inputId": "smoke",
+            "mipRgba8Bytes": 20971512,
+            "sha256": "b9890532ed794b80a0501098a3a80c79b3a0da5d7ac885eccd509fdb07e61ec1",
+            "url": "/.scratch/atlas-build/v1/full-smoke.webp"
+          }
+        ],
+        "mobileMemoryAccepted": false
+      },
+      {
+        "automatic": true,
+        "mobile": true,
+        "variant": "full",
+        "selected": [
+          {
+            "bytes": 277976,
+            "cellSize": 256,
+            "decodedRgbaSha256": "ef5c19227fd76c2c2caf8ff3a5f0cd4668f3ca30a33f96bebf39aeca970e555b",
+            "dimensions": [
+              2048,
+              1024
+            ],
+            "file": "full-flame.webp",
+            "grid": [
+              8,
+              4
+            ],
+            "id": "full",
+            "inputId": "flame",
+            "mipRgba8Bytes": 11184812,
+            "sha256": "cc80a1d651f272f13a99f49b85a10415907a6a6b3abb138a42e27ffcba558a0d",
+            "url": "/.scratch/atlas-build/v1/full-flame.webp"
+          },
+          {
+            "bytes": 274538,
+            "cellSize": 256,
+            "decodedRgbaSha256": "e8f683fa681a8baeb742e4f2c74382581e3bc15c00016d3682cdce40cf24d177",
+            "dimensions": [
+              2560,
+              1536
+            ],
+            "file": "full-smoke.webp",
+            "grid": [
+              10,
+              6
+            ],
+            "id": "full",
+            "inputId": "smoke",
+            "mipRgba8Bytes": 20971512,
+            "sha256": "b9890532ed794b80a0501098a3a80c79b3a0da5d7ac885eccd509fdb07e61ec1",
+            "url": "/.scratch/atlas-build/v1/full-smoke.webp"
+          }
+        ],
+        "mobileMemoryAccepted": false
+      }
+    ],
+    "startupFailures": [
+      {
+        "fault": "corrupt-texture",
+        "errors": [
+          "Error: Asset hash mismatch: /.scratch/atlas-build/v1/full-smoke.webp"
+        ],
+        "resourcesAfterDispose": {
+          "geometries": 0,
+          "textures": 0
+        }
+      },
+      {
+        "fault": "late-startup",
+        "errors": [
+          "Error: injected late startup"
+        ],
+        "resourcesAfterDispose": {
+          "geometries": 0,
+          "textures": 0
+        }
+      }
+    ],
+    "disposedGpuResources": {
+      "geometries": 0,
+      "textures": 0
+    }
+  },
+  "tests": {
+    "nodePassed": 17,
+    "pythonPassed": 5,
+    "rebuildByteForByte": true
+  },
+  "sourceAudit": {
+    "originals": 51,
+    "copies": 51,
+    "allHashesMatch": true
+  },
+  "mobileMemoryAccepted": false,
+  "physicalPhoneFps": null,
+  "eightMiBAtlasTargetMetByAcceptedVariant": false,
+  "textureCompressionChangesGpuFormat": false,
+  "limitations": [
+    "Reduced variants failed the predeclared silhouette gate and remain diagnostics.",
+    "Full WebP preserves RGBA source pixels, but its GPU storage remains RGBA8 with mipmaps.",
+    "GPU times are single-frame diagnostic queries on Intel Iris Xe; CPU samples may be below clock resolution.",
+    "Projected quad area is an upper bound proxy, not measured fragment overdraw.",
+    "No perspective, bloom or workshop admission."
+  ],
+  "files": [
+    {
+      "path": "tools/niagara-native-lab/atlas-build.py",
+      "sha256Utf8LF": "43b2001ca0a33d12ace4000adc0ee4fc28dc5253d2822381da241e6e1c0723e2"
+    },
+    {
+      "path": "tools/niagara-native-lab/atlas_build_test.py",
+      "sha256Utf8LF": "452195c91e0952f2b123ac3aafabf16efb2357454f0734569c4bd904ab3c9231"
+    },
+    {
+      "path": "tools/niagara-native-lab/atlas-source.json",
+      "sha256Utf8LF": "b637ebf8db45b2e8ed63459d7269eb0e708155d10e82dbc530c2ddaeed5171da"
+    },
+    {
+      "path": "tools/niagara-native-lab/atlas-manifest.json",
+      "sha256Utf8LF": "cd560a4149c8d1f6c3ade4f703bcee7f621ef99b67e0d5c90ae854c76045143e"
+    },
+    {
+      "path": "tools/niagara-native-lab/atlas-policy.js",
+      "sha256Utf8LF": "4f475f0799bd6966bc82967a3d71e351799c0f7c76993c73d324b3c466b21402"
+    },
+    {
+      "path": "tools/niagara-native-lab/atlas-policy.test.mjs",
+      "sha256Utf8LF": "43cb64d6aa5a0da1ebad0b6af787eeddcda277796e92aae87befa8705e995a9d"
+    },
+    {
+      "path": "tools/niagara-native-lab/budget.html",
+      "sha256Utf8LF": "c88f212853858565a74e795f3fecf24ecd3a2a4ca57d962fcf2b88ec4fd11291"
+    },
+    {
+      "path": "tools/niagara-native-lab/budget-lab.js",
+      "sha256Utf8LF": "2ced45c4b1e36d02fa4b5cff1c6130e81ca09f8dd263ea3d2a4a3a50ad061437"
+    },
+    {
+      "path": "tools/niagara-native-lab/qa-atlas.mjs",
+      "sha256Utf8LF": "8012fc5a645db074e6671a3d3d491debdeaa13d2a5b6ae9f473d00c23f0c0d84"
+    },
+    {
+      "path": "tools/niagara-native-lab/compare-atlas.py",
+      "sha256Utf8LF": "09c114fa4ac67201653ef951efebda50b3be48a4c6d4620b6abaa4c69f4d606d"
+    },
+    {
+      "path": "tools/niagara-native-lab/check-atlas-repeat.py",
+      "sha256Utf8LF": "53ec2d00bb8ea28b259e4fdb744c473a51554f9495105c6702e82e9110e668e5"
+    },
+    {
+      "path": "tools/niagara-native-lab/verify-atlas.mjs",
+      "sha256Utf8LF": "76fa3aaa2d7b7d46254c677fabf20c563c1546d774b984b2b96d0d578c16c95d"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".scratch/atlas-lab/budget02/browser.json",
+      "sha256": "59d7e924ff05dabf9c04b33a9969b118aff544e4f599cc1058cf635d539984d8"
+    },
+    {
+      "path": ".scratch/atlas-lab/budget02/comparison.json",
+      "sha256": "8d37f62043d70801b8a140946b0c3e42a978540463ec55cb9b11d85f678e03f9"
+    },
+    {
+      "path": ".scratch/atlas-lab/budget02/repeat.json",
+      "sha256": "f8d62f4a841a520fee3544a5fc376517b38dd60890e3897f051af726777bf76c"
+    },
+    {
+      "path": ".scratch/atlas-lab/budget01/source-audit.json",
+      "sha256": "eed1e01b9a77d366013bd12333e7248a4d83f713f4af4e65e37fded4d69ad829"
+    },
+    {
+      "path": "docs/delivery/st01c/atlas-desktop.png",
+      "sha256": "7d55e1cb2f2d04930f6c332399b5c886cc7370cfde2dd9da790abbb0d671805f"
+    },
+    {
+      "path": "docs/delivery/st01c/atlas-mobile.png",
+      "sha256": "b25ac936412ef29283037f3e7acafe9909f2b1f1505d42472ba7970dcf0445f2"
+    },
+    {
+      "path": "docs/delivery/st01c/atlas-comparison.png",
+      "sha256": "d286272627f0b45b54061c96b621605958d3acdf52400af14b66368f684914d7"
+    }
+  ]
+}

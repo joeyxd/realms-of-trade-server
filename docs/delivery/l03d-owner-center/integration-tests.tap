@@ -1,0 +1,526 @@
+TAP version 13
+# Subtest: offline bootstrap makes no request and disabled config keeps guest mode available
+ok 1 - offline bootstrap makes no request and disabled config keeps guest mode available
+  ---
+  duration_ms: 3.8098
+  type: 'test'
+  ...
+# Subtest: public config initializes persistent SDK lazily and token reads the refreshed session without exposing it in state
+ok 2 - public config initializes persistent SDK lazily and token reads the refreshed session without exposing it in state
+  ---
+  duration_ms: 1.5781
+  type: 'test'
+  ...
+# Subtest: signup reports confirmation safely and logout only ends this browser session
+ok 3 - signup reports confirmation safely and logout only ends this browser session
+  ---
+  duration_ms: 0.6254
+  type: 'test'
+  ...
+# Subtest: signup redirect and resend use the game origin and trimmed email
+ok 4 - signup redirect and resend use the game origin and trimmed email
+  ---
+  duration_ms: 0.5118
+  type: 'test'
+  ...
+# Subtest: known provider codes map to fixed Spanish errors and arbitrary provider text stays hidden
+ok 5 - known provider codes map to fixed Spanish errors and arbitrary provider text stays hidden
+  ---
+  duration_ms: 0.5933
+  type: 'test'
+  ...
+# Subtest: resend reports a fixed failure when the installed Auth SDK has no resend method
+ok 6 - resend reports a fixed failure when the installed Auth SDK has no resend method
+  ---
+  duration_ms: 0.332
+  type: 'test'
+  ...
+# Subtest: malformed auth success responses fail with fixed errors
+ok 7 - malformed auth success responses fail with fixed errors
+  ---
+  duration_ms: 0.3852
+  type: 'test'
+  ...
+# Subtest: token fails closed when a known session disappears or the SDK cannot validate it
+ok 8 - token fails closed when a known session disappears or the SDK cannot validate it
+  ---
+  duration_ms: 0.84
+  type: 'test'
+  ...
+# Subtest: SDK startup failure remains fail closed until the player explicitly chooses guest
+ok 9 - SDK startup failure remains fail closed until the player explicitly chooses guest
+  ---
+  duration_ms: 0.5409
+  type: 'test'
+  ...
+# Subtest: background Auth events cannot undo an explicit guest choice; a new login can
+ok 10 - background Auth events cannot undo an explicit guest choice; a new login can
+  ---
+  duration_ms: 1.6233
+  type: 'test'
+  ...
+# Subtest: configuration and provider failures expose only fixed Spanish errors
+ok 11 - configuration and provider failures expose only fixed Spanish errors
+  ---
+  duration_ms: 0.6572
+  type: 'test'
+  ...
+# Subtest: owner API requires the bearer key and rejects foreign origins and hosts
+ok 12 - owner API requires the bearer key and rejects foreign origins and hosts
+  ---
+  duration_ms: 103.957
+  type: 'test'
+  ...
+# Subtest: view is fresh, reports exact file byte hashes, and never serializes filesystem or secret data
+ok 13 - view is fresh, reports exact file byte hashes, and never serializes filesystem or secret data
+  ---
+  duration_ms: 106.2
+  type: 'test'
+  ...
+# Subtest: fixed downloads preserve BOM, CRLF, UTF-8 bytes, and reject traversal names
+ok 14 - fixed downloads preserve BOM, CRLF, UTF-8 bytes, and reject traversal names
+  ---
+  duration_ms: 87.148
+  type: 'test'
+  ...
+# Subtest: personality and objective content stays inert while static app serves only its three assets
+ok 15 - personality and objective content stays inert while static app serves only its three assets
+  ---
+  duration_ms: 58.7974
+  type: 'test'
+  ...
+# Subtest: scope mismatch and unavailable budget fail closed without exposing paths or becoming zero
+ok 16 - scope mismatch and unavailable budget fail closed without exposing paths or becoming zero
+  ---
+  duration_ms: 75.305
+  type: 'test'
+  ...
+# Subtest: configuration uses exact JSON contracts, CAS, and durable serialized concurrent writes
+ok 17 - configuration uses exact JSON contracts, CAS, and durable serialized concurrent writes
+  ---
+  duration_ms: 102.8468
+  type: 'test'
+  ...
+# Subtest: revocation preserves unknown usage and held reservations through owner configure
+ok 18 - revocation preserves unknown usage and held reservations through owner configure
+  ---
+  duration_ms: 128.1934
+  type: 'test'
+  ...
+# Subtest: control endpoints forward only exact empty bodies and do not enable CORS or query authentication
+ok 19 - control endpoints forward only exact empty bodies and do not enable CORS or query authentication
+  ---
+  duration_ms: 56.215
+  type: 'test'
+  ...
+# Subtest: runner errors and private connection details are sanitized at the HTTP boundary
+ok 20 - runner errors and private connection details are sanitized at the HTTP boundary
+  ---
+  duration_ms: 31.5751
+  type: 'test'
+  ...
+# Subtest: view never starts or thinks, and an unconfirmed stop remains explicitly unproven
+ok 21 - view never starts or thinks, and an unconfirmed stop remains explicitly unproven
+  ---
+  duration_ms: 44.1977
+  type: 'test'
+  ...
+# Subtest: POST requires Origin and streamed bodies over 16 KiB are rejected without Content-Length
+ok 22 - POST requires Origin and streamed bodies over 16 KiB are rejected without Content-Length
+  ---
+  duration_ms: 31.5083
+  type: 'test'
+  ...
+# Subtest: invalid or likely-secret owner files clear the files section and never echo content or paths
+ok 23 - invalid or likely-secret owner files clear the files section and never echo content or paths
+  ---
+  duration_ms: 45.0256
+  type: 'test'
+  ...
+# Subtest: production owned runner starts, thinks, stops, and revokes its game control grant
+ok 24 - production owned runner starts, thinks, stops, and revokes its game control grant
+  ---
+  duration_ms: 3382.6967
+  type: 'test'
+  ...
+# Subtest: refresh projects a validated owner response and stop uses the displayed epoch
+ok 25 - refresh projects a validated owner response and stop uses the displayed epoch
+  ---
+  duration_ms: 4.7418
+  type: 'test'
+  ...
+# Subtest: logout/account switch clears rows and late response cannot restore them
+ok 26 - logout/account switch clears rows and late response cannot restore them
+  ---
+  duration_ms: 0.4121
+  type: 'test'
+  ...
+# Subtest: logout and relogin to the same account cannot reuse the old gameplay binding
+ok 27 - logout and relogin to the same account cannot reuse the old gameplay binding
+  ---
+  duration_ms: 0.2487
+  type: 'test'
+  ...
+# Subtest: timeout is bounded and does not retry; transport close clears projection
+ok 28 - timeout is bounded and does not retry; transport close clears projection
+  ---
+  duration_ms: 16.9556
+  type: 'test'
+  ...
+# Subtest: account session mismatch and loss of joined state reject requests and late results
+ok 29 - account session mismatch and loss of joined state reject requests and late results
+  ---
+  duration_ms: 0.3657
+  type: 'test'
+  ...
+# Subtest: server errors use fixed safe copy and malformed projections are ignored
+ok 30 - server errors use fixed safe copy and malformed projections are ignored
+  ---
+  duration_ms: 0.3607
+  type: 'test'
+  ...
+# Subtest: stale stop retains a valid safe projection then deliberately refreshes
+ok 31 - stale stop retains a valid safe projection then deliberately refreshes
+  ---
+  duration_ms: 0.5294
+  type: 'test'
+  ...
+# Subtest: stale-control refresh queued before logout cannot target a later session
+ok 32 - stale-control refresh queued before logout cannot target a later session
+  ---
+  duration_ms: 0.3006
+  type: 'test'
+  ...
+# Subtest: offline provisioned companion can still be stopped with nullable baseline epoch
+ok 33 - offline provisioned companion can still be stopped with nullable baseline epoch
+  ---
+  duration_ms: 0.25
+  type: 'test'
+  ...
+# Subtest: owner list is private, bounded and available as an honest empty state when controls are off
+ok 34 - owner list is private, bounded and available as an honest empty state when controls are off
+  ---
+  duration_ms: 811.2766
+  type: 'test'
+  ...
+# Subtest: two authenticated owners see only their configured characters, never grants/tasks or another account
+ok 35 - two authenticated owners see only their configured characters, never grants/tasks or another account
+  ---
+  duration_ms: 694.9762
+  type: 'test'
+  ...
+# Subtest: stop fences queued input and old epoch, stays idempotent, and refuses to stop a new session from stale UI
+ok 36 - stop fences queued input and old epoch, stays idempotent, and refuses to stop a new session from stale UI
+  ---
+  duration_ms: 2354.9502
+  type: 'test'
+  ...
+# Subtest: a null baseline cannot stop a newly connected character
+ok 37 - a null baseline cannot stop a newly connected character
+  ---
+  duration_ms: 1760.5233
+  type: 'test'
+  ...
+# Subtest: owner can stop a configured character that has never been admitted with its null baseline
+ok 38 - owner can stop a configured character that has never been admitted with its null baseline
+  ---
+  duration_ms: 1875.0662
+  type: 'test'
+  ...
+# Subtest: signed-out and offline snapshots discard companion rows and language changes update labels
+ok 39 - signed-out and offline snapshots discard companion rows and language changes update labels
+  ---
+  duration_ms: 3.8162
+  type: 'test'
+  ...
+# Subtest: stop is single-flight, keeps rows visible while pending, and never renders callback errors
+ok 40 - stop is single-flight, keeps rows visible while pending, and never renders callback errors
+  ---
+  duration_ms: 1.7515
+  type: 'test'
+  ...
+# Subtest: unconfigured or inactive rows have no stop action and refresh errors use fixed copy
+ok 41 - unconfigured or inactive rows have no stop action and refresh errors use fixed copy
+  ---
+  duration_ms: 0.8414
+  type: 'test'
+  ...
+# Subtest: panel visibility callback fires only on transitions and stopped is distinct from offline
+ok 42 - panel visibility callback fires only on transitions and stopped is distinct from offline
+  ---
+  duration_ms: 0.5366
+  type: 'test'
+  ...
+# Subtest: ready has a truthful label, setup note persists, and known error codes use fixed localized copy
+ok 43 - ready has a truthful label, setup note persists, and known error codes use fixed localized copy
+  ---
+  duration_ms: 0.4654
+  type: 'test'
+  ...
+# Subtest: modal keyboard flow traps Tab at both ends while native traversal and Escape remain available
+ok 44 - modal keyboard flow traps Tab at both ends while native traversal and Escape remain available
+  ---
+  duration_ms: 0.5178
+  type: 'test'
+  ...
+# Subtest: dialog portals to the stage UI and the HUD toggle opens and closes it
+ok 45 - dialog portals to the stage UI and the HUD toggle opens and closes it
+  ---
+  duration_ms: 0.4425
+  type: 'test'
+  ...
+# Subtest: refresh focus moves to close before the refresh button becomes disabled
+ok 46 - refresh focus moves to close before the refresh button becomes disabled
+  ---
+  duration_ms: 0.3926
+  type: 'test'
+  ...
+# Subtest: N opens the hand fuel panel while empty, and confirmed snapshots label torch duration
+ok 47 - N opens the hand fuel panel while empty, and confirmed snapshots label torch duration
+  ---
+  duration_ms: 2.4956
+  type: 'test'
+  ...
+# Subtest: fueled hand torch sends exact immutable fire set command and waits for confirmation
+ok 48 - fueled hand torch sends exact immutable fire set command and waits for confirmation
+  ---
+  duration_ms: 2.77
+  type: 'test'
+  ...
+# Subtest: fire command retries exact request once, times out, and denial feedback is localized
+ok 49 - fire command retries exact request once, times out, and denial feedback is localized
+  ---
+  duration_ms: 0.407
+  type: 'test'
+  ...
+# Subtest: owner-only raft interaction opens fire panel for the nearest supported fixture kind
+ok 50 - owner-only raft interaction opens fire panel for the nearest supported fixture kind
+  ---
+  duration_ms: 1.9162
+  type: 'test'
+  ...
+# Subtest: fuelled fixture prompts from confirmed fire rows and still opens its station panel
+ok 51 - fuelled fixture prompts from confirmed fire rows and still opens its station panel
+  ---
+  duration_ms: 0.2408
+  type: 'test'
+  ...
+# Subtest: legacy lantern path remains unchanged when fire feature flag is absent
+ok 52 - legacy lantern path remains unchanged when fire feature flag is absent
+  ---
+  duration_ms: 1.0421
+  type: 'test'
+  ...
+# Subtest: fractional accumulated economy clocks use the same quantized seconds for JS and SQL receipts
+ok 53 - fractional accumulated economy clocks use the same quantized seconds for JS and SQL receipts
+  ---
+  duration_ms: 12399.3668
+  type: 'test'
+  ...
+# Subtest: fire paid operation commits through the optional ground journal and shared SQL receipt
+ok 54 - fire paid operation commits through the optional ground journal and shared SQL receipt
+  ---
+  duration_ms: 14576.9662
+  type: 'test'
+  ...
+# Subtest: paid hand fuel is replay-safe, lit state is public, and simulation expiry clears the public flame
+ok 55 - paid hand fuel is replay-safe, lit state is public, and simulation expiry clears the public flame
+  ---
+  duration_ms: 731.5444
+  type: 'test'
+  ...
+# Subtest: no wood denies fuel without changing profile, and missing fire readiness blocks host startup
+ok 56 - no wood denies fuel without changing profile, and missing fire readiness blocks host startup
+  ---
+  duration_ms: 1075.3692
+  type: 'test'
+  ...
+# Subtest: hand torch fuel load debits exactly one madera and increments both bounded revisions
+ok 57 - hand torch fuel load debits exactly one madera and increments both bounded revisions
+  ---
+  duration_ms: 7.6397
+  type: 'test'
+  ...
+# Subtest: set settles elapsed fire time by flooring remaining fuel and never spends wood
+ok 58 - set settles elapsed fire time by flooring remaining fuel and never spends wood
+  ---
+  duration_ms: 1.0453
+  type: 'test'
+  ...
+# Subtest: raft fuel uses only the owner profile and matching living condition identity
+ok 59 - raft fuel uses only the owner profile and matching living condition identity
+  ---
+  duration_ms: 2.5058
+  type: 'test'
+  ...
+# Subtest: malformed fire state and unauthorized profile deltas are rejected
+ok 60 - malformed fire state and unauthorized profile deltas are rejected
+  ---
+  duration_ms: 3.7585
+  type: 'test'
+  ...
+# Subtest: hand slot has one visual fuel slot and sends an immutable one-wood craft-and-light intent
+ok 61 - hand slot has one visual fuel slot and sends an immutable one-wood craft-and-light intent
+  ---
+  duration_ms: 10.0073
+  type: 'test'
+  ...
+# Subtest: confirmed fire state controls load and toggle buttons; only one pending command is allowed
+ok 62 - confirmed fire state controls load and toggle buttons; only one pending command is allowed
+  ---
+  duration_ms: 1.0601
+  type: 'test'
+  ...
+# Subtest: station uses pack plus raft hold as available stock and emits its stable composite key tuple
+ok 63 - station uses pack plus raft hold as available stock and emits its stable composite key tuple
+  ---
+  duration_ms: 0.833
+  type: 'test'
+  ...
+# Subtest: retry sends the exact same request once and times out without changing confirmed fuel
+ok 64 - retry sends the exact same request once and times out without changing confirmed fuel
+  ---
+  duration_ms: 0.6468
+  type: 'test'
+  ...
+# Subtest: denials localize server recovery reasons and session changes reset the active request
+ok 65 - denials localize server recovery reasons and session changes reset the active request
+  ---
+  duration_ms: 0.8119
+  type: 'test'
+  ...
+# Subtest: English labels, disabled-world guard, active-only Escape, and dispose lifecycle
+ok 66 - English labels, disabled-world guard, active-only Escape, and dispose lifecycle
+  ---
+  duration_ms: 1.7955
+  type: 'test'
+  ...
+# Subtest: unlit grill reports fuel and preserves recipe progress and ingredients
+ok 67 - unlit grill reports fuel and preserves recipe progress and ingredients
+  ---
+  duration_ms: 5.7565
+  type: 'test'
+  ...
+# Subtest: expired grill fuel stops production without losing partial work or consuming fish
+ok 68 - expired grill fuel stops production without losing partial work or consuming fish
+  ---
+  duration_ms: 2.0647
+  type: 'test'
+  ...
+# Subtest: a lit grill resumes saved work and production does not debit another fire unit
+ok 69 - a lit grill resumes saved work and production does not debit another fire unit
+  ---
+  duration_ms: 1.526
+  type: 'test'
+  ...
+# Subtest: two players at 100 ms RTT: prediction holds, they see each other walk and swing
+not ok 70 - two players at 100 ms RTT: prediction holds, they see each other walk and swing
+  ---
+  duration_ms: 7305.9222
+  type: 'test'
+  location: 'C:\\DEV\\real of trade\\area17-market\\tests\\net.test.mjs:27:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    no prediction corrections while walking
+
+    10 !== 0
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 10
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/DEV/real%20of%20trade/area17-market/tests/net.test.mjs:79:10)
+    runNextTicks (node:internal/process/task_queues:65:5)
+    process.processTimers (node:internal/timers:538:9)
+    async Test.run (node:internal/test_runner/test:1125:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)
+  ...
+# Subtest: a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+ok 71 - a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+  ---
+  duration_ms: 11.1289
+  type: 'test'
+  ...
+# Subtest: init and refresh use same-origin HTTP only; prepare reviews exact proof and sign is explicit
+ok 72 - init and refresh use same-origin HTTP only; prepare reviews exact proof and sign is explicit
+  ---
+  duration_ms: 23.0594
+  type: 'test'
+  ...
+# Subtest: a completed verification with a lost HTTP reply is recovered by refresh without another signature
+ok 73 - a completed verification with a lost HTTP reply is recovered by refresh without another signature
+  ---
+  duration_ms: 8.8467
+  type: 'test'
+  ...
+# Subtest: invalid challenge identity, exact SIWE policy, or extra fields never reach a signature prompt
+ok 74 - invalid challenge identity, exact SIWE policy, or extra fields never reach a signature prompt
+  ---
+  duration_ms: 6.2681
+  type: 'test'
+  ...
+# Subtest: wrong network and wrong-origin game URLs stop before bearer requests or signatures
+ok 75 - wrong network and wrong-origin game URLs stop before bearer requests or signatures
+  ---
+  duration_ms: 0.865
+  type: 'test'
+  ...
+# Subtest: accountsChanged emitted during eth_requestAccounts is ignored until identity is reread
+ok 76 - accountsChanged emitted during eth_requestAccounts is ignored until identity is reread
+  ---
+  duration_ms: 0.9825
+  type: 'test'
+  ...
+# Subtest: closing review keeps the pending server challenge: same wallet replays, another is busy, expiry permits a new one
+ok 77 - closing review keeps the pending server challenge: same wallet replays, another is busy, expiry permits a new one
+  ---
+  duration_ms: 3.0022
+  type: 'test'
+  ...
+# Subtest: provider account changes while the challenge reply is pending leave a resumable challenge without prompting
+ok 78 - provider account changes while the challenge reply is pending leave a resumable challenge without prompting
+  ---
+  duration_ms: 1.2908
+  type: 'test'
+  ...
+# Subtest: an expired review challenge cannot open the signature prompt
+ok 79 - an expired review challenge cannot open the signature prompt
+  ---
+  duration_ms: 0.742
+  type: 'test'
+  ...
+# Subtest: wallet or auth account/network changes and cancellation discard a late signature without verification
+ok 80 - wallet or auth account/network changes and cancellation discard a late signature without verification
+  ---
+  duration_ms: 11.1828
+  type: 'test'
+  ...
+# Subtest: provider timeout and provider exceptions become safe UI errors with no verification request
+ok 81 - provider timeout and provider exceptions become safe UI errors with no verification request
+  ---
+  duration_ms: 20.5078
+  type: 'test'
+  ...
+# Subtest: logout clears an existing wallet link
+ok 82 - logout clears an existing wallet link
+  ---
+  duration_ms: 8.1449
+  type: 'test'
+  ...
+# Subtest: AccountAuth exposes only a matched current user and token pair from sessionIdentity
+ok 83 - AccountAuth exposes only a matched current user and token pair from sessionIdentity
+  ---
+  duration_ms: 2.3275
+  type: 'test'
+  ...
+1..83
+# tests 83
+# suites 0
+# pass 82
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 61350.651

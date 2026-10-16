@@ -1,0 +1,771 @@
+{
+  "schemaVersion": 1,
+  "family": "ground-family-v1",
+  "generatedAt": "2026-10-07T05:08:28.148Z",
+  "generator": {
+    "script": "tools/prepare-ground-materials.mjs",
+    "python": "Python 3.14.3",
+    "pillow": "12.2.0",
+    "resampler": "Pillow Lanczos; RGB processing without explicit colorspace/gamma conversion"
+  },
+  "sources": [
+    {
+      "id": "sand-grass-albedo",
+      "pairId": "sand-grass",
+      "kind": "albedo",
+      "file": "Transición de arena y pastizal pintada.png",
+      "originalPath": "materials/Transición de arena y pastizal pintada.png",
+      "path": "docs/art/source/ground-family-v1/sand-grass-albedo.png",
+      "sha256": "04f3040285c6ef6571fda2b874055cd710ea13ee62cf02f794ee4a6382c7156a",
+      "byteLength": 3116135,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24"
+    },
+    {
+      "id": "sand-grass-normal",
+      "pairId": "sand-grass",
+      "kind": "normal",
+      "file": "Mapa normal de transición arena y hierba.png",
+      "originalPath": "materials/Mapa normal de transición arena y hierba.png",
+      "path": "docs/art/source/ground-family-v1/sand-grass-normal.png",
+      "sha256": "125954ffce35b2cbfbdec375c055f81053dfe85e119d2321a8b9ee6154126f6d",
+      "byteLength": 3292284,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24"
+    },
+    {
+      "id": "sand-dirt-albedo",
+      "pairId": "sand-dirt",
+      "kind": "albedo",
+      "file": "Textura de Arena y Tierra Compactada.png",
+      "originalPath": "materials/Textura de Arena y Tierra Compactada.png",
+      "path": "docs/art/source/ground-family-v1/sand-dirt-albedo.png",
+      "sha256": "f48b6043228849d4d0da65def045c25dfe3c27582b3395822bc3cf1bc1c9c1b0",
+      "byteLength": 3738440,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24"
+    },
+    {
+      "id": "sand-dirt-normal",
+      "pairId": "sand-dirt",
+      "kind": "normal",
+      "file": "Mapa normal de arena y tierra pedregosa.png",
+      "originalPath": "materials/Mapa normal de arena y tierra pedregosa.png",
+      "path": "docs/art/source/ground-family-v1/sand-dirt-normal.png",
+      "sha256": "1cc57c4ad08441ee31acc3963530823a68703bc83ee0f91cfc3488e6f99a08a7",
+      "byteLength": 3196621,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24"
+    },
+    {
+      "id": "grass-albedo",
+      "pairId": "grass",
+      "kind": "albedo",
+      "file": "Textura de hierba tropical estilizada.png",
+      "originalPath": "materials/Textura de hierba tropical estilizada.png",
+      "path": "docs/art/source/ground-family-v1/grass-albedo.png",
+      "sha256": "35c929fdba35316283c0bf4e25f923bd48169d8e8bb8b3495f0805d7317bf573",
+      "byteLength": 3462273,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24"
+    },
+    {
+      "id": "grass-normal",
+      "pairId": "grass",
+      "kind": "normal",
+      "file": "Textura normal de césped y tierra.png",
+      "originalPath": "materials/Textura normal de césped y tierra.png",
+      "path": "docs/art/source/ground-family-v1/grass-normal.png",
+      "sha256": "6adc43419e47f112b67c3aec5c3ef1e603a6b51c01853328502533cb8ee48505",
+      "byteLength": 3548194,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24"
+    },
+    {
+      "id": "dirt-albedo",
+      "pairId": "dirt",
+      "kind": "albedo",
+      "file": "Textura de tierra seca con piedras y conchas.png",
+      "originalPath": "materials/Textura de tierra seca con piedras y conchas.png",
+      "path": "docs/art/source/ground-family-v1/dirt-albedo.png",
+      "sha256": "2dcb8bed0e003aaef4f91d6096c76185f38f662aad7908195b01196847b713ab",
+      "byteLength": 3909220,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24"
+    },
+    {
+      "id": "dirt-normal",
+      "pairId": "dirt",
+      "kind": "normal",
+      "file": "Textura normal de tierra agrietada con guijarros.png",
+      "originalPath": "materials/Textura normal de tierra agrietada con guijarros.png",
+      "path": "docs/art/source/ground-family-v1/dirt-normal.png",
+      "sha256": "5de54a331ff95591bd6a925a96f40fae97bb55dbbec78dadb22ad66a80c280f6",
+      "byteLength": 3262544,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24"
+    }
+  ],
+  "previews": [
+    {
+      "id": "sand-grass-albedo-desktop",
+      "type": "preview",
+      "pairId": "sand-grass",
+      "channel": "albedo",
+      "device": "desktop",
+      "size": 1024,
+      "quality": 85,
+      "path": "docs/art/ground/ground-family-v1/sand-grass-albedo-desktop.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 299890,
+      "sha256": "72a7fd68cd0996d767bbe996c26ef43322577c24d0322380e3f6bab30b757130",
+      "pixelFormat": "yuv420p",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 85,
+        "compressionMethod": 6
+      },
+      "processing": "RGB resized with Lanczos; no explicit gamma or color transform"
+    },
+    {
+      "id": "sand-grass-albedo-mobile",
+      "type": "preview",
+      "pairId": "sand-grass",
+      "channel": "albedo",
+      "device": "mobile",
+      "size": 512,
+      "quality": 82,
+      "path": "docs/art/ground/ground-family-v1/sand-grass-albedo-mobile.webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 72902,
+      "sha256": "155533b1d9e0e3415cffd2a8efcd48413a02d686b26e2979a9f29f7f7f79e471",
+      "pixelFormat": "yuv420p",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 82,
+        "compressionMethod": 6
+      },
+      "processing": "RGB resized with Lanczos; no explicit gamma or color transform"
+    },
+    {
+      "id": "sand-grass-normal-desktop",
+      "type": "preview",
+      "pairId": "sand-grass",
+      "channel": "normal",
+      "device": "desktop",
+      "size": 1024,
+      "quality": 100,
+      "path": "docs/art/ground/ground-family-v1/sand-grass-normal-desktop.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 1857908,
+      "sha256": "b4bf3e373b032682d2b5f931c1dbf0afbe51907827494286f0138402e1690421",
+      "pixelFormat": "argb",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionMethod": 6
+      },
+      "processing": "RGB channels resized independently with Lanczos; no gamma or color transform"
+    },
+    {
+      "id": "sand-grass-normal-mobile",
+      "type": "preview",
+      "pairId": "sand-grass",
+      "channel": "normal",
+      "device": "mobile",
+      "size": 512,
+      "quality": 100,
+      "path": "docs/art/ground/ground-family-v1/sand-grass-normal-mobile.webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 508108,
+      "sha256": "d55830360ee4120b967efc32123ea9623dfa409841cb149c281306ea29eb5549",
+      "pixelFormat": "argb",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionMethod": 6
+      },
+      "processing": "RGB channels resized independently with Lanczos; no gamma or color transform"
+    },
+    {
+      "id": "sand-dirt-albedo-desktop",
+      "type": "preview",
+      "pairId": "sand-dirt",
+      "channel": "albedo",
+      "device": "desktop",
+      "size": 1024,
+      "quality": 85,
+      "path": "docs/art/ground/ground-family-v1/sand-dirt-albedo-desktop.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 413226,
+      "sha256": "bf93c81bbc1426ede89b7bac8f68b19fde455483efdfbee881c38a454fba578a",
+      "pixelFormat": "yuv420p",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 85,
+        "compressionMethod": 6
+      },
+      "processing": "RGB resized with Lanczos; no explicit gamma or color transform"
+    },
+    {
+      "id": "sand-dirt-albedo-mobile",
+      "type": "preview",
+      "pairId": "sand-dirt",
+      "channel": "albedo",
+      "device": "mobile",
+      "size": 512,
+      "quality": 82,
+      "path": "docs/art/ground/ground-family-v1/sand-dirt-albedo-mobile.webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 100564,
+      "sha256": "a474fe0903f4aa0298eb6f85a7c2dd28fbb629c60394a82dc8199c4f796b2399",
+      "pixelFormat": "yuv420p",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 82,
+        "compressionMethod": 6
+      },
+      "processing": "RGB resized with Lanczos; no explicit gamma or color transform"
+    },
+    {
+      "id": "sand-dirt-normal-desktop",
+      "type": "preview",
+      "pairId": "sand-dirt",
+      "channel": "normal",
+      "device": "desktop",
+      "size": 1024,
+      "quality": 100,
+      "path": "docs/art/ground/ground-family-v1/sand-dirt-normal-desktop.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 1866578,
+      "sha256": "5b1d489fc484e808508feabc5a6ec90a7577025a885fbb9464477c2c42e54fc7",
+      "pixelFormat": "argb",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionMethod": 6
+      },
+      "processing": "RGB channels resized independently with Lanczos; no gamma or color transform"
+    },
+    {
+      "id": "sand-dirt-normal-mobile",
+      "type": "preview",
+      "pairId": "sand-dirt",
+      "channel": "normal",
+      "device": "mobile",
+      "size": 512,
+      "quality": 100,
+      "path": "docs/art/ground/ground-family-v1/sand-dirt-normal-mobile.webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 501436,
+      "sha256": "795a02c9d7879987e0bbab5b76ad0ac10df071888e1e0ded7c963bedd8325235",
+      "pixelFormat": "argb",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionMethod": 6
+      },
+      "processing": "RGB channels resized independently with Lanczos; no gamma or color transform"
+    },
+    {
+      "id": "grass-albedo-desktop",
+      "type": "preview",
+      "pairId": "grass",
+      "channel": "albedo",
+      "device": "desktop",
+      "size": 1024,
+      "quality": 85,
+      "path": "docs/art/ground/ground-family-v1/grass-albedo-desktop.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 394998,
+      "sha256": "c674a11cfcc8943c9c7cd76a873f1e3bb5dc058f8bc5be4c3d79814e2b021817",
+      "pixelFormat": "yuv420p",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 85,
+        "compressionMethod": 6
+      },
+      "processing": "RGB resized with Lanczos; no explicit gamma or color transform"
+    },
+    {
+      "id": "grass-albedo-mobile",
+      "type": "preview",
+      "pairId": "grass",
+      "channel": "albedo",
+      "device": "mobile",
+      "size": 512,
+      "quality": 82,
+      "path": "docs/art/ground/ground-family-v1/grass-albedo-mobile.webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 100054,
+      "sha256": "b9ceceadc7836db31b7b0a6b591c99c2d120075e2dae4aa94b98dcbc977bff82",
+      "pixelFormat": "yuv420p",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 82,
+        "compressionMethod": 6
+      },
+      "processing": "RGB resized with Lanczos; no explicit gamma or color transform"
+    },
+    {
+      "id": "grass-normal-desktop",
+      "type": "preview",
+      "pairId": "grass",
+      "channel": "normal",
+      "device": "desktop",
+      "size": 1024,
+      "quality": 100,
+      "path": "docs/art/ground/ground-family-v1/grass-normal-desktop.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 2013786,
+      "sha256": "12da3c7a845e2feea193ce46a64fc7d05cc12bd868fab4ab58c14c94cebee30e",
+      "pixelFormat": "argb",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionMethod": 6
+      },
+      "processing": "RGB channels resized independently with Lanczos; no gamma or color transform"
+    },
+    {
+      "id": "grass-normal-mobile",
+      "type": "preview",
+      "pairId": "grass",
+      "channel": "normal",
+      "device": "mobile",
+      "size": 512,
+      "quality": 100,
+      "path": "docs/art/ground/ground-family-v1/grass-normal-mobile.webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 561170,
+      "sha256": "e1e926c626260f988e8e6558ba41af402760f69bd800bc1114f02de69ac26f4a",
+      "pixelFormat": "argb",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionMethod": 6
+      },
+      "processing": "RGB channels resized independently with Lanczos; no gamma or color transform"
+    },
+    {
+      "id": "dirt-albedo-desktop",
+      "type": "preview",
+      "pairId": "dirt",
+      "channel": "albedo",
+      "device": "desktop",
+      "size": 1024,
+      "quality": 85,
+      "path": "docs/art/ground/ground-family-v1/dirt-albedo-desktop.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 458214,
+      "sha256": "e317cd61495a90b2a5cea1a1ea53ff7e22e034f72358307a2906c8f3e4037c05",
+      "pixelFormat": "yuv420p",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 85,
+        "compressionMethod": 6
+      },
+      "processing": "RGB resized with Lanczos; no explicit gamma or color transform"
+    },
+    {
+      "id": "dirt-albedo-mobile",
+      "type": "preview",
+      "pairId": "dirt",
+      "channel": "albedo",
+      "device": "mobile",
+      "size": 512,
+      "quality": 82,
+      "path": "docs/art/ground/ground-family-v1/dirt-albedo-mobile.webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 109416,
+      "sha256": "34bcfe51d4f5934067911bc7b33dafc2c2337eeb68863f2c4549516a600065bc",
+      "pixelFormat": "yuv420p",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 82,
+        "compressionMethod": 6
+      },
+      "processing": "RGB resized with Lanczos; no explicit gamma or color transform"
+    },
+    {
+      "id": "dirt-normal-desktop",
+      "type": "preview",
+      "pairId": "dirt",
+      "channel": "normal",
+      "device": "desktop",
+      "size": 1024,
+      "quality": 100,
+      "path": "docs/art/ground/ground-family-v1/dirt-normal-desktop.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 1950594,
+      "sha256": "17503f1ff98711965d3be99ea788ad96933cc20d4d75c693804f45b9fe9a0ccd",
+      "pixelFormat": "argb",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionMethod": 6
+      },
+      "processing": "RGB channels resized independently with Lanczos; no gamma or color transform"
+    },
+    {
+      "id": "dirt-normal-mobile",
+      "type": "preview",
+      "pairId": "dirt",
+      "channel": "normal",
+      "device": "mobile",
+      "size": 512,
+      "quality": 100,
+      "path": "docs/art/ground/ground-family-v1/dirt-normal-mobile.webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 549586,
+      "sha256": "1898f92ff4954353131e4034fdf6e9a8f212dda9a414ebbde3632b0618bd3c84",
+      "pixelFormat": "argb",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionMethod": 6
+      },
+      "processing": "RGB channels resized independently with Lanczos; no gamma or color transform"
+    }
+  ],
+  "runtimeAtlases": [
+    {
+      "id": "atlas-albedo-desktop",
+      "type": "atlas",
+      "channel": "albedo",
+      "device": "desktop",
+      "size": 2048,
+      "tileSize": 1024,
+      "contentSize": 960,
+      "gutter": 32,
+      "quality": 85,
+      "path": "assets/textures/ground-family-v1/atlas-albedo-desktop.webp",
+      "dimensions": {
+        "width": 2048,
+        "height": 2048
+      },
+      "byteLength": 1412322,
+      "sha256": "b8f9ada423fdc076e44c134429268c63c84bfe7f0febc41fbb38529e399e6b6a",
+      "pixelFormat": "yuv420p",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 85,
+        "compressionMethod": 6
+      },
+      "processing": "RGB resized with Lanczos; no explicit gamma or color transform"
+    },
+    {
+      "id": "atlas-albedo-mobile",
+      "type": "atlas",
+      "channel": "albedo",
+      "device": "mobile",
+      "size": 1024,
+      "tileSize": 512,
+      "contentSize": 480,
+      "gutter": 16,
+      "quality": 82,
+      "path": "assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 338874,
+      "sha256": "7e80897384b77e685c06677e519d74deb2424b58bbeab6e66220f6381875bf28",
+      "pixelFormat": "yuv420p",
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 82,
+        "compressionMethod": 6
+      },
+      "processing": "RGB resized with Lanczos; no explicit gamma or color transform"
+    },
+    {
+      "id": "atlas-normal-desktop",
+      "type": "atlas",
+      "channel": "normal",
+      "device": "desktop",
+      "size": 2048,
+      "tileSize": 1024,
+      "contentSize": 960,
+      "gutter": 32,
+      "quality": 100,
+      "path": "assets/textures/ground-family-v1/atlas-normal-desktop.webp",
+      "dimensions": {
+        "width": 2048,
+        "height": 2048
+      },
+      "byteLength": 6954286,
+      "sha256": "d93e712e34ac70158c3ec17e3d753e3b62d04e0b3ae676a3b3aee8504b0bb49f",
+      "pixelFormat": "argb",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionMethod": 6
+      },
+      "processing": "RGB channels resized independently with Lanczos; no gamma or color transform"
+    },
+    {
+      "id": "atlas-normal-mobile",
+      "type": "atlas",
+      "channel": "normal",
+      "device": "mobile",
+      "size": 1024,
+      "tileSize": 512,
+      "contentSize": 480,
+      "gutter": 16,
+      "quality": 100,
+      "path": "assets/textures/ground-family-v1/atlas-normal-mobile.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 1892466,
+      "sha256": "393ec807c425e6e31f973f8fe8cca0a6e992dcf93898a638b3d73e56c33e2b61",
+      "pixelFormat": "argb",
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionMethod": 6
+      },
+      "processing": "RGB channels resized independently with Lanczos; no gamma or color transform"
+    }
+  ],
+  "atlasLayout": {
+    "originConvention": "pixel top-left; TextureLoader flipY=true",
+    "tileOrder": [
+      {
+        "id": "sand-grass",
+        "x": 0,
+        "y": 0,
+        "origin": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0.5
+        ],
+        "glslUv": {
+          "offset": [
+            0,
+            0.5
+          ],
+          "inset": [
+            0.015625,
+            0.015625
+          ],
+          "span": [
+            0.46875,
+            0.46875
+          ]
+        }
+      },
+      {
+        "id": "sand-dirt",
+        "x": 1,
+        "y": 0,
+        "origin": [
+          1024,
+          0
+        ],
+        "offset": [
+          0.5,
+          0.5
+        ],
+        "glslUv": {
+          "offset": [
+            0.5,
+            0.5
+          ],
+          "inset": [
+            0.015625,
+            0.015625
+          ],
+          "span": [
+            0.46875,
+            0.46875
+          ]
+        }
+      },
+      {
+        "id": "grass",
+        "x": 0,
+        "y": 1,
+        "origin": [
+          0,
+          1024
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "glslUv": {
+          "offset": [
+            0,
+            0
+          ],
+          "inset": [
+            0.015625,
+            0.015625
+          ],
+          "span": [
+            0.46875,
+            0.46875
+          ]
+        }
+      },
+      {
+        "id": "dirt",
+        "x": 1,
+        "y": 1,
+        "origin": [
+          1024,
+          1024
+        ],
+        "offset": [
+          0.5,
+          0
+        ],
+        "glslUv": {
+          "offset": [
+            0.5,
+            0
+          ],
+          "inset": [
+            0.015625,
+            0.015625
+          ],
+          "span": [
+            0.46875,
+            0.46875
+          ]
+        }
+      }
+    ],
+    "desktop": {
+      "atlas": [
+        2048,
+        2048
+      ],
+      "tile": [
+        1024,
+        1024
+      ],
+      "content": [
+        960,
+        960
+      ],
+      "gutter": 32
+    },
+    "mobile": {
+      "atlas": [
+        1024,
+        1024
+      ],
+      "tile": [
+        512,
+        512
+      ],
+      "content": [
+        480,
+        480
+      ],
+      "gutter": 16
+    },
+    "gutter": "duplicated edge pixels on all four edges and corners",
+    "normalMaps": "lossless RGB WebP; no gamma transform"
+  },
+  "aggregateRuntimeBytes": 10597948
+}

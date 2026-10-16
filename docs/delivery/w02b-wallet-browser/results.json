@@ -1,0 +1,270 @@
+{
+  "scope": "local focused AccountPanel + WalletPanel; fake Auth; real in-memory wallet service; no game join",
+  "origin": "http://127.0.0.1:57555",
+  "chainId": 84532,
+  "evidence": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\w02b-wallet-browser",
+  "results": [
+    {
+      "case": "desktop account login, wrong chain, explicit review, cancelled signature, successful link and reload",
+      "pass": true,
+      "lostCommittedReply": true,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "measurements": {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "document": {
+          "width": 1280,
+          "height": 900
+        },
+        "panel": {
+          "width": 407,
+          "scrollWidth": 407
+        },
+        "controls": [
+          {
+            "name": "Consultar vínculo",
+            "width": 115,
+            "height": 44,
+            "reachable": true
+          }
+        ],
+        "controlMeasurements": [
+          {
+            "phase": "unlinked",
+            "controls": [
+              {
+                "name": "Conectar wallet",
+                "width": 107,
+                "height": 44,
+                "inViewport": true
+              },
+              {
+                "name": "Consultar vínculo",
+                "width": 115,
+                "height": 44,
+                "inViewport": true
+              }
+            ]
+          },
+          {
+            "phase": "review",
+            "controls": [
+              {
+                "name": "Firmar y vincular",
+                "width": 115,
+                "height": 44,
+                "inViewport": true
+              },
+              {
+                "name": "Cerrar intento",
+                "width": 100,
+                "height": 44,
+                "inViewport": true
+              },
+              {
+                "name": "Consultar vínculo",
+                "width": 115,
+                "height": 44,
+                "inViewport": true
+              }
+            ]
+          },
+          {
+            "phase": "linked",
+            "controls": [
+              {
+                "name": "Consultar vínculo",
+                "width": 115,
+                "height": 44,
+                "inViewport": true
+              }
+            ]
+          }
+        ]
+      },
+      "pageErrors": []
+    },
+    {
+      "case": "mobile-portrait account login, wrong chain, explicit review, cancelled signature, successful link and reload",
+      "pass": true,
+      "lostCommittedReply": false,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "measurements": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "document": {
+          "width": 390,
+          "height": 844
+        },
+        "panel": {
+          "width": 308,
+          "scrollWidth": 308
+        },
+        "controls": [
+          {
+            "name": "Consultar vínculo",
+            "width": 288,
+            "height": 44,
+            "reachable": true
+          }
+        ],
+        "controlMeasurements": [
+          {
+            "phase": "unlinked",
+            "controls": [
+              {
+                "name": "Conectar wallet",
+                "width": 140,
+                "height": 44,
+                "inViewport": true
+              },
+              {
+                "name": "Consultar vínculo",
+                "width": 140,
+                "height": 44,
+                "inViewport": true
+              }
+            ]
+          },
+          {
+            "phase": "review",
+            "controls": [
+              {
+                "name": "Firmar y vincular",
+                "width": 140,
+                "height": 44,
+                "inViewport": true
+              },
+              {
+                "name": "Cerrar intento",
+                "width": 140,
+                "height": 44,
+                "inViewport": true
+              },
+              {
+                "name": "Consultar vínculo",
+                "width": 288,
+                "height": 44,
+                "inViewport": true
+              }
+            ]
+          },
+          {
+            "phase": "linked",
+            "controls": [
+              {
+                "name": "Consultar vínculo",
+                "width": 288,
+                "height": 44,
+                "inViewport": true
+              }
+            ]
+          }
+        ]
+      },
+      "pageErrors": []
+    },
+    {
+      "case": "mobile-landscape account login, wrong chain, explicit review, cancelled signature, successful link and reload",
+      "pass": true,
+      "lostCommittedReply": false,
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "measurements": {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "document": {
+          "width": 844,
+          "height": 390
+        },
+        "panel": {
+          "width": 375,
+          "scrollWidth": 375
+        },
+        "controls": [
+          {
+            "name": "Consultar vínculo",
+            "width": 115,
+            "height": 44,
+            "reachable": true
+          }
+        ],
+        "controlMeasurements": [
+          {
+            "phase": "unlinked",
+            "controls": [
+              {
+                "name": "Conectar wallet",
+                "width": 107,
+                "height": 44,
+                "inViewport": true
+              },
+              {
+                "name": "Consultar vínculo",
+                "width": 115,
+                "height": 44,
+                "inViewport": true
+              }
+            ]
+          },
+          {
+            "phase": "review",
+            "controls": [
+              {
+                "name": "Firmar y vincular",
+                "width": 115,
+                "height": 44,
+                "inViewport": true
+              },
+              {
+                "name": "Cerrar intento",
+                "width": 100,
+                "height": 44,
+                "inViewport": true
+              },
+              {
+                "name": "Consultar vínculo",
+                "width": 115,
+                "height": 44,
+                "inViewport": true
+              }
+            ]
+          },
+          {
+            "phase": "linked",
+            "controls": [
+              {
+                "name": "Consultar vínculo",
+                "width": 115,
+                "height": 44,
+                "inViewport": true
+              }
+            ]
+          }
+        ]
+      },
+      "pageErrors": []
+    }
+  ],
+  "counters": {
+    "signins": 3,
+    "challenges": 6,
+    "verifications": 3,
+    "linkReads": 10
+  },
+  "pageErrors": []
+}

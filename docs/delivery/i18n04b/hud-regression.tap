@@ -1,0 +1,28 @@
+✔ UI catalogs have complete Spanish/English pairs and matching placeholders (5.1899ms)
+✔ each source catalog key is defined only once (2.2649ms)
+✔ text and rich translations escape untrusted parameters while retaining app markup (0.5603ms)
+✔ locale selection accepts supported preferences and recovers from bad storage (0.1952ms)
+✔ a bootstrap choice survives blocked storage when the module mounts (0.9154ms)
+✔ display translation leaves stable good IDs untouched (0.1882ms)
+✔ market categories follow the selected language while good and town identities stay stable (0.2653ms)
+✔ authored data parameters translate again while human parameters stay literal (0.2185ms)
+✔ every generated gear base and affix has a display translation without changing the item (0.9429ms)
+✔ literal i18n calls in UI, client navigation, and main have catalog entries (9.7848ms)
+✔ literal static data display strings have an English dictionary entry (7.3445ms)
+✔ source contains no invalid $5 i18n placeholder aliases (6.5697ms)
+✔ community, naval HUD, and cartography display the selected locale (1.0525ms)
+✔ generated village NPC roles translate while authored names and world data stay intact (314.8379ms)
+✔ logging, pack and naval lesson snapshots localize without changing their source state or command (2.2209ms)
+✔ artisan locale events refresh a pending learning label without resending or replacing its command (2.3946ms)
+✔ storage locale rerender preserves the pending placement snapshot and never calls retry (0.3317ms)
+✔ raft and personal lantern language refreshes preserve pending intent and do not send again (2.679ms)
+✔ live system catalog keeps both locales and interpolation parameters aligned (1.9249ms)
+✔ live system catalog covers the M5-facing localization surfaces (0.1126ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 487.6468

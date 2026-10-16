@@ -1,0 +1,33 @@
+{
+  "schema": "gm03a-validation-history/v1",
+  "at": "2026-10-10T20:50:38.456Z",
+  "corrections": [
+    {
+      "kind": "harness",
+      "detail": "Pass initial language as a page argument instead of referring to the Node closure."
+    },
+    {
+      "kind": "harness",
+      "detail": "Remove a redundant modal close after cross-browser Undo already closed it."
+    },
+    {
+      "kind": "harness",
+      "detail": "Check exported JSON under document.base, matching the existing envelope."
+    },
+    {
+      "kind": "harness",
+      "detail": "Live canary catches GmDraftStoreError rather than unrelated M5 StoreError; actual lost-response commit succeeded. Corrected run passes 14 checks."
+    },
+    {
+      "kind": "harness",
+      "detail": "Public logout camera observed synchronously at walkPreview.stop before title camera animation; first public run already passed all five GM03a checks and restored baseline."
+    }
+  ],
+  "final": {
+    "localBrowserChecks": 35,
+    "errors": [],
+    "integratedTests": 102,
+    "serverRegressionTests": 113
+  },
+  "note": "Automated suites overlap. Local browser uses fixture auth and explicitly non-durable Memory; public Supabase acceptance is separate."
+}

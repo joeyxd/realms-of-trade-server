@@ -1,0 +1,348 @@
+{
+  "build": "0.6.0-alpha.16",
+  "protocol": 32,
+  "generatedAt": "2026-10-09T04:15:58.146Z",
+  "setup": "Ephemeral localhost hosts, memory store, isolated browser contexts. Server ECS relocation is a QA fixture; gathering, panel opening, quantities and crafting use real controls. No .env, SQL or external services.",
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7d-tools\\desktop-1280x720-00-tool-required.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7d-tools\\desktop-1280x720-01-axe-ready.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7d-tools\\desktop-1280x720-01-axe-done.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7d-tools\\desktop-1280x720-02-axe-chop.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7d-tools\\desktop-1280x720-03-stump.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7d-tools\\desktop-1280x720-04-pickaxe-ready.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7d-tools\\desktop-1280x720-04-pickaxe-done.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7d-tools\\desktop-1280x720-rock-first-hit.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7d-tools\\desktop-1280x720-rock-depleted.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7d-tools\\desktop-1280x720-iron_ore-first-hit.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7d-tools\\desktop-1280x720-iron_ore-depleted.png"
+      ],
+      "acks": [
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "cd7d2772-ce4e-4f84-896e-53eec7b72b6d",
+          "ok": true,
+          "why": "",
+          "rev": 2,
+          "good": "tronco",
+          "count": 1
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "6ebf21c2-77fb-4b81-8656-93105fb82331",
+          "ok": true,
+          "why": "",
+          "rev": 2,
+          "good": "piedra",
+          "count": 1
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "craft",
+          "opId": "1e587938-a1ba-40f8-b900-0bba2c8f201c",
+          "ok": true,
+          "why": "",
+          "rev": 3,
+          "good": "madera",
+          "count": 1
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "craft",
+          "opId": "62ee9db8-c124-46ac-9c4a-178cd3afd8f5",
+          "ok": true,
+          "why": "",
+          "rev": 4,
+          "tool": "axe",
+          "tier": 1,
+          "count": 1
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "a42348eb-c544-441f-a263-2ea7baa08ce4",
+          "ok": true,
+          "why": "",
+          "rev": 2,
+          "good": "tronco",
+          "count": 0,
+          "remaining": 2,
+          "felled": false
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "561c7dfe-3c1e-422c-811f-df1077238cc1",
+          "ok": true,
+          "why": "",
+          "rev": 3,
+          "good": "tronco",
+          "count": 0,
+          "remaining": 1,
+          "felled": false
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "e992ffc9-ff10-412e-b02b-007549d7c2f7",
+          "ok": true,
+          "why": "",
+          "rev": 4,
+          "good": "tronco",
+          "count": 2,
+          "remaining": 0,
+          "felled": true
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "craft",
+          "opId": "678a1ba9-0975-44db-aa1e-b72f6fae2bd6",
+          "ok": true,
+          "why": "",
+          "rev": 6,
+          "good": "madera",
+          "count": 2
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "597759fd-679a-4169-a813-ad35fcfc5c58",
+          "ok": true,
+          "why": "",
+          "rev": 2,
+          "good": "piedra",
+          "count": 1
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "c64ad752-4588-4017-9e9c-c51dfdbe5570",
+          "ok": true,
+          "why": "",
+          "rev": 2,
+          "good": "piedra",
+          "count": 1
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "craft",
+          "opId": "15d2fcaf-401b-4cc0-b18e-b22891cc3b17",
+          "ok": true,
+          "why": "",
+          "rev": 9,
+          "tool": "pickaxe",
+          "tier": 1,
+          "count": 1
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "21b605f9-c0c0-4883-9de6-b3518b5ea67e",
+          "ok": true,
+          "why": "",
+          "rev": 2,
+          "good": "piedra",
+          "count": 0,
+          "remaining": 3,
+          "broken": false
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "3d373777-3b48-4f9b-863a-da9935d0bec6",
+          "ok": true,
+          "why": "",
+          "rev": 3,
+          "good": "piedra",
+          "count": 0,
+          "remaining": 2,
+          "broken": false
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "1348f365-6447-4c96-89fb-c72069ffd431",
+          "ok": true,
+          "why": "",
+          "rev": 4,
+          "good": "piedra",
+          "count": 0,
+          "remaining": 1,
+          "broken": false
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "59d928b8-be8e-4f6d-97d9-00164b985b3b",
+          "ok": true,
+          "why": "",
+          "rev": 5,
+          "good": "piedra",
+          "count": 2,
+          "remaining": 0,
+          "broken": true
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "a15bb27c-17c5-4f5e-a107-4d24acc1cd0e",
+          "ok": true,
+          "why": "",
+          "rev": 2,
+          "good": "mineral_hierro",
+          "count": 0,
+          "remaining": 4,
+          "broken": false
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "2f4c51b0-2a2e-49b0-9bc9-9b6893a529c5",
+          "ok": true,
+          "why": "",
+          "rev": 3,
+          "good": "mineral_hierro",
+          "count": 0,
+          "remaining": 3,
+          "broken": false
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "ffe775c4-2537-4889-8568-01b9a63fdac1",
+          "ok": true,
+          "why": "",
+          "rev": 4,
+          "good": "mineral_hierro",
+          "count": 0,
+          "remaining": 2,
+          "broken": false
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "cef517f5-2d75-4f9d-9fb1-5fd103137071",
+          "ok": true,
+          "why": "",
+          "rev": 5,
+          "good": "mineral_hierro",
+          "count": 0,
+          "remaining": 1,
+          "broken": false
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "e4a2eb25-cee8-4042-9e58-a139ba1d2c91",
+          "ok": true,
+          "why": "",
+          "rev": 6,
+          "good": "mineral_hierro",
+          "count": 1,
+          "remaining": 0,
+          "broken": true
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "05dc8b75-7fee-4442-88f4-422dcb001ad6",
+          "ok": false,
+          "why": "full",
+          "rev": 1
+        }
+      ],
+      "catalogue": {
+        "wood": 11,
+        "stone": 69,
+        "palm": 96,
+        "iron_ore": 6,
+        "rock": 24
+      },
+      "rockVisual": {
+        "tool": "pickaxe",
+        "visible": true,
+        "pose": true,
+        "scale": 2.4,
+        "cracks": true,
+        "meta": {
+          "nodes": 30,
+          "ironOre": 6,
+          "drawCalls": 7,
+          "geometryTriangles": 64,
+          "source": "model:coast-rock-v1",
+          "texturesAdded": 0,
+          "instanceScale": 2.4,
+          "depletedScale": 0.3,
+          "maxNodes": 206,
+          "crackDrawCalls": 1
+        }
+      },
+      "iron_oreVisual": {
+        "tool": "pickaxe",
+        "visible": true,
+        "pose": true,
+        "scale": 2.4,
+        "cracks": true,
+        "meta": {
+          "nodes": 30,
+          "ironOre": 6,
+          "drawCalls": 3,
+          "geometryTriangles": 64,
+          "source": "model:coast-rock-v1",
+          "texturesAdded": 0,
+          "instanceScale": 2.4,
+          "depletedScale": 0.3,
+          "maxNodes": 206,
+          "crackDrawCalls": 1
+        }
+      },
+      "conservation": {
+        "tools": {
+          "axe": 1,
+          "pickaxe": 1
+        },
+        "goods": {
+          "madera": 1,
+          "piedra": 2,
+          "mineral_hierro": 1
+        },
+        "tradeRev": 11,
+        "weaponPreserved": true
+      },
+      "reconnect": "actual crafted axe/pickaxe, raw ore, pack and revision preserved in signed save"
+    }
+  ],
+  "failures": [],
+  "status": "passed"
+}

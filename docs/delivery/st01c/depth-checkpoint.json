@@ -1,0 +1,596 @@
+{
+  "schema": "st01c-depth-checkpoint/v1",
+  "date": "2026-10-14",
+  "sourceSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "scope": "Private orthographic DepthFade calibration and source-generated CPU pilot. No gameplay, final UE tone/color, perspective, optimized texture or physical mobile acceptance.",
+  "sourcesRehashed": {
+    "originals": 51,
+    "copies": 51,
+    "allUnchanged": true
+  },
+  "codeSha256": {
+    "tools/niagara-native-lab/particles.js": "1e936b7c0e70fcc8bc70083a67b590d19ee09162128db4c9654840317bbadaf1",
+    "tools/niagara-native-lab/depth-stage.js": "a6882c903439ebefcd9a18df5bf873ad6c76e72979c04da34af04401bd6b7763",
+    "tools/niagara-native-lab/depth-stage.test.mjs": "6982516df76be73093241bf5a0a334389560f3a1ddf704fc46975151482d0b63",
+    "tools/niagara-native-lab/depth-lab.js": "5464e29c247921c5cc99228650eebb2e50ac2977d33a485fb235c06949dfd698",
+    "tools/niagara-native-lab/depth.html": "3dbab71eda56439c8b5e7ad868dda3df73837c0456202d381c69d1c4bc07a106",
+    "tools/niagara-native-lab/index.html": "102acdd2fe4985f8f7231568ca85feba88588dcd7f69add3fb5af9bdb002946f",
+    "tools/niagara-native-lab/qa-depth.mjs": "714a6337f965fd21bfd838f759d78bc4f17470068e24af588f99d91f630cb6a5",
+    "tools/niagara-native-lab/verify-depth.mjs": "a13f9c4ebfb096b82a850a885b0ef830e0a81cca3485782eee69ee0dbf69dd77",
+    "tools/niagara-native-lab/compare-depth.py": "2c6536bb192623bcd4727fecf428a0b6905c25c82e3ac6ae7502d638bee4bab7",
+    "tools/unreal-niagara-probe/capture_depth.py": "613a3c2f00513b650041d6e02858758be5a6e07febf23af6c174f88a1f926b6b",
+    "tools/unreal-niagara-probe/capture_reference.py": "a3c667eff9dc96414a2dac9f5abd1b1ab97b4e4a6d6bcba44fe0447b814f90ee",
+    "docs/delivery/st01c/effect-description.json": "20274bfc383dc50f0789ba394b61f3c8d31f91cc79f99537e073a0fef10f3c0f"
+  },
+  "referenceValidation": {
+    "schema": "st01c-depth-validation/v1",
+    "inputs": [
+      {
+        "run": "depth02",
+        "reportSha256": "107f22919e3797003428a0894cffeb0122d881a4e3152622209e4df83b6e1dc7",
+        "particleSha256": "5883038eeff4af992052a41e934c33281b053e7f4caa1e2e9bcb61f4659bf3d7"
+      },
+      {
+        "run": "depth03",
+        "reportSha256": "107f22919e3797003428a0894cffeb0122d881a4e3152622209e4df83b6e1dc7",
+        "particleSha256": "5883038eeff4af992052a41e934c33281b053e7f4caa1e2e9bcb61f4659bf3d7"
+      }
+    ],
+    "imagesPerRun": 22,
+    "repeatableImageHashes": true,
+    "calibrationQualification": "Positive gaps measure the fade ramp; zero/negative black outputs also include opaque depth occlusion, not an independent proof of the clamp branch.",
+    "calibration": [
+      {
+        "run": "depth02",
+        "gapCm": -25,
+        "expected": 0,
+        "unrealLinearRGB": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "run": "depth02",
+        "gapCm": 0,
+        "expected": 0,
+        "unrealLinearRGB": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "run": "depth02",
+        "gapCm": 25,
+        "expected": 0.25,
+        "unrealLinearRGB": [
+          0.2509765625,
+          0.2509765625,
+          0.2509765625
+        ]
+      },
+      {
+        "run": "depth02",
+        "gapCm": 50,
+        "expected": 0.5,
+        "unrealLinearRGB": [
+          0.501953125,
+          0.501953125,
+          0.501953125
+        ]
+      },
+      {
+        "run": "depth02",
+        "gapCm": 100,
+        "expected": 1,
+        "unrealLinearRGB": [
+          1.00390625,
+          1.00390625,
+          1.00390625
+        ]
+      },
+      {
+        "run": "depth02",
+        "gapCm": 150,
+        "expected": 1,
+        "unrealLinearRGB": [
+          1.00390625,
+          1.00390625,
+          1.00390625
+        ]
+      },
+      {
+        "run": "depth03",
+        "gapCm": -25,
+        "expected": 0,
+        "unrealLinearRGB": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "run": "depth03",
+        "gapCm": 0,
+        "expected": 0,
+        "unrealLinearRGB": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "run": "depth03",
+        "gapCm": 25,
+        "expected": 0.25,
+        "unrealLinearRGB": [
+          0.2509765625,
+          0.2509765625,
+          0.2509765625
+        ]
+      },
+      {
+        "run": "depth03",
+        "gapCm": 50,
+        "expected": 0.5,
+        "unrealLinearRGB": [
+          0.501953125,
+          0.501953125,
+          0.501953125
+        ]
+      },
+      {
+        "run": "depth03",
+        "gapCm": 100,
+        "expected": 1,
+        "unrealLinearRGB": [
+          1.00390625,
+          1.00390625,
+          1.00390625
+        ]
+      },
+      {
+        "run": "depth03",
+        "gapCm": 150,
+        "expected": 1,
+        "unrealLinearRGB": [
+          1.00390625,
+          1.00390625,
+          1.00390625
+        ]
+      }
+    ],
+    "nativeCapturedStateInputs": 0,
+    "sameParticlesAsAcceptedReference": true
+  },
+  "imageComparison": {
+    "method": "512px; step120; shared Three ACES exposure1; union max>8; masks max>32",
+    "thresholdsBeforeReview": {
+      "rgbMae255Max": 10,
+      "maskIoU32Min": 0.94
+    },
+    "cases": [
+      {
+        "case": "none_front",
+        "activePixels": 10880,
+        "rgbMae255": 6.0266850490196076,
+        "maskIoU32": 0.9830464604633105,
+        "maxChannelDifference255": 55.0,
+        "accepted": true
+      },
+      {
+        "case": "wall-25_front",
+        "activePixels": 0,
+        "rgbMae255": 0.0,
+        "maskIoU32": 1.0,
+        "maxChannelDifference255": 0.0,
+        "accepted": true
+      },
+      {
+        "case": "wall0_front",
+        "activePixels": 0,
+        "rgbMae255": 0.0,
+        "maskIoU32": 1.0,
+        "maxChannelDifference255": 1.0,
+        "accepted": true
+      },
+      {
+        "case": "wall50_front",
+        "activePixels": 8424,
+        "rgbMae255": 3.538659385881608,
+        "maskIoU32": 0.9870111924830731,
+        "maxChannelDifference255": 39.0,
+        "accepted": true
+      },
+      {
+        "case": "wall150_front",
+        "activePixels": 10880,
+        "rgbMae255": 6.0266850490196076,
+        "maskIoU32": 0.9830464604633105,
+        "maxChannelDifference255": 55.0,
+        "accepted": true
+      },
+      {
+        "case": "none_oblique",
+        "activePixels": 9671,
+        "rgbMae255": 7.370523558404853,
+        "maskIoU32": 0.9841105800284201,
+        "maxChannelDifference255": 63.0,
+        "accepted": true
+      },
+      {
+        "case": "wall-25_oblique",
+        "activePixels": 0,
+        "rgbMae255": 0.0,
+        "maskIoU32": 1.0,
+        "maxChannelDifference255": 0.0,
+        "accepted": true
+      },
+      {
+        "case": "wall0_oblique",
+        "activePixels": 0,
+        "rgbMae255": 0.0,
+        "maskIoU32": 1.0,
+        "maxChannelDifference255": 1.0,
+        "accepted": true
+      },
+      {
+        "case": "wall50_oblique",
+        "activePixels": 8168,
+        "rgbMae255": 3.6294482533463923,
+        "maskIoU32": 0.982664098384946,
+        "maxChannelDifference255": 34.0,
+        "accepted": true
+      },
+      {
+        "case": "wall150_oblique",
+        "activePixels": 9671,
+        "rgbMae255": 7.370523558404853,
+        "maskIoU32": 0.9841105800284201,
+        "maxChannelDifference255": 63.0,
+        "accepted": true
+      },
+      {
+        "case": "none_side",
+        "activePixels": 10315,
+        "rgbMae255": 6.447503635482307,
+        "maskIoU32": 0.9866597590985624,
+        "maxChannelDifference255": 59.0,
+        "accepted": true
+      },
+      {
+        "case": "wall-25_side",
+        "activePixels": 0,
+        "rgbMae255": 0.0,
+        "maskIoU32": 1.0,
+        "maxChannelDifference255": 0.0,
+        "accepted": true
+      },
+      {
+        "case": "wall0_side",
+        "activePixels": 203,
+        "rgbMae255": 0.3333333333333333,
+        "maskIoU32": 1.0,
+        "maxChannelDifference255": 2.0,
+        "accepted": true
+      },
+      {
+        "case": "wall50_side",
+        "activePixels": 8276,
+        "rgbMae255": 4.737554374093765,
+        "maskIoU32": 0.9871387083390956,
+        "maxChannelDifference255": 44.0,
+        "accepted": true
+      },
+      {
+        "case": "wall150_side",
+        "activePixels": 10315,
+        "rgbMae255": 6.447503635482307,
+        "maskIoU32": 0.9866597590985624,
+        "maxChannelDifference255": 59.0,
+        "accepted": true
+      },
+      {
+        "case": "floor_oblique",
+        "activePixels": 8175,
+        "rgbMae255": 7.263649337410805,
+        "maskIoU32": 0.9825553983969826,
+        "maxChannelDifference255": 63.0,
+        "accepted": true
+      }
+    ],
+    "accepted": true,
+    "finalUnrealColorParity": false
+  },
+  "browser": {
+    "run": "depth02",
+    "checks": [
+      "GPU calibration: contact/occlusion, quarter, half and full opacity match 100cm source span",
+      "all 16 pilot cases: independent source-generated particles, surfaces and three cameras",
+      "fade toggle preserves state; layers, reset and camera orbit work",
+      "390px controls fit; physical device FPS not measured",
+      "no particle captures as inputs, only local GET, zero errors, all GPU resources disposed"
+    ],
+    "calibration": [
+      {
+        "gapCm": -25,
+        "expected": 0,
+        "nativeLinearRGB": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "gapCm": 0,
+        "expected": 0,
+        "nativeLinearRGB": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "gapCm": 25,
+        "expected": 0.25,
+        "nativeLinearRGB": [
+          0.25,
+          0.25,
+          0.25
+        ]
+      },
+      {
+        "gapCm": 50,
+        "expected": 0.5,
+        "nativeLinearRGB": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      {
+        "gapCm": 100,
+        "expected": 1,
+        "nativeLinearRGB": [
+          0.99951171875,
+          0.99951171875,
+          0.99951171875
+        ]
+      },
+      {
+        "gapCm": 150,
+        "expected": 1,
+        "nativeLinearRGB": [
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "errors": [],
+    "requests": [
+      {
+        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/depth.html?run=depth02",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/depth-lab.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/node_modules/three/build/three.module.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/node_modules/three/examples/jsm/loaders/RGBELoader.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/particles.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/native-simulation.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/source-identity.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/depth-stage.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/update-simulation.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/depth-report.json",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/pilot-source.json",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/capture-report.json",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/textures/T_FlameUV_2.png",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/textures/T_Smoke_1.png",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall50_oblique.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/calibration-25_front.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/calibration0_front.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/calibration25_front.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/calibration50_front.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/calibration100_front.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/calibration150_front.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/none_front.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall-25_front.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall0_front.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall50_front.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall150_front.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/none_oblique.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall-25_oblique.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall0_oblique.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall150_oblique.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/none_side.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall-25_side.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall0_side.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall50_side.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/wall150_side.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/depth02/floor_oblique.hdr",
+        "method": "GET"
+      }
+    ],
+    "stats": {
+      "calls": 6,
+      "textures": 28
+    },
+    "resourcesAfterDispose": {
+      "geometries": 0,
+      "textures": 0
+    }
+  },
+  "cpu": {
+    "tests": 11,
+    "pass": 11,
+    "fail": 0
+  },
+  "previousModesBrowser": {
+    "native": 7,
+    "update": 6,
+    "observed": 6,
+    "errors": 0
+  },
+  "assetSaves": 0,
+  "gameplayActivation": false,
+  "screenshots": [
+    {
+      "file": "depth-front.png",
+      "sha256": "4076cb3c07787ac70a8485ca9b69ca656e310e72c05cb31e940a722a59f79556",
+      "visuallyInspected": true
+    },
+    {
+      "file": "depth-oblique.png",
+      "sha256": "9968a8428b55e300b4ab1940a6478c25785c5b0c9ac089efa0b84480d9135aae",
+      "visuallyInspected": true
+    },
+    {
+      "file": "depth-side.png",
+      "sha256": "72ae77fde4b19c8ae1ec0e6962c8db07b54dc0aa121b2b687bdac6f75e782ff8",
+      "visuallyInspected": true
+    },
+    {
+      "file": "depth-floor.png",
+      "sha256": "4619e3ffc50c35145c30f09a50d8359eeda57de07530fa893fc4ad34445397b1",
+      "visuallyInspected": true
+    },
+    {
+      "file": "depth-floor-hard.png",
+      "sha256": "ffab2f74122d2aaf0b27b7003f580e35596a849732b8472212551fe1228e640b",
+      "visuallyInspected": true
+    },
+    {
+      "file": "depth-mobile.png",
+      "sha256": "2e1b3d3fe0ad24ab3f22cb196b9e94e93076d5f59afefe34d3cdec72232819aa",
+      "visuallyInspected": true
+    }
+  ],
+  "engineSource": [
+    {
+      "relative": "Source/Runtime/Engine/Private/Materials/MaterialExpressions.cpp",
+      "sha256": "66909943c30bdcea8f8bc47bd3b719093eeed4d11715b94cb120fb4f4330d815"
+    },
+    {
+      "relative": "Source/Runtime/Engine/Public/Materials/MaterialExpressionDepthFade.h",
+      "sha256": "c77d4c51b1f28e55700d568c3fb5fb871b188e39937d9743b9f90119f1077443"
+    },
+    {
+      "relative": "Shaders/Private/Common.ush",
+      "sha256": "d6d43d5200e269bc38136cf644054e5c0ae372a61dce21d3a97ef6e9450ec8e5"
+    },
+    {
+      "relative": "Source/Runtime/Engine/Private/Materials/HLSLMaterialTranslator.cpp",
+      "sha256": "b103a57deeca5fbb280a0c36fda9e022d4abe978e2d0ceb27a34cf4aea9968f5"
+    }
+  ],
+  "qualifications": [
+    "Negative/zero calibration black outputs include opaque occlusion.",
+    "Large per-channel color differences remain (max63/255) under shared ACES.",
+    "UE clipping matrices use internal defaults; exact near/far not exported.",
+    "Cached reference HDRs are diagnostic resources, not the intended game budget."
+  ]
+}

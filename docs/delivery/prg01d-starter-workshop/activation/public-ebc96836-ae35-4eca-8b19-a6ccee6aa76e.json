@@ -1,0 +1,37 @@
+{
+  "schema": "mn.starter-workshop.public.v1",
+  "at": "2026-10-11T02:16:26.694Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "mode": "raft-navigation-only",
+  "protocol": 47,
+  "gameVersion": "0.6.0-alpha.39",
+  "checks": [
+    {
+      "name": "public_tls_release_and_sql023_024_026_readiness",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.39",
+      "protocolVersion": 47,
+      "realPlayers": 0,
+      "workshopReady": true,
+      "resourcesReady": true
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "ordinary_dock_centerline_gangplank_to_owned_deck",
+      "pass": true,
+      "supportedByOwnedDeck": true
+    }
+  ],
+  "errors": [],
+  "pass": true,
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 0,
+    "receiptPolicy": "economic receipts intentionally retained"
+  },
+  "completedAt": "2026-10-11T02:16:53.184Z"
+}

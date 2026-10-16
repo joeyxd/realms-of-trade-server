@@ -1,0 +1,18 @@
+{
+  "schema": "gm03a-qa-records/v1",
+  "at": "2026-10-10T20:57:32.822Z",
+  "syntheticHeads": [
+    {
+      "world": "gm03qa-c0bea0ca-fede-4e7b-94c6-d63907e8afae",
+      "owner_id": "baeae7d8-d736-40d9-b207-e70c3211a163",
+      "revision": 2
+    },
+    {
+      "world": "gm03qa-3be8d32d-6a33-46d6-bff6-48d27e839d86",
+      "owner_id": "6b84a752-e19c-44d3-b682-4fd28a9ba0b1",
+      "revision": 2
+    }
+  ],
+  "syntheticReceipts": 6,
+  "note": "Both isolated canary attempts retained. Initial attempt committed correctly but harness expected the generic StoreError rather than GmDraftStoreError; corrected probe passed. No Auth accounts or M5 rows created by these fixtures."
+}

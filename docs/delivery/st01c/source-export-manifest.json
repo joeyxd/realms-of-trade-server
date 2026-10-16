@@ -1,0 +1,145 @@
+{
+  "schema": "st01c-source-export-manifest/v1",
+  "engine": "5.8.0-55116800+++UE5+Release-5.8",
+  "completed": true,
+  "exports": [
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single",
+      "class": "NiagaraSystem",
+      "ok": true,
+      "file": "system.t3d",
+      "bytes": 11369738,
+      "sha256": "00e5e08d39ce24c743400060ac59a693fe24044c0aec3d3366cf6a07086370d3"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Flame_Basic_001.NE_Flame_Basic_001",
+      "class": "NiagaraEmitter",
+      "ok": true,
+      "file": "NE_Flame_Basic_001.t3d",
+      "bytes": 2235352,
+      "sha256": "46d316a765d1f63aed68a79330ff28980835c09a68593283a39edf285f855846"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Smoke_Basic.NE_Smoke_Basic",
+      "class": "NiagaraEmitter",
+      "ok": true,
+      "file": "NE_Smoke_Basic.t3d",
+      "bytes": 2227766,
+      "sha256": "19e07764d67a7a1088fe4ab642ca577090e15ba185e82b4862844f9c0baa7d7f"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1.MI_Flame_1",
+      "class": "MaterialInstanceConstant",
+      "ok": true,
+      "file": "MI_Flame_1.t3d",
+      "bytes": 2119,
+      "sha256": "411e20704b47fb670d0f99c4b9f91b170492dd780344e3c50e809726ab88291e"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_2.MI_Flame_2",
+      "class": "MaterialInstanceConstant",
+      "ok": true,
+      "file": "MI_Flame_2.t3d",
+      "bytes": 2119,
+      "sha256": "613a0470130c383b0d5a4850bc70f15f62ed04b4d24d2891182057b94c88edac"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1.MI_Smoke_1",
+      "class": "MaterialInstanceConstant",
+      "ok": true,
+      "file": "MI_Smoke_1.t3d",
+      "bytes": 2115,
+      "sha256": "124fa009da28a83f496c1492c3f6c129911d665ec5a6606e3056fe9758f9421e"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke.M_Smoke",
+      "class": "Material",
+      "ok": true,
+      "file": "M_Smoke.t3d",
+      "bytes": 8032,
+      "sha256": "2cf916c9a3c37b3e8319e6405e0a3abe888cd09e15a79ccb0e58f769e01a46ae"
+    }
+  ],
+  "unsupportedPythonWrappers": [
+    {
+      "class": "NiagaraScriptSource",
+      "unavailable": "Python wrapper missing"
+    },
+    {
+      "class": "NiagaraGraph",
+      "unavailable": "Python wrapper missing"
+    },
+    {
+      "class": "NiagaraDataInterfaceCurve",
+      "unavailable": "Python wrapper missing"
+    },
+    {
+      "class": "NiagaraDataInterfaceVectorCurve",
+      "unavailable": "Python wrapper missing"
+    },
+    {
+      "class": "NiagaraDataInterfaceColorCurve",
+      "unavailable": "Python wrapper missing"
+    }
+  ],
+  "scope": "Source data only; does not prove simulation semantics or visual equivalence.",
+  "finalToolScriptsExecuted": true,
+  "priorExportsUsedByNativeAndStackAudits": [
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single",
+      "class": "NiagaraSystem",
+      "ok": true,
+      "file": "system.t3d",
+      "bytes": 11369738,
+      "sha256": "d7d78b14338a081a2b2a0af6a86ded8faf4fe46072e2e0fc26e1b0fc90d7aa11"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Flame_Basic_001.NE_Flame_Basic_001",
+      "class": "NiagaraEmitter",
+      "ok": true,
+      "file": "NE_Flame_Basic_001.t3d",
+      "bytes": 2235352,
+      "sha256": "df6b70d52d034e784515c1d19017d978203ccb4eaeb208342f47ad34be71bc08"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Smoke_Basic.NE_Smoke_Basic",
+      "class": "NiagaraEmitter",
+      "ok": true,
+      "file": "NE_Smoke_Basic.t3d",
+      "bytes": 2227766,
+      "sha256": "611242815aa698468995b5192265bcf3df1ebfbbae98e47ffd7e19680142e750"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1.MI_Flame_1",
+      "class": "MaterialInstanceConstant",
+      "ok": true,
+      "file": "MI_Flame_1.t3d",
+      "bytes": 2119,
+      "sha256": "411e20704b47fb670d0f99c4b9f91b170492dd780344e3c50e809726ab88291e"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_2.MI_Flame_2",
+      "class": "MaterialInstanceConstant",
+      "ok": true,
+      "file": "MI_Flame_2.t3d",
+      "bytes": 2119,
+      "sha256": "613a0470130c383b0d5a4850bc70f15f62ed04b4d24d2891182057b94c88edac"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1.MI_Smoke_1",
+      "class": "MaterialInstanceConstant",
+      "ok": true,
+      "file": "MI_Smoke_1.t3d",
+      "bytes": 2115,
+      "sha256": "124fa009da28a83f496c1492c3f6c129911d665ec5a6606e3056fe9758f9421e"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke.M_Smoke",
+      "class": "Material",
+      "ok": true,
+      "file": "M_Smoke.t3d",
+      "bytes": 8032,
+      "sha256": "2cf916c9a3c37b3e8319e6405e0a3abe888cd09e15a79ccb0e58f769e01a46ae"
+    }
+  ]
+}

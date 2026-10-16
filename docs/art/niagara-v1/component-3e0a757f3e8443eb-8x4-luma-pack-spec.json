@@ -1,0 +1,160 @@
+{
+  "id": "niagara-985a431dc6c0d1ca",
+  "atlasId": "component-3e0a757f3e8443eb-8x4-luma",
+  "role": "source-texture",
+  "sourcePath": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\FX\\NiagaraSystems\\NS_Flame_Single.uasset",
+  "sourceSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "component": {
+    "textureSha256": "3e0a757f3e8443ebfc1644d98ecea09e9f225c684d588fb0f89afcfac9d0c410",
+    "columns": 8,
+    "rows": 4,
+    "mapping": "luminance-to-white-alpha",
+    "name": "T_FlameUV_2"
+  },
+  "sourceBinding": {
+    "systemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+    "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraSpriteRendererProperties_0",
+    "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_2",
+    "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_2"
+  },
+  "frames": [
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_000_source_0000.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_001_source_0001.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_002_source_0002.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_003_source_0003.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_004_source_0004.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_005_source_0005.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_006_source_0006.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_007_source_0007.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_008_source_0008.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_009_source_0009.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_010_source_0010.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_011_source_0011.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_012_source_0012.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_013_source_0013.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_014_source_0014.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_015_source_0015.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_016_source_0016.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_017_source_0017.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_018_source_0018.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_019_source_0019.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_020_source_0020.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_021_source_0021.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_022_source_0022.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_023_source_0023.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_024_source_0024.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_025_source_0025.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_026_source_0026.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_027_source_0027.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_028_source_0028.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_029_source_0029.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_030_source_0030.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\frame_031_source_0031.png"
+  ],
+  "duration": 2,
+  "worldWidth": 6,
+  "worldHeight": 6,
+  "desktopTile": 256,
+  "blend": "alpha",
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-ce800df9a9628c95",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\Textures\\T_FlameUV_2.uasset",
+      "sha256": "3e0a757f3e8443ebfc1644d98ecea09e9f225c684d588fb0f89afcfac9d0c410",
+      "bytes": 533071
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\Textures\\T_FlameUV_2.png",
+      "sha256": "cd44ef0de6222e9ce7b0185099f07bf2763c33190f716c45fa06083ba08e9d86",
+      "bytes": 654386,
+      "format": "PNG",
+      "width": 2048,
+      "height": 1024,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 8,
+      "rows": 4,
+      "cells": 32,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "luminance-to-white-alpha",
+    "mappingFormula": "RGB=white; A=0.299R+0.587G+0.114B in source channel domain",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-985a431dc6c0d1ca",
+        "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single",
+        "sourceBinding": {
+          "systemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+          "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_2",
+          "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_2"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:",
+          "matched": true
+        },
+        "parameterName": "SUBUV"
+      }
+    ]
+  }
+}

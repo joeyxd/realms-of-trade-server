@@ -1,0 +1,72 @@
+{
+  "schema": "gm03a-deployment/v1",
+  "utc": "2026-10-10T21:02:57.247350+00:00",
+  "revision": "3319634e9fa1aae35026db4be604307489a84774",
+  "image": "marea-negra:alpha-3319634e9fa1",
+  "imageId": "sha256:eded137aed9f4364707a330b5f2dc6bdea72f597ac596bcf3660c79fd73d37ab",
+  "container": "68c165a5d85161c77e2b71785ec8da65866331a7e272e371fde4af65ab9814eb",
+  "containerCount": 1,
+  "health": "healthy",
+  "startedAt": "2026-10-10T21:01:24.27676759Z",
+  "current": "/opt/marea-negra/releases/3319634e9fa1aae35026db4be604307489a84774",
+  "updaterTimer": "active",
+  "validationMarker": {
+    "revision": "3319634e9fa1aae35026db4be604307489a84774",
+    "image_id": "sha256:eded137aed9f4364707a330b5f2dc6bdea72f597ac596bcf3660c79fd73d37ab",
+    "tests_passed": true
+  },
+  "offlineReleaseTests": {
+    "tests": 107,
+    "pass": 107,
+    "fail": 0
+  },
+  "publicHealth": 200,
+  "status": {
+    "version": "0.6.0-alpha.28",
+    "players": 0,
+    "sockets": 0,
+    "tick": 5251,
+    "errors": 0
+  },
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0,
+    "unsaved": 0,
+    "profileWrites": 0,
+    "worldWriting": false,
+    "tickBlocked": false,
+    "economic": {
+      "enabled": true,
+      "pending": 0,
+      "failed": false,
+      "completed": 0,
+      "replays": 0
+    },
+    "resources": {
+      "enabled": true,
+      "ready": true,
+      "logging": true
+    },
+    "world": {
+      "id": "marea-negra",
+      "ready": true,
+      "failed": false,
+      "version": 1525,
+      "errors": 0
+    }
+  },
+  "acceptedRuntimeRevision": "9f23be355107ce0fdb783a5f68fd9cc93289cbda",
+  "runtimeEqualToAccepted": true,
+  "runtimeComparedPaths": [
+    "package.json",
+    "package-lock.json",
+    "index.html",
+    "src",
+    "server",
+    "styles",
+    "assets",
+    "deploy"
+  ]
+}

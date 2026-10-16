@@ -1,0 +1,62 @@
+{
+  "schema": "mn.companion-availability.public.v1",
+  "at": "2026-10-11T16:31:36.315Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "gameVersion": "0.6.0-alpha.51",
+  "protocolVersion": 55,
+  "world": "marea-negra",
+  "production": true,
+  "simulatedAuth": false,
+  "providerCalls": false,
+  "gameplayMutations": false,
+  "checks": [
+    {
+      "name": "public_alpha_and_durable_companion_config_readiness",
+      "pass": true,
+      "version": "0.6.0-alpha.51",
+      "protocol": 55
+    },
+    {
+      "name": "temporary_verified_account_created_without_seed_profile",
+      "pass": true
+    },
+    {
+      "name": "real_login_and_host_created_normal_profile",
+      "pass": true,
+      "profileVersion": 2
+    },
+    {
+      "name": "authenticated_owner_sees_server_setup_unavailable_es",
+      "pass": true
+    },
+    {
+      "name": "inference_center_reports_empty_durable_head_and_no_catalog_es",
+      "pass": true,
+      "revision": 0
+    },
+    {
+      "name": "authenticated_inference_unavailable_mobile_en_no_horizontal_overflow",
+      "pass": true,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "name": "authenticated_browser_runtime_and_page_errors_empty",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "01-authenticated-no-companion-setup-desktop-es.png",
+    "02-authenticated-inference-unavailable-desktop-es.png",
+    "03-authenticated-inference-unavailable-mobile-en.png"
+  ],
+  "errors": [],
+  "pass": true,
+  "cleanup": {
+    "markerMatchedBeforeDelete": true,
+    "profileDeleted": true,
+    "authDeleted": true
+  }
+}

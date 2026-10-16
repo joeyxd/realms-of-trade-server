@@ -1,0 +1,84 @@
+{
+  "schema": "mn.community-journal-sessions.acceptance.v1",
+  "date": "2026-10-09",
+  "slice": "A1b2b4",
+  "uniquePertinentCases": 165,
+  "newCases": 34,
+  "priorCases": 131,
+  "repeatedPriorCasesAfterFinalGuard": 47,
+  "syntaxCheckedModules": 6,
+  "sources": [
+    {
+      "path": "server/community/boundProfileSessions.mjs",
+      "sha256": "29dd5851a70a08b054be737e00541e2a0d701922127879b689c182ea45b32582"
+    },
+    {
+      "path": "server/community/scopedProfileSessions.mjs",
+      "sha256": "f7c761cbe69c694263569349067c32762084fb496c7413ad1f06811640879063"
+    },
+    {
+      "path": "server/community/operationRecovery.mjs",
+      "sha256": "912cb105294902236658c2a2a8ca7fa0dfd022429a30a92b985b264892cfad14"
+    },
+    {
+      "path": "tests/community-journal-sessions.test.mjs",
+      "sha256": "43d5ab81669591a1c520941a7b64619f48a56275bc838226dbf9b1eed6065103"
+    },
+    {
+      "path": "tests/community-journal-session-boundaries.test.mjs",
+      "sha256": "2899a9fe0f68c1e6fa28a18654e791ae44b74f3328d04a157c33edb0ffc80579"
+    },
+    {
+      "path": "tests/community-journal-sessions-sql.test.mjs",
+      "sha256": "c4c87aa7949aba25b8a46a617fde425ea5afab76847c2239f35d8f777f737b2a"
+    }
+  ],
+  "runs": [
+    {
+      "path": ".scratch/a1b2b4-regression.log",
+      "scope": "Prior community regression before final dispatch guard",
+      "tests": 131,
+      "pass": 131,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 71249.7031
+    },
+    {
+      "path": ".scratch/a1b2b4-final-sessions.log",
+      "scope": "Final affected sessions/recovery regression and 26 new cases",
+      "tests": 73,
+      "pass": 73,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 18053.9235
+    },
+    {
+      "path": ".scratch/a1b2b4-sql.log",
+      "scope": "Final SQL integration including held prepare and close",
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 13870.4842
+    }
+  ],
+  "validated": [
+    "journal-only session save/contribution",
+    "read-only startup and exact explicit retry",
+    "current-row synchronous publication",
+    "clean PostgreSQL disk reopen",
+    "SQL terminal rollback",
+    "close and auth replacement between dispatch phases",
+    "no late profile reply to revoked connection"
+  ],
+  "limits": [
+    "Optional owner not mounted in GameHost/M5",
+    "One process barrier without distributed lease",
+    "PGlite fixture serializes SQL; clean reopen is not abrupt failover",
+    "No live Supabase/Auth, host restart, protocol or UI changes",
+    "Publisher owns atomic rollback; closed administrative recovery stays internal"
+  ]
+}
