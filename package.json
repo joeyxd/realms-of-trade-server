@@ -15,7 +15,9 @@
     "shot": "node tools/shot.mjs",
     "assets:index": "node tools/asset-index/build.mjs",
     "assets:check": "node tools/asset-index/build.mjs --check",
-    "assets:find": "node tools/asset-index/build.mjs --find"
+    "assets:find": "node tools/asset-index/build.mjs --find",
+    "board": "node tools/board/build.mjs",
+    "board:images": "python tools/board/images.py --out docs/board/img"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
