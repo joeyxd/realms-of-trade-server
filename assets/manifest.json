@@ -62,6 +62,16 @@
       "notes": "Tripo hut-stilt-thatch, 9500 tris, 1024 desktop / 512 mobile texture. See docs/art/prop-hut-stilt-thatch-v2/README.md."
     },
     {
+      "id": "prop:market-stall-awning",
+      "kind": "prop",
+      "src": "models/prop-market-stall-awning-v3-desktop.glb",
+      "mobileSrc": "models/prop-market-stall-awning-v3-mobile.glb",
+      "props": [
+        "stall"
+      ],
+      "notes": "Tripo market-stall-awning, 6174 tris, 512 desktop / 256 mobile texture. See docs/art/prop-market-stall-awning-v3/README.md."
+    },
+    {
       "id": "tex:raft-comic-v1",
       "kind": "tex",
       "src": "textures/raft/comic-materials-v1.webp",
