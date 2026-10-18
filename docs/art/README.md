@@ -176,3 +176,7 @@ modelos y capturas históricos permanecen como prototipos técnicos, sin aprobac
 - [Prueba original del arbusto v1](shrubs/shrub-v1.md): concepto, atlas de cuatro hojas, color/normal
   generados y prompts conservados. La preparación móvil y aplicación posterior están en S07.
   GPT Image 2 solicitado; la herramienta integrada no devuelve el modelo exacto.
+
+- [Revamp visual de la aldea de noche](night-village-revamp/README.md): referencia objetivo y captura
+  previa (alpha.70) del pase de luz, vestido, hierba y atmosfera de la plaza de Salty Shore; lote Tripo
+  de diez props y plantas.

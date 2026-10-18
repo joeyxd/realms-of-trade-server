@@ -566,6 +566,141 @@ export function generateWorld(seed) {
   fort('blackFlag', C(2.5, 2.5), { r: 0.25 });
   { const q = P(L.calaSign); addProp('sign', q.x, q.z, { r: 0.35, rot: Math.PI / 4 + 0.3, v: 0, h: 1 }); } // facing the camera, turned to the trail
 
+  const botWaypoints = [
+    [-100, 2], [-108, -10], [-92, -14], [-94, 6], [-112, 4], [-122, 10], [-128, 0], [-118, 18],
+    [-86, -2], [-104, 14], [-136, 6], [-90, 10],
+  ].map(P);
+
+  // Night plaza dressing (T-1018-20): lantern posts, fences, a notice board, planters, a tarp stall and two more crate stacks
+  // around the campfire. After every random draw and with explicit rot / v, so no rng value moves and no existing prop
+  // shifts; before the collider hash, so the new colliders are in it. Every spot keeps the walkable plaza walkable:
+  // clear of bot waypoints, the straight lines bots walk between them, the Sendero polyline and the NPCs, and away from the
+  // campfire when it has a collider. All placement numbers live in PLAZA; (du, dv) are offsets from the village centre.
+  const PLAZA = {
+    // Clearances (world u).
+    FIRE_CLEAR: 3.2,        // a collider prop stays this far from the campfire centre
+    WAYPOINT_GAP: 1.5,      // min distance from any bot waypoint
+    ROUTE_GAP: 0.9,         // min distance between a footprint edge and any straight line between two bot waypoints
+    PATH_GAP: 1.5,          // min distance from the Sendero polyline
+    NPC_GAP: 1.2,           // min distance from the merchant (Don Bacalao), the vendor at the stall front (Tía Perla) and the tattooist
+    NPC_VENDOR_BACK: [-8, 3],       // the merchant Don Bacalao, offset from the vendor spot (du, dv)
+    NPC_VENDOR_FRONT: [-2.2, -1.2], // shopkeeper stall front, offset from the vendor spot (du, dv)
+    NUDGE_STEP: 0.2,        // search ring spacing when a spot is blocked
+    NUDGE_DIRS: 16,         // directions tried per search ring
+    CRATE_ROUTE_GAP: 0.55,  // the same for the crate stacks: the east stack sits between the stall front and three route legs, nothing within DRESS_NUDGE clears 0.9; a bot body is 0.4 u
+    // Collider footprints (circle radius).
+    LANTERN_R: 0.3, BOARD_R: 0.65, PLANTER_R: 0.33, TARP_R: 1.5, CRATE_R: 0.6, FENCE_R: 0.2,
+    EDGE_GAP: 0.3,          // default gap between a new footprint and an existing collider edge
+    // Lantern ring around the campfire.
+    RING_COUNT: 6, RING_A0: 0.3, RING_RADIUS: 7.5, RING_CENTRE: [-1, -1],
+    RING_COLLIDER_GAP: 1.3, // a ring post is skipped when this close to a collider edge
+    RING_HUT_GAP: 3.6,      // ... or this close to a hut centre
+    RING_NUDGE: 1,          // max slide of a ring post to clear a route
+    // Lanterns beside the stalls.
+    STALL_LANTERN_SIDE: 2.6, TATTOO_LANTERN_SIDE: 2.2, TATTOO_ROT: 1.1, STALL_LANTERN_NUDGE: 0.6,
+    // Fences: runs of segments end to end.
+    FENCE_SEGMENTS: 3, FENCE_LEN: 2, // the kit is 2 u long along its local x (props.js fenceGeo)
+    FENCE_FOOT_STEP: 0.75,  // three footprint circles at -step, 0, +step along the segment axis
+    FENCE_HUT_GAP: 2.9,     // a fence line stays this far from a hut centre
+    FENCE_SLIDE: 1,         // max slide of a run along the plaza edge to clear a route or a hut
+    FENCE_EAST: [12, -7.5, 'v'], FENCE_NORTH: [-8.5, -12.6, 'u'], // start (du, dv) and run axis; east moved out from (9.6, -6), where the bot route from waypoint 2 to 8 crosses it
+    // Single props (du, dv).
+    BOARD_AT: [-7.5, 5.5],
+    PLANTERS_AT: [[-8, -3], [7, -7], [-3, 12], [9, 8]],
+    TARP_AT: [-6, -11.5],
+    CRATES_AT: [[3, 12.5, 0.4], [8, 13, 1.9]], // du, dv, rot
+    DRESS_NUDGE: 2,         // default max slide of a single prop (a crate stack that finds no clear spot is dropped)
+  };
+  {
+    const hutsAt = props.filter((q) => q.kind === 'hut');
+    const campfireAt = P(L.campfire);
+    const npcSpots = [
+      P([L.vendor[0] + PLAZA.NPC_VENDOR_BACK[0], L.vendor[1] + PLAZA.NPC_VENDOR_BACK[1]]),
+      P([L.vendor[0] + PLAZA.NPC_VENDOR_FRONT[0], L.vendor[1] + PLAZA.NPC_VENDOR_FRONT[1]]),
+      P(L.tattoo),
+    ];
+    // The straight route legs between consecutive waypoints, closing the loop (last to first), and every pair of waypoints
+    // (a bot picks any waypoint as its next target). Small props clear the legs; the long fence walls clear every pair.
+    const botLegs = botWaypoints.map((w, i) => [w, botWaypoints[(i + 1) % botWaypoints.length]]);
+    const botPairs = [];
+    for (let i = 0; i < botWaypoints.length; i++) for (let j = i + 1; j < botWaypoints.length; j++) botPairs.push([botWaypoints[i], botWaypoints[j]]);
+    const edgeGap = (x, z) => { let g = 1e9; for (const c of colliders) g = Math.min(g, Math.hypot(x - c.x, z - c.z) - c.r); return g; };
+    const hutGap = (x, z) => { let g = 1e9; for (const h of hutsAt) g = Math.min(g, Math.hypot(x - h.x, z - h.z)); return g; };
+    // A spot with a footprint of radius `r` is clear of every waypoint, every bot line, the path and the NPCs.
+    const routeClear = (x, z, r = 0, gap = PLAZA.ROUTE_GAP, lines = botLegs) => botWaypoints.every((w) => Math.hypot(x - w.x, z - w.z) >= PLAZA.WAYPOINT_GAP)
+      && lines.every(([a, b]) => segDist(x, z, a.x, a.z, b.x, b.z, tmp) >= gap + r)
+      && pathInfo(x, z).d >= PLAZA.PATH_GAP && npcSpots.every((n) => Math.hypot(x - n.x, z - n.z) >= PLAZA.NPC_GAP);
+    // Offsets to try when a spot is blocked: the spot itself, then rings of directions up to `max` u.
+    const nudges = (max) => {
+      const out = [[0, 0]];
+      for (let d = PLAZA.NUDGE_STEP; d <= max + 1e-9; d += PLAZA.NUDGE_STEP) for (let k = 0; k < PLAZA.NUDGE_DIRS; k++) {
+        const ang = (k * 2 * Math.PI) / PLAZA.NUDGE_DIRS;
+        out.push([Math.cos(ang) * d, Math.sin(ang) * d]);
+      }
+      return out;
+    };
+    const faceCampfire = (x, z) => Math.atan2(campfireAt.x - x, campfireAt.z - z); // local +z (the front) toward the fire
+    const armCampfire = (x, z) => Math.atan2(-(campfireAt.z - z), campfireAt.x - x); // lantern arm (local +x) over the plaza
+    // Collider props: place at relative (du, dv), nudging up to `max` u until the spot is clear of colliders (edge gap
+    // `gap`) and of the walking routes; a prop with a collider also stays clear of the campfire. Appends nothing when no
+    // spot fits and logs nothing: tests/map-revamp.test.mjs pins the prop count, so a miss fails there.
+    const dress = (kind, du, dv, opts, { max = PLAZA.DRESS_NUDGE, gap = PLAZA.EDGE_GAP, rotOf = faceCampfire, hutMin = 0, routeGap = PLAZA.ROUTE_GAP } = {}) => {
+      for (const [a, b] of nudges(max)) {
+        const p = V(du + a, dv + b);
+        if (edgeGap(p.x, p.z) < gap + (opts.r || 0) || hutGap(p.x, p.z) < hutMin || !routeClear(p.x, p.z, opts.r || 0, routeGap)) continue;
+        if ((opts.r || 0) > 0 && Math.hypot(p.x - campfireAt.x, p.z - campfireAt.z) < PLAZA.FIRE_CLEAR) continue;
+        addProp(kind, p.x, p.z, { v: 0.5, rot: rotOf(p.x, p.z), ...opts });
+        return true;
+      }
+      return false;
+    };
+    // Lantern ring around the campfire: a post whose spot is too close to a collider or a hut is skipped; the others move
+    // up to RING_NUDGE only to clear a waypoint, a bot line, the path or an NPC.
+    for (let k = 0; k < PLAZA.RING_COUNT; k++) {
+      const a = PLAZA.RING_A0 + (k * 2 * Math.PI) / PLAZA.RING_COUNT;
+      const du = PLAZA.RING_CENTRE[0] + PLAZA.RING_RADIUS * Math.cos(a), dv = PLAZA.RING_CENTRE[1] + PLAZA.RING_RADIUS * Math.sin(a), p = V(du, dv);
+      if (edgeGap(p.x, p.z) < PLAZA.RING_COLLIDER_GAP || hutGap(p.x, p.z) < PLAZA.RING_HUT_GAP) continue;
+      dress('lantern', du, dv, { r: PLAZA.LANTERN_R }, { max: PLAZA.RING_NUDGE, gap: PLAZA.RING_COLLIDER_GAP, hutMin: PLAZA.RING_HUT_GAP, rotOf: armCampfire });
+    }
+    // One lantern beside the vendor stall, one beside the tattooist: on the side facing the plaza, or the other side when
+    // that one is on a route.
+    const stallRef = [[props.find((q) => q.kind === 'stall'), PLAZA.STALL_LANTERN_SIDE], [{ ...P(L.tattoo), rot: PLAZA.TATTOO_ROT }, PLAZA.TATTOO_LANTERN_SIDE]]; // the tattooist faces TATTOO_ROT
+    for (const [c, off] of stallRef) {
+      const toFire = (e) => { const w = toWorld(e.u, e.v); return Math.hypot(w.x - campfireAt.x, w.z - campfireAt.z); };
+      const spots = [off, -off].map((o) => toUV(c.x + Math.cos(c.rot) * o, c.z - Math.sin(c.rot) * o)).sort((p, q) => toFire(p) - toFire(q));
+      for (const sp of spots) if (dress('lantern', sp.u - L.village[0], sp.v - L.village[1], { r: PLAZA.LANTERN_R }, { max: PLAZA.STALL_LANTERN_NUDGE, rotOf: armCampfire })) break;
+    }
+    // Fence runs of FENCE_SEGMENTS segments, end to end along the u or v axis. A run slides up to FENCE_SLIDE along the
+    // plaza edge (any direction) when it would touch a hut or come too close to a waypoint, a bot line or the path.
+    // Each segment gets three footprint circles along its axis, appended right after its prop.
+    const fenceRun = (du0, dv0, along) => {
+      const dir = along === 'v' ? [0, 1] : [1, 0], len = PLAZA.FENCE_LEN, n = PLAZA.FENCE_SEGMENTS;
+      for (const [a, b] of nudges(PLAZA.FENCE_SLIDE)) {
+        const centres = Array.from({ length: n }, (_, i) => V(du0 + a + dir[0] * len * i, dv0 + b + dir[1] * len * i));
+        const ends = [V(du0 + a - dir[0] * len / 2, dv0 + b - dir[1] * len / 2), V(du0 + a + dir[0] * (len * n - len / 2), dv0 + b + dir[1] * (len * n - len / 2))];
+        let ok = true;
+        for (let s = 0; s <= 12 && ok; s++) {
+          const t = s / 12, x = ends[0].x + (ends[1].x - ends[0].x) * t, z = ends[0].z + (ends[1].z - ends[0].z) * t;
+          if (hutGap(x, z) < PLAZA.FENCE_HUT_GAP || !routeClear(x, z, PLAZA.FENCE_R, PLAZA.ROUTE_GAP, botPairs)) ok = false;
+        }
+        if (!ok) continue;
+        const rot = Math.atan2(-(ends[1].z - ends[0].z), ends[1].x - ends[0].x);
+        const ax = Math.cos(rot), az = -Math.sin(rot); // the segment axis in world space (local +x under rotation.y = rot)
+        for (const c of centres) {
+          addProp('fence', c.x, c.z, { r: 0, rot, v: 0.5 });
+          for (const k of [-1, 0, 1]) colliders.push({ x: c.x + ax * k * PLAZA.FENCE_FOOT_STEP, z: c.z + az * k * PLAZA.FENCE_FOOT_STEP, r: PLAZA.FENCE_R });
+        }
+        return;
+      }
+    };
+    fenceRun(...PLAZA.FENCE_EAST);
+    fenceRun(...PLAZA.FENCE_NORTH);
+    dress('board', PLAZA.BOARD_AT[0], PLAZA.BOARD_AT[1], { r: PLAZA.BOARD_R });
+    for (const [du, dv] of PLAZA.PLANTERS_AT) dress('planter', du, dv, { r: PLAZA.PLANTER_R });
+    dress('stallTarp', PLAZA.TARP_AT[0], PLAZA.TARP_AT[1], { r: PLAZA.TARP_R });
+    for (const [du, dv, rot] of PLAZA.CRATES_AT) dress('crate', du, dv, { r: PLAZA.CRATE_R, rot }, { routeGap: PLAZA.CRATE_ROUTE_GAP });
+  }
+
   // Static collider spatial hash.
   const CELL = 4;
   const grid = new Map();
@@ -600,10 +735,6 @@ export function generateWorld(seed) {
     // No look of her own yet: she wears the vendor's (no spare NPC skin). Facing the walk up from the beach.
     { id: 'tattoo', name: 'Doña Sepia', title: 'Tatuadora', skin: 15, ...P(L.tattoo), facing: 1.1 },
   ];
-  const botWaypoints = [
-    [-100, 2], [-108, -10], [-92, -14], [-94, 6], [-112, 4], [-122, 10], [-128, 0], [-118, 18],
-    [-86, -2], [-104, 14], [-136, 6], [-90, 10],
-  ].map(P);
 
   // Respawn checkpoints: the last one you reached (by zone) is where you wake up after falling.
   const checkpoints = {

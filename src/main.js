@@ -165,6 +165,8 @@ async function boot() {
 
   // The GPU's name and class, read once: AUTO starts a strong one on Ultra, and the settings show it.
   const gpu = safe('gpu', () => gpuInfo(world.renderer, isTouch)) || { name: '', tier: 'mid' };
+  // ?dof=0 turns the depth of field off, ?dof=1 forces it on (even on medium); absent: the tier decides.
+  if (params.has('dof')) world.pipeline.dof.force = Math.max(0, +params.get('dof') || 0);
   const quality = new Quality((cfg) => world.applyQuality(cfg), settings.quality, isTouch, gpu.tier);
   // Comic hits (impact frames, speed lines, onomatopoeia): Ultra only, and the player can turn them off.
   comic.configure({ pipeline: world.pipeline, camera: world.camera, worldUI, settings, isOn: () => quality.current === 'ultra' && settings.comicFx !== false });
@@ -1838,7 +1840,7 @@ async function boot() {
       return views.map((v) => ({ look: v.look.name, ext: v.ext ? v.ext.id : null, height: +v.height.toFixed(2) }));
     };
     // Bloom debug views: __mn.view('bloom') (bloom only), __mn.view('glow') (glow mask), __mn.view() (normal).
-    window.__mn.view = (v) => { world.pipeline.view = { bloom: 1, glow: 2 }[v] || 0; return world.pipeline.view; };
+    window.__mn.view = (v) => { world.pipeline.view = { bloom: 1, glow: 2, coc: 3 }[v] || 0; return world.pipeline.view; };
     // Freeze-frame FX check for screenshots at low frame rates.
     window.__mn.fxTest = () => {
       const v = views.get(client.youServer);

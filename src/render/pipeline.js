@@ -5,6 +5,8 @@
 //   4 half-res copy of rtPost                 → rtRefract   (what the water refracts)
 //   5 water (refraction, absorption, foam)    → rtPost      (manual depth test vs rtNormal)
 //   6 FX layer with soft depth                → rtPost
+//  6b depth of field (high/ultra only): CoC + ½ downsample → rtDofA, blur H → rtDofB, V → rtDofA,
+//     full-res composite of rtPost and the blur → rtDof (bloom and the final pass then read rtDof)
 //   7 bloom: extract glow (½) → down ¼ ⅛ 1/16 → up back to ½ (additive)
 //   8 bloom + grading (contrast, split tone) + AA + dither → screen
 // Low: opaque → screen, cheap alpha water (heightmap depth) → screen, FX → screen (no grading, no bloom).
@@ -19,6 +21,20 @@ import { tuning } from '../data/tuning.js';
 import { worldNormalMat } from './toon.js';
 
 export const LAYER = { WORLD: 0, FX: 1, NO_OUTLINE: 2, WATER: 3 };
+
+// Depth of field: the HD-2D diorama / tilt-shift look (high and ultra; quality.js `dof` is the tier strength).
+// Distances are view depths in world units; the focus is the camera rig's distance (scene.js sets
+// pipeline.dof.focus every frame). Read every frame: tweak live through window.__mn.world.pipeline.dofCfg.
+const DOF = {
+  range: 3.5, // half-width of the sharp band around the focus distance (about +-5 u of ground at the 48 deg pitch)
+  falloffFar: 8, // behind the band: depth over which the blur ramps up to full (background)
+  falloffNear: 4, // in front of the band: the same toward the camera (foreground)
+  tilt: 1, // tilt-shift floor: blur toward the top and bottom of the screen whatever the depth
+  tiltStart: 0.2, tiltEnd: 0.5, // the tilt ramps from 0 to `tilt` between these distances (screen heights) off the centre line
+  maxBlurPx: 10, // blur reach at full CoC, in half-res pixels of a 900-px-tall canvas (scaled with the screen height)
+  blend: 2.5, // composite weight of the blurred image = min(1, CoC x blend): 1 is a linear mix (a half-sharp double image
+  // in the ramp); 2.5 lets the blur take over from CoC 0.4, where its reach (4 half-res px) already hides the sharp edge
+};
 
 // Shared uniforms for FX materials (soft particles against the scene depth).
 export const FXU = {
@@ -175,6 +191,78 @@ void main() {
 }
 `;
 
+// Depth of field. Circle of confusion 0..1 from the opaque scene depth (linearised like the outline pass' linD):
+// distance outside the sharp band on each side, floored by the tilt-shift ramp toward the top and bottom edges.
+// The sky (depth 1 = far) blurs fully. Shared by the downsample and the composite (same uniform objects).
+const DOF_COC = /* glsl */ `
+#include <packing>
+uniform sampler2D tDepth;
+uniform float uNear, uFar, uFocus, uRange, uFallNear, uFallFar, uTilt, uTiltA, uTiltB;
+float dofCoc(vec2 uv) {
+  float d = -perspectiveDepthToViewZ(texture2D(tDepth, uv).r, uNear, uFar) - uFocus;
+  float c = d > 0.0 ? smoothstep(0.0, uFallFar, d - uRange) : smoothstep(0.0, uFallNear, -d - uRange);
+  return max(c, uTilt * smoothstep(uTiltA, uTiltB, abs(uv.y - 0.5)));
+}
+`;
+// A: half-res downsample (4 bilinear taps one full-res texel out: a 4x4 box) with the footprint's mean CoC in alpha.
+const DOF_DOWN = /* glsl */ `
+${DOF_COC}
+uniform sampler2D tColor;
+uniform vec2 uOff;
+varying vec2 vUv;
+void main() {
+  vec2 a = vUv - uOff, b = vUv + vec2(uOff.x, -uOff.y), c = vUv + vec2(-uOff.x, uOff.y), d = vUv + uOff;
+  vec3 col = (texture2D(tColor, a).rgb + texture2D(tColor, b).rgb + texture2D(tColor, c).rgb + texture2D(tColor, d).rgb) * 0.25;
+  gl_FragColor = vec4(col, (dofCoc(a) + dofCoc(b) + dofCoc(c) + dofCoc(d)) * 0.25);
+  #include <colorspace_fragment>
+}
+`;
+// B / C: separable gather blur, 13 taps along uDir, reach = centre CoC x uRadius, Gaussian falloff. A tap counts
+// min(1, its CoC / the centre's + 0.2): sharp in-focus pixels barely bleed into the blurred background around them.
+// The centre CoC passes through in alpha (the second axis weighs by the same CoC).
+const DOF_BLUR = /* glsl */ `
+uniform sampler2D tInput;
+uniform vec2 uDir;
+uniform float uRadius;
+varying vec2 vUv;
+const int TAPS = 6;
+void main() {
+  vec4 c = texture2D(tInput, vUv);
+  float r = c.a * uRadius;
+  if (r < 0.5) { gl_FragColor = c; return; }
+  vec2 stp = uDir * (r / float(TAPS));
+  float inv = 1.0 / max(c.a, 0.05);
+  vec3 sum = c.rgb;
+  float wsum = 1.0;
+  for (int i = 1; i <= TAPS; i++) {
+    float x = float(i) / float(TAPS);
+    float g = exp(-2.0 * x * x);
+    vec4 p = texture2D(tInput, vUv + stp * float(i));
+    vec4 n = texture2D(tInput, vUv - stp * float(i));
+    float wp = g * min(1.0, p.a * inv + 0.2), wn = g * min(1.0, n.a * inv + 0.2);
+    sum += p.rgb * wp + n.rgb * wn;
+    wsum += wp + wn;
+  }
+  gl_FragColor = vec4(sum / wsum, c.a);
+}
+`;
+// D: full-res composite. The CoC is recomputed per pixel from depth (a crisp band edge, ink stays sharp in focus);
+// alpha is rtPost's, so the glow mask the bloom reads is untouched. Debug view 3 writes the CoC as grayscale.
+const DOF_COMPOSITE = /* glsl */ `
+${DOF_COC}
+uniform sampler2D tColor;
+uniform sampler2D tBlur;
+uniform int uView;
+uniform float uBlend;
+varying vec2 vUv;
+void main() {
+  vec4 src = texture2D(tColor, vUv);
+  float coc = dofCoc(vUv);
+  gl_FragColor = uView == 3 ? vec4(vec3(coc), 1.0) : vec4(mix(src.rgb, texture2D(tBlur, vUv).rgb, min(1.0, coc * uBlend)), src.a);
+  #include <colorspace_fragment>
+}
+`;
+
 // Final: bloom, grading (S-curve contrast, split toning, saturation, vignette, danger, capped screen flash,
 // slow-mo chroma) and
 // FXAA (medium) or bilinear downsample of the supersampled buffer (high), + output color space.
@@ -224,6 +312,7 @@ void main() {
   vec3 bloom = texture2D(tBloom, vUv).rgb * uBloom * 0.2; // levels summed: a uniform glowing area gains ~uBloom×
   if (uView == 1) { gl_FragColor = vec4(bloom, 1.0); return; }
   if (uView == 2) { gl_FragColor = vec4(vec3(1.0 - texture2D(tInput, vUv).a), 1.0); return; }
+  if (uView == 3) { gl_FragColor = vec4(texture2D(tInput, vUv).rgb, 1.0); return; } // DOF CoC (written by the DOF composite)
   col += bloom;
   // Grade in a perceptual (≈ gamma 2) space: S-curve contrast, then shadows toward one hue and
   // highlights toward another (luma-neutral tints), then saturation.
@@ -308,7 +397,7 @@ export class Pipeline {
       vignette: 0.22, sat: 1.07, chroma: 0, danger: 0, flash: 0, flashColor: new THREE.Color(1, 1, 1),
       contrast: 0, split: 0, splitShadow: new THREE.Color(0x5a4aa0), splitHigh: new THREE.Color(0xffd9a0), bloom: 0,
     };
-    this.view = 0; // debug: 1 = bloom only, 2 = glow mask
+    this.view = 0; // debug: 1 = bloom only, 2 = glow mask, 3 = depth-of-field CoC
     this.fxHeight = 1; // pixel height of the target FX draw into (point sprite scale)
 
     this.rtMain = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: true });
@@ -364,10 +453,49 @@ export class Pipeline {
     FXU.uDepth.value = this.rtNormal.depthTexture;
     WATERU.tSceneDepth.value = this.rtNormal.depthTexture;
     WATERU.tRefract.value = this.rtRefract.texture;
+    // Depth of field. focus (view depth, world units) and enabled are set by the scene every frame; force is the
+    // URL's ?dof= strength (null = the tier's). Targets and materials exist only while the strength is above 0.
+    this.dof = { focus: 20, enabled: true, force: null };
+    this.dofCfg = DOF;
+    this.dofStrength = 0;
+    this.dofActive = false; // the last frame drew the DOF passes (QA stat)
+    this.rtDof = this.rtDofA = this.rtDofB = null;
+  }
+
+  // Creates the DOF targets (full res + two half res) and, once, its materials; frees the targets when off.
+  setupDof(on) {
+    if (!on) {
+      if (this.rtDof) for (const rt of [this.rtDof, this.rtDofA, this.rtDofB]) rt.dispose();
+      this.rtDof = this.rtDofA = this.rtDofB = null;
+      this.dofActive = false;
+      return;
+    }
+    if (this.rtDof) return;
+    const target = () => {
+      const rt = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false });
+      rt.texture.colorSpace = THREE.SRGBColorSpace;
+      return rt;
+    };
+    this.rtDof = target(); this.rtDofA = target(); this.rtDofB = target();
+    if (this.dofDown) return;
+    const coc = {
+      tDepth: { value: this.rtNormal.depthTexture }, uNear: { value: 0.5 }, uFar: { value: 1400 }, uFocus: { value: 20 },
+      uRange: { value: DOF.range }, uFallNear: { value: DOF.falloffNear }, uFallFar: { value: DOF.falloffFar },
+      uTilt: { value: DOF.tilt }, uTiltA: { value: DOF.tiltStart }, uTiltB: { value: DOF.tiltEnd },
+    };
+    this.dofU = coc; // shared by the downsample and the composite
+    const dm = (frag, uniforms) => new THREE.ShaderMaterial({ uniforms, vertexShader: FS_QUAD_VERT, fragmentShader: frag, depthTest: false, depthWrite: false });
+    this.dofDown = dm(DOF_DOWN, { ...coc, tColor: { value: this.rtPost.texture }, uOff: { value: new THREE.Vector2() } });
+    this.dofBlur = dm(DOF_BLUR, { tInput: { value: null }, uDir: { value: new THREE.Vector2() }, uRadius: { value: 0 } });
+    this.dofComp = dm(DOF_COMPOSITE, { ...coc, tColor: { value: this.rtPost.texture }, tBlur: { value: null }, uView: { value: 0 }, uBlend: { value: DOF.blend } });
+    this.dofQuad = fsQuad(this.dofDown);
   }
 
   setQuality(q) {
     Object.assign(this.q, q);
+    const f = this.dof.force;
+    this.dofStrength = this.q.outlines ? (f ?? this.q.dof ?? 0) : 0; // needs the outlined pipeline (scene depth, rtPost)
+    this.setupDof(this.dofStrength > 0);
     // Ultra inks bolder: creases 0.5 -> 0.7 and the world's lines hold out to 140 / 320 u instead of 90 / 210.
     const ultra = this.q.comic > 0, cu = this.composite.uniforms;
     cu.uCreaseW.value = ultra ? 0.7 : 0.5;
@@ -398,6 +526,12 @@ export class Pipeline {
     }
     this.rtPost.setSize(sw, sh);
     this.rtRefract.setSize(Math.max(1, sw >> 1), Math.max(1, sh >> 1));
+    if (this.rtDof) {
+      this.rtDof.setSize(sw, sh);
+      this.rtDofA.setSize(Math.max(1, sw >> 1), Math.max(1, sh >> 1));
+      this.rtDofB.setSize(Math.max(1, sw >> 1), Math.max(1, sh >> 1));
+      this.dofDown.uniforms.uOff.value.set(1 / sw, 1 / sh);
+    }
     this.composite.uniforms.uTexel.value.set(1 / sw, 1 / sh);
     // Outline thickness scales with resolution so it reads the same on 720p and 4K.
     this.composite.uniforms.uThick.value = Math.max(1, Math.round((sh / 1080) * 2.2 * 10) / 10) * (this.q.outlineMul || 1);
@@ -523,6 +657,13 @@ export class Pipeline {
     r.render(scene, cam);
     r.autoClear = true;
 
+    // 6b) Depth of field (high / ultra) into rtDof; rtPost is left as it is. Bloom and the final pass read rtDof.
+    this.dofActive = !!this.rtDof && this.dof.enabled;
+    if (this.dofActive) this.renderDof();
+    const src = this.dofActive ? this.rtDof : this.rtPost;
+    this.bloomExtract.uniforms.tInput.value = src.texture;
+    this.final.uniforms.tInput.value = src.texture;
+
     // 7) Bloom.
     const g = this.grading;
     const bloomOn = g.bloom > 0.005 || this.view === 1;
@@ -543,6 +684,27 @@ export class Pipeline {
     r.setRenderTarget(null);
     r.render(this.finalQuad.scene, this.quadCam);
     worldLayers();
+  }
+
+  // Depth of field: CoC + half-res downsample, horizontal and vertical gather blur, full-res composite.
+  renderDof() {
+    const r = this.renderer, q = this.dofQuad, cfg = this.dofCfg, u = this.dofU, cam = this.camera;
+    const pass = (mat, target) => { q.mesh.material = mat; r.setRenderTarget(target); r.render(q.scene, this.quadCam); };
+    u.uNear.value = cam.near; u.uFar.value = cam.far; u.uFocus.value = this.dof.focus;
+    u.uRange.value = cfg.range; u.uFallNear.value = cfg.falloffNear; u.uFallFar.value = cfg.falloffFar;
+    u.uTilt.value = cfg.tilt; u.uTiltA.value = cfg.tiltStart; u.uTiltB.value = cfg.tiltEnd;
+    const a = this.rtDofA, b = this.rtDofB, bu = this.dofBlur.uniforms;
+    r.autoClear = true;
+    pass(this.dofDown, a);
+    // Reach in half-res texels: maxBlurPx at a 900-px-tall canvas (450 half-res rows), the same screen fraction at any size.
+    bu.uRadius.value = cfg.maxBlurPx * this.dofStrength * (a.height / 450);
+    bu.tInput.value = a.texture; bu.uDir.value.set(1 / a.width, 0);
+    pass(this.dofBlur, b);
+    bu.tInput.value = b.texture; bu.uDir.value.set(0, 1 / b.height);
+    pass(this.dofBlur, a);
+    const cu = this.dofComp.uniforms;
+    cu.tBlur.value = a.texture; cu.uView.value = this.view; cu.uBlend.value = cfg.blend;
+    pass(this.dofComp, this.rtDof);
   }
 
   renderBloom() {

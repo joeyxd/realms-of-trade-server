@@ -66,7 +66,7 @@ export class Effects {
     this.ringCursor = 0;
     this.fires = [];
     for (const p of map.props) {
-      const f = { acc: 0, sparkAcc: Math.random(), smokeAcc: Math.random() };
+      const f = { acc: 0, sparkAcc: Math.random(), smokeAcc: Math.random(), emberAcc: 0 };
       if (p.kind === 'brazier') this.fires.push({ ...f, x: p.x, y: p.y + 1.15, z: p.z, kind: 'brazier' });
       if (p.kind === 'campfire') this.fires.push({ ...f, x: p.x, y: p.y + 0.25, z: p.z, kind: 'campfire' });
       if (p.kind === 'gatePost') this.fires.push({ ...f, x: p.x, y: p.y + 4.9, z: p.z, kind: 'brazier' });
@@ -78,6 +78,8 @@ export class Effects {
     this.arenaR = map.landmarks.arenaR;
     this.emberAcc = 0;
     this.ashAcc = 0;
+    this.fireflyAcc = 0;
+    this.mistAcc = 0;
     this.time = 0;
     this.focus = new THREE.Vector3();
   }
@@ -188,13 +190,24 @@ export class Effects {
           { life: 0.45 + R() * 0.3, size: camp ? 1.35 : 1.1, size1: 0.2, color: R() < 0.5 ? [1, 0.36, 0.05] : [1, 0.62, 0.14], alpha: 0.9, gravity: -0.8, drag: 1.2, shape: SHAPE.GLOW });
       }
       // Sparks: pop out of the flames and wander up, trailing and cooling from yellow to red.
-      f.sparkAcc += dt * (camp ? 5 : 3.5);
+      f.sparkAcc += dt * (camp ? 8 : 3.5);
       while (f.sparkAcc >= 1) {
         f.sparkAcc -= 1;
         const a = R() * Math.PI * 2, s = 0.3 + R() * 0.6;
         this.streaks.spawn(f.x + Math.cos(a) * 0.2, f.y + 0.3, f.z + Math.sin(a) * 0.2, Math.cos(a) * s, 2.4 + R() * 2.2, Math.sin(a) * s,
           { life: 0.9 + R() * 0.9, width: 0.08 + R() * 0.04, stretch: 0.08, color: [1, 0.66, 0.25], color1: [0.95, 0.22, 0.04], gravity: -0.3, drag: 0.9, turb: 2.2 });
       }
+      if (camp && this.night > 0.35) {
+        f.emberAcc += dt * 2.5;
+        while (f.emberAcc >= 1) {
+          f.emberAcc -= 1;
+          const a = R() * Math.PI * 2, s = 0.08 + R() * 0.17;
+          this.add.spawn(f.x + (R() - 0.5) * 0.2, f.y + 0.25, f.z + (R() - 0.5) * 0.2,
+            Math.cos(a) * s, 0.6 + R() * 0.5, Math.sin(a) * s,
+            { life: 2.5 + R() * 1.5, size: 0.06 + R() * 0.04, color: [1, 0.60, 0.23], alpha: 0.9,
+              gravity: 0, drag: 0.45, shape: SHAPE.GLOW, turb: 0.65 });
+        }
+      } else f.emberAcc = 0;
       // Smoke: soft wisps, warm underneath (heat + the fire's own light), dark as they rise.
       f.smokeAcc += dt * (camp ? 3 : 2.2);
       while (f.smokeAcc >= 1) {
@@ -203,6 +216,37 @@ export class Effects {
           { life: 3 + R() * 1.2, size: 0.45, size1: 2.3, color: [0.4, 0.38, 0.4], alpha: 0.32, gravity: -0.05, drag: 0.35, shape: SHAPE.WISP, turb: 0.35, heat: 0.6 });
       }
     }
+    // Night fireflies drift around the player; the additive pool applies the active quality budget.
+    if (this.night > 0.35) {
+      this.fireflyAcc += dt * 3 * this.night;
+      while (this.fireflyAcc >= 1) {
+        this.fireflyAcc -= 1;
+        const a = R() * Math.PI * 2, d = Math.sqrt(25 + R() * (26 * 26 - 25));
+        const speed = 0.15 + R() * 0.3, tint = R() * 0.22;
+        this.add.spawn(focus.x + Math.cos(a) * d, focus.y + 0.5 + R() * 1.7, focus.z + Math.sin(a) * d,
+          Math.cos(a) * speed, -0.1 + R() * 0.3, Math.sin(a) * speed,
+          { life: 3 + R() * 2.5, size: 0.1 + R() * 0.08, size1: 0.045,
+            color: [0.839 + 0.161 * tint, 1 - 0.122 * tint, 0.478 + 0.063 * tint],
+            alpha: 0.9, gravity: 0, drag: 0.65, shape: SHAPE.GLOW, turb: 0.45 });
+      }
+    } else this.fireflyAcc = 0;
+    // Ground mist stays over land and outside the Caldera, where volcanic ash owns the atmosphere.
+    if (this.night > 0.35 && !near(this.arena, this.arenaR + 22)) {
+      this.mistAcc += dt * 1.6 * this.night;
+      while (this.mistAcc >= 1) {
+        this.mistAcc -= 1;
+        const a = R() * Math.PI * 2, d = Math.sqrt(16 + R() * (22 * 22 - 16));
+        const x = focus.x + Math.cos(a) * d, z = focus.z + Math.sin(a) * d;
+        if (this.map.heightAt(x, z) <= 0) continue;
+        const drift = 0.08 + R() * 0.12, dir = R() * Math.PI * 2;
+        const size = 2.6 + R() * 1.6;
+        this.alpha.spawn(x, this.map.groundAt(x, z) + 0.15 + R() * 0.35, z,
+          Math.cos(dir) * drift, 0, Math.sin(dir) * drift,
+          { life: 6 + R() * 3, size, size1: size * 1.4,
+            color: [0.549, 0.608, 0.753], alpha: 0.055 + R() * 0.025,
+            gravity: 0, drag: 0.12, shape: SHAPE.WISP, turb: 0.12 });
+      }
+    } else this.mistAcc = 0;
     // Volcano: crater glow puffs + slow smoke plume, lit from below by the crater (visible from far away).
     const v = this.volcano;
     v.acc += dt * 10;

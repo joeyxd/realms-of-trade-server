@@ -34,13 +34,16 @@ function oldHeightAt(x, z) {
 
 test('revamp keeps the full seed baseline placement and gameplay landmarks intact', () => {
   const map = generateWorld(seed);
-  assert.equal(map.props.length, 1259);
-  assert.deepEqual(withoutY(map.props), withoutY(baseline.props));
-  for (const key of ['colliders', 'npcs', 'enemySpawns', 'racks', 'checkpoints', 'dock', 'landmarks', 'cala'])
+  // The night plaza dressing (T-1018-20: 4 lantern posts + 2 beside the stalls, 6 fence segments, a board, 4 planters,
+  // a tarp stall, 2 crates) is appended after every baseline prop and collider, so the baseline stays an exact prefix.
+  assert.equal(map.props.length, 1259 + 20);
+  assert.deepEqual(withoutY(map.props.slice(0, baseline.props.length)), withoutY(baseline.props));
+  assert.deepEqual(map.colliders.slice(0, baseline.colliders.length), baseline.colliders, 'colliders changed during terrain-only pass');
+  for (const key of ['npcs', 'enemySpawns', 'racks', 'checkpoints', 'dock', 'landmarks', 'cala'])
     assert.deepEqual(map[key], baseline[key], `${key} changed during terrain-only pass`);
 
   const byKind = new Map();
-  for (const p of map.props) {
+  for (const p of map.props.slice(0, baseline.props.length)) {
     if (['ship', 'float', 'dockPost'].includes(p.kind) || map.onDock(p.x, p.z)
       || p.y === map.dock.deckY + 0.62) continue;
     const prior = baseline.props[map.props.indexOf(p)];

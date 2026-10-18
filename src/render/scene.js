@@ -152,7 +152,7 @@ export class GameScene {
 
   applyQuality(cfg) {
     this.qcfg = cfg;
-    this.pipeline.setQuality({ pixelRatio: cfg.pixelRatio, ss: cfg.ss, outlines: cfg.outlines, fxaa: cfg.fxaa, comic: cfg.comic ?? 0, outlineMul: cfg.outlineMul ?? 1 });
+    this.pipeline.setQuality({ pixelRatio: cfg.pixelRatio, ss: cfg.ss, outlines: cfg.outlines, fxaa: cfg.fxaa, comic: cfg.comic ?? 0, outlineMul: cfg.outlineMul ?? 1, dof: cfg.dof ?? 0 });
     this.lighting.setShadowSize(cfg.shadow);
     this.effects.setQuality(cfg.particles, cfg.outlines);
     this.footprints.setQuality(cfg.particles, globalThis.matchMedia?.('(pointer: coarse)')?.matches === true);
@@ -297,6 +297,11 @@ export class GameScene {
     if (this.rafts.setInterior(ctx.shelterId ?? null)) this.pipeline.markDirty();
     U.mnTime.value = this.time;
     this.pipeline.update(dt);
+    // Depth of field: focus at the rig's distance (the player); under the naval chase camera (not the rig) at the
+    // focus point's view depth; off on the title orbit.
+    const dof = this.pipeline.dof;
+    dof.enabled = !!ctx.playing;
+    dof.focus = ctx.naval ? -this.tmpV.copy(ctx.focus).applyMatrix4(this.camera.matrixWorldInverse).z : this.rig.dist;
     this.focus.copy(ctx.focus);
     this.grass.update(ctx.focus);
     this.beachDebris.update(ctx.focus);
@@ -381,6 +386,8 @@ export class GameScene {
   applyPreset(p) {
     const k = this.lights.knobs;
     k.fire = p.fire; k.lava = p.lavaLight; k.night = p.windows; k.eyes = 0.4 + 0.6 * p.fire;
+    U.mnLightSoft.value = p.lightSoft;
+    U.mnLightBounce.value = p.lightBounce;
     WATER_LIGHT.uWaterLight.value.copy(p.water);
     WATER_LIGHT.uSparkle.value = p.sparkle;
     WATER_LIGHT.uFoamLight.value = p.foam;
@@ -396,7 +403,8 @@ export class GameScene {
     if (gm) {
       const lit = Math.min(1, p.fire * 1.5);
       gm.color.copy(this.glassDay).lerp(this.glassLit, lit);
-      gm.userData.glow.value = p.fire;
+      // Up to 1.3x brighter halo at full night (p.fire 1); unchanged by day.
+      gm.userData.glow.value = p.fire * (1 + 0.3 * Math.max(0, (p.fire - 0.3) / 0.7));
     }
     FXU.uFxLight.value.copy(p.fxLight);
     this.effects.setNight((p.fire - 0.3) / 0.7);

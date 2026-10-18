@@ -1,5 +1,27 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**VR01, 2026-10-18 — revamp visual de la aldea de noche (luz, vestido, hierba, atmósfera, DOF), alpha.72/protocolo 62:**
+Objetivo: la plaza de Salty Shore de noche como el diorama de referencia (`docs/art/night-village-revamp/`), sin perder el
+toon, la tinta ni la mecánica de oscuridad. Luz (`lighting.js`, `lights.js`, `toon.js`): charcos suaves con rebote
+(`mnLightSoft`/`mnLightBounce`), preset `night` con relleno azul marino (hemi 1.7, split 0.4 con sombras 0x1c2452,
+sat 0.88, lightSoft 0.5, lightBounce 0.1) y radios cortos (linterna i 2.4 r 5.5, hoguera i 3.2 r 6.5, ventana r 6);
+el dorado baja a lightSoft 0.45 / lightBounce 0.08 para mantener el orden día < dorado < noche de `tests/fx.test.mjs`.
+Vestido de plaza (`worldgen.js` bloque `PLAZA`, `props.js` kits fence/board/planter/stallTarp): 20 props anexados tras
+la línea base (1259 + 20) con 32 colisionadores (18 pies de valla), rutas de bots respetadas por tramos (`routeClear`),
+`tests/map-revamp.test.mjs` fija el prefijo. Hierba de borde (`grassPlacement.js`, `shrubPlacement.js`, presupuestos
+1000/520/160, `tests/grass-placement.test.mjs`). Atmósfera (`vfx/effects.js`): luciérnagas, niebla baja y ascuas con
+puerta de noche. Profundidad de campo (`pipeline.js` paso 6b, solo alto/ultra, `quality.js` campo `dof`): CoC desde la
+profundidad de `rtNormal` con foco en `rig.dist`, banda nítida ±3.5 u (caída 4 delante / 8 detrás), tilt-shift 0.2–0.5
+de pantalla, blur separable a media resolución (13 taps, pesado por CoC), composición a resolución completa con el alfa
+de `rtPost` intacto (la máscara de brillo del bloom sobrevive); `?dof=0|1`, vista de depuración `__mn.view('coc')`,
+`tests/quality-dof.test.mjs`. Harness: `node tools/shot.mjs <dir> --scenario=village-night --quality=high [--dof=0]`
+(pasa el diálogo de personajes, anula `lighting.setGameplay`, imprime JSON con sunI, hemi, dof y luces; 3,5 min bajo
+SwiftShader); `tools/qa-night-village.mjs` admite `VARIANTS` para comparar presets en una sola sesión. Gate 29 ficheros
+202/202; capturas fuera de git (`shots/`). Pendiente: MAX_LIGHTS 12 descarta la linterna del puesto y 3 ventanas en la
+plaza; los shaders del DOF compilan en el primer fotograma (un tirón: añadirlos al calentamiento de `scene.js`); exportar
+los 10 GLB del estudio Tripo (T-1018-19) y meterlos con `prep-asset.mjs`; sombreador de losas (`terrain.js:117-128`);
+agua y materiales de la tabla de referencia.
+
 **AS02, 2026-10-18 — barril de ron Tripo, alpha.71/protocolo 62:**
 El barril procedural se sustituye por el GLB de Tripo `prop-rum-barrel-v1` (1867 tris, textura 512 PC / 256 móvil)
 vía `assets/manifest.json` (`prop:barrel`, `mobileSrc`); fila `barril` del catálogo actualizada, fuentes en

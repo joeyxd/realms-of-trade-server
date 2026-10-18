@@ -282,6 +282,67 @@ function flagPoleGeo() {
   ]);
 }
 
+// Night plaza dressing (T-1018-20). Procedural stand-ins sized for the Tripo models that will replace them through the
+// asset manifest (the model is fitted to this kit's bounding box): fence 2.0 x 1.0 x 0.14, board 1.4 x 1.9, planter
+// 0.7 x 0.9, stallTarp 2.8 x 2.5 x 1.8. Origin at the base centre; the front of board and stallTarp is +z, a fence runs along x.
+// One fence segment: two square posts, two rails and a diagonal brace, 2.0 u long, 1.0 u high, 0.14 u thick.
+function fenceGeo() {
+  const L = [];
+  for (const x of [-0.93, 0.93]) L.push(part(rbox(0.14, 1.0, 0.14, 0.02), WOOD_D, { pos: [x, 0.5, 0] }));
+  for (const y of [0.34, 0.74]) L.push(part(rbox(1.86, 0.09, 0.05, 0.012), WOOD, { pos: [0, y, 0] }));
+  const run = 1.72, rise = 0.4;
+  L.push(part(bbox(Math.hypot(run, rise), 0.07, 0.04), WOOD_L, { pos: [0, 0.54, 0.045], rot: [0, 0, Math.atan2(rise, run)] }));
+  return merge(L);
+}
+
+// Notice board: two posts, a plank panel with pinned notes and a small slanted roof cap, 1.4 u wide and 1.9 u tall.
+function boardGeo() {
+  const L = [];
+  for (const x of [-0.6, 0.6]) L.push(part(cyl(0.07, 0.085, 1.78, 6), WOOD_D, { pos: [x, 0.89, 0] }));
+  L.push(part(rbox(1.24, 0.92, 0.08, 0.02), WOOD, { pos: [0, 1.22, 0] }));
+  L.push(part(rbox(1.3, 0.08, 0.1, 0.02), WOOD_D, { pos: [0, 0.7, 0.01] })); // ledge under the panel
+  for (const [x, y, w, h, c] of [[-0.38, 1.38, 0.3, 0.36, 0xe8dcc0], [0.04, 1.26, 0.28, 0.34, 0xd9c9a0], [0.4, 1.4, 0.26, 0.3, 0xf0e6cc], [-0.12, 1.02, 0.34, 0.2, 0xb8352c], [0.36, 1.04, 0.24, 0.22, 0xe8dcc0]]) {
+    L.push(part(bbox(w, h, 0.015), c, { pos: [x, y, 0.05], rot: [0, 0, (x * 7) % 0.2 - 0.1] }));
+  }
+  L.push(part(rbox(1.4, 0.07, 0.46, 0.02), WOOD_D, { pos: [0, 1.84, 0.04], rot: [0.2, 0, 0] })); // roof cap, higher at the back
+  return merge(L);
+}
+
+// Planter: a clay pot 0.6 u wide and 0.5 u tall under a rounded green bush 0.7 u wide (0.9 u in all).
+function planterGeo() {
+  const CLAY = 0xb5643c, CLAY_D = 0x8f4a2a;
+  return merge([
+    part(cyl(0.3, 0.22, 0.46, 10), CLAY, { pos: [0, 0.23, 0] }),
+    part(cyl(0.3, 0.3, 0.07, 10), CLAY_D, { pos: [0, 0.465, 0] }),
+    part(sphere(0.3, 8, 6), 0x4f9a3a, { pos: [0, 0.6, 0], scale: [1.15, 1, 1.15] }),
+    part(sphere(0.2, 7, 5), 0x68b047, { pos: [-0.12, 0.74, 0.05] }),
+    part(sphere(0.18, 7, 5), 0x3f8230, { pos: [0.13, 0.7, -0.08] }),
+    part(sphere(0.05, 5, 4), 0xe8463c, { pos: [0.2, 0.84, 0.16] }),
+    part(sphere(0.05, 5, 4), 0xffd166, { pos: [-0.22, 0.8, -0.14] }),
+  ]);
+}
+
+// Market stall under a blue tarp: a 2.4 x 1.2 x 0.9 u table, four 2.4 u poles and a 2.8 x 1.8 u roof that sags in the middle.
+// Front is +z.
+function stallTarpGeo() {
+  const BLUE = 0x2f6fb5, BLUE_D = 0x24558f;
+  const L = [part(rbox(2.4, 0.1, 1.2, 0.03), WOOD, { pos: [0, 0.85, 0] }), part(rbox(2.3, 0.06, 1.05, 0.02), WOOD_D, { pos: [0, 0.32, 0] })];
+  for (const [x, z] of [[1.15, 0.55], [-1.15, 0.55], [1.15, -0.55], [-1.15, -0.55]]) L.push(part(cyl(0.055, 0.065, 2.4, 6), WOOD_D, { pos: [x, 1.2, z] }));
+  L.push(part(rbox(2.3, 0.07, 0.07, 0.02), WOOD_D, { pos: [0, 2.3, -0.55] })); // the back beam
+  const tarp = new THREE.BoxGeometry(2.8, 0.05, 1.8, 8, 1, 6);
+  const tp = tarp.attributes.position;
+  for (let i = 0; i < tp.count; i++) {
+    const fx = 1 - (tp.getX(i) / 1.4) ** 2, fz = 1 - (tp.getZ(i) / 0.9) ** 2;
+    tp.setY(i, tp.getY(i) - 0.13 * Math.max(0, fx) * Math.max(0, fz));
+  }
+  tarp.computeVertexNormals();
+  L.push(part(tarp, 0, { pos: [0, 2.42, 0], rot: [0.08, 0, 0], paint: (x, y, z) => (Math.abs(z) > 0.82 ? BLUE_D : BLUE) }));
+  // Goods on the table: a row of gourds and two jars.
+  for (const [x, c] of [[-0.9, 0xff9f1c], [-0.6, 0xffd166], [-0.3, 0x7bc74d], [0.05, 0xe8463c]]) L.push(part(sphere(0.12, 7, 5), c, { pos: [x, 1.02, 0.15] }));
+  for (const x of [0.6, 0.95]) L.push(part(cyl(0.1, 0.12, 0.26, 7), 0x9a5a2e, { pos: [x, 1.05, -0.1] }));
+  return merge(L);
+}
+
 function rockRingGeo() {
   const L = [];
   for (let i = 0; i < 9; i++) {
@@ -413,6 +474,7 @@ export function createProps(map) {
     hut: hutGeo(mappedTown), crate: crateGeo(), barrel: barrelGeo(), stall: stallGeo(mappedTown), lantern: townLanternGeometry(mappedTown),
     dockPost: postGeo(mappedTown), brazier: braziersGeo(), pillar: pillarGeo(), gatePost: gatePostGeo(), sign: townSignPostGeometry(mappedTown),
     campfire: rockRingGeo(), rack: rackGeo(), skullPost: skullPostGeo(), palisade: palisadeGeo(), blackFlag: flagPoleGeo(),
+    fence: fenceGeo(), board: boardGeo(), planter: planterGeo(), stallTarp: stallTarpGeo(),
   };
   if (mappedTown) for (const kind of ['crate', 'barrel']) {
     const original = kits[kind];

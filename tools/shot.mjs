@@ -1,5 +1,5 @@
 // Automated screenshots + console check (Playwright, headless Chromium with SwiftShader WebGL).
-// Usage: node tools/shot.mjs [outDir] [--quality=high] [--scenario=all|title|play]
+// Usage: node tools/shot.mjs [outDir] [--quality=high] [--scenario=all|title|play|village-night] [--dof=0|1]
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -34,6 +34,7 @@ const port = server.address().port;
 const extra = process.env.MN_PROXY_SPKI ? [`--ignore-certificate-errors-spki-list=${process.env.MN_PROXY_SPKI}`] : [];
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required', ...extra] });
 const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
+if (scenario === 'village-night') await page.setViewportSize({ width: 1920, height: 900 });
 // Optional: serve the CDN libraries from a local copy (MN_LIBS=<dir with three-0.160.0/ and gsap-3.12.5/>),
 // and fetch fonts from Node, so screenshots don't depend on the browser's network stack.
 if (process.env.MN_LIBS) {
@@ -62,10 +63,11 @@ page.on('console', (m) => {
 page.on('pageerror', (e) => logs.push(`[pageerror] ${e.message}`));
 page.on('requestfailed', (r) => logs.push(`[requestfailed] ${r.url()} ${r.failure()?.errorText}`));
 
-const shot = async (name) => { await page.screenshot({ path: path.join(outDir, name + '.png') }); console.log('shot', name); };
+const shot = async (name) => { await page.screenshot({ path: path.join(outDir, name + '.png'), timeout: 120000 }); console.log('shot', name); };
 const wait = (ms) => page.waitForTimeout(ms);
 const t0 = Date.now();
-await page.goto(`http://localhost:${port}/?q=${quality}&tod=day&debug&perf&maxdt=${opt.maxdt || 0.5}`, { waitUntil: "load" });
+const dofParam = opt.dof !== undefined ? `&dof=${opt.dof}` : ''; // --dof=0 off, --dof=1 forced on, absent: the tier's
+await page.goto(`http://localhost:${port}/?q=${quality}&tod=day&debug&perf&maxdt=${opt.maxdt || 0.5}${dofParam}`, { waitUntil: "load" });
 try {
   await page.waitForFunction(() => window.__mn && !document.querySelector('#btn-play').disabled, null, { timeout: +(opt.timeout || 120000) });
 } catch (e) {
@@ -76,11 +78,56 @@ try {
 }
 console.log('ready in', Date.now() - t0, 'ms');
 await wait(2500);
-await shot('01-title');
+if (scenario !== 'village-night') await shot('01-title');
 if (scenario !== 'title') {
   await page.click('#btn-play', { force: true });
-  await page.waitForFunction(() => window.__mn.st.mode === 'playing', null, { timeout: 60000 });
+  // A "Your characters" dialog can block gameplay after PLAY: click through it (bounded, no-op when absent).
+  for (let i = 0; i < 12; i++) {
+    if (await page.evaluate(() => window.__mn.st.mode === 'playing')) break;
+    const pri = page.locator('.player-characters-primary:visible:not([disabled])');
+    if (await pri.count()) await pri.first().click({ force: true });
+    else {
+      const sec = page.locator('.player-characters-secondary:visible:not([disabled])');
+      if (await sec.count()) await sec.first().click({ force: true });
+    }
+    await wait(2500);
+  }
+  try { await page.waitForFunction(() => window.__mn.st.mode === 'playing', null, { timeout: 60000 }); }
+  catch (e) {
+    console.log('NOT PLAYING', await page.evaluate(() => JSON.stringify({ mode: window.__mn.st.mode, body: document.body.innerText.slice(0, 400) })));
+    console.log(logs.join(String.fromCharCode(10)));
+    await browser.close(); server.close(); process.exit(1);
+  }
   await page.waitForFunction(() => !window.__mn.world.rig.blend, null, { timeout: 90000 });
+  if (scenario === 'village-night') {
+    const x = +(opt.x ?? 2), z = +(opt.z ?? 4), zoom = +(opt.zoom ?? 1);
+    await page.evaluate(([x, z, zoom]) => {
+      const m = window.__mn, r = m.world.rig, V = m.map.landmarks.village;
+      m.teleport(V.x + x, V.z + z);
+      r.yaw = r.yawTarget = Math.PI / 4;
+      r.zoom(zoom - r.zoomIdx);
+      // The server clock overrides tod() in gameplay unless setGameplay is neutralised first.
+      const L = m.world.lighting;
+      L.setGameplay = function () { this.gameplay = false; };
+      m.tod('night');
+    }, [x, z, zoom]);
+    await page.waitForFunction(() => window.__mn.world.lighting.cur.sunI <= 0.02, null, { timeout: 60000 });
+    await wait(9000);
+    await page.evaluate(() => new Promise((done) => {
+      let n = 10;
+      const frame = () => --n ? requestAnimationFrame(frame) : done();
+      requestAnimationFrame(frame);
+    }));
+    const stats = await page.evaluate(() => {
+      const w = window.__mn.world, i = w.renderer.info;
+      const c = w.lighting.cur;
+      return { calls: i.render.calls, triangles: i.render.triangles, programs: i.programs.length,
+        sunI: c.sunI, hemiI: c.hemiI, lightSoft: c.lightSoft, lightBounce: c.lightBounce, dof: !!w.pipeline.dofActive,
+        lights: w.lights?.picked?.filter((s) => s.w > 0).map((s) => s.kind) ?? [] };
+    });
+    await shot(`village-night-${quality}`);
+    console.log(JSON.stringify({ scenario, quality, ...stats }));
+  } else {
   // Enemies fight back since M2: god mode keeps the tour from ending at a checkpoint.
   await page.evaluate(() => window.__mn.client.send({ t: 'cmd', type: 'dev', op: 'god', on: true }));
   await wait(3000);
@@ -169,6 +216,7 @@ if (scenario !== 'title') {
   await tp('13-village-night', L.village.x + 2, L.village.z + 1);
   const perf = await page.evaluate(() => document.querySelector('#perf').textContent);
   console.log(perf);
+  }
 }
 console.log('--- console (errors/warnings) ---');
 console.log(logs.length ? logs.join('\n') : '(clean)');

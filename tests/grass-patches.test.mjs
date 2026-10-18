@@ -89,14 +89,14 @@ test('grass placement is coordinate-hash deterministic, capped, safe, and leaves
   for (const p of first) {
     for (const key of ['x', 'y', 'z', 'nx', 'ny', 'nz', 'rot', 'scale', 'radius']) assert.ok(Number.isFinite(p[key]), `${key} is finite`);
     assert.ok(p.variant >= 0 && p.variant < GRASS_STYLES.length);
-    assert.ok(p.scale >= 0.7 && p.scale <= 1.25);
+    assert.ok(p.scale >= 0.7 && p.scale <= 1.3); // edge clumps run 0.8-1.3
     assert.ok(Math.abs(p.radius - p.scale * 0.85) < EPS);
     assert.ok(Math.abs(Math.hypot(p.nx, p.ny, p.nz) - 1) < 1e-6 && p.ny > 0.9);
     assert.ok(Math.hypot(p.x, p.z) >= p.radius + shrubs[0].radius + 0.2,
       'patch avoids the supplied shrub footprint');
   }
   const patches = new Map();
-  for (const p of first) patches.set(p.patch, (patches.get(p.patch) || 0) + 1);
+  for (const p of first.filter((q) => !q.edge)) patches.set(p.patch, (patches.get(p.patch) || 0) + 1);
   assert.ok([...patches.values()].every((count) => count <= 5), 'each sparse patch has at most five clumps');
 });
 
@@ -112,7 +112,7 @@ test('grass placement inherits terrain, mask, access, obstacle, dock, and shrub 
   for (const [label, map] of unsafeMaps) assert.deepEqual(buildGrassPatches(map), [], `${label} is excluded`);
   const clearCases = [
     ['spawn', mapFixture({ landmarks: { spawn: { x: 0, z: 0 } } }), (p) => p.radius + 6],
-    ['village', mapFixture({ landmarks: { village: { x: 0, z: 0 } } }), (p) => p.radius + 8],
+    ['village', mapFixture({ landmarks: { village: { x: 0, z: 0 } } }), (p) => p.radius + 3],
     ['dock approach', mapFixture({ landmarks: { dockBase: { x: -10, z: 0 }, dockEnd: { x: 10, z: 0 } } }), (p) => p.radius + 3],
     ['access point', mapFixture({ npcs: [{ x: 0, z: 0, r: 0.5 }] }), (p) => p.radius + 2.5],
   ];
@@ -130,9 +130,9 @@ test('grass placement inherits terrain, mask, access, obstacle, dock, and shrub 
 });
 
 test('grass quality tiers impose the requested instance and LOD budgets', () => {
-  assert.deepEqual(grassBudget('high'), { limit: 600, distance: 55, detailDistance: 24 });
-  assert.deepEqual(grassBudget('medium'), { limit: 320, distance: 38, detailDistance: 14 });
-  assert.deepEqual(grassBudget('high', true), { limit: 320, distance: 38, detailDistance: 14 });
+  assert.deepEqual(grassBudget('high'), { limit: 1000, distance: 55, detailDistance: 24 });
+  assert.deepEqual(grassBudget('medium'), { limit: 520, distance: 38, detailDistance: 14 });
+  assert.deepEqual(grassBudget('high', true), { limit: 520, distance: 38, detailDistance: 14 });
   assert.deepEqual(grassBudget('low'), { limit: 160, distance: 28, detailDistance: 0 });
 });
 
@@ -167,7 +167,7 @@ test('grass renderer shares opaque resources, applies distance LOD, and reuses b
     const nearest = points.reduce((best, p) => !best || Math.hypot(p.x, p.z) < Math.hypot(best.x, best.z) ? p : best, null);
     grass.update({ x: nearest.x, z: nearest.z });
     const stats = grass.group.userData.grass;
-    const expectedHigh = points.slice(0, 600).filter((p) => Math.hypot(p.x - nearest.x, p.z - nearest.z) <= 55);
+    const expectedHigh = points.slice(0, 1000).filter((p) => Math.hypot(p.x - nearest.x, p.z - nearest.z) <= 55);
     const expectedNear = expectedHigh.filter((p) => Math.hypot(p.x - nearest.x, p.z - nearest.z) <= 24).length;
     assert.equal(stats.active, expectedHigh.length, 'active instances obey the high distance and priority cap');
     assert.equal(stats.near, expectedNear, 'near LOD follows the high detail distance');
@@ -180,7 +180,7 @@ test('grass renderer shares opaque resources, applies distance LOD, and reuses b
       ? [28, 36, 44][p.variant] : [14, 18, 22][p.variant]), 0);
     assert.equal(stats.triangles, expectedTriangles, 'triangle stats use the full and shared far geometry');
     for (const [name, mobile, distance, detailDistance, limit] of [
-      ['medium', false, 38, 14, 320], ['high', true, 38, 14, 320], ['low', false, 28, 0, 160], ['high', false, 55, 24, 600],
+      ['medium', false, 38, 14, 520], ['high', true, 38, 14, 520], ['low', false, 28, 0, 160], ['high', false, 55, 24, 1000],
     ]) {
       grass.setQuality(name, mobile);
       const eligible = points.slice(0, limit).filter((p) => Math.hypot(p.x - nearest.x, p.z - nearest.z) <= distance);

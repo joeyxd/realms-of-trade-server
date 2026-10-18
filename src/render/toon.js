@@ -28,6 +28,9 @@ export const U = {
   mnLightPos: { value: Array.from({ length: MAX_LIGHTS }, () => new THREE.Vector4(0, -999, 0, 1)) },
   mnLightCol: { value: Array.from({ length: MAX_LIGHTS }, () => new THREE.Vector4(0, 0, 0, 0)) },
   mnLightCount: { value: 0 },
+  // Pool softness (0 banded rings .. 1 smooth ramp) and the faint wide warm bounce; both follow the lighting preset.
+  mnLightSoft: { value: 0.35 },
+  mnLightBounce: { value: 0 },
 };
 
 export const GLSL_COMMON = /* glsl */ `
@@ -105,12 +108,16 @@ export const GLSL_LIGHTS = /* glsl */ `
 uniform vec4 mnLightPos[MN_MAX_LIGHTS];
 uniform vec4 mnLightCol[MN_MAX_LIGHTS];
 uniform int mnLightCount;
+uniform float mnLightSoft;
+uniform float mnLightBounce;
 // Three soft bands (faint rim, warm pool, hot core) mixed with a smooth ramp: painted pools, not rings.
-float mnLightFall(float x) {
+// soft = 0 keeps the bands, 1 is the pure ramp.
+float mnLightFallS(float x, float soft) {
   float s = x * x * (3.0 - 2.0 * x);
   float b = 0.2 * smoothstep(0.0, 0.08, s) + 0.32 * smoothstep(0.3, 0.38, s) + 0.48 * smoothstep(0.68, 0.76, s);
-  return mix(b, s, 0.35);
+  return mix(b, s, soft);
 }
+float mnLightFall(float x) { return mnLightFallS(x, mnLightSoft); }
 vec3 mnLocalLight(vec3 wp, vec3 wn) {
   vec3 sum = vec3(0.0);
   for (int i = 0; i < MN_MAX_LIGHTS; i++) {
@@ -122,6 +129,9 @@ vec3 mnLocalLight(vec3 wp, vec3 wn) {
     float ndl = dot(wn, d / max(dist, 1e-3));
     float back = mix(0.12, 0.55, mnLightCol[i].w);
     sum += mnLightCol[i].rgb * mnLightFall(x) * (back + (1.0 - back) * smoothstep(-0.2, 0.6, ndl));
+    // Warm bounce: a wide weak fill that ignores the light direction; floors get the most, walls some.
+    float bx = pow(smoothstep(0.0, 1.0, 1.0 - dist / (lp.w * 1.6)), 2.0);
+    sum += mnLightCol[i].rgb * (bx * mnLightBounce * (0.55 + 0.45 * max(wn.y, 0.0)));
   }
   return sum;
 }
@@ -131,7 +141,7 @@ vec3 mnLocalOmni(vec3 wp) {
   for (int i = 0; i < MN_MAX_LIGHTS; i++) {
     if (i >= mnLightCount) break;
     vec4 lp = mnLightPos[i];
-    sum += mnLightCol[i].rgb * mnLightFall(clamp(1.0 - distance(lp.xyz, wp) / lp.w, 0.0, 1.0));
+    sum += mnLightCol[i].rgb * mnLightFallS(clamp(1.0 - distance(lp.xyz, wp) / lp.w, 0.0, 1.0), 0.35);
   }
   return sum;
 }

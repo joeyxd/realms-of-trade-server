@@ -30,7 +30,8 @@ function segmentDistance(x, z, a, b) {
   return Math.hypot(x - a.x - dx * t, z - a.z - dz * t);
 }
 
-export function shrubSite(map, x, z, radius = 1, ctx = shrubSiteContext(map)) {
+// Grass hugs the huts, so it passes a smaller village radius; shrubs keep the default 8 u.
+export function shrubSite(map, x, z, radius = 1, ctx = shrubSiteContext(map), { villageClear = 8 } = {}) {
   if (![x, z, radius].every(Number.isFinite) || radius <= 0) return null;
   const y = map.heightAt(x, z), dx = (map.heightAt(x + radius, z) - map.heightAt(x - radius, z)) / (2 * radius);
   const dz = (map.heightAt(x, z + radius) - map.heightAt(x, z - radius)) / (2 * radius);
@@ -43,7 +44,7 @@ export function shrubSite(map, x, z, radius = 1, ctx = shrubSiteContext(map)) {
       Math.abs(h - y - dx * (px - x) - dz * (pz - z)) > 0.18) return null;
   }
   const l = map.landmarks || {};
-  for (const [point, clear] of [[l.spawn, 6], [l.village, 8], [l.arena, (l.arenaR || 19) + 4], [map.cala, map.cala?.r + 1]])
+  for (const [point, clear] of [[l.spawn, 6], [l.village, villageClear], [l.arena, (l.arenaR || 19) + 4], [map.cala, map.cala?.r + 1]])
     if (point && Math.hypot(x - point.x, z - point.z) < radius + clear) return null;
   if (l.dockBase && l.dockEnd && segmentDistance(x, z, l.dockBase, l.dockEnd) < radius + 3) return null;
   if (ctx.access.some((p) => Math.hypot(x - p.x, z - p.z) < radius + (p.r || 0.5) + 2)) return null;

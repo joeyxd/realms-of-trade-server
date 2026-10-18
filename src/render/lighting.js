@@ -21,7 +21,7 @@ const PRESETS = {
     fire: 0.3, lavaLight: 0.6, windows: 0,
     water: C(0xffffff), sparkle: 1, foam: 1,
     contrast: 0.16, sat: 1.12, vignette: 0.28, splitShadow: C(0x5a4aa0), splitHigh: C(0xffd9a0), split: 0.05,
-    bloom: 0.35, glints: 0.15, fxLight: CL(1, 1, 1),
+    bloom: 0.35, glints: 0.15, fxLight: CL(1, 1, 1), lightSoft: 0.35, lightBounce: 0,
   },
   golden: {
     sun: C(0xffb36a), sunI: 2.3, el: 30, az: 44,
@@ -32,18 +32,18 @@ const PRESETS = {
     fire: 0.55, lavaLight: 0.9, windows: 0.45,
     water: C(0xffe2d0), sparkle: 1.1, foam: 1,
     contrast: 0.19, sat: 1.1, vignette: 0.33, splitShadow: C(0x5a3c9a), splitHigh: C(0xffb070), split: 0.08,
-    bloom: 0.55, glints: 0.25, fxLight: CL(1, 0.8, 0.66),
+    bloom: 0.55, glints: 0.25, fxLight: CL(1, 0.8, 0.66), lightSoft: 0.45, lightBounce: 0.08,
   },
   night: {
     sun: C(0x25304a), sunI: 0.018, el: 58, az: -18,
-    hemiSky: C(0x111827), hemiGround: C(0x08090f), hemiI: 0.018,
-    skyTop: C(0x080c26), skyHorizon: C(0x10172a), skyBottom: C(0x080b13), fog: C(0x0a0e17), fogNear: 100, fogFar: 520,
+    hemiSky: C(0x2f4287), hemiGround: C(0x141832), hemiI: 1.7,
+    skyTop: C(0x080c26), skyHorizon: C(0x10172a), skyBottom: C(0x080b13), fog: C(0x0b1020), fogNear: 100, fogFar: 520,
     cloudCol: C(0x3a4a72), stars: 1, sunDisc: 0.8,
     rim: C(0x000000), fill: CL(0, 0, 0), lava: 1.25, cloud: 0.04,
     fire: 1, lavaLight: 1, windows: 1,
     water: C(0x080d18), sparkle: 0.08, foam: 0.04,
-    contrast: 0.12, sat: 0.78, vignette: 0.34, splitShadow: C(0x101322), splitHigh: C(0x25202a), split: 0,
-    bloom: 0.45, glints: 0.05, fxLight: CL(0.025, 0.03, 0.045),
+    contrast: 0.12, sat: 0.88, vignette: 0.30, splitShadow: C(0x1c2452), splitHigh: C(0x3a2a1e), split: 0.4,
+    bloom: 0.6, glints: 0.05, fxLight: CL(0.025, 0.03, 0.045), lightSoft: 0.5, lightBounce: 0.1,
   },
   volcanic: {
     sun: C(0xff8c5a), sunI: 0.85, el: 40, az: 60,
@@ -54,7 +54,7 @@ const PRESETS = {
     fire: 1, lavaLight: 1.2, windows: 0,
     water: C(0x6a3a30), sparkle: 0.2, foam: 0.6,
     contrast: 0.28, sat: 1.12, vignette: 0.46, splitShadow: C(0x4a2a90), splitHigh: C(0xff9040), split: 0.18,
-    bloom: 1.0, glints: 0.3, fxLight: CL(0.42, 0.27, 0.24),
+    bloom: 1.0, glints: 0.3, fxLight: CL(0.42, 0.27, 0.24), lightSoft: 0.5, lightBounce: 0.12,
   },
 };
 PRESETS.dusk = PRESETS.golden;

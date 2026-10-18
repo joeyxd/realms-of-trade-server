@@ -12,12 +12,12 @@ export { MAX_LIGHTS };
 
 // Light kinds: base color, intensity, radius, flicker amount/speed, wrap, which preset knob scales it.
 const KINDS = {
-  lantern: { color: 0xffb35a, i: 2.6, r: 7.5, flicker: 0.08, speed: 1.6, wrap: 0.35, knob: 'fire' },
+  lantern: { color: 0xffb35a, i: 2.4, r: 5.5, flicker: 0.08, speed: 1.6, wrap: 0.35, knob: 'fire' },
   portable: { color: 0xffdf9a, i: 2.6, r: 7.5, flicker: 0.08, speed: 1.6, wrap: 0.35, knob: 'portable' },
-  brazier: { color: 0xff7a2a, i: 3.6, r: 9.5, flicker: 0.2, speed: 2.6, wrap: 0.35, knob: 'fire' },
-  campfire: { color: 0xff8a32, i: 3.8, r: 10, flicker: 0.24, speed: 2.9, wrap: 0.35, knob: 'fire' },
+  brazier: { color: 0xff7a2a, i: 3.6, r: 12, flicker: 0.2, speed: 2.6, wrap: 0.35, knob: 'fire' },
+  campfire: { color: 0xff8a32, i: 3.2, r: 6.5, flicker: 0.24, speed: 2.9, wrap: 0.35, knob: 'fire' },
   lava: { color: 0xff5a1e, i: 3.0, r: 12, flicker: 0.1, speed: 0.6, wrap: 0.5, knob: 'lava' },
-  window: { color: 0xffa648, i: 2.2, r: 6, flicker: 0.05, speed: 0.9, wrap: 0.2, knob: 'night' },
+  window: { color: 0xffa648, i: 2.4, r: 6, flicker: 0.05, speed: 0.9, wrap: 0.2, knob: 'night' },
   eyes: { color: 0x5ad8ff, i: 1.4, r: 3.2, flicker: 0, speed: 0, wrap: 0.6, knob: 'eyes' },
   // Soft up-light from the glowing cracks of the Caldera floor.
   arena: { color: 0xff5a24, i: 1.5, r: 20, flicker: 0.06, speed: 0.5, wrap: 0.85, knob: 'lava' },

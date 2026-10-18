@@ -214,7 +214,7 @@ function makeMaterial(map, heightTex, ssr) {
   Object.assign(uniforms, SKY, {
     mnTime: U.mnTime, mnWind: U.mnWind, mnCloud: U.mnCloud, mnNoiseTex: U.mnNoiseTex,
     mnPlayer: U.mnPlayer, mnOccR: U.mnOccR, mnOccOn: U.mnOccOn, mnNearFade: U.mnNearFade,
-    mnLightPos: U.mnLightPos, mnLightCol: U.mnLightCol, mnLightCount: U.mnLightCount,
+    mnLightPos: U.mnLightPos, mnLightCol: U.mnLightCol, mnLightCount: U.mnLightCount, mnLightSoft: U.mnLightSoft, mnLightBounce: U.mnLightBounce,
     ...WATER_LIGHT,
     ...WATER_DETAIL_UNIFORMS,
     tWave: { value: getWaveTexture() },

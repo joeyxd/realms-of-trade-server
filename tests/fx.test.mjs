@@ -29,6 +29,18 @@ test('every lighting preset carries the same keys (they blend key by key)', opts
   assert.ok(mod.PRESETS.volcanic.bloom >= mod.PRESETS.night.bloom);
 });
 
+test('presets carry the local-light softness and bounce, growing toward the night', opts, () => {
+  const { day, golden, night } = mod.PRESETS;
+  for (const p of [day, golden, night, mod.PRESETS.volcanic]) {
+    assert.equal(typeof p.lightSoft, 'number');
+    assert.equal(typeof p.lightBounce, 'number');
+  }
+  assert.equal(day.lightSoft, 0.35);
+  assert.equal(day.lightBounce, 0);
+  assert.ok(day.lightSoft < golden.lightSoft && golden.lightSoft < night.lightSoft);
+  assert.ok(day.lightBounce < golden.lightBounce && golden.lightBounce < night.lightBounce);
+});
+
 test('streak pool: spawn, cool, die and reuse slots without growing', opts, () => {
   const pool = new mod.StreakPool(8);
   for (let i = 0; i < 12; i++) pool.spawn(i, 1, 0, 0, 2, 0, { life: 0.5, width: 0.1, color: [1, 1, 0], color1: [1, 0, 0] });
