@@ -32,6 +32,16 @@
       ]
     },
     {
+      "id": "prop:barrel",
+      "kind": "prop",
+      "src": "models/prop-rum-barrel-v1-desktop.glb",
+      "mobileSrc": "models/prop-rum-barrel-v1-mobile.glb",
+      "props": [
+        "barrel"
+      ],
+      "notes": "Tripo rum barrel, 1867 tris, 512 desktop / 256 mobile texture. See docs/art/prop-rum-barrel/README.md."
+    },
+    {
       "id": "tex:raft-comic-v1",
       "kind": "tex",
       "src": "textures/raft/comic-materials-v1.webp",

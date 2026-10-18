@@ -5196,7 +5196,7 @@
       ],
       "state": "applied",
       "nextStep": "Variantes adicionales, ajuste artístico y rendimiento en dispositivos físicos pendientes.",
-      "notes": "Candidato procedural no equivale a asset final aceptado. S17: ocho barriles estáticos cerrados pintados con duelas y dos aros de hierro; color/normal S14 compartidos. Las variantes abierto/claro/oscuro siguen pendientes. Sin imágenes nuevas ni cambios de posición.",
+      "notes": "2026-10-18: el manifiesto prop:barrel sustituye el barril procedural por el GLB de Tripo prop-rum-barrel-v1 (1867 tris, 512/256). Historial S17: Candidato procedural no equivale a asset final aceptado. S17: ocho barriles estáticos cerrados pintados con duelas y dos aros de hierro; color/normal S14 compartidos. Las variantes abierto/claro/oscuro siguen pendientes. Sin imágenes nuevas ni cambios de posición.",
       "references": [
         {
           "label": "Reuso Unreal",
@@ -5215,6 +5215,36 @@
         }
       ],
       "files": [
+        {
+          "label": "Modelo escritorio · prop-rum-barrel-v1-desktop.glb",
+          "path": "assets/models/prop-rum-barrel-v1-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil · prop-rum-barrel-v1-mobile.glb",
+          "path": "assets/models/prop-rum-barrel-v1-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD · rum-barrel-v1-lod.glb",
+          "path": "docs/art/prop-rum-barrel/rum-barrel-v1-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original · rum-barrel-v1-original.glb",
+          "path": "docs/art/prop-rum-barrel/rum-barrel-v1-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto Codex · rum-barrel-v1-concept.png",
+          "path": "docs/art/prop-rum-barrel/rum-barrel-v1-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia · README.md",
+          "path": "docs/art/prop-rum-barrel/README.md",
+          "role": "source"
+        },
         {
           "label": "Catálogo previo S17",
           "path": "docs/art/source/port-cargo-v1/before/catalog.source.json",

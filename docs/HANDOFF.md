@@ -1,5 +1,11 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AS02, 2026-10-18 — barril de ron Tripo, alpha.71/protocolo 62:**
+El barril procedural se sustituye por el GLB de Tripo `prop-rum-barrel-v1` (1867 tris, textura 512 PC / 256 móvil)
+vía `assets/manifest.json` (`prop:barrel`, `mobileSrc`); fila `barril` del catálogo actualizada, fuentes en
+`docs/art/prop-rum-barrel/`. Sin cambios de código: un prop importado gana también en pueblos con mapa (como el crate).
+Protocolo de assets OK. Sin captura de navegador en este corte; FPS físico no aceptado.
+
 **ST01c, 2026-10-14 — atlas: descarga cerrada, memoria GPU pendiente:**
 [Entrega](delivery/st01c/ATLAS-LAB.md), [checkpoint](delivery/st01c/atlas-checkpoint.json).
 WebP lossless completo: 1.369.043→552.514 B (-59,64 %), mismos RGBA y 268 renders
