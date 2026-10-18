@@ -1,5 +1,6 @@
 // Automated screenshots + console check (Playwright, headless Chromium with SwiftShader WebGL).
 // Usage: node tools/shot.mjs [outDir] [--quality=high] [--scenario=all|title|play|village-night] [--dof=0|1]
+//   [--tod=night|golden|day] (village-night scenario: the light preset, default night)
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,6 +16,7 @@ const outDir = path.resolve(args.find((a) => !a.startsWith('--')) || path.join(r
 const opt = Object.fromEntries(args.filter((a) => a.startsWith('--')).map((a) => a.slice(2).split('=')));
 const quality = opt.quality || 'high';
 const scenario = opt.scenario || 'all';
+const tod = ['night', 'golden', 'day'].includes(opt.tod) ? opt.tod : 'night';
 const width = +(opt.w || 1280), height = +(opt.h || 720);
 fs.mkdirSync(outDir, { recursive: true });
 
@@ -101,7 +103,7 @@ if (scenario !== 'title') {
   await page.waitForFunction(() => !window.__mn.world.rig.blend, null, { timeout: 90000 });
   if (scenario === 'village-night') {
     const x = +(opt.x ?? 2), z = +(opt.z ?? 4), zoom = +(opt.zoom ?? 1);
-    await page.evaluate(([x, z, zoom]) => {
+    await page.evaluate(([x, z, zoom, tod]) => {
       const m = window.__mn, r = m.world.rig, V = m.map.landmarks.village;
       m.teleport(V.x + x, V.z + z);
       r.yaw = r.yawTarget = Math.PI / 4;
@@ -109,9 +111,14 @@ if (scenario !== 'title') {
       // The server clock overrides tod() in gameplay unless setGameplay is neutralised first.
       const L = m.world.lighting;
       L.setGameplay = function () { this.gameplay = false; };
-      m.tod('night');
-    }, [x, z, zoom]);
-    await page.waitForFunction(() => window.__mn.world.lighting.cur.sunI <= 0.02, null, { timeout: 60000 });
+      m.tod(tod);
+    }, [x, z, zoom, tod]);
+    // night: the sun is out; day: full sun and the windows unlit; golden: the golden preset's lit windows (0.45).
+    // Day and golden give up after 20 s and shoot anyway.
+    await page.waitForFunction((t) => {
+      const c = window.__mn.world.lighting.cur;
+      return t === 'night' ? c.sunI <= 0.02 : t === 'day' ? c.sunI >= 0.5 && c.windows < 0.05 : c.sunI >= 0.5 && Math.abs(c.windows - 0.45) < 0.03;
+    }, tod, { timeout: tod === 'night' ? 60000 : 20000 }).catch((e) => { if (tod === 'night') throw e; console.log('TOD WAIT TIMEOUT', tod, e.message); });
     await wait(9000);
     await page.evaluate(() => new Promise((done) => {
       let n = 10;
@@ -122,11 +129,11 @@ if (scenario !== 'title') {
       const w = window.__mn.world, i = w.renderer.info;
       const c = w.lighting.cur;
       return { calls: i.render.calls, triangles: i.render.triangles, programs: i.programs.length,
-        sunI: c.sunI, hemiI: c.hemiI, lightSoft: c.lightSoft, lightBounce: c.lightBounce, dof: !!w.pipeline.dofActive,
+        sunI: c.sunI, windows: c.windows, hemiI: c.hemiI, lightSoft: c.lightSoft, lightBounce: c.lightBounce, dof: !!w.pipeline.dofActive,
         lights: w.lights?.picked?.filter((s) => s.w > 0).map((s) => s.kind) ?? [] };
     });
-    await shot(`village-night-${quality}`);
-    console.log(JSON.stringify({ scenario, quality, ...stats }));
+    await shot(`village-${tod}-${quality}`);
+    console.log(JSON.stringify({ scenario, quality, tod, ...stats }));
   } else {
   // Enemies fight back since M2: god mode keeps the tour from ending at a checkpoint.
   await page.evaluate(() => window.__mn.client.send({ t: 'cmd', type: 'dev', op: 'god', on: true }));

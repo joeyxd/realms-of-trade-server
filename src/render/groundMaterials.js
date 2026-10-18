@@ -72,6 +72,8 @@ export const GROUND_SETUP = /* glsl */ `
   float dirtCoreW = smoothstep(0.35, 0.85, pathW);
   // Retain the village's small stone plaza; the surrounding ground and roads become painted dirt.
   float plazaW = 1.0 - smoothstep(4.0, 7.0, length(wp.xz - mnSandTrail.zw));
+  vec3 plazaN = vec3(0.0, 0.0, 1.0);
+  float plazaNormalW = 0.0;
   if (mnGroundEnabled > 0.5 && grassW > 0.001) {
     grass = mnGroundSample(mnGroundColor, vec2(0.0, 0.0), fract(groundUV), groundDx, groundDy);
   }
@@ -109,4 +111,8 @@ export const GROUND_NORMAL_SAMPLE = /* glsl */ `
     mnSandNormalWeight = max(mnSandNormalWeight, groundSurface * (max(grassW, grassEdgeW) * (1.0 - pathW) + pathW * (1.0 - plazaW))
       * (1.0 - smoothstep(35.0, 70.0, length(vViewPosition))));
   }
+  // Apply last and outside the atlas guard: procedural cobbles also work with no ground textures.
+  float cobbleNormalW = plazaNormalW * groundSurface;
+  mnSandN = mix(mnSandN, plazaN, cobbleNormalW);
+  mnSandNormalWeight = mix(mnSandNormalWeight, 0.8 * fade, cobbleNormalW);
 `;

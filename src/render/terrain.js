@@ -114,16 +114,33 @@ export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrai
         // Rock on steep slopes.
         float rockW = smoothstep(0.28, 0.42, slope + (n1 - 0.5) * 0.08);
         col = mix(col, rock * (0.9 + 0.2 * n1), rockW);
-        // Path / village dirt with flagstones: crisp ink joint, a light bevel inside each stone, a little hue per stone.
+        // Rounded village cobbles: sandy joints, a shallow dome and restrained colour per stone.
         if (pathW > 0.001) {
-          vec4 vs = texture2D(mnNoiseTex, wp.xz * 0.1125);
-          vec3 stone = mix(dirt, srgb(vec3(0.88, 0.77, 0.58)), 0.55) * (0.88 + 0.24 * vs.a);
-          stone *= mix(vec3(1.0), mix(vec3(1.05, 1.0, 0.92), vec3(0.94, 1.0, 1.07), fract(vs.a * 5.0)), fade);
+          const float cobbleScale = 0.2; // 0.625 u cells; G * 0.1875 approximates distance to the joint in u.
+          vec2 cobbleUV = wp.xz * cobbleScale;
+          vec4 vs = textureGrad(mnNoiseTex, cobbleUV, gp.xy * cobbleScale, gp.zw * cobbleScale);
+          vec3 stone = mix(srgb(vec3(0.74, 0.68, 0.57)), dirt, 0.1);
+          stone *= 1.0 + (vs.a * 0.16 - 0.08) * fade;
+          stone *= mix(vec3(1.0), mix(vec3(1.04, 1.0, 0.96), vec3(0.96, 1.0, 1.04), fract(vs.a * 5.0)), fade);
           float isStone = step(0.5, vMask.x);
-          float gap = mix(smoothstep(0.1, 0.25, vs.g), smoothstep(0.07, 0.13, vs.g), fade); // stones reach the joint up close
-          vec3 p = mix(dirt, stone, gap * isStone);
-          p *= 1.0 + 0.08 * mnLine(abs(vs.g - 0.13), 0.035) * isStone * fade;
-          p = mix(p, MN_INK, 0.7 * mnLine(vs.g, 0.085) * isStone * fade);
+          float rimThreshold = 1.0 - smoothstep(0.5, 0.7, vMask.x);
+          float cobbleOn = isStone * mix(1.0, step(rimThreshold, vs.a), fade);
+          float edgeU = vs.g * 0.1875;
+          float gap = smoothstep(0.045, 0.055, edgeU); // full sandy joint width ~0.10 u
+          float dome = smoothstep(0.05, 0.17, edgeU);
+          vec3 grout = srgb(vec3(0.62, 0.50, 0.35)) * (0.85 + 0.15 * smoothstep(0.0, 0.05, edgeU));
+          vec3 p = mix(dirt, mix(stone, mix(grout, stone * (0.88 + 0.12 * dome), gap), fade), cobbleOn);
+          if (fade * cobbleOn * gap > 0.001) {
+            // Fixed 0.03 u differences survive reduced render resolution; no screen-space height derivatives.
+            float gx = textureGrad(mnNoiseTex, cobbleUV + vec2(0.006, 0.0), gp.xy * cobbleScale, gp.zw * cobbleScale).g;
+            float gz = textureGrad(mnNoiseTex, cobbleUV + vec2(0.0, 0.006), gp.xy * cobbleScale, gp.zw * cobbleScale).g;
+            vec2 dh = (smoothstep(vec2(0.05), vec2(0.17), vec2(gx, gz) * 0.1875) - dome) / 0.03;
+            vec2 bevelSlope = dh * 0.06; // 0.06 u dome height; ~30 degree lit rim after the 0.8 blend
+            bevelSlope *= min(1.0, 0.8 / max(length(bevelSlope), 0.00001));
+            // Sand's tangent basis is (+X, -Z); cancel its strength only for the cobble normal.
+            plazaN = vec3(vec2(-bevelSlope.x, bevelSlope.y) / max(mnSandNormalStrength, 0.001), 1.0);
+            plazaNormalW = pathW * cobbleOn * gap * mix(1.0, plazaW, mnGroundEnabled);
+          }
           ${GROUND_PATH_COLOR}
           col = mix(col, p, pathW);
         }
