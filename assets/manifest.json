@@ -52,6 +52,16 @@
       "notes": "Tripo hut-stilt-shingle, 9500 tris, 1024 desktop / 512 mobile texture. See docs/art/prop-hut-stilt-shingle-v2/README.md."
     },
     {
+      "id": "prop:hut-stilt-thatch",
+      "kind": "prop",
+      "src": "models/prop-hut-stilt-thatch-v2-desktop.glb",
+      "mobileSrc": "models/prop-hut-stilt-thatch-v2-mobile.glb",
+      "props": [
+        "hut"
+      ],
+      "notes": "Tripo hut-stilt-thatch, 9500 tris, 1024 desktop / 512 mobile texture. See docs/art/prop-hut-stilt-thatch-v2/README.md."
+    },
+    {
       "id": "tex:raft-comic-v1",
       "kind": "tex",
       "src": "textures/raft/comic-materials-v1.webp",
