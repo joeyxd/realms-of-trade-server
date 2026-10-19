@@ -85,6 +85,16 @@
       "notes": "Tripo fern-cluster, 4515 tris, 512 desktop / 256 mobile texture. See docs/art/prop-fern-cluster-v3/README.md."
     },
     {
+      "id": "prop:broadleaf-plant",
+      "kind": "prop",
+      "src": "models/prop-broadleaf-plant-v3-desktop.glb",
+      "mobileSrc": "models/prop-broadleaf-plant-v3-mobile.glb",
+      "props": [
+        "broadleaf"
+      ],
+      "notes": "Tripo broadleaf-plant, 2753 tris, 512 desktop / 256 mobile texture. See docs/art/prop-broadleaf-plant-v3/README.md."
+    },
+    {
       "id": "tex:raft-comic-v1",
       "kind": "tex",
       "src": "textures/raft/comic-materials-v1.webp",

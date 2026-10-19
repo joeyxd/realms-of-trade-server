@@ -5709,6 +5709,64 @@
       "evidence": []
     },
     {
+      "id": "broadleaf-plant",
+      "name": "Planta de hoja ancha",
+      "category": "Vegetación",
+      "priority": "P1",
+      "kind": "object",
+      "description": "Planta tropical de hoja ancha para sotobosque y jardines de la aldea.",
+      "variants": [
+        "hoja ancha"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "Pendiente de cablear al renderizador y a worldgen; ajuste artístico y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-19: el manifiesto prop:broadleaf-plant aporta un GLB de Tripo (2753 tris, textura 512/256) para un tipo de prop nuevo. Procedencia: Tripo AI, 2026-10-19; GLB fuente sha256 04e46593b26fe693329d1f0c07348c729e5c151173721194ae7ed9075082772d.",
+      "references": [
+        {
+          "label": "Concepto Codex · broadleaf-plant-v3-concept.png",
+          "path": "docs/art/prop-broadleaf-plant-v3/broadleaf-plant-v3-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio · prop-broadleaf-plant-v3-desktop.glb",
+          "path": "assets/models/prop-broadleaf-plant-v3-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil · prop-broadleaf-plant-v3-mobile.glb",
+          "path": "assets/models/prop-broadleaf-plant-v3-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD · broadleaf-plant-v3-lod.glb",
+          "path": "docs/art/prop-broadleaf-plant-v3/broadleaf-plant-v3-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original · broadleaf-plant-v3-original.glb",
+          "path": "docs/art/prop-broadleaf-plant-v3/broadleaf-plant-v3-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto Codex · broadleaf-plant-v3-concept.png",
+          "path": "docs/art/prop-broadleaf-plant-v3/broadleaf-plant-v3-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia · README.md",
+          "path": "docs/art/prop-broadleaf-plant-v3/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
       "id": "cesta-cubeta",
       "name": "Cesta y cubeta",
       "category": "Props del puerto",
