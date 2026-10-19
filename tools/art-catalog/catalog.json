@@ -5767,6 +5767,64 @@
       "evidence": []
     },
     {
+      "id": "flower-bush",
+      "name": "Arbusto con flores",
+      "category": "Vegetación",
+      "priority": "P1",
+      "kind": "object",
+      "description": "Arbusto bajo con flores para jardines de la aldea y el sotobosque.",
+      "variants": [
+        "flores"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "Pendiente de cablear al renderizador y a worldgen; ajuste artístico y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-19: el manifiesto prop:flower-bush aporta un GLB de Tripo (3348 tris, textura 512/256) para un tipo de prop nuevo. Procedencia: Tripo AI, 2026-10-19; GLB fuente sha256 c54fb595d9c7c9e73a2317dc21170246b121329f13328a9588076ebe20475db3.",
+      "references": [
+        {
+          "label": "Concepto Codex · flower-bush-v5-concept.png",
+          "path": "docs/art/prop-flower-bush-v5/flower-bush-v5-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio · prop-flower-bush-v5-desktop.glb",
+          "path": "assets/models/prop-flower-bush-v5-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil · prop-flower-bush-v5-mobile.glb",
+          "path": "assets/models/prop-flower-bush-v5-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD · flower-bush-v5-lod.glb",
+          "path": "docs/art/prop-flower-bush-v5/flower-bush-v5-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original · flower-bush-v5-original.glb",
+          "path": "docs/art/prop-flower-bush-v5/flower-bush-v5-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto Codex · flower-bush-v5-concept.png",
+          "path": "docs/art/prop-flower-bush-v5/flower-bush-v5-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia · README.md",
+          "path": "docs/art/prop-flower-bush-v5/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
       "id": "cesta-cubeta",
       "name": "Cesta y cubeta",
       "category": "Props del puerto",

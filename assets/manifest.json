@@ -95,6 +95,16 @@
       "notes": "Tripo broadleaf-plant, 2753 tris, 512 desktop / 256 mobile texture. See docs/art/prop-broadleaf-plant-v3/README.md."
     },
     {
+      "id": "prop:flower-bush",
+      "kind": "prop",
+      "src": "models/prop-flower-bush-v5-desktop.glb",
+      "mobileSrc": "models/prop-flower-bush-v5-mobile.glb",
+      "props": [
+        "flowerbush"
+      ],
+      "notes": "Tripo flower-bush, 3348 tris, 512 desktop / 256 mobile texture. See docs/art/prop-flower-bush-v5/README.md."
+    },
+    {
       "id": "tex:raft-comic-v1",
       "kind": "tex",
       "src": "textures/raft/comic-materials-v1.webp",
