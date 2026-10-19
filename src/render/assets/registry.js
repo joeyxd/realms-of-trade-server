@@ -5,6 +5,7 @@
 //   import { assets } from './assets/registry.js';
 //   assets.charLook(lookIdx, wpn)   → a rebound character build for CharacterView, or null
 //   assets.propId(kind)             → the prop entry replacing a procedural prop kind, or null
+//   assets.propIds(kind)            → every loaded prop entry listing the kind (variants, manifest order)
 //   assets.instanced(id, matrices, target) → a Group of InstancedMeshes (props: one per part), or null
 //   assets.model(id, target)        → a fitted Group clone (ships, buildings, anything), or null
 //   assets.texture(id)              → a THREE.Texture, or null
@@ -153,6 +154,22 @@ export class Assets {
   entry(id) { return this.man.entries.get(id) || null; }
   has(id) { return !!this.data(id); }
   propId(kind) { const id = this.man.byProp.get(kind); return id && this.has(id) ? id : null; }
+  // Every loaded variant of a kind, in manifest order. An unbound kind (byProp deleted, as the QA canary does) is
+  // procedural; a byProp id other than the first variant (canary override) is used alone.
+  propIds(kind) {
+    const bound = this.man.byProp.get(kind), all = this.man.byPropAll.get(kind) || [];
+    if (!bound) return [];
+    if (bound !== all[0]) return this.has(bound) ? [bound] : [];
+    return all.filter((id) => this.has(id));
+  }
+  // The fit instanced() / model() apply to a static model: { s, x, y, z } (scale, then translate) plus the fitted box
+  // { min, max } and the entry, or null while the model is not loaded. Lets a caller place details on the fitted model.
+  fitted(id, target = null) {
+    const d = this.data(id), e = this.entry(id);
+    if (!d || !d.parts) return null;
+    const f = fitBox(d.min, d.max, e, target);
+    return { ...f, entry: e, min: d.min.map((v, i) => v * f.s + [f.x, f.y, f.z][i]), max: d.max.map((v, i) => v * f.s + [f.x, f.y, f.z][i]) };
+  }
   texture(id) { const e = this.entry(id); return e && e.kind === 'tex' ? this.data(id) : null; }
   list() {
     return [...this.man.entries.values()].map((e) => {

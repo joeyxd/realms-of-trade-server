@@ -36,7 +36,8 @@ test('revamp keeps the full seed baseline placement and gameplay landmarks intac
   const map = generateWorld(seed);
   // The night plaza dressing (T-1018-20: 4 lantern posts + 2 beside the stalls, 6 fence segments, a board, 4 planters,
   // a tarp stall, 2 crates) is appended after every baseline prop and collider, so the baseline stays an exact prefix.
-  assert.equal(map.props.length, 1259 + 20);
+  // The 17 village palms (T-1018-36) come after the plaza dressing.
+  assert.equal(map.props.length, 1259 + 20 + 17);
   assert.deepEqual(withoutY(map.props.slice(0, baseline.props.length)), withoutY(baseline.props));
   assert.deepEqual(map.colliders.slice(0, baseline.colliders.length), baseline.colliders, 'colliders changed during terrain-only pass');
   for (const key of ['npcs', 'enemySpawns', 'racks', 'checkpoints', 'dock', 'landmarks', 'cala'])

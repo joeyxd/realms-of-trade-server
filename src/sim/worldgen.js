@@ -699,6 +699,83 @@ export function generateWorld(seed) {
     for (const [du, dv] of PLAZA.PLANTERS_AT) dress('planter', du, dv, { r: PLAZA.PLANTER_R });
     dress('stallTarp', PLAZA.TARP_AT[0], PLAZA.TARP_AT[1], { r: PLAZA.TARP_R });
     for (const [du, dv, rot] of PLAZA.CRATES_AT) dress('crate', du, dv, { r: PLAZA.CRATE_R, rot }, { routeGap: PLAZA.CRATE_ROUTE_GAP });
+
+    // ---- Village palms (T-1018-36) ------------------------------------------------------------------------------------------
+    // Real palms standing in the village, as in the reference: a loose ring just outside the cobbles with gaps where the routes
+    // leave the plaza, one or two beside each hut (outside its collider, never in its door arc), two by the vendor stall, and
+    // three down the screen from the plaza, on the lower terrace (between the default camera and the tools/shot.mjs spot).
+    // Walking past them puts their crowns between the camera and the player: toon.js dissolves the near field only in a disc
+    // around the player and the depth of field blurs the rest.
+    // Appended after the plaza dressing with explicit rot / v (no rng), so every earlier prop and collider stays where it was.
+    // A blocked spot is nudged up to NUDGE u; a palm with no clear spot is dropped (tests/map-revamp.test.mjs pins the count).
+    // The render picks the palm form from a hash of the coordinates (palmGeometry.js palmVariant, repeated in palmForm): each
+    // palm slides along world x in FORM_STEP steps until the hash gives the form it asks for.
+    const VILLAGE_PALMS = {
+      COBBLE_CLEAR: 7.5,  // min distance from the village point (the cobbled plaza fades out at 7 u, groundMaterials.js)
+      FIRE_GAP: 3.5,      // from the campfire centre
+      PALM_GAP: 2.8,      // between palms, the island's own included
+      HUT_GAP: 3.2,       // from a hut centre (the hut collider is 2.6)
+      DOOR_ARC: 0.9, DOOR_REACH: 6, // no palm within DOOR_ARC rad of a hut's door axis (its local +z) when closer than DOOR_REACH u
+      PROP_GAP: 1.4,      // from the edge of a town prop (lantern, fence, board, planter, tarp, crate, barrel, stall, rack, sign)
+      EDGE_GAP: 0.3,      // between the trunk collider and any other collider edge
+      R: 0.38,            // trunk collider, as every palm on the island
+      NUDGE: 0.6,         // max slide of a blocked spot
+      FORM_STEP: 0.01, FORM_TRIES: 40, // the form search along world x
+      // du, dv (from the village point), rot, scale, h, form (0 tall, 1 curved, 2 short). A curved palm leans along its local +x,
+      // so its rot points the crown away from the hut or the plaza it stands by. Crowns at 5.5 to 6 u (short ones about 4).
+      AT: [
+        [10.5, -2, 0.4, 1.0, 5.6, 0], [10, 3.5, 1.571, 1.04, 5.8, 1],                         // ring, up the screen behind the plaza
+        [9.9, -7.5, 2.356, 1.0, 5.8, 1], [11.3, -14.2, 5.3, 1.03, 5.6, 0],                     // beside the upper-left hut
+        [-0.3, -12, 1.9, 1.05, 5.6, 0], [2.4, -10, 3.927, 1.02, 5.8, 1], [-0.5, -9, 3.1, 0.98, 5.6, 0], // ring, left of the plaza
+        [1, -16.7, 4.4, 1.05, 5.6, 2],                                                        // behind the left hut
+        [-8.6, -8.4, 4.712, 1.06, 5.8, 1], [-8.6, -5.4, 2.6, 1.07, 5.6, 0],                    // camera side, lower left
+        [-12.1, -11.5, 0.9, 1.02, 5.6, 0],                                                    // behind the lower-left hut
+        [-9.7, 5.4, 0, 1.06, 5.8, 1], [-12.2, 12.3, 3.7, 1.0, 5.6, 0],                         // camera side, lower right, and its hut
+        [13.4, 14.5, 1.2, 1.05, 5.6, 2],                                                      // behind the upper-right hut
+        [4.8, 19.6, 1.6, 1.03, 5.8, 1], [-0.7, 19.2, 5.9, 1.04, 5.6, 0], [10, 18, 0.785, 1.0, 5.8, 1], // the stall and the right hut
+      ],
+    };
+    {
+      const VP = VILLAGE_PALMS;
+      const townKinds = new Set(['lantern', 'fence', 'board', 'planter', 'stallTarp', 'crate', 'barrel', 'stall', 'rack', 'sign']);
+      const local = props.filter((q) => (q.kind === 'palm' || townKinds.has(q.kind)) && Math.hypot(q.x - village.x, q.z - village.z) < 45);
+      // A fence counts as its whole segment (FENCE_LEN along its local x), any other prop as a circle of radius r.
+      const propGap = (x, z, q) => {
+        if (q.kind !== 'fence') return Math.hypot(x - q.x, z - q.z) - q.r;
+        const ax = Math.cos(q.rot) * PLAZA.FENCE_LEN / 2, az = -Math.sin(q.rot) * PLAZA.FENCE_LEN / 2;
+        return segDist(x, z, q.x - ax, q.z - az, q.x + ax, q.z + az, tmp);
+      };
+      // The form the render picks for a spot (palmGeometry.js palmVariant, same hash); tests/village-palms.test.mjs checks the
+      // placed palms get the forms asked for here.
+      const palmForm = (x, z) => {
+        let k = Math.imul(Math.round(x * 100), 73856093) ^ Math.imul(Math.round(z * 100), 19349663);
+        k = Math.imul(k ^ (k >>> 16), 0x45d9f3b); k ^= k >>> 16;
+        return (k >>> 0) % 3;
+      };
+      const doorClear = (x, z, h) => {
+        const d = Math.hypot(x - h.x, z - h.z);
+        if (d < VP.HUT_GAP) return false;
+        if (d >= VP.DOOR_REACH) return true;
+        const a = Math.atan2(x - h.x, z - h.z) - h.rot;
+        return Math.abs(Math.atan2(Math.sin(a), Math.cos(a))) >= VP.DOOR_ARC;
+      };
+      const palmClear = (x, z) => Math.hypot(x - village.x, z - village.z) >= VP.COBBLE_CLEAR
+        && Math.hypot(x - campfireAt.x, z - campfireAt.z) >= VP.FIRE_GAP
+        && hutsAt.every((h) => doorClear(x, z, h))
+        && local.every((q) => (q.kind === 'palm' ? Math.hypot(x - q.x, z - q.z) >= VP.PALM_GAP : propGap(x, z, q) >= VP.PROP_GAP))
+        && edgeGap(x, z) >= VP.EDGE_GAP + VP.R && routeClear(x, z, VP.R) && !nearPractice(x, z);
+      for (const [du, dv, rot, scale, h, form] of VP.AT) {
+        for (const [a, b] of nudges(VP.NUDGE)) {
+          const p = V(du + a, dv + b);
+          let j = 0;
+          while (j < VP.FORM_TRIES && palmForm(p.x + j * VP.FORM_STEP, p.z) !== form) j++;
+          const x = p.x + j * VP.FORM_STEP;
+          if (j === VP.FORM_TRIES || !palmClear(x, p.z)) continue;
+          local.push(addProp('palm', x, p.z, { r: VP.R, rot, scale, h, v: 0.5 }));
+          break;
+        }
+      }
+    }
   }
 
   // Static collider spatial hash.

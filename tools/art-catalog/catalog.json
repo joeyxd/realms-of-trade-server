@@ -5477,6 +5477,180 @@
       ]
     },
     {
+      "id": "hut-stilt-shingle",
+      "name": "Cabaña sobre pilotes con tejas",
+      "category": "Edificios",
+      "priority": "P0",
+      "kind": "object",
+      "description": "Cabaña de aldea sobre pilotes, techo de tejas de madera, porche, escalones y ventanas con postigos. Variante de las seis cabañas de la aldea.",
+      "variants": [
+        "tejas"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "Ajuste artístico y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-18: el manifiesto prop:hut-stilt-shingle sustituye el prop procedural; GLB de Tripo (9500 tris, textura 1024/512). Procedencia: Tripo AI, task eba01e66-cabf-4915-ad42-643a8e284c9d, 2026-10-18; GLB fuente sha256 802a41eb7b60991f3f49ae315be5f569ee85ffab59b0c95554eaf7aa456f2c19. Orientación: el frente del GLB mira a +x y el manifiesto gira rotY -90 hacia el +z del juego.",
+      "references": [
+        {
+          "label": "Concepto Codex · hut-stilt-shingle-v2-concept.png",
+          "path": "docs/art/prop-hut-stilt-shingle-v2/hut-stilt-shingle-v2-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio · prop-hut-stilt-shingle-v2-desktop.glb",
+          "path": "assets/models/prop-hut-stilt-shingle-v2-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil · prop-hut-stilt-shingle-v2-mobile.glb",
+          "path": "assets/models/prop-hut-stilt-shingle-v2-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD · hut-stilt-shingle-v2-lod.glb",
+          "path": "docs/art/prop-hut-stilt-shingle-v2/hut-stilt-shingle-v2-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original · hut-stilt-shingle-v2-original.glb",
+          "path": "docs/art/prop-hut-stilt-shingle-v2/hut-stilt-shingle-v2-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto Codex · hut-stilt-shingle-v2-concept.png",
+          "path": "docs/art/prop-hut-stilt-shingle-v2/hut-stilt-shingle-v2-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia · README.md",
+          "path": "docs/art/prop-hut-stilt-shingle-v2/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "hut-stilt-thatch",
+      "name": "Cabaña sobre pilotes con paja",
+      "category": "Edificios",
+      "priority": "P0",
+      "kind": "object",
+      "description": "Cabaña de aldea sobre pilotes, techo de paja, porche, escalones y una ventana lateral. Variante de las seis cabañas de la aldea.",
+      "variants": [
+        "paja"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "Ajuste artístico y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-18: el manifiesto prop:hut-stilt-thatch sustituye el prop procedural; GLB de Tripo (9500 tris, textura 1024/512). Procedencia: Tripo AI, task e3c786c5-6224-4adf-950e-f1d62a6280cc, 2026-10-18; GLB fuente sha256 d9fa83314ab31184540cd2d149c6afee0bed8f2c31430865d8377c10cd04ad57. Orientación: el frente del GLB mira a +x y el manifiesto gira rotY -90 hacia el +z del juego.",
+      "references": [
+        {
+          "label": "Concepto Codex · hut-stilt-thatch-v2-concept.png",
+          "path": "docs/art/prop-hut-stilt-thatch-v2/hut-stilt-thatch-v2-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio · prop-hut-stilt-thatch-v2-desktop.glb",
+          "path": "assets/models/prop-hut-stilt-thatch-v2-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil · prop-hut-stilt-thatch-v2-mobile.glb",
+          "path": "assets/models/prop-hut-stilt-thatch-v2-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD · hut-stilt-thatch-v2-lod.glb",
+          "path": "docs/art/prop-hut-stilt-thatch-v2/hut-stilt-thatch-v2-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original · hut-stilt-thatch-v2-original.glb",
+          "path": "docs/art/prop-hut-stilt-thatch-v2/hut-stilt-thatch-v2-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto Codex · hut-stilt-thatch-v2-concept.png",
+          "path": "docs/art/prop-hut-stilt-thatch-v2/hut-stilt-thatch-v2-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia · README.md",
+          "path": "docs/art/prop-hut-stilt-thatch-v2/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "market-stall-awning",
+      "name": "Puesto de mercado con toldo",
+      "category": "Edificios",
+      "priority": "P0",
+      "kind": "object",
+      "description": "Puesto de mercado con mostrador abierto, toldo a rayas rojas y crema y techo de paja. Sustituye al puesto del vendedor.",
+      "variants": [
+        "toldo a rayas"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "Ajuste artístico y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-18: el manifiesto prop:market-stall-awning sustituye el prop procedural; GLB de Tripo (6174 tris, textura 512/256). Procedencia: Tripo AI, task 5936ca31-0466-43c7-94ca-a3486f93afa6, 2026-10-18; GLB fuente sha256 cb88c7f02249a3d97d3a80504b4992a27d4e34c03b6a2221b52baa1da60ecfdf. Orientación: el frente del GLB mira a +x y el manifiesto gira rotY -90 hacia el +z del juego.",
+      "references": [
+        {
+          "label": "Concepto Codex · market-stall-awning-v3-concept.png",
+          "path": "docs/art/prop-market-stall-awning-v3/market-stall-awning-v3-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio · prop-market-stall-awning-v3-desktop.glb",
+          "path": "assets/models/prop-market-stall-awning-v3-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil · prop-market-stall-awning-v3-mobile.glb",
+          "path": "assets/models/prop-market-stall-awning-v3-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD · market-stall-awning-v3-lod.glb",
+          "path": "docs/art/prop-market-stall-awning-v3/market-stall-awning-v3-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original · market-stall-awning-v3-original.glb",
+          "path": "docs/art/prop-market-stall-awning-v3/market-stall-awning-v3-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto Codex · market-stall-awning-v3-concept.png",
+          "path": "docs/art/prop-market-stall-awning-v3/market-stall-awning-v3-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia · README.md",
+          "path": "docs/art/prop-market-stall-awning-v3/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
       "id": "cesta-cubeta",
       "name": "Cesta y cubeta",
       "category": "Props del puerto",

@@ -37,6 +37,9 @@ import { U } from './toon.js';
 import { tuning } from '../data/tuning.js';
 import { stage } from '../ui/stage.js';
 
+// Radius of the near-fade cut-out around the player, in screen half-heights (toon.js mnCutoutR).
+const PLAYER_CUTOUT_R = 0.26;
+
 // Boss shield: an additive fresnel ellipsoid with drifting hex cells (no depth write, no outline).
 function makeShieldBubble() {
   const m = new THREE.ShaderMaterial({
@@ -279,8 +282,8 @@ export class GameScene {
     }
   }
 
-  // Debug close-up cameras: stop dissolving whatever is near the lens.
-  nearFade(on) { U.mnNearFade.value = on ? 13 : 0; }
+  // Debug close-up cameras: stop dissolving whatever is near the lens (and drop the player cut-out: the old 4 u fade).
+  nearFade(on) { U.mnNearFade.value = on ? 13 : 0; this.nearOff = !on; }
 
   setTitleShadows(on) {
     const cam = this.lighting.sun.shadow.camera;
@@ -312,6 +315,16 @@ export class GameScene {
     // The close naval camera must keep the hull, sail and helm fully visible.
     U.mnOccOn.value = ctx.playing && !ctx.naval ? 1 : 0;
     if (ctx.occ2) U.mnOcc2.value.set(ctx.occ2.x, ctx.occ2.y + 0.6, ctx.occ2.z, 1); else U.mnOcc2.value.w = 0;
+    // The near fade dissolves only a disc around the player (toon.js): crowns and roofs at the screen edges stay and the depth
+    // of field blurs them. Projected with the camera the rig has already placed this frame; off on the title, at sea and
+    // under the debug close-up cameras (radius 0: the whole near field dissolves, as before).
+    const cutout = ctx.playing && !ctx.naval && !this.nearOff;
+    U.mnCutoutR.value = cutout ? PLAYER_CUTOUT_R : 0;
+    if (cutout) {
+      const p = this.tmpV.set(ctx.focus.x, ctx.focus.y + 1.0, ctx.focus.z).project(this.camera), e = this.camera.projectionMatrix.elements;
+      U.mnPlayerNdc.value.set(p.x, p.y);
+      U.mnCutoutProj.value.set(e[0], e[5]);
+    }
     this.lighting.setGameplay(!!ctx.playing);
     this.lighting.update(dt, ctx.shadowFocus || ctx.focus, ctx.clockPhase);
     this.applyPreset(this.lighting.cur);

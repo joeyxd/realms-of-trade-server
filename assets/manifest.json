@@ -49,7 +49,8 @@
       "props": [
         "hut"
       ],
-      "notes": "Tripo hut-stilt-shingle, 9500 tris, 1024 desktop / 512 mobile texture. See docs/art/prop-hut-stilt-shingle-v2/README.md."
+      "rotY": -90,
+      "notes": "Tripo hut-stilt-shingle, 9500 tris, 1024 desktop / 512 mobile texture. Door and steps face +x in the GLB; rotY -90 turns them to the game's +z. Variant of prop:hut-stilt-thatch (split by position hash). See docs/art/prop-hut-stilt-shingle-v2/README.md."
     },
     {
       "id": "prop:hut-stilt-thatch",
@@ -59,7 +60,8 @@
       "props": [
         "hut"
       ],
-      "notes": "Tripo hut-stilt-thatch, 9500 tris, 1024 desktop / 512 mobile texture. See docs/art/prop-hut-stilt-thatch-v2/README.md."
+      "rotY": -90,
+      "notes": "Tripo hut-stilt-thatch, 9500 tris, 1024 desktop / 512 mobile texture. Door and steps face +x in the GLB; rotY -90 turns them to the game's +z. Variant of prop:hut-stilt-shingle (split by position hash). See docs/art/prop-hut-stilt-thatch-v2/README.md."
     },
     {
       "id": "prop:market-stall-awning",
@@ -69,7 +71,8 @@
       "props": [
         "stall"
       ],
-      "notes": "Tripo market-stall-awning, 6174 tris, 512 desktop / 256 mobile texture. See docs/art/prop-market-stall-awning-v3/README.md."
+      "rotY": -90,
+      "notes": "Tripo market-stall-awning, 6174 tris, 512 desktop / 256 mobile texture. The open counter faces +x in the GLB; rotY -90 turns it to the game's +z (the procedural counter side). See docs/art/prop-market-stall-awning-v3/README.md."
     },
     {
       "id": "tex:raft-comic-v1",

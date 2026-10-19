@@ -179,4 +179,5 @@ modelos y capturas históricos permanecen como prototipos técnicos, sin aprobac
 
 - [Revamp visual de la aldea de noche](night-village-revamp/README.md): referencia objetivo y captura
   previa (alpha.70) del pase de luz, vestido, hierba y atmosfera de la plaza de Salty Shore; lote Tripo
-  de diez props y plantas.
+  de diez props y plantas. Referencias de día ([día](night-village-revamp/reference-target-day.webp)) y de
+  noche ([noche 2](night-village-revamp/reference-target-night-2.webp)) del mismo pase.

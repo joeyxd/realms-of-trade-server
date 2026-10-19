@@ -1,5 +1,32 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**VR02, 2026-10-19 — aldea de noche, segundo corte (adoquines, chozas y puesto Tripo, palmeras, recorte del jugador), alpha.73/protocolo 62:**
+Sigue a VR01 sobre alpha.72 (sin empujar aún: alpha.72 y alpha.73 salen juntos). Adoquines de plaza (`terrain.js` rama stone,
+`groundMaterials.js`): piedras redondeadas de 0,6 u con deriva de valor y tono por celda, junta de arena de 0,10 u sin tinta,
+bisel con normal por diferencias finitas en `mnSandN` y piedras que se diluyen en arena en el borde (T-1018-33, Codex sol).
+Tres props Tripo (`docs/art/prop-hut-stilt-shingle-v2/`, `prop-hut-stilt-thatch-v2/`, `prop-market-stall-awning-v3/`; 9500 /
+9500 / 6174 tris, WebP 1024-512 / 512-256) entran por `assets/manifest.json` con `rotY -90` (puerta y escalones en +x del GLB
+hacia el +z del juego). Variantes (`registry.js` byPropAll / propIds / fitted, `props.js` propVariants): un kind puede listar varios
+modelos y sus instancias se reparten por hash de posición (round-robin, todos los clientes coinciden); las seis chozas de la aldea
+mezclan los dos modelos. Ventanas iluminadas de las chozas importadas (`props.js` HUT_WINDOWS, medidas sobre el GLB tras el rotY,
+cajas de brillo por el mismo ajuste de caja que el modelo); el fallback procedural sigue intacto sin modelos. Filas del catálogo
+(`tools/art-catalog/catalog.json`). Palmeras de aldea (`worldgen.js` bloque VILLAGE_PALMS, T-1018-36): 17 palmeras explícitas
+(du/dv/rot/escala/altura/forma, sin rng) anexadas tras el vestido de plaza (1259 + 20 + 17), colisionador r 0,38, fuera de la plaza,
+del fuego, de los arcos de puerta de las chozas, de los props, de las rutas de bots y de las zonas de práctica; forma elegida
+deslizando en x hasta que el hash de `palmGeometry.js` da la pedida. Recorte del jugador en el desvanecido cercano (`toon.js`
+mnCutoutR / mnPlayerNdc / mnCutoutProj, `scene.js` PLAYER_CUTOUT_R 0,26, T-1018-32): solo se disuelve un disco alrededor del
+jugador en pantalla; copas y tejados del borde se quedan y los difumina la profundidad de campo (radio 0 = comportamiento
+anterior: título, mar, cámaras de depuración). Harness: `node tools/shot.mjs <dir> --scenario=village-night --quality=high
+--tod=night|golden|day`. Tests nuevos: `tests/prop-variants.test.mjs` (contrato del manifiesto, escalones en +x, reparto
+determinista, ventanas, fallback) y `tests/village-palms.test.mjs` (orden, campos, distancias, determinismo, recorte);
+`tests/map-revamp.test.mjs` fija 1259 + 20 + 17. Gate 29 ficheros 202/202 (verificador), `assets:check` OK. Capturas fuera de
+git: `shots/t36/village-night-high.png` (palmeras + recorte + DOF), `shots/t34/night-zoom2.png` (chozas y puesto Tripo de
+noche), `shots/t32/village-day-high.png` (día con DOF). Pendiente: empujar alpha.72 + alpha.73; MAX_LIGHTS 12 sigue
+descartando ventanas en la plaza (la captura cuenta 1 ventana entre 10 luces); calentamiento de los shaders del DOF en
+`scene.js`; los GLB de vegetación ya generados en `asset-staging/tripo/` (fern-cluster, flower-bush, broadleaf-plant, con
+`-v2-lod`) necesitan kinds nuevos de prop antes de entrar; los siete props de plaza del estudio Tripo (lantern-post,
+fence-rope, notice-board, planter-flowers, stall-tarp, crate-stack, campfire-ring) siguen sin exportar.
+
 **VR01, 2026-10-18 — revamp visual de la aldea de noche (luz, vestido, hierba, atmósfera, DOF), alpha.72/protocolo 62:**
 Objetivo: la plaza de Salty Shore de noche como el diorama de referencia (`docs/art/night-village-revamp/`), sin perder el
 toon, la tinta ni la mecánica de oscuridad. Luz (`lighting.js`, `lights.js`, `toon.js`): charcos suaves con rebote

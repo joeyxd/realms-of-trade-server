@@ -61,9 +61,10 @@ export function selectTextureSource(entry, mobileTextures = false) {
 
 // Validates and fills defaults. Never throws: bad entries are dropped with a message in `errors` (the game then draws
 // the procedural piece), so one broken line in the manifest cannot take the game down.
-// Returns { entries: Map(id → entry), byLook: Map(look name → char id), byProp: Map(prop kind → prop id), errors: [] }.
+// Returns { entries: Map(id → entry), byLook: Map(look name → char id), byProp: Map(prop kind → first prop id),
+// byPropAll: Map(prop kind → [prop ids] in manifest order, the variants), errors: [] }.
 export function normalizeManifest(json, { looks = null } = {}) {
-  const out = { entries: new Map(), byLook: new Map(), byProp: new Map(), errors: [] };
+  const out = { entries: new Map(), byLook: new Map(), byProp: new Map(), byPropAll: new Map(), errors: [] };
   const list = json && Array.isArray(json.assets) ? json.assets : null;
   if (!list) { if (json) out.errors.push('manifest: no "assets" list'); return out; }
   for (const raw of list) {
@@ -126,9 +127,11 @@ export function normalizeManifest(json, { looks = null } = {}) {
       if (!e.props.length) { err('prop needs "props": the procedural prop kinds it replaces'); continue; }
       e.fit = FITS.prop.includes(raw.fit) ? raw.fit : 'proc';
       e.size = num(raw.size, 0); e.height = num(raw.height, 0);
+      // Several entries may list the same kind: they are variants (byPropAll, manifest order); byProp keeps the first.
       for (const k of e.props) {
-        if (out.byProp.has(k)) err(`prop "${k}" already replaced by ${out.byProp.get(k)}`);
-        else out.byProp.set(k, e.id);
+        if (!out.byPropAll.has(k)) out.byPropAll.set(k, []);
+        out.byPropAll.get(k).push(e.id);
+        if (!out.byProp.has(k)) out.byProp.set(k, e.id);
       }
     } else if (kind === 'model') {
       e.size = num(raw.size, 0); e.height = num(raw.height, 0);

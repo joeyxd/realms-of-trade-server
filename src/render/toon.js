@@ -17,6 +17,12 @@ export const U = {
   // A second thing that must not hide under the canopy (M4.5): your chest, your spilled loot. xyz + on (w).
   mnOcc2: { value: new THREE.Vector4(0, -1000, 0, 0) },
   mnNearFade: { value: 13 },
+  // Player cut-out of the near fade (scene.js writes them every frame): the player's projected position (NDC), the disc radius
+  // in NDC half-heights (0 dissolves the whole near field, as before) and the projection scale (P[0][0], P[1][1]) it was
+  // projected with, so a fragment can find its own NDC from vMnWorld.
+  mnPlayerNdc: { value: new THREE.Vector2(0, 0) },
+  mnCutoutR: { value: 0 },
+  mnCutoutProj: { value: new THREE.Vector2(1, 1) },
   mnCloud: { value: 0.32 },
   mnWind: { value: new THREE.Vector2(0.9, 0.45) },
   mnRimColor: { value: new THREE.Color(0x9fd8ff) },
@@ -239,6 +245,9 @@ varying vec3 vMnRest;
 #define vMnRest vMnWorld
 #endif
 uniform vec4 mnOcc2;
+uniform vec2 mnPlayerNdc;
+uniform float mnCutoutR;
+uniform vec2 mnCutoutProj;
 // How much a fragment sits inside the cylinder from the camera to target (0 outside).
 float mnOccFade(vec3 target) {
   vec3 seg = target - cameraPosition;
@@ -261,9 +270,17 @@ if (mnOccOn > 0.5) {
   float fade = mnOccFade(mnPlayer);
   if (mnOcc2.w > 0.5) fade = max(fade, mnOccFade(mnOcc2.xyz));
   if (fade * 0.9 > mnBayer(gl_FragCoord.xy)) discard;
-  // Anything very close to the camera dissolves too (tall palms at the screen edge).
+  // Anything very close to the camera dissolves too (palm crowns, roofs). With mnCutoutR > 0 only inside a disc around the
+  // player on screen (round: x in half-heights, soft over the outer quarter); the rest of the near field stays for the depth
+  // of field to blur. mnCutoutR <= 0 dissolves the whole near field.
   float camD = distance(vMnWorld, cameraPosition);
   float near = 1.0 - smoothstep(mnNearFade, mnNearFade + 4.0, camD);
+  if (mnCutoutR > 0.0 && near > 0.0) {
+    vec3 mnVp = (viewMatrix * vec4(vMnWorld, 1.0)).xyz;
+    vec2 mnNdc = mnCutoutProj * mnVp.xy / max(-mnVp.z, 1e-3);
+    vec2 mnOff = (mnNdc - mnPlayerNdc) * vec2(mnCutoutProj.y / mnCutoutProj.x, 1.0);
+    near *= 1.0 - smoothstep(mnCutoutR * 0.75, mnCutoutR, length(mnOff));
+  }
   if (near > 0.0 && near * 0.95 > mnBayer(gl_FragCoord.xy)) discard;
 }
 #endif

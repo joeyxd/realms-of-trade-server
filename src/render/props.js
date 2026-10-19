@@ -456,6 +456,50 @@ function boxTarget(geo) {
   return { w: Math.max(b.max.x - b.min.x, b.max.z - b.min.z), h: b.max.y - b.min.y };
 }
 
+// Lit windows of the imported huts, by manifest id. Measured on the GLB in the frame the registry hands out (after the
+// manifest rotY, so +z is the door side): c = centre on the wall plane [x, y, z] in model units, face = the wall's
+// outward normal, size = [width, height] of the dark opening. createProps maps them through the same fit as the model.
+const HUT_WINDOWS = {
+  'prop:hut-stilt-shingle': [
+    { c: [0.163, -0.053, 0.062], face: '+z', size: [0.085, 0.095] },
+    { c: [-0.305, -0.053, -0.149], face: '-x', size: [0.1, 0.095] },
+    { c: [0.31, -0.053, -0.149], face: '+x', size: [0.1, 0.095] },
+  ],
+  'prop:hut-stilt-thatch': [
+    { c: [0.143, -0.057, 0.166], face: '+z', size: [0.12, 0.105] },
+    { c: [-0.318, -0.057, -0.09], face: '-x', size: [0.13, 0.105] },
+  ],
+};
+const WINDOW_PUSH = 0.06, WINDOW_THICK = 0.04; // u: how far a glow box sits off the wall, and its depth
+
+// A glow box for one measured window of a fitted model, in the procedural prop's local frame.
+function modelWindowBox(win, fit) {
+  const { s } = fit, w = win.size[0] * s, h = win.size[1] * s;
+  const sign = win.face[0] === '-' ? -1 : 1, onX = win.face[1] === 'x';
+  const geo = onX ? new THREE.BoxGeometry(WINDOW_THICK, h, w) : new THREE.BoxGeometry(w, h, WINDOW_THICK);
+  const x = win.c[0] * s + fit.x + (onX ? sign * WINDOW_PUSH : 0);
+  const y = win.c[1] * s + fit.y;
+  const z = win.c[2] * s + fit.z + (onX ? 0 : sign * WINDOW_PUSH);
+  return geo.translate(x, y, z);
+}
+
+// Which model variant (0..n-1) each prop of a kind uses, aligned with `list`. The props are ordered by a hash of their
+// world position and dealt out round-robin: every client agrees (it depends on positions only, never on load order or
+// the RNG) and the models stay evenly mixed (counts differ by at most one).
+export function propVariants(list, n) {
+  if (n <= 1) return list.map(() => 0);
+  const hash = (p) => {
+    let h = Math.imul(Math.round(p.x * 64) | 0, 0x2c1b3c6d) ^ Math.imul(Math.round(p.z * 64) | 0, 0x297a2d39);
+    h = Math.imul(h ^ (h >>> 15), 0x85ebca6b);
+    h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
+    return (h ^ (h >>> 16)) >>> 0;
+  };
+  const order = list.map((p, i) => ({ i, h: hash(p), x: p.x, z: p.z })).sort((a, b) => a.h - b.h || a.x - b.x || a.z - b.z);
+  const out = new Array(list.length);
+  order.forEach((o, k) => { out[o.i] = k % n; });
+  return out;
+}
+
 export function createProps(map) {
   const group = new THREE.Group();
   group.name = 'props';
@@ -491,8 +535,17 @@ export function createProps(map) {
   }
   // Imported models (assets/manifest.json "prop" entries) replace whole kinds: instanced, fitted to the procedural
   // prop's size (so the sim's colliders still match), their own emission instead of the glass / coal / window parts.
-  const extOf = new Map(), extAt = new Map();
-  for (const kind of byKind.keys()) { const id = assets.propId(kind); if (id) { extOf.set(kind, id); extAt.set(kind, []); } }
+  // A kind can list several models (variants): its instances are split between them by propVariants.
+  const extOf = new Map(), extAt = new Map(), extTarget = new Map(), extFit = new Map(), extPick = new Map();
+  for (const kind of byKind.keys()) {
+    const ids = assets.propIds(kind);
+    if (!ids.length) continue;
+    extOf.set(kind, ids);
+    extAt.set(kind, new Map(ids.map((id) => [id, []])));
+    extTarget.set(kind, boxTarget(kits[kind]));
+    const picks = propVariants(byKind.get(kind), ids.length);
+    byKind.get(kind).forEach((p, i) => extPick.set(p, picks[i]));
+  }
   // Dress only a native, port-facing hut. Imported houses keep their authored shape and fittings.
   const hall = mappedTown && !extOf.has('hut') ? selectTownHall(map) : null;
   // Static props are baked into one merged mesh per world chunk (few draw calls, culls per chunk).
@@ -507,7 +560,16 @@ export function createProps(map) {
       q.setFromAxisAngle(up, p.rot);
       const s = kind === 'pillar' ? sc.set(1, p.h, 1) : sc.set(p.scale, p.scale, p.scale);
       m4.compose(v.set(p.x, p.y, p.z), q, s);
-      if (extOf.has(kind)) { extAt.get(kind).push(m4.clone()); continue; }
+      if (extOf.has(kind)) {
+        const id = extOf.get(kind)[extPick.get(p)];
+        extAt.get(kind).get(id).push(m4.clone());
+        if (kind === 'hut' && HUT_WINDOWS[id]) {
+          if (!extFit.has(id)) extFit.set(id, assets.fitted(id, extTarget.get(kind)));
+          const fit = extFit.get(id);
+          if (fit) for (const win of HUT_WINDOWS[id]) windowParts.push(strip(modelWindowBox(win, fit).applyMatrix4(m4)));
+        }
+        continue;
+      }
       const key = `${Math.floor(p.x / CH)},${Math.floor(p.z / CH)}`;
       if (!buckets.has(key)) buckets.set(key, []);
       buckets.get(key).push(kits[kind].clone().applyMatrix4(m4));
@@ -563,11 +625,13 @@ export function createProps(map) {
     if (key === sepiaKey) mesh.userData.townFurniture = { family: 'town-furniture-v1', kind: 'sepia', mapped: mappedTown, texturesAdded: 0 };
     group.add(mesh);
   }
-  for (const [kind, id] of extOf) {
-    const ext = assets.instanced(id, extAt.get(kind), boxTarget(kits[kind]));
-    if (ext) {
-      if (mappedTown && kind === 'crate' && id === 'prop:storage-crate') paintPortCargoInstances(ext, townMat);
-      group.add(ext);
+  for (const [kind, ids] of extOf) {
+    for (const id of ids) {
+      const ext = assets.instanced(id, extAt.get(kind).get(id), extTarget.get(kind));
+      if (ext) {
+        if (mappedTown && kind === 'crate' && id === 'prop:storage-crate') paintPortCargoInstances(ext, townMat);
+        group.add(ext);
+      }
     }
   }
   const coalMat = glowBasic({ color: 0xff7a1a }, 0.85);
