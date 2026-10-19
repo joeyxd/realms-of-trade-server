@@ -5665,7 +5665,7 @@
         "assets/manifest.json"
       ],
       "state": "applied",
-      "nextStep": "Pendiente de cablear al renderizador y a worldgen; ajuste artístico y rendimiento en dispositivos físicos pendientes.",
+      "nextStep": "Cableado en alpha.74: kit procedural y caja de ajuste en src/render/props.js (fern / flowerbush / broadleaf), colocación en src/sim/worldgen.js VILLAGE_VEGETATION (24 plantas en la aldea: bases de las chozas, borde de la plaza, puesto). Ajuste artístico y rendimiento en dispositivos físicos pendientes.",
       "notes": "2026-10-19: el manifiesto prop:fern-cluster aporta un GLB de Tripo (4515 tris, textura 512/256) para un tipo de prop nuevo. Procedencia: Tripo AI, 2026-10-19; GLB fuente sha256 e5a60d4680c16a7f251f89d203f16b62bb4742cf58ae92625e9a776a6954deae.",
       "references": [
         {
@@ -5723,7 +5723,7 @@
         "assets/manifest.json"
       ],
       "state": "applied",
-      "nextStep": "Pendiente de cablear al renderizador y a worldgen; ajuste artístico y rendimiento en dispositivos físicos pendientes.",
+      "nextStep": "Cableado en alpha.74: kit procedural y caja de ajuste en src/render/props.js (fern / flowerbush / broadleaf), colocación en src/sim/worldgen.js VILLAGE_VEGETATION (24 plantas en la aldea: bases de las chozas, borde de la plaza, puesto). Ajuste artístico y rendimiento en dispositivos físicos pendientes.",
       "notes": "2026-10-19: el manifiesto prop:broadleaf-plant aporta un GLB de Tripo (2753 tris, textura 512/256) para un tipo de prop nuevo. Procedencia: Tripo AI, 2026-10-19; GLB fuente sha256 04e46593b26fe693329d1f0c07348c729e5c151173721194ae7ed9075082772d.",
       "references": [
         {
@@ -5781,7 +5781,7 @@
         "assets/manifest.json"
       ],
       "state": "applied",
-      "nextStep": "Pendiente de cablear al renderizador y a worldgen; ajuste artístico y rendimiento en dispositivos físicos pendientes.",
+      "nextStep": "Cableado en alpha.74: kit procedural y caja de ajuste en src/render/props.js (fern / flowerbush / broadleaf), colocación en src/sim/worldgen.js VILLAGE_VEGETATION (24 plantas en la aldea: bases de las chozas, borde de la plaza, puesto). Ajuste artístico y rendimiento en dispositivos físicos pendientes.",
       "notes": "2026-10-19: el manifiesto prop:flower-bush aporta un GLB de Tripo (3348 tris, textura 512/256) para un tipo de prop nuevo. Procedencia: Tripo AI, 2026-10-19; GLB fuente sha256 c54fb595d9c7c9e73a2317dc21170246b121329f13328a9588076ebe20475db3.",
       "references": [
         {

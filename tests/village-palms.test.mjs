@@ -9,7 +9,7 @@ import { U, patchToon, normalMatFor } from '../src/render/toon.js';
 // The village palms (T-1018-36) come right after the baseline props (1259) and the night plaza dressing (20).
 const SEED = 99282957, FIRST = 1259 + 20, COUNT = 17;
 const map = generateWorld(SEED);
-const palms = map.props.slice(FIRST);
+const palms = map.props.slice(FIRST, FIRST + COUNT);
 const village = map.landmarks.village;
 const huts = map.props.filter((p) => p.kind === 'hut');
 const campfire = map.props.find((p) => p.kind === 'campfire');
@@ -32,7 +32,8 @@ const propGap = (p, q) => {
 const crown = (p) => [6, 5.7, 4.2][palmVariant(p)] * (p.h / 6) * p.scale;
 
 test('the village palms are appended after the plaza dressing, each with the standard palm fields and collider', () => {
-  assert.equal(map.props.length, FIRST + COUNT);
+  const PROP_TOTAL = 1259 + 20 + 17 + 24; // the 24 plants of worldgen.js VILLAGE_VEGETATION (T-1019-04) follow the palms
+  assert.equal(map.props.length, PROP_TOTAL);
   assert.equal(palms.length, COUNT);
   for (const p of palms) {
     assert.equal(p.kind, 'palm');
@@ -97,7 +98,7 @@ test('the village palms frame the plaza, flank every hut and stand between the d
 
 test('village palm placement is deterministic and draws no random numbers', () => {
   const again = generateWorld(SEED);
-  assert.deepEqual(again.props.slice(FIRST), palms);
+  assert.deepEqual(again.props.slice(FIRST, FIRST + COUNT), palms);
   assert.deepEqual(again.colliders, map.colliders);
   // Another seed keeps every rule the generator itself checks (a palm with no clear spot is dropped, never forced).
   const other = generateWorld(20261007), otherVillage = other.landmarks.village;

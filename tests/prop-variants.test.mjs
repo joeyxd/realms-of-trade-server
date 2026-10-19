@@ -10,6 +10,8 @@ import { normalizeManifest } from '../src/render/assets/manifest.js';
 import { generateWorld } from '../src/sim/worldgen.js';
 import { createProps, propVariants } from '../src/render/props.js';
 import { readGlb } from '../tools/glb.mjs';
+import { PLANT_BOX } from '../src/render/props.js';
+import { fitBox } from '../src/render/assets/manifest.js';
 
 const ROOT = new URL('../', import.meta.url);
 const manifestJson = JSON.parse(readFileSync(new URL('assets/manifest.json', ROOT), 'utf8'));
@@ -154,6 +156,99 @@ test('createProps still builds the procedural hut, stall and window glow while n
   try {
     assert.ok(out.group.getObjectByName('hutWindows'), 'procedural huts keep their lit windows');
     assert.ok(out.group.children.some((c) => c.name === 'propsChunk'), 'the procedural props are baked');
+    assert.ok(!out.group.children.some((c) => /^prop:/.test(c.name)), 'no imported instances');
+  } finally { dispose(out.group); }
+});
+
+// The village plants (T-1019-04): the Tripo fern, flower bush and broadleaf plant replace the procedural plant kits.
+const PLANTS = [
+  ['fern', 'prop:fern-cluster', 'assets/models/prop-fern-cluster-v3-desktop.glb'],
+  ['flowerbush', 'prop:flower-bush', 'assets/models/prop-flower-bush-v5-desktop.glb'],
+  ['broadleaf', 'prop:broadleaf-plant', 'assets/models/prop-broadleaf-plant-v3-desktop.glb'],
+];
+const near = (a, b, label) => assert.ok(Math.abs(a - b) < 1e-6, `${label}: ${a} is not ${b}`);
+
+function villagePlants() {
+  const plants = generateWorld(1337).props.filter((p) => PLANTS.some(([kind]) => kind === p.kind));
+  assert.deepEqual(PLANTS.map(([kind]) => plants.filter((p) => p.kind === kind).length), [10, 7, 7], 'the village plants');
+  return plants;
+}
+
+test('manifest: one model each for the fern, flower bush and broadleaf kinds, fitted to the kit, no cut-out', () => {
+  const m = normalizeManifest(manifestJson);
+  assert.deepEqual(m.errors, []);
+  for (const [kind, id] of PLANTS) {
+    assert.deepEqual(m.byPropAll.get(kind), [id]);
+    const e = m.entries.get(id);
+    assert.equal(e.kind, 'prop', id);
+    assert.equal(e.fit, 'proc', id);
+    assert.equal(e.rotY, 0, id);
+    assert.equal(e.yOffset, 0, `${id}: fitBox alone grounds it`);
+    assert.equal(e.toon.alphaTest, 0, `${id}: no alpha cut-out`);
+    assert.ok(e.mobileSrc, `${id}: a mobile pair`);
+  }
+});
+
+test('the plant GLBs fit their kits to about the planned sizes, centred and standing on y = 0', () => {
+  const m = normalizeManifest(manifestJson);
+  const plan = { fern: [1.1, 0.7], flowerbush: [1.2, 0.9], broadleaf: [1.15, 1.05] }; // w x h (u) at scale 1
+  for (const [kind, id, file] of PLANTS) {
+    const pts = glbPositions(file);
+    const min = [0, 1, 2].map((i) => Math.min(...pts.map((p) => p[i]))), max = [0, 1, 2].map((i) => Math.max(...pts.map((p) => p[i])));
+    const f = fitBox(min, max, m.entries.get(id), { w: PLANT_BOX[kind][0], h: PLANT_BOX[kind][1] });
+    const w = Math.max(max[0] - min[0], max[2] - min[2]) * f.s, h = (max[1] - min[1]) * f.s;
+    assert.ok(Math.abs(w / plan[kind][0] - 1) <= 0.2, `${kind}: fitted ${w.toFixed(2)} wide`);
+    assert.ok(Math.abs(h / plan[kind][1] - 1) <= 0.2, `${kind}: fitted ${h.toFixed(2)} tall`);
+    near(min[1] * f.s + f.y, 0, `${kind} base`);
+    near((min[0] + max[0]) / 2 * f.s + f.x, 0, `${kind} centre x`);
+    near((min[2] + max[2]) / 2 * f.s + f.z, 0, `${kind} centre z`);
+  }
+});
+
+test('createProps makes imported instances for the fern, flower bush and broadleaf plant, fitted to their kits', () => {
+  const plants = villagePlants();
+  const got = new Map();
+  const ids = Object.fromEntries(PLANTS.map(([kind, id]) => [kind, id]));
+  withAssets({
+    propIds: (kind) => (ids[kind] ? [ids[kind]] : []),
+    propId: (kind) => ids[kind] || null,
+    fitted: () => null,
+    instanced: (id, matrices, target) => { got.set(id, { n: matrices.length, target }); const g = new THREE.Group(); g.name = id; return g; },
+  }, () => {
+    const out = createProps(propMap(plants.map((p) => ({ ...p }))));
+    try {
+      for (const [kind, id] of PLANTS) {
+        assert.equal(got.get(id)?.n, plants.filter((p) => p.kind === kind).length, `${kind}: one instance per plant`);
+        near(got.get(id).target.w, PLANT_BOX[kind][0], `${kind} fit width`);
+        near(got.get(id).target.h, PLANT_BOX[kind][1], `${kind} fit height`);
+        assert.ok(out.group.getObjectByName(id), `${id} is in the group`);
+      }
+      assert.ok(!out.group.children.some((c) => c.name === 'propsChunk'), 'no procedural plant is baked');
+      assert.ok(!out.group.getObjectByName('hutWindows'), 'plants get no window glow');
+    } finally { dispose(out.group); }
+  });
+});
+
+test('createProps falls back to the cheap plant kits while no model is loaded', () => {
+  for (const [kind] of PLANTS) {
+    assert.equal(assets.propIds(kind).length, 0, 'no model state in this process');
+    const out = createProps(propMap([{ kind, x: 0, y: 0, z: 0, rot: 0, scale: 1, r: 0, v: 0.5, h: 0 }]));
+    try {
+      const chunks = out.group.children.filter((c) => c.name === 'propsChunk');
+      assert.equal(chunks.length, 1, `${kind} is baked`);
+      const geo = chunks[0].geometry;
+      geo.computeBoundingBox();
+      const b = geo.boundingBox;
+      assert.ok(geo.getAttribute('position').count / 3 < 120, `${kind}: under 120 triangles`);
+      near(b.min.y, 0, `${kind} base`);
+      near(b.max.y, PLANT_BOX[kind][1], `${kind} height`);
+      near(Math.max(b.max.x - b.min.x, b.max.z - b.min.z), PLANT_BOX[kind][0], `${kind} width`);
+      assert.ok(!out.group.children.some((c) => /^prop:/.test(c.name)), 'no imported instances');
+    } finally { dispose(out.group); }
+  }
+  const out = createProps(propMap(villagePlants().map((p) => ({ ...p }))));
+  try {
+    assert.ok(out.group.children.some((c) => c.name === 'propsChunk'), 'the whole village set is baked');
     assert.ok(!out.group.children.some((c) => /^prop:/.test(c.name)), 'no imported instances');
   } finally { dispose(out.group); }
 });

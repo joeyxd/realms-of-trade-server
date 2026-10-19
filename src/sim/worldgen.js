@@ -735,16 +735,17 @@ export function generateWorld(seed) {
         [4.8, 19.6, 1.6, 1.03, 5.8, 1], [-0.7, 19.2, 5.9, 1.04, 5.6, 0], [10, 18, 0.785, 1.0, 5.8, 1], // the stall and the right hut
       ],
     };
+    // The town props the palms and the plants keep clear of (with every palm). propGap: the gap from the edge of one;
+    // a fence counts as its whole segment (FENCE_LEN along its local x), any other prop as a circle of radius r.
+    const townKinds = new Set(['lantern', 'fence', 'board', 'planter', 'stallTarp', 'crate', 'barrel', 'stall', 'rack', 'sign']);
+    const propGap = (x, z, q) => {
+      if (q.kind !== 'fence') return Math.hypot(x - q.x, z - q.z) - q.r;
+      const ax = Math.cos(q.rot) * PLAZA.FENCE_LEN / 2, az = -Math.sin(q.rot) * PLAZA.FENCE_LEN / 2;
+      return segDist(x, z, q.x - ax, q.z - az, q.x + ax, q.z + az, tmp);
+    };
     {
       const VP = VILLAGE_PALMS;
-      const townKinds = new Set(['lantern', 'fence', 'board', 'planter', 'stallTarp', 'crate', 'barrel', 'stall', 'rack', 'sign']);
       const local = props.filter((q) => (q.kind === 'palm' || townKinds.has(q.kind)) && Math.hypot(q.x - village.x, q.z - village.z) < 45);
-      // A fence counts as its whole segment (FENCE_LEN along its local x), any other prop as a circle of radius r.
-      const propGap = (x, z, q) => {
-        if (q.kind !== 'fence') return Math.hypot(x - q.x, z - q.z) - q.r;
-        const ax = Math.cos(q.rot) * PLAZA.FENCE_LEN / 2, az = -Math.sin(q.rot) * PLAZA.FENCE_LEN / 2;
-        return segDist(x, z, q.x - ax, q.z - az, q.x + ax, q.z + az, tmp);
-      };
       // The form the render picks for a spot (palmGeometry.js palmVariant, same hash); tests/village-palms.test.mjs checks the
       // placed palms get the forms asked for here.
       const palmForm = (x, z) => {
@@ -772,6 +773,69 @@ export function generateWorld(seed) {
           const x = p.x + j * VP.FORM_STEP;
           if (j === VP.FORM_TRIES || !palmClear(x, p.z)) continue;
           local.push(addProp('palm', x, p.z, { r: VP.R, rot, scale, h, v: 0.5 }));
+          break;
+        }
+      }
+    }
+
+    // ---- Village vegetation (T-1019-04) -------------------------------------------------------------------------------------
+    // The Tripo fern, flower bush and broadleaf plant (props.js kits fern / flowerbush / broadleaf) dress the night village:
+    // two or three at the base of each hut (outside its collider, off its door axis; a flower bush just beside the door),
+    // clusters of two at the plaza rim between the ring palms where the cobbles fade into sand, and two behind the vendor
+    // stall. No collider (r 0): players and bots walk through them; shrubs and scattered grass keep off them
+    // (shrubPlacement.js PLANT_R). Appended after the village palms with explicit rot / v (no rng), so every earlier prop and
+    // collider stays where it was. A blocked spot is nudged up to NUDGE u; a plant with no clear spot is dropped
+    // (tests/village-vegetation.test.mjs pins the count). terrainRevamp.js levels the hut pads and the terraces afterwards,
+    // so the rows were picked on level or gently sloped ground of the final terrain and the test checks the footing.
+    const VILLAGE_VEGETATION = {
+      COBBLE_CLEAR: 7.4,  // a plant off a hut base stands at least this far from the village point (the cobbles fade out at 7 u)
+      HUT_MIN: 2.7, HUT_MAX: 3.6, // a hut-base plant: this far from a hut centre (the hut collider is 2.6); no plant nearer HUT_MIN
+      DOOR_ARC: VILLAGE_PALMS.DOOR_ARC, DOOR_REACH: VILLAGE_PALMS.DOOR_REACH, // off every door axis, as the palms
+      FIRE_GAP: 3.5,      // from the campfire centre
+      PROP_GAP: 0.6,      // from the edge of a town prop (propGap)
+      PALM_GAP: 0.5,      // from a palm trunk (its collider edge): ferns under palms look right
+      PLANT_GAP: 0.9,     // between plant centres
+      COLLIDER_GAP: 0.1,  // from any collider edge (rocks, huts): never inside one
+      ROUTE_R: 0.5,       // footprint radius against the walking routes (routeClear)
+      NUDGE: 0.6,         // max slide of a blocked spot
+      // du, dv (from the village point), kind, rot, scale. Fitted at scale 1 (props.js PLANT_BOX): fern 1.11 x 0.68 u,
+      // flowerbush 1.27 x 0.85, broadleaf 1.21 x 1.0.
+      AT: [
+        [9.2, -14, 'fern', 2.1, 1.05], [7.3, -9.4, 'flowerbush', 0.6, 1.1], [12.6, -12.5, 'broadleaf', 4.0, 1.1],   // upper-left hut
+        [-2, -12, 'flowerbush', 1.3, 1.0], [-4.6, -16.5, 'fern', 5.2, 1.1], [-2.8, -18.1, 'broadleaf', 3.3, 1.05], // left hut
+        [-9.9, -5.9, 'flowerbush', 2.8, 1.05], [-15, -7.2, 'fern', 0.9, 1.0], [-14.6, -9.5, 'broadleaf', 5.6, 1.15], // lower-left hut
+        [-11, 12, 'flowerbush', 4.4, 1.05], [-14, 9, 'fern', 1.7, 1.1], [-12.5, 6.4, 'broadleaf', 0.4, 1.0],        // lower-right hut
+        [10.2, 10.2, 'fern', 3.6, 1.05], [11.5, 13.6, 'broadleaf', 2.5, 1.1],                                       // upper-right hut
+        [1.2, 19.9, 'fern', 4.9, 1.0], [3.5, 19.6, 'broadleaf', 1.1, 1.05],                                         // right hut
+        [-3.9, -8.9, 'fern', 0.3, 0.95], [-2.5, -9.5, 'flowerbush', 3.9, 0.9],  // rim, lower left between the ring palms
+        [0.9, -9.2, 'fern', 5.0, 1.0], [1.6, -10.6, 'flowerbush', 2.2, 0.95],   // rim, left, under the ring palms
+        [-9, 0.9, 'fern', 1.4, 0.9], [-9.6, -0.2, 'flowerbush', 4.7, 1.0],      // rim, camera side
+        [5.6, 18.5, 'broadleaf', 3.0, 1.0], [4.6, 18.6, 'fern', 0.8, 0.95],     // behind the vendor stall, under its palm
+      ],
+    };
+    {
+      const VV = VILLAGE_VEGETATION;
+      const local = props.filter((q) => (q.kind === 'palm' || townKinds.has(q.kind)) && Math.hypot(q.x - village.x, q.z - village.z) < 45);
+      const plants = [];
+      const hutBase = (x, z) => hutsAt.some((h) => { const d = Math.hypot(x - h.x, z - h.z); return d >= VV.HUT_MIN && d <= VV.HUT_MAX; });
+      const offDoor = (x, z, h) => {
+        const d = Math.hypot(x - h.x, z - h.z);
+        if (d < VV.HUT_MIN) return false;
+        if (d >= VV.DOOR_REACH) return true;
+        const a = Math.atan2(x - h.x, z - h.z) - h.rot;
+        return Math.abs(Math.atan2(Math.sin(a), Math.cos(a))) >= VV.DOOR_ARC;
+      };
+      const plantClear = (x, z) => (Math.hypot(x - village.x, z - village.z) >= VV.COBBLE_CLEAR || hutBase(x, z))
+        && hutsAt.every((h) => offDoor(x, z, h))
+        && Math.hypot(x - campfireAt.x, z - campfireAt.z) >= VV.FIRE_GAP
+        && local.every((q) => propGap(x, z, q) >= (q.kind === 'palm' ? VV.PALM_GAP : VV.PROP_GAP))
+        && plants.every((q) => Math.hypot(x - q.x, z - q.z) >= VV.PLANT_GAP)
+        && edgeGap(x, z) >= VV.COLLIDER_GAP && routeClear(x, z, VV.ROUTE_R) && !nearPractice(x, z);
+      for (const [du, dv, kind, rot, scale] of VV.AT) {
+        for (const [a, b] of nudges(VV.NUDGE)) {
+          const p = V(du + a, dv + b);
+          if (!plantClear(p.x, p.z)) continue;
+          plants.push(addProp(kind, p.x, p.z, { r: 0, rot, scale, v: 0.5 }));
           break;
         }
       }

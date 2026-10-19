@@ -1,5 +1,29 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**VR03, 2026-10-19 — aldea de noche, tercer corte (helechos, arbustos de flores y plantas de hoja ancha Tripo), alpha.74/protocolo 62:**
+Sigue a VR02 sobre alpha.73 (sin empujar: alpha.72, .73 y .74 salen juntos). Tres kinds de prop nuevos `fern`, `flowerbush` y
+`broadleaf` (ya en `PROP_KINDS` y en `assets/manifest.json`: `prop:fern-cluster` 4515 tris, `prop:flower-bush` 3348,
+`prop:broadleaf-plant` 2753, WebP 512 / 256, `docs/art/prop-*/`). Render (`props.js`): kits procedurales `fernGeo`,
+`flowerbushGeo` y `broadleafGeo` (conos e icosaedros facetados, 108 / 100 / 96 tris, base en y 0) que son el fallback sin modelo
+y la caja de ajuste del GLB (`PLANT_BOX`: helecho 1,0 x 0,68 u, arbusto 1,1 x 0,86, hoja ancha 1,1 x 1,0); `fitBox` deja los
+modelos en unos 1,11 x 0,68, 1,27 x 0,85 y 1,21 x 1,0 a escala 1, apoyados en el suelo sin yOffset, instanciados con el toon y la
+tinta de siempre (sin emisión, sin recorte alfa, doble cara como dice el GLB). Colocación (`worldgen.js` bloque VILLAGE_VEGETATION
+tras VILLAGE_PALMS; `townKinds` y `propGap` suben un nivel para compartirlos): 24 filas explícitas (du/dv/kind/rot/escala, sin
+rng, v 0,5) anexadas tras las palmeras (1259 + 20 + 17 + 24): 10 helechos, 7 arbustos de flores y 7 de hoja ancha, r 0 (sin
+colisionador: jugadores y bots los atraviesan). Dos o tres en la base de cada choza (2,7 a 3,6 u del centro, fuera del arco de
+puerta 0,9 rad / 6 u; un arbusto de flores junto a la puerta en cuatro chozas), tres parejas en el borde de la plaza entre las
+palmeras del anillo (a 7,4 u o más del punto de aldea, donde los adoquines se funden en arena) y dos tras el puesto de la
+vendedora, bajo su palmera. Holguras: FIRE_GAP 3,5, PROP_GAP 0,6, PALM_GAP 0,5 del tronco, PLANT_GAP 0,9, COLLIDER_GAP 0,1,
+routeClear con r 0,5, fuera de nearPractice (incluye los 3,2 u del armero de la aldea); empuje máximo 0,6 u. Con la semilla
+99282957 ninguna fila se empuja y el reparto de recursos (`resourceLayout`, que también da forma al terreno) no cambia.
+Matorrales y hierba dispersa esquivan las plantas (`shrubPlacement.js` PLANT_R: helecho 0,58, arbusto 0,7, hoja ancha 0,58,
+por la escala); `grassPlacement.js` EDGE_KINDS sin tocar (la hierba ya llena su tope de 1000 y las plantas no la necesitan).
+Tests: nuevo `tests/village-vegetation.test.mjs` (orden, campos, holguras, composición, recursos intactos, determinismo,
+matorrales y hierba), `tests/prop-variants.test.mjs` ampliado (manifiesto, tamaño ajustado de los tres GLB, instancias importadas,
+fallback de los kits), `tests/village-palms.test.mjs` acota su ventana de palmeras y, como `tests/map-revamp.test.mjs`, fija el
+total 1259 + 20 + 17 + 24; `package.json`, `src/data/meta.js` (lo que sirve `/status`) y `package-lock.json` en alpha.74. Pendiente:
+la hierba de borde de las chozas solo mira colisionadores y puede crecer sobre una planta.
+
 **VR02, 2026-10-19 — aldea de noche, segundo corte (adoquines, chozas y puesto Tripo, palmeras, recorte del jugador), alpha.73/protocolo 62:**
 Sigue a VR01 sobre alpha.72 (sin empujar aún: alpha.72 y alpha.73 salen juntos). Adoquines de plaza (`terrain.js` rama stone,
 `groundMaterials.js`): piedras redondeadas de 0,6 u con deriva de valor y tono por celda, junta de arena de 0,10 u sin tinta,

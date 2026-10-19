@@ -1,5 +1,8 @@
 // Cosmetic foliage uses coordinate hashes, never the simulation RNG or collider list.
 export const SHRUB_LIMIT = 900;
+// The village plants (worldgen.js VILLAGE_VEGETATION) have no collider (r 0); as obstacles they count about half their
+// fitted width (props.js PLANT_BOX) times their scale, so shrubs and scattered grass keep off them.
+const PLANT_R = { fern: 0.58, flowerbush: 0.7, broadleaf: 0.58 };
 
 function rank(x, z, seed, salt) {
   let n = Math.imul(Math.round(x * 100), 73856093) ^ Math.imul(Math.round(z * 100), 19349663) ^ seed ^ salt;
@@ -11,7 +14,8 @@ export function shrubSiteContext(map) {
   const buckets = new Map(), cell = 8;
   for (const p of map.props || []) {
     if (['bush', 'flower', 'pebble', 'seaweed', 'float'].includes(p.kind)) continue;
-    const radius = p.kind === 'palm' ? Math.max(p.r || 0.4, (p.h / 6) * p.scale * 1.32) : p.r || 0.6;
+    const radius = p.kind === 'palm' ? Math.max(p.r || 0.4, (p.h / 6) * p.scale * 1.32)
+      : PLANT_R[p.kind] ? PLANT_R[p.kind] * (p.scale || 1) : p.r || 0.6;
     // Index the full obstacle radius so large huts cannot be missed at cell edges.
     for (let ix = Math.floor((p.x - radius) / cell); ix <= Math.floor((p.x + radius) / cell); ix++)
       for (let iz = Math.floor((p.z - radius) / cell); iz <= Math.floor((p.z + radius) / cell); iz++) {

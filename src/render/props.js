@@ -322,6 +322,59 @@ function planterGeo() {
   ]);
 }
 
+// Village plants (T-1019-04): the fallback for the imported fern, flower bush and broadleaf plant, and their fit box
+// (boxTarget: createProps scales the GLB into it, base on y = 0, so the box sets the in-game size). Faceted cones and
+// icosahedra, under 120 triangles each. Box w x h (u): fern 1.0 x 0.68, flowerbush 1.1 x 0.86, broadleaf 1.1 x 1.0.
+// The Tripo models fit to about 1.11 x 0.68, 1.27 x 0.85 and 1.21 x 1.0 at scale 1 (their height binds and fitBox lets a
+// model run up to 15 % wider than the box).
+export const PLANT_BOX = { fern: [1.0, 0.68], flowerbush: [1.1, 0.86], broadleaf: [1.1, 1.0] };
+
+// Merges the parts and rescales them to exactly w wide (the larger horizontal extent) and h tall, centred, base on y = 0.
+function plantKit(parts, [w, h]) {
+  const g = merge(parts);
+  g.computeBoundingBox();
+  const b = g.boundingBox, s = w / Math.max(b.max.x - b.min.x, b.max.z - b.min.z);
+  g.translate(-(b.min.x + b.max.x) / 2, -b.min.y, -(b.min.z + b.max.z) / 2);
+  g.scale(s, h / (b.max.y - b.min.y), s);
+  g.computeBoundingBox();
+  g.computeBoundingSphere();
+  return g;
+}
+
+// A leaf: a flattened four-sided cone (12 triangles) rooted at the origin, leaning `tilt` rad from vertical toward angle `a`.
+function leaf(len, wid, tilt, a, color) {
+  const d = [Math.sin(a) * Math.sin(tilt), Math.cos(tilt), Math.cos(a) * Math.sin(tilt)];
+  return part(cone(wid, len, 4), color, { scale: [1, 1, 0.35], rot: [tilt, a, 0], pos: d.map((c) => c * len / 2) });
+}
+
+// Fern: seven low fronds splayed around the root and two upright ones in the middle (108 triangles).
+function fernGeo() {
+  const L = [];
+  for (let i = 0; i < 7; i++) L.push(leaf(0.62, 0.12, 1.05, i * 0.898 + 0.2, i % 2 ? 0x5aa845 : 0x3f8f3a));
+  for (let i = 0; i < 2; i++) L.push(leaf(0.5, 0.1, 0.45, i * 3.14 + 0.6, 0x2f7a33));
+  return plantKit(L, PLANT_BOX.fern);
+}
+
+// Flower bush: three leafy lumps under five orange and yellow blossoms (100 triangles).
+function flowerbushGeo() {
+  const L = [
+    part(ico(0.5, 0), 0x3f8a34, { scale: [1, 0.8, 1], pos: [0, 0.4, 0] }),
+    part(ico(0.32, 0), 0x4f9a3a, { pos: [0.3, 0.32, 0.12] }),
+    part(ico(0.3, 0), 0x356f2c, { pos: [-0.28, 0.3, -0.14] }),
+  ];
+  for (const [x, y, z, c] of [[0.1, 0.78, 0.2, 0xff6a10], [-0.3, 0.6, 0.25, 0xffb81c], [0.4, 0.55, -0.2, 0xf05a28], [-0.12, 0.7, -0.32, 0xff8a1e], [0.38, 0.45, 0.35, 0xffc62e]])
+    L.push(part(new THREE.OctahedronGeometry(0.09), c, { pos: [x, y, z] }));
+  return plantKit(L, PLANT_BOX.flowerbush);
+}
+
+// Broadleaf plant: six broad leaves arching out and two upright ones (96 triangles).
+function broadleafGeo() {
+  const L = [];
+  for (let i = 0; i < 6; i++) L.push(leaf(0.75, 0.2, 0.8, i * 1.047 + 0.3, i % 2 ? 0x3c9445 : 0x2f7d3b));
+  for (let i = 0; i < 2; i++) L.push(leaf(0.7, 0.17, 0.3, i * 3.14 + 1.2, 0x2a6a33));
+  return plantKit(L, PLANT_BOX.broadleaf);
+}
+
 // Market stall under a blue tarp: a 2.4 x 1.2 x 0.9 u table, four 2.4 u poles and a 2.8 x 1.8 u roof that sags in the middle.
 // Front is +z.
 function stallTarpGeo() {
@@ -519,6 +572,7 @@ export function createProps(map) {
     dockPost: postGeo(mappedTown), brazier: braziersGeo(), pillar: pillarGeo(), gatePost: gatePostGeo(), sign: townSignPostGeometry(mappedTown),
     campfire: rockRingGeo(), rack: rackGeo(), skullPost: skullPostGeo(), palisade: palisadeGeo(), blackFlag: flagPoleGeo(),
     fence: fenceGeo(), board: boardGeo(), planter: planterGeo(), stallTarp: stallTarpGeo(),
+    fern: fernGeo(), flowerbush: flowerbushGeo(), broadleaf: broadleafGeo(),
   };
   if (mappedTown) for (const kind of ['crate', 'barrel']) {
     const original = kits[kind];
