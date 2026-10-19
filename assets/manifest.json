@@ -75,6 +75,16 @@
       "notes": "Tripo market-stall-awning, 6174 tris, 512 desktop / 256 mobile texture. The open counter faces +x in the GLB; rotY -90 turns it to the game's +z (the procedural counter side). See docs/art/prop-market-stall-awning-v3/README.md."
     },
     {
+      "id": "prop:fern-cluster",
+      "kind": "prop",
+      "src": "models/prop-fern-cluster-v3-desktop.glb",
+      "mobileSrc": "models/prop-fern-cluster-v3-mobile.glb",
+      "props": [
+        "fern"
+      ],
+      "notes": "Tripo fern-cluster, 4515 tris, 512 desktop / 256 mobile texture. See docs/art/prop-fern-cluster-v3/README.md."
+    },
+    {
       "id": "tex:raft-comic-v1",
       "kind": "tex",
       "src": "textures/raft/comic-materials-v1.webp",

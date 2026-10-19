@@ -5651,6 +5651,64 @@
       "evidence": []
     },
     {
+      "id": "fern-cluster",
+      "name": "Racimo de helechos",
+      "category": "Vegetación",
+      "priority": "P1",
+      "kind": "object",
+      "description": "Racimo de helechos tropicales de sotobosque para la aldea y la selva baja.",
+      "variants": [
+        "helechos"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "Pendiente de cablear al renderizador y a worldgen; ajuste artístico y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-19: el manifiesto prop:fern-cluster aporta un GLB de Tripo (4515 tris, textura 512/256) para un tipo de prop nuevo. Procedencia: Tripo AI, 2026-10-19; GLB fuente sha256 e5a60d4680c16a7f251f89d203f16b62bb4742cf58ae92625e9a776a6954deae.",
+      "references": [
+        {
+          "label": "Concepto Codex · fern-cluster-v3-concept.png",
+          "path": "docs/art/prop-fern-cluster-v3/fern-cluster-v3-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio · prop-fern-cluster-v3-desktop.glb",
+          "path": "assets/models/prop-fern-cluster-v3-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil · prop-fern-cluster-v3-mobile.glb",
+          "path": "assets/models/prop-fern-cluster-v3-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD · fern-cluster-v3-lod.glb",
+          "path": "docs/art/prop-fern-cluster-v3/fern-cluster-v3-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original · fern-cluster-v3-original.glb",
+          "path": "docs/art/prop-fern-cluster-v3/fern-cluster-v3-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto Codex · fern-cluster-v3-concept.png",
+          "path": "docs/art/prop-fern-cluster-v3/fern-cluster-v3-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia · README.md",
+          "path": "docs/art/prop-fern-cluster-v3/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
       "id": "cesta-cubeta",
       "name": "Cesta y cubeta",
       "category": "Props del puerto",
