@@ -10,6 +10,8 @@ import { artisanMutation } from './artisanOperation.mjs';
 import { fireMutation } from './fireOperation.mjs';
 import { checkedFreshwaterCommand, freshwaterMutation } from '../src/sim/systems/freshwaterProfile.js';
 import { attributeMutation, draftAttributes } from './attributeOperation.mjs';
+import { draftSkills, skillMutation } from './skillOperation.mjs';
+import { parseSkillCommand } from '../src/sim/systems/skillPlan.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const NIL_UUID = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
@@ -103,6 +105,12 @@ function checkedCommand(raw) {
       if (raw.stat !== 'carga') fail('input');
       integer(raw.n, 1, 9);
     }
+    return jsonCopy(raw);
+  }
+  if (raw.type === 'skills') {
+    if (!['assign', 'reset'].includes(raw.op)) fail('input');
+    exact(raw, ['type', 'op', 'opId', 'expectedRev', 'tree', ...(raw.op === 'assign' ? ['node'] : [])]);
+    if (!parseSkillCommand(raw)) fail('input');
     return jsonCopy(raw);
   }
   if (raw.type === 'fire') {
@@ -245,13 +253,13 @@ function checkedRequest(input) {
       worldData.resources.nodes.find(node => node.id === command.node)?.kind !== 'palm')) fail('input');
   const request = { world, account, command, expectedProfileVersion: input.expectedProfileVersion,
     expectedWorldVersion: input.expectedWorldVersion, profile, worldData, ack };
-  if (artisanMutation(command) || fireMutation(command) || attributeMutation(command) || freshwaterMutation(command)) {
+  if (artisanMutation(command) || fireMutation(command) || attributeMutation(command) || skillMutation(command) || freshwaterMutation(command)) {
     if (!Object.hasOwn(input, 'before') || Object.hasOwn(input, 'beneficiaries')) fail('input');
     const before = JSON.parse(bytes(input.before, MAX_PROFILE_BYTES)), sanitized = sanitizeProfile(before);
     if (!sanitized || canonicalEconomicText(before) !== canonicalEconomicText(sanitized)) fail('input');
     request.before = before;
-    if (attributeMutation(command)) {
-      const planned = draftAttributes(before, command);
+    if (attributeMutation(command) || skillMutation(command)) {
+      const planned = (skillMutation(command) ? draftSkills : draftAttributes)(before, command);
       if (canonicalEconomicText(planned.profile) !== canonicalEconomicText(profile) ||
           canonicalEconomicText(planned.ack) !== canonicalEconomicText(ack)) fail('input');
     }

@@ -182,3 +182,29 @@ test('pilot v2 progression is preserved by the cooperative award and participant
     assert.equal(saved.practice.logging, 3);
   } finally { await a.finish(); }
 });
+
+test('a v3 skills block survives the cooperative award and the participant contract refuses rewriting it', async t => {
+  const block = (logging, extra) => ({ v: 3, practice: { logging, survival: 5, trade: 2 }, milestones: [], knowledge: [],
+    skills: { lunge: 2, blast: 1 }, skr: { combat: 1 }, skg: { combat: 2, survival: 0, sailing: 0, crafting: 0, trade: 0 }, ...extra });
+  const progressions = { [ACCOUNT_ONE]: block(0), [ACCOUNT_TWO]: block(20, { milestones: ['pilot_coastal'] }) };
+  for (const mutate of [
+    raw => { raw.request.beneficiaries.find(row => row.account === ACCOUNT_TWO).profile.progression.skills.lunge = 3; },
+    raw => { raw.request.beneficiaries.find(row => row.account === ACCOUNT_TWO).profile.progression.practice.survival = 50; },
+    raw => { delete raw.request.beneficiaries.find(row => row.account === ACCOUNT_TWO).profile.progression.skg; },
+  ]) {
+    const a = await captureFinal(t, { progressions }), candidate = copy(a.raw); mutate(candidate);
+    try {
+      await denied(a.base, candidate);
+      await unchanged(a);
+    } finally { await a.finish(); }
+  }
+  const a = await captureFinal(t, { progressions });
+  try {
+    assert.equal((await a.base.commitEconomicOperation(a.raw)).ok, true);
+    for (const account of [ACCOUNT_ONE, ACCOUNT_TWO]) {
+      const saved = (await a.base.loadProfile(account)).data.progression, before = progressions[account];
+      assert.deepEqual({ ...saved, practice: { ...saved.practice, logging: 0 } }, { ...before, practice: { ...before.practice, logging: 0 } });
+      assert.ok(saved.practice.logging > before.practice.logging);
+    }
+  } finally { await a.finish(); }
+});

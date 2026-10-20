@@ -88,7 +88,7 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, torchResinCoconutOperations = false, agentTrade = false,
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, skillOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, torchResinCoconutOperations = false, agentTrade = false,
     groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false,
     inferenceCatalog = [], inferenceConfigAllowMemory = false, companionCreation = false, companionCreationAllowMemory = false,
     companionPairing = false, companionPairingAllowMemory = false, companionPresence = false, companionPresenceAllowMemory = false } = {}) {
@@ -108,6 +108,8 @@ export class GameHost {
     this.workshopOperations = workshopOperations;
     if (typeof attributeOperations !== 'boolean' || attributeOperations && !workshopOperations) throw new StoreError('configuration');
     this.attributeOperations = attributeOperations;
+    if (typeof skillOperations !== 'boolean' || skillOperations && !workshopOperations) throw new StoreError('configuration');
+    this.skillOperations = skillOperations;
     this.loggingAim = new LoggingAim(this);
     if (typeof fireOperations !== 'boolean' || fireOperations && !economicOperations) throw new StoreError('configuration');
     this.fireOperations = fireOperations;
@@ -598,6 +600,8 @@ export class GameHost {
           (await this.store.checkStarterWorkshop())?.version !== 1)) throw new StoreError('configuration');
       if (this.attributeOperations && (typeof this.store.checkAttributeOperations !== 'function' ||
           (await this.store.checkAttributeOperations())?.version !== 1)) throw new StoreError('configuration');
+      if (this.skillOperations && (typeof this.store.checkSkillOperations !== 'function' ||
+          (await this.store.checkSkillOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.agentTrade && (await this.store.checkAgentTradeOperations())?.version !== 1) throw new StoreError('configuration');
       const economy = await this.worldState.open(this.server.world.economy);
       if (this.closing) throw new StoreError('cancelled');
@@ -778,6 +782,7 @@ export class GameHost {
         artisan: { enabled: this.artisanOperations, ready: this.artisanOperations && !!this.worldState?.ready },
         workshop: { enabled: this.workshopOperations, ready: this.workshopOperations && this.worldState?.resources?.v === 3 && !!this.worldState?.ready },
         attributes: { enabled: this.attributeOperations, ready: this.attributeOperations && !!this.worldState?.ready },
+        skills: { enabled: this.skillOperations, ready: this.skillOperations && !!this.worldState?.ready },
         companionCreation: { enabled: this.companionCreation.enabled, ready: this.companionCreation.ready,
           pending: this.companionCreation.busy.size },
         companionPairing: { enabled: this.companionPairing.enabled, ready: this.companionPairing.ready },
@@ -879,7 +884,7 @@ export class GameHost {
       return;
     }
     if (this.economicAuthority?.handle(sock, msg)) return;
-    if (msg.t === MSG.CMD && ['community', 'artisan', 'fire', 'freshwater'].includes(msg.type)) {
+    if (msg.t === MSG.CMD && ['community', 'artisan', 'fire', 'freshwater', 'skills'].includes(msg.type)) {
       this.sendTo(sock.id, { t: MSG.EVENT, ev: { type: msg.type, to: this.server.clients.get(sock.id)?.entity,
         op: msg.op, opId: msg.opId, ok: false, why: 'disabled', rev: 0, project: null, durable: false } });
       return;
@@ -1538,6 +1543,8 @@ export class GameHost {
       const c = this.server.clients.get(id), s = this.profiles.clients.get(id);
       msg = { ...msg, content: { ...(this.contentIdentity ?? { generation: 0, revisionId: null }) },
         attributes: { enabled: this.attributeOperations && this.worldState?.ready === true &&
+          !this.worldState.failed && c?.serverProfile === true && !!s && !s.closed && !s.failed && !sock.agentIdentity },
+        skills: { enabled: this.skillOperations && this.worldState?.ready === true &&
           !this.worldState.failed && c?.serverProfile === true && !!s && !s.closed && !s.failed && !sock.agentIdentity } };
     }
     if (this.agentPilot || this.companionPairing?.enabled) {

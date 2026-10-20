@@ -10,6 +10,8 @@ export const MAX_TREE_RANK = 10;
 export const MAX_NODE_RANK = 3;
 export const POINTS_PER_RANK = 2;
 export const RESET_FREE = 1;
+// Gold price of every reset of a tree after its free one (SK04).
+export const SKILL_RESET_GOLD = 150;
 export const GRID_COLS = 3;
 
 // Display order of the left list. `practiceKeys` are the profile counters that feed the tree's practice.
@@ -198,14 +200,15 @@ export function nodesByTier(treeId) {
   return grid;
 }
 
-/** May the player raise this node one rank? The gate (weapon, knowledge, pearl) is not evaluated here. */
-export function canRaise(treeId, nodeId, { practice, skills } = {}) {
+/** May the player raise this node one rank? The gate (weapon, knowledge, pearl) is not evaluated here.
+ *  `grant` adds the tree's migrated points (progression.skg), 0 when absent. */
+export function canRaise(treeId, nodeId, { practice, skills, grant = 0 } = {}) {
   const node = nodeById(nodeId);
   if (!node) return { ok: false, reason: 'unknown' };
   if (node.tree !== treeId) return { ok: false, reason: 'tree' };
   if (!tierOpen(treeId, practice, node.tier)) return { ok: false, reason: 'tier' };
   if (nodeRank(skills, nodeId) >= MAX_NODE_RANK) return { ok: false, reason: 'max' };
-  if (pointsFree(treeId, practice, skills) < 1) return { ok: false, reason: 'points' };
+  if (pointsFree(treeId, practice, skills, grant) < 1) return { ok: false, reason: 'points' };
   return { ok: true, reason: null };
 }
 
