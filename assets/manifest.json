@@ -127,6 +127,16 @@
       "notes": "Tripo campfire-ring, 2000 tris, 512 desktop / 256 mobile texture. See docs/art/prop-campfire-ring-v2/README.md."
     },
     {
+      "id": "prop:crate-stack",
+      "kind": "prop",
+      "src": "models/prop-crate-stack-v2-desktop.glb",
+      "mobileSrc": "models/prop-crate-stack-v2-mobile.glb",
+      "props": [
+        "crate"
+      ],
+      "notes": "Tripo crate-stack, 2502 tris, 512 desktop / 256 mobile texture. See docs/art/prop-crate-stack-v2/README.md."
+    },
+    {
       "id": "tex:raft-comic-v1",
       "kind": "tex",
       "src": "textures/raft/comic-materials-v1.webp",
