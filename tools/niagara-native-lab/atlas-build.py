@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build deterministic lossless WebP and lossy KTX2 UASTC derivatives for the ST01c atlases."""
+"""Build deterministic lossless WebP, lossy KTX2 UASTC and diagnostic KTX2 RGBA8 derivatives for the ST01c atlases."""
 from __future__ import annotations
 
 import argparse
@@ -29,15 +29,25 @@ EXPECTED_INPUTS = {
 WEBP_VARIANTS = {"full": 256, "half": 128, "quarter": 64}
 # GPU-compressed variants keep the full 256 px cell: no downscale, no RDO. Orientation is flipped to a
 # lower-left origin because Three uploads compressed textures without flipY.
+_UASTC_ARGS = ("--encode", "uastc", "--uastc_quality", "4")
+_MIP_ARGS = ("--zcmp", "3", "--genmipmap", "--lower_left_maps_to_s0t0", "--assign_oetf", "srgb", "--assign_primaries", "srgb")
+# The four KTX2 recipes form a 2x2 decomposition of mip filter (toktx default lanczos4 | box) by codec (UASTC | raw RGBA8).
 KTX2_RECIPES = {
-    "ktx2-uastc": ("--t2", "--encode", "uastc", "--uastc_quality", "4", "--zcmp", "3", "--genmipmap",
-                   "--lower_left_maps_to_s0t0", "--assign_oetf", "srgb", "--assign_primaries", "srgb"),
+    "ktx2-uastc": ("--t2", *_UASTC_ARGS, *_MIP_ARGS),
+    "ktx2-uastc-box": ("--t2", *_UASTC_ARGS, *_MIP_ARGS, "--filter", "box"),
+    "ktx2-rgba8": ("--t2", *_MIP_ARGS),
+    "ktx2-rgba8-box": ("--t2", *_MIP_ARGS, "--filter", "box"),
 }
-EXPECTED_VARIANTS = {**WEBP_VARIANTS, **{ident: 256 for ident in KTX2_RECIPES}}
+KTX2_CODECS = {"ktx2-uastc": "uastc", "ktx2-uastc-box": "uastc", "ktx2-rgba8": "rgba8", "ktx2-rgba8-box": "rgba8"}
+# atlas-source.json declares only the variants of the earlier stages; the three diagnostic KTX2 variants are declared here
+# (full 256 px cells, never chosen by the automatic selection).
+EXPECTED_VARIANTS = {**WEBP_VARIANTS, "ktx2-uastc": 256}
+DIAGNOSTIC_VARIANTS = {"ktx2-uastc-box": 256, "ktx2-rgba8": 256, "ktx2-rgba8-box": 256}
 # Portable encoder kept outside git; override with --toktx.
 DEFAULT_TOKTX = Path("C:/DEV/real of trade/realms-of-trade-server/.scratch/tools/ktx-4.4.2/bin/toktx.exe")
 KTX2_MAGIC = b"\xabKTX 20\xbb\r\n\x1a\n"
 KHR_DF_MODEL_UASTC, KHR_DF_PRIMARIES_BT709, KHR_DF_TRANSFER_SRGB, KTX2_SUPERCOMPRESSION_ZSTD = 166, 1, 2, 2
+KHR_DF_MODEL_RGBSDA, VK_FORMAT_R8G8B8A8_SRGB = 1, 43
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -178,14 +188,18 @@ def encode_ktx2(toktx: Path, ident: str, input_row: dict, input_path: Path, temp
     info = parse_ktx2(data)
     width, height = input_row["dimensions"]
     expected_levels = max(width, height).bit_length()
-    if (info["vkFormat"], info["width"], info["height"], info["depth"], info["layers"], info["faces"]) != (0, width, height, 0, 0, 1) \
-            or info["supercompression"] != KTX2_SUPERCOMPRESSION_ZSTD or len(info["levels"]) != expected_levels:
+    uastc = KTX2_CODECS[ident] == "uastc"
+    if (info["width"], info["height"], info["depth"], info["layers"], info["faces"]) != (width, height, 0, 0, 1)             or info["supercompression"] != KTX2_SUPERCOMPRESSION_ZSTD or len(info["levels"]) != expected_levels             or info["vkFormat"] != (0 if uastc else VK_FORMAT_R8G8B8A8_SRGB):
         raise RuntimeError(f"unexpected KTX2 container layout: {name}")
-    if (info["colorModel"], info["primaries"], info["transfer"]) != (KHR_DF_MODEL_UASTC, KHR_DF_PRIMARIES_BT709, KHR_DF_TRANSFER_SRGB):
-        raise RuntimeError(f"KTX2 must declare UASTC, BT.709 primaries and sRGB transfer: {name}")
-    block_bytes = sum(((max(1, width >> i) + 3) // 4) * ((max(1, height >> i) + 3) // 4) * 16 for i in range(expected_levels))
-    if sum(level["uncompressedByteLength"] for level in info["levels"]) != block_bytes:
-        raise RuntimeError(f"KTX2 level sizes do not match 8 bpp UASTC blocks: {name}")
+    model = KHR_DF_MODEL_UASTC if uastc else KHR_DF_MODEL_RGBSDA
+    if (info["colorModel"], info["primaries"], info["transfer"]) != (model, KHR_DF_PRIMARIES_BT709, KHR_DF_TRANSFER_SRGB):
+        raise RuntimeError(f"KTX2 must declare {'UASTC' if uastc else 'RGBSDA'}, BT.709 primaries and sRGB transfer: {name}")
+    if uastc:
+        block_bytes = sum(((max(1, width >> i) + 3) // 4) * ((max(1, height >> i) + 3) // 4) * 16 for i in range(expected_levels))
+        if sum(level["uncompressedByteLength"] for level in info["levels"]) != block_bytes:
+            raise RuntimeError(f"KTX2 level sizes do not match 8 bpp UASTC blocks: {name}")
+    elif [level["uncompressedByteLength"] for level in info["levels"]] != [max(1, width >> i) * max(1, height >> i) * 4 for i in range(expected_levels)]:
+        raise RuntimeError(f"KTX2 level sizes do not match 32 bpp RGBA8 levels: {name}")
     return name, data, info, ["toktx", *KTX2_RECIPES[ident], name, input_row["file"]]
 
 
@@ -267,6 +281,9 @@ def generate(spec: dict, resolved: list[tuple[dict, Path]], temp_dir: Path, tokt
                    "fullVariant": "exact source RGBA pixels", "encoding": "lossless WebP; method=6; exact=True",
                    "gpuEncoding": "ktx2-uastc: full 256 px cells, lossy UASTC quality 4 via toktx, mipmaps stored in file "
                                   "(toktx default filter), sRGB transfer, Zstandard level 3, no RDO; origin flipped to lower-left",
+                   "mipDecomposition": "diagnostic 2x2 over ktx2-uastc: ktx2-uastc-box (same line plus --filter box), "
+                                       "ktx2-rgba8 (raw R8G8B8A8_SRGB, toktx default filter) and ktx2-rgba8-box (raw plus --filter box); "
+                                       "never chosen by the automatic selection",
                    "gutters": "none; preserve source cell UV boundaries",
                    "textHashNormalization": "UTF-8 text with CRLF normalized to LF"},
         "inputs": [], "variants": [],
@@ -281,17 +298,19 @@ def generate(spec: dict, resolved: list[tuple[dict, Path]], temp_dir: Path, tokt
         manifest["inputs"].append({"id": row["id"], "file": row["file"], "sha256": sha(source_data), "bytes": len(source_data),
                                    "dimensions": list(source.size), "grid": row["grid"], "srgb": row["srgb"],
                                    "decodedRgbaSha256": sha(_decoded_rgba(source))})
-        for variant in sorted(spec["variants"], key=lambda v: v["cellSize"], reverse=True):
+        diagnostics = [{"id": ident, "cellSize": size} for ident, size in DIAGNOSTIC_VARIANTS.items()]
+        for variant in sorted([*spec["variants"], *diagnostics], key=lambda v: v["cellSize"], reverse=True):
             ident, cell_size = variant["id"], variant["cellSize"]
             if ident in KTX2_RECIPES:
                 name, encoded, info, command = encode_ktx2(toktx, ident, manifest["inputs"][-1], path, temp_dir)
                 outputs[name] = encoded
                 manifest["variants"].append({"id": ident, "inputId": row["id"], "file": name, "sha256": sha(encoded),
                     "bytes": len(encoded), "dimensions": list(source.size), "grid": row["grid"], "cellSize": cell_size,
-                    "mipRgba8Bytes": mip_rgba8_bytes(*source.size), "container": "ktx2", "codec": "uastc", "lossy": True,
+                    "mipRgba8Bytes": mip_rgba8_bytes(*source.size), "container": "ktx2", "codec": KTX2_CODECS[ident],
+                    "lossy": KTX2_CODECS[ident] == "uastc",
                     "encodedFromRgbaSha256": manifest["inputs"][-1]["decodedRgbaSha256"], "supercompression": "zstd",
                     "levelCount": len(info["levels"]), "gpuBlockBytes": sum(l["uncompressedByteLength"] for l in info["levels"]),
-                    "levels": info["levels"], "colorModel": "UASTC", "transfer": "srgb", "primaries": "bt709",
+                    "levels": info["levels"], "colorModel": "UASTC" if KTX2_CODECS[ident] == "uastc" else "RGBSDA", "transfer": "srgb", "primaries": "bt709",
                     "encoder": {"name": "toktx", "version": manifest["versions"]["toktx"], "commandLine": " ".join(command),
                                 "workingDirectory": "empty temp folder; input path is workspace-relative"}})
                 continue

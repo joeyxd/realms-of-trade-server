@@ -21,7 +21,8 @@ def metrics(a,b):
             'max255':float(error.max()),'pixelsEqual':bool(np.array_equal(a,b)),
             'emptyPreserved':bool(np.array_equal(a,b)) if not (a>0).any() else True}
 variants=[]
-for variant in ['full','half','quarter']+(['ktx2-uastc'] if (out/'ktx2-uastc').is_dir() else []):
+# KTX2 variants are evaluated only when the run folder has them, so earlier runs still compare.
+for variant in ['full','half','quarter']+[v for v in ['ktx2-uastc','ktx2-uastc-box','ktx2-rgba8','ktx2-rgba8-box'] if (out/v).is_dir()]:
     rows=[];ue_rows=[]
     for case in cases:
         baseline=image(out/'source'/case['file']);candidate=image(out/variant/case['file'])

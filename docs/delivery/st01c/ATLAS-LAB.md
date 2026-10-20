@@ -213,3 +213,109 @@ python -B tools/niagara-native-lab/compare-atlas.py budget04
 python -B tools/niagara-native-lab/check-atlas-repeat.py budget03 budget04
 python -B tools/niagara-native-lab/check-atlas-repeat.py budget01 budget03 --variants source,full,half,quarter
 ```
+
+## Cadena de mips frente a códec (descomposición 2x2)
+
+2026-10-20. La etapa anterior midió `ktx2-uastc` con 37/268 fallos de IoU de máscara, pero
+sus mips los genera `toktx` (filtro por defecto `lanczos4`) mientras que la ruta WebP (`full`)
+usa los mips que genera el driver. Aquí se separan ambos factores con tres variantes
+**diagnósticas** nuevas, mismo corpus de 268 casos, mismos umbrales y misma lógica de
+comparación. Ninguna entra en la selección automática (sigue `full`/`full`). Es laboratorio:
+no toca el juego ni el catálogo. Números en
+[atlas-mip-checkpoint.json](atlas-mip-checkpoint.json); corridas `budget07` y `budget08`.
+
+**Las cuatro líneas de `toktx` v4.4.2** (por atlas; la de la llama, la del humo cambia solo
+los nombres de archivo y `T_Smoke_1.png`). Las cuatro quedan guardadas en el manifiesto:
+
+```text
+ktx2-uastc      toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-uastc-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png
+ktx2-uastc-box  toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb --filter box ktx2-uastc-box-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png
+ktx2-rgba8      toktx --t2 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-rgba8-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png
+ktx2-rgba8-box  toktx --t2 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb --filter box ktx2-rgba8-box-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png
+```
+
+`ktx2-uastc` conserva su línea byte a byte (sus dos archivos y las seis WebP no cambian; el
+manifiesto solo crece y las filas previas quedan idénticas). Los RGBA8 son
+`VK_FORMAT_R8G8B8A8_SRGB` con transferencia sRGB y BT.709; se conservó `--zcmp 3` porque
+`KTX2Loader` de Three 0.160.0 descomprime Zstandard también para formatos sin comprimir
+(`createRawTexture`), y la carga en Chrome lo confirmó. Dos codificaciones consecutivas de
+cada línea son idénticas byte a byte (`atlas-build.py --check` regenera y compara).
+Las tres variantes se declaran en `atlas-build.py` (`DIAGNOSTIC_VARIANTS`); `atlas-source.json`
+no cambia.
+
+**Tabla 2x2: fallos sobre 268 casos (IoU mínimo de máscara contra la referencia).**
+
+| Mips en el archivo | RGBA8, sin códec | UASTC (calidad 4, zstd 3) |
+| --- | --- | --- |
+| `toktx` `lanczos4` (por defecto) | `ktx2-rgba8`: **31/268** (0,852941) | `ktx2-uastc`: **37/268** (0,852941) |
+| `toktx` `--filter box` | `ktx2-rgba8-box`: **43/268** (0,852941) | `ktx2-uastc-box`: **47/268** (0,852941) |
+
+Referencia de mips del driver: `full` (WebP sin pérdida) 0/268, IoU mínimo 1. Todas las
+variantes pasan las 6 comparaciones contra UE (6/6; MAE máximo 7,836 `ktx2-rgba8`, 7,796
+`ktx2-rgba8-box`, 7,854 `ktx2-uastc`, 7,807 `ktx2-uastc-box`; umbral 10). El IoU mínimo de
+las cuatro variantes es el mismo caso: humo, celda 12, frontal, 0 EV (`case-172`).
+
+| Variante | MAE máx. /255 | P95 máx. /255 | Fallos (todos por `maskIoU32 < 0,98`) |
+| --- | ---: | ---: | --- |
+| `full` | 0 | 0 | 0 |
+| `ktx2-rgba8` | 0,351413 (piloto, tick 30, frontal, 0 EV) | 2 | 31: 30 celdas de humo + 1 capa de humo |
+| `ktx2-rgba8-box` | 0,200032 (capa humo, oblicua, +1 EV) | 1 | 43: 41 celdas de humo + 1 capa de humo + 1 piloto |
+| `ktx2-uastc` | 0,664794 (celda llama 17, frontal, +1 EV) | 3 | 37: 36 celdas de humo + 1 capa de humo |
+| `ktx2-uastc-box` | 0,653966 (piloto, tick 30, frontal, 0 EV) | 3 | 47: 46 celdas de humo + 1 capa de humo |
+
+**Formato subido y memoria (medidos en la página, Chrome 155.0.8059.85, ANGLE D3D11, Intel
+Iris Xe).** Todas las variantes KTX2 suben su propia cadena de mips desde el archivo
+(`mipSource: file`, `generateMipmaps: false`, 12 / 12 niveles); el driver no la regenera. El
+formato interno WebGL se nombra según las reglas de Three r160 (`getInternalFormat`), no se
+consulta al driver porque la página no lo expone.
+
+| Variante | Formato Three | Formato interno (derivado) | Color | bpp | Bytes GPU | MiB | Niveles | Archivos (par) |
+| --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: |
+| `full` (WebP) | `RGBAFormat` | `SRGB8_ALPHA8` | sRGB | 32 | 32.156.324 | 30,67 | 12 / 12 (driver) | 552.514 B |
+| `ktx2-rgba8` | `RGBAFormat` | `SRGB8_ALPHA8` | sRGB | 32 | 32.156.324 | 30,67 | 12 / 12 | 2.103.237 B |
+| `ktx2-rgba8-box` | `RGBAFormat` | `SRGB8_ALPHA8` | sRGB | 32 | 32.156.324 | 30,67 | 12 / 12 | 2.060.528 B |
+| `ktx2-uastc` | `RGBA_BPTC_Format` | `COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT` | sRGB | 8 | 8.039.200 | 7,67 | 12 / 12 | 1.394.823 B |
+| `ktx2-uastc-box` | `RGBA_BPTC_Format` | `COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT` | sRGB | 8 | 8.039.200 | 7,67 | 12 / 12 | 1.381.358 B |
+
+Los bytes de los datos entregados por `KTX2Loader` (`uploadedBytes`) coinciden con los
+bytes GPU calculados en las cinco variantes. `KTX2Loader` devuelve el RGBA8 sin comprimir
+como `DataTexture` con filtros `Nearest`; la página le fija `LinearMipmapLinear` /
+`Linear`, como en las otras rutas (la cadena subida sigue siendo la del archivo).
+
+**Repetición.** `check-atlas-repeat.py budget07 budget08` compara 2.144 imágenes (8
+variantes x 268), todas con píxeles decodificados idénticos. `check-atlas-repeat.py
+budget03 budget07 --variants source,full,half,quarter,ktx2-uastc` compara 1.340 imágenes
+(5 x 268), todas idénticas: las variantes anteriores se renderizan igual que en `budget03`
+(0, 49, 230 y 37 fallos). Una corrida de `qa-atlas.mjs` tarda unos 58 s.
+
+**Lectura** (solo estas reglas acordadas, aplicadas a los números medidos):
+
+- Efecto de los mips con `lanczos4` = `ktx2-rgba8` frente a `full`: 31/268 frente a 0/268;
+  IoU mínimo 0,852941 frente a 1; MAE máximo 0,351413/255 frente a 0.
+- Efecto de los mips con `box` = `ktx2-rgba8-box` frente a `full`: 43/268 frente a 0/268.
+  Contra la referencia: MAE máximo 0,200032/255 e IoU mínimo 0,852941 (cuánto se acercan los
+  mips `box` de `toktx` a los del driver).
+- Efecto del códec con `lanczos4` = `ktx2-uastc` frente a `ktx2-rgba8`: 37/268 frente a
+  31/268 (+6); MAE máximo 0,664794 frente a 0,351413; IoU mínimo igual (0,852941).
+- Efecto del códec con `box` = `ktx2-uastc-box` frente a `ktx2-rgba8-box`: 47/268 frente a
+  43/268 (+4); MAE máximo 0,653966 frente a 0,200032; IoU mínimo igual (0,852941).
+- Ninguna de las variantes nuevas tiene 0/268; por tanto no se escribe "pasa el gate" para
+  ninguna.
+
+**Lo que NO está aceptado.** `MOBILE_MEMORY_ACCEPTED` sigue en `false`. Ninguna variante
+(`ktx2-uastc`, `ktx2-uastc-box`, `ktx2-rgba8`, `ktx2-rgba8-box`) está aceptada. El formato
+GPU, el presupuesto de 8 MiB (atlases solos o con LUT y targets), la deriva de silueta en
+contornos tenues y ASTC/ETC2 (sin medir: este Chrome no los expone) quedan para la decisión
+del autor.
+
+```powershell
+python -B tools/niagara-native-lab/atlas-build.py --toktx "C:/DEV/real of trade/realms-of-trade-server/.scratch/tools/ktx-4.4.2/bin/toktx.exe"
+python -B tools/niagara-native-lab/atlas-build.py --check
+node tools/niagara-native-lab/verify-atlas.mjs
+node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs' budget07
+node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs' budget08
+python -B tools/niagara-native-lab/compare-atlas.py budget07
+python -B tools/niagara-native-lab/compare-atlas.py budget08
+python -B tools/niagara-native-lab/check-atlas-repeat.py budget07 budget08
+python -B tools/niagara-native-lab/check-atlas-repeat.py budget03 budget07 --variants source,full,half,quarter,ktx2-uastc
+```

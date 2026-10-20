@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from PIL import Image
 ROOT=Path(__file__).resolve().parents[2]
-KNOWN=['source','full','half','quarter','ktx2-uastc']
+KNOWN=['source','full','half','quarter','ktx2-uastc','ktx2-uastc-box','ktx2-rgba8','ktx2-rgba8-box']
 argv=sys.argv[1:];requested=None
 if '--variants' in argv:
     at=argv.index('--variants')

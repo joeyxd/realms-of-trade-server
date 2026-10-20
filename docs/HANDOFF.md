@@ -1,5 +1,20 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01c, 2026-10-20 — mips frente a códec (2x2): domina la cadena de mips; UASTC añade poco:**
+[Entrega](delivery/st01c/ATLAS-LAB.md) sección «Cadena de mips frente a códec (descomposición 2x2)»,
+[checkpoint](delivery/st01c/atlas-mip-checkpoint.json). Tres variantes diagnósticas (nunca automáticas):
+`ktx2-rgba8` (RGBA8 sRGB sin códec, mips toktx lanczos4), `ktx2-rgba8-box` y `ktx2-uastc-box` (`--filter box`).
+Fallos/268, todos por maskIoU32 (mín. 0,852941 en el mismo caso en las cuatro: humo, celda 12, frontal, 0 EV):
+rgba8 31, uastc 37, rgba8-box 43, uastc-box 47; full 0; 6/6 UE pasan en todas. El nivel 0 de los KTX2 RGBA8 es
+byte-idéntico al PNG decodificado y el sampler coincide con el camino WebP: los 31 fallos vienen solo de los
+niveles 1-11. toktx box ≈ caja 2x2 en luz lineal (±1 LSB) y aun así se aleja más del driver que lanczos4: los
+mips de ANGLE D3D11 no son esa caja (filtro sin medir). Runs idénticos budget07/08 y del verificador budget09/10
+(2.144 imágenes); legado píxel-idéntico a budget03. uastc-box 7,67 MiB BC7; rgba8 30,67 MiB. Pin del manifiesto
+9731837e (atlas-gpu-checkpoint.json conserva befcf4f9). `MOBILE_MEMORY_ACCEPTED` sigue false. La referencia
+del gate es el render con mips del driver: toda cadena de mips en archivo (obligatoria en formatos comprimidos)
+deriva en contornos tenues. Sigue (autor): qué referencia vale para variantes con mips en archivo; medición
+barata propuesta: solo el códec (uastc contra rgba8 con los mismos mips, sin renders nuevos).
+
 **ST01c, 2026-10-19 — compresión GPU medida (KTX2 UASTC): memoria sí, silueta no; sigue aislar mips:**
 [Entrega](delivery/st01c/ATLAS-LAB.md) sección «Compresión GPU a resolución completa (KTX2 UASTC)»,
 [checkpoint GPU](delivery/st01c/atlas-gpu-checkpoint.json). Variante `ktx2-uastc` (toktx 4.4.2 portable,

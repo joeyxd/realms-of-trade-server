@@ -22,7 +22,7 @@ const browser=await chromium.launch(launch);
 const results=[];
 const manifest=JSON.parse(await fs.readFile(new URL('./atlas-manifest.json',import.meta.url),'utf8'));
 try{
-  for(const variant of ['source','full','half','quarter','ktx2-uastc']){
+  for(const variant of ['source','full','half','quarter','ktx2-uastc','ktx2-uastc-box','ktx2-rgba8','ktx2-rgba8-box']){
     const directory=new URL(variant+'/',out);await fs.mkdir(directory,{recursive:true});
     const page=await browser.newPage({viewport:{width:1280,height:1150}}),errors=[],requests=[];
     page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
@@ -49,9 +49,14 @@ try{
     await page.screenshot({path:fileURLToPath(new URL('mobile-layout.png',directory)),fullPage:true});
     const stats=await page.evaluate(()=>budgetLab.stats);
     const gpu=await page.evaluate(()=>budgetLab.gpu),extensions=await page.evaluate(()=>budgetLab.extensions),device=await page.evaluate(()=>budgetLab.device);
-    if(variant==='ktx2-uastc'){assert.notEqual(gpu.format,'RGBAFormat',`KTX2 fell back to RGBA8; extensions ${JSON.stringify(extensions)}`);assert.ok(gpu.bytes>0&&gpu.bitsPerPixel<32);
-      assert.equal(gpu.loader,'KTX2Loader');assert.equal(gpu.colorSpace,'srgb');}
+    if(variant.startsWith('ktx2-uastc')){assert.notEqual(gpu.format,'RGBAFormat',`KTX2 fell back to RGBA8; extensions ${JSON.stringify(extensions)}`);assert.ok(gpu.bytes>0&&gpu.bitsPerPixel<32);}
+    // Raw KTX2 keeps RGBA8: same bytes as the driver-mipped WebP path, but the chain comes from the file.
     else{assert.equal(gpu.format,'RGBAFormat');assert.equal(gpu.bytes,stats.atlasMipRgba8Bytes);}
+    if(variant.startsWith('ktx2-')){assert.equal(gpu.loader,'KTX2Loader');assert.equal(gpu.colorSpace,'srgb');
+      // Every KTX2 variant uploads its own full chain; the driver must not regenerate it.
+      assert.equal(gpu.mipSource,'file');assert.equal(gpu.driverGeneratesMips,false);assert.deepEqual(gpu.mipCount,[12,12]);
+      assert.ok(gpu.textures.every(t=>t.uploadedBytes===t.bytes&&t.mipSource==='file'&&t.driverGeneratesMips===false));}
+    else assert.equal(gpu.mipSource,'driver');
     const atlasRequests=requests.filter(r=>/\/textures\/.+\.png|\/atlas-build\/v1\/.+\.(webp|ktx2)/.test(r.url));
     assert.equal(atlasRequests.length,2);assert.deepEqual(atlasRequests.map(r=>new URL(r.url).pathname).sort(),selected.map(r=>r.url).sort());
     assert.ok(requests.every(r=>r.method==='GET'&&(r.url.startsWith('http://127.0.0.1:5197/')||r.url.startsWith('blob:'))));

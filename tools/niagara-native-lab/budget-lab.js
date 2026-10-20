@@ -15,6 +15,11 @@ const GPU_FORMATS = new Map([
   [THREE.RGB_ETC2_Format, ['RGB_ETC2_Format', 4, 8]], [THREE.RGB_ETC1_Format, ['RGB_ETC1_Format', 4, 8]]]);
 const mipChain = (width, height) => { const levels = [];
   for (;;) { levels.push([width, height]); if (width === 1 && height === 1) return levels; width = Math.max(1, width >> 1); height = Math.max(1, height >> 1); } };
+// Three r160 does not expose the WebGL internal format it picks, so name it from the rules in WebGLTextures.getInternalFormat
+// (derived, not queried from the driver): RGBA8 uploads as SRGB8_ALPHA8 when the colour space is sRGB, BPTC as its sRGB variant.
+const internalFormatOf = texture => texture.format === THREE.RGBAFormat && texture.type === THREE.UnsignedByteType
+  ? (texture.colorSpace === THREE.SRGBColorSpace ? 'SRGB8_ALPHA8' : 'RGBA8')
+  : texture.format === THREE.RGBA_BPTC_Format ? (texture.colorSpace === THREE.SRGBColorSpace ? 'COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT' : 'COMPRESSED_RGBA_BPTC_UNORM_EXT') : null;
 function gpuTextureReport(texture, row) {
   const entry = GPU_FORMATS.get(texture.format); if (!entry) throw new Error(`Unmapped GPU texture format: ${texture.format}`);
   const [format, bitsPerPixel, blockBytes] = entry, compressed = texture.mipmaps.length > 0;
@@ -23,12 +28,15 @@ function gpuTextureReport(texture, row) {
   const bytes = levels.reduce((n, [w, h]) => n + (blockBytes ? Math.ceil(w / 4) * Math.ceil(h / 4) * blockBytes : w * h * bitsPerPixel / 8), 0);
   const uploadedBytes = compressed ? texture.mipmaps.reduce((n, m) => n + m.data.byteLength, 0) : null;
   if (compressed && uploadedBytes !== bytes) throw new Error('Compressed mip bytes differ from the block estimate');
-  return { id: row.inputId || row.id, format, bitsPerPixel, bytes, uploadedBytes, mipCount: levels.length, width: row.dimensions[0], height: row.dimensions[1] };
+  return { id: row.inputId || row.id, format, internalFormat: internalFormatOf(texture), bitsPerPixel, bytes, uploadedBytes, mipCount: levels.length,
+    mipSource: compressed ? 'file' : 'driver', driverGeneratesMips: texture.generateMipmaps, colorSpace: texture.colorSpace,
+    width: row.dimensions[0], height: row.dimensions[1] };
 }
 function gpuSummary(reports, rows, texture0, loader) {
   if (new Set(reports.map(r => r.format)).size !== 1) throw new Error('Mixed GPU formats in one atlas pair');
   return { format: reports[0].format, bitsPerPixel: reports[0].bitsPerPixel, bytes: reports.reduce((n, r) => n + r.bytes, 0),
     mipCount: reports.map(r => r.mipCount), supercompression: rows[0].supercompression || 'none',
+    internalFormat: reports[0].internalFormat, mipSource: reports[0].mipSource, driverGeneratesMips: reports.some(r => r.driverGeneratesMips),
     colorSpace: texture0.colorSpace, loader, textures: reports };
 }
 const state = { ready: false, errors: [] }; window.budgetLab = state;
@@ -66,6 +74,10 @@ try {
         ktx2Loader = own(new KTX2Loader().setTranscoderPath('/node_modules/three/examples/jsm/libs/basis/').detectSupport(renderer)); }
       texture = own(await ktx2Loader.loadAsync(url)); textures.push(texture);
       if (texture.mipmaps.length !== row.levelCount) throw new Error('Unexpected KTX2 mip chain');
+      // Uncompressed KTX2 comes back as a DataTexture with the Nearest defaults (the loader only sets filters for transcoded textures);
+      // give it the sampling state of the other paths. Its own mip chain is still uploaded and the driver does not regenerate it.
+      if (row.codec === 'rgba8') { texture.minFilter = THREE.LinearMipmapLinearFilter; texture.magFilter = THREE.LinearFilter; }
+      if (texture.generateMipmaps) throw new Error('KTX2 texture would get driver-generated mips');
       // The container declares sRGB and a full chain; the loader must not need any override.
       if (texture.colorSpace !== THREE.SRGBColorSpace || texture.minFilter !== THREE.LinearMipmapLinearFilter) throw new Error('KTX2 sampling state differs from the WebP path');
     } else {
@@ -127,7 +139,8 @@ try {
       `GPU ${state.gpu.loader === 'KTX2Loader' ? 'medida' : '(RGBA8 estimado)'}: ${state.gpu.format} · ${state.gpu.bitsPerPixel} bpp · ${(state.gpu.bytes/1048576).toFixed(2)} MiB · ${state.gpu.mipCount.join('/')} niveles\n`+
       `${particles.count} partículas · ${state.stats.calls} draw calls · LUT 256 KiB · targets 5 MiB estimados\n`+
       (['half','quarter'].includes(variant)?'Diagnóstico: esta reducción no pasó todas las pruebas de silueta.':
-        variant === 'ktx2-uastc'?'Diagnóstico: compresión GPU con pérdida; fidelidad y presupuesto de memoria móvil pendientes.':
+        variant === 'ktx2-uastc' || variant === 'ktx2-uastc-box'?'Diagnóstico: compresión GPU con pérdida; fidelidad y presupuesto de memoria móvil pendientes.':
+        variant.startsWith('ktx2-rgba8')?'Diagnóstico: RGBA8 sin códec con la cadena de mips de toktx; separa los mips del códec.':
         'Detalle original conservado; presupuesto de memoria móvil pendiente.');
   }
   state.configure = options => {

@@ -38,13 +38,14 @@
     "fullVariant": "exact source RGBA pixels",
     "gpuEncoding": "ktx2-uastc: full 256 px cells, lossy UASTC quality 4 via toktx, mipmaps stored in file (toktx default filter), sRGB transfer, Zstandard level 3, no RDO; origin flipped to lower-left",
     "gutters": "none; preserve source cell UV boundaries",
+    "mipDecomposition": "diagnostic 2x2 over ktx2-uastc: ktx2-uastc-box (same line plus --filter box), ktx2-rgba8 (raw R8G8B8A8_SRGB, toktx default filter) and ktx2-rgba8-box (raw plus --filter box); never chosen by the automatic selection",
     "resize": "per-cell Lanczos; RGB decoded to linear sRGB then encoded; alpha resized separately",
     "textHashNormalization": "UTF-8 text with CRLF normalized to LF"
   },
   "schema": "st01c-atlas-build/v1",
   "sourceSpecSha256": "dee3fe58e795106ad81915eae3df9d3ecadddd45182ff6b99aa811607fd1a255",
   "sourceSystemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
-  "toolSha256": "0469acf5de19f1a10217ef82a7f591c04dace1930204b44b773235457a7dcf82",
+  "toolSha256": "d3e5040bc335b8e26d48d59e305f036cc9e13dfb4686ea090e23d77d72ee61ee",
   "variants": [
     {
       "bytes": 277976,
@@ -117,6 +118,338 @@
       "inputId": "smoke",
       "mipRgba8Bytes": 5242872,
       "sha256": "92146ad4f999d4912749d915637c4f4a36d876e84e82a1391c277adc0df82f05"
+    },
+    {
+      "bytes": 1045650,
+      "cellSize": 256,
+      "codec": "rgba8",
+      "colorModel": "RGBSDA",
+      "container": "ktx2",
+      "dimensions": [
+        2048,
+        1024
+      ],
+      "encodedFromRgbaSha256": "ef5c19227fd76c2c2caf8ff3a5f0cd4668f3ca30a33f96bebf39aeca970e555b",
+      "encoder": {
+        "commandLine": "toktx --t2 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-rgba8-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png",
+        "name": "toktx",
+        "version": "toktx v4.4.2",
+        "workingDirectory": "empty temp folder; input path is workspace-relative"
+      },
+      "file": "ktx2-rgba8-flame.ktx2",
+      "gpuBlockBytes": 11184812,
+      "grid": [
+        8,
+        4
+      ],
+      "id": "ktx2-rgba8",
+      "inputId": "flame",
+      "levelCount": 12,
+      "levels": [
+        {
+          "byteLength": 698601,
+          "uncompressedByteLength": 8388608
+        },
+        {
+          "byteLength": 232083,
+          "uncompressedByteLength": 2097152
+        },
+        {
+          "byteLength": 76957,
+          "uncompressedByteLength": 524288
+        },
+        {
+          "byteLength": 25130,
+          "uncompressedByteLength": 131072
+        },
+        {
+          "byteLength": 8560,
+          "uncompressedByteLength": 32768
+        },
+        {
+          "byteLength": 2641,
+          "uncompressedByteLength": 8192
+        },
+        {
+          "byteLength": 704,
+          "uncompressedByteLength": 2048
+        },
+        {
+          "byteLength": 266,
+          "uncompressedByteLength": 512
+        },
+        {
+          "byteLength": 80,
+          "uncompressedByteLength": 128
+        },
+        {
+          "byteLength": 38,
+          "uncompressedByteLength": 32
+        },
+        {
+          "byteLength": 17,
+          "uncompressedByteLength": 8
+        },
+        {
+          "byteLength": 13,
+          "uncompressedByteLength": 4
+        }
+      ],
+      "lossy": false,
+      "mipRgba8Bytes": 11184812,
+      "primaries": "bt709",
+      "sha256": "1dc26612e0808c5ffdba83f9d8936c6db6359026c93a5cbc130f2397bfd3e1ef",
+      "supercompression": "zstd",
+      "transfer": "srgb"
+    },
+    {
+      "bytes": 1057587,
+      "cellSize": 256,
+      "codec": "rgba8",
+      "colorModel": "RGBSDA",
+      "container": "ktx2",
+      "dimensions": [
+        2560,
+        1536
+      ],
+      "encodedFromRgbaSha256": "e8f683fa681a8baeb742e4f2c74382581e3bc15c00016d3682cdce40cf24d177",
+      "encoder": {
+        "commandLine": "toktx --t2 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-rgba8-smoke.ktx2 .scratch/unreal/reference11/textures/T_Smoke_1.png",
+        "name": "toktx",
+        "version": "toktx v4.4.2",
+        "workingDirectory": "empty temp folder; input path is workspace-relative"
+      },
+      "file": "ktx2-rgba8-smoke.ktx2",
+      "gpuBlockBytes": 20971512,
+      "grid": [
+        10,
+        6
+      ],
+      "id": "ktx2-rgba8",
+      "inputId": "smoke",
+      "levelCount": 12,
+      "levels": [
+        {
+          "byteLength": 700566,
+          "uncompressedByteLength": 15728640
+        },
+        {
+          "byteLength": 238398,
+          "uncompressedByteLength": 3932160
+        },
+        {
+          "byteLength": 78701,
+          "uncompressedByteLength": 983040
+        },
+        {
+          "byteLength": 24323,
+          "uncompressedByteLength": 245760
+        },
+        {
+          "byteLength": 10311,
+          "uncompressedByteLength": 61440
+        },
+        {
+          "byteLength": 3262,
+          "uncompressedByteLength": 15360
+        },
+        {
+          "byteLength": 906,
+          "uncompressedByteLength": 3840
+        },
+        {
+          "byteLength": 377,
+          "uncompressedByteLength": 960
+        },
+        {
+          "byteLength": 108,
+          "uncompressedByteLength": 240
+        },
+        {
+          "byteLength": 45,
+          "uncompressedByteLength": 60
+        },
+        {
+          "byteLength": 17,
+          "uncompressedByteLength": 8
+        },
+        {
+          "byteLength": 13,
+          "uncompressedByteLength": 4
+        }
+      ],
+      "lossy": false,
+      "mipRgba8Bytes": 20971512,
+      "primaries": "bt709",
+      "sha256": "8c95f90bde8f5e1d04a37cb1b69c678158f8bb958bacec6df8732ae9db0529a2",
+      "supercompression": "zstd",
+      "transfer": "srgb"
+    },
+    {
+      "bytes": 1033167,
+      "cellSize": 256,
+      "codec": "rgba8",
+      "colorModel": "RGBSDA",
+      "container": "ktx2",
+      "dimensions": [
+        2048,
+        1024
+      ],
+      "encodedFromRgbaSha256": "ef5c19227fd76c2c2caf8ff3a5f0cd4668f3ca30a33f96bebf39aeca970e555b",
+      "encoder": {
+        "commandLine": "toktx --t2 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb --filter box ktx2-rgba8-box-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png",
+        "name": "toktx",
+        "version": "toktx v4.4.2",
+        "workingDirectory": "empty temp folder; input path is workspace-relative"
+      },
+      "file": "ktx2-rgba8-box-flame.ktx2",
+      "gpuBlockBytes": 11184812,
+      "grid": [
+        8,
+        4
+      ],
+      "id": "ktx2-rgba8-box",
+      "inputId": "flame",
+      "levelCount": 12,
+      "levels": [
+        {
+          "byteLength": 698601,
+          "uncompressedByteLength": 8388608
+        },
+        {
+          "byteLength": 226791,
+          "uncompressedByteLength": 2097152
+        },
+        {
+          "byteLength": 73807,
+          "uncompressedByteLength": 524288
+        },
+        {
+          "byteLength": 22969,
+          "uncompressedByteLength": 131072
+        },
+        {
+          "byteLength": 7116,
+          "uncompressedByteLength": 32768
+        },
+        {
+          "byteLength": 2124,
+          "uncompressedByteLength": 8192
+        },
+        {
+          "byteLength": 744,
+          "uncompressedByteLength": 2048
+        },
+        {
+          "byteLength": 297,
+          "uncompressedByteLength": 512
+        },
+        {
+          "byteLength": 87,
+          "uncompressedByteLength": 128
+        },
+        {
+          "byteLength": 41,
+          "uncompressedByteLength": 32
+        },
+        {
+          "byteLength": 17,
+          "uncompressedByteLength": 8
+        },
+        {
+          "byteLength": 13,
+          "uncompressedByteLength": 4
+        }
+      ],
+      "lossy": false,
+      "mipRgba8Bytes": 11184812,
+      "primaries": "bt709",
+      "sha256": "482ffbf19f922f9d0d1335c151da6919cf4b16ea5e0849efd5a22c7a11db0740",
+      "supercompression": "zstd",
+      "transfer": "srgb"
+    },
+    {
+      "bytes": 1027361,
+      "cellSize": 256,
+      "codec": "rgba8",
+      "colorModel": "RGBSDA",
+      "container": "ktx2",
+      "dimensions": [
+        2560,
+        1536
+      ],
+      "encodedFromRgbaSha256": "e8f683fa681a8baeb742e4f2c74382581e3bc15c00016d3682cdce40cf24d177",
+      "encoder": {
+        "commandLine": "toktx --t2 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb --filter box ktx2-rgba8-box-smoke.ktx2 .scratch/unreal/reference11/textures/T_Smoke_1.png",
+        "name": "toktx",
+        "version": "toktx v4.4.2",
+        "workingDirectory": "empty temp folder; input path is workspace-relative"
+      },
+      "file": "ktx2-rgba8-box-smoke.ktx2",
+      "gpuBlockBytes": 20971512,
+      "grid": [
+        10,
+        6
+      ],
+      "id": "ktx2-rgba8-box",
+      "inputId": "smoke",
+      "levelCount": 12,
+      "levels": [
+        {
+          "byteLength": 700566,
+          "uncompressedByteLength": 15728640
+        },
+        {
+          "byteLength": 220920,
+          "uncompressedByteLength": 3932160
+        },
+        {
+          "byteLength": 72548,
+          "uncompressedByteLength": 983040
+        },
+        {
+          "byteLength": 20769,
+          "uncompressedByteLength": 245760
+        },
+        {
+          "byteLength": 8122,
+          "uncompressedByteLength": 61440
+        },
+        {
+          "byteLength": 2482,
+          "uncompressedByteLength": 15360
+        },
+        {
+          "byteLength": 845,
+          "uncompressedByteLength": 3840
+        },
+        {
+          "byteLength": 358,
+          "uncompressedByteLength": 960
+        },
+        {
+          "byteLength": 114,
+          "uncompressedByteLength": 240
+        },
+        {
+          "byteLength": 47,
+          "uncompressedByteLength": 60
+        },
+        {
+          "byteLength": 17,
+          "uncompressedByteLength": 8
+        },
+        {
+          "byteLength": 13,
+          "uncompressedByteLength": 4
+        }
+      ],
+      "lossy": false,
+      "mipRgba8Bytes": 20971512,
+      "primaries": "bt709",
+      "sha256": "3f75178f121655905c5b3d25d988fe908e82e5bde05909ae1f906d4e8cfed110",
+      "supercompression": "zstd",
+      "transfer": "srgb"
     },
     {
       "bytes": 688923,
@@ -281,6 +614,172 @@
       "mipRgba8Bytes": 20971512,
       "primaries": "bt709",
       "sha256": "aa4757a19f82375727879b7d91e5445dfa76300580cb4f1cd1ea300890e8d347",
+      "supercompression": "zstd",
+      "transfer": "srgb"
+    },
+    {
+      "bytes": 684208,
+      "cellSize": 256,
+      "codec": "uastc",
+      "colorModel": "UASTC",
+      "container": "ktx2",
+      "dimensions": [
+        2048,
+        1024
+      ],
+      "encodedFromRgbaSha256": "ef5c19227fd76c2c2caf8ff3a5f0cd4668f3ca30a33f96bebf39aeca970e555b",
+      "encoder": {
+        "commandLine": "toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb --filter box ktx2-uastc-box-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png",
+        "name": "toktx",
+        "version": "toktx v4.4.2",
+        "workingDirectory": "empty temp folder; input path is workspace-relative"
+      },
+      "file": "ktx2-uastc-box-flame.ktx2",
+      "gpuBlockBytes": 2796240,
+      "grid": [
+        8,
+        4
+      ],
+      "id": "ktx2-uastc-box",
+      "inputId": "flame",
+      "levelCount": 12,
+      "levels": [
+        {
+          "byteLength": 486350,
+          "uncompressedByteLength": 2097152
+        },
+        {
+          "byteLength": 137773,
+          "uncompressedByteLength": 524288
+        },
+        {
+          "byteLength": 40620,
+          "uncompressedByteLength": 131072
+        },
+        {
+          "byteLength": 12537,
+          "uncompressedByteLength": 32768
+        },
+        {
+          "byteLength": 3936,
+          "uncompressedByteLength": 8192
+        },
+        {
+          "byteLength": 1719,
+          "uncompressedByteLength": 2048
+        },
+        {
+          "byteLength": 476,
+          "uncompressedByteLength": 512
+        },
+        {
+          "byteLength": 137,
+          "uncompressedByteLength": 128
+        },
+        {
+          "byteLength": 41,
+          "uncompressedByteLength": 32
+        },
+        {
+          "byteLength": 25,
+          "uncompressedByteLength": 16
+        },
+        {
+          "byteLength": 25,
+          "uncompressedByteLength": 16
+        },
+        {
+          "byteLength": 25,
+          "uncompressedByteLength": 16
+        }
+      ],
+      "lossy": true,
+      "mipRgba8Bytes": 11184812,
+      "primaries": "bt709",
+      "sha256": "0e2aabe3204e70df3138af3077f0df361b9c8174b482149a0c36a54401e3f371",
+      "supercompression": "zstd",
+      "transfer": "srgb"
+    },
+    {
+      "bytes": 697150,
+      "cellSize": 256,
+      "codec": "uastc",
+      "colorModel": "UASTC",
+      "container": "ktx2",
+      "dimensions": [
+        2560,
+        1536
+      ],
+      "encodedFromRgbaSha256": "e8f683fa681a8baeb742e4f2c74382581e3bc15c00016d3682cdce40cf24d177",
+      "encoder": {
+        "commandLine": "toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb --filter box ktx2-uastc-box-smoke.ktx2 .scratch/unreal/reference11/textures/T_Smoke_1.png",
+        "name": "toktx",
+        "version": "toktx v4.4.2",
+        "workingDirectory": "empty temp folder; input path is workspace-relative"
+      },
+      "file": "ktx2-uastc-box-smoke.ktx2",
+      "gpuBlockBytes": 5242960,
+      "grid": [
+        10,
+        6
+      ],
+      "id": "ktx2-uastc-box",
+      "inputId": "smoke",
+      "levelCount": 12,
+      "levels": [
+        {
+          "byteLength": 482492,
+          "uncompressedByteLength": 3932160
+        },
+        {
+          "byteLength": 146111,
+          "uncompressedByteLength": 983040
+        },
+        {
+          "byteLength": 44583,
+          "uncompressedByteLength": 245760
+        },
+        {
+          "byteLength": 15124,
+          "uncompressedByteLength": 61440
+        },
+        {
+          "byteLength": 4764,
+          "uncompressedByteLength": 15360
+        },
+        {
+          "byteLength": 2474,
+          "uncompressedByteLength": 3840
+        },
+        {
+          "byteLength": 663,
+          "uncompressedByteLength": 960
+        },
+        {
+          "byteLength": 199,
+          "uncompressedByteLength": 240
+        },
+        {
+          "byteLength": 105,
+          "uncompressedByteLength": 96
+        },
+        {
+          "byteLength": 41,
+          "uncompressedByteLength": 32
+        },
+        {
+          "byteLength": 25,
+          "uncompressedByteLength": 16
+        },
+        {
+          "byteLength": 25,
+          "uncompressedByteLength": 16
+        }
+      ],
+      "lossy": true,
+      "mipRgba8Bytes": 20971512,
+      "primaries": "bt709",
+      "sha256": "3864d59bfb8a8bb0d5740c4cbcb370a6250c2735ebd10dbe449a80ca8bd4383f",
       "supercompression": "zstd",
       "transfer": "srgb"
     },

@@ -137,3 +137,11 @@ de comandos quedan en el manifiesto. `budget.html?variant=ktx2-uastc` carga el p
 `extensions` y el lanzamiento del navegador en `browser.json`. `--variants` de
 `check-atlas-repeat.py` compara solo las variantes indicadas (por defecto, las presentes
 en ambas corridas).
+
+**Cadena de mips frente a códec, 2026-10-20:** tres variantes diagnósticas (`ktx2-uastc-box`,
+`ktx2-rgba8`, `ktx2-rgba8-box`) forman con `ktx2-uastc` una descomposición 2x2 (mips de
+`toktx` por defecto o `--filter box`; RGBA8 sin códec o UASTC). Nunca entran en la selección
+automática. Resultado en la [entrega](../../docs/delivery/st01c/ATLAS-LAB.md) y
+`atlas-mip-checkpoint.json` (corridas `budget07` y `budget08`); `MOBILE_MEMORY_ACCEPTED` sigue
+en `false`. `qa-atlas.mjs` recorre ocho variantes y `check-atlas-repeat.py` compara por
+defecto las presentes en ambas corridas.

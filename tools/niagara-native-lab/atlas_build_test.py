@@ -96,6 +96,44 @@ class AtlasBuildTests(unittest.TestCase):
             self.assertEqual(command[0], "toktx")
             self.assertIn("--encode uastc", " ".join(command))
 
+    def test_diagnostic_recipes_are_a_2x2_over_the_uastc_line(self):
+        recipes = atlas_build.KTX2_RECIPES
+        self.assertEqual(recipes["ktx2-uastc"], ("--t2", "--encode", "uastc", "--uastc_quality", "4", "--zcmp", "3", "--genmipmap",
+                                                 "--lower_left_maps_to_s0t0", "--assign_oetf", "srgb", "--assign_primaries", "srgb"))
+        self.assertEqual(recipes["ktx2-uastc-box"], recipes["ktx2-uastc"] + ("--filter", "box"))
+        self.assertEqual(recipes["ktx2-rgba8"], ("--t2", "--zcmp", "3", "--genmipmap", "--lower_left_maps_to_s0t0",
+                                                 "--assign_oetf", "srgb", "--assign_primaries", "srgb"))
+        self.assertEqual(recipes["ktx2-rgba8-box"], recipes["ktx2-rgba8"] + ("--filter", "box"))
+        self.assertNotIn("--filter", recipes["ktx2-uastc"] + recipes["ktx2-rgba8"])
+        self.assertEqual(set(atlas_build.EXPECTED_VARIANTS) | set(atlas_build.DIAGNOSTIC_VARIANTS), {*atlas_build.WEBP_VARIANTS, *recipes})
+        self.assertFalse(set(atlas_build.EXPECTED_VARIANTS) & set(atlas_build.DIAGNOSTIC_VARIANTS))
+
+    def test_rgba8_variants_write_raw_srgb_levels_and_box_changes_only_the_mips(self):
+        if not atlas_build.DEFAULT_TOKTX.is_file():
+            self.skipTest("portable toktx is not installed")
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "noise.png"
+            image = Image.new("RGBA", (16, 8))
+            image.putdata([((x * 37 + y * 11) % 256, (x * x * 5 + y * 3) % 256, (x * y * 7) % 256, 255 - (x + y) % 3 * 60)
+                           for y in range(8) for x in range(16)])
+            image.save(source)
+            row = {"id": "flame", "dimensions": [16, 8], "file": "noise.png"}
+            built = {}
+            for ident in ("ktx2-rgba8", "ktx2-rgba8-box"):
+                name, data, info, command = atlas_build.encode_ktx2(atlas_build.DEFAULT_TOKTX, ident, row, source, Path(temp))
+                self.assertEqual(name, f"{ident}-flame.ktx2")
+                self.assertEqual((info["vkFormat"], info["colorModel"], info["primaries"], info["transfer"]), (43, 1, 1, 2))
+                self.assertEqual([level["uncompressedByteLength"] for level in info["levels"]], [512, 128, 32, 8, 4])
+                self.assertNotIn("--encode", command)
+                self.assertEqual("--filter box" in " ".join(command), ident.endswith("-box"))
+                built[ident] = data
+            self.assertNotEqual(built["ktx2-rgba8"], built["ktx2-rgba8-box"])
+            again = atlas_build.encode_ktx2(atlas_build.DEFAULT_TOKTX, "ktx2-rgba8-box", row, source, Path(temp))[1]
+            self.assertEqual(again, built["ktx2-rgba8-box"])
+            box = atlas_build.encode_ktx2(atlas_build.DEFAULT_TOKTX, "ktx2-uastc-box", row, source, Path(temp))
+            self.assertEqual((box[2]["vkFormat"], box[2]["colorModel"], len(box[2]["levels"])), (0, 166, 5))
+            self.assertIn("--filter box", " ".join(box[3]))
+
 
 if __name__ == "__main__":
     unittest.main()
