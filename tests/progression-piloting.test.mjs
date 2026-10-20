@@ -51,7 +51,7 @@ test('later logging practice retains piloting version and milestone', () => {
 test('v1 cannot claim a future technique; malformed v2 and future versions fail closed', () => {
   const learned = learnCoastalPilot().progression;
   for (const invalid of [
-    { ...learned, v: 1 }, { ...learned, v: 3 },
+    { ...learned, v: 1 }, { ...learned, v: 4 },
     { ...learned, milestones: ['pilot_coastal', 'pilot_coastal'] },
     { ...learned, milestones: ['pilot_coastal', 'unknown'] },
     { ...learned, practice: { logging: 0, piloting: 999 } },

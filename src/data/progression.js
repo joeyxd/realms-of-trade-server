@@ -3,6 +3,8 @@
 import { RESOURCE_KINDS } from './resources.js';
 
 export const PROGRESSION_VERSION = 1;
+export const SKILLS_PROGRESSION_VERSION = 3;
+export const SKILL_PRACTICE_MAX = 1_000_000_000;
 // Keep v1 profiles byte-compatible until this first pilot milestone is actually learned.
 export const PILOTING = Object.freeze({
   version: 2,

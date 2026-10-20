@@ -1,12 +1,11 @@
 // Skill sheet (SK02, PLAN-SKILLS.md 2.1, 2.3, 2.4 and 3.1 to 3.3): the read-only `tree` kind of the Habilidades tab.
 // A pure view model plus html builders: no DOM, no profile writes. The state is derived from the live profile with
-// absent-preserving reads (a real `progression` field always wins over the fallbacks below), then drawn as three
+// absent-preserving reads (combat practice always comes from weapon mastery), then drawn as three
 // columns: the tree list, the 5x3 node grid and the node detail. The character screen owns selection and clicks.
-import { MASTERY, WEAPON_KINDS } from '../data/weapons.js';
-import { ARTS } from '../data/tattoos.js';
+import { WEAPON_KINDS } from '../data/weapons.js';
 import {
-  CURVES, MAX_NODE_RANK, MAX_TREE_RANK, NODES, TIERS, TREES, gateState, migrateTattooRank, nodeById, nodeRank,
-  nodesByTier, pointsEarned, pointsSpent, practiceOf, practiceToNext, tierOpen, treeRank,
+  CURVES, MAX_NODE_RANK, MAX_TREE_RANK, TIERS, TREES, combatPractice, gateState, legacySkills, nodeById, nodeRank,
+  nodesByTier, pointsEarned, pointsFree, pointsSpent, practiceOf, practiceToNext, skillGrant, tierOpen, treeRank,
 } from '../data/skillTree.js';
 import { skillIcon } from './hud.js';
 import { loggingSkillHtml } from './loggingSkill.js';
@@ -25,7 +24,7 @@ const fill = (s, p) => String(s).replace(/\{(\w+)\}/g, (_, k) => String(p[k] ?? 
 const COPY = {
   es: {
     trees: 'Árboles', points: 'Puntos de habilidad', earned: 'Ganados', spent: 'Gastados', free: 'Libres', freeTip: 'Puntos libres',
-    rank: 'Rango', practice: 'Práctica', maxRank: 'Rango máximo', provisional: 'Práctica provisional: suma de la maestría de tus armas.',
+    rank: 'Rango', practice: 'Práctica', maxRank: 'Rango máximo', combatPractice: 'Práctica de combate: suma de la maestría de tus armas.',
     pick: 'Elige una habilidad de la rejilla para ver su detalle.', trained: 'Se entrena con {activity}.',
     kind: { active: 'Activa', technique: 'Técnica', passive: 'Pasiva' },
     now: 'Ahora', next: 'Siguiente', tbd: 'Efecto por definir', none: 'Ninguno',
@@ -41,7 +40,7 @@ const COPY = {
   },
   en: {
     trees: 'Trees', points: 'Skill points', earned: 'Earned', spent: 'Spent', free: 'Free', freeTip: 'Free points',
-    rank: 'Rank', practice: 'Practice', maxRank: 'Max rank', provisional: 'Provisional practice: the sum of your weapon mastery.',
+    rank: 'Rank', practice: 'Practice', maxRank: 'Max rank', combatPractice: 'Combat practice: the sum of your weapon mastery.',
     pick: 'Pick a skill on the grid to see its detail.', trained: 'Trained by {activity}.',
     kind: { active: 'Active', technique: 'Technique', passive: 'Passive' },
     now: 'Now', next: 'Next', tbd: 'Effect to be defined', none: 'None',
@@ -73,47 +72,23 @@ export function skillSheetState(profile, weaponIndex = 0) {
   const levelAt = (i) => { const v = Math.floor(Number(p?.mast?.[i]?.[0])); return Number.isFinite(v) && v > 0 ? v : 0; };
   const mastery = Object.fromEntries(WEAPON_KINDS.map((kind, i) => [kind, levelAt(i)]));
 
-  const practice = { combat: 0, logging: 0, survival: 0, sailing: 0, crafting: 0, trade: 0 };
+  const practice = { combat: combatPractice(p?.mast), logging: 0, survival: 0, sailing: 0, crafting: 0, trade: 0 };
   for (const key of PRACTICE_KEYS) practice[key] = count(progression?.practice?.[key]);
-  const real = progression?.practice?.combat;
-  const provisional = { combat: false };
-  if (typeof real === 'number' && Number.isFinite(real)) practice.combat = Math.max(0, real);
-  else {
-    // No server counter yet: the XP gathered in every weapon's mastery (the levels passed plus the current bar).
-    provisional.combat = true;
-    let sum = 0;
-    WEAPON_KINDS.forEach((_, i) => {
-      const level = Math.min(MASTERY.max, levelAt(i));
-      if (!level) return;
-      for (let n = 0; n < level - 1; n++) sum += MASTERY.xp[n] || 0;
-      sum += count(Number(p?.mast?.[i]?.[1]));
-    });
-    practice.combat = sum;
-  }
 
   const has = isObj(p?.sk?.has) ? p.sk.has : {};
-  let skills;
-  if (isObj(progression?.skills)) skills = { ...progression.skills };
-  else {
-    skills = {};
-    for (const node of NODES) {
-      if (!node.skill) { skills[node.id] = 0; continue; }
-      const art = Object.hasOwn(ARTS, node.skill) ? ARTS[node.skill] : null;
-      if (Object.hasOwn(has, node.skill) && has[node.skill]) skills[node.id] = migrateTattooRank(has[node.skill][0]);
-      else if (art && mastery[art.weapon] >= art.mastery) skills[node.id] = 1;
-      else skills[node.id] = 0;
-    }
-  }
+  const adopted = isObj(progression?.skills);
+  const skills = adopted ? { ...progression.skills } : legacySkills(has, mastery);
 
   const pearl = !!p?.pearls?.swallowed;
   const knows = (id) => !!id && Object.hasOwn(has, id) && !!has[id];
   return {
-    practice, skills, provisional, weapon, mastery, pearl, progression: progression || undefined,
+    practice, skills, weapon, mastery, pearl, progression: progression || undefined,
     knows,
     ctxFor: (node) => ({ weapon, mastery: { ...mastery }, knowledge: knows(node?.skill) ? ['tattoo'] : [], pearl }),
     points: (treeId) => {
-      const earned = pointsEarned(treeId, practice), spent = pointsSpent(treeId, skills);
-      return { earned, spent, free: Math.max(0, earned - spent) };
+      const grant = adopted ? count(progression?.skg?.[treeId]) : skillGrant(treeId, practice, skills);
+      const earned = pointsEarned(treeId, practice) + grant, spent = pointsSpent(treeId, skills);
+      return { earned, spent, free: pointsFree(treeId, practice, skills, grant) };
     },
   };
 }
@@ -260,7 +235,7 @@ function nodeDetailHtml(state, node, lang, extra) {
 function treeSummaryHtml(state, tree, lang) {
   const T = copy(lang), rank = treeRank(tree.id, state.practice), pr = progress(tree.id, state.practice), pts = state.points(tree.id);
   const trained = Object.hasOwn(T.activity, tree.id) ? `<p class="sk-trained">${esc(fill(T.trained, { activity: T.activity[tree.id] }))}</p>` : '';
-  const prov = tree.id === 'combat' && state.provisional.combat ? `<p class="sk-trained">${esc(T.provisional)}</p>` : '';
+  const combat = tree.id === 'combat' ? `<p class="sk-trained">${esc(T.combatPractice)}</p>` : '';
   return `<div class="sk-node is-summary">
     ${heroHtml(tree, 'sk-hero')}
     <div class="sk-node-head"><h2>${esc(tr(tree.name, lang))}</h2><span class="sk-node-rank">${esc(T.rank)} ${rank}/${MAX_TREE_RANK}</span></div>
@@ -269,7 +244,7 @@ function treeSummaryHtml(state, tree, lang) {
     <div class="sk-points-row"><span>${esc(T.earned)}</span><b>${pts.earned}</b></div>
     <div class="sk-points-row"><span>${esc(T.spent)}</span><b>${pts.spent}</b></div>
     <div class="sk-points-row is-free"><span>${esc(T.free)}</span><b>${pts.free}</b></div>
-    ${prov}${trained}
+    ${combat}${trained}
     <p class="sk-pick">${esc(T.pick)}</p>
     ${tree.id === 'survival' ? loggingSkillHtml(state.progression, lang) : ''}</div>`;
 }

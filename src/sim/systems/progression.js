@@ -1,10 +1,16 @@
 // Pure PRG01a logging plans. No live profile/node mutation, I/O, receipts or gameplay activation.
 // Only a trusted host may call this after validating a hit (tool, range, calm, capacity, etc.).
 // A plan is not a durable reward. M5 must commit the final node + all profiles + receipt together.
-import { LOGGING, LOGGING_LESSON, PROGRESSION_VERSION, PILOTING } from '../../data/progression.js';
+import { LOGGING, LOGGING_LESSON, PROGRESSION_VERSION, PILOTING, SKILLS_PROGRESSION_VERSION, SKILL_PRACTICE_MAX } from '../../data/progression.js';
 import { HARVEST, RESOURCE_KINDS } from '../../data/resources.js';
+import { MAX_NODE_RANK, NODES, TREES } from '../../data/skillTree.js';
 
 const PALM = RESOURCE_KINDS.palm;
+const PRACTICE_KEYS = ['survival', 'sailing', 'crafting', 'trade'];
+const OPTIONAL_KEYS = ['skills', 'skr', 'skg'];
+const SKILL_CAPS = Object.fromEntries(NODES.map(n => [n.id, MAX_NODE_RANK]));
+const RESET_CAPS = Object.fromEntries(TREES.map(t => [t.id, 1000]));
+const GRANT_CAPS = Object.fromEntries(TREES.map(t => [t.id, MAX_NODE_RANK * NODES.filter(n => n.tree === t.id).length]));
 const ACTOR = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const NIL = '00000000-0000-0000-0000-000000000000';
 const cmp = (a, b) => a < b ? -1 : a > b ? 1 : 0;
@@ -19,6 +25,13 @@ function exact(o, keys) {
     const d = descriptors[k];
     return d?.enumerable && Object.hasOwn(d, 'value');
   });
+}
+function optional(o, required, allowed) {
+  return object(o) && exact(o, [...required, ...allowed.filter(k => Object.hasOwn(o, k))]);
+}
+function counts(o, caps) {
+  return object(o) && exact(o, Object.keys(o))
+    && Object.keys(o).every(k => Object.hasOwn(caps, k) && integer(o[k], 0, caps[k]));
 }
 function list(a, max) {
   if (!Array.isArray(a) || Object.getPrototypeOf(a) !== Array.prototype
@@ -42,14 +55,35 @@ export function newProgression() {
 // PRG01b1 preserves legacy omission in the profile DTO; activity integration follows separately.
 export function readProgression(raw) {
   if (raw === undefined) return newProgression();
-  if (!exact(raw, ['v', 'practice', 'milestones', 'knowledge']) || ![PROGRESSION_VERSION, PILOTING.version].includes(raw.v)
-      || !exact(raw.practice, ['logging']) || !integer(raw.practice.logging, 0, LOGGING.maxPractice)
+  const required = ['v', 'practice', 'milestones', 'knowledge'];
+  if (!optional(raw, required, OPTIONAL_KEYS)
+      || ![PROGRESSION_VERSION, PILOTING.version, SKILLS_PROGRESSION_VERSION].includes(raw.v)) fail('progression');
+  const skillsVersion = raw.v === SKILLS_PROGRESSION_VERSION;
+  if ((!skillsVersion && !exact(raw, required))
+      || !optional(raw.practice, ['logging'], skillsVersion ? PRACTICE_KEYS : [])
+      || !integer(raw.practice.logging, 0, LOGGING.maxPractice)
+      || PRACTICE_KEYS.some(k => Object.hasOwn(raw.practice, k) && !integer(raw.practice[k], 0, SKILL_PRACTICE_MAX))
       || !list(raw.milestones, raw.v === PROGRESSION_VERSION ? 1 : 2)
-      || raw.milestones.some(id => id !== LOGGING.milestone && !(raw.v === PILOTING.version && id === PILOTING.milestone))
+      || raw.milestones.some(id => id !== LOGGING.milestone && !(raw.v !== PROGRESSION_VERSION && id === PILOTING.milestone))
       || new Set(raw.milestones).size !== raw.milestones.length
-      || !list(raw.knowledge, 1) || raw.knowledge.some(id => id !== LOGGING_LESSON.id)) fail('progression');
-  return { v: raw.v, practice: { logging: raw.practice.logging },
+      || !list(raw.knowledge, 1) || raw.knowledge.some(id => id !== LOGGING_LESSON.id)
+      || (Object.hasOwn(raw, 'skills') && !counts(raw.skills, SKILL_CAPS))
+      || (Object.hasOwn(raw, 'skr') && !counts(raw.skr, RESET_CAPS))
+      || (Object.hasOwn(raw, 'skg') && !counts(raw.skg, GRANT_CAPS))) fail('progression');
+  const progression = { v: raw.v, practice: { ...raw.practice },
     milestones: [...raw.milestones], knowledge: [...raw.knowledge] };
+  for (const key of OPTIONAL_KEYS) if (Object.hasOwn(raw, key)) progression[key] = { ...raw[key] };
+  return progression;
+}
+
+// Pure preparation for SK04/SK06; callers must commit through their authoritative operation.
+export function creditPractice(raw, key, n) {
+  if (!PRACTICE_KEYS.includes(key) || !integer(n, 1, Number.MAX_SAFE_INTEGER)) fail('progression');
+  const progression = readProgression(raw);
+  progression.v = SKILLS_PROGRESSION_VERSION;
+  const current = progression.practice[key] ?? 0;
+  progression.practice[key] = current + Math.min(n, SKILL_PRACTICE_MAX - current);
+  return progression;
 }
 
 export function loggingStatus(raw) {
@@ -71,7 +105,7 @@ export function pilotingStatus(raw) {
 export function learnCoastalPilot(raw) {
   const progression = readProgression(raw);
   if (progression.milestones.includes(PILOTING.milestone)) return { learned: false, progression };
-  progression.v = PILOTING.version;
+  progression.v = Math.max(progression.v, PILOTING.version);
   progression.milestones.push(PILOTING.milestone);
   return { learned: true, progression };
 }

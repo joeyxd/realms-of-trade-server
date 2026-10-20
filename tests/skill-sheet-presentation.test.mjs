@@ -64,7 +64,7 @@ test('combat renders five trees and fifteen node cells; closed tiers carry the l
   assert.equal(count(html.left, /data-tree=/g), 5);
   assert.equal(count(html.center, /data-node=/g), 15);
   assert.doesNotMatch(html.left, /exploration|Exploraci/);
-  // Mastery 3 + 1 gives provisional combat rank 3: tiers I and II are open, III to V closed.
+  // Mastery 3 + 1 gives combat rank 3: tiers I and II are open, III to V closed.
   assert.equal(count(html.center, /class="sk-tier is-closed"/g), 3);
   assert.match(html.center, /class="sk-tier is-closed"[^>]*><b>III<\/b>[\s\S]*?<i class="sk-lock"><svg/);
   assert.match(html.center, /class="sk-tier"[^>]*><b>II<\/b>/);
@@ -138,7 +138,7 @@ test('draft nodes say the effect is to be defined and summaries name how a tree 
   assert.match(text(parts(screen, profile, 'en').right), /Trained by logging/);
   screen.skTree = 'combat';
   assert.doesNotMatch(text(parts(screen, profile, 'es').right), /Se entrena con/);
-  assert.match(text(parts(screen, profile, 'es').right), /Práctica provisional/);
+  assert.match(text(parts(screen, profile, 'es').right), /Práctica de combate: suma de la maestría de tus armas/);
   for (const tree of ['sailing', 'crafting', 'trade']) {
     screen.skTree = tree;
     assert.match(text(parts(screen, profile, 'es').right), /Se entrena con/, tree);

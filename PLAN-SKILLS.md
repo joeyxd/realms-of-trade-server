@@ -133,7 +133,7 @@ Créditos de práctica por actividad (resultado válido del servidor):
 
 | Árbol | Acción | Hook | Estado |
 |---|---|---|---|
-| Combate | baja, parry, guardia, misión de combate | `world.onXp` (inventory.js:204): añadir `treePractice('combat', n)` al fan-out | existe la señal |
+| Combate | baja, parry, guardia, misión de combate | derivada de la maestría de las armas (`combatPractice(mast)`, que ya alimenta `world.onXp`, inventory.js:204); sin contador propio (SK03) | hecho |
 | Supervivencia | palmera talada; agua dulce bebida; comida cocinada; rescate/reembarque | loggingOperation.mjs, freshwaterOperation.mjs, fireOperation.mjs | la tala ya cuenta |
 | Navegación | minutos al timón con avance real; atraque; reparación de balsa | pilotaje (donde se concede pilot_coastal), raftEditor | por crear |
 | Oficios | receta completada; enseñanza del artesano; reparación | artisanOperation.mjs | por crear |
@@ -249,10 +249,15 @@ y nombres de nodo en el catálogo como pares [es,en] (`dataText`).
 - `src/data/skillTree.js` (nuevo): `TREES`, `NODES` (id, tree, tier, kind, ranks[], gate, text[es,en],
   icon), curvas, y funciones puras `treeRank(practice)`, `tierOpen`, `pointsEarned`, `pointsSpent`,
   `nodeRank(profile, id)`; tests en tests/.
-- Perfil (v:1 se mantiene, bloque interno versionado como pide área03:150-160): `progression.practice`
-  abre a `{logging, combat, survival, sailing, crafting, trade}` (logging se conserva y suma a survival);
-  nuevo `progression.skills: {nodeId: rank}` y `progression.skr: {tree: resetsUsados}`. `readProgression` y
-  `sanitizeProfile` validan rangos 0-3 y gasto <= ganado.
+- Perfil (v:1 se mantiene, bloque interno versionado como pide área03:150-160): `progression` v3
+  (`SKILLS_PROGRESSION_VERSION`) abre `practice` a `{logging, survival, sailing, crafting, trade}` (logging se
+  conserva y suma a survival) y añade los opcionales `skills: {nodeId: rank}`, `skr: {tree: resetsUsados}` y
+  `skg: {tree: puntosConcedidos}` (la migración de tatuajes). `readProgression` valida solo la forma (rangos
+  0-3, ids conocidos, topes); gasto <= ganado + concedido se comprueba en la operación de SK04, nunca al leer.
+- SK03 (T-1019-81) cambia dos cosas del diseño: la práctica de Combate se deriva siempre de la maestría
+  (`combatPractice(mast)`, ya persistida; no hay contador ni fan-out en `world.onXp`), y SK03 entrega solo el
+  lector. El SQL de producción (`mn_valid_logging_progression`, 016:182, usado por 021 y 029) exige 4 claves y
+  v 1..2: la migración de SK04 debe aceptar v3 en esos validadores antes del primer escritor de v3.
 - Operación `server/skillOperation.mjs` (assign, reset, adopt) calcada de attributeOperation.mjs con su
   plan puro `src/sim/systems/skillPlan.js`, comando en protocol.js, flag `MN_SKILL_OPERATIONS`, migración
   SQL con RPC de readiness y gate `check*` (ops/migration-check.md). El número de SQL y de protocolo se toma
@@ -268,7 +273,7 @@ y nombres de nodo en el catálogo como pares [es,en] (`dataText`).
 | SK00 | esta propuesta aprobada, decisiones de la sección 6 | PLAN-SKILLS.md | DESIGN | Joi |
 | SK01 | catálogo skillTree.js con Combate completo y tiers I-II del resto, helpers puros, tests | src/data, tests | BUILD medium | node --test |
 | SK02 | hoja "tree" de solo lectura con estado real (maestría, tatuajes, perla), iconos v1, hero, textos ES/EN | src/ui, styles, assets/ui | BUILD medium + IMAGE | gate 28 + captura QA |
-| SK03 | perfil: práctica por árbol, skills, sanitize, migración de tatuajes, fan-out de combate | src/sim, inventory.js | BUILD high | gate + inv02-baseline |
+| SK03 | perfil, lado lector: progression v3 (skills, skr, skg, práctica pacífica), Combate derivado de la maestría, concesión de la migración de tatuajes; sin escritores ni SQL | src/sim, src/data, src/ui | BUILD high | gate + suite completa |
 | SK04 | gasto y reset: skillPlan, skillOperation, protocolo, SQL + readiness, flag; botón Subir en vivo | server, src/net, migrations | BUILD high | gate + migration-check |
 | SK05 | préstamo por equipo: campo grants, loadout, hoja, dos ítems piloto | items.js, inventory.js, stats.js | BUILD medium | gate |
 | SK06 | créditos de práctica de Supervivencia, Navegación, Oficios y Comercio, un ticket por árbol, con el área dueña | server ops | BUILD medium cada uno | gate |

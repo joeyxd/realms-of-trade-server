@@ -215,7 +215,7 @@ test('malformed and future progression versions reject the profile without rewri
   const valid = accountProfile();
   for (const progression of [
     { v: 2, practice: { logging: -1 }, milestones: [PILOTING.milestone], knowledge: [] },
-    { v: 3, practice: { logging: 30 }, milestones: [PILOTING.milestone], knowledge: [] },
+    { v: 4, practice: { logging: 30 }, milestones: [PILOTING.milestone], knowledge: [] },
   ]) {
     assert.equal(sanitizeProfile({ ...valid, progression }), null);
   }

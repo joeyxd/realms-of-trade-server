@@ -1,10 +1,10 @@
 // Skill-tree catalog (PLAN-SKILLS.md sections 2.1, 2.2, 2.3, 2.6, 2.7 and 4): the six trees, the five tiers, the
 // practice curves, the 39 nodes and the pure helpers that read them. Data plus pure functions only: no DOM, no UI,
-// no render imports. Practice and node ranks live in the profile (plain objects); everything else is derived here.
-//   practice  { logging, combat, survival, sailing, crafting, trade }  counters that only go up
+// no render imports. Peaceful practice and node ranks live in the profile; combat practice is derived from mastery.
+//   practice  { logging, combat, survival, sailing, crafting, trade }  the sheet's derived counters
 //   skills    { nodeId: rank }  rank 0..MAX_NODE_RANK, spent only inside the node's own tree
 import { MASTERY, SKILLS, WEAPON_KINDS } from './weapons.js';
-import { SKILL_IDS, TATTOO } from './tattoos.js';
+import { ARTS, SKILL_IDS, TATTOO } from './tattoos.js';
 
 export const MAX_TREE_RANK = 10;
 export const MAX_NODE_RANK = 3;
@@ -188,7 +188,8 @@ export function pointsSpent(treeId, skills) {
   return sum;
 }
 
-export const pointsFree = (treeId, practice, skills) => Math.max(0, pointsEarned(treeId, practice) - pointsSpent(treeId, skills));
+export const skillGrant = (treeId, practice, skills) => Math.max(0, pointsSpent(treeId, skills) - pointsEarned(treeId, practice));
+export const pointsFree = (treeId, practice, skills, grant = 0) => Math.max(0, pointsEarned(treeId, practice) + grant - pointsSpent(treeId, skills));
 
 /** The grid of a tree: 5 tiers of GRID_COLS cells, each a node or null (indexed by col - 1). */
 export function nodesByTier(treeId) {
@@ -231,9 +232,36 @@ export function migrateTattooRank(r) {
   return 3;
 }
 
+/** XP of completed mastery levels plus the current bar, summed over every weapon. */
+export function combatPractice(mast) {
+  let sum = 0;
+  WEAPON_KINDS.forEach((_, i) => {
+    const v = Math.floor(Number(mast?.[i]?.[0]));
+    const level = Number.isFinite(v) && v > 0 ? Math.min(MASTERY.max, v) : 0;
+    if (!level) return;
+    for (let n = 0; n < level - 1; n++) sum += MASTERY.xp[n] || 0;
+    const xp = Number(mast?.[i]?.[1]);
+    if (Number.isFinite(xp) && xp > 0) sum += xp;
+  });
+  return sum;
+}
+
+/** Legacy tattoo entries (`sk.has`) and mastery levels keyed by weapon kind. */
+export function legacySkills(has = {}, mastery = {}) {
+  const skills = {};
+  for (const node of NODES) {
+    if (!node.skill) { skills[node.id] = 0; continue; }
+    const art = Object.hasOwn(ARTS, node.skill) ? ARTS[node.skill] : null;
+    if (Object.hasOwn(has, node.skill) && has[node.skill]) skills[node.id] = migrateTattooRank(has[node.skill][0]);
+    else if (art && mastery[art.weapon] >= art.mastery) skills[node.id] = 1;
+    else skills[node.id] = 0;
+  }
+  return skills;
+}
+
 /** Everything a tree view needs, derived from the plain profile objects. */
-export function treeSummary(treeId, { practice, skills } = {}) {
-  const earned = pointsEarned(treeId, practice);
+export function treeSummary(treeId, { practice, skills, grant = 0 } = {}) {
+  const earned = pointsEarned(treeId, practice) + grant;
   const spent = pointsSpent(treeId, skills);
   return {
     id: treeId,

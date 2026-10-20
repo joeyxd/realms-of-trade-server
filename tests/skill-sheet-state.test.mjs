@@ -18,7 +18,7 @@ test('a null and an empty profile give an all-zero state without throwing', () =
     const state = skillSheetState(profile, 0);
     assert.ok(ranksOf(state).every((r) => r === 0), 'every node rank is 0');
     assert.deepEqual(Object.values(state.practice), [0, 0, 0, 0, 0, 0]);
-    assert.equal(state.provisional.combat, true);
+    assert.equal(Object.hasOwn(state, 'provisional'), false);
     assert.equal(state.pearl, false);
     for (const node of NODES) assert.equal(state.ctxFor(node).pearl, false);
     for (const id of ['combat', 'survival', 'sailing', 'crafting', 'trade']) assert.deepEqual(state.points(id), { earned: 0, spent: 0, free: 0 });
@@ -61,22 +61,22 @@ test('progression.skills present wins over the fallback', () => {
   assert.equal(state.skills.lunge, 1, 'the state is a copy');
 });
 
-test('progression.practice.combat present wins over the provisional mastery sum', () => {
+test('combat practice always comes from mastery even if an unvalidated counter is present', () => {
   const profile = { mast: [[6, 100], [3, 0]], progression: { practice: { combat: 42, logging: 7, trade: 3 } } };
   const state = skillSheetState(profile, 0);
-  assert.equal(state.practice.combat, 42);
-  assert.equal(state.provisional.combat, false);
+  assert.equal(state.practice.combat, MASTERY.xp.slice(0, 5).reduce((a, b) => a + b, 0) + 100 + MASTERY.xp[0] + MASTERY.xp[1]);
+  assert.equal(Object.hasOwn(state, 'provisional'), false);
   assert.equal(state.practice.logging, 7);
   assert.equal(state.practice.trade, 3);
   assert.equal(state.practice.sailing, 0);
-  assert.equal(skillSheetState({ progression: { practice: { combat: 0 } } }, 0).provisional.combat, false);
+  assert.equal(skillSheetState({ progression: { practice: { combat: 0 } } }, 0).practice.combat, 0);
 });
 
-test('the provisional combat practice sums the XP of every weapon mastery', () => {
+test('combat practice sums the XP of every weapon mastery', () => {
   const state = skillSheetState({ mast: [[3, 10], [2, 5]] }, 0);
   const expected = MASTERY.xp[0] + MASTERY.xp[1] + 10 + MASTERY.xp[0] + 5;
   assert.equal(state.practice.combat, expected);
-  assert.equal(state.provisional.combat, true);
+  assert.equal(Object.hasOwn(state, 'provisional'), false);
   // One weapon at mastery level L with no XP in the bar: the tree rank it buys.
   const rankAt = (level) => treeRank('combat', skillSheetState({ mast: [[level, 0]] }, 0).practice);
   assert.deepEqual([1, 2, 3, 4, 5].map(rankAt), [1, 2, 3, 4, 5]);
@@ -103,7 +103,7 @@ test('free points never go negative', () => {
   assert.equal(pts.earned, 0);
   assert.equal(pts.spent, 9);
   assert.equal(pts.free, 0);
-  const rich = skillSheetState({ progression: { practice: { combat: 99999 }, skills: { lunge: 2 } } }, 0).points('combat');
+  const rich = skillSheetState({ mast: [[MASTERY.max, 0]], progression: { skills: { lunge: 2 } } }, 0).points('combat');
   assert.deepEqual(rich, { earned: 18, spent: 2, free: 16 });
 });
 
