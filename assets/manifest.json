@@ -157,6 +157,16 @@
       "notes": "Tripo notice-board, 2004 tris, 512 desktop / 256 mobile texture. See docs/art/prop-notice-board-v2/README.md."
     },
     {
+      "id": "prop:planter-flowers",
+      "kind": "prop",
+      "src": "models/prop-planter-flowers-v2-desktop.glb",
+      "mobileSrc": "models/prop-planter-flowers-v2-mobile.glb",
+      "props": [
+        "planter"
+      ],
+      "notes": "Tripo planter-flowers, 3000 tris, 512 desktop / 256 mobile texture. See docs/art/prop-planter-flowers-v2/README.md."
+    },
+    {
       "id": "tex:raft-comic-v1",
       "kind": "tex",
       "src": "textures/raft/comic-materials-v1.webp",
