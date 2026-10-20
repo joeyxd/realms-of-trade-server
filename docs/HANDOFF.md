@@ -1,5 +1,34 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**VR06, 2026-10-20 — aldea de noche, sexto corte (siete props Tripo v2, ajustes y grading medidos, farol con vidrio y luz propios), alpha.81/protocolo 63:**
+Versión alpha.81 en package.json, package-lock.json (dos entradas) y src/data/meta.js; protocolo 63 sin cambios.
+Reutiliza los siete modelos ya importados del estudio Tripo: campfire-ring, crate-stack, fence-rope, notice-board,
+planter-flowers, stall-tarp y lantern-post. El manifiesto admite fence/board/planter/stallTarp y sustituye sus kits;
+crate conserva la mezcla determinista de storage-crate y crate-stack. Colocaciones, cantidades, simulación y colliders intactos.
+Ajustes uniformes a escala de instancia 1, dimensiones finales ancho x alto x fondo en u, con las cajas reales de los kits:
+campfire proc 2.256914 x 0.522170 x 2.239205; crate proc 0.788183 x 1 x 0.698677;
+fence size 2.431082, final 2.431082 x 1.692318 x 0.520505; board proc 1.610000 x 1.457484 x 0.701633;
+planter height 0.9, final 0.967204 x 0.9 x 0.845702; stallTarp proc 2.620354 x 2.516843 x 2.043202;
+lantern height 2.6, final 1.314412 x 2.6 x 0.606586. Board a altura 1.9 excedería 1.8 de ancho; planter con proc no llega a 0.8 de alto.
+Fence: poste derecho medido por intersección de triángulos a y=0.05, grosor fuente 0.173516778; tamaño L=2W/(W-grosor)
+(W=0.978546262), así L=2+grosor ajustado y los postes contiguos se solapan al paso existente 2.0. Su altura 1.692318 supera
+1.6; se conserva el tamaño autorizado y queda señalado para revisión. rotY 0 en seis modelos: valla sobre x, papeles del tablón
+hacia +z y frente de mercancía/tela del puesto hacia +z; farol rotY 22 para llevar su brazo oblicuo hacia +x.
+Grading decidido antes de capturas: mediana de luminancia lineal Rec.709 tras convertir sRGB, máscara unión de triángulos UV
+rasterizada en centros de texel, solo baseColor desktop (sin padding). Barril de referencia 0.065884; campfire 0.073082,
+crate 0.028037, fence 0.046289, board 0.038610, planter 0.035938, stallTarp 0.029269, lantern 0.037942.
+bright=round(10*clamp(barril/prop,1,4))/10: respectivamente 1.0, 2.3, 1.4, 1.7, 1.8, 2.3, 1.7; sat 1.15 salvo planter 1.3.
+El farol tiene seis caras de vidrio opaco: doce cajas finas de glowBasic (dos bandas por cara) entran en glowParts;
+se dejan libres esquinas, techo, base y abrazadera central. Centro medido tras rotY [0.124953,0.633,-0.016715]; assets.fitted
+aplica el mismo ajuste que al modelo. LANTERN_LIGHT_OFFSET=[0.3209,1.68367,-0.00413] mueve la luz puntual a ese centro ajustado,
+con rotación y escala de instancia. El vidrio procedural sigue en [0.42,1.78,0]. Sin shader nuevo ni emisión en otros props.
+Siete fichas del catálogo reclaman modelos desktop/mobile, fuentes, conceptos y README; README originales conservados.
+Pruebas VR06: ocho casos de bindings, grades ligados al SHA256 de cada GLB, ajustes desktop/mobile, vallas, anclaje luminoso,
+superficies de vidrio por raycast, instanciación y fallback. Capturas `village-night` de noche y de día (SwiftShader, high) revisadas:
+faroles con vidrio encendido y luz en la lámpara, anillo de fogata, lona azul, cajas y maceta legibles; falta GPU real y dispositivos
+físicos. Revertir primero el commit de cableado VR06 (el último, alpha.81) y después los siete commits de assets f00c672..9024a4c
+(ambos incluidos, en orden inverso; rango Git f00c672^..9024a4c).
+
 **VR05, 2026-10-19 — aldea de noche, quinto corte (hierba de borde respeta las plantas, grading de las plantas Tripo, test de la noche realineado), alpha.80/protocolo 63:**
 `grassPlacement.js`: las plantas del pueblo (fern, flowerbush, broadleaf; `PLANT_R` ahora exportado de `shrubPlacement.js`) entran en la
 lista `occupied` con la marca `root`: una mata se rechaza solo si su centro cae dentro de la huella de la planta más 0.1 u

@@ -526,6 +526,35 @@ const HUT_WINDOWS = {
 };
 const WINDOW_PUSH = 0.06, WINDOW_THICK = 0.04; // u: how far a glow box sits off the wall, and its depth
 
+// Measured from the v2 GLB's six glass planes after node transforms and rotY 22 degrees (registry frame).
+export const LANTERN_GLASS = {
+  id: 'prop:lantern-post',
+  c: [0.124953, 0.633, -0.016715],
+  // UV-coloured glass spans y 0.557..0.708; inset bands leave the opaque centre strap at 0.62..0.64 clear.
+  bands: [{ y: 0.5925, h: 0.045 }, { y: 0.671, h: 0.052 }],
+  // Glass planes are 0.0765 from the centre; 0.064-wide slabs fit between the raised corner bars.
+  width: 0.064, depth: 0.004,
+  panes: [
+    { x: 0.195882, z: -0.045373, rotY: 112 },
+    { x: 0.185236, z: 0.030383, rotY: 52 },
+    { x: 0.114306, z: 0.059040, rotY: -8 },
+    { x: 0.054023, z: 0.011942, rotY: -68 },
+    { x: 0.064670, z: -0.063813, rotY: -128 },
+    { x: 0.135600, z: -0.092471, rotY: -188 },
+  ],
+};
+
+// Thin glow boxes cover the glass itself, leaving its metal roof, base, corners and middle strap visible.
+function modelLanternGlass(fit) {
+  const glass = LANTERN_GLASS, boxes = [];
+  for (const pane of glass.panes) for (const band of glass.bands) {
+    boxes.push(new THREE.BoxGeometry(glass.width * fit.s, band.h * fit.s, glass.depth * fit.s)
+      .rotateY(pane.rotY * Math.PI / 180)
+      .translate(pane.x * fit.s + fit.x, band.y * fit.s + fit.y, pane.z * fit.s + fit.z));
+  }
+  return boxes;
+}
+
 // A glow box for one measured window of a fitted model, in the procedural prop's local frame.
 function modelWindowBox(win, fit) {
   const { s } = fit, w = win.size[0] * s, h = win.size[1] * s;
@@ -622,6 +651,11 @@ export function createProps(map) {
           if (!extFit.has(id)) extFit.set(id, assets.fitted(id, extTarget.get(kind)));
           const fit = extFit.get(id);
           if (fit) for (const win of HUT_WINDOWS[id]) windowParts.push(strip(modelWindowBox(win, fit).applyMatrix4(m4)));
+        }
+        if (kind === 'lantern' && id === LANTERN_GLASS.id) {
+          if (!extFit.has(id)) extFit.set(id, assets.fitted(id, extTarget.get(kind)));
+          const fit = extFit.get(id);
+          if (fit) for (const glass of modelLanternGlass(fit)) glowParts.push(strip(glass.applyMatrix4(m4)));
         }
         continue;
       }

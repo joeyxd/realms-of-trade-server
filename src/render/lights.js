@@ -10,6 +10,9 @@ import { isRaftFireTuple, personalLanternPoint, raftFirePoint } from './personal
 
 export { MAX_LIGHTS };
 
+// V2 lantern glass centre after rotY 22, fitBox height 2.6 and base centring; checked against the GLB in VR06 tests.
+export const LANTERN_LIGHT_OFFSET = [0.3209, 1.68367, -0.00413];
+
 // Light kinds: base color, intensity, radius, flicker amount/speed, wrap, which preset knob scales it.
 const KINDS = {
   lantern: { color: 0xffb35a, i: 2.4, r: 5.5, flicker: 0.08, speed: 1.6, wrap: 0.35, knob: 'fire' },
@@ -75,7 +78,7 @@ export class LocalLights {
       const c = Math.cos(p.rot), s = Math.sin(p.rot);
       // Local (lx, lz) offset rotated like the prop (three.js Y rotation).
       const at = (lx, ly, lz) => [p.x + lx * c + lz * s, p.y + ly, p.z - lx * s + lz * c];
-      if (p.kind === 'lantern') add('lantern', ...at(0.42, 1.8, 0));
+      if (p.kind === 'lantern') add('lantern', ...at(...LANTERN_LIGHT_OFFSET.map((v) => v * (p.scale ?? 1))));
       else if (p.kind === 'brazier') add('brazier', p.x, p.y + 1.6, p.z);
       else if (p.kind === 'gatePost') add('brazier', p.x, p.y + 5.2, p.z, { r: 10 });
       else if (p.kind === 'campfire') add('campfire', p.x, p.y + 0.8, p.z);

@@ -124,7 +124,13 @@
       "props": [
         "campfire"
       ],
-      "notes": "Tripo campfire-ring, 2000 tris, 512 desktop / 256 mobile texture. See docs/art/prop-campfire-ring-v2/README.md."
+      "notes": "Tripo campfire-ring, 2000 tris, 512 desktop / 256 mobile texture. See docs/art/prop-campfire-ring-v2/README.md.",
+      "fit": "proc",
+      "rotY": 0,
+      "toon": {
+        "sat": 1.15,
+        "bright": 1
+      }
     },
     {
       "id": "prop:crate-stack",
@@ -134,7 +140,13 @@
       "props": [
         "crate"
       ],
-      "notes": "Tripo crate-stack, 2502 tris, 512 desktop / 256 mobile texture. See docs/art/prop-crate-stack-v2/README.md."
+      "notes": "Tripo crate-stack, 2502 tris, 512 desktop / 256 mobile texture. See docs/art/prop-crate-stack-v2/README.md.",
+      "fit": "proc",
+      "rotY": 0,
+      "toon": {
+        "sat": 1.15,
+        "bright": 2.3
+      }
     },
     {
       "id": "prop:fence-rope",
@@ -144,7 +156,14 @@
       "props": [
         "fence"
       ],
-      "notes": "Tripo fence-rope, 1500 tris, 512 desktop / 256 mobile texture. See docs/art/prop-fence-rope-v2/README.md."
+      "notes": "Tripo fence-rope, 1500 tris, 512 desktop / 256 mobile texture. See docs/art/prop-fence-rope-v2/README.md.",
+      "fit": "size",
+      "size": 2.431082,
+      "rotY": 0,
+      "toon": {
+        "sat": 1.15,
+        "bright": 1.4
+      }
     },
     {
       "id": "prop:notice-board",
@@ -154,7 +173,13 @@
       "props": [
         "board"
       ],
-      "notes": "Tripo notice-board, 2004 tris, 512 desktop / 256 mobile texture. See docs/art/prop-notice-board-v2/README.md."
+      "notes": "Tripo notice-board, 2004 tris, 512 desktop / 256 mobile texture. See docs/art/prop-notice-board-v2/README.md.",
+      "fit": "proc",
+      "rotY": 0,
+      "toon": {
+        "sat": 1.15,
+        "bright": 1.7
+      }
     },
     {
       "id": "prop:planter-flowers",
@@ -164,7 +189,14 @@
       "props": [
         "planter"
       ],
-      "notes": "Tripo planter-flowers, 3000 tris, 512 desktop / 256 mobile texture. See docs/art/prop-planter-flowers-v2/README.md."
+      "notes": "Tripo planter-flowers, 3000 tris, 512 desktop / 256 mobile texture. See docs/art/prop-planter-flowers-v2/README.md.",
+      "fit": "height",
+      "height": 0.9,
+      "rotY": 0,
+      "toon": {
+        "sat": 1.3,
+        "bright": 1.8
+      }
     },
     {
       "id": "prop:stall-tarp",
@@ -174,7 +206,13 @@
       "props": [
         "stallTarp"
       ],
-      "notes": "Tripo stall-tarp, 4015 tris, 512 desktop / 256 mobile texture. See docs/art/prop-stall-tarp-v2/README.md."
+      "notes": "Tripo stall-tarp, 4015 tris, 512 desktop / 256 mobile texture. See docs/art/prop-stall-tarp-v2/README.md.",
+      "fit": "proc",
+      "rotY": 0,
+      "toon": {
+        "sat": 1.15,
+        "bright": 2.3
+      }
     },
     {
       "id": "prop:lantern-post",
@@ -184,7 +222,14 @@
       "props": [
         "lantern"
       ],
-      "notes": "Tripo lantern-post, 2500 tris, 512 desktop / 256 mobile texture. See docs/art/prop-lantern-post-v2/README.md."
+      "notes": "Tripo lantern-post, 2500 tris, 512 desktop / 256 mobile texture. See docs/art/prop-lantern-post-v2/README.md.",
+      "fit": "height",
+      "height": 2.6,
+      "rotY": 22,
+      "toon": {
+        "sat": 1.15,
+        "bright": 1.7
+      }
     },
     {
       "id": "tex:raft-comic-v1",

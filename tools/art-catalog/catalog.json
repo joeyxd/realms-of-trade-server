@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 37,
-  "updatedAt": "2026-10-09T00:13:45.638Z",
+  "revision": 38,
+  "updatedAt": "2026-10-20T14:56:32.459Z",
   "style": {
     "title": "Puerto tropical ilustrado 3D con tinta fuerte",
     "description": "Dirección moderna de sprites y modelado ilustrado 3D: siluetas expresivas, contornos de tinta marcados, superficies pintadas y grandes planos de color. No realista ni fotográfica. Geometría, textura y alfa se combinan cuando convenga; no obliga a convertir el mundo a sprites 2D."
@@ -14358,6 +14358,413 @@
           "path": "docs/delivery/map-revamp-v1.md"
         }
       ]
+    },
+    {
+      "id": "campfire-ring",
+      "name": "Fogata de piedras",
+      "category": "Atrezzo y mobiliario",
+      "priority": "P1",
+      "kind": "object",
+      "description": "Piedras alrededor de leños para las dos fogatas existentes.",
+      "variants": [
+        "campfire"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "VR06 alpha.78: cableado local; revisión visual de día/noche por el verificador y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-20: reutiliza el prop Tripo v2 ya importado (2000 tris, WebP 512 escritorio / 256 móvil). Fit proc; rotY 0; toon sat 1.15, bright 1. Mediana lineal de texels cubiertos por UV 0.073082; barril de referencia 0.065884. Fuente Tripo retopologizada sha256 f0ba14385e534d57deb6e953cb405491677c37d8b77837b9523fd51cee4a13cb.",
+      "references": [
+        {
+          "label": "Concepto · campfire-ring-v2-concept.png",
+          "path": "docs/art/prop-campfire-ring-v2/campfire-ring-v2-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio",
+          "path": "assets/models/prop-campfire-ring-v2-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil",
+          "path": "assets/models/prop-campfire-ring-v2-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD",
+          "path": "docs/art/prop-campfire-ring-v2/campfire-ring-v2-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original",
+          "path": "docs/art/prop-campfire-ring-v2/campfire-ring-v2-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto",
+          "path": "docs/art/prop-campfire-ring-v2/campfire-ring-v2-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia",
+          "path": "docs/art/prop-campfire-ring-v2/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "crate-stack",
+      "name": "Cajas de fruta apiladas",
+      "category": "Atrezzo y mobiliario",
+      "priority": "P1",
+      "kind": "object",
+      "description": "Caja de fruta sobre una caja de carga; alterna con el modelo storage-crate.",
+      "variants": [
+        "crate"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "VR06 alpha.78: cableado local; revisión visual de día/noche por el verificador y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-20: reutiliza el prop Tripo v2 ya importado (2502 tris, WebP 512 escritorio / 256 móvil). Fit proc; rotY 0; toon sat 1.15, bright 2.3. Mediana lineal de texels cubiertos por UV 0.028037; barril de referencia 0.065884. Fuente Tripo retopologizada sha256 ef4c9de65483f49b5e24abe099f2ba9d765bc72843b15b4a24eed58a0c5a8a0f.",
+      "references": [
+        {
+          "label": "Concepto · crate-stack-v2-concept.png",
+          "path": "docs/art/prop-crate-stack-v2/crate-stack-v2-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio",
+          "path": "assets/models/prop-crate-stack-v2-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil",
+          "path": "assets/models/prop-crate-stack-v2-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD",
+          "path": "docs/art/prop-crate-stack-v2/crate-stack-v2-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original",
+          "path": "docs/art/prop-crate-stack-v2/crate-stack-v2-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto",
+          "path": "docs/art/prop-crate-stack-v2/crate-stack-v2-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia",
+          "path": "docs/art/prop-crate-stack-v2/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "fence-rope",
+      "name": "Valla de madera y cuerda",
+      "category": "Atrezzo y mobiliario",
+      "priority": "P1",
+      "kind": "object",
+      "description": "Dos postes unidos por travesaño y diagonal con ataduras de cuerda.",
+      "variants": [
+        "fence"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "VR06 alpha.78: cableado local; revisión visual de día/noche por el verificador y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-20: reutiliza el prop Tripo v2 ya importado (1500 tris, WebP 512 escritorio / 256 móvil). Fit size 2.431082; rotY 0; toon sat 1.15, bright 1.4. Mediana lineal de texels cubiertos por UV 0.046289; barril de referencia 0.065884. Fuente Tripo retopologizada sha256 8b565c2fb4f67a2fe69db38eedf89fb401e3004ac998f9511d727249b460a4b2.",
+      "references": [
+        {
+          "label": "Concepto · fence-rope-v2-concept.png",
+          "path": "docs/art/prop-fence-rope-v2/fence-rope-v2-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio",
+          "path": "assets/models/prop-fence-rope-v2-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil",
+          "path": "assets/models/prop-fence-rope-v2-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD",
+          "path": "docs/art/prop-fence-rope-v2/fence-rope-v2-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original",
+          "path": "docs/art/prop-fence-rope-v2/fence-rope-v2-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto",
+          "path": "docs/art/prop-fence-rope-v2/fence-rope-v2-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia",
+          "path": "docs/art/prop-fence-rope-v2/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "notice-board",
+      "name": "Tablón de anuncios",
+      "category": "Atrezzo y mobiliario",
+      "priority": "P1",
+      "kind": "object",
+      "description": "Tablón con papeles, tejadillo y dos patas, orientado hacia +z.",
+      "variants": [
+        "board"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "VR06 alpha.78: cableado local; revisión visual de día/noche por el verificador y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-20: reutiliza el prop Tripo v2 ya importado (2004 tris, WebP 512 escritorio / 256 móvil). Fit proc; rotY 0; toon sat 1.15, bright 1.7. Mediana lineal de texels cubiertos por UV 0.038610; barril de referencia 0.065884. Fuente Tripo retopologizada sha256 69c6fbe2cb30b89c9614644be76f51561bcc47299a04f3e5d83f85bbec3df7b4.",
+      "references": [
+        {
+          "label": "Concepto · notice-board-v2-concept.png",
+          "path": "docs/art/prop-notice-board-v2/notice-board-v2-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio",
+          "path": "assets/models/prop-notice-board-v2-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil",
+          "path": "assets/models/prop-notice-board-v2-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD",
+          "path": "docs/art/prop-notice-board-v2/notice-board-v2-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original",
+          "path": "docs/art/prop-notice-board-v2/notice-board-v2-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto",
+          "path": "docs/art/prop-notice-board-v2/notice-board-v2-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia",
+          "path": "docs/art/prop-notice-board-v2/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "planter-flowers",
+      "name": "Maceta de hibiscos",
+      "category": "Vegetación",
+      "priority": "P1",
+      "kind": "object",
+      "description": "Maceta de barro con flores rojas y rosas para la plaza.",
+      "variants": [
+        "planter"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "VR06 alpha.78: cableado local; revisión visual de día/noche por el verificador y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-20: reutiliza el prop Tripo v2 ya importado (3000 tris, WebP 512 escritorio / 256 móvil). Fit height 0.9; rotY 0; toon sat 1.3, bright 1.8. Mediana lineal de texels cubiertos por UV 0.035938; barril de referencia 0.065884. Fuente Tripo retopologizada sha256 8a686f0f381c1cd8d5a3b70d062e17565afcd6cfba15be87435f0ca824d47ca0.",
+      "references": [
+        {
+          "label": "Concepto · planter-flowers-v2-concept.png",
+          "path": "docs/art/prop-planter-flowers-v2/planter-flowers-v2-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio",
+          "path": "assets/models/prop-planter-flowers-v2-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil",
+          "path": "assets/models/prop-planter-flowers-v2-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD",
+          "path": "docs/art/prop-planter-flowers-v2/planter-flowers-v2-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original",
+          "path": "docs/art/prop-planter-flowers-v2/planter-flowers-v2-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto",
+          "path": "docs/art/prop-planter-flowers-v2/planter-flowers-v2-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia",
+          "path": "docs/art/prop-planter-flowers-v2/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "stall-tarp",
+      "name": "Puesto con toldo azul",
+      "category": "Atrezzo y mobiliario",
+      "priority": "P1",
+      "kind": "object",
+      "description": "Puesto de cuatro postes, toldo azul y mercancía, orientado hacia +z.",
+      "variants": [
+        "stallTarp"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json"
+      ],
+      "state": "applied",
+      "nextStep": "VR06 alpha.78: cableado local; revisión visual de día/noche por el verificador y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-20: reutiliza el prop Tripo v2 ya importado (4015 tris, WebP 512 escritorio / 256 móvil). Fit proc; rotY 0; toon sat 1.15, bright 2.3. Mediana lineal de texels cubiertos por UV 0.029269; barril de referencia 0.065884. Fuente Tripo retopologizada sha256 288949ca03a26430fd294609419a1a32eebcd2cfc36a4d79e7586e4202007c66.",
+      "references": [
+        {
+          "label": "Concepto · stall-tarp-v2-concept.png",
+          "path": "docs/art/prop-stall-tarp-v2/stall-tarp-v2-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio",
+          "path": "assets/models/prop-stall-tarp-v2-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil",
+          "path": "assets/models/prop-stall-tarp-v2-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD",
+          "path": "docs/art/prop-stall-tarp-v2/stall-tarp-v2-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original",
+          "path": "docs/art/prop-stall-tarp-v2/stall-tarp-v2-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto",
+          "path": "docs/art/prop-stall-tarp-v2/stall-tarp-v2-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia",
+          "path": "docs/art/prop-stall-tarp-v2/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "lantern-post",
+      "name": "Poste de farol",
+      "category": "Atrezzo y mobiliario",
+      "priority": "P1",
+      "kind": "object",
+      "description": "Poste de madera con brazo hacia +x y farol colgante con vidrio iluminado.",
+      "variants": [
+        "lantern"
+      ],
+      "destination": [
+        "src/render/props.js",
+        "assets/manifest.json",
+        "src/render/lights.js"
+      ],
+      "state": "applied",
+      "nextStep": "VR06 alpha.78: cableado local; revisión visual de día/noche por el verificador y rendimiento en dispositivos físicos pendientes.",
+      "notes": "2026-10-20: reutiliza el prop Tripo v2 ya importado (2500 tris, WebP 512 escritorio / 256 móvil). Fit height 2.6; rotY 22; toon sat 1.15, bright 1.7. Mediana lineal de texels cubiertos por UV 0.037942; barril de referencia 0.065884. Fuente Tripo retopologizada sha256 791461c98746296254226f3d3ea5d767875f3a8e09848c5abee8882f273834d2.",
+      "references": [
+        {
+          "label": "Concepto · lantern-post-v2-concept.png",
+          "path": "docs/art/prop-lantern-post-v2/lantern-post-v2-concept.png",
+          "role": "reference"
+        }
+      ],
+      "files": [
+        {
+          "label": "Modelo escritorio",
+          "path": "assets/models/prop-lantern-post-v2-desktop.glb",
+          "role": "model"
+        },
+        {
+          "label": "Modelo móvil",
+          "path": "assets/models/prop-lantern-post-v2-mobile.glb",
+          "role": "mobile"
+        },
+        {
+          "label": "Fuente Tripo LOD",
+          "path": "docs/art/prop-lantern-post-v2/lantern-post-v2-lod.glb",
+          "role": "source"
+        },
+        {
+          "label": "Fuente Tripo original",
+          "path": "docs/art/prop-lantern-post-v2/lantern-post-v2-original.glb",
+          "role": "source"
+        },
+        {
+          "label": "Concepto",
+          "path": "docs/art/prop-lantern-post-v2/lantern-post-v2-concept.png",
+          "role": "source"
+        },
+        {
+          "label": "Procedencia",
+          "path": "docs/art/prop-lantern-post-v2/README.md",
+          "role": "source"
+        }
+      ],
+      "evidence": []
     }
   ]
 }

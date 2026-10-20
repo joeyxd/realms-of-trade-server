@@ -19,7 +19,8 @@
 //          debris and ink outline works with it. A rigid model (no skin) can be a char too: all of it rides `bone`.
 //   prop   A static model that replaces procedural world props of the kinds in `props` (worldgen's map.props kinds:
 //          hut, crate, barrel, stall, lantern, dockPost, brazier, pillar, gatePost, sign, campfire, rack, skullPost,
-//          palisade, blackFlag). Fitted to the procedural one's size by default, so collisions stay right.
+//          palisade, blackFlag, fern, flowerbush, broadleaf, fence, board, planter, stallTarp).
+//          Fitted to the procedural one's size by default, so collisions stay right.
 //   model  Any other static model the code asks for by id (ships, buildings, trade goods, NPC stalls…):
 //          assets.model(id) gives a fitted, toon-shaded clone or null (then the code draws its procedural one).
 //   tex    A texture by id: assets.texture(id) (sRGB colour unless "data": true).
@@ -46,7 +47,7 @@
 
 export const KINDS = ['char', 'prop', 'model', 'tex'];
 export const OUR_BONES = ['hips', 'spine', 'chest', 'head', 'thighL', 'shinL', 'thighR', 'shinR', 'armL', 'foreL', 'armR', 'foreR'];
-export const PROP_KINDS = ['hut', 'crate', 'barrel', 'stall', 'lantern', 'dockPost', 'brazier', 'pillar', 'gatePost', 'sign', 'campfire', 'rack', 'skullPost', 'palisade', 'blackFlag', 'fern', 'flowerbush', 'broadleaf'];
+export const PROP_KINDS = ['hut', 'crate', 'barrel', 'stall', 'lantern', 'dockPost', 'brazier', 'pillar', 'gatePost', 'sign', 'campfire', 'rack', 'skullPost', 'palisade', 'blackFlag', 'fern', 'flowerbush', 'broadleaf', 'fence', 'board', 'planter', 'stallTarp'];
 const FITS = { prop: ['proc', 'height', 'size', 'none'], model: ['proc', 'size', 'height', 'none'] };
 
 const num = (v, d) => (typeof v === 'number' && Number.isFinite(v) ? v : d);
