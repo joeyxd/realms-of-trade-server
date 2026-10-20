@@ -118,7 +118,7 @@ export class GameHost {
     if (typeof specialMealOperations !== 'boolean' || specialMealOperations && !canteenOperations) throw new StoreError('configuration');
     this.specialMealOperations = specialMealOperations;
     if (typeof torchResinCoconutOperations !== 'boolean' || torchResinCoconutOperations &&
-        (!workshopOperations || !fireOperations || !canteenOperations || groundTransactions !== null)) throw new StoreError('configuration');
+        (!workshopOperations || !fireOperations || !canteenOperations)) throw new StoreError('configuration');
     this.torchResinCoconutOperations = torchResinCoconutOperations;
     if (typeof economicOperations !== 'boolean' || economicOperations && pearlJournal !== null ||
         !economicOperations && communityRequirements !== null) throw new StoreError('configuration');

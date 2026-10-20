@@ -241,6 +241,26 @@ test('the trusted opt-in rejects accessors and the separate agent-trade lane', a
   assert.throws(() => new GameHost({ ...base, agentTrade: true, groundTransactions: { journal } }), { code: 'configuration' });
 });
 
+test('the torch capability composes with the ground opt-in but keeps its own prerequisites', async t => {
+  // One store per host: the ground session registers one owner per store and world.
+  const options = () => {
+    const stub = async () => ({ version: 1 });
+    const store = { ...createMemoryStore(), durable: true, checkGroundTransactions: stub, loadGroundTransaction: stub,
+      commitGroundTransaction: stub };
+    return { seed: 2, bots: 0, store, worldId: WORLD, resolvePlayer: async () => ACCOUNT,
+      economicOperations: true, resourceOperations: true, loggingOperations: true, artisanOperations: true,
+      workshopOperations: true, fireOperations: true, freshwaterOperations: true, canteenOperations: true,
+      torchResinCoconutOperations: true, log: () => {}, groundTransactions: { journal: memoryJournal(WORLD) } };
+  };
+  const host = new GameHost(options());
+  cleanup(t, host);
+  assert.equal(host.torchResinCoconutOperations, true);
+  assert.ok(host.groundAuthority);
+  for (const missing of ['workshopOperations', 'fireOperations', 'canteenOperations'])
+    assert.throws(() => new GameHost({ ...options(), [missing]: false }),
+      { code: 'configuration' }, `torch still requires ${missing} under ground`);
+});
+
 test('accounts-only ground hosts reject guest admission', async t => {
   const f = await fixture({ resolvePlayer: async () => null }); cleanup(t, f.host);
   const socket = new Socket();

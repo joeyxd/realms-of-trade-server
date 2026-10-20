@@ -1,5 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA15, 2026-10-20 — antorchas/resina/coco componen con Ground; piloto común público apagado, alpha.78/protocolo 62:**
+[Entrega/evidencia](delivery/torch-ground-composition.md); primer corte del paso 3 de la [matriz](CONTINUITY-MATRIX.md) (T-1020-05).
+`server/host.mjs` ya no rechaza `torchResinCoconutOperations` junto con `groundTransactions`; conserva workshop, fuego y cantimplora.
+Cargar antorcha (2 tronco + 1 resina), extras de tala de palmera con beneficiarios y comer coco se confirman por el recibo
+común SQL018/019 con el recibo económico anidado y se aplican en el borde de tick. Host detenido tras commit y antes de apply:
+un host nuevo recupera el botín una sola vez, sin nuevo sorteo; el reenvío con el mismo `opId` es réplica.
+`tests/torch-ground-host.test.mjs` 4/4 con SQL real 001-037; conjunto dirigido 41/41 (base 36/36); actualizador 202/202.
+Sin SQL/flag/protocolo nuevos; Ground sigue opt-in y apagado en público. Los tests nuevos no están en TESTS del actualizador (decisión del operador).
+Siguen los demás cortes de composición (recursos/puntero GM, compañeros, bots, rutas autónomas), kill/cofre completo, adopción detenida y canario VPS.
+
 **AREA12 I18N04b2, 2026-10-20 — cobertura ES/EN de todo texto visible y cambio de idioma en vivo, alpha.77/protocolo 62:**
 Barrido de los textos que seguían saliendo en español con EN elegido. Roster de personajes: errores en el idioma
 elegido y refresco en vivo (`src/client/playerCharacters.js`, `src/ui/playerCharacters.js`). Compañeros IA: roles,

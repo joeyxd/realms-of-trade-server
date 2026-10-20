@@ -4,6 +4,7 @@ Revisión 2026-10-12, base `8fa8f58478310d9c39fa06e39bbabaf81a6ed9d3`;
 integra también ST01a de `7b34381dc8318ad83dcd5b48acfcfa68b5736931`.
 Give común continúa desde `1417975`; [entrega y aceptación](delivery/m5-ground-pearl-give.md).
 [Swallow común](delivery/m5-ground-pearl-swallow.md) continúa desde `a19f5e1`: cuatro poderes, input reversible y dos SIGKILL locales. Código publicado en `46902fe`, alpha.67/protocolo 60; piloto apagado.
+Antorchas/resina/coco componen con Ground (T-1020-05, sobre `710763b`): [entrega](delivery/torch-ground-composition.md); sigue siendo opt-in.
 Deriva de los planes y contratos enlazados; organiza sus dependencias de guardado,
 sin sustituir sus decisiones de producto. [Revisión y evidencia](delivery/m5-continuity-review.md).
 
@@ -53,8 +54,8 @@ La matriz no copia sus parámetros para evitar balances divergentes.
 3. **Composición con features activas**, antes de adoptar el mundo público. Resolver recursos GM,
    emparejamiento/control/presupuesto de agentes y rutas autónomas que sigan excluidas. El corte
    [antorchas/resina/coco](briefs/torch-resin-coconut.md), integrado desde `5338538`, añade SQL037
-   y también rechaza `torchResinCoconutOperations` junto con `groundTransactions`. Componer sus
-   costes, extras de tala y consumo antes de quitar ese guard; publicar código no activa su flag.
+   y rechazaba `torchResinCoconutOperations` junto con `groundTransactions`. Sus costes, extras de tala y
+   consumo ya componen con Ground y el guard se quitó ([entrega T-1020-05](delivery/torch-ground-composition.md)); publicar código no activa su flag.
    Mantener los guards mientras falte aceptación; activar el piloto no debe apagar features silenciosamente.
    [L03g presencia](delivery/l03g-companion-presence/README.md), integrado desde `5ad1029`,
    añade SQL039 para ingreso durable antes de publicar el cuerpo. Sigue excluido de Ground;
