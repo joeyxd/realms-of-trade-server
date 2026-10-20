@@ -1,5 +1,20 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**VR05, 2026-10-19 — aldea de noche, quinto corte (hierba de borde respeta las plantas, grading de las plantas Tripo, test de la noche realineado), alpha.80/protocolo 63:**
+`grassPlacement.js`: las plantas del pueblo (fern, flowerbush, broadleaf; `PLANT_R` ahora exportado de `shrubPlacement.js`) entran en la
+lista `occupied` con la marca `root`: una mata se rechaza solo si su centro cae dentro de la huella de la planta más 0.1 u
+(`PLANT_ROOT_MARGIN`); arbustos y bush siguen con la regla de disco completo (`blocked()`); el bucle de anillo de props reintenta 8 veces
+(`RING_ATTEMPTS`; las 4 primeras sales reproducen el trazado antiguo). Semilla 99282957: 118 matas de borde (antes 114, 23 con la raíz
+dentro de una planta), 71 cerca de la aldea; el contrato de anillo de choza cuenta las plantas al pie como vestido con suelo de 3 matas
+(la choza de 77,62 tiene 3 matas y 4 plantas). Test nuevo "grass clumps keep off the village plants" (5 tests, 0 fallos).
+Las tres plantas Tripo leían casi negras incluso de día (texturas oscuras de origen: mediana de luminancia lineal 0.032 arbusto de flores,
+0.057 helecho, 0.070 hoja ancha; el barril 0.14 de media): `assets/manifest.json` les da bloque `toon` (`sat` 1.3; `bright` 4.0
+flower-bush, 2.6 fern-cluster, 2.2 broadleaf-plant), que `toonmat.js gradeGlsl` aplica al albedo antes de la luz; de noche las flores
+rojas y las hojas verdes leen bajo los faroles (capturas shots/t1019-43b-day y -night, fuera de git). Sin código nuevo. Regla para los
+próximos assets Tripo de vegetación: medir la textura y gradarla en el manifest antes de la primera captura.
+`tests/night-lighting.test.mjs` realineado con la noche VR01 (hemisferio azul marino hemiI 1.7; fallaba 3/3 desde 3b10283b y no está en
+el gate): 3 tests, 0 fallos. Versión alpha.80 en los tres archivos. Pendiente: los siete props del estudio Tripo (una aprobación de
+descarga), agua y materiales; opcional un emisivo nocturno tenue en el arbusto si el grading no basta en GPU real.
 **IC03a, 2026-10-20 — la mente emparejada entra en el cuerpo de presencia (L03g-b, servidor y cliente), alpha.79/protocolo 63:**
 Con `MN_COMPANION_PRESENCE=1` y SQL039 listo, un HELLO emparejado (`agent: true` + token `mncp_`) ya no crea otra
 entidad: se ata al cuerpo de presencia activo del dueño (`server/companionPresence.mjs` `attach`, `server/host.mjs`

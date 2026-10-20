@@ -82,6 +82,10 @@
       "props": [
         "fern"
       ],
+      "toon": {
+        "sat": 1.3,
+        "bright": 2.6
+      },
       "notes": "Tripo fern-cluster, 4515 tris, 512 desktop / 256 mobile texture. See docs/art/prop-fern-cluster-v3/README.md."
     },
     {
@@ -92,6 +96,10 @@
       "props": [
         "broadleaf"
       ],
+      "toon": {
+        "sat": 1.3,
+        "bright": 2.2
+      },
       "notes": "Tripo broadleaf-plant, 2753 tris, 512 desktop / 256 mobile texture. See docs/art/prop-broadleaf-plant-v3/README.md."
     },
     {
@@ -102,6 +110,10 @@
       "props": [
         "flowerbush"
       ],
+      "toon": {
+        "sat": 1.3,
+        "bright": 4.0
+      },
       "notes": "Tripo flower-bush, 3348 tris, 512 desktop / 256 mobile texture. See docs/art/prop-flower-bush-v5/README.md."
     },
     {
