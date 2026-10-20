@@ -72,9 +72,12 @@ try{
     const page=await context.newPage();await page.goto('http://127.0.0.1:5197/tools/niagara-native-lab/budget.html');
     await page.waitForFunction(()=>window.budgetLab?.ready||window.budgetLab?.errors.length);
     assert.ok(await page.evaluate(()=>budgetLab.ready));
-    assert.equal(await page.evaluate(()=>budgetLab.variant),'full');
-    assert.equal(await page.evaluate(()=>budgetLab.mobileMemoryAccepted),false);
-    results.push({automatic:true,mobile,variant:await page.evaluate(()=>budgetLab.variant),selected:await page.evaluate(()=>budgetLab.selected),mobileMemoryAccepted:false});
+    assert.equal(await page.evaluate(()=>budgetLab.variant),'ktx2-uastc');
+    assert.equal(await page.evaluate(()=>budgetLab.mobileMemoryAccepted),true);
+    const mobileBudget=await page.evaluate(()=>budgetLab.mobileBudget);
+    assert.equal(mobileBudget.within,true);assert.equal(mobileBudget.limitBytes,8388608);
+    results.push({automatic:true,mobile,variant:await page.evaluate(()=>budgetLab.variant),selected:await page.evaluate(()=>budgetLab.selected),
+      mobileMemoryAccepted:await page.evaluate(()=>budgetLab.mobileMemoryAccepted),mobileBudget});
     await page.evaluate(()=>budgetLab.dispose());await context.close();
   }
   // Both early corruption and a post-upload startup failure must release resources.
@@ -94,7 +97,7 @@ try{
     else await page.route('**/budget-lab.js',async route=>{const response=await route.fetch();
       const body=(await response.text()).replace('draw();state.ready=true;',"draw();throw new Error('injected late startup');state.ready=true;");
       assert.ok(body.includes('injected late startup'));await route.fulfill({response,body});});
-    await page.goto('http://127.0.0.1:5197/tools/niagara-native-lab/budget.html'+(fault.startsWith('corrupt-ktx2')?'?variant=ktx2-uastc':''));
+    await page.goto('http://127.0.0.1:5197/tools/niagara-native-lab/budget.html'+(fault.startsWith('corrupt-ktx2')?'?variant=ktx2-uastc':fault==='corrupt-texture'?'?variant=full':''));
     await page.waitForFunction(()=>window.budgetLab?.errors.length);
     assert.equal(await page.evaluate(()=>budgetLab.ready),false);
     assert.deepEqual(await page.evaluate(()=>budgetLab.resourcesAfterDispose),{geometries:0,textures:0});

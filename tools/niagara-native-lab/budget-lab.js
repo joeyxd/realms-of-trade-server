@@ -5,7 +5,7 @@ import { SOURCE_PRESET_SHA256 } from './source-identity.js';
 import { FILM_SOURCE_SHA256 } from './film-identity.js';
 import { createFilmLUT, filmFragment } from './film-color.js';
 import { DepthStage } from './depth-stage.js';
-import { selectVariant, texturePlan, validateManifest, ATLAS_MANIFEST_SHA256, MOBILE_MEMORY_ACCEPTED } from './atlas-policy.js';
+import { selectVariant, texturePlan, validateManifest, mobileBudget, ATLAS_MANIFEST_SHA256, MOBILE_MEMORY_ACCEPTED } from './atlas-policy.js';
 const $ = id => document.getElementById(id);
 // Three format constant -> [name, bits per pixel, bytes per 4x4 block (0 = uncompressed)].
 const GPU_FORMATS = new Map([
@@ -110,6 +110,8 @@ try {
   state.requested = requested; state.variant = variant; state.selected = selected;
   state.gpu = gpuSummary(reports, selected, textures[0], selected[0].container === 'ktx2' ? 'KTX2Loader' : 'TextureLoader');
   state.mobileMemoryAccepted = MOBILE_MEMORY_ACCEPTED;
+  // Budget of the selected variant: atlases' GPU bytes + LUT against 8 MiB; render targets are excluded.
+  state.mobileBudget = mobileBudget(manifest, variant, film.generatedBytes);
   function draw() {
     if (state.disposed) return;
     const started = performance.now(), snapshot = simulation.seek(tick);
@@ -138,10 +140,12 @@ try {
       `${(state.stats.atlasDownloadBytes/1024).toFixed(1)} KiB descargados · ${(state.stats.atlasMipRgba8Bytes/1048576).toFixed(2)} MiB de atlas estimados\n`+
       `GPU ${state.gpu.loader === 'KTX2Loader' ? 'medida' : '(RGBA8 estimado)'}: ${state.gpu.format} · ${state.gpu.bitsPerPixel} bpp · ${(state.gpu.bytes/1048576).toFixed(2)} MiB · ${state.gpu.mipCount.join('/')} niveles\n`+
       `${particles.count} partículas · ${state.stats.calls} draw calls · LUT 256 KiB · targets 5 MiB estimados\n`+
+      `Presupuesto móvil (atlas + LUT): ${(state.mobileBudget.totalBytes/1048576).toFixed(2)} de ${(state.mobileBudget.limitBytes/1048576).toFixed(0)} MiB · ${state.mobileBudget.within?'dentro':'fuera'} (sin targets)\n`+
       (['half','quarter'].includes(variant)?'Diagnóstico: esta reducción no pasó todas las pruebas de silueta.':
-        variant === 'ktx2-uastc' || variant === 'ktx2-uastc-box'?'Diagnóstico: compresión GPU con pérdida; fidelidad y presupuesto de memoria móvil pendientes.':
+        variant === 'ktx2-uastc'?'Automático (decisión del autor, 2026-10-20): UASTC con pérdida aceptada; la deriva de silueta en humo tenue está medida y fijada.':
+        variant === 'ktx2-uastc-box'?'Diagnóstico: compresión GPU con pérdida y mips box; no aceptada.':
         variant.startsWith('ktx2-rgba8')?'Diagnóstico: RGBA8 sin códec con la cadena de mips de toktx; separa los mips del códec.':
-        'Detalle original conservado; presupuesto de memoria móvil pendiente.');
+        'Detalle original conservado sin pérdida; no cabe en el presupuesto móvil de 8 MiB.');
   }
   state.configure = options => {
     const allowed = ['tick','view','bias','layer','surface','cell','frame'];

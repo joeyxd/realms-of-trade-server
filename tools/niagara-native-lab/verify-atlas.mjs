@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
-import { validateManifest, ATLAS_MANIFEST_SHA256 } from './atlas-policy.js';
+import { validateManifest, ATLAS_MANIFEST_SHA256, MOBILE_MEMORY_ACCEPTED } from './atlas-policy.js';
 const root=new URL('../../',import.meta.url);
 const hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 const textHash=async url=>hash((await fs.readFile(url,'utf8')).replaceAll('\r\n','\n'));
@@ -29,4 +29,4 @@ for(const row of m.variants.filter(r=>r.container==='ktx2')){
     if(!uastc)assert.equal(level.uncompressedByteLength,Math.max(1,row.dimensions[0]>>i)*Math.max(1,row.dimensions[1]>>i)*4,row.file);});
   ktx2Files++;
 }
-console.log(JSON.stringify({pinnedManifest:true,sourceImages:2,verifiedDerivatives:m.variants.length,ktx2Files,mobileMemoryAccepted:false}));
+console.log(JSON.stringify({pinnedManifest:true,sourceImages:2,verifiedDerivatives:m.variants.length,ktx2Files,mobileMemoryAccepted:MOBILE_MEMORY_ACCEPTED}));

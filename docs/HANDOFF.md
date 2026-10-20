@@ -1,5 +1,20 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01c, 2026-10-20 — decisión del autor: UASTC automático, deriva fijada, memoria móvil aceptada:**
+[Entrega](delivery/st01c/ATLAS-LAB.md) sección «Decisión del autor (2026-10-20)»,
+[aceptación](delivery/st01c/atlas-drift-acceptance.json). El autor vio la comparación visual (celdas de humo
+con picos de 33-52/255, cambio de 1-3 niveles por píxel) y la juzgó invisible en juego. D1: `ktx2-uastc` se
+acepta con la deriva de budget07 frente a `source`, fijada: exactamente sus 37 casos fallidos, cada uno con
+max255 <= 3 y 0 fallos UE; compare-atlas.py añade `driftAccepted` y `unexpectedFailures` solo a esa variante
+(el resto de claves y `thresholdsBeforeReview` no cambian). D2: los 8 MiB cuentan atlases + LUT,
+8.039.200 + 262.144 = 8.301.344 B (margen 87.264 B); los targets (~5 MiB) son coste compartido del render.
+D3: `AUTOMATIC_VARIANTS` = ktx2-uastc en escritorio y móvil, `MOBILE_MEMORY_ACCEPTED` true;
+atlas-policy.js `mobileBudget()`, página con `state.mobileBudget`. qa-atlas.mjs: el fallo 'corrupt-texture'
+abre `?variant=full` (la página por defecto ya no pide WebP). Runs budget13/14 (worker) y budget15/16
+(verificador) píxel-idénticos a budget07 (2.144 imágenes); 19/19 tests. budget11/12 son parciales (cuelgue
+previo al arreglo), no usar. Sin aceptar: las demás variantes, ASTC/ETC2 y FPS en un teléfono real.
+Sigue (autor): segunda familia (NS_BasicHit candidata).
+
 **ST01c, 2026-10-20 — mips frente a códec (2x2): domina la cadena de mips; UASTC añade poco:**
 [Entrega](delivery/st01c/ATLAS-LAB.md) sección «Cadena de mips frente a códec (descomposición 2x2)»,
 [checkpoint](delivery/st01c/atlas-mip-checkpoint.json). Tres variantes diagnósticas (nunca automáticas):

@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import fs from 'node:fs';
-import { validateManifest, texturePlan, selectVariant, AUTOMATIC_VARIANTS, mipRgba8Bytes } from './atlas-policy.js';
+import { validateManifest, texturePlan, selectVariant, AUTOMATIC_VARIANTS, mipRgba8Bytes,
+  mobileBudget, MOBILE_MEMORY_ACCEPTED, MOBILE_BUDGET_LIMIT_BYTES } from './atlas-policy.js';
 const manifest = JSON.parse(fs.readFileSync(new URL('./atlas-manifest.json',import.meta.url)));
 const KTX2_VARIANTS=['ktx2-uastc','ktx2-uastc-box','ktx2-rgba8','ktx2-rgba8-box'];
 test('one pair per selection; NPOT device limits reject instead of changing quality',()=>{
@@ -12,12 +13,22 @@ test('one pair per selection; NPOT device limits reject instead of changing qual
   assert.throws(()=>texturePlan(manifest,'source',2048),/limit/);
   assert.equal(selectVariant('auto',false),AUTOMATIC_VARIANTS.desktop);
   assert.equal(selectVariant('auto',true),AUTOMATIC_VARIANTS.mobile);
-  assert.deepEqual({...AUTOMATIC_VARIANTS},{desktop:'full',mobile:'full'});
+  assert.deepEqual({...AUTOMATIC_VARIANTS},{desktop:'ktx2-uastc',mobile:'ktx2-uastc'});
   for(const variant of KTX2_VARIANTS)assert.equal(selectVariant(variant,true),variant);
   assert.throws(()=>selectVariant('../../source',true));
 });
-test('automatic selection never picks a KTX2 variant',()=>{
-  for(const coarse of [false,true])assert.ok(!selectVariant('auto',coarse).startsWith('ktx2-'));
+test('automatic selection is ktx2-uastc on desktop and mobile; diagnostics are never automatic',()=>{
+  for(const coarse of [false,true])assert.equal(selectVariant('auto',coarse),'ktx2-uastc');
+  for(const variant of Object.values(AUTOMATIC_VARIANTS))assert.ok(!/rgba8|box/.test(variant));
+});
+test('mobile budget counts atlas GPU bytes plus the LUT against 8 MiB',()=>{
+  assert.equal(MOBILE_BUDGET_LIMIT_BYTES,8388608);assert.equal(MOBILE_MEMORY_ACCEPTED,true);
+  assert.deepEqual(mobileBudget(manifest,'ktx2-uastc',262144),
+    {limitBytes:8388608,atlasGpuBytes:8039200,lutBytes:262144,totalBytes:8301344,within:true});
+  assert.equal(mobileBudget(manifest,'full',262144).atlasGpuBytes,32156324);
+  assert.equal(mobileBudget(manifest,'full',262144).within,false);
+  assert.equal(mobileBudget(manifest,AUTOMATIC_VARIANTS.mobile,262144).within,true);
+  assert.equal(mobileBudget(manifest,'source',262144).within,false);assert.throws(()=>mobileBudget(manifest,'../x',262144));assert.throws(()=>mobileBudget(manifest,'ktx2-uastc',-1));
 });
 test('mip accounting includes rectangular tail down to 1x1',()=>{
   assert.equal(mipRgba8Bytes(3,2),28);assert.equal(mipRgba8Bytes(2048,1024),11184812);

@@ -40,10 +40,19 @@ for variant in ['full','half','quarter']+[v for v in ['ktx2-uastc','ktx2-uastc-b
                      'worstCase':{'maxMae255':max(rows,key=lambda r:r['mae255'])['case'],'minIoU':min(rows,key=lambda r:r['maskIoU32'])['case'],
                                   'maxP95':max(rows,key=lambda r:r['p95Channel255'])['case']},
                      'originalCases':rows,'ueCases':ue_rows})
+# Author-accepted drift (docs/delivery/st01c/atlas-drift-acceptance.json): the named variant is checked against the pinned failure list.
+acceptance=json.loads((ROOT/'docs/delivery/st01c/atlas-drift-acceptance.json').read_text(encoding='utf8'))
+for row in variants:
+    if row['variant']!=acceptance['variant']: continue
+    allowed=set(acceptance['acceptedFailures'])
+    unexpected=[r['case']['file'] for r in row['originalCases'] if not r['accepted'] and (r['case']['file'] not in allowed or r['max255']>acceptance['maxFailingMax255'])]
+    if row['ueFailures']>acceptance['ueFailuresAllowed']: unexpected.append('ueFailures>'+str(acceptance['ueFailuresAllowed']))
+    row['driftAccepted']=not unexpected;row['unexpectedFailures']=unexpected
 result={'schema':'st01c-atlas-comparison/v1','run':run,'thresholdsBeforeReview':{'mae255':2,'p95Channel255':6,'maskIoU32':.98,'ueMae255':10,'ueIoU32':.94},'variants':variants}
 (out/'comparison.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf8',newline='\n')
 for row in variants:
  print(json.dumps({'variant':row['variant'],'accepted':row['accepted'],'failures':row['failures'],
    'maxMae255':max(r['mae255'] for r in row['originalCases']),'minIoU':min(r['maskIoU32'] for r in row['originalCases']),
-   'maxP95':max(r['p95Channel255'] for r in row['originalCases']),'ueMaxMae255':max(r['mae255'] for r in row['ueCases'])}))
+   'maxP95':max(r['p95Channel255'] for r in row['originalCases']),'ueMaxMae255':max(r['mae255'] for r in row['ueCases']),
+   **({'driftAccepted':row['driftAccepted'],'unexpectedFailures':row['unexpectedFailures']} if 'driftAccepted' in row else {})}))
 assert variants[0]['accepted'],'Lossless full variant must preserve original pixels'

@@ -319,3 +319,68 @@ python -B tools/niagara-native-lab/compare-atlas.py budget08
 python -B tools/niagara-native-lab/check-atlas-repeat.py budget07 budget08
 python -B tools/niagara-native-lab/check-atlas-repeat.py budget03 budget07 --variants source,full,half,quarter,ktx2-uastc
 ```
+
+## Decisión del autor (2026-10-20)
+
+El autor decidió que KTX2 UASTC (`ktx2-uastc`) sea la textura automática en escritorio y en
+móvil. Esta sección solo registra esa decisión; no reescribe ninguna regla ni checkpoint
+anterior (`thresholdsBeforeReview` y las métricas no cambian, y `ktx2-uastc` sigue sin pasar
+el gate antiguo: `accepted: false`).
+
+**Lo que SÍ está aceptado.**
+
+- **D1, deriva de silueta.** `ktx2-uastc` se acepta con la deriva medida en `budget07` frente
+  a la línea base `source`: exactamente sus 37 casos fallidos (36 celdas aisladas de humo +
+  1 vista de capa de humo), cada uno con `max255 <= 3`, y `ueFailures == 0`. Motivo: en la
+  línea base los casos que fallan tienen picos de 33-52/255 (celdas 33-47, vista de capa 52)
+  y el corte de silueta está en 32, de modo que entre 2 y 26 píxeles por celda (56 en la
+  vista de capa) cruzan el corte y rompen el IoU mientras el cambio por píxel es de 1-3
+  niveles. La distancia a Unreal apenas cambia (sesgo frontal 0, MAE: `full` 6,912,
+  `ktx2-uastc` 6,913) y las seis comparaciones con Unreal pasan. El autor juzgó la deriva
+  invisible en juego.
+- **D2, presupuesto móvil.** Los 8 MiB (8.388.608 B) cuentan los bytes GPU de los atlases más
+  la LUT (262.144 B). Los render targets (unos 5 MiB estimados) son coste compartido del
+  renderer y quedan fuera. `ktx2-uastc`: 8.039.200 + 262.144 = 8.301.344 B, margen 87.264 B.
+  `full` (32.156.324 B de GPU) no cabe.
+- **D3, selección.** `AUTOMATIC_VARIANTS = { desktop: 'ktx2-uastc', mobile: 'ktx2-uastc' }` y
+  `MOBILE_MEMORY_ACCEPTED = true` en `atlas-policy.js`. `mobileBudget(manifest, variant,
+  lutBytes)` calcula `{limitBytes, atlasGpuBytes, lutBytes, totalBytes, within}`.
+
+**Lo que NO está aceptado.**
+
+- `ktx2-uastc-box`, `ktx2-rgba8`, `ktx2-rgba8-box`, `half` y `quarter`. `ktx2-rgba8` y los
+  `-box` siguen siendo solo diagnóstico y nunca son automáticos.
+- ASTC/ETC2 y los FPS en un teléfono real siguen sin medir (este Chrome no expone ASTC/ETC2;
+  la medición de GPU es de un Intel Iris Xe con BPTC).
+- Los render targets quedan fuera de este presupuesto; su coste no se ha aceptado aquí.
+
+**Cómo funciona la guarda de deriva fijada.** `atlas-drift-acceptance.json`
+(`st01c-atlas-drift-acceptance/v1`) guarda la variante, la corrida de referencia, la línea
+base, `maxFailingMax255: 3`, `ueFailuresAllowed: 0` y la lista ordenada de los 37 archivos
+fallidos aceptados. `compare-atlas.py` añade a la entrada de esa variante `driftAccepted` y
+`unexpectedFailures`: es un fallo inesperado cualquier caso fallido fuera de la lista, con
+`max255 > 3`, o cualquier fallo de Unreal. Cualquier deriva nueva deja `driftAccepted: false`.
+Las demás variantes no reciben claves nuevas y los valores ya existentes no cambian.
+
+**Corridas.** `budget13` y `budget14` (mismo código, mismo Chrome) con el automático ya en
+`ktx2-uastc`: `qa-atlas.mjs` sale con código 0 en ambas; en escritorio y móvil la variante
+automática es `ktx2-uastc`, `mobileMemoryAccepted` es `true` y el presupuesto queda dentro.
+`compare-atlas.py` en `budget07`, `budget08`, `budget13` y `budget14` da fallos
+full 0, half 49, quarter 230, ktx2-uastc 37, ktx2-uastc-box 47, ktx2-rgba8 31,
+ktx2-rgba8-box 43, y para `ktx2-uastc` `driftAccepted: true` y `unexpectedFailures: []`.
+`check-atlas-repeat.py` (`budget07` con `budget13`, y `budget13` con `budget14`): 2144
+imágenes, todos los píxeles decodificados idénticos. La prueba de fallo `corrupt-texture` de
+`qa-atlas.mjs` ahora abre `?variant=full`, porque la página por defecto ya carga KTX2.
+
+```powershell
+node --test tools/niagara-native-lab/*.test.mjs
+python -B tools/niagara-native-lab/atlas_build_test.py
+python -B tools/niagara-native-lab/atlas-build.py --check
+node tools/niagara-native-lab/verify-atlas.mjs
+node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs' budget13
+node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs' budget14
+python -B tools/niagara-native-lab/compare-atlas.py budget13
+python -B tools/niagara-native-lab/compare-atlas.py budget14
+python -B tools/niagara-native-lab/check-atlas-repeat.py budget07 budget13
+python -B tools/niagara-native-lab/check-atlas-repeat.py budget13 budget14
+```

@@ -281,12 +281,12 @@
       "reference textures"
     ],
     "physicalMobileFps": null,
-    "acceptedMobileVariant": null,
+    "acceptedMobileVariant": "ktx2-uastc",
     "atlasBuildManifest": "../../../tools/niagara-native-lab/atlas-manifest.json",
     "originalPngDownloadBytes": 1369043,
     "selectedLosslessWebpBytes": 552514,
-    "automaticPrivateVariant": "full",
-    "atlasGpuMemoryReductionAccepted": false,
+    "automaticPrivateVariant": "ktx2-uastc",
+    "atlasGpuMemoryReductionAccepted": true,
     "atlasVariants": [
       {
         "id": "full",
@@ -310,7 +310,7 @@
         "rgba8MipEstimatedBytes": 2009764
       }
     ],
-    "variantMeaning": "WebP full conserva resoluci?n/p?xeles; los candidatos half/quarter quedan solo para diagn?stico. Memoria y FPS de tel?fono siguen pendientes."
+    "variantMeaning": "Decisión del autor 2026-10-20: KTX2 UASTC (ktx2-uastc) es el atlas automático en escritorio y móvil, con la deriva de silueta en humo tenue medida y fijada (atlas-drift-acceptance.json) y 8.301.344 B de atlas + LUT dentro de 8 MiB (sin render targets). WebP full conserva resolución y píxeles; half, quarter, ktx2-uastc-box, ktx2-rgba8 y ktx2-rgba8-box no están aceptados. FPS y ASTC/ETC2 en un teléfono real siguen sin medir."
   },
   "limitations": [
     "Ficha experimental fuera del catálogo del juego; no habilita composición automática.",

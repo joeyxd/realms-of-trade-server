@@ -1,7 +1,10 @@
 // Private pilot texture admission; source identities remain separate from variants.
-export const AUTOMATIC_VARIANTS = Object.freeze({ desktop: 'full', mobile: 'full' });
+// Author decision 2026-10-20: KTX2 UASTC is the automatic texture on desktop and mobile.
+export const AUTOMATIC_VARIANTS = Object.freeze({ desktop: 'ktx2-uastc', mobile: 'ktx2-uastc' });
 export const ATLAS_MANIFEST_SHA256 = '9731837e8d1c865679ea2eaa098a042d5a27a88b76033618acdc7e9071a8d942';
-export const MOBILE_MEMORY_ACCEPTED = false;
+export const MOBILE_MEMORY_ACCEPTED = true;
+// Mobile budget: 8 MiB counting the atlases' GPU bytes plus the film LUT; render targets are the renderer's shared cost and stay outside.
+export const MOBILE_BUDGET_LIMIT_BYTES = 8 * 1024 * 1024;
 const SHA = /^[0-9a-f]{64}$/;
 const INPUTS = [
   ['flame', 'cd44ef0de6222e9ce7b0185099f07bf2763c33190f716c45fa06083ba08e9d86', [2048, 1024], [8, 4]],
@@ -9,7 +12,8 @@ const INPUTS = [
 ];
 const CELLS = { full: 256, half: 128, quarter: 64, 'ktx2-uastc': 256, 'ktx2-uastc-box': 256, 'ktx2-rgba8': 256, 'ktx2-rgba8-box': 256 };
 // KTX2 containers: UASTC is transcoded on the device, raw RGBA8 is uploaded as is; the -box variants only change the
-// mip filter. The rgba8 and -box variants are diagnostic for the mip/codec decomposition, never an automatic choice.
+// mip filter. Only ktx2-uastc is automatic; ktx2-rgba8 and every -box variant are diagnostic for the mip/codec
+// decomposition, never an automatic choice.
 const KTX2 = new Map([['ktx2-uastc', { codec: 'uastc', box: false }], ['ktx2-uastc-box', { codec: 'uastc', box: true }],
   ['ktx2-rgba8', { codec: 'rgba8', box: false }], ['ktx2-rgba8-box', { codec: 'rgba8', box: true }]]);
 const extensionOf = variant => KTX2.has(variant) ? 'ktx2' : 'webp';
@@ -19,10 +23,27 @@ export function mipRgba8Bytes(width, height) {
   while (true) { sum += width * height * 4; if (width === 1 && height === 1) return sum;
     width = Math.max(1, Math.floor(width / 2)); height = Math.max(1, Math.floor(height / 2)); }
 }
+// Mobile memory budget of one variant: atlas GPU bytes (UASTC blocks, or RGBA8 mips for WebP, raw KTX2 and the PNG original) plus the LUT.
+export function mobileBudget(manifest, variant, lutBytes) {
+  validateManifest(manifest);
+  if ((variant !== 'source' && !Object.hasOwn(CELLS, variant)) || !Number.isSafeInteger(lutBytes) || lutBytes < 0) throw new Error('Invalid budget request');
+  const uastc = KTX2.get(variant)?.codec === 'uastc';
+  // The PNG original is decoded to RGBA8 with a driver-generated chain, like the lossless WebP.
+  const rows = variant === 'source' ? manifest.inputs : manifest.variants.filter(r => r.id === variant);
+  const atlasGpuBytes = rows.reduce((n, r) => n + (uastc ? uastcMipBytes(...r.dimensions) : mipRgba8Bytes(...r.dimensions)), 0);
+  const totalBytes = atlasGpuBytes + lutBytes;
+  return { limitBytes: MOBILE_BUDGET_LIMIT_BYTES, atlasGpuBytes, lutBytes, totalBytes, within: totalBytes <= MOBILE_BUDGET_LIMIT_BYTES };
+}
 export function selectVariant(requested, coarsePointer) {
   if (requested === 'auto') return AUTOMATIC_VARIANTS[coarsePointer ? 'mobile' : 'desktop'];
   if (requested !== 'source' && !Object.hasOwn(CELLS, requested)) throw new Error('Unknown atlas variant');
   return requested;
+}
+// UASTC GPU bytes: 16 B per 4x4 block, summed over the whole mip chain down to 1x1.
+function uastcMipBytes(width, height) {
+  let sum = 0;
+  for (;;) { sum += Math.ceil(width / 4) * Math.ceil(height / 4) * 16; if (width === 1 && height === 1) return sum;
+    width = Math.max(1, width >> 1); height = Math.max(1, height >> 1); }
 }
 function validKtx2Row(row, input, dimensions, recipe) {
   const uastc = recipe.codec === 'uastc';
