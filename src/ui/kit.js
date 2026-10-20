@@ -16,7 +16,7 @@ export const escHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':
 /** Absolute URL of a kit asset (a relative url() set inline would resolve against the page, not the stylesheet). */
 export const kitAsset = (path) => { try { return new URL(`assets/ui/${path}`, document.baseURI).href; } catch { return `assets/ui/${path}`; } };
 
-// Painted atlases in assets/ui/kit (cut by tools/crafting-ui/icons.py; keep the id order in sync with its ATLASES).
+// Painted atlases in assets/ui/kit (cut by tools/crafting-ui/icons.py, cooking_icons.py and skill_icons.py; keep the id order in sync with their ATLASES/IDS).
 export const ICON_ATLASES = {
   // Food art comes first so existing goods resolve to the refreshed silhouettes.
   // Order matches tools/crafting-ui/cooking_icons.py. Meal IDs are presentation only.
@@ -29,6 +29,10 @@ export const ICON_ATLASES = {
     'chaleco', 'casaca', 'coraza', 'botas', 'altas', 'viento', 'anillo', 'diente', 'brujula', 'amuleto', 'moneda'] },
   misc: { cols: 4, rows: 4, ids: ['antorcha', 'lanza', 'arpon', 'cuerda', 'arco', 'flechas', 'fogata', 'potion', 'crate', 'crate2',
     'crate3', 'mochila', 'cinturon', 'oro', 'mapa', 'diario'] },
+  // Skills sheet: the five trees (plus the hidden exploration slot) and the combat nodes I-V; order matches
+  // tools/crafting-ui/skill_icons.py IDS.
+  skills: { cols: 6, rows: 4, ids: ['combat', 'survival', 'sailing', 'crafting', 'trade', 'exploration', 'lunge', 'blast', 'temple',
+    'wave', 'blink', 'trigger', 'tromba', 'leap', 'wheel', 'storm', 'rain', 'eye', 'pearl_affinity', 'deluge', 'curse_tamed'] },
 };
 const CELL = new Map();
 for (const [atlas, { cols, ids }] of Object.entries(ICON_ATLASES))

@@ -107,8 +107,8 @@ test('free points never go negative', () => {
   assert.deepEqual(rich, { earned: 18, spent: 2, free: 16 });
 });
 
-test('skillGlyph wraps the HUD svg in a span with the given class', () => {
-  const html = skillGlyph('lunge', 'sk-ico');
-  assert.match(html, /^<span class="sk-ico"><svg/);
+test('skillGlyph picks the painted atlas cell when one exists and wraps the HUD svg otherwise', () => {
+  assert.equal(skillGlyph('lunge', 'sk-ico'), '<span class="kit-ico sk-ico" data-atlas="skills" style="--ix:0;--iy:1" aria-hidden="true"></span>');
+  assert.match(skillGlyph('steady_chop', 'sk-ico'), /^<span class="sk-ico"><svg/);
   assert.match(skillGlyph('nothing-like-this', 'x'), /^<span class="x"><svg/);
 });

@@ -12,9 +12,9 @@ import { skillIcon } from './hud.js';
 import { loggingSkillHtml } from './loggingSkill.js';
 import { LINE_ICONS as I, atlasIcon, escHtml as esc, fmtNum, hasAtlasIcon, kitAsset, tr } from './kit.js';
 
-// Trees whose painted hero (assets/ui/skills/hero-<id>.webp) has shipped. Empty today: the box shows the tree icon on the
-// plate instead of a request that would 404. Add the id here when its file lands (the same pattern as workbench.js).
-export const HERO_ART = new Set();
+// Trees whose painted hero (assets/ui/skills/hero-<id>.webp and -mobile, cut by tools/crafting-ui/skill_icons.py) has shipped;
+// the hidden exploration tree has none and shows its icon on the plate instead (the same pattern as workbench.js).
+export const HERO_ART = new Set(['combat', 'survival', 'sailing', 'crafting', 'trade']);
 
 const PRACTICE_KEYS = ['logging', 'survival', 'sailing', 'crafting', 'trade'];
 const isObj = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
@@ -144,7 +144,7 @@ const practiceText = (pr, lang, T) => (pr.need === null ? T.maxRank : `${fmtNum(
 // The hero box: the painted hero when it shipped, else the tree icon on the plate. `ico` holds a large icon over the art.
 function heroHtml(tree, cls, ico = '') {
   const art = HERO_ART.has(tree.id);
-  const style = art ? ` style="--art:url('${kitAsset(`skills/hero-${tree.id}.webp`)}')"` : '';
+  const style = art ? ` style="--art:url('${kitAsset(`skills/hero-${tree.id}.webp`)}');--art-m:url('${kitAsset(`skills/hero-${tree.id}-mobile.webp`)}')"` : '';
   return `<div class="${cls}${art ? '' : ' is-empty'}"${style} aria-hidden="true">${ico || (art ? '' : skillGlyph(tree.icon, 'sk-hero-ico'))}</div>`;
 }
 

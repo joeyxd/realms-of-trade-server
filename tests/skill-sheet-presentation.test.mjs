@@ -156,16 +156,17 @@ test('active node ranks show the current to next table', (t) => {
   assert.match(text(parts(screen, profile, 'en').right), /Parry margin/);
 });
 
-test('the render is deterministic and the painting box makes no request while the hero file is absent', (t) => {
+test('the render is deterministic and the hero boxes paint the shipped art with its mobile variant', (t) => {
   t.after(() => setLocale('es'));
   const { profile, screen } = fixture();
   screen.skNode = 'wave';
   assert.deepEqual(parts(screen, profile, 'es'), parts(screen, profile, 'es'));
   const html = Object.values(parts(screen, profile, 'es')).join('');
-  assert.equal(HERO_ART.size, 0);
-  assert.doesNotMatch(html, /url\(/);
-  assert.match(html, /class="sk-paint is-empty"/);
-  assert.match(html, /class="sk-hero is-empty"|class="sk-hero"/);
+  assert.equal(HERO_ART.size, 5);
+  assert.match(html, /class="sk-paint" style="--art:url\('assets\/ui\/skills\/hero-combat\.webp'\);--art-m:url\('assets\/ui\/skills\/hero-combat-mobile\.webp'\)" aria-hidden="true"/);
+  assert.match(html, /class="sk-hero" style="--art:url\('assets\/ui\/skills\/hero-combat\.webp'\);--art-m:url\('assets\/ui\/skills\/hero-combat-mobile\.webp'\)" aria-hidden="true"/);
+  assert.doesNotMatch(html, /is-empty/);
+  assert.doesNotMatch(html, /hero-exploration/);
   // Builders are pure: the same state renders the same strings.
   const state = skillSheetState(profile, 0), sel = { tree: 'combat', node: 'wave' };
   assert.equal(skillListHtml(state, sel, 'es'), skillListHtml(state, sel, 'es'));
@@ -191,4 +192,18 @@ test('clicking a tree selects it and clears the node; clicking a node toggles it
   click('[data-tree]', { tree: 'exploration' }); // the hidden tree is not selectable
   assert.equal(screen.skTree, 'trade');
   assert.equal(renders, 3);
+});
+
+test('skills atlas: every tree and combat node has a painted cell; the five heroes ship with a mobile variant', async () => {
+  const { ICON_ATLASES, hasAtlasIcon } = await import('../src/ui/kit.js');
+  const { TREES, NODES } = await import('../src/data/skillTree.js');
+  assert.equal(ICON_ATLASES.skills.ids.length, 21);
+  for (const tree of TREES) assert.ok(hasAtlasIcon(tree.icon), tree.id);
+  for (const node of NODES.filter((n) => n.tree === 'combat')) assert.ok(hasAtlasIcon(node.icon), node.id);
+  assert.deepEqual([...HERO_ART], TREES.filter((t) => !t.hidden).map((t) => t.id));
+  const { profile } = fixture();
+  const state = skillSheetState(profile, 0), sel = { tree: 'combat', node: 'wave' };
+  const html = skillCenterHtml(state, sel, 'es') + skillRightHtml(state, sel, 'es');
+  assert.ok(html.includes('skills/hero-combat.webp') && html.includes('skills/hero-combat-mobile.webp'));
+  assert.ok(html.includes('data-atlas="skills"'));
 });

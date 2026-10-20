@@ -14,12 +14,12 @@ export const GRID_COLS = 3;
 
 // Display order of the left list. `practiceKeys` are the profile counters that feed the tree's practice.
 export const TREES = [
-  { id: 'combat', name: { es: 'Combate', en: 'Combat' }, tag: { es: 'Sable, pistolas, tatuajes y perla', en: 'Saber, pistols, tattoos and pearl' }, icon: 'combat', practiceKeys: ['combat'], hero: 'assets/ui/skills/hero-combat.webp', hidden: false },
-  { id: 'survival', name: { es: 'Supervivencia', en: 'Survival' }, tag: { es: 'Tala, agua, comida y rescate', en: 'Logging, water, food and rescue' }, icon: 'survival', practiceKeys: ['survival', 'logging'], hero: 'assets/ui/skills/hero-survival.webp', hidden: false },
-  { id: 'sailing', name: { es: 'Navegación', en: 'Sailing' }, tag: { es: 'Timón, aparejos y travesía', en: 'Helm, rigging and voyages' }, icon: 'sailing', practiceKeys: ['sailing'], hero: 'assets/ui/skills/hero-sailing.webp', hidden: false },
-  { id: 'crafting', name: { es: 'Oficios', en: 'Crafting' }, tag: { es: 'Fabricación, reparación y artesanos', en: 'Making, repairs and artisans' }, icon: 'crafting', practiceKeys: ['crafting'], hero: 'assets/ui/skills/hero-crafting.webp', hidden: false },
-  { id: 'trade', name: { es: 'Comercio', en: 'Trade' }, tag: { es: 'Mercado, contactos y contratos', en: 'Market, contacts and contracts' }, icon: 'trade', practiceKeys: ['trade'], hero: 'assets/ui/skills/hero-trade.webp', hidden: false },
-  { id: 'exploration', name: { es: 'Exploración', en: 'Exploration' }, tag: { es: 'Reservado para más adelante', en: 'Reserved for later' }, icon: 'exploration', practiceKeys: ['exploration'], hero: 'assets/ui/skills/hero-exploration.webp', hidden: true },
+  { id: 'combat', name: { es: 'Combate', en: 'Combat' }, tag: { es: 'Sable, pistolas, tatuajes y perla', en: 'Saber, pistols, tattoos and pearl' }, icon: 'combat', practiceKeys: ['combat'], hero: 'assets/ui/skills/hero-combat.webp', heroMobile: 'assets/ui/skills/hero-combat-mobile.webp', hidden: false },
+  { id: 'survival', name: { es: 'Supervivencia', en: 'Survival' }, tag: { es: 'Tala, agua, comida y rescate', en: 'Logging, water, food and rescue' }, icon: 'survival', practiceKeys: ['survival', 'logging'], hero: 'assets/ui/skills/hero-survival.webp', heroMobile: 'assets/ui/skills/hero-survival-mobile.webp', hidden: false },
+  { id: 'sailing', name: { es: 'Navegación', en: 'Sailing' }, tag: { es: 'Timón, aparejos y travesía', en: 'Helm, rigging and voyages' }, icon: 'sailing', practiceKeys: ['sailing'], hero: 'assets/ui/skills/hero-sailing.webp', heroMobile: 'assets/ui/skills/hero-sailing-mobile.webp', hidden: false },
+  { id: 'crafting', name: { es: 'Oficios', en: 'Crafting' }, tag: { es: 'Fabricación, reparación y artesanos', en: 'Making, repairs and artisans' }, icon: 'crafting', practiceKeys: ['crafting'], hero: 'assets/ui/skills/hero-crafting.webp', heroMobile: 'assets/ui/skills/hero-crafting-mobile.webp', hidden: false },
+  { id: 'trade', name: { es: 'Comercio', en: 'Trade' }, tag: { es: 'Mercado, contactos y contratos', en: 'Market, contacts and contracts' }, icon: 'trade', practiceKeys: ['trade'], hero: 'assets/ui/skills/hero-trade.webp', heroMobile: 'assets/ui/skills/hero-trade-mobile.webp', hidden: false },
+  { id: 'exploration', name: { es: 'Exploración', en: 'Exploration' }, tag: { es: 'Reservado para más adelante', en: 'Reserved for later' }, icon: 'exploration', practiceKeys: ['exploration'], hero: 'assets/ui/skills/hero-exploration.webp', heroMobile: 'assets/ui/skills/hero-exploration-mobile.webp', hidden: true },
 ];
 
 // A tier opens when the tree reaches `rank`.
