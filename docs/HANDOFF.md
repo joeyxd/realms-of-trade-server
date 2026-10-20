@@ -45,6 +45,7 @@ realms-of-trade-server/.scratch/tools/ktx-4.4.2/bin. compare-atlas.py evalúa kt
 tiene; check-atlas-repeat.py admite `--variants`. atlas-checkpoint.json conserva el pin antiguo del manifiesto.
 Sin cambios de juego, SQL, protocolo ni registro. Sigue: aislar la cadena de mips (mips equivalentes al
 driver o comparar nivel 0), decisión del autor sobre formato y presupuesto, luego la segunda familia.
+
 **SK04a, 2026-10-20 — gastar y resetear puntos de habilidad, lado servidor, a oscuras (T-1020-62, T-1020-63), alpha.83:**
 Nuevo `msg.type 'skills'` en el carril económico M5, calcado de Carga (`attributes`): plan puro
 `src/sim/systems/skillPlan.js` `planSkillChange` (`assign` sube un nodo un rango por un punto del árbol; `reset` pone
@@ -121,6 +122,7 @@ próximos assets Tripo de vegetación: medir la textura y gradarla en el manifes
 `tests/night-lighting.test.mjs` realineado con la noche VR01 (hemisferio azul marino hemiI 1.7; fallaba 3/3 desde 3b10283b y no está en
 el gate): 3 tests, 0 fallos. Versión alpha.80 en los tres archivos. Pendiente: los siete props del estudio Tripo (una aprobación de
 descarga), agua y materiales; opcional un emisivo nocturno tenue en el arbusto si el grading no basta en GPU real.
+
 **IC03a, 2026-10-20 — la mente emparejada entra en el cuerpo de presencia (L03g-b, servidor y cliente), alpha.79/protocolo 63:**
 Con `MN_COMPANION_PRESENCE=1` y SQL039 listo, un HELLO emparejado (`agent: true` + token `mncp_`) ya no crea otra
 entidad: se ata al cuerpo de presencia activo del dueño (`server/companionPresence.mjs` `attach`, `server/host.mjs`
