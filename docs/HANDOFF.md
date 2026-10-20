@@ -61,6 +61,7 @@ recalculando con el catálogo vivo (añadir nodos no cerca el carril). Sin clien
 llega en SK04b. Antes de encender el flag: aplicar 041 en Supabase y comprobar readiness (context/ops/migration-check.md),
 y que `server/groundTransaction.mjs:22` valide los recibos de skills por la ruta guardada (hoy los recalcula; las
 transacciones de suelo están apagadas en producción). El catálogo solo puede crecer (quitar un nodo rompe readProgression).
+
 **AREA15, 2026-10-20 — recursos GM componen con Ground por SQL040; piloto común público apagado, alpha.82/protocolo 63:**
 [Entrega/evidencia](delivery/gm-ground-composition.md); segundo corte del paso 3 de la [matriz](CONTINUITY-MATRIX.md) (T-1020-70).
 `server/host.mjs` ya no rechaza `gmResources` junto con `groundTransactions` (arranque y `prepareContentResources`); bajo
