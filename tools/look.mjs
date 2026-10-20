@@ -471,7 +471,7 @@ for (const s of scen) {
     await page.keyboard.press('KeyF'); await wait(1800); await shot('31-sepia-dialog');
     const tat = await page.$('[data-tattoo]');
     if (tat) await tat.click({ force: true });
-    else await page.evaluate(() => window.__mn.panels.charPanel.open('tattoo', { learn: true }));
+    else await page.evaluate(() => window.__mn.panels.charPanel.open('skills', { learn: true }));
     await wait(1500); await shot('32-tattoo-tab');
     const learn = await page.$('[data-tt="tromba"]');
     if (learn) { await learn.click({ force: true }); await wait(600); const b = await page.$('[data-learn]'); if (b) await b.click({ force: true }); await wait(1500); }

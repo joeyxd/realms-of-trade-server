@@ -33,7 +33,7 @@ import { LINE_ICONS as I, atlasIcon, escHtml as esc, fmtNum, onLocaleChange, uiL
 const TEXT = {
   es: {
     dialog: 'Personaje', close: 'Cerrar', tagline: 'Explora · Recolecta · Sobrevive', motto: 'Más audaz\nMás lejos',
-    tabs: { stats: 'Personaje', gear: 'Inventario', tattoo: 'Habilidades', quests: 'Diario', pearl: 'Perlas' },
+    tabs: { stats: 'Personaje', gear: 'Inventario', skills: 'Habilidades', quests: 'Diario', pearl: 'Perlas' },
     details: 'Detalles del personaje', level: 'Nivel', health: 'Salud', stamina: 'Aguante', carry: 'Carga',
     core: 'Atributos', allStats: 'Ver todos', back: 'Volver', equipment: 'Equipo', itemDetails: 'Detalles del objeto',
     slot: { head: 'Cabeza', chest: 'Pecho', boots: 'Botas', weapon: 'Arma', ring1: 'Abalorio', ring2: 'Abalorio' },
@@ -57,7 +57,7 @@ const TEXT = {
   },
   en: {
     dialog: 'Character', close: 'Close', tagline: 'Explore · Gather · Survive', motto: 'Bolder\nFarther',
-    tabs: { stats: 'Character', gear: 'Inventory', tattoo: 'Skills', quests: 'Journal', pearl: 'Pearls' },
+    tabs: { stats: 'Character', gear: 'Inventory', skills: 'Skills', quests: 'Journal', pearl: 'Pearls' },
     details: 'Character details', level: 'Level', health: 'Health', stamina: 'Stamina', carry: 'Carry',
     core: 'Core stats', allStats: 'View all', back: 'Back', equipment: 'Equipment', itemDetails: 'Item details',
     slot: { head: 'Head', chest: 'Chest', boots: 'Boots', weapon: 'Main hand', ring1: 'Trinket', ring2: 'Trinket' },
@@ -80,7 +80,7 @@ const TEXT = {
       'An ember of the volcanic forge; where others see ash, he sees a trade.'],
   },
 };
-const TAB_ORDER = [['stats', 'C', 'person'], ['gear', 'I', 'backpack'], ['tattoo', 'T', 'skills'], ['quests', 'L', 'journal'], ['pearl', 'P', 'pearl']];
+const TAB_ORDER = [['stats', 'C', 'person'], ['gear', 'I', 'backpack'], ['skills', 'T', 'skills'], ['quests', 'L', 'journal'], ['pearl', 'P', 'pearl']];
 const RARITY_VAR = ['common', 'uncommon', 'rare', 'epic', 'legend'];
 const SLOT_ICON = { head: 'head', chest: 'chest', boots: 'boots', weapon: 'sword', ring1: 'ring', ring2: 'ring' };
 const STAT_ICON = { atk: 'sword', def: 'shield', hp: 'heart', crit: 'crit', critD: 'crit', spd: 'speed', cdr: 'cooldown', rip: 'bolt', refl: 'shield',
@@ -207,7 +207,7 @@ export class CharacterScreen extends CharPanel {
   // ---- Rendering -------------------------------------------------------------------------------------------
   // 'tree' is the read-only skill sheet; the Doña Sepia flow (learn) keeps the wide tattoo list with its learn buttons.
   kind() {
-    if (this.tab === 'tattoo' && !this.learn) return 'tree';
+    if (this.tab === 'skills' && !this.learn) return 'tree';
     return (this.tab === 'stats' && !this.statsAll) || this.tab === 'gear' ? 'sheet' : 'wide';
   }
   render() {
@@ -224,7 +224,7 @@ export class CharacterScreen extends CharPanel {
     if (kind === 'wide') {
       const scroll = this.root.querySelector('.ch-wide')?.scrollTop || 0;
       const body = this.tab === 'stats' ? `<div class="ch-wide-head"><button class="ch-link" data-all-stats>‹ ${esc(T.back)}</button></div>${this.statsHtml(p)}`
-        : this.tab === 'tattoo' ? loggingSkillHtml(p.progression, lang) + this.tattooHtml(p) : this.tab === 'pearl' ? pearlHtml(p, null, this.nearby?.() || []) : this.questsHtml(p);
+        : this.tab === 'skills' ? loggingSkillHtml(p.progression, lang) + this.tattooHtml(p) : this.tab === 'pearl' ? pearlHtml(p, null, this.nearby?.() || []) : this.questsHtml(p);
       if (this.part('wide', body) && this.renderedTab === this.tab) this.root.querySelector('.ch-wide').scrollTop = scroll;
       this.renderedTab = this.tab;
       return;

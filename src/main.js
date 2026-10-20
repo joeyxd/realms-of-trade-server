@@ -256,7 +256,7 @@ async function boot() {
   });
   bus.on('attributes', ev => safe('attributes', () => charPanel.attributes.onResult(ev)));
   bus.on('you:welcome', () => charPanel.attributes.resetSession());
-  const dialog = new Dialog($('#dialog'), { send: sendCmd, onShop: () => charPanel.open('gear', { shop: true }), onTattoo: () => charPanel.open('tattoo', { learn: true }), onMarket: (town) => commercePanel.openMarket(town) });
+  const dialog = new Dialog($('#dialog'), { send: sendCmd, onShop: () => charPanel.open('gear', { shop: true }), onTattoo: () => charPanel.open('skills', { learn: true }), onMarket: (town) => commercePanel.openMarket(town) });
   const mapView = new MapView($('#mapview'), map);
   const miniMap = new MiniMap($('#hud'), map, { isTouch, onOpen: () => {
     if (st.mode === 'playing' && input.enabled && !pause.open && !chatPanel.typing) $('#hud-map').click();
@@ -424,7 +424,7 @@ async function boot() {
   input.onHotkey('KeyR', () => { if (!raftEditor.active) return false; raftEditor.rotate(); return true; });
   input.onHotkey('KeyC', panelKey(() => charPanel.toggle('stats')));
   input.onHotkey('KeyL', panelKey(() => charPanel.toggle('quests')));
-  input.onHotkey('KeyT', panelKey(() => charPanel.toggle('tattoo'))); // M4.7: your tattoos and the Q / E loadout
+  input.onHotkey('KeyT', panelKey(() => charPanel.toggle('skills'))); // M4.7: your tattoos and the Q / E loadout
   input.onHotkey('KeyP', panelKey(() => charPanel.toggle('pearl')));
   input.onHotkey('KeyM', panelKey(() => mapView.toggle()));
   input.onHotkey('KeyU', () => {

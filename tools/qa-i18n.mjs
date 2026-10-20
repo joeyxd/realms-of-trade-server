@@ -234,7 +234,7 @@ try {
   ui.clearChatBubbles();box.remove();setLocale('en');
   return {liveChatLabel:true,humanTextPreserved:true,noReplay:true,offscreenPromptHidden:true};
  });report.checks.push(chatCheck);
- await page.evaluate(()=>window.__mn.panels.charPanel.open('tattoo'));
+ await page.evaluate(()=>window.__mn.panels.charPanel.open('skills'));
  const tattooBranches=await page.evaluate(async()=>{
   const {TATTOOS,TATTOO}=await import('/src/data/tattoos.js');
   const panel=window.__mn.panels.charPanel, getProfile=panel.profile, profile=structuredClone(getProfile());

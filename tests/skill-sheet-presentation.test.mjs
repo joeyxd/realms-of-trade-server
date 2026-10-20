@@ -20,7 +20,7 @@ function fixture() {
     eco: { pack: { cap: 50, goods: {} } }, tools: {}, pearls: { swallowed: null, bag: [] },
   };
   const screen = Object.create(CharacterScreen.prototype);
-  Object.assign(screen, { tab: 'tattoo', learn: false, skTree: 'combat', skNode: null, ttSel: null, parts: {},
+  Object.assign(screen, { tab: 'skills', learn: false, skTree: 'combat', skNode: null, ttSel: null, parts: {},
     profile: () => profile, stats: () => ({ weapon: 0, level: 5, potions: 2, gold: 80 }),
     weapon: () => 0, slots: () => ({ q: 'lunge', e: 'wave' }), isOpen: true, root: { hidden: false, querySelector: () => null } });
   return { profile, screen };
@@ -45,7 +45,7 @@ test('the tree shell has the sheet grid areas and no figure canvas, and the figu
   setLocale('es');
   const { screen } = fixture();
   const html = screen.shellHtml(screen.t(), 'tree');
-  assert.match(html, /class="cp ch-screen is-tree ch-on-tattoo interactive"/);
+  assert.match(html, /class="cp ch-screen is-tree ch-on-skills interactive"/);
   for (const part of ['left', 'center', 'right', 'quick']) assert.match(html, new RegExp(`data-part="${part}"`));
   assert.doesNotMatch(html, /ch-model|<canvas|data-view/);
   let drawn = 0;

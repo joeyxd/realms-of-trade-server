@@ -24,7 +24,7 @@ import { loggingSkillHtml } from './loggingSkill.js';
 import { AttributeControls } from './attributeControls.js';
 import { dataText, dataParam, text as ltext, rich, translateData, t, formatNumber, onLocaleChange } from '../core/i18n.js';
 
-const TABS = [['gear', 'adventure.tab.gear', 'I'], ['stats', 'adventure.tab.stats', 'C'], ['quests', 'adventure.tab.quests', 'L'], ['tattoo', 'adventure.tab.tattoos', 'T'], ['pearl', 'adventure.tab.pearls', 'P'], ['logging', 'systems.logging.tab', '']];
+const TABS = [['gear', 'adventure.tab.gear', 'I'], ['stats', 'adventure.tab.stats', 'C'], ['quests', 'adventure.tab.quests', 'L'], ['skills', 'adventure.tab.tattoos', 'T'], ['pearl', 'adventure.tab.pearls', 'P'], ['logging', 'systems.logging.tab', '']];
 const DOLL = [['head', 'top'], ['weapon', 'left'], ['chest', 'left2'], ['ring1', 'right'], ['ring2', 'right2'], ['boots', 'bottom']];
 const pct = (v, d = 0) => formatNumber(v * 100, { maximumFractionDigits: d, minimumFractionDigits: d }) + ' %';
 
@@ -92,10 +92,10 @@ export class CharPanel {
     const t = e.target;
     if (t.closest('[data-close]')) { this.close(); sfx.click(); return; }
     const tab = t.closest('[data-tab]');
-    if (tab) { this.tab = tab.dataset.tab; this.shop = this.shop && this.tab === 'gear'; this.learn = this.learn && this.tab === 'tattoo'; this.pinned = null; this.render(); sfx.click(); return; }
+    if (tab) { this.tab = tab.dataset.tab; this.shop = this.shop && this.tab === 'gear'; this.learn = this.learn && this.tab === 'skills'; this.pinned = null; this.render(); sfx.click(); return; }
     const attribute = t.closest('[data-attribute-op]');
     if (attribute) { if (!attribute.disabled) this.attributes.act(attribute.dataset.attributeOp); return; }
-    if (this.tab === 'tattoo' && this.tattooClick(t)) return;
+    if (this.tab === 'skills' && this.tattooClick(t)) return;
     const pearl = t.closest('[data-pearl-op]');
     if (pearl) { this.pearlClick(pearl); return; }
     const buy = t.closest('[data-buy]');
@@ -128,7 +128,7 @@ export class CharPanel {
     const tabs = TABS.map(([id, label, key]) => `<button class="tab" data-tab="${id}" aria-selected="${this.tab === id}">${t(label)}${key ? ` <span class="kbd">${key}</span>` : ''}</button>`).join('');
     const html = `<div class="cp frame interactive" role="dialog" aria-label="${t('adventure.aria.character')}">
       <div class="cp-head"><div class="tabs" role="tablist">${tabs}</div><button class="icon-btn cp-x" data-close aria-label="${t('adventure.aria.close')}">✕</button></div>
-      <div class="cp-body">${!p ? `<p class="cp-empty">${dataText('Aún no has subido a bordo.')}</p>` : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.tab === 'tattoo' ? this.tattooHtml(p) : this.tab === 'pearl' ? pearlHtml(p, null, this.nearby?.() || []) : this.tab === 'logging' ? loggingSkillHtml(p.progression, locale) : this.questsHtml(p)}</div>
+      <div class="cp-body">${!p ? `<p class="cp-empty">${dataText('Aún no has subido a bordo.')}</p>` : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.tab === 'skills' ? this.tattooHtml(p) : this.tab === 'pearl' ? pearlHtml(p, null, this.nearby?.() || []) : this.tab === 'logging' ? loggingSkillHtml(p.progression, locale) : this.questsHtml(p)}</div>
     </div>`;
     // Profiles come often (mastery XP in a fight): the DOM is only touched when what it shows changes, so a
     // click or the hover never lands on a cell that was rebuilt under the pointer.
@@ -401,7 +401,7 @@ export class CharPanel {
   }
 
   denyTattoo() {
-    if (!this.isOpen || this.tab !== 'tattoo') return;
+    if (!this.isOpen || this.tab !== 'skills') return;
     const el = this.root.querySelector('.tt-card-big');
     if (!el) return;
     el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');

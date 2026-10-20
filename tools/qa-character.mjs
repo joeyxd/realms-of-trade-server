@@ -158,7 +158,7 @@ async function run(spec) {
     await setLocale(page, 'es'); await pause(200);
 
     // Every other tab renders on screen.
-    for (const [tab, n] of [['gear', '06-inventory'], ['tattoo', '07-skills'], ['quests', '08-journal'], ['pearl', '09-pearls']]) {
+    for (const [tab, n] of [['gear', '06-inventory'], ['skills', '07-skills'], ['quests', '08-journal'], ['pearl', '09-pearls']]) {
       await tap(page, spec, `[data-tab="${tab}"]`); await pause(300);
       check(await page.evaluate((t) => window.__mn.panels.charPanel.tab === t, tab), `tab ${tab} did not open`);
       result.layouts[tab] = await layout(page);
