@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateWorld } from '../src/sim/worldgen.js';
 import { GRASS_LIMIT, buildGrassPatches, grassBudget } from '../src/render/grassPlacement.js';
-import { buildShrubs } from '../src/render/shrubPlacement.js';
+import { buildShrubs, PLANT_R } from '../src/render/shrubPlacement.js';
 import { preserveTerrainSites } from '../src/render/terrainSites.js';
 
 // Pure placement check: grassPlacement.js imports no THREE or DOM, so the real seeded map is enough.
@@ -12,6 +12,7 @@ const edge = points.filter((p) => p.edge);
 const village = map.landmarks.village;
 const campfires = map.props.filter((p) => p.kind === 'campfire');
 const huts = map.props.filter((p) => p.kind === 'hut');
+const plants = map.props.filter((p) => PLANT_R[p.kind]);
 
 test('grass budgets and edge clump counts per tier', () => {
   const tiers = Object.fromEntries(['low', 'medium', 'high'].map((name) =>
@@ -35,13 +36,17 @@ test('grass budgets and edge clump counts per tier', () => {
 
 test('edge clumps hug the village props and the walk', () => {
   const nearVillage = edge.filter((p) => Math.hypot(p.x - village.x, p.z - village.z) < 30);
+  console.log(`nearVillage edge clumps: ${nearVillage.length}`);
   assert.ok(nearVillage.length >= 60, `${nearVillage.length} edge clumps near the village`);
   for (const kind of ['hut', 'walk', 'path']) assert.ok(edge.some((p) => p.edge === kind), `${kind} edge clumps exist`);
   assert.ok(edge.every((p) => p.scale >= 0.8 && p.scale <= 1.3 && Math.abs(p.radius - p.scale * 0.85) < 1e-6));
   assert.ok(edge.filter((p) => p.variant < 2).length > edge.length * 0.8, 'tuft and fan styles dominate');
   for (const hut of huts) {
     const ring = edge.filter((p) => p.edge === 'hut' && Math.hypot(p.x - hut.x, p.z - hut.z) < hut.r + 2.1);
-    assert.ok(ring.length >= 4, `hut at ${hut.x.toFixed(0)},${hut.z.toFixed(0)} has ${ring.length} ring clumps`);
+    // Every hut base is dressed by at least 4 pieces, grass clumps or Tripo plants at the base (within r + 2.1; the hut
+    // at 77,62 keeps 3 clumps next to four plants and its door arc), and never fewer than 3 clumps of grass.
+    const based = plants.filter((p) => Math.hypot(p.x - hut.x, p.z - hut.z) < hut.r + 2.1).length;
+    assert.ok(ring.length >= 3 && ring.length + based >= 4, `hut at ${hut.x.toFixed(0)},${hut.z.toFixed(0)} has ${ring.length} ring clumps and ${based} plants`);
     // The door faces local +z: no clump inside the door arc.
     for (const p of ring) {
       const angle = Math.atan2(p.x - hut.x, p.z - hut.z), diff = Math.atan2(Math.sin(angle - hut.rot), Math.cos(angle - hut.rot));
@@ -59,6 +64,17 @@ test('plaza, colliders, water, and walkable paths stay clear', () => {
     assert.ok(map.pathInfo(p.x, p.z).d >= 1.5, 'the Sendero core stays clear');
   }
   for (const hut of huts) for (const p of points) assert.ok(Math.hypot(p.x - hut.x, p.z - hut.z) - hut.r >= 1.0 - 1e-6);
+});
+
+test('grass clumps keep off the village plants', () => {
+  assert.ok(plants.length >= 20, `village plants include ${plants.length} props`);
+  let leaning = 0;
+  for (const point of points) for (const plant of plants) {
+    const dist = Math.hypot(point.x - plant.x, point.z - plant.z), plantR = PLANT_R[plant.kind] * (plant.scale || 1);
+    assert.ok(dist >= plantR + 0.1 - 1e-6, `grass root at ${point.x},${point.z} is inside ${plant.kind} at ${plant.x},${plant.z}`);
+    if (dist < point.radius + plantR) leaning++;
+  }
+  console.log(`clumps whose disc still touches a plant: ${leaning}`);
 });
 
 test('layout is deterministic and the runtime path (legacy terrain source) honours the same rules', () => {

@@ -1,6 +1,6 @@
 // Small cosmetic clusters share the shrub clearance checks without touching world RNG or colliders.
 // Pure module: no THREE, no DOM, so Node tests can import it directly.
-import { shrubSite, shrubSiteContext } from './shrubPlacement.js';
+import { PLANT_R, shrubSite, shrubSiteContext } from './shrubPlacement.js';
 
 export const GRASS_LIMIT = 1000;
 
@@ -14,6 +14,9 @@ const WALK_STEP = 2.4, WALK_NEAR = 1.7, WALK_FAR = 2.8, PATH_CORE = 1.6;
 const EDGE_KINDS = ['hut', 'stall', 'stallTarp', 'board', 'fence']; // also the placement priority
 const GRASS_CELL_CHANCE = 0.95; // share of 9 u hash cells that carry a patch (was 0.6)
 const EDGE_SCALE_MIN = 0.8, EDGE_SCALE_SPAN = 0.5;
+// Grass may lean over a fern, its root may not grow inside it: plants block only the clump centre.
+const PLANT_ROOT_MARGIN = 0.1;
+const RING_ATTEMPTS = 8; // retries per ring clump; the first 4 salts reproduce the original layout
 
 function hash(x, z, seed, salt) {
   let n = Math.imul(Math.round(x * 100), 73856093) ^ Math.imul(Math.round(z * 100), 19349663) ^ seed ^ salt;
@@ -69,6 +72,11 @@ function edgeSite(map, x, z, radius, ctx, half) {
   return { y: y - 0.05, nx: -dx / length, ny: 1 / length, nz: -dz / length, material };
 }
 
+// Shrubs and bushes keep the full disc rule; entries flagged root (village plants) only block the clump centre.
+function blocked(occupied, x, z, radius) {
+  return occupied.some((p) => Math.hypot(x - p.x, z - p.z) < (p.root ? p.radius + PLANT_ROOT_MARGIN : radius + p.radius + 0.2));
+}
+
 // Edge clump sources in priority order: village props first, then the beach walk, then the Sendero.
 // Everything is keyed by coordinates, so prop order and client never change the layout.
 function edgeClumps(map, { ctx, seed, half, occupied, clear }) {
@@ -78,7 +86,7 @@ function edgeClumps(map, { ctx, seed, half, occupied, clear }) {
     if (!clear(x, z)) return false;
     const site = edgeSite(map, x, z, radius, ctx, half);
     if (!site || (skipSand && site.material === 'sand')) return false;
-    if (occupied.some((p) => Math.hypot(x - p.x, z - p.z) < radius + p.radius + 0.2)) return false;
+    if (blocked(occupied, x, z, radius)) return false;
     if (out.some((c) => Math.hypot(x - c.x, z - c.z) < (radius + c.radius) * 0.6)) return false;
     const r = hash(x, z, seed, salt + 4);
     const { material, ...rest } = site;
@@ -97,7 +105,7 @@ function edgeClumps(map, { ctx, seed, half, occupied, clear }) {
     const inner = r + Math.max(RING_IN, COLLIDER_CLEAR), span = r + RING_OUT - inner;
     const door = p.kind === 'hut' && Number.isFinite(p.rot) ? p.rot : null; // hut door faces local +z
     const patch = `edge:${p.kind}:${Math.round(p.x)},${Math.round(p.z)}`;
-    for (let i = 0; i < want; i++) for (let attempt = 0; attempt < 4; attempt++) {
+    for (let i = 0; i < want; i++) for (let attempt = 0; attempt < RING_ATTEMPTS; attempt++) {
       const salt = 1000 + (i * 4 + attempt) * 8;
       const angle = hash(p.x, p.z, seed, salt + 1) * Math.PI * 2;
       if (door !== null && Math.abs(Math.atan2(Math.sin(angle - door), Math.cos(angle - door))) < DOOR_ARC) continue;
@@ -131,8 +139,11 @@ export function buildGrassPatches(map, { shrubs = [], limit = GRASS_LIMIT } = {}
   if (!cap) return [];
   const ctx = shrubSiteContext(map), seed = map.seed | 0, candidates = [], clear = clearance(map);
   const half = Math.max(0, Math.min(200, Number.isFinite(map.half) ? map.half : 165));
-  const occupied = [...shrubs, ...(map.props || []).filter((p) => p.kind === 'bush').map((p) =>
-    ({ x: p.x, z: p.z, radius: Math.max(0.6, (p.scale || 1) * 1.2) }))];
+  const props = map.props || [];
+  const occupied = [...shrubs, ...props.filter((p) => p.kind === 'bush').map((p) =>
+    ({ x: p.x, z: p.z, radius: Math.max(0.6, (p.scale || 1) * 1.2) })),
+  ...props.filter((p) => PLANT_R[p.kind]).map((p) =>
+    ({ x: p.x, z: p.z, radius: PLANT_R[p.kind] * (p.scale || 1), root: true }))];
   // Edge clumps come first so the sort-and-cut below never drops them.
   const edge = edgeClumps(map, { ctx, seed, half, occupied, clear });
   for (let x = -half + 4; x < half - 4; x += 9) for (let z = -half + 4; z < half - 4; z += 9) {
@@ -147,7 +158,7 @@ export function buildGrassPatches(map, { shrubs = [], limit = GRASS_LIMIT } = {}
       const px = cx + Math.cos(angle) * r, pz = cz + Math.sin(angle) * r;
       const scale = 0.7 + hash(px, pz, seed, 859) * 0.55, radius = scale * 0.85;
       const site = shrubSite(map, px, pz, radius, ctx, { villageClear: GRASS_VILLAGE_CLEAR });
-      if (!site || !clear(px, pz) || occupied.some((p) => Math.hypot(px - p.x, pz - p.z) < radius + p.radius + 0.2)) continue;
+      if (!site || !clear(px, pz) || blocked(occupied, px, pz, radius)) continue;
       if (edge.some((c) => Math.hypot(px - c.x, pz - c.z) < (radius + c.radius) * 0.6)) continue;
       // Keep every blade root on the sampled plane while burying only a small base margin.
       candidates.push({ x: px, z: pz, ...site, y: site.y + 0.03, scale, radius,

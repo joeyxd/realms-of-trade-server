@@ -2,7 +2,7 @@
 export const SHRUB_LIMIT = 900;
 // The village plants (worldgen.js VILLAGE_VEGETATION) have no collider (r 0); as obstacles they count about half their
 // fitted width (props.js PLANT_BOX) times their scale, so shrubs and scattered grass keep off them.
-const PLANT_R = { fern: 0.58, flowerbush: 0.7, broadleaf: 0.58 };
+export const PLANT_R = { fern: 0.58, flowerbush: 0.7, broadleaf: 0.58 };
 
 function rank(x, z, seed, salt) {
   let n = Math.imul(Math.round(x * 100), 73856093) ^ Math.imul(Math.round(z * 100), 19349663) ^ seed ^ salt;
