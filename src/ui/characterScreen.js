@@ -5,6 +5,8 @@
 import { CharPanel } from './charpanel.js';
 import { BASES, RARITIES, ITEMS, CONSUMABLES, STATS, slotFits } from '../data/items.js';
 import { WEAPONS, WEAPON_KINDS } from '../data/weapons.js';
+import { ARTS, DEFAULT_LOADOUT } from '../data/tattoos.js';
+import { TREES, nodeById } from '../data/skillTree.js';
 import { GOOD_IDS } from '../data/goods.js';
 import { tuning } from '../data/tuning.js';
 import { GAME } from '../data/meta.js';
@@ -21,6 +23,8 @@ import { skillIcon } from './hud.js';
 import { pearlHtml } from './pearlpanel.js';
 import { createFigureLoop } from './figureLoop.js';
 import { loggingSkillHtml } from './loggingSkill.js';
+import { skillSheetState, skillListHtml, skillCenterHtml, skillRightHtml } from './skillSheet.js';
+import { sfx } from '../audio/sfx.js';
 import { goodName } from './craftingCatalog.js';
 import { provisionsGuideHtml } from './provisionInfo.js';
 import { translateData } from '../core/i18n.js';
@@ -95,6 +99,8 @@ export class CharacterScreen extends CharPanel {
     this.tab = 'stats';
     this.statsAll = false;
     this.slotFocus = null;
+    this.skTree = 'combat'; // SK02: the tree and the node picked on the Habilidades sheet (kept across re-renders)
+    this.skNode = null;
     this.cam = { yaw: HOME_YAW, zoom: 1 };
     this.figureLoop = createFigureLoop({ shouldRun: () => this.shouldAnimateFigure(), draw: (delta) => this.drawFigure(false, { delta }) });
     this.onFigureVisibilityChange = () => this.syncFigureLoop();
@@ -134,6 +140,11 @@ export class CharacterScreen extends CharPanel {
     const view = t.closest('[data-view]');
     if (view) { this.cam.yaw = VIEWS[+view.dataset.view] ?? HOME_YAW; this.requestFigure(); return; }
     if (t.closest('[data-view-reset]')) { this.cam = { yaw: HOME_YAW, zoom: 1 }; this.requestFigure(); return; }
+    if (this.kind() === 'tree') {
+      const tree = t.closest('[data-tree]'), node = t.closest('[data-node]');
+      if (tree && TREES.some((x) => x.id === tree.dataset.tree && !x.hidden)) { this.skTree = tree.dataset.tree; this.skNode = null; this.render(); sfx.click(); return; }
+      if (node && nodeById(node.dataset.node)?.tree === this.skSelection().tree) { this.skNode = this.skNode === node.dataset.node ? null : node.dataset.node; this.render(); sfx.click(); return; }
+    }
     const slot = t.closest('[data-slot]');
     if (slot) { this.slotFocus = slot.dataset.slot; if (!this.profile()?.eq?.[this.slotFocus]) { this.pinned = null; this.renderDetail(); this.mark(); return; } }
     else if (t.closest('[data-tab]')) { this.slotFocus = null; this.statsAll = false; }
@@ -181,7 +192,7 @@ export class CharacterScreen extends CharPanel {
     return true;
   }
   drawFigure(thumbs = false, { delta = 0 } = {}) {
-    if (!this.isOpen || typeof this.figure !== 'function') return;
+    if (!this.isOpen || typeof this.figure !== 'function' || this.kind() !== 'sheet') return; // the tree kind has no figure
     const main = this.root.querySelector('.ch-model canvas');
     try {
       if (main && this.sizeCanvas(main)) this.figure(main, { yaw: this.cam.yaw, zoom: this.cam.zoom, idle: true, delta, still: false });
@@ -194,7 +205,11 @@ export class CharacterScreen extends CharPanel {
   }
 
   // ---- Rendering -------------------------------------------------------------------------------------------
-  kind() { return (this.tab === 'stats' && !this.statsAll) || this.tab === 'gear' ? 'sheet' : 'wide'; }
+  // 'tree' is the read-only skill sheet; the Doña Sepia flow (learn) keeps the wide tattoo list with its learn buttons.
+  kind() {
+    if (this.tab === 'tattoo' && !this.learn) return 'tree';
+    return (this.tab === 'stats' && !this.statsAll) || this.tab === 'gear' ? 'sheet' : 'wide';
+  }
   render() {
     const p = this.profile(), lang = uiLang(), T = TEXT[lang], kind = p ? this.kind() : 'wide';
     const shellKey = `${lang}|${this.tab}|${kind}|${this.shop}|${!!p}`;
@@ -214,12 +229,47 @@ export class CharacterScreen extends CharPanel {
       this.renderedTab = this.tab;
       return;
     }
+    if (kind === 'tree') { this.renderTree(p, T, lang); return; }
     if (this.tab === 'stats') { this.part('left', this.detailsHtml(p, T, lang)); this.part('right', this.equipHtml(p, T, lang)); }
     else { this.part('left', this.shop ? this.shopHtml(p) + this.bagHtml(p, T, lang) : this.bagHtml(p, T, lang)); this.part('right', this.goodsHtml(p, T, lang)); }
     this.part('quick', this.quickHtml(p, T, lang));
     this.renderedTab = this.tab;
     this.updateLive();
     this.renderDetail(); this.mark();
+  }
+  // SK02 skill sheet: three regions from the live profile, plus the same quick bar as the sheet kind.
+  renderTree(p, T, lang) {
+    const sel = this.skSelection(), key = `${sel.tree}|${sel.node}`, same = key === this.skKey;
+    const scrolls = ['left', 'center', 'right'].map((name) => [name, this.root.querySelector(`[data-part="${name}"]`)]);
+    const tops = scrolls.map(([, el]) => el?.scrollTop || 0);
+    const html = this.treeParts(p, lang);
+    for (const name of ['left', 'center', 'right']) this.part(name, html[name]);
+    this.part('quick', this.quickHtml(p, T, lang));
+    // A new selection starts at the top; a profile refresh keeps the reader where they were.
+    scrolls.forEach(([, el], i) => { if (el) el.scrollTop = same ? tops[i] : 0; });
+    this.skKey = key;
+    this.renderedTab = this.tab;
+  }
+  // The selection, always valid: a visible tree and (optionally) one of its nodes.
+  skSelection() {
+    const tree = TREES.find((x) => x.id === this.skTree && !x.hidden)?.id || 'combat';
+    const node = this.skNode && nodeById(this.skNode)?.tree === tree ? this.skNode : null;
+    return { tree, node };
+  }
+  treeParts(p, lang) {
+    const state = skillSheetState(p, this.stats().weapon | 0), sel = this.skSelection(), node = sel.node ? nodeById(sel.node) : null;
+    return { left: skillListHtml(state, sel, lang), center: skillCenterHtml(state, sel, lang),
+      right: skillRightHtml(state, sel, lang, { tattoo: node ? this.skillTattooBlock(p, node) : '' }) };
+  }
+  // The existing tattoo card (Poner en Q / E, forms) for an active node whose art or tattoo can be used now.
+  skillTattooBlock(p, node) {
+    if (node.kind !== 'active' || !node.skill) return '';
+    const w = this.stats().weapon | 0, kind = WEAPON_KINDS[w], sk = p.sk || { has: {}, lo: [], free: 1 };
+    const has = (id) => sk.has?.[id], art = Object.hasOwn(ARTS, node.skill) ? ARTS[node.skill] : null;
+    if (!has(node.skill) && !(art && art.weapon === kind)) return '';
+    this.ttSel = node.skill; // tattooClick reads it for data-put and data-form
+    const lo = sk.lo?.[w] || DEFAULT_LOADOUT[kind], mlvl = (p.mast?.[w] || [1])[0];
+    return `<div class="sk-tt">${this.tattooDetail(p, node.skill, { lo, has, mlvl, kind, price: '' })}</div>`;
   }
   // Replaces one region only when its markup changed (profiles arrive often; the pointer must not lose its cell).
   part(name, html) {
@@ -242,6 +292,11 @@ export class CharacterScreen extends CharPanel {
       </header>`;
     const hints = `<div class="ch-hints ch-hints-l"><span><span class="kit-key">ESC</span>${esc(T.hintBack)}</span></div>
       <div class="ch-hints ch-hints-r"><span><span class="kit-key">${esc(T.dbl)}</span>${esc(T.hintEquip)}</span></div>`;
+    if (kind === 'tree') return `<div class="cp ch-screen is-tree ch-on-${this.tab} interactive" role="dialog" aria-label="${esc(T.dialog)}">${top}
+      <section class="ch-left kit-plate" data-part="left"></section>
+      <section class="ch-center kit-plate" data-part="center"></section>
+      <section class="ch-right kit-plate" data-part="right"></section>
+      <footer class="ch-quick kit-plate" data-part="quick"></footer>${hints}</div>`;
     if (kind === 'wide') return `<div class="cp ch-screen is-wide interactive" role="dialog" aria-label="${esc(T.dialog)}">${top}<section class="ch-wide kit-plate" data-part="wide"></section>${hints}</div>`;
     const views = T.views.map((label, i) => `<button class="ch-view" type="button" data-view="${i}" aria-label="${esc(label)}" title="${esc(label)}"><canvas></canvas></button>`).join('');
     return `<div class="cp ch-screen is-sheet ch-on-${this.tab} interactive" role="dialog" aria-label="${esc(T.dialog)}">${top}
