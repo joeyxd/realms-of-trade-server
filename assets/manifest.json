@@ -137,6 +137,16 @@
       "notes": "Tripo crate-stack, 2502 tris, 512 desktop / 256 mobile texture. See docs/art/prop-crate-stack-v2/README.md."
     },
     {
+      "id": "prop:fence-rope",
+      "kind": "prop",
+      "src": "models/prop-fence-rope-v2-desktop.glb",
+      "mobileSrc": "models/prop-fence-rope-v2-mobile.glb",
+      "props": [
+        "fence"
+      ],
+      "notes": "Tripo fence-rope, 1500 tris, 512 desktop / 256 mobile texture. See docs/art/prop-fence-rope-v2/README.md."
+    },
+    {
       "id": "tex:raft-comic-v1",
       "kind": "tex",
       "src": "textures/raft/comic-materials-v1.webp",
