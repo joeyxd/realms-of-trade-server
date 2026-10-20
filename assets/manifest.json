@@ -177,6 +177,16 @@
       "notes": "Tripo stall-tarp, 4015 tris, 512 desktop / 256 mobile texture. See docs/art/prop-stall-tarp-v2/README.md."
     },
     {
+      "id": "prop:lantern-post",
+      "kind": "prop",
+      "src": "models/prop-lantern-post-v2-desktop.glb",
+      "mobileSrc": "models/prop-lantern-post-v2-mobile.glb",
+      "props": [
+        "lantern"
+      ],
+      "notes": "Tripo lantern-post, 2500 tris, 512 desktop / 256 mobile texture. See docs/art/prop-lantern-post-v2/README.md."
+    },
+    {
       "id": "tex:raft-comic-v1",
       "kind": "tex",
       "src": "textures/raft/comic-materials-v1.webp",
