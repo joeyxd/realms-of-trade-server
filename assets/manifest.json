@@ -112,9 +112,19 @@
       ],
       "toon": {
         "sat": 1.3,
-        "bright": 4.0
+        "bright": 4
       },
       "notes": "Tripo flower-bush, 3348 tris, 512 desktop / 256 mobile texture. See docs/art/prop-flower-bush-v5/README.md."
+    },
+    {
+      "id": "prop:campfire-ring",
+      "kind": "prop",
+      "src": "models/prop-campfire-ring-v2-desktop.glb",
+      "mobileSrc": "models/prop-campfire-ring-v2-mobile.glb",
+      "props": [
+        "campfire"
+      ],
+      "notes": "Tripo campfire-ring, 2000 tris, 512 desktop / 256 mobile texture. See docs/art/prop-campfire-ring-v2/README.md."
     },
     {
       "id": "tex:raft-comic-v1",
