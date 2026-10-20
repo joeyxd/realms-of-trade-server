@@ -29,7 +29,7 @@ async function database(t, { skills = true } = {}) {
   const db = new PGlite();
   t.after(() => db.close());
   await db.exec('CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role; CREATE SCHEMA auth; CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT NULL::uuid $$;');
-  assert.ok(NAMES.length >= 39 && NAMES.at(-1).startsWith('039_'), NAMES.at(-1));
+  assert.ok(NAMES.length >= 40 && NAMES.at(-1).startsWith('040_'), NAMES.at(-1));
   for (const name of NAMES) await db.exec(SQL[name]);
   if (skills) { await db.exec(SQL041); await db.exec(SQL041); }
   return db;
