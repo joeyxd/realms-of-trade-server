@@ -8,5 +8,6 @@ URL-PARA-AMIGOS.txt
 .DS_Store
 *.log
 .claude/worktrees/
+__pycache__/
 # Generated asset index (npm run assets:index / ARTE-Y-MODELOS.cmd)
 ARTE-Y-MODELOS.html
