@@ -8,8 +8,10 @@ let mod = null;
 try {
   const THREE = await import('three');
   const { LocalLights } = await import('../src/render/lights.js');
-  const { U } = await import('../src/render/toon.js');
-  mod = { THREE, LocalLights, U };
+  const { U, MAX_LIGHTS } = await import('../src/render/toon.js');
+  globalThis.window = globalThis.window || { devicePixelRatio: 1 };
+  const { TIERS, tierConfig } = await import('../src/render/quality.js');
+  mod = { THREE, LocalLights, U, MAX_LIGHTS, TIERS, tierConfig };
 } catch { mod = null; }
 const opts = mod ? {} : { skip: 'three is not installed (npm install)' };
 const map = generateWorld(GAME.seed);
@@ -40,8 +42,18 @@ test('light sources come from the island props', opts, () => {
   assert.equal(count('eyes'), 2);
 });
 
+test('tier light caps fit the shader array', opts, () => {
+  const { MAX_LIGHTS, TIERS, tierConfig } = mod;
+  assert.equal(MAX_LIGHTS, 16);
+  assert.equal(tierConfig('high').lights, 16);
+  assert.equal(tierConfig('ultra').lights, 16);
+  assert.equal(tierConfig('low').lights, 4);
+  assert.equal(tierConfig('medium').lights, 8);
+  for (const name of TIERS) assert.ok(tierConfig(name).lights <= MAX_LIGHTS, `${name} fits the shader array`);
+});
+
 test('light selection fits every tier and never pops', opts, () => {
-  for (const max of [4, 8, 12]) {
+  for (const max of [4, 8, 12, 16]) {
     const lights = new mod.LocalLights(map);
     lights.max = max;
     Object.assign(lights.knobs, { fire: 1, lava: 1, night: 1, eyes: 1, player: 1 });

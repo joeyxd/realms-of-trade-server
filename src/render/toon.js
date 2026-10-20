@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { getNoiseTexture } from './noiseTex.js';
 
-export const MAX_LIGHTS = 12;
+export const MAX_LIGHTS = 16;
 
 export const U = {
   mnNoiseTex: { value: getNoiseTexture() },

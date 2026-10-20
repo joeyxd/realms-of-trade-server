@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**VR04, 2026-10-19 — aldea de noche, cuarto corte (16 luces en high/ultra y calentamiento de los shaders del DOF), alpha.75/protocolo 62:**
+`MAX_LIGHTS` sube a 16 en `toon.js` (array del shader; los bucles cortan en `mnLightCount`); preset high con `lights: 16`,
+ultra lo hereda, low 4 y medium 8 igual: 14 huecos clasificados más 2 de reserva. `Pipeline.warmDof()` compila
+`dofDown`/`dofBlur`/`dofComp` contra el quad en `prewarm` (`scene.js`) con el target `rtDofA`, restaurando material y target
+antes de esperar. Tests tocados: `tests/lights.test.mjs` (5, incluye caps de tiers y recorrido con 16 luces) y
+`tests/quality-dof.test.mjs` (3, incluye conexión de warmDof en prewarm): 8 tests, 0 fallos. Versión alpha.75 en los tres archivos.
+Pendiente: los siete props del estudio Tripo (lantern-post, fence-rope, notice-board, planter-flowers, stall-tarp,
+crate-stack, campfire-ring), agua y materiales, y las flores que leen oscuras de noche.
+
 **VR03, 2026-10-19 — aldea de noche, tercer corte (helechos, arbustos de flores y plantas de hoja ancha Tripo), alpha.74/protocolo 62:**
 Sigue a VR02 sobre alpha.73 (sin empujar: alpha.72, .73 y .74 salen juntos). Tres kinds de prop nuevos `fern`, `flowerbush` y
 `broadleaf` (ya en `PROP_KINDS` y en `assets/manifest.json`: `prop:fern-cluster` 4515 tris, `prop:flower-bush` 3348,

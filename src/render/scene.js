@@ -256,6 +256,7 @@ export class GameScene {
     // Compile each pass the way it draws: into a render target (linear) on medium/high, the screen
     // (sRGB) on low; the world with the scene lights, the FX layer without them (the FX pass's
     // camera layers exclude the lights, which changes the program).
+    // Compile the DOF quad materials too when the tier has DOF.
     const fx = this.scene.children.filter((o) => o.layers.mask === 1 << LAYER.FX);
     const fxScene = new THREE.Scene();
     for (const o of fx) fxScene.add(o);
@@ -268,9 +269,10 @@ export class GameScene {
       const world = compile(this.scene);
       cam.layers.set(LAYER.FX);
       const fxDone = compile(fxScene, this.scene);
+      const dofDone = this.pipeline.warmDof();
       for (const o of fx) this.scene.add(o);
       r.setRenderTarget(prev);
-      await Promise.all([world, fxDone]);
+      await Promise.all([world, fxDone, dofDone]);
     } finally {
       for (const o of fx) if (o.parent !== this.scene) this.scene.add(o);
       r.setRenderTarget(prev);

@@ -13,7 +13,7 @@ export function tierConfig(name) {
     case 'ultra':
       return { ...tierConfig('high'), name: 'ultra', ink: 2, comic: 1, outlineMul: 1.3 };
     default:
-      return { name: 'high', pixelRatio: Math.min(dpr, 2), ss: dpr <= 1.25 ? 1.5 : 1, outlines: true, fxaa: true, shadow: 2048, particles: 1, waves: 1, occluders: true, lights: 12, bloom: 1, ink: 1, comic: 0, outlineMul: 1, dof: 1 };
+      return { name: 'high', pixelRatio: Math.min(dpr, 2), ss: dpr <= 1.25 ? 1.5 : 1, outlines: true, fxaa: true, shadow: 2048, particles: 1, waves: 1, occluders: true, lights: 16, bloom: 1, ink: 1, comic: 0, outlineMul: 1, dof: 1 };
   }
 }
 

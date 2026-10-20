@@ -2,9 +2,22 @@
 // loads three from a CDN and cannot be imported here; this pins the tier contract the pipeline reads.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 globalThis.window = globalThis.window || { devicePixelRatio: 1 };
 const { TIERS, tierConfig } = await import('../src/render/quality.js');
+
+test('dof shaders are warmed in prewarm', () => {
+  const pipeline = readFileSync(new URL('../src/render/pipeline.js', import.meta.url), 'utf8');
+  const scene = readFileSync(new URL('../src/render/scene.js', import.meta.url), 'utf8');
+  const warmDof = pipeline.match(/^  warmDof\(\) \{\r?\n([\s\S]*?)^  \}/m);
+  assert.ok(warmDof, 'Pipeline defines warmDof');
+  assert.ok(warmDof[1].includes('compileAsync'), 'warmDof compiles the DOF programs');
+  const prewarm = scene.match(/^  async prewarm\(\) \{\r?\n([\s\S]*?)^  \}/m);
+  assert.ok(prewarm, 'GameScene defines prewarm');
+  assert.ok(prewarm[1].includes('this.pipeline.warmDof()'), 'prewarm warms DOF');
+  assert.ok(prewarm[1].includes('Promise.all([world, fxDone, dofDone])'), 'prewarm awaits all three passes');
+});
 
 test('every tier carries a numeric dof strength: 0 on low and medium, 1 or more on high and ultra', () => {
   for (const dpr of [1, 2]) {

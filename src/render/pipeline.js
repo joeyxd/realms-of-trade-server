@@ -491,6 +491,23 @@ export class Pipeline {
     this.dofQuad = fsQuad(this.dofDown);
   }
 
+  // DOF programs otherwise compile on the first DOF frame (a hitch); bind the target first to select the program variant.
+  warmDof() {
+    if (!this.rtDof || !this.dofQuad) return Promise.resolve();
+    const r = this.renderer, q = this.dofQuad;
+    const prev = r.getRenderTarget();
+    const prevMat = q.mesh.material;
+    const promises = [];
+    r.setRenderTarget(this.rtDofA);
+    for (const mat of [this.dofDown, this.dofBlur, this.dofComp]) {
+      q.mesh.material = mat;
+      promises.push(r.compileAsync ? r.compileAsync(q.scene, this.quadCam) : Promise.resolve(r.compile(q.scene, this.quadCam)));
+    }
+    q.mesh.material = prevMat;
+    r.setRenderTarget(prev);
+    return Promise.all(promises).then(() => {});
+  }
+
   setQuality(q) {
     Object.assign(this.q, q);
     const f = this.dof.force;
