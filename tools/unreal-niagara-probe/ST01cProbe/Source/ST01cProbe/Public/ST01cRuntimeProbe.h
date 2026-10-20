@@ -20,6 +20,14 @@ public:
     UFUNCTION(BlueprintCallable, Category="ST01c")
     static FString ReadCompiledPilot(UNiagaraSystem* System);
 
+    // Same as ConfigurePilot/ReadCompiledPilot, but the scope (system, handles,
+    // seed base, script count) comes from a systems/<name>.json spec text.
+    UFUNCTION(BlueprintCallable, Category="ST01c")
+    static FString ConfigureSystem(UNiagaraSystem* System, const FString& SpecJson);
+
+    UFUNCTION(BlueprintCallable, Category="ST01c")
+    static FString ReadCompiledSystem(UNiagaraSystem* System, const FString& SpecJson);
+
     UFUNCTION(BlueprintCallable, Category="ST01c")
     static FString ReadParticles(UNiagaraComponent* Component);
 

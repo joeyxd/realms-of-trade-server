@@ -1,4 +1,5 @@
 #include "ST01cRuntimeProbe.h"
+#include "ST01cSpec.h"
 #include "Misc/Paths.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
@@ -22,12 +23,29 @@
 
 namespace
 {
-    constexpr TCHAR PilotPath[] = TEXT("/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single");
-    bool Allowed(const UNiagaraSystem* System)
+    bool Allowed(const UNiagaraSystem* System, const FST01cScope& Scope)
     {
-        return IsInGameThread() && System && System->GetPathName() == PilotPath &&
+        return IsInGameThread() && System && System->GetPathName() == Scope.SystemObjectPath &&
             FPaths::GetBaseFilename(FPaths::GetProjectFilePath()) == TEXT("ST01c_Pilot") &&
             FPaths::ProjectDir().Contains(TEXT("/.scratch/"));
+    }
+    // Older capture scripts only ever probe the exact pilot.
+    bool Allowed(const UNiagaraSystem* System)
+    {
+        return Allowed(System, ST01cSpec::Pilot());
+    }
+    // The listed handles (when the spec lists them) must match in count, name and order.
+    bool HandlesMatch(const UNiagaraSystem* System, const FST01cScope& Scope)
+    {
+        const TArray<FNiagaraEmitterHandle>& Handles = System->GetEmitterHandles();
+        if (Handles.IsEmpty()) return false;
+        if (!Scope.bHandlesListed) return true;
+        if (Handles.Num() != Scope.Handles.Num()) return false;
+        for (int32 Index = 0; Index < Handles.Num(); ++Index)
+        {
+            if (Handles[Index].GetName() != FName(*Scope.Handles[Index])) return false;
+        }
+        return true;
     }
     FString Encode(const TSharedRef<FJsonObject>& Object)
     {
@@ -43,18 +61,34 @@ namespace
     }
 }
 
+static FString ConfigureWithScope(UNiagaraSystem* System, const FST01cScope& Scope);
+static FString ReadCompiledWithScope(UNiagaraSystem* System, const FST01cScope& Scope);
+
 FString UST01cRuntimeProbe::ConfigurePilot(UNiagaraSystem* System)
 {
-    if (!Allowed(System) || System->GetEmitterHandles().Num() != 2) return TEXT("{\"error\":\"pilot scope\"}");
+    return ConfigureWithScope(System, ST01cSpec::Pilot());
+}
+
+FString UST01cRuntimeProbe::ConfigureSystem(UNiagaraSystem* System, const FString& SpecJson)
+{
+    FST01cScope Scope;
+    FString Error;
+    if (!ST01cSpec::Parse(SpecJson, Scope, Error)) return FString::Printf(TEXT("{\"error\":\"spec: %s\"}"), *Error);
+    return ConfigureWithScope(System, Scope);
+}
+
+static FString ConfigureWithScope(UNiagaraSystem* System, const FST01cScope& Scope)
+{
+    if (!Allowed(System, Scope) || !HandlesMatch(System, Scope)) return TEXT("{\"error\":\"pilot scope\"}");
     auto Result = MakeShared<FJsonObject>();
     Result->SetStringField(TEXT("system"), System->GetPathName());
     Result->SetStringField(TEXT("overrideScope"), TEXT("in-memory comparison fixture only; originals not saved"));
     Result->SetNumberField(TEXT("warmupTime"), System->GetWarmupTime());
     Result->SetNumberField(TEXT("warmupTicks"), System->GetWarmupTickCount());
     TArray<TSharedPtr<FJsonValue>> Enums;
-    for (const TCHAR* Name : { TEXT("ENiagaraSUbUVAnimationMode"), TEXT("ENiagaraEmitterLifeCycleMode"), TEXT("ENiagara_EmitterStateOptions"), TEXT("ENiagara_InfiniteLoopDuration"), TEXT("ENiagaraEmitterScalabilityMode_Limited"), TEXT("ENiagaraScaleColorMode") })
+    for (const FString& Name : Scope.SourceEnums)
     {
-        FString Path = FString::Printf(TEXT("/Niagara/Enums/%s.%s"), Name, Name);
+        FString Path = FString::Printf(TEXT("/Niagara/Enums/%s.%s"), *Name, *Name);
         UEnum* Enum = LoadObject<UEnum>(nullptr, *Path);
         if (!Enum) return TEXT("{\"error\":\"required source enum missing\"}");
         auto Row = MakeShared<FJsonObject>();
@@ -82,7 +116,7 @@ FString UST01cRuntimeProbe::ConfigurePilot(UNiagaraSystem* System)
         Row->SetBoolField(TEXT("originalDeterminism"), Data->bDeterminism);
         Row->SetNumberField(TEXT("originalSeed"), Data->RandomSeed);
         Data->bDeterminism = true;
-        Data->RandomSeed = 6371 + Index++;
+        Data->RandomSeed = Scope.SeedBase + Index++;
         Row->SetNumberField(TEXT("fixtureSeed"), Data->RandomSeed);
         Rows.Add(MakeShared<FJsonValueObject>(Row));
     }
@@ -94,21 +128,34 @@ FString UST01cRuntimeProbe::ConfigurePilot(UNiagaraSystem* System)
 
 FString UST01cRuntimeProbe::ReadCompiledPilot(UNiagaraSystem* System)
 {
-    if (!Allowed(System) || System->GetEmitterHandles().Num() != 2)
+    return ReadCompiledWithScope(System, ST01cSpec::Pilot());
+}
+
+FString UST01cRuntimeProbe::ReadCompiledSystem(UNiagaraSystem* System, const FString& SpecJson)
+{
+    FST01cScope Scope;
+    FString Error;
+    if (!ST01cSpec::Parse(SpecJson, Scope, Error)) return FString::Printf(TEXT("{\"error\":\"spec: %s\"}"), *Error);
+    return ReadCompiledWithScope(System, Scope);
+}
+
+static FString ReadCompiledWithScope(UNiagaraSystem* System, const FST01cScope& Scope)
+{
+    if (!Allowed(System, Scope) || !HandlesMatch(System, Scope))
         return TEXT("{\"error\":\"pilot scope\"}");
     TArray<UNiagaraScript*> Scripts = { System->GetSystemSpawnScript(), System->GetSystemUpdateScript() };
-    int32 Index = 0;
     for (const FNiagaraEmitterHandle& Handle : System->GetEmitterHandles())
     {
-        const TCHAR* Expected = Index++ == 0 ? TEXT("NE_Flame_Basic_001") : TEXT("NE_Smoke_Basic");
         auto* Data = Handle.GetEmitterData();
-        if (Handle.GetName() != FName(Expected) || !Data || Data->SimTarget != ENiagaraSimTarget::CPUSim)
+        if (!Data || Data->SimTarget != ENiagaraSimTarget::CPUSim)
             return TEXT("{\"error\":\"effective CPU pilot required\"}");
         TArray<UNiagaraScript*> EmitterScripts;
         Data->GetScripts(EmitterScripts, false, false);
         Scripts.Append(EmitterScripts);
     }
-    if (Scripts.Num() > 12) return TEXT("{\"error\":\"script bounds\"}");
+    // A listed count must match exactly; null records whatever the system has (bounded).
+    if (Scope.ExpectedScripts >= 0 ? Scripts.Num() != Scope.ExpectedScripts : Scripts.Num() > 64)
+        return TEXT("{\"error\":\"script bounds\"}");
     auto Result = MakeShared<FJsonObject>();
     Result->SetStringField(TEXT("schema"), TEXT("st01c-compiled-pilot/v1"));
     Result->SetStringField(TEXT("system"), System->GetPathName());

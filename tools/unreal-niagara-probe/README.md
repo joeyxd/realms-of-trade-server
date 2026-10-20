@@ -44,19 +44,48 @@ EditorScriptingUtilities and ST01cProbe in the isolated project. Build:
 & 'C:/Program Files/Epic Games/UE_5.8/Engine/Build/BatchFiles/Build.bat' UnrealEditor Win64 Development '-Project=C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -WaitMutex
 ```
 
-Run each probe with forward slashes in command-line paths. The source probe exports
-T3D into a fresh `probe01/`; the material probe requires a fresh output JSON:
+Every probe takes a system spec and a fresh run name, nothing is hardcoded to one system:
+`-SystemSpec=<absolute path of systems/*.json>` and `-ProbeRun=<name>` (letters, digits, `_`, `-`;
+`-run=` is Unreal's own switch, hence the different name). No spec, no run. The spec
+(`systems/ns-flame-single.json` for the pilot, `systems/ns-basichit.json` for NS_BasicHit) holds the system
+package, pack root, source SHA, emitter handles in order (or `null` to record every handle), emitter assets,
+fixture seed base (6371 + handle index), expected script count (or `null`), the enums to record,
+the material instances, their base materials and the expression classes with the fields to read.
+Run names map to `<project>/<name>/` for the source and compiled probes and to
+`<project>/<name>.json` for the material, closure and native-values probes; all refuse an existing run.
+Use forward slashes in command-line paths. Console logs go beside the run (`<name>-console.log`):
 
 ```powershell
-& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -run=pythonscript '-script=C:/DEV/real of trade/st01c-native/.scratch/unreal/probe_source.py' -unattended -nop4 -nosplash -nosound -NullRHI
-& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -run=pythonscript '-script=C:/DEV/real of trade/st01c-native/.scratch/unreal/probe_material_defaults.py' -unattended -nop4 -nosplash -nosound -NullRHI
-& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -run=ST01cProbe '-Output=C:/DEV/real of trade/st01c-native/.scratch/unreal/native-values.json' -unattended -nop4 -nosplash -nosound -NullRHI
-python tools/inspect-niagara-text.py .scratch/unreal/probe01/system.t3d --output .scratch/system-inspection.json
+$ue = 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$proj = 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject'
+$spec = 'C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/systems/ns-flame-single.json'
+& $ue $proj -run=pythonscript '-script=C:/DEV/real of trade/st01c-native/.scratch/unreal/probe_source.py' "-SystemSpec=$spec" -ProbeRun=probe06 -unattended -nop4 -nosplash -nosound -NullRHI
+& $ue $proj -run=pythonscript '-script=C:/DEV/real of trade/st01c-native/.scratch/unreal/probe_material_defaults.py' "-SystemSpec=$spec" -ProbeRun=material-defaults02 -unattended -nop4 -nosplash -nosound -NullRHI
+& $ue $proj -run=ST01cProbe "-SystemSpec=$spec" -ProbeRun=native-values04 -unattended -nop4 -nosplash -nosound -NullRHI
+python tools/inspect-niagara-text.py .scratch/unreal/probe06/system.t3d --output .scratch/system-inspection.json
 ```
 
+The probe scripts derive their root from the project directory, so they also run straight from
+`tools/unreal-niagara-probe/`; the copies beside the `.uproject` are optional.
+
+### Second system (NS_BasicHit)
+
+A new system needs only a new spec, the copy of its package closure and the same four probes:
+
+1. `python tools/unreal-niagara-probe/closure_copy.py --spec <spec> --apply` copies the seeds (system, direct
+   `/Game` dependencies and textures from `docs/research/unreal-assets/st01b/myproject-dependencies.json`)
+   from `C:/Unreal/MyProject/Content`, never writing there. An existing copy must hash equal or it stops.
+2. `probe_closure.py` (same Python invocation as above) reads the hard-reference closure from the AssetRegistry
+   and lists packages still missing; repeat with `closure_copy.py --extra <closure json>` until none are missing, then add
+   `--audit docs/delivery/st01c/<name>/source-copy-audit.json`.
+3. `check_copy_audit.py <audit>` re-hashes originals and copies and exits non-zero on any mismatch.
+4. Run the source, compiled and material probes and the commandlet, then `build_export_manifest.py` pins the run.
+   `compare_t3d.py <run A> <run B>` compares two source runs with the per-load ChangeId GUIDs masked: Unreal
+   assigns fresh ones on every load, so two T3D exports are never byte-identical.
+
 The C++ commandlet accepts only `ST01c_Pilot` inside a `.scratch/` folder and a fresh
-output file inside that project. It validates the exact system path and two handle
-names/order. The declared source SHA is checked externally against the original
+output file inside that project. It validates the exact system path from the spec, and the
+emitter handle names and order when the spec lists them. The declared source SHA is checked externally against the original
 and copy; the commandlet itself does not claim to hash the asset. It does not save
 assets, launch a simulation, request rendering or translate shaders.
 
@@ -122,8 +151,14 @@ The helper requires the scratch project, exact pilot and CPU handle order; it ne
 saves assets. Rebuild/copy the plugin as above, then use a fresh run:
 
 ```powershell
-& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -run=pythonscript '-script=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/probe_compiled.py' -CompiledRun=compiled03 -unattended -nop4 -nosplash -nosound -NullRHI
+& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -run=pythonscript '-script=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/probe_compiled.py' '-SystemSpec=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/systems/ns-flame-single.json' -ProbeRun=compiled03 -unattended -nop4 -nosplash -nosound -NullRHI
 ```
+
+The plugin functions are `ConfigureSystem`/`ReadCompiledSystem` (scope from the spec text); the older
+`ConfigurePilot`/`ReadCompiledPilot` keep the pilot scope for the capture scripts. With the pilot spec the compiled
+`report.json` is byte-identical to `compiled02` and the native-values file to `native-values02/03`; the
+T3D exports and the material defaults are not byte-stable (see `compare_t3d.py`; the original material probe
+printed an object representation with a memory address).
 
 The accepted source preset uses the reviewed `compiled02` report/text hashes. CPU
 comparison data stays separate from these compiler inputs. The original pilot has

@@ -1,23 +1,55 @@
-"""Read-only source extraction probe, restricted to this isolated pilot copy."""
+"""Read-only source extraction probe, restricted to this isolated scratch project.
+
+Command line: -SystemSpec=<absolute systems/*.json> -ProbeRun=<fresh name>.
+Writes <project>/<ProbeRun>/ (report.json plus one .t3d per exported object).
+"""
 import hashlib
 import json
 import os
+import re
 import traceback
 import unreal
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+
+def command_line_value(name):
+    """Value of -name=... from the command line; handles a whole-argument quote and spaces."""
+    line = unreal.SystemLibrary.get_command_line()
+    match = re.search(r'-' + name + '=', line, re.IGNORECASE)
+    if not match:
+        return None
+    rest = line[match.end():]
+    if match.start() > 0 and line[match.start() - 1] == '"':
+        return rest.split('"', 1)[0]
+    if rest.startswith('"'):
+        return rest[1:].split('"', 1)[0]
+    return rest.split()[0] if rest.split() else None
+
+
+ROOT = os.path.abspath(unreal.Paths.project_dir())
 project = os.path.normcase(os.path.abspath(unreal.Paths.get_project_file_path()))
 expected = os.path.normcase(os.path.join(ROOT, 'ST01c_Pilot.uproject'))
 if project != expected or '/.scratch/' not in ROOT.replace('\\', '/'):
     raise RuntimeError('Source probe requires this isolated scratch project')
-OUT = os.path.join(ROOT, 'probe01')
+SPEC_PATH = command_line_value('SystemSpec')
+RUN = command_line_value('ProbeRun')
+if not SPEC_PATH or not os.path.isfile(SPEC_PATH):
+    raise RuntimeError('Source probe requires -SystemSpec=<absolute spec json>')
+if not RUN or not re.fullmatch(r'[A-Za-z0-9_-]{1,40}', RUN):
+    raise RuntimeError('Source probe requires a bounded -ProbeRun=<name>')
+with open(SPEC_PATH, encoding='utf-8') as spec_file:
+    SPEC = json.load(spec_file)
+if SPEC.get('schema') != 'st01c-system-spec/v1':
+    raise RuntimeError('Unsupported system spec schema')
+OUT = os.path.join(ROOT, RUN)
 if os.path.exists(OUT):
     raise RuntimeError('Source probe requires a fresh output directory')
 os.makedirs(OUT)
-SYSTEM = '/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single'
-PACK = '/Game/sA_Megapack_v1/sA_StylizedAttacksPack'
+SYSTEM = SPEC['systemPackage']
+SYSTEM_NAME = SYSTEM.rsplit('/', 1)[1]
+PACK = SPEC['packRoot']
+
 report = {'schema': 'st01c-source-probe/v1', 'engine': str(unreal.SystemLibrary.get_engine_version()),
-          'project': unreal.Paths.get_project_file_path(), 'exports': [], 'objects': [], 'materials': [], 'errors': [],
+          'project': unreal.Paths.get_project_file_path(), 'systemSpec': SPEC_PATH.replace('\\', '/'), 'exports': [], 'objects': [], 'materials': [], 'errors': [],
           'scope': 'Source data only; does not prove simulation semantics or visual equivalence.'}
 
 def write_report():
@@ -71,12 +103,12 @@ try:
         raise RuntimeError('Exact pilot did not load as NiagaraSystem')
     report['systemFields'] = fields(system, ['emitter_handles', 'system_spawn_script', 'system_update_script', 'exposed_parameters'])
     export_object(system, 'system')
-    for name in ['NE_Flame_Basic_001', 'NE_Smoke_Basic']:
-        emitter = unreal.load_asset(PACK + '/FX/NiagaraEmitters/' + name)
+    for package in SPEC['emitterAssets']:
+        emitter = unreal.load_asset(package)
         if emitter is None:
-            raise RuntimeError('Emitter did not load: ' + name)
-        export_object(emitter, name)
-    queue = [unreal.load_asset(PACK + '/Materials/' + name) for name in ['MI_Flame_1', 'MI_Flame_2', 'MI_Smoke_1']]
+            raise RuntimeError('Emitter did not load: ' + package)
+        export_object(emitter, package.rsplit('/', 1)[1])
+    queue = [unreal.load_asset(package) for package in SPEC['materialInstances']]
     visited = set()
     while queue:
         obj = queue.pop(0)
@@ -102,7 +134,7 @@ try:
         count = 0
         for obj in unreal.ObjectIterator(wrapper):
             path = path_of(obj)
-            if not path.startswith(SYSTEM + '.NS_Flame_Single:') and not path.startswith(PACK + '/FX/NiagaraEmitters/'):
+            if not path.startswith(SYSTEM + '.' + SYSTEM_NAME + ':') and not path.startswith(PACK + '/FX/NiagaraEmitters/'):
                 continue
             count += 1
             if count > 256:

@@ -1,4 +1,5 @@
 ﻿#include "ST01cProbeCommandlet.h"
+#include "ST01cSpec.h"
 
 #include "Misc/CommandLine.h"
 #include "Misc/EngineVersion.h"
@@ -22,10 +23,6 @@
 
 namespace
 {
-    constexpr TCHAR PilotSystemPath[] = TEXT("/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single");
-    constexpr TCHAR PilotSystemSourceSha256[] = TEXT("985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165");
-    constexpr const TCHAR* ExpectedEmitterNames[] = { TEXT("NE_Flame_Basic_001"), TEXT("NE_Smoke_Basic") };
-
     FString GuidString(const FGuid& Guid)
     {
         return Guid.ToString(EGuidFormats::DigitsWithHyphensLower);
@@ -186,14 +183,33 @@ UST01cProbeCommandlet::UST01cProbeCommandlet()
 
 int32 UST01cProbeCommandlet::Main(const FString& Params)
 {
-    FString OutputPath;
-    if (!FParse::Value(*Params, TEXT("Output="), OutputPath) || OutputPath.IsEmpty())
+    FString SpecPath;
+    FString RunName;
+    if (!FParse::Value(*Params, TEXT("SystemSpec="), SpecPath) || SpecPath.IsEmpty() ||
+        !FParse::Value(*Params, TEXT("ProbeRun="), RunName) || RunName.IsEmpty())
     {
-        UE_LOG(LogTemp, Error, TEXT("Required argument missing: -Output=<absolute-json-path>"));
+        UE_LOG(LogTemp, Error, TEXT("Required arguments missing: -SystemSpec=<absolute-spec-json> -ProbeRun=<fresh-name>"));
+        return 2;
+    }
+    for (const TCHAR Character : RunName)
+    {
+        if (!FChar::IsAlnum(Character) && Character != TEXT('_') && Character != TEXT('-'))
+        {
+            UE_LOG(LogTemp, Error, TEXT("ProbeRun may only contain letters, digits, '_' and '-'"));
+            return 2;
+        }
+    }
+    FString SpecText;
+    FST01cScope Scope;
+    FString SpecError;
+    if (!FFileHelper::LoadFileToString(SpecText, *SpecPath) || !ST01cSpec::Parse(SpecText, Scope, SpecError))
+    {
+        UE_LOG(LogTemp, Error, TEXT("Could not read system spec %s: %s"), *SpecPath, *SpecError);
         return 2;
     }
 
-    OutputPath = FPaths::ConvertRelativePathToFull(OutputPath);
+    // The run name maps to <project>/<run>.json, which must not exist yet.
+    FString OutputPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectDir(), RunName + TEXT(".json")));
     if (FPaths::GetBaseFilename(FPaths::GetProjectFilePath()) != TEXT("ST01c_Pilot") ||
         !FPaths::ProjectDir().Contains(TEXT("/.scratch/")) ||
         !FPaths::IsUnderDirectory(OutputPath, FPaths::ProjectDir()) || FPaths::FileExists(OutputPath))
@@ -201,17 +217,17 @@ int32 UST01cProbeCommandlet::Main(const FString& Params)
         UE_LOG(LogTemp, Error, TEXT("Probe requires this isolated project and a fresh output inside it"));
         return 2;
     }
-    UNiagaraSystem* System = LoadObject<UNiagaraSystem>(nullptr, PilotSystemPath);
+    UNiagaraSystem* System = LoadObject<UNiagaraSystem>(nullptr, *Scope.SystemObjectPath);
     if (!System)
     {
-        UE_LOG(LogTemp, Error, TEXT("Could not load exact pilot system: %s"), PilotSystemPath);
+        UE_LOG(LogTemp, Error, TEXT("Could not load exact system: %s"), *Scope.SystemObjectPath);
         return 3;
     }
 
     const TArray<FNiagaraEmitterHandle>& Handles = System->GetEmitterHandles();
-    if (Handles.Num() != 2)
+    if (Handles.IsEmpty() || (Scope.bHandlesListed && Handles.Num() != Scope.Handles.Num()))
     {
-        UE_LOG(LogTemp, Error, TEXT("Expected exactly 2 emitter handles; found %d"), Handles.Num());
+        UE_LOG(LogTemp, Error, TEXT("Expected %d emitter handles; found %d"), Scope.bHandlesListed ? Scope.Handles.Num() : 1, Handles.Num());
         return 4;
     }
 
@@ -219,7 +235,7 @@ int32 UST01cProbeCommandlet::Main(const FString& Params)
     Root->SetStringField(TEXT("schema"), TEXT("st01c-native-api-probe/v1"));
     Root->SetStringField(TEXT("engineVersion"), FEngineVersion::Current().ToString());
     Root->SetStringField(TEXT("systemObjectPath"), System->GetPathName());
-    Root->SetStringField(TEXT("expectedSourceSystemSha256"), PilotSystemSourceSha256);
+    Root->SetStringField(TEXT("expectedSourceSystemSha256"), Scope.SourceSha256);
     Root->SetStringField(TEXT("shaValidation"), TEXT("external-only; commandlet does not hash the uasset"));
     Root->SetNumberField(TEXT("emitterHandleCount"), Handles.Num());
     TArray<TSharedPtr<FJsonValue>> Emitters;
@@ -227,7 +243,7 @@ int32 UST01cProbeCommandlet::Main(const FString& Params)
     for (int32 HandleIndex = 0; HandleIndex < Handles.Num(); ++HandleIndex)
     {
         const FNiagaraEmitterHandle& Handle = Handles[HandleIndex];
-        if (Handle.GetName() != FName(ExpectedEmitterNames[HandleIndex]))
+        if (Scope.bHandlesListed && Handle.GetName() != FName(*Scope.Handles[HandleIndex]))
         {
             UE_LOG(LogTemp, Error, TEXT("Unexpected emitter at order %d: %s"), HandleIndex, *Handle.GetName().ToString());
             return 4;

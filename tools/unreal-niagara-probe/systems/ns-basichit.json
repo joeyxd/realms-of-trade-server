@@ -1,0 +1,78 @@
+{
+  "schema": "st01c-system-spec/v1",
+  "name": "NS_BasicHit",
+  "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit",
+  "packRoot": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack",
+  "sourceSystemSha256": "97a82bae61b292371a78cadc6ffef2f7dcae3ea39ac0a9ccb6b5ed2ee57e18cf",
+  "emitterHandles": null,
+  "emitterAssets": [
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Basic_Flash",
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Flame_Basic_001",
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_SimpleBurst"
+  ],
+  "fixtureSeedBase": 6371,
+  "expectedScriptCount": null,
+  "sourceEnums": [
+    "ENiagaraSUbUVAnimationMode",
+    "ENiagaraEmitterLifeCycleMode",
+    "ENiagara_EmitterStateOptions",
+    "ENiagara_InfiniteLoopDuration",
+    "ENiagaraEmitterScalabilityMode_Limited",
+    "ENiagaraScaleColorMode",
+    "ENiagaraInactiveMode",
+    "ENiagaraSystemInactiveMode",
+    "ENiagaraTorusDistributionMode"
+  ],
+  "materialInstances": [
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Fireball",
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1",
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Hit_1",
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Radial_2"
+  ],
+  "baseMaterials": [
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke",
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Ground_Crack",
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Master_RadialBeam"
+  ],
+  "expressionClasses": {
+    "MaterialExpressionDepthFade": [
+      "fade_distance_default",
+      "in_opacity",
+      "fade_distance"
+    ],
+    "MaterialExpressionClamp": [
+      "min_default",
+      "max_default",
+      "clamp_mode",
+      "input",
+      "min",
+      "max"
+    ],
+    "MaterialExpressionTextureSampleParameterSubUV": [
+      "texture",
+      "sampler_type",
+      "sampler_source",
+      "blend",
+      "parameter_name"
+    ],
+    "MaterialExpressionMultiply": [
+      "const_a",
+      "const_b",
+      "a",
+      "b"
+    ],
+    "MaterialExpressionTextureSampleParameter2D": [
+      "texture",
+      "sampler_type",
+      "sampler_source",
+      "parameter_name"
+    ],
+    "MaterialExpressionScalarParameter": [
+      "default_value",
+      "parameter_name"
+    ],
+    "MaterialExpressionMaterialFunctionCall": [
+      "material_function"
+    ]
+  }
+}
