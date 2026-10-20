@@ -2,7 +2,7 @@ const COPY = {
   es: {
     title: 'Presencia en Salty Shore', join: 'Salir conmigo', follow: 'Sígueme', wait: 'Espera aquí',
     return: 'Volver al ancla', retire: 'Descansar en el puerto', refresh: 'Actualizar presencia',
-    safe: 'Piloto de zona segura: no habilita combate ni recolección.', separate: 'La IA y el emparejamiento se controlan por separado.',
+    safe: 'Piloto de zona segura: no habilita combate ni recolección.', separate: 'La IA emparejada habla y se mueve como este cuerpo (seguir, esperar, volver).',
     first: 'Primero vuelve al punto de llegada de Salty Shore.', disabled: 'El control de presencia está apagado. Se conserva aquí el último estado recibido.',
     loading: 'Consultando presencia…', mutating: 'Guardando la orden…', offline: 'Conéctate al mundo para consultar la presencia.',
     signed_out: 'Inicia sesión para consultar la presencia.', ready: 'Estado actualizado.', error: 'No se pudo completar la solicitud.',
@@ -22,7 +22,7 @@ const COPY = {
   en: {
     title: 'Presence at Salty Shore', join: 'Come with me', follow: 'Follow me', wait: 'Wait here',
     return: 'Return to anchor', retire: 'Rest at the harbor', refresh: 'Refresh presence',
-    safe: 'Safe-zone pilot: combat and harvesting are unavailable.', separate: 'AI and pairing are controlled separately.',
+    safe: 'Safe-zone pilot: combat and harvesting are unavailable.', separate: 'The paired AI speaks and moves as this body (follow, wait, return).',
     first: 'First return to the Salty Shore arrival point.', disabled: 'Presence control is off. The last received state is kept here.',
     loading: 'Checking presence…', mutating: 'Saving the order…', offline: 'Join the world to check presence.',
     signed_out: 'Sign in to check presence.', ready: 'Presence updated.', error: 'The request could not be completed.',

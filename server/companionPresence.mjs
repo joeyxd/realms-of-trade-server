@@ -67,7 +67,8 @@ export class CompanionPresenceService {
     const p = this.host.companionPairing;
     return p.busy.size > 0 || [...p.codes.values(), ...p.tokens.values(), ...p.admitted.values()]
       .some(e => e.ownerId === owner || e.characterId === character) ||
-      [...this.host.sockets.values()].some(s => s.agentIdentity === character);
+      // A revoked socket stays in host.sockets until its close completes, but it no longer pairs the character.
+      [...this.host.sockets.values()].some(s => s.agentIdentity === character && !s.pairingRevoked);
   }
   // A present body that is not mid-join, mid-retire, failed or about to auto-retire.
   liveBody(owner, character) {

@@ -295,6 +295,8 @@ export class CompanionPairingService {
       const sock = this.host.sockets.get(id);
       this.admitted.delete(id);
       if (sock) {
+        // Marked before the close handshake: the socket stays refused and uncounted until it leaves.
+        sock.pairingRevoked = true;
         try { sock.ws.close(1008, 'pairing revoked'); } catch { /* gone */ }
       }
     }

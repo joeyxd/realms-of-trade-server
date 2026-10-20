@@ -491,6 +491,116 @@ test('presence orders from a revoked or replaced mind are rejected by the contro
   firstSock.ws.terminate();
 });
 
+// Records every presence result the host sends, keyed by receiving socket id.
+function captureResults(app) {
+  const results = [], sendTo = app.game.sendTo.bind(app.game);
+  app.game.sendTo = (id, message) => {
+    if (message.t === PRESENCE_RESULT) results.push({ id, message });
+    return sendTo(id, message);
+  };
+  return results;
+}
+
+test('a revoked mind socket that is still closing no longer counts as paired or as a mind', async t => {
+  const r = await room(t), owner = await r.connect('owner');
+  const { characterKey, revision } = await prepared(owner);
+  await summon(owner, revision);
+  const { entry } = bodyFor(r.app, characterKey), presenceService = r.app.game.companionPresence;
+  const mind = await attachMind(r, owner), sock = mindSocket(r.app);
+  const results = captureResults(r.app);
+  assert.equal(presenceService.paired(OWNER, characterKey), true, 'the attached mind pairs the character');
+  assert.equal(r.app.game.status().storage.companionPresence.minds, 1);
+
+  // Hold the close handshake open: the socket stays in host.sockets after the revoke.
+  const realClose = sock.ws.close.bind(sock.ws);
+  sock.ws.close = () => {};
+  presenceService.revokePairing(entry, 'fixture');
+  assert.equal(r.app.game.sockets.get(sock.id), sock, 'the socket has not left yet');
+  assert.equal(sock.ws.readyState, WebSocket.OPEN);
+  assert.equal(sock.pairingRevoked, true);
+  assert.equal(presenceService.paired(OWNER, characterKey), false, 'a revoked socket does not pair the character');
+  assert.equal(r.app.game.status().storage.companionPresence.minds, 0);
+  assert.equal(presenceService.mindCount(), 0);
+  assert.equal(r.app.game.companionPairing.admitted.has(sock.id), false);
+
+  // It keeps being refused until it is gone.
+  const before = { order: entry.order, revision: entry.revision };
+  await mind.send({ t: PRESENCE, requestId: 'revoked-closing', op: 'follow', expectedRevision: entry.revision });
+  const refused = (await until(() => results.find(row => row.id === sock.id && row.message.requestId === 'revoked-closing'))).message;
+  assert.equal(refused.ok, false); assert.equal(refused.why, 'forbidden');
+  assert.deepEqual({ order: entry.order, revision: entry.revision }, before);
+
+  sock.ws.close = realClose;
+  sock.ws.terminate();
+  await until(() => !r.app.game.sockets.has(sock.id));
+  assert.equal(presenceService.paired(OWNER, characterKey), false);
+});
+
+test('a profile failure ends the pairing before the fence: the mind closes with 1008 and the old token is refused', async t => {
+  const r = await room(t), owner = await r.connect('owner');
+  const { characterKey, revision } = await prepared(owner);
+  await summon(owner, revision);
+  const body = bodyFor(r.app, characterKey), pairingService = r.app.game.companionPairing;
+  const mind = await attachMind(r, owner), sock = mindSocket(r.app);
+  const reasons = [], revokeOwner = pairingService.revokeOwner.bind(pairingService);
+  pairingService.revokeOwner = (id, why) => { reasons.push(why); return revokeOwner(id, why); };
+
+  assert.equal(r.app.game.companionPresence.profileFailure(body.id), true);
+  assert.equal(reasons[0], 'profile', 'the presence revoke runs first, with the profile reason');
+  assert.equal(sock.pairingRevoked, true);
+  assert.deepEqual(await mind.closed, { code: 1008, reason: 'pairing revoked' });
+  assert.equal(pairingService.codes.size + pairingService.tokens.size + pairingService.admitted.size, 0);
+  assert.equal(r.app.game.companionPresence.minds.size, 0);
+  assert.equal(body.entry.mind, null);
+
+  // A late runner with the old token never gets a welcome: the fenced host refuses the upgrade (503),
+  // answers the HELLO with an error, or hangs up.
+  let outcome = null;
+  try {
+    const late = await r.connect(null, { hello: false });
+    outcome = await Promise.race([hello(late, mind.bootstrap.token, mind.bootstrap.content), late.closed.then(() => null)]);
+  } catch (error) { assert.match(String(error.message), /503/); }
+  assert.ok(outcome === null || outcome.t === MSG.ERROR, JSON.stringify(outcome));
+  assert.equal(mindSocket(r.app), undefined);
+  assert.equal(aiNames(r.app).length, 1, 'the refused runner spawned nothing');
+  assert.equal(r.app.game.unsavedProfiles.has(body.id), true, 'the failed profile stays recorded');
+  r.app.game.unsavedProfiles.clear(); // The fixture failure is simulated: let the shutdown flush succeed.
+});
+
+test('a mind order that passed the dispatch check and is revoked before it executes is refused', async t => {
+  const r = await room(t), owner = await r.connect('owner');
+  const { characterKey, revision } = await prepared(owner);
+  await summon(owner, revision);
+  const { entry, entity } = bodyFor(r.app, characterKey), presenceService = r.app.game.companionPresence;
+  const ecs = r.app.game.server.world.ecs;
+  const mind = await attachMind(r, owner), sock = mindSocket(r.app);
+  const results = captureResults(r.app);
+  const load = await presence(mind, 'load'); assert.equal(load.ok, true);
+  const before = { order: entry.order, revision: entry.revision, x: ecs.x[entity], z: ecs.z[entity] };
+
+  // A mind order awaits nothing in the store: its only gap is the microtask between the dispatch check
+  // and the execution recheck. rate() runs inside that gap, so the test revokes from there.
+  let passedCheck = false, revokedInGap = false;
+  const rate = presenceService.rate.bind(presenceService);
+  presenceService.rate = owner => {
+    passedCheck = presenceService.mindCurrent(sock);
+    sock.ws.close = () => {}; // keep the socket open so the refusal can be observed
+    presenceService.revokePairing(entry, 'fixture'); revokedInGap = true;
+    presenceService.rate = rate;
+    return rate(owner);
+  };
+  await mind.send({ t: PRESENCE, requestId: 'revoked-in-flight', op: 'follow', expectedRevision: before.revision });
+  const refused = (await until(() => results.find(row => row.id === sock.id && row.message.requestId === 'revoked-in-flight'))).message;
+  assert.equal(passedCheck, true, 'the order was current when the dispatch check passed');
+  assert.equal(revokedInGap, true);
+  assert.equal(refused.ok, false); assert.equal(refused.why, 'forbidden');
+  assert.deepEqual({ order: entry.order, revision: entry.revision, x: ecs.x[entity], z: ecs.z[entity] }, before,
+    'the body order, revision and position are unchanged');
+  step(r.app, 5);
+  assert.equal(entry.order, before.order);
+  sock.ws.terminate();
+});
+
 test('flag off keeps L03f: a paired controller is its own chat-only entity and no mind attaches', async t => {
   const r = await room(t, { presence: false }), owner = await r.connect('owner');
   const characterKey = await create(owner);
