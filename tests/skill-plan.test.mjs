@@ -175,7 +175,7 @@ test('the command parser is exact and canRaise keeps its callers when the grant 
   assert.equal(canRaise('trade', 'haggling', { practice, skills: { contacts: 3, contracts: 1 }, grant: 3 }).ok, true);
 });
 
-test('every catalog node id and tree fits the SQL040 format and count bounds', () => {
+test('every catalog node id and tree fits the SQL041 format and count bounds', () => {
   for (const n of NODES) assert.match(n.id, /^[a-z][a-z0-9_]{0,39}$/);
   assert.ok(NODES.length <= 90);
   for (const t of TREES) assert.ok(NODES.filter(n => n.tree === t.id).length * 3 <= 45, t.id);

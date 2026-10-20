@@ -234,7 +234,7 @@ function checkedAck(raw, command) {
 
 function checkedProfile(raw, storedSkills) {
   const parsed = JSON.parse(bytes(raw, MAX_PROFILE_BYTES));
-  // Stored skills use SQL040's progression shape; the other profile fields keep their normal checks.
+  // Stored skills use SQL041's progression shape; the other profile fields keep their normal checks.
   const candidate = storedSkills && object(parsed) ? { ...parsed } : parsed;
   if (storedSkills && object(candidate)) delete candidate.progression;
   const sanitized = candidate && sanitizeProfile(candidate);

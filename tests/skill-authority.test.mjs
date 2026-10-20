@@ -62,7 +62,7 @@ test('a host without the economic lane answers skill commands as disabled', asyn
   assert.equal(host.status().storage.skills.enabled, false);
 });
 
-test('skill operations need the starter workshop lane and an exact {version:1} SQL040 readiness', async () => {
+test('skill operations need the starter workshop lane and an exact {version:1} SQL041 readiness', async () => {
   const { store } = makeResourceStore();
   assert.throws(() => makeResourceHost(store, async () => ACCOUNT_ONE, { ...options, workshopOperations: false }), /configuration/);
   assert.throws(() => makeResourceHost(store, async () => ACCOUNT_ONE, { ...options, skillOperations: 'yes' }), /configuration/);
@@ -73,7 +73,7 @@ test('skill operations need the starter workshop lane and an exact {version:1} S
     const host = makeResourceHost(stores.store, async () => ACCOUNT_ONE, options);
     await assert.rejects(host.prepare(), error => checkSkillOperations?.toString().includes('throw')
       ? /SQL skill readiness unavailable/.test(error.message) : error.code === 'configuration');
-    assert.equal(host.worldState.ready, false, 'no world admission without SQL040');
+    assert.equal(host.worldState.ready, false, 'no world admission without SQL041');
     await host.close().catch(() => {});
   }
   const control = makeResourceHost(makeResourceStore().store, async () => ACCOUNT_ONE, options);

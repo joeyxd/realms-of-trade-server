@@ -13,11 +13,11 @@ import { teachStorage } from '../server/artisanOperation.mjs';
 import { draftSkills, validStoredSkillRequest } from '../server/skillOperation.mjs';
 import { RESET_FREE, SKILL_RESET_GOLD } from '../src/data/skillTree.js';
 
-// Every migration through SQL039 really executes in PGlite, then SQL040 (twice: it must be rerunnable).
+// Every migration through SQL040 really executes in PGlite, then SQL041 (twice: it must be rerunnable).
 const MIGRATIONS = new URL('../server/migrations/', import.meta.url);
-const NAMES = (await readdir(MIGRATIONS)).filter(n => /^\d{3}_[a-z0-9_]+\.sql$/.test(n) && n < '040').sort();
+const NAMES = (await readdir(MIGRATIONS)).filter(n => /^\d{3}_[a-z0-9_]+\.sql$/.test(n) && n < '041').sort();
 const SQL = Object.fromEntries(await Promise.all(NAMES.map(async n => [n, await readFile(new URL(n, MIGRATIONS), 'utf8')])));
-const SQL040 = await readFile(new URL('040_skill_operations.sql', MIGRATIONS), 'utf8');
+const SQL041 = await readFile(new URL('041_skill_operations.sql', MIGRATIONS), 'utf8');
 const OLD_VALIDATOR = SQL['016_logging_operations.sql']
   .match(/CREATE OR REPLACE FUNCTION public\.mn_valid_logging_progression[\s\S]*?\$function\$;/)[0];
 const ACCOUNT = 'aaaa0000-0000-4000-8000-000000000001', CONTRIBUTOR = 'bbbb0000-0000-4000-8000-000000000002';
@@ -31,7 +31,7 @@ async function database(t, { skills = true } = {}) {
   await db.exec('CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role; CREATE SCHEMA auth; CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT NULL::uuid $$;');
   assert.ok(NAMES.length >= 39 && NAMES.at(-1).startsWith('039_'), NAMES.at(-1));
   for (const name of NAMES) await db.exec(SQL[name]);
-  if (skills) { await db.exec(SQL040); await db.exec(SQL040); }
+  if (skills) { await db.exec(SQL041); await db.exec(SQL041); }
   return db;
 }
 const one = async (db, text, params = []) => (await db.query(text, params)).rows[0];
@@ -88,19 +88,19 @@ const V3_FULL = { v: 3, practice: { logging: 60, survival: 4, sailing: 3, crafti
   milestones: ['logging_steady', 'pilot_coastal'], knowledge: ['raft_storage'], skills: { lunge: 2, tromba: 3, haggling: 0 },
   skr: { combat: 1, exploration: 1000 }, skg: { combat: 45, survival: 0, sailing: 0, crafting: 0, trade: 18 } };
 
-test('SQL040 reset literals match RESET_FREE and SKILL_RESET_GOLD', () => {
-  const price = SQL040.match(/price:=CASE WHEN used>=(\d+) THEN (\d+) ELSE 0 END;/);
+test('SQL041 reset literals match RESET_FREE and SKILL_RESET_GOLD', () => {
+  const price = SQL041.match(/price:=CASE WHEN used>=(\d+) THEN (\d+) ELSE 0 END;/);
   assert.ok(price);
   assert.equal(Number(price[1]), RESET_FREE);
   assert.equal(Number(price[2]), SKILL_RESET_GOLD);
 });
 
-test('SQL040 readiness detects either pre-040 writer and recovers after rerunning the migration', async t => {
+test('SQL041 readiness detects either pre-041 writer and recovers after rerunning the migration', async t => {
   const db = await database(t, { skills: false });
   const old = await one(db, `select
     pg_get_functiondef('public.mn_commit_economic_operation(uuid,jsonb)'::regprocedure) commit,
     pg_get_functiondef('public.mn_save_profile(uuid,jsonb,integer)'::regprocedure) save`);
-  await db.exec(SQL040);
+  await db.exec(SQL041);
   for (const body of [old.commit, old.save]) {
     await db.exec('SET ROLE service_role');
     assert.deepEqual((await one(db, 'select public.mn_skill_operations_ready() r')).r, { version: 1 });
@@ -109,14 +109,14 @@ test('SQL040 readiness detects either pre-040 writer and recovers after rerunnin
     await db.exec('SET ROLE service_role');
     assert.deepEqual((await one(db, 'select public.mn_skill_operations_ready() r')).r, { version: 0 });
     await db.exec('RESET ROLE');
-    await db.exec(SQL040);
+    await db.exec(SQL041);
     await db.exec('SET ROLE service_role');
     assert.deepEqual((await one(db, 'select public.mn_skill_operations_ready() r')).r, { version: 1 });
     await db.exec('RESET ROLE');
   }
 });
 
-test('SQL040 autosave guards skill state on update and creation while allowing unchanged and legacy profiles', async t => {
+test('SQL041 autosave guards skill state on update and creation while allowing unchanged and legacy profiles', async t => {
   const db = await database(t), p = character();
   // Exercise the invoker RPC with the service role's production RLS behavior.
   await db.exec('ALTER ROLE service_role BYPASSRLS');
@@ -156,7 +156,7 @@ test('SQL040 autosave guards skill state on update and creation while allowing u
   }
 });
 
-test('SQL040 and JS keep historical catalog shapes valid across receipt replay and migration reapplication', async t => {
+test('SQL041 and JS keep historical catalog shapes valid across receipt replay and migration reapplication', async t => {
   const f = await skillFixture(t), request = skillRequest(f, assign(f, 'historical-catalog'));
   delete request.profile.progression.skills.haggling;
   request.profile.progression.skills.retired_node = 1;
@@ -166,13 +166,13 @@ test('SQL040 and JS keep historical catalog shapes valid across receipt replay a
     [id(105), json(request)])).ok, true);
   const result = await accept(f, id(105), request);
   await f.db.exec('RESET ROLE');
-  await f.db.exec(SQL040);
+  await f.db.exec(SQL041);
   await f.db.exec('SET ROLE service_role');
   assert.deepEqual(await commit(f.db, id(105), request), { ...result, replay: true });
   assert.deepEqual((await stored(f.db)).data, request.profile);
 });
 
-test('SQL040 is rerunnable, service-only, keeps SQL037 readiness, and its probe fails on SQL016\'s old validator', async t => {
+test('SQL041 is rerunnable, service-only, keeps SQL037 readiness, and its probe fails on SQL016\'s old validator', async t => {
   const db = await database(t);
   assert.deepEqual((await one(db, 'select public.mn_skill_operations_ready() r')).r, { version: 1 });
   assert.deepEqual((await one(db, 'select public.mn_torch_resin_coconut_ready() r')).r, { version: 1 },
@@ -195,7 +195,7 @@ test('SQL040 is rerunnable, service-only, keeps SQL037 readiness, and its probe 
   await db.exec(OLD_VALIDATOR);
   assert.deepEqual((await one(db, 'select public.mn_skill_operations_ready() r')).r, { version: 0 });
   assert.equal(await validProgression(db, V3_FULL), false, 'SQL016 refuses every v3 block');
-  await db.exec(SQL040);
+  await db.exec(SQL041);
   assert.deepEqual((await one(db, 'select public.mn_skill_operations_ready() r')).r, { version: 1 });
   const before = await database(t, { skills: false });
   assert.equal((await one(before, "select to_regprocedure('public.mn_skill_operations_ready()') r")).r, null);
@@ -235,7 +235,7 @@ test('the v1/v2 validator answers stay unchanged and v3 accepts everything readP
   for (const p of [...accepted, ...looser]) assert.equal(await validProgression(legacy, p), false, 'SQL016 refused every v3 block');
 });
 
-test('SQL040 commits adoption, assign, free and paid resets, and refuses short gold as an exact no-op', async t => {
+test('SQL041 commits adoption, assign, free and paid resets, and refuses short gold as an exact no-op', async t => {
   const f = await skillFixture(t);
   const adopt = skillRequest(f, assign(f, 'assign-lunge'));
   assert.equal(adopt.ack.ok, true, adopt.ack.why);
@@ -259,7 +259,7 @@ test('SQL040 commits adoption, assign, free and paid resets, and refuses short g
   assert.equal((await stored(f.db)).version, 8);
 });
 
-test('SQL040 refuses forged skill receipts and leaves profile, world and receipts untouched', async t => {
+test('SQL041 refuses forged skill receipts and leaves profile, world and receipts untouched', async t => {
   const f = await skillFixture(t);
   await accept(f, id(10), skillRequest(f, assign(f, 'setup-assign')));
   const valid = { assign: skillRequest(f, assign(f, 'forged-assign')), reset: skillRequest(f, reset(f, 'forged-reset')) };
@@ -314,7 +314,7 @@ test('every other economic command keeps node ranks, resets, grants and peaceful
   assert.equal(unchanged.ok, true, JSON.stringify(unchanged));
   assert.deepEqual((await stored(f.db)).data.progression, f.p.progression);
 
-  // Control: before SQL040 nothing stopped an ordinary receipt from rewriting the block.
+  // Control: before SQL041 nothing stopped an ordinary receipt from rewriting the block.
   const legacy = await database(t, { skills: false }), adopted = copy(f.p);
   await seed(legacy, [[ACCOUNT, adopted]], f.w);
   const rewritten = copy(adopted); rewritten.progression.skills.lunge = 3;
@@ -357,7 +357,7 @@ function palmReceipt(actorProgression, contributorProgression) {
   return { request, state, actor, contributor };
 }
 
-test('logging beneficiaries accept a v3 block after SQL040 and keep its skill state (SQL016 lane)', async t => {
+test('logging beneficiaries accept a v3 block after SQL041 and keep its skill state (SQL016 lane)', async t => {
   const offline = { v: 3, practice: { logging: 10, sailing: 7 }, milestones: ['pilot_coastal'], knowledge: [],
     skills: { lunge: 1, blast: 2 }, skr: { trade: 2 }, skg: { combat: 3, survival: 0, sailing: 0, crafting: 0, trade: 0 } };
   const { request, state, actor, contributor } = palmReceipt(V3_FULL, offline);
@@ -399,7 +399,7 @@ test('logging beneficiaries accept a v3 block after SQL040 and keep its skill st
   }
 });
 
-test('the artisan lesson accepts a v3 block after SQL040 and keeps its skill state (SQL021 lane)', async t => {
+test('the artisan lesson accepts a v3 block after SQL041 and keeps its skill state (SQL021 lane)', async t => {
   const progression = { v: 3, practice: { logging: 60, crafting: 2 }, milestones: ['logging_steady'], knowledge: [],
     skills: { lunge: 2 }, skr: { combat: 1 }, skg: { combat: 1, survival: 0, sailing: 0, crafting: 0, trade: 0 } };
   const character = () => { const p = newProfile(); delete p.carry; delete p.workshop; p.eco.pack = { cap: 10, goods: { madera: 2 } };

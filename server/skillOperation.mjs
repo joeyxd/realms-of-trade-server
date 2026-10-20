@@ -21,7 +21,7 @@ const without = (v, keys) => Object.fromEntries(Object.entries(v).filter(([k]) =
 const TREE_IDS = ['combat', 'survival', 'sailing', 'crafting', 'trade', 'exploration'];
 const NODE_ID = /^[a-z][a-z0-9_]{0,39}$/;
 
-// SQL040's persisted schema bounds, independent of today's catalog membership and grant caps.
+// SQL041's persisted schema bounds, independent of today's catalog membership and grant caps.
 function storedProgression(p) {
   if (!object(p) || !integer(p.v, 1, 3)) return false;
   const required = ['v', 'practice', 'milestones', 'knowledge'], optional = ['skills', 'skr', 'skg'];
