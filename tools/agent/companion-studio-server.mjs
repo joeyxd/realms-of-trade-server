@@ -3,6 +3,7 @@ import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { readFile, mkdir, access } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createInferenceCenter } from './inference-center.mjs';
 import { LocalCompanion } from './local-companion.mjs';
 import { DEFAULT_COMPANION_DRAFT, ROLE_TEMPLATES, PERSONALITY_TEMPLATES, TRAIT_TEMPLATES,
   COMPANION_LOOKS, validateCompanionDraft } from '../../src/net/companionTemplates.js';
@@ -12,8 +13,9 @@ const exact = (v, keys) => v && typeof v === 'object' && !Array.isArray(v) &&
 const fail = why => ({ ok: false, why });
 
 export async function createCompanionStudio({ directory, baseUrl, modelId, port = 0,
-  adapterFactory, initialCompanion = null } = {}) {
+  adapterFactory, inferenceHome, initialCompanion = null } = {}) {
   const root = resolve(directory);
+  const inferenceCenter = await createInferenceCenter({ inferenceHome });
   const defaultDraft = validateCompanionDraft({ ...DEFAULT_COMPANION_DRAFT, skin: 1, baseUrl, modelId, thinkingMode: 'disabled' });
   let companion = initialCompanion, creating = false, closed = false, origin = null;
   const key = randomBytes(32).toString('hex');
@@ -31,7 +33,9 @@ export async function createCompanionStudio({ directory, baseUrl, modelId, port 
   async function view() {
     const state = companion ? await companion.view() : { ok: true, created: false, draft: defaultDraft, scope: null,
       status: { state: 'not_created', connected: false, inFlight: false, public: false }, files: {}, budget: null, transcript: [] };
+    const inference = inferenceCenter.view();
     return { ...state, models: [companion?.draft.modelId ?? modelId],
+      inference,
       templates: { roles: ROLE_TEMPLATES, personalities: PERSONALITY_TEMPLATES, traits: TRAIT_TEMPLATES }, looks: COMPANION_LOOKS };
   }
   function reply(response, status, result) {
@@ -63,18 +67,35 @@ export async function createCompanionStudio({ directory, baseUrl, modelId, port 
       }
       if (request.method === 'GET' && request.url === '/api/state') { reply(response, 200, await view()); return; }
       if (request.method !== 'POST' || !['/api/create', '/api/start', '/api/stop', '/api/chat', '/api/remember', '/api/files', '/api/reenter',
-        '/api/context/refresh', '/api/memory/compact', '/api/continuity'].includes(request.url)) {
+        '/api/context/refresh', '/api/memory/compact', '/api/continuity',
+        '/api/inference/endpoint', '/api/inference/endpoint/delete', '/api/inference/probe',
+        '/api/inference/test', '/api/inference/select'].includes(request.url)) {
         request.resume(); reply(response, 404, fail('route_unavailable')); return;
       }
       if (request.headers.origin !== origin) { request.resume(); reply(response, 403, fail('origin_required')); return; }
+      if (request.url.startsWith('/api/inference/') && inferenceCenter.view().error === 'invalid_store') {
+        request.resume(); reply(response, 409, fail('invalid_store')); return;
+      }
       const input = await parseBody(request), route = request.url;
-      const fields = route === '/api/create' ? ['draft', 'limits'] : route === '/api/chat' ? ['text'] :
-        route === '/api/memory/compact' ? ['sourceIds'] : route === '/api/continuity' ? ['autoCompact'] : [];
+      const inferenceFields = { '/api/inference/endpoint': ['endpoint'], '/api/inference/endpoint/delete': ['id'],
+        '/api/inference/probe': ['id'], '/api/inference/test': ['id', 'modelId', 'prompt'], '/api/inference/select': ['id', 'modelId'] };
+      const fields = inferenceFields[route] ?? (route === '/api/create' ? ['draft', 'limits'] : route === '/api/chat' ? ['text'] :
+        route === '/api/memory/compact' ? ['sourceIds'] : route === '/api/continuity' ? ['autoCompact'] : []);
       if (!exact(input, fields)) { reply(response, 400, fail('invalid_request')); return; }
       if (route === '/api/memory/compact' && (!Array.isArray(input.sourceIds) || input.sourceIds.length < 1 || input.sourceIds.length > 8 ||
         new Set(input.sourceIds).size !== input.sourceIds.length || !input.sourceIds.every(id => typeof id === 'string' && /^episode:[a-f0-9]{64}$/.test(id))) ||
         route === '/api/continuity' && typeof input.autoCompact !== 'boolean') {
         reply(response, 400, fail('invalid_request')); return;
+      }
+      if (route.startsWith('/api/inference/')) {
+        if (route !== '/api/inference/endpoint' && typeof input.id !== 'string') { reply(response, 400, fail('invalid_request')); return; }
+        const result = route === '/api/inference/endpoint' ? await inferenceCenter.save(input.endpoint)
+          : route === '/api/inference/endpoint/delete' ? await inferenceCenter.delete(input.id)
+          : route === '/api/inference/probe' ? await inferenceCenter.probe(input.id)
+          : route === '/api/inference/select' ? await inferenceCenter.select(input.id, input.modelId)
+          : await inferenceCenter.test(input.id, input.modelId, input.prompt);
+        reply(response, result.ok ? 200 : result.why === 'endpoint_unknown' ? 404 : result.why === 'invalid_request' ? 400 : 409, result);
+        return;
       }
       let result;
       if (route === '/api/create') {

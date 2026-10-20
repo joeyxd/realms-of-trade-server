@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { request as httpRequest } from 'node:http';
+import { createServer, request as httpRequest } from 'node:http';
 import { DEFAULT_COMPANION_DRAFT } from '../src/net/companionTemplates.js';
 import { createCompanionStudio } from '../tools/agent/companion-studio-server.mjs';
 import { createLocalOpenAIMind } from '../tools/agent/local-openai-mind.mjs';
@@ -20,7 +20,7 @@ async function studioFixture(t, options = {}) {
     await studio?.close().catch(() => {});
     await rm(parent, { recursive: true, force: true });
   });
-  studio = await createCompanionStudio({ directory, baseUrl: draft.baseUrl, modelId: draft.modelId,
+  studio = await createCompanionStudio({ directory, inferenceHome: join(parent, 'inference'), baseUrl: draft.baseUrl, modelId: draft.modelId,
     ...(options.adapterFactory ? { adapterFactory: options.adapterFactory } : {}) });
   const access = await studio.listen();
   return { parent, directory, studio, replaceStudio: next => { studio = next; }, ...access };
@@ -271,7 +271,7 @@ test('create requires the exact schema and does not infer until explicit start',
   assert.equal(stopped.status, 200, JSON.stringify(stoppedBody));
   assert.equal(stoppedBody.state, 'stopped');
   await access.studio.close();
-  const reopened = await createCompanionStudio({ directory: access.directory, baseUrl: draft.baseUrl, modelId: draft.modelId,
+  const reopened = await createCompanionStudio({ directory: access.directory, inferenceHome: join(access.parent, 'inference'), baseUrl: draft.baseUrl, modelId: draft.modelId,
     adapterFactory: () => { adapterConstructions++; const adapter = createLocalOpenAIMind({ baseUrl: draft.baseUrl,
       modelId: draft.modelId, thinkingMode: draft.thinkingMode, maxCalls: 8, maxOutputTokens: 512, timeoutMs: 30000 });
       return { ...adapter, async complete(request) { inferenceCalls++; return adapter.complete(request); } }; } });
@@ -284,3 +284,95 @@ test('create requires the exact schema and does not infer until explicit start',
   assert.equal(adapterConstructions, 1, 'opening a saved runtime does not instantiate an adapter');
   assert.equal(inferenceCalls, 0);
 });
+
+
+test('inference routes enforce exact schemas, bearer and Origin before companion creation', async t => {
+  const access = await studioFixture(t);
+  const routes = [
+    ['/api/inference/endpoint', { endpoint: { id: null, label: 'Local', baseUrl: 'https://example.invalid/v1', apiKey: 'secret-abcd', defaultModel: 'm' } }],
+    ['/api/inference/endpoint/delete', { id: 'missing' }], ['/api/inference/probe', { id: 'missing' }],
+    ['/api/inference/test', { id: 'missing', modelId: 'm', prompt: 'Hola' }], ['/api/inference/select', { id: 'missing', modelId: 'm' }],
+  ];
+  for (const [route, body] of routes) {
+    assert.equal((await fetch(`${access.origin}${route}`, { method: 'POST', headers: { Origin: access.origin, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).status, 401);
+    assert.equal((await fetch(`${access.origin}${route}`, { method: 'POST', headers: { Authorization: `Bearer ${access.key}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).status, 403);
+    assert.equal((await post(access, route, body, { Origin: 'https://evil.invalid' })).status, 403);
+    assert.equal((await post(access, route, { ...body, extra: 1 })).status, 400);
+  }
+  assert.equal((await post(access, routes[0][0], routes[0][1])).status, 200);
+  for (const [route, body] of routes.slice(1)) {
+    const response = await post(access, route, body); assert.equal(response.status, 404); assert.equal((await response.json()).why, 'endpoint_unknown');
+  }
+  for (const body of [{ endpoint: {} }, { endpoint: { ...routes[0][1].endpoint, extra: true } }, { endpoint: { ...routes[0][1].endpoint, baseUrl: 'ftp://invalid' } }]) {
+    const response = await post(access, '/api/inference/endpoint', body); assert.equal(response.status, 400); assert.equal((await response.json()).why, 'invalid_request');
+  }
+  const state = await access.studio.view(); assert.equal(state.inference.endpoints[0].keyHint, 'abcd');
+  assert.doesNotMatch(JSON.stringify(state), /secret-abcd|apiKey/);
+});
+
+test('inference routes probe, select, test usage, persist and delete with correct status codes', async t => {
+  let broken = false, calls = 0;
+  const provider = createServer(async (req, res) => {
+    calls++; assert.equal(req.headers.authorization, 'Bearer key-1234');
+    if (broken) { res.writeHead(502); res.end(); return; }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    if (req.method === 'GET') { res.end(JSON.stringify({ data: [{ id: 'model-b' }, { id: 'model-a' }] })); return; }
+    const chunks = []; for await (const chunk of req) chunks.push(chunk);
+    const packet = JSON.parse(Buffer.concat(chunks)); assert.equal(packet.model, 'model-b');
+    res.end(JSON.stringify({ model: 'model-b', choices: [{ index: 0, message: { role: 'assistant', content: 'x'.repeat(2100) }, finish_reason: 'stop' }], usage: { prompt_tokens: 7, completion_tokens: 3 } }));
+  });
+  await new Promise(done => provider.listen(0, '127.0.0.1', done));
+  t.after(() => new Promise(done => { provider.closeAllConnections(); provider.close(done); }));
+  const access = await studioFixture(t);
+  const endpoint = { id: null, label: 'Prueba', baseUrl: `http://127.0.0.1:${provider.address().port}/v1`, apiKey: 'key-1234', defaultModel: 'model-b' };
+  const { id } = await (await post(access, '/api/inference/endpoint', { endpoint })).json();
+  assert.equal((await post(access, '/api/inference/probe', { id })).status, 200);
+  assert.equal((await post(access, '/api/inference/select', { id, modelId: 'unknown' })).status, 400);
+  assert.equal((await post(access, '/api/inference/select', { id, modelId: 'model-b' })).status, 200);
+  const state = await access.studio.view(); assert.deepEqual(state.models, [draft.modelId]); assert.deepEqual(state.inference.active, { endpointId: id, modelId: 'model-b' });
+  for (const body of [{ id, modelId: '', prompt: 'Hi' }, { id, modelId: 'model-b', prompt: '' }, { id, modelId: 'model-b', prompt: 'x'.repeat(2001) }, { id, modelId: 'm'.repeat(129), prompt: 'Hi' }, { id: 4, modelId: 'm', prompt: 'Hi' }]) assert.equal((await post(access, '/api/inference/test', body)).status, 400);
+  const response = await post(access, '/api/inference/test', { id, modelId: 'model-b', prompt: 'Hola' });
+  const result = await response.json(); assert.equal(response.status, 200); assert.equal(result.text.length, 2000); assert.deepEqual(result.usage, { inputTokens: 7, outputTokens: 3 }); assert.equal(result.status, 200);
+  broken = true;
+  assert.equal((await post(access, '/api/inference/probe', { id })).status, 409);
+  assert.equal((await post(access, '/api/inference/test', { id, modelId: 'model-b', prompt: 'Hola' })).status, 409);
+  assert.equal(calls, 4);
+  assert.deepEqual((await access.studio.view()).inference.endpoints[0].models, ['model-a', 'model-b']);
+  assert.equal((await access.studio.view()).inference.endpoints[0].usage.failures, 1);
+  assert.equal((await post(access, '/api/inference/endpoint/delete', { id })).status, 200);
+  assert.equal((await access.studio.view()).inference.active, null); assert.deepEqual((await access.studio.view()).models, [draft.modelId]);
+});
+
+for (const [kind, bytes] of [
+  ['corrupt', Buffer.from('{broken JSON')],
+  ['schema-invalid', Buffer.from(JSON.stringify({ v: 1, endpoints: [{ id: 'a'.repeat(16) }], active: null, catalog: {}, usage: {} }))],
+  ['invalid catalog', Buffer.from(JSON.stringify({ v: 1, endpoints: [], active: null, catalog: [], usage: {} }))],
+  ['missing active', Buffer.from(JSON.stringify({ v: 1, endpoints: [], catalog: {}, usage: {} }))],
+]) {
+  test(`Studio starts read-only over ${kind} inference.json, mutations return invalid_store and file bytes remain unchanged`, async t => {
+    const home = await mkdtemp(join(tmpdir(), 'mn-invalid-inference-'));
+    t.after(() => rm(home, { recursive: true, force: true }));
+    const file = join(home, 'inference.json'); await writeFile(file, bytes);
+    const studio = await createCompanionStudio({ directory: join(home, 'companion'), inferenceHome: home,
+      baseUrl: draft.baseUrl, modelId: draft.modelId });
+    t.after(() => studio.close());
+    const access = await studio.listen();
+    const response = await fetch(`${access.origin}/api/state`, { headers: headers(access) });
+    assert.equal(response.status, 200);
+    const state = await response.json();
+    assert.deepEqual(state.inference, { endpoints: [], active: null, error: 'invalid_store' });
+    assert.deepEqual(state.models, [draft.modelId]);
+    for (const [route, body] of [
+      ['endpoint', { endpoint: { id: null, label: 'Local', baseUrl: draft.baseUrl, defaultModel: 'm' } }],
+      ['endpoint/delete', { id: 'x' }], ['probe', { id: 'x' }],
+      ['test', { id: 'x', modelId: 'm', prompt: 'Hola' }], ['select', { id: 'x', modelId: 'm' }],
+    ]) {
+      const result = await post(access, `/api/inference/${route}`, body);
+      assert.equal(result.status, 409); assert.deepEqual(await result.json(), { ok: false, why: 'invalid_store' });
+    }
+    assert.deepEqual(await readFile(file), bytes);
+    const companion = await post(access, '/api/create', { draft, limits });
+    assert.equal(companion.status, 200); assert.equal((await companion.json()).created, true);
+    assert.deepEqual(await readFile(file), bytes);
+  });
+}

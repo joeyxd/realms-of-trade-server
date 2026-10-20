@@ -43,6 +43,22 @@ previos; `paired-companion` falla a veces bajo carga y pasa aislado). Versión a
 Pendiente: SK04 (gasto y reset: skillPlan, skillOperation, protocolo, SQL con readiness que acepte v3, flag; el id
 de la pestaña pasa a `skills`).
 
+**IC01, 2026-10-19 — centro de inferencia del Studio local (endpoints y claves, sondeo /models con caché, completado de prueba con uso), sin cambio de versión:**
+Primer corte de la nueva ruta AREA17 (IC01..IC07, tablero y `area17-market/context/`): las claves y los endpoints viven en el
+Studio del PC del dueño, el servidor sigue siendo solo metadatos (D-A3). Nuevo `tools/agent/inference-center.mjs` (registro en
+`inference.json` bajo `MN_INFERENCE_HOME` o `~/.marea-negra/`, escritura atómica, `keyHint` y nunca la clave, caché por endpoint con
+`updatedAt`/`checkedAt` y tope 2500, uso acumulado, selección activa, fichero corrupto = solo lectura `invalid_store`) y
+`tools/agent/endpoint-openai-transport.mjs` (http/https al endpoint registrado, misma `generate()` que el transporte local,
+`usage { inputTokens, outputTokens }`, `servedModel`/`modelMismatch`, registros abiertos a metadatos de proveedor, `tool_calls`
+no vacío o `function_call` no nulo fallan cerrado, `eos` = `stop`). Studio: rutas `/api/inference/{endpoint,endpoint/delete,probe,
+test,select}` tras las vallas existentes, `GET /api/state` con `inference`, sección "Centro de inferencia" en `index.html`/`main.js`;
+el `models` del wizard no cambia (IC02 lo cablea). El transporte local sigue clavado a loopback. Tests 64/64 en cinco archivos, gate
+29 ficheros 202/202; humo visual Playwright contra endpoint falso (alta, sondeo 3 modelos, selección, completado 12/9 tokens, clave
+fuera del DOM, 390 px sin desbordamiento): [entrega](delivery/ic01-inference-center.md), [uso](agents/inference-center.md).
+Siguiente: IC02 paso endpoint/modelo en el wizard y `LocalCompanion` sobre el transporte de endpoint; IC03 L03g-b mente en el cuerpo
+de presencia con SQL039; IC04 observación v2; IC05 verbos harvest/cook/hunt; IC06 bucle de memoria medido; IC07 feed visual opcional.
+Ticket T-1019-09 (Codex sol, rework 1, parche del chef en el decodificador).
+
 **VR04, 2026-10-19 — aldea de noche, cuarto corte (16 luces en high/ultra y calentamiento de los shaders del DOF), alpha.75/protocolo 62:**
 `MAX_LIGHTS` sube a 16 en `toon.js` (array del shader; los bucles cortan en `mnLightCount`); preset high con `lights: 16`,
 ultra lo hereda, low 4 y medium 8 igual: 14 huecos clasificados más 2 de reserva. `Pipeline.warmDof()` compila

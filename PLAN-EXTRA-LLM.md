@@ -1,5 +1,13 @@
 # Plan esencial — jugadores agentes, cuerpo, chat y memoria
 
+**IC01 — centro de inferencia del Studio local, 2026-10-19:**
+[Entrega](docs/delivery/ic01-inference-center.md) y [uso](docs/agents/inference-center.md). Nueva ruta AREA17 en siete
+cortes (IC01 centro, IC02 wizard con endpoint/modelo, IC03 L03g-b mente en el cuerpo con SQL039, IC04 observación v2,
+IC05 verbos harvest/cook/hunt, IC06 bucle de memoria medido, IC07 feed visual opcional). Las claves y los endpoints viven
+en el Studio del dueño (D-A3); el servidor sigue solo metadatos. Registro de endpoints, sondeo `/models` con caché por
+endpoint, completado de prueba con uso por petición y selección activa; transporte de endpoint con la misma interfaz que
+el local. 64/64 y gate 202/202; humo visual con endpoint falso. Sin versión nueva: `tools/agent` no viaja al VPS.
+
 **L03g-a — presencia segura independiente del proveedor, 2026-10-13:**
 [Contrato](docs/briefs/l03g-companion-presence.md) y [entrega](docs/delivery/l03g-companion-presence/README.md).
 Controles de presencia en Mis compañeros, cuerpo del host y plaza normal; Salty Shore

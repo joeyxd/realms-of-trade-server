@@ -4,6 +4,15 @@ const THINKING_LABELS = { server_default: 'Predeterminado del servidor', disable
 const FILE_LABELS = { personality: 'Personalidad', objectives: 'Objetivos', memory: 'Memoria', guide: 'Guía' };
 const STATE_LABELS = { not_created: 'Sin crear', stopped: 'Detenido', starting: 'Iniciando', ready: 'En servicio', error: 'Revisar estado' };
 const WHY_COPY = {
+  endpoint_unknown: 'La conexión ya no existe. Actualiza el panel.',
+  http_status: 'El proveedor rechazó la consulta. Revisa la URL y la clave.',
+  invalid_json: 'El proveedor no devolvió JSON válido.',
+  invalid_response: 'La respuesta no tiene el formato esperado.',
+  transport_error: 'No se pudo completar la conexión con el proveedor.',
+  timeout: 'Se agotó el tiempo de espera. Consulta el consumo antes de repetir.',
+  response_too_large: 'La respuesta supera el tamaño permitido.',
+  invalid_store: 'El archivo de inferencia está dañado. El centro está en modo de solo lectura; conserva el archivo antes de repararlo.',
+  storage_error: 'No se pudo guardar la configuración local.',
   unauthorized: 'El acceso local no es válido. Abre el panel con el enlace de acceso vigente.',
   not_created: 'Primero crea a tu compañero.', already_created: 'Ya hay un compañero en esta sesión.',
   invalid_request: 'Revisa los datos e inténtalo de nuevo.', invalid_draft: 'Revisa los datos del compañero.',
@@ -99,7 +108,9 @@ async function api(path, body) {
   } catch { throw new Error('network'); }
   let data;
   try { data = await response.json(); } catch { throw new Error('response'); }
-  if (!response.ok || data?.ok === false) throw new Error(typeof data?.why === 'string' ? data.why : 'request_failed');
+  if (!response.ok || data?.ok === false) {
+    const error = new Error(typeof data?.why === 'string' ? data.why : 'request_failed'); error.result = data; throw error;
+  }
   return data;
 }
 
@@ -184,6 +195,7 @@ function renderStep() {
 }
 
 function showWorkspace() {
+  renderInference(snapshot?.inference);
   const exists = created(); $('wizard').hidden = exists; $('workspace').hidden = !exists;
   $('companion-name').textContent = exists ? (snapshot.draft?.name || snapshot.status?.name || 'Compañero local') : 'Aún sin crear';
   $('game-status').textContent = gameConnected() ? 'Juego: conectado (confirmado)' : 'Juego: sin conexión confirmada';
@@ -394,6 +406,15 @@ async function sendChat(event) {
   if (sent) { $('chat-input').value = ''; $('chat-count').textContent = '0 / 280'; }
 }
 function setupEvents() {
+  $('inference-new').addEventListener('click', () => editEndpoint(null));
+  $('inference-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    const endpoint = { id: editingEndpointId, label: $('inference-label').value.trim(), baseUrl: $('inference-url').value.trim(),
+      defaultModel: $('inference-default').value.trim() || null };
+    if ($('inference-clear-key').checked) endpoint.apiKey = '';
+    else if ($('inference-key').value || !editingEndpointId) endpoint.apiKey = $('inference-key').value;
+    if (await inferenceAction('/api/inference/endpoint', { endpoint })) editEndpoint(null);
+  });
   $('next').addEventListener('click', () => {
     const error = validateStep(step); if (error) { announce(error, true); return; }
     announce(''); step = Math.min(3, step + 1); renderStep();
@@ -423,6 +444,104 @@ function setupEvents() {
     const blob = new Blob([file.content], { type: 'text/plain;charset=utf-8' }), link = document.createElement('a');
     link.href = URL.createObjectURL(blob); link.download = file.filename || `${currentFile}.txt`; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 0);
   });
+}
+
+let editingEndpointId = null;
+const inferenceDrafts = new Map();
+
+export function inferenceUsageTiles(usage = {}) {
+  return [['Peticiones', fmt(usage.requests ?? 0)], ['Fallos', fmt(usage.failures ?? 0)],
+    ['Tokens entrada', fmt(usage.promptTokens ?? 0)], ['Tokens salida', fmt(usage.completionTokens ?? 0)],
+    ['Latencia media', usage.requests ? `${Math.round(usage.latencyMsTotal / usage.requests)} ms` : '—'],
+    ['Último error', usage.lastError || 'Ninguno']];
+}
+
+function editEndpoint(endpoint) {
+  editingEndpointId = endpoint?.id ?? null;
+  $('inference-form-title').textContent = endpoint ? `Editar ${endpoint.label}` : 'Añadir endpoint';
+  $('inference-label').value = endpoint?.label ?? ''; $('inference-url').value = endpoint?.baseUrl ?? '';
+  $('inference-default').value = endpoint?.defaultModel ?? ''; $('inference-key').value = '';
+  $('inference-clear-key').checked = false;
+  $('inference-key').placeholder = endpoint?.keyHint ? `Guardada: ••••${endpoint.keyHint}` : 'Pega la clave aquí';
+}
+
+async function inferenceAction(path, body) {
+  if (pending.has('inference')) return false;
+  setPending('inference', true); renderInference(snapshot?.inference);
+  let success = false;
+  const box = $('inference-result');
+  box.hidden = false; box.textContent = 'Esperando resultado…';
+  try {
+    const result = await api(path, body); success = true;
+    box.textContent = path.endsWith('/test') ? completionReport(result)
+      : path.endsWith('/probe') ? `${result.models.length} modelos guardados en caché.` : 'Configuración guardada.';
+    if (path.endsWith('/endpoint/delete') && editingEndpointId === body.id) editEndpoint(null);
+  } catch (error) {
+    box.textContent = error.result && path.endsWith('/test') ? completionReport(error.result) : fixedWhy(error.message);
+  } finally {
+    await refresh(); setPending('inference', false); renderInference(snapshot?.inference);
+  }
+  return success;
+}
+export function completionReport(result) {
+  return [result.ok ? 'Completado confirmado' : `Error: ${result.why}`, result.text || '',
+    `Tokens entrada: ${fmt(result.usage?.inputTokens)} · salida: ${fmt(result.usage?.outputTokens)}`,
+    `Latencia: ${fmt(result.latencyMs)} ms · HTTP: ${result.status ?? 'sin respuesta'}`,
+    result.servedModel ? `Modelo servido: ${result.servedModel}${result.modelMismatch ? ' · Difiere del solicitado' : ''}` : ''].filter(Boolean).join('\n');
+}
+
+export function renderInference(inference) {
+  const list = $('inference-endpoints'); if (!list) return;
+  const endpoints = inference?.endpoints ?? [], active = inference?.active;
+  const activeEndpoint = endpoints.find(endpoint => endpoint.id === active?.endpointId);
+  setPill($('inference-active'), activeEndpoint ? `${activeEndpoint.label} · ${active.modelId}` : 'Sin selección activa', activeEndpoint ? 'ok' : 'muted');
+  list.replaceChildren();
+  const busy = pending.has('inference') || Boolean(inference?.error);
+  for (const id of inferenceDrafts.keys()) if (!endpoints.some(endpoint => endpoint.id === id)) inferenceDrafts.delete(id);
+  for (const control of $('inference-form').querySelectorAll('input,button')) control.disabled = busy;
+  if (!endpoints.length) list.append(textNode('p', inference?.error ? fixedWhy(inference.error) : 'Añade una conexión para consultar sus modelos.', 'empty-state'));
+  for (const endpoint of endpoints) {
+    const card = textNode('article', '', 'endpoint-card');
+    const header = textNode('div', '', 'panel-top');
+    header.append(textNode('strong', endpoint.label), textNode('span', endpoint.keyHint ? `Clave ••••${endpoint.keyHint}` : 'Sin clave', 'pill muted'));
+    card.append(header, textNode('p', endpoint.baseUrl, 'endpoint-url'),
+      textNode('p', `Modelo por defecto: ${endpoint.defaultModel || 'Sin definir'}`, 'subtle'),
+      textNode('p', `${endpoint.models.length} modelos · Última comprobación: ${endpoint.catalogCheckedAt ? new Date(endpoint.catalogCheckedAt).toLocaleString('es-MX') : 'Sin consultar'}`, 'subtle'));
+    card.append(textNode('p', `Modelos de: ${endpoint.catalogUpdatedAt ? new Date(endpoint.catalogUpdatedAt).toLocaleString('es-MX') : 'Sin catálogo'}`, 'subtle'));
+    if (endpoint.catalogError) card.append(textNode('p', `Consulta: ${endpoint.catalogError}`, 'subtle'));
+    const usage = textNode('div', '', 'usage-grid');
+    for (const [label, value] of inferenceUsageTiles(endpoint.usage)) {
+      const tile = textNode('div', '', 'usage'); tile.append(textNode('span', label), textNode('strong', value)); usage.append(tile);
+    }
+    card.append(usage);
+    const modelLabel = textNode('label', 'Modelo');
+    const select = document.createElement('select'); select.setAttribute('aria-label', `Modelo de ${endpoint.label}`);
+    const choices = [...new Set([...endpoint.models, ...(endpoint.defaultModel ? [endpoint.defaultModel] : [])])];
+    for (const modelId of choices) { const option = textNode('option', modelId); option.value = modelId; select.append(option); }
+    const draft = inferenceDrafts.get(endpoint.id) ?? { prompt: 'Responde con un saludo breve.', modelId: active?.endpointId === endpoint.id ? active.modelId : endpoint.defaultModel };
+    inferenceDrafts.set(endpoint.id, draft);
+    select.value = choices.includes(draft.modelId) ? draft.modelId : choices[0] || '';
+    draft.modelId = select.value;
+    select.addEventListener('change', () => { draft.modelId = select.value; });
+    select.disabled = busy || !choices.length; modelLabel.append(select);
+    const promptLabel = textNode('label', 'Prompt de prueba');
+    const prompt = document.createElement('textarea'); prompt.rows = 2; prompt.maxLength = 2000; prompt.value = draft.prompt; prompt.disabled = busy;
+    prompt.addEventListener('input', () => { draft.prompt = prompt.value; }); promptLabel.append(prompt);
+    const actions = textNode('div', '', 'status-actions');
+    const button = (label, action, disabled = false) => {
+      const el = textNode('button', label, 'button secondary'); el.type = 'button'; el.disabled = busy || disabled;
+      el.addEventListener('click', action); actions.append(el);
+    };
+    button('Editar', () => editEndpoint(endpoint));
+    button('Probar modelos', () => inferenceAction('/api/inference/probe', { id: endpoint.id }));
+    button('Probar completado', () => {
+      if (!prompt.value.trim() || prompt.value.length > 2000) { announce('Escribe un prompt de 1 a 2000 caracteres.', true); return; }
+      return inferenceAction('/api/inference/test', { id: endpoint.id, modelId: select.value, prompt: prompt.value });
+    }, !choices.length);
+    button('Seleccionar', () => inferenceAction('/api/inference/select', { id: endpoint.id, modelId: select.value }), !choices.length);
+    button('Borrar', () => inferenceAction('/api/inference/endpoint/delete', { id: endpoint.id }));
+    card.append(modelLabel, promptLabel, actions); list.append(card);
+  }
 }
 
 export async function initialize() {
