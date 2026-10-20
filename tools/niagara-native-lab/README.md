@@ -116,3 +116,24 @@ WebP completo ahorra 59,64 % de descarga con renders exactos; 128/64 px fallaron
 gate de silueta y no se admiten. La memoria GPU sigue en 30,67 MiB estimados; selección
 automática conserva full y lo indica. Próximo experimento: compresión GPU a resolución
 completa, antes de presupuesto móvil físico y admisión al taller.
+
+**Compresión GPU, 2026-10-19:** variante `ktx2-uastc` (KTX2 UASTC a 256 px por celda, 7,67 MiB
+BC7 medidos; falla el gate: 37/268, solo IoU de máscara). Resultado en la
+[entrega](../../docs/delivery/st01c/ATLAS-LAB.md) y `atlas-gpu-checkpoint.json`;
+`MOBILE_MEMORY_ACCEPTED` sigue en `false`. Comandos nuevos:
+
+```powershell
+python -B tools/niagara-native-lab/atlas-build.py --toktx "C:/DEV/real of trade/realms-of-trade-server/.scratch/tools/ktx-4.4.2/bin/toktx.exe"
+node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs' budget03
+node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs' budget04
+python -B tools/niagara-native-lab/compare-atlas.py budget03
+python -B tools/niagara-native-lab/check-atlas-repeat.py budget03 budget04
+python -B tools/niagara-native-lab/check-atlas-repeat.py budget01 budget03 --variants source,full,half,quarter
+```
+
+`--toktx` apunta al encoder KTX-Software 4.4.2 (portable, fuera de git); su versión y la línea
+de comandos quedan en el manifiesto. `budget.html?variant=ktx2-uastc` carga el par con
+`KTX2Loader` y muestra el formato GPU subido y sus MiB; `qa-atlas.mjs` guarda `gpu`,
+`extensions` y el lanzamiento del navegador en `browser.json`. `--variants` de
+`check-atlas-repeat.py` compara solo las variantes indicadas (por defecto, las presentes
+en ambas corridas).

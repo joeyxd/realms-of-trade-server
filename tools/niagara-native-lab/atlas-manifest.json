@@ -36,14 +36,15 @@
   "recipe": {
     "encoding": "lossless WebP; method=6; exact=True",
     "fullVariant": "exact source RGBA pixels",
+    "gpuEncoding": "ktx2-uastc: full 256 px cells, lossy UASTC quality 4 via toktx, mipmaps stored in file (toktx default filter), sRGB transfer, Zstandard level 3, no RDO; origin flipped to lower-left",
     "gutters": "none; preserve source cell UV boundaries",
     "resize": "per-cell Lanczos; RGB decoded to linear sRGB then encoded; alpha resized separately",
     "textHashNormalization": "UTF-8 text with CRLF normalized to LF"
   },
   "schema": "st01c-atlas-build/v1",
-  "sourceSpecSha256": "b637ebf8db45b2e8ed63459d7269eb0e708155d10e82dbc530c2ddaeed5171da",
+  "sourceSpecSha256": "dee3fe58e795106ad81915eae3df9d3ecadddd45182ff6b99aa811607fd1a255",
   "sourceSystemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
-  "toolSha256": "43b2001ca0a33d12ace4000adc0ee4fc28dc5253d2822381da241e6e1c0723e2",
+  "toolSha256": "0469acf5de19f1a10217ef82a7f591c04dace1930204b44b773235457a7dcf82",
   "variants": [
     {
       "bytes": 277976,
@@ -118,6 +119,172 @@
       "sha256": "92146ad4f999d4912749d915637c4f4a36d876e84e82a1391c277adc0df82f05"
     },
     {
+      "bytes": 688923,
+      "cellSize": 256,
+      "codec": "uastc",
+      "colorModel": "UASTC",
+      "container": "ktx2",
+      "dimensions": [
+        2048,
+        1024
+      ],
+      "encodedFromRgbaSha256": "ef5c19227fd76c2c2caf8ff3a5f0cd4668f3ca30a33f96bebf39aeca970e555b",
+      "encoder": {
+        "commandLine": "toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-uastc-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png",
+        "name": "toktx",
+        "version": "toktx v4.4.2",
+        "workingDirectory": "empty temp folder; input path is workspace-relative"
+      },
+      "file": "ktx2-uastc-flame.ktx2",
+      "gpuBlockBytes": 2796240,
+      "grid": [
+        8,
+        4
+      ],
+      "id": "ktx2-uastc",
+      "inputId": "flame",
+      "levelCount": 12,
+      "levels": [
+        {
+          "byteLength": 486350,
+          "uncompressedByteLength": 2097152
+        },
+        {
+          "byteLength": 138957,
+          "uncompressedByteLength": 524288
+        },
+        {
+          "byteLength": 41538,
+          "uncompressedByteLength": 131072
+        },
+        {
+          "byteLength": 13683,
+          "uncompressedByteLength": 32768
+        },
+        {
+          "byteLength": 5330,
+          "uncompressedByteLength": 8192
+        },
+        {
+          "byteLength": 1800,
+          "uncompressedByteLength": 2048
+        },
+        {
+          "byteLength": 468,
+          "uncompressedByteLength": 512
+        },
+        {
+          "byteLength": 137,
+          "uncompressedByteLength": 128
+        },
+        {
+          "byteLength": 41,
+          "uncompressedByteLength": 32
+        },
+        {
+          "byteLength": 25,
+          "uncompressedByteLength": 16
+        },
+        {
+          "byteLength": 25,
+          "uncompressedByteLength": 16
+        },
+        {
+          "byteLength": 25,
+          "uncompressedByteLength": 16
+        }
+      ],
+      "lossy": true,
+      "mipRgba8Bytes": 11184812,
+      "primaries": "bt709",
+      "sha256": "fc901aae5e1843caadfc3ec8e685cbff674756d981a89f6f9491034b6ddaf5f1",
+      "supercompression": "zstd",
+      "transfer": "srgb"
+    },
+    {
+      "bytes": 705900,
+      "cellSize": 256,
+      "codec": "uastc",
+      "colorModel": "UASTC",
+      "container": "ktx2",
+      "dimensions": [
+        2560,
+        1536
+      ],
+      "encodedFromRgbaSha256": "e8f683fa681a8baeb742e4f2c74382581e3bc15c00016d3682cdce40cf24d177",
+      "encoder": {
+        "commandLine": "toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-uastc-smoke.ktx2 .scratch/unreal/reference11/textures/T_Smoke_1.png",
+        "name": "toktx",
+        "version": "toktx v4.4.2",
+        "workingDirectory": "empty temp folder; input path is workspace-relative"
+      },
+      "file": "ktx2-uastc-smoke.ktx2",
+      "gpuBlockBytes": 5242960,
+      "grid": [
+        10,
+        6
+      ],
+      "id": "ktx2-uastc",
+      "inputId": "smoke",
+      "levelCount": 12,
+      "levels": [
+        {
+          "byteLength": 482492,
+          "uncompressedByteLength": 3932160
+        },
+        {
+          "byteLength": 148342,
+          "uncompressedByteLength": 983040
+        },
+        {
+          "byteLength": 47206,
+          "uncompressedByteLength": 245760
+        },
+        {
+          "byteLength": 17100,
+          "uncompressedByteLength": 61440
+        },
+        {
+          "byteLength": 6553,
+          "uncompressedByteLength": 15360
+        },
+        {
+          "byteLength": 2608,
+          "uncompressedByteLength": 3840
+        },
+        {
+          "byteLength": 642,
+          "uncompressedByteLength": 960
+        },
+        {
+          "byteLength": 217,
+          "uncompressedByteLength": 240
+        },
+        {
+          "byteLength": 105,
+          "uncompressedByteLength": 96
+        },
+        {
+          "byteLength": 41,
+          "uncompressedByteLength": 32
+        },
+        {
+          "byteLength": 25,
+          "uncompressedByteLength": 16
+        },
+        {
+          "byteLength": 25,
+          "uncompressedByteLength": 16
+        }
+      ],
+      "lossy": true,
+      "mipRgba8Bytes": 20971512,
+      "primaries": "bt709",
+      "sha256": "aa4757a19f82375727879b7d91e5445dfa76300580cb4f1cd1ea300890e8d347",
+      "supercompression": "zstd",
+      "transfer": "srgb"
+    },
+    {
       "bytes": 37546,
       "cellSize": 64,
       "decodedRgbaSha256": "6c166be0fb66f7c49a7d0a9d6cc601fb1ded3c2467dad0583baa125a223e3527",
@@ -157,6 +324,7 @@
   "versions": {
     "libwebp": "1.6.0",
     "pillow": "12.2.0",
-    "python": "3.14.3"
+    "python": "3.14.3",
+    "toktx": "toktx v4.4.2"
   }
 }

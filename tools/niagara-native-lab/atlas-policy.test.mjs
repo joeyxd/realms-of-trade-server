@@ -4,13 +4,15 @@ import fs from 'node:fs';
 import { validateManifest, texturePlan, selectVariant, AUTOMATIC_VARIANTS, mipRgba8Bytes } from './atlas-policy.js';
 const manifest = JSON.parse(fs.readFileSync(new URL('./atlas-manifest.json',import.meta.url)));
 test('one pair per selection; NPOT device limits reject instead of changing quality',()=>{
-  for(const variant of ['source','full','half','quarter']){
+  for(const variant of ['source','full','half','quarter','ktx2-uastc']){
     const plan=texturePlan(manifest,variant,4096);assert.equal(plan.length,2);
-    assert.ok(plan.every(r=>r.url.endsWith(variant==='source'?'.png':'.webp')));
+    assert.ok(plan.every(r=>r.url.endsWith(variant==='source'?'.png':variant==='ktx2-uastc'?'.ktx2':'.webp')));
   }
   assert.throws(()=>texturePlan(manifest,'source',2048),/limit/);
   assert.equal(selectVariant('auto',false),AUTOMATIC_VARIANTS.desktop);
   assert.equal(selectVariant('auto',true),AUTOMATIC_VARIANTS.mobile);
+  assert.deepEqual({...AUTOMATIC_VARIANTS},{desktop:'full',mobile:'full'});
+  assert.equal(selectVariant('ktx2-uastc',true),'ktx2-uastc');
   assert.throws(()=>selectVariant('../../source',true));
 });
 test('mip accounting includes rectangular tail down to 1x1',()=>{
@@ -20,7 +22,11 @@ test('mip accounting includes rectangular tail down to 1x1',()=>{
 test('wrong source, grid, pixel identity, path or missing derivative cannot load',()=>{
   for(const mutate of [m=>m.inputs[0].sha256='0'.repeat(64),m=>m.inputs[0].file='../foo.png',
     m=>m.variants[0].grid=[4,8],m=>m.variants[0].mipRgba8Bytes++,m=>m.variants.pop(),
-    m=>m.variants.find(r=>r.id==='full').decodedRgbaSha256='0'.repeat(64)]){
+    m=>m.variants.find(r=>r.id==='full').decodedRgbaSha256='0'.repeat(64),
+    m=>m.variants.find(r=>r.id==='ktx2-uastc').lossy=false,m=>m.variants.find(r=>r.id==='ktx2-uastc').levelCount--,
+    m=>m.variants.find(r=>r.id==='ktx2-uastc').transfer='linear',m=>m.variants.find(r=>r.id==='ktx2-uastc').gpuBlockBytes++,
+    m=>m.variants.find(r=>r.id==='ktx2-uastc').file='ktx2-uastc-flame.webp',
+    m=>m.variants.find(r=>r.id==='ktx2-uastc').encoder.commandLine+=' --uastc_rdo_l']){
     const bad=structuredClone(manifest);mutate(bad);assert.throws(()=>validateManifest(bad));
   }
 });

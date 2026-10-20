@@ -21,7 +21,7 @@ def metrics(a,b):
             'max255':float(error.max()),'pixelsEqual':bool(np.array_equal(a,b)),
             'emptyPreserved':bool(np.array_equal(a,b)) if not (a>0).any() else True}
 variants=[]
-for variant in ['full','half','quarter']:
+for variant in ['full','half','quarter']+(['ktx2-uastc'] if (out/'ktx2-uastc').is_dir() else []):
     rows=[];ue_rows=[]
     for case in cases:
         baseline=image(out/'source'/case['file']);candidate=image(out/variant/case['file'])
@@ -34,7 +34,11 @@ for variant in ['full','half','quarter']:
             ue_rows.append({'view':case['view'],'bias':case['bias'],**comparison,
                 'accepted':comparison['mae255']<=10 and comparison['maskIoU32']>=.94})
     variants.append({'variant':variant,'accepted':all(r['accepted'] for r in rows+ue_rows),
-                     'failures':sum(not r['accepted'] for r in rows+ue_rows),'originalCases':rows,'ueCases':ue_rows})
+                     'failures':sum(not r['accepted'] for r in rows+ue_rows),'originalFailures':sum(not r['accepted'] for r in rows),
+                     'ueFailures':sum(not r['accepted'] for r in ue_rows),
+                     'worstCase':{'maxMae255':max(rows,key=lambda r:r['mae255'])['case'],'minIoU':min(rows,key=lambda r:r['maskIoU32'])['case'],
+                                  'maxP95':max(rows,key=lambda r:r['p95Channel255'])['case']},
+                     'originalCases':rows,'ueCases':ue_rows})
 result={'schema':'st01c-atlas-comparison/v1','run':run,'thresholdsBeforeReview':{'mae255':2,'p95Channel255':6,'maskIoU32':.98,'ueMae255':10,'ueIoU32':.94},'variants':variants}
 (out/'comparison.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf8',newline='\n')
 for row in variants:

@@ -1,5 +1,20 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01c, 2026-10-19 — compresión GPU medida (KTX2 UASTC): memoria sí, silueta no; sigue aislar mips:**
+[Entrega](delivery/st01c/ATLAS-LAB.md) sección «Compresión GPU a resolución completa (KTX2 UASTC)»,
+[checkpoint GPU](delivery/st01c/atlas-gpu-checkpoint.json). Variante `ktx2-uastc` (toktx 4.4.2 portable,
+UASTC calidad 4, zstd 3, mips en archivo, sRGB, sin RDO, origen abajo-izquierda) cargada con KTX2Loader:
+Chrome sube BC7 (RGBA_BPTC_Format), 8 bpp, 8.039.200 B = 7,67 MiB frente a 30,67 MiB RGBA8; archivos
+1.394.823 B (2,5× el par WebP). Gate de 268 casos: 37 fallos, todos por maskIoU32 < 0,98 en celdas de humo
+(mín. 0,8529); MAE máx. 0,66/255 y P95 3/255 pasan; 6/6 UE pasan. Dos runs idénticos dos veces
+(budget03/04, budget05/06); variantes previas píxel-idénticas a budget01. El resultado no separa el códec
+de la cadena de mips (toktx lanczos4 frente a mips del driver en WebP; las celdas se dibujan a ~197 px).
+`MOBILE_MEMORY_ACCEPTED` sigue false; los 7,67 MiB no incluyen LUT (256 KiB) ni targets (~5 MiB).
+ASTC/ETC2 no expuestos en este Chrome: bpp calculado. Encoder sin instalar en
+realms-of-trade-server/.scratch/tools/ktx-4.4.2/bin. compare-atlas.py evalúa ktx2-uastc solo si el run lo
+tiene; check-atlas-repeat.py admite `--variants`. atlas-checkpoint.json conserva el pin antiguo del manifiesto.
+Sin cambios de juego, SQL, protocolo ni registro. Sigue: aislar la cadena de mips (mips equivalentes al
+driver o comparar nivel 0), decisión del autor sobre formato y presupuesto, luego la segunda familia.
 **SK04a, 2026-10-20 — gastar y resetear puntos de habilidad, lado servidor, a oscuras (T-1020-62, T-1020-63), alpha.83:**
 Nuevo `msg.type 'skills'` en el carril económico M5, calcado de Carga (`attributes`): plan puro
 `src/sim/systems/skillPlan.js` `planSkillChange` (`assign` sube un nodo un rango por un punto del árbol; `reset` pone

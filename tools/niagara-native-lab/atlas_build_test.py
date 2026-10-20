@@ -71,6 +71,31 @@ class AtlasBuildTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             atlas_build.mip_rgba8_bytes(0, 1)
 
+    def test_ktx2_parser_rejects_foreign_or_truncated_files(self):
+        with self.assertRaises(ValueError):
+            atlas_build.parse_ktx2(b"RIFF" * 40)
+        with self.assertRaises(ValueError):
+            atlas_build.parse_ktx2(atlas_build.KTX2_MAGIC + b"\x00" * 20)
+
+    def test_toktx_recipe_declares_srgb_uastc_zstd_with_mipmaps_and_gl_origin(self):
+        if not atlas_build.DEFAULT_TOKTX.is_file():
+            self.skipTest("portable toktx is not installed")
+        self.assertIn("--genmipmap", atlas_build.KTX2_RECIPES["ktx2-uastc"])
+        self.assertFalse([a for a in atlas_build.KTX2_RECIPES["ktx2-uastc"] if a.startswith("--uastc_rdo")])
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "tiny.png"
+            image = Image.new("RGBA", (16, 8), (200, 40, 10, 255))
+            image.putpixel((0, 0), (0, 0, 255, 255))
+            image.save(source)
+            row = {"id": "flame", "dimensions": [16, 8], "file": "tiny.png"}
+            name, data, info, command = atlas_build.encode_ktx2(atlas_build.DEFAULT_TOKTX, "ktx2-uastc", row, source, Path(temp))
+            self.assertEqual(name, "ktx2-uastc-flame.ktx2")
+            self.assertEqual((info["width"], info["height"], len(info["levels"])), (16, 8, 5))
+            self.assertEqual((info["transfer"], info["primaries"], info["supercompression"]), (2, 1, 2))
+            self.assertIn(b"KTXorientation\x00ru", data)
+            self.assertEqual(command[0], "toktx")
+            self.assertIn("--encode uastc", " ".join(command))
+
 
 if __name__ == "__main__":
     unittest.main()

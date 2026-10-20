@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build deterministic, per-frame lossless WebP derivatives for the ST01c atlases."""
+"""Build deterministic lossless WebP and lossy KTX2 UASTC derivatives for the ST01c atlases."""
 from __future__ import annotations
 
 import argparse
@@ -9,6 +9,8 @@ import math
 from pathlib import Path
 import platform
 import re
+import struct
+import subprocess
 import sys
 import tempfile
 
@@ -24,7 +26,18 @@ EXPECTED_INPUTS = {
     "flame": ("T_FlameUV_2.png", (2048, 1024), (8, 4)),
     "smoke": ("T_Smoke_1.png", (2560, 1536), (10, 6)),
 }
-EXPECTED_VARIANTS = {"full": 256, "half": 128, "quarter": 64}
+WEBP_VARIANTS = {"full": 256, "half": 128, "quarter": 64}
+# GPU-compressed variants keep the full 256 px cell: no downscale, no RDO. Orientation is flipped to a
+# lower-left origin because Three uploads compressed textures without flipY.
+KTX2_RECIPES = {
+    "ktx2-uastc": ("--t2", "--encode", "uastc", "--uastc_quality", "4", "--zcmp", "3", "--genmipmap",
+                   "--lower_left_maps_to_s0t0", "--assign_oetf", "srgb", "--assign_primaries", "srgb"),
+}
+EXPECTED_VARIANTS = {**WEBP_VARIANTS, **{ident: 256 for ident in KTX2_RECIPES}}
+# Portable encoder kept outside git; override with --toktx.
+DEFAULT_TOKTX = Path("C:/DEV/real of trade/realms-of-trade-server/.scratch/tools/ktx-4.4.2/bin/toktx.exe")
+KTX2_MAGIC = b"\xabKTX 20\xbb\r\n\x1a\n"
+KHR_DF_MODEL_UASTC, KHR_DF_PRIMARIES_BT709, KHR_DF_TRANSFER_SRGB, KTX2_SUPERCOMPRESSION_ZSTD = 166, 1, 2, 2
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -93,7 +106,7 @@ def load_spec(path: Path = SPEC_PATH) -> tuple[dict, bytes, list[tuple[dict, Pat
         raise ValueError("missing pilot atlas")
     variants = spec["variants"]
     if not isinstance(variants, list) or len(variants) != len(EXPECTED_VARIANTS):
-        raise ValueError("expected full, half, and quarter variants")
+        raise ValueError("expected the declared atlas variants")
     variant_ids: set[str] = set()
     for row in variants:
         if not isinstance(row, dict) or set(row) != {"id", "cellSize"}:
@@ -118,6 +131,62 @@ def mip_rgba8_bytes(width: int, height: int) -> int:
         if width == 1 and height == 1:
             return total
         width, height = max(1, width >> 1), max(1, height >> 1)
+
+
+def parse_ktx2(data: bytes) -> dict:
+    """Read the KTX2 header, level index and basic data format descriptor fields we pin."""
+    if len(data) < 80 or data[:12] != KTX2_MAGIC:
+        raise ValueError("not a KTX2 file")
+    (vk_format, _type_size, width, height, depth, layers, faces, level_count, supercompression,
+     dfd_offset, dfd_length, _kvd_offset, _kvd_length) = struct.unpack_from("<13I", data, 12)
+    if level_count < 1 or len(data) < 80 + 24 * level_count or dfd_length < 28 or dfd_offset + dfd_length > len(data):
+        raise ValueError("truncated KTX2 header")
+    levels = []
+    for index in range(level_count):
+        offset, length, uncompressed = struct.unpack_from("<3Q", data, 80 + 24 * index)
+        if offset + length > len(data):
+            raise ValueError("KTX2 level outside file")
+        levels.append({"byteLength": length, "uncompressedByteLength": uncompressed})
+    model, primaries, transfer, flags = struct.unpack_from("<4B", data, dfd_offset + 12)
+    return {"vkFormat": vk_format, "width": width, "height": height, "depth": depth, "layers": layers, "faces": faces,
+            "supercompression": supercompression, "colorModel": model, "primaries": primaries,
+            "transfer": transfer, "dfdFlags": flags, "levels": levels}
+
+
+def toktx_version(toktx: Path) -> str:
+    try:
+        result = subprocess.run([str(toktx), "--version"], capture_output=True, text=True)
+    except OSError as exc:
+        raise RuntimeError(f"toktx unavailable: {exc}") from exc
+    version = (result.stdout or result.stderr).strip()
+    if result.returncode != 0 or not re.fullmatch(r"toktx v\d+\.\d+\.\d+", version):
+        raise RuntimeError(f"toktx unavailable or unexpected version: {version or result.returncode}")
+    return version
+
+
+def encode_ktx2(toktx: Path, ident: str, input_row: dict, input_path: Path, temp_dir: Path) -> tuple[str, bytes, dict, list[str]]:
+    """Run toktx once per source atlas (one retry) and validate the container it wrote."""
+    name = f"{ident}-{input_row['id']}.ktx2"
+    args = [*KTX2_RECIPES[ident], name, str(input_path)]
+    for attempt in (1, 2):
+        result = subprocess.run([str(toktx), *args], cwd=temp_dir, capture_output=True, text=True)
+        if result.returncode == 0 and (temp_dir / name).is_file():
+            break
+        if attempt == 2:
+            raise RuntimeError(f"toktx failed for {name} (exit {result.returncode}): {result.stderr.strip() or result.stdout.strip()}")
+    data = (temp_dir / name).read_bytes()
+    info = parse_ktx2(data)
+    width, height = input_row["dimensions"]
+    expected_levels = max(width, height).bit_length()
+    if (info["vkFormat"], info["width"], info["height"], info["depth"], info["layers"], info["faces"]) != (0, width, height, 0, 0, 1) \
+            or info["supercompression"] != KTX2_SUPERCOMPRESSION_ZSTD or len(info["levels"]) != expected_levels:
+        raise RuntimeError(f"unexpected KTX2 container layout: {name}")
+    if (info["colorModel"], info["primaries"], info["transfer"]) != (KHR_DF_MODEL_UASTC, KHR_DF_PRIMARIES_BT709, KHR_DF_TRANSFER_SRGB):
+        raise RuntimeError(f"KTX2 must declare UASTC, BT.709 primaries and sRGB transfer: {name}")
+    block_bytes = sum(((max(1, width >> i) + 3) // 4) * ((max(1, height >> i) + 3) // 4) * 16 for i in range(expected_levels))
+    if sum(level["uncompressedByteLength"] for level in info["levels"]) != block_bytes:
+        raise RuntimeError(f"KTX2 level sizes do not match 8 bpp UASTC blocks: {name}")
+    return name, data, info, ["toktx", *KTX2_RECIPES[ident], name, input_row["file"]]
 
 
 def _srgb_to_linear(channel: Image.Image) -> Image.Image:
@@ -185,7 +254,7 @@ def _decoded_rgba(image: Image.Image) -> bytes:
     return image.convert("RGBA").tobytes()
 
 
-def generate(spec: dict, resolved: list[tuple[dict, Path]], temp_dir: Path) -> tuple[dict, dict[str, bytes]]:
+def generate(spec: dict, resolved: list[tuple[dict, Path]], temp_dir: Path, toktx: Path = DEFAULT_TOKTX) -> tuple[dict, dict[str, bytes]]:
     tool_bytes = normalized_utf8(TOOL)
     manifest = {
         "schema": MANIFEST_SCHEMA,
@@ -193,9 +262,11 @@ def generate(spec: dict, resolved: list[tuple[dict, Path]], temp_dir: Path) -> t
         "sourceSpecSha256": sha(normalized_utf8(SPEC_PATH)),
         "toolSha256": sha(tool_bytes),
         "versions": {"python": platform.python_version(), "pillow": PILLOW_VERSION,
-                     "libwebp": features.version("webp")},
+                     "libwebp": features.version("webp"), "toktx": toktx_version(toktx)},
         "recipe": {"resize": "per-cell Lanczos; RGB decoded to linear sRGB then encoded; alpha resized separately",
                    "fullVariant": "exact source RGBA pixels", "encoding": "lossless WebP; method=6; exact=True",
+                   "gpuEncoding": "ktx2-uastc: full 256 px cells, lossy UASTC quality 4 via toktx, mipmaps stored in file "
+                                  "(toktx default filter), sRGB transfer, Zstandard level 3, no RDO; origin flipped to lower-left",
                    "gutters": "none; preserve source cell UV boundaries",
                    "textHashNormalization": "UTF-8 text with CRLF normalized to LF"},
         "inputs": [], "variants": [],
@@ -212,6 +283,18 @@ def generate(spec: dict, resolved: list[tuple[dict, Path]], temp_dir: Path) -> t
                                    "decodedRgbaSha256": sha(_decoded_rgba(source))})
         for variant in sorted(spec["variants"], key=lambda v: v["cellSize"], reverse=True):
             ident, cell_size = variant["id"], variant["cellSize"]
+            if ident in KTX2_RECIPES:
+                name, encoded, info, command = encode_ktx2(toktx, ident, manifest["inputs"][-1], path, temp_dir)
+                outputs[name] = encoded
+                manifest["variants"].append({"id": ident, "inputId": row["id"], "file": name, "sha256": sha(encoded),
+                    "bytes": len(encoded), "dimensions": list(source.size), "grid": row["grid"], "cellSize": cell_size,
+                    "mipRgba8Bytes": mip_rgba8_bytes(*source.size), "container": "ktx2", "codec": "uastc", "lossy": True,
+                    "encodedFromRgbaSha256": manifest["inputs"][-1]["decodedRgbaSha256"], "supercompression": "zstd",
+                    "levelCount": len(info["levels"]), "gpuBlockBytes": sum(l["uncompressedByteLength"] for l in info["levels"]),
+                    "levels": info["levels"], "colorModel": "UASTC", "transfer": "srgb", "primaries": "bt709",
+                    "encoder": {"name": "toktx", "version": manifest["versions"]["toktx"], "commandLine": " ".join(command),
+                                "workingDirectory": "empty temp folder; input path is workspace-relative"}})
+                continue
             image = build_atlas(source, tuple(row["grid"]), cell_size)
             target = temp_dir / f"{ident}-{row['id']}.webp"
             image.save(target, format="WEBP", lossless=True, method=6, exact=True)
@@ -229,12 +312,22 @@ def generate(spec: dict, resolved: list[tuple[dict, Path]], temp_dir: Path) -> t
     return manifest, outputs
 
 
-def run(check: bool) -> None:
+def manifest_extends(old_bytes: bytes, new: dict) -> bool:
+    """True when every input and variant row of the previous manifest survives unchanged in the new one."""
+    try:
+        old = json.loads(old_bytes)
+    except json.JSONDecodeError:
+        return False
+    return (isinstance(old, dict) and old.get("schema") == MANIFEST_SCHEMA and old.get("inputs") == new["inputs"]
+            and all(row in new["variants"] for row in old.get("variants", [])))
+
+
+def run(check: bool, toktx: Path) -> None:
     spec, _spec_bytes, resolved = load_spec()
     OUT_DIR.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="st01c-atlas-") as temp_name:
         temp = Path(temp_name)
-        manifest, outputs = generate(spec, resolved, temp)
+        manifest, outputs = generate(spec, resolved, temp, toktx)
         manifest_bytes = canonical_json(manifest)
         expected = {**outputs, "manifest.json": manifest_bytes}
         existing = {name: (OUT_DIR / name).exists() for name in expected}
@@ -249,11 +342,14 @@ def run(check: bool) -> None:
         for name, data in expected.items():
             target = OUT_DIR / name
             if target.exists() and target.read_bytes() != data:
+                # The manifest is an index: it may grow when the previous rows survive byte for byte.
+                if name == "manifest.json" and manifest_extends(target.read_bytes(), manifest):
+                    continue
                 raise RuntimeError(f"refusing to overwrite changed output: {target}")
         OUT_DIR.mkdir(parents=True, exist_ok=True)
         for name, data in expected.items():
             target = OUT_DIR / name
-            if not target.exists():
+            if not target.exists() or (name == "manifest.json" and target.read_bytes() != data):
                 target.write_bytes(data)
         print(f"atlas-build wrote/confirmed {len(outputs)} derivatives under {OUT_DIR.relative_to(ROOT)}")
 
@@ -261,9 +357,10 @@ def run(check: bool) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="regenerate in temp and compare byte-for-byte")
+    parser.add_argument("--toktx", type=Path, default=DEFAULT_TOKTX, help="KTX-Software toktx executable (default: portable v4.4.2 install)")
     args = parser.parse_args()
     try:
-        run(args.check)
+        run(args.check, args.toktx)
         return 0
     except (OSError, ValueError, RuntimeError, json.JSONDecodeError) as exc:
         print(f"atlas-build: {exc}", file=sys.stderr)

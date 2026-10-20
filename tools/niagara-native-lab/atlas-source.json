@@ -22,6 +22,7 @@
   "variants": [
     { "id": "full", "cellSize": 256 },
     { "id": "half", "cellSize": 128 },
-    { "id": "quarter", "cellSize": 64 }
+    { "id": "quarter", "cellSize": 64 },
+    { "id": "ktx2-uastc", "cellSize": 256 }
   ]
 }

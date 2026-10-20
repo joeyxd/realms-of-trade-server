@@ -115,3 +115,101 @@ python -B tools/niagara-native-lab/compare-atlas.py budget01
 python -B tools/niagara-native-lab/compare-atlas.py budget02
 python -B tools/niagara-native-lab/check-atlas-repeat.py budget01 budget02
 ```
+
+## Compresión GPU a resolución completa (KTX2 UASTC)
+
+2026-10-19. **Medido: la variante `ktx2-uastc` sube BC7 a 7,67 MiB, pero NO pasa el gate de
+fidelidad (37/268 fallan, todos por IoU de máscara).** Números en
+[atlas-gpu-checkpoint.json](atlas-gpu-checkpoint.json). `MOBILE_MEMORY_ACCEPTED` sigue en
+`false` a la espera de la decisión del autor; este corte no la cambia ni cambia la selección
+automática (`full`/`full`). Es laboratorio: no toca el juego, el catálogo ni registra efectos.
+
+**Encoder.** KTX-Software `toktx v4.4.2` (instalación portable fuera de git; se elige con
+`atlas-build.py --toktx <ruta>`). Línea exacta por atlas, también guardada en el manifiesto:
+
+```text
+toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-uastc-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png
+```
+
+El humo usa las mismas opciones con `ktx2-uastc-smoke.ktx2` y `T_Smoke_1.png`. Resolución
+completa (sin escalado), UASTC calidad 4, cadena de mips de 12 niveles dentro del archivo
+(filtro por defecto de toktx), transferencia sRGB y primarias BT.709 declaradas, Zstandard
+nivel 3, sin RDO. `--lower_left_maps_to_s0t0` voltea el origen porque Three sube las texturas
+comprimidas sin `flipY`; el render confirma la orientación. El número de hilos queda en el
+valor por defecto: dos codificaciones consecutivas y la regeneración de `--check` producen
+**bytes idénticos**, así que `--check` sigue comparando byte a byte (no hizo falta
+comparar metadatos ni imágenes decodificadas). `verify-atlas.mjs` ahora también lee la
+cabecera KTX2, el índice de niveles y el DFD (UASTC, BT.709, sRGB, Zstandard).
+El manifiesto de `.scratch/atlas-build/v1` solo crece (las filas previas se conservan
+idénticas); los seis WebP no cambian y su hash fijado sigue verificándose.
+
+| Archivo | PNG original | WebP sin pérdida | KTX2 UASTC |
+| --- | ---: | ---: | ---: |
+| Llama 2048×1024 | 654.386 B | 277.976 B | 688.923 B |
+| Humo 2560×1536 | 714.657 B | 274.538 B | 705.900 B |
+| **Par** | 1.369.043 B | **552.514 B** | 1.394.823 B |
+
+UASTC comprimido con Zstandard descarga **más** que el PNG (+1,9 %) y 2,5 veces el WebP:
+su ventaja es memoria GPU, no transferencia.
+
+**Navegador.** El mismo lanzamiento de siempre (Chrome 155.0.8059.85 instalado,
+`headless: true`, `channel: 'chrome'`, ANGLE D3D11, Intel Iris Xe) ya expone
+`EXT_texture_compression_bptc` y `WEBGL_compressed_texture_s3tc`, y no expone
+`WEBGL_compressed_texture_astc` ni `_etc`. No hizo falta otro lanzamiento. `KTX2Loader`
+(Three 0.160.0, transcodificador local en `node_modules`) elige BC7 y entrega
+`texture.colorSpace = SRGBColorSpace` desde el propio archivo. En una GPU solo ASTC o ETC2
+el mismo UASTC se transcodificaría a 8 bpp igualmente (cuenta calculada, no medida aquí).
+
+| Variante | Formato subido | bpp | Bytes GPU (suma de mips) | MiB | Niveles |
+| --- | --- | ---: | ---: | ---: | --- |
+| `full` (WebP) | `RGBAFormat` | 32 | 32.156.324 | 30,67 | 12 / 12 |
+| `ktx2-uastc` | `RGBA_BPTC_Format` | 8 | 8.039.200 | **7,67** | 12 / 12 |
+
+Los bytes de KTX2 coinciden exactamente con los de los datos que `KTX2Loader` entrega
+(`uploadedBytes`: 2.796.240 + 5.242.960). 7,67 MiB queda 349.408 B por debajo de 8 MiB
+(8.388.608 B). Solo cuentan los atlas: la LUT (256 KiB) y los targets (5 MiB estimados)
+son aparte, como en el resto del documento. La UI muestra el formato y los MiB medidos
+junto a la línea de presupuesto móvil pendiente.
+
+**Gate, mismo corpus de 268 casos y mismos umbrales** (`budget03`, repetido en `budget04`
+con resultados idénticos):
+
+| Variante | Aceptada | Fallos | Peor caso |
+| --- | --- | ---: | --- |
+| `full` | sí | 0/268 | MAE 0, IoU 1 |
+| `half` (referencia) | no | 49 | IoU mínimo 0,733333 |
+| `quarter` (referencia) | no | 230 | IoU mínimo 0 |
+| `ktx2-uastc` | **no** | **37/268** (+0/6 contra UE) | IoU mínimo **0,852941** (humo, celda 12, frontal, 0 EV) |
+
+Para `ktx2-uastc`: MAE máximo 0,664794/255 (llama, celda 17, frontal, +1 EV) y P95 máximo
+3/255, ambos dentro del umbral; fallan 36 diagnósticos de celda de humo (de 120) y una vista
+de humo solo, siempre por `maskIoU32 < 0,98`, es decir, por pixeles de contorno tenue cerca
+del corte de 32/255. Los 10 tiempos del efecto completo, las capas de llama, pared y suelo
+pasan, y las seis comparaciones con UE a 2 s pasan (MAE máximo 7,854/255, IoU mínimo
+0,981838). No se construyó `ktx2-uastc-rdo`: la variante sin RDO no pasó el gate, y RDO
+solo añadiría error. Este resultado no separa el error del códec del de la cadena de mips
+(toktx filtra los mips; el camino WebP usa los mips que genera el driver).
+
+Repetición: `check-atlas-repeat.py budget03 budget04` compara 1.340 imágenes (5 variantes
+x 268), todas con píxeles decodificados idénticos; `budget01` frente a `budget03` con
+`--variants source,full,half,quarter` compara las 1.072 de siempre, idénticas. Las
+estadísticas de las variantes previas (0, 49 y 230 fallos) son las de `budget01`.
+
+Falla de carga: además del WebP corrupto, el humo `.ktx2` con cuerpo inválido es rechazado
+por el control de hash (`corrupt-ktx2`), y un cuerpo del tamaño correcto con ese control
+omitido en la copia servida de la página llega a `KTX2Loader`, que lo rechaza con
+`Missing KTX 2.0 identifier` (`corrupt-ktx2-loader`). En ambos casos el error se informa y
+texturas y geometrías quedan en cero.
+
+**`MOBILE_MEMORY_ACCEPTED` sigue en `false`, pendiente de la decisión del autor** de si
+7,67 MiB con 37 fallos de IoU en diagnósticos de humo cumple el objetivo móvil.
+
+```powershell
+python -B tools/niagara-native-lab/atlas-build.py --toktx "C:/DEV/real of trade/realms-of-trade-server/.scratch/tools/ktx-4.4.2/bin/toktx.exe"
+node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs' budget03
+node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs' budget04
+python -B tools/niagara-native-lab/compare-atlas.py budget03
+python -B tools/niagara-native-lab/compare-atlas.py budget04
+python -B tools/niagara-native-lab/check-atlas-repeat.py budget03 budget04
+python -B tools/niagara-native-lab/check-atlas-repeat.py budget01 budget03 --variants source,full,half,quarter
+```
