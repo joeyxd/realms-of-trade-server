@@ -1,11 +1,13 @@
 // Safe-port presence owns the body, independently of controller grants and provider work.
 import { randomUUID } from 'node:crypto';
-import { MSG } from '../src/net/protocol.js';
+import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { attachProfile, detachProfile } from '../src/sim/systems/inventory.js';
 import { presenceAnchor, presencePointAllowed, presenceSafety, advancePresence } from './companionPresencePolicy.mjs';
 
 const REQUEST = /^[A-Za-z0-9:_-]{1,100}$/;
 const OPS = ['load', 'join', 'follow', 'wait', 'return', 'retire'];
+// L03g-b: an attached mind may read its body and give the safe orders; join and retire stay with the owner.
+const MIND_OPS = ['load', 'follow', 'wait', 'return'];
 const exact = (v, keys) => v && typeof v === 'object' && !Array.isArray(v) &&
   Object.keys(v).length === keys.length && keys.every(k => Object.hasOwn(v, k));
 // Companions belong to the account; a human session's key is its selected character.
@@ -16,6 +18,7 @@ export class CompanionPresenceService {
     Object.assign(this, { host, enabled, allowMemory, timeoutMs });
     this.ready = false; this.entries = new Map(); this.busy = new Map();
     this.pendingSlots = 0; this.tasks = new Set(); this.rates = new Map(); this.detaching = new Map();
+    this.minds = new Map(); // body client id -> the paired socket attached to that body (L03g-b)
   }
   async prepare() {
     const h = this.host;
@@ -32,12 +35,14 @@ export class CompanionPresenceService {
   hasClient(id) { return this.detaching.has(id) || [...this.entries.values()].some(e => e.body?.id === id); }
   profileFailure(id) {
     let snapshot = this.detaching.get(id);
+    const e = [...this.entries.values()].find(e => e.body?.id === id);
     if (!snapshot) {
-      const e = [...this.entries.values()].find(e => e.body?.id === id);
       if (!e) return false;
       snapshot = { key: e.record.characterKey, data: structuredClone(this.host.server.world.profiles.get(e.body.entity)) };
     }
     this.host.unsavedProfiles.set(id, structuredClone(snapshot));
+    // A failed body write ends its pairing before the world fence closes everyone else.
+    if (e) this.revokePairing(e, 'profile');
     this.host.fenceWorld('companion_profile'); return true;
   }
   trackDetach(e) {
@@ -49,6 +54,8 @@ export class CompanionPresenceService {
     return [...this.entries.values()].some(e => e.record.characterKey === character && (e.body || e.head.active || e.operation || e.unavailable));
   }
   async pairingBlocked(owner, character) {
+    // L03g-b: with presence on, a pairing code only ever authorises a mind for the owner's live body.
+    if (this.enabled) return this.liveBody(owner, character) ? false : 'presence_body_required';
     if (this.fencedCharacter(character)) return true;
     if (!this.gateReady) return this.enabled; // Enabling presence without SQL cannot bypass its gate.
     try {
@@ -61,6 +68,61 @@ export class CompanionPresenceService {
     return p.busy.size > 0 || [...p.codes.values(), ...p.tokens.values(), ...p.admitted.values()]
       .some(e => e.ownerId === owner || e.characterId === character) ||
       [...this.host.sockets.values()].some(s => s.agentIdentity === character);
+  }
+  // A present body that is not mid-join, mid-retire, failed or about to auto-retire.
+  liveBody(owner, character) {
+    const e = this.entries.get(owner);
+    return this.ready && !this.host.closing && !!e?.body && e.record.characterKey === character && !e.operation &&
+      !e.unavailable && !this.busy.has(owner) && !this.detaching.has(e.body.id) ? e : null;
+  }
+  // A mind counts while its socket is open and its pairing admission and control epoch are current.
+  mindLive(e) {
+    const h = this.host, sock = e?.mind?.sock;
+    return !!sock && h.sockets.get(sock.id) === sock && sock.ws.readyState === 1 &&
+      h.companionPairing.admitted.has(sock.id) && h.agentControl.authorize(sock.id, e.mind.epoch);
+  }
+  mindCount() { return [...this.entries.values()].filter(e => this.mindLive(e)).length; }
+  attachable(owner, character) {
+    const e = this.liveBody(owner, character);
+    return !!e && !this.mindLive(e);
+  }
+  // L03g-b: bind a paired socket to the owner's live body. No entity, profile or slot is created and
+  // nothing about the body changes; from now on the socket perceives, hears and speaks as that body.
+  attach(sock, owner, character, epoch) {
+    const h = this.host, w = h.server.world, e = this.liveBody(owner, character);
+    if (!e) return 'unavailable';
+    if (this.mindLive(e)) return 'occupied';
+    this.release(e); // A revoked or closing mind never blocks its replacement.
+    const body = e.body;
+    // Leave the spectator lane: the body's own stream replaces it, so nothing arrives twice.
+    h.server.disconnect(sock.id);
+    e.mind = { sock, epoch }; this.minds.set(body.id, sock);
+    sock.companionMind = { owner, body: body.id, entity: body.entity };
+    h.sendTo(body.id, { t: MSG.SPAWN, e: w.describe(body.entity) });
+    h.sendTo(body.id, { t: MSG.WELCOME, v: PROTOCOL_VERSION, you: body.entity, tick: w.tick, seed: w.seed });
+    h.server.chat.join(body.id); // The body speaks and listens through an ordinary chat session.
+    return null;
+  }
+  release(e) {
+    const m = e?.mind;
+    if (!m) return false;
+    e.mind = null; m.sock.companionMind = null;
+    for (const [id, sock] of this.minds) if (sock === m.sock) this.minds.delete(id);
+    // Only the chat session ends with the mind: order, position, health and profile stay as they are.
+    if (e.body) this.host.server.chat.leave(e.body.id);
+    return true;
+  }
+  // Retirement, failures and shutdown end the owner's pairing: codes and tokens drop, the mind closes (1008).
+  revokePairing(e, why) {
+    this.release(e);
+    this.host.companionPairing.revokeOwner(e.owner, why);
+  }
+  revokeMinds(why) { for (const e of this.entries.values()) if (e.mind) this.revokePairing(e, why); }
+  // The epoch captured at attach must still authorise this socket; revocation or replacement ends it.
+  mindCurrent(sock) {
+    const m = sock?.companionMind, e = m && this.entries.get(m.owner);
+    return !!e && e.mind?.sock === sock && e.body?.id === m.body && this.mindLive(e) &&
+      this.host.companionPairing.admissionCurrent(sock);
   }
   projection(e) {
     if (!e) return null;
@@ -80,24 +142,30 @@ export class CompanionPresenceService {
     this.rates.set(owner, { at: row?.at ?? now, count: (row?.count ?? 0) + 1 }); return true;
   }
   async dispatch(sock, message) {
-    const h = this.host, session = this.principal(sock), owner = session ? sessionOwner(session) : undefined;
+    // An attached mind (L03g-b) acts for the owner of its body, never through the owner's session.
+    const h = this.host, mind = sock?.companionMind ?? null, session = mind ? null : this.principal(sock);
+    const owner = mind ? mind.owner : session ? sessionOwner(session) : undefined;
     const requestId = typeof message.requestId === 'string' && REQUEST.test(message.requestId) ? message.requestId : null;
     const reply = why => {
       if (h.sockets.get(sock.id) !== sock || sock.ws.readyState !== 1 || (session && this.principal(sock) !== session)) return;
       h.sendTo(sock.id, { t: MSG.AGENT_COMPANION_PRESENCE_RESULT, requestId, ok: why === null, why,
-        enabled: this.ready, presence: session ? this.projection(this.entries.get(owner)) : null });
+        enabled: this.ready, presence: session || mind ? this.projection(this.entries.get(owner)) : null });
     };
-    if (!session) return reply('forbidden');
+    if (!session && !mind) return reply('forbidden');
     const keys = message.op === 'load' ? ['t', 'requestId', 'op'] : ['t', 'requestId', 'op', 'expectedRevision'];
     if (!requestId || !OPS.includes(message.op) || !exact(message, keys) ||
         (message.op !== 'load' && (!Number.isSafeInteger(message.expectedRevision) || message.expectedRevision < 0))) return reply('invalid_request');
     if (!this.ready) return reply('unavailable');
+    if (mind && (!MIND_OPS.includes(message.op) || !this.mindCurrent(sock))) return reply('forbidden');
     if (this.busy.has(owner) || this.busy.size >= 8 || !this.rate(owner)) return reply('busy');
     let abandoned = false, timer;
-    const current = () => !abandoned && !h.closing && this.principal(sock) === session;
+    const current = () => !abandoned && !h.closing && (mind ? this.mindCurrent(sock) : this.principal(sock) === session);
     const operation = Promise.resolve().then(async () => {
       let e = this.entries.get(owner);
-      if (!e) {
+      if (mind) {
+        // Recheck the control epoch at execution: a revoked or replaced mind changes nothing.
+        if (!current() || e?.mind?.sock !== sock || e.body?.id !== mind.body) return 'forbidden';
+      } else if (!e) {
         const owned = await h.companionPairing.loadOwned(session, sock, current);
         if (!current()) return 'forbidden';
         if (!owned) return 'no_companion';
@@ -107,7 +175,7 @@ export class CompanionPresenceService {
           reason: head.active ? 'recovery_required' : null, ownerSock: sock, ownerSession: session, operation: false };
         this.entries.set(owner, e);
       }
-      e.ownerSock = sock; e.ownerSession = session;
+      if (!mind) { e.ownerSock = sock; e.ownerSession = session; }
       if (message.op === 'load') return e.unavailable ? 'unavailable' : null;
       if (e.revision !== message.expectedRevision) return 'conflict';
       if (e.unavailable) return 'unavailable';
@@ -115,7 +183,9 @@ export class CompanionPresenceService {
       if (message.op === 'join') return this.join(e, session, current);
       if (!e.body) return 'no_companion';
       if (message.op === 'retire') return this.retire(e, current);
-      const world = h.server.world, ownerEntity = h.server.clients.get(sock.id)?.entity;
+      // A mind's "follow" still means its owner; it can never name another target.
+      const ownerSock = mind ? e.ownerSock : sock, world = h.server.world;
+      const ownerEntity = ownerSock && (!mind || this.principal(ownerSock) === e.ownerSession) ? h.server.clients.get(ownerSock.id)?.entity : undefined;
       if (message.op === 'wait') {
         e.order = 'wait'; e.stagnant = 0; e.revision++;
         e.reason = presenceSafety(world, e.body.entity); return null;
@@ -219,6 +289,7 @@ export class CompanionPresenceService {
       if (latest) return latest;
       // Detach synchronously before releasing the gate. A failed release leaves recovery required.
       this.trackDetach(e);
+      this.revokePairing(e, 'retired');
       h.server.disconnect(body.id); h.profiles.close(body.id); e.body = null; e.order = 'wait'; e.revision++;
       await h.profiles.flush();
       this.detaching.delete(body.id);
@@ -226,7 +297,7 @@ export class CompanionPresenceService {
         active: false, runId: e.head.runId });
       if (result.ok !== true) { e.head = result.head; e.reason = 'recovery_required'; return 'conflict'; }
       e.head = result.head; e.reason = null; return null;
-    } catch { e.unavailable = true; e.reason = 'unavailable'; return 'unavailable'; }
+    } catch { e.unavailable = true; e.reason = 'unavailable'; this.revokePairing(e, 'unavailable'); return 'unavailable'; }
     finally { e.operation = false; }
   }
   step() {
@@ -267,8 +338,12 @@ export class CompanionPresenceService {
     task.finally(() => { this.tasks.delete(task); if (this.busy.get(e.owner) === task) this.busy.delete(e.owner); }).catch(() => {});
   }
   onClose(sock) {
-    for (const e of this.entries.values()) if (e.ownerSock === sock && e.body) {
-      e.ownerSock = null; e.ownerSession = null; e.order = 'return'; e.reason = null; e.revision++;
+    for (const e of this.entries.values()) {
+      // A closing mind leaves its body exactly as it is, with its current order.
+      if (e.mind?.sock === sock) this.release(e);
+      if (e.ownerSock === sock && e.body) {
+        e.ownerSock = null; e.ownerSession = null; e.order = 'return'; e.reason = null; e.revision++;
+      }
     }
   }
   async close() {
@@ -279,6 +354,7 @@ export class CompanionPresenceService {
         presenceSafety(this.host.server.world, e.body.entity, { anchor: true, fullHealth: true }) === null;
       const id = e.body.id;
       this.trackDetach(e);
+      this.revokePairing(e, 'server_close');
       this.host.server.disconnect(id); this.host.profiles.close(id); e.body = null;
       if (safe) {
         try {

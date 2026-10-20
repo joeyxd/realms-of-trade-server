@@ -15,6 +15,7 @@ const COPY = {
     paired: 'El compañero está emparejado; el control de presencia requiere resolver ese estado primero.',
     recovery_required: 'El compañero quedó fuera durante un reinicio. Su presencia requiere revisión; no se invocará de nuevo.',
     blocked: 'El servidor bloqueó esta orden por seguridad.',
+    mindOn: 'Mente conectada: habla por este cuerpo y solo puede pedirle seguir, esperar o volver.', mindOff: 'Ninguna mente conectada a este cuerpo.',
     state: p => p ? `${p.name}: ${({ resting: 'en reposo', present: 'presente', recovery: 'requiere revisión', unavailable: 'no disponible' })[p.status]}. Orden: ${{ wait: 'esperar', follow: 'seguir', return: 'volver' }[p.order]}.` : 'Sin presencia activa.',
     reason: value => value === 'recovery' ? 'El compañero quedó fuera durante un reinicio. Su presencia requiere revisión; no se invocará de nuevo.' : '',
   },
@@ -34,6 +35,7 @@ const COPY = {
     paired: 'The companion is paired; resolve that state before changing presence.',
     recovery_required: 'The companion was left out during a restart. Its presence needs review; it will not be summoned again.',
     blocked: 'The server blocked this order for safety.',
+    mindOn: 'Mind connected: it speaks through this body and may only ask it to follow, wait, or return.', mindOff: 'No mind is connected to this body.',
     state: p => p ? `${p.name}: ${{ resting: 'resting', present: 'present', recovery: 'needs review', unavailable: 'unavailable' }[p.status]}. Order: ${{ wait: 'wait', follow: 'follow', return: 'return' }[p.order]}.` : 'No active presence.',
     reason: value => value === 'recovery' ? 'The companion was left out during a restart. Its presence needs review; it will not be summoned again.' : '',
   },
@@ -54,6 +56,7 @@ export class CompanionPresenceUI {
     this.title = node('h3'); this.status = node('p', 'mn-companion-presence-status');
     this.status.setAttribute('role', 'status'); this.status.setAttribute('aria-live', 'polite');
     this.stateText = node('p', 'mn-companion-presence-status');
+    this.mindNote = node('p', 'mn-companion-presence-note'); this.mindNote.hidden = true;
     this.separateNote = node('p', 'mn-companion-presence-note'); this.safeNote = node('p', 'mn-companion-presence-note');
     this.anchorNote = node('p', 'mn-companion-presence-note'); this.hostNote = node('p', 'mn-companion-presence-note');
     this.hostNote.textContent = '';
@@ -68,7 +71,7 @@ export class CompanionPresenceUI {
     }
     this.refreshButton = node('button'); this.refreshButton.type = 'button';
     this.refreshButton.addEventListener('click', () => this.client.load({ refresh: true }));
-    this.container.append(this.title, this.status, this.stateText, this.hostNote, this.separateNote, this.safeNote, this.anchorNote, this.actions, this.refreshButton);
+    this.container.append(this.title, this.status, this.stateText, this.mindNote, this.hostNote, this.separateNote, this.safeNote, this.anchorNote, this.actions, this.refreshButton);
     this.element = this.container; parent.append(this.container); this.installStyles();
     this.unsubscribe = client.subscribe(state => this.setState(state)); this.render();
   }
@@ -88,6 +91,10 @@ export class CompanionPresenceUI {
     this.hostNote.textContent = this.state.enabled ? '' : c.disabled;
     const p = this.state.presence;
     this.stateText.textContent = `${c.state(p)}${c.reason(p?.status) ? ` ${c.reason(p.status)}` : p?.reason && c[p.reason] ? ` ${c[p.reason]}` : ''}`;
+    // L03g-b: say whether a paired mind is attached to the present body (null while unknown).
+    const mind = this.client.mindConnected?.() ?? null;
+    this.mindNote.hidden = !this.state.enabled || p?.status !== 'present' || typeof mind !== 'boolean';
+    this.mindNote.textContent = mind ? c.mindOn : c.mindOff;
     for (const op of ACTIONS) this.buttons[op].textContent = c[op];
     const available = this.canAct();
     for (const [op, button] of Object.entries(this.buttons)) {

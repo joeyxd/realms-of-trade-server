@@ -215,44 +215,48 @@ test('hurt and danger deny retirement without healing or despawning the entity',
   ecs.atkStage[entity] = 0;
 });
 
-test('pairing and body presence exclude each other in both directions', async t => {
+test('with presence on, a pairing code needs the live body and retirement leaves no code to fence the next admission', async t => {
+  // L03g-b replaced the L03g-a exclusion: pairing now authorises a mind for the owner's live body.
   const { app, connect } = await room(t), owner = await connect('owner');
   const { characterKey, revision } = await joinedPresence(owner);
+  const row = (await ownerControl(owner)).companions.find(item => item.characterKey === characterKey);
+  assert.ok(row);
+  assert.equal((await ownerControl(owner, 'resume', row)).ok, true);
+  assert.equal((await pairing(owner, 'issue')).why, 'presence_body_required', 'a resting companion has no body for a mind');
   const joined = await request(owner, 'join', revision); assert.equal(joined.ok, true);
-  assert.equal((await pairing(owner, 'issue')).why, 'busy', 'a live host body fences pairing issue');
+  const issued = await pairing(owner, 'issue'); assert.equal(issued.ok, true, 'the live body accepts a pairing code');
 
   const retired = await request(owner, 'retire', joined.presence.revision);
   assert.equal(retired.ok, true); assert.equal(retired.presence.status, 'resting');
   assert.equal(app.game.server.humans, 1);
-  const row = (await ownerControl(owner)).companions.find(item => item.characterKey === characterKey);
-  assert.ok(row);
-  assert.equal((await ownerControl(owner, 'resume', row)).ok, true);
-  const issued = await pairing(owner, 'issue'); assert.equal(issued.ok, true);
-  const afterCode = await request(owner, 'join', retired.presence.revision);
-  assert.equal(afterCode.why, 'paired', 'pending pairing code fences host-body admission');
-  assert.equal(afterCode.presence.status, 'resting');
+  assert.equal(app.game.companionPairing.codes.size, 0, 'retirement drops the pending code');
   assert.equal(app.game.companionPresence.fencedCharacter(characterKey), false);
+  const again = await request(owner, 'join', retired.presence.revision);
+  assert.equal(again.ok, true, 'no stale code fences the next host-body admission');
+  assert.equal(app.game.server.humans, 2);
 });
 
-test('a claimed live pairing token fences a concurrent host-body admission without a duplicate entity', async t => {
+test('a claimed pairing token for the live body never yields a second admission or a duplicate entity', async t => {
+  // L03g-b: the token belongs to the live body, so a concurrent host-body admission is a conflict.
   const { app, connect } = await room(t), owner = await connect('owner');
   const { characterKey, revision } = await joinedPresence(owner);
   const row = (await ownerControl(owner)).companions.find(item => item.characterKey === characterKey);
   assert.ok(row); assert.equal((await ownerControl(owner, 'resume', row)).ok, true);
+  const joined = await request(owner, 'join', revision); assert.equal(joined.ok, true);
   const code = await pairing(owner, 'issue'); assert.equal(code.ok, true);
   const runner = await connect(null, { hello: false });
   const claim = await pairing(runner, 'claim', { code: code.code });
   assert.equal(claim.ok, true);
   assert.ok(claim.bootstrap.token.startsWith('mncp_'));
 
-  const denied = await request(owner, 'join', revision);
-  assert.equal(denied.why, 'paired', 'claiming the live code creates an admission token that fences host presence');
-  assert.equal(denied.presence.entity, null);
-  assert.equal(app.game.server.humans, 1);
-  assert.equal([...app.game.server.clients.values()].filter(client => client.entity).length, 1,
+  const denied = await request(owner, 'join', joined.presence.revision);
+  assert.equal(denied.why, 'conflict', 'the body is already present');
+  assert.equal(denied.presence.entity, joined.presence.entity);
+  assert.equal(app.game.server.humans, 2);
+  assert.equal([...app.game.server.clients.values()].filter(client => client.entity).length, 2,
     'the unadmitted runner and denied presence operation created no extra gameplay entity');
-  assert.equal([...app.game.server.clients.values()].filter(client => client.companionResident).length, 0);
-  assert.equal(app.game.companionPresence.entries.get(OWNER).body, null);
+  assert.equal([...app.game.server.clients.values()].filter(client => client.companionResident).length, 1);
+  assert.equal(app.game.companionPresence.entries.get(OWNER).body.entity, joined.presence.entity);
   assert.equal(app.game.companionPairing.tokens.has(claim.bootstrap.token), true,
     'the denial did not consume or invalidate the independent pairing admission');
 });
@@ -393,7 +397,7 @@ test('ambiguous admission timeout never publishes a late body or permits pairing
   const result = await resultPromise;
   assert.equal(result.why, 'unavailable');
   assert.equal(app.game.server.humans, 1);
-  assert.equal((await pairing(owner, 'issue')).why, 'busy');
+  assert.equal((await pairing(owner, 'issue')).why, 'presence_body_required'); // L03g-b: no live body, no code.
   release();
   await until(() => presence.busy.size === 0);
   const current = await request(owner, 'load');
@@ -451,6 +455,6 @@ test('an unpublished attachment failure leaves no entity, slot, or profile while
   assert.equal(w.residentPlayers.size, 0);
   assert.equal(app.game.profiles.accounts.has(characterKey), false);
   assert.equal((await store.loadCompanionPresence({ world: WORLD, owner: OWNER, character: characterKey })).active, true);
-  assert.equal((await pairing(owner, 'issue')).why, 'busy');
+  assert.equal((await pairing(owner, 'issue')).why, 'presence_body_required'); // L03g-b: no live body, no code.
   assert.equal(app.game.healthy(), true, 'ordinary human gameplay remains available after the unpublished cleanup');
 });

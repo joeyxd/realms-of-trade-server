@@ -4,6 +4,8 @@ import { performance } from 'node:perf_hooks';
 const CAPABILITIES = Object.freeze(['move', 'aim', 'attack_pve', 'body_pve', 'chat', 'inventory_read', 'market_read', 'trade_buy', 'trade_sell']);
 const TYPES = new Set(['move', 'aim', 'attack_pve', 'go_to', 'follow', 'keep_distance', 'body_pve']);
 const PRIORITIES = Object.freeze(['reflex', 'goal', 'direct']);
+// Created companions: chat only, or chat plus "presence" (the safe follow/wait/return body orders, L03g-b).
+const CREATED_GRANTS = Object.freeze([Object.freeze(['chat']), Object.freeze(['chat', 'presence'])]);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const WORLD_ID = /^[a-zA-Z0-9:_-]{1,100}$/;
 const OPAQUE_ID = /^[a-zA-Z0-9:_-]{1,100}$/;
@@ -121,13 +123,15 @@ export class AgentControl {
   }
 
   // Only the host's verified SQL034 provisioning path calls this. Created companions have
-  // a fixed chat-only policy; callers cannot turn their role template into capabilities.
+  // a fixed policy chosen by the host mode (chat, or chat plus the safe body-presence orders);
+  // callers cannot turn their role template into capabilities.
   registerCreated(binding) {
     if (!exact(binding, ['ownerId', 'characterId', 'capabilities']) ||
         !canonicalUuid(binding.ownerId) || !canonicalUuid(binding.characterId) ||
         binding.ownerId === binding.characterId ||
         [binding.ownerId, binding.characterId].includes('00000000-0000-0000-0000-000000000000') ||
-        !Array.isArray(binding.capabilities) || binding.capabilities.length !== 1 || binding.capabilities[0] !== 'chat') return null;
+        !Array.isArray(binding.capabilities) || !CREATED_GRANTS.some((grant) => grant.length === binding.capabilities.length &&
+          grant.every((capability, index) => binding.capabilities[index] === capability))) return null;
     const existing = this.#bindings.get(binding.characterId);
     if (existing) return this.#created.has(binding.characterId) && existing.ownerId === binding.ownerId
       ? this.ownedBinding(binding.ownerId, binding.characterId) : null;

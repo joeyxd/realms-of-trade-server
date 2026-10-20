@@ -1,5 +1,32 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**IC03a, 2026-10-20 — la mente emparejada entra en el cuerpo de presencia (L03g-b, servidor y cliente), alpha.79/protocolo 63:**
+Con `MN_COMPANION_PRESENCE=1` y SQL039 listo, un HELLO emparejado (`agent: true` + token `mncp_`) ya no crea otra
+entidad: se ata al cuerpo de presencia activo del dueño (`server/companionPresence.mjs` `attach`, `server/host.mjs`
+`join`), sin perfil, plaza ni segundo nombre. La mente percibe desde el cuerpo (WELCOME con `you` = cuerpo, mismo radio
+24 y tope 64), recibe lo que el servidor manda al cuerpo (`host.sendTo`) y habla como el cuerpo ("<nombre> [IA]") por su
+sesión de chat normal y sus límites; un susurro al cuerpo le llega. Solo manda `AGENT_COMPANION_PRESENCE`
+`load|follow|wait|return` (claves exactas, CAS `expectedRevision`, límite y regla de ocupado del dueño); `join`,
+`retire`, INPUTS, AGENT_TASK y el resto: `forbidden`; el cuerpo solo se mueve por `step()`. Grant del emparejamiento
+exacto `["chat","presence"]` con presencia encendida y `["chat"]` con ella apagada. Ciclo de vida: emitir código exige el
+cuerpo vivo (`presence_body_required`); cuerpo ausente, retirándose u ocupado rechaza el HELLO sin crear nada; una mente
+por cuerpo (el cierre de un segundo controlador rechazado no revoca a la primera); retiro, autorretiro, fallo de perfil,
+valla y cierre del servidor revocan el emparejamiento (códigos y tokens fuera, mente cerrada con 1008); cerrar o revocar
+la mente deja el cuerpo igual (orden, vida, posición, perfil) y otro código ata otra mente; una orden de una mente
+revocada o sustituida la rechaza la época de control. Bandera apagada (producción hoy): L03f sin cambios. Cliente: "Conectar
+en mi PC" solo ofrece código con el cuerpo presente ("Invoca primero a tu compañero" / "Summon your companion first") y la
+tarjeta de presencia dice si hay una mente conectada (ES/EN). `/status` suma `storage.companionPresence.minds` solo con la
+presencia encendida. Versión alpha.79 en los tres archivos; protocolo 63.
+Tests nuevos: `tests/companion-body-mind-network.test.mjs` (12) y `tests/companion-body-mind-ui.test.mjs` (3). En
+`tests/companion-presence-network.test.mjs` cambian cuatro casos que afirmaban la exclusión L03g-a: dos reescritos ("with
+presence on, a pairing code needs the live body…", "a claimed pairing token for the live body never yields…") y dos
+aserciones `busy` → `presence_body_required` ("ambiguous admission timeout…", "an unpublished attachment failure…").
+Suite del área 943 tests, 930 pasan, 8 fallos, todos en la base previa (inventario, trade, PvE y movimiento): 0 nuevos.
+Gate 29 ficheros 202/202. i18n 80/80. [Entrega](delivery/ic03-mind-in-body.md).
+Pendiente: IC03b, el lado runner (`tools/agent/contract.mjs` `NETWORK_CAPABILITIES` aún rechaza `presence`,
+`paired-companion.mjs` fija `["chat"]` y la mente no traduce sus verbos a follow/wait/return); prueba a mano con la bandera
+encendida; SQL039 en producción antes de encenderla. Ticket T-1020-02.
+
 **AREA15, 2026-10-20 — antorchas/resina/coco componen con Ground; piloto común público apagado, alpha.78/protocolo 62:**
 [Entrega/evidencia](delivery/torch-ground-composition.md); primer corte del paso 3 de la [matriz](CONTINUITY-MATRIX.md) (T-1020-05).
 `server/host.mjs` ya no rechaza `torchResinCoconutOperations` junto con `groundTransactions`; conserva workshop, fuego y cantimplora.

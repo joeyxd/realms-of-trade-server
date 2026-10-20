@@ -14,7 +14,9 @@ const TOKEN_TTL_MS = 60 * 60 * 1000;
 const MAX_OWNERS = 64;
 const MAX_REQUESTS_PER_MINUTE = 30;
 const MAX_IN_FLIGHT = 32;
-const CAPABILITIES = Object.freeze(['chat']);
+// The host mode fixes the grant: chat only, or (L03g-b, body presence on) chat plus the safe presence orders.
+const CHAT_GRANT = Object.freeze(['chat']);
+const BODY_GRANT = Object.freeze(['chat', 'presence']);
 const copy = value => structuredClone(value);
 const sessionOwner = session => session.ownerKey ?? session.key;
 const ownerKey = owner => owner;
@@ -77,6 +79,15 @@ export class CompanionPairingService {
 
   principal(sock) { return this.host.companionConfig.principal(sock); }
 
+  // Never chosen by the record or the runner; each check accepts exactly the current mode's shape.
+  grant() { return this.host.companionPresence?.enabled === true ? BODY_GRANT : CHAT_GRANT; }
+
+  exactGrant(capabilities) {
+    const grant = this.grant();
+    return Array.isArray(capabilities) && capabilities.length === grant.length &&
+      grant.every((capability, index) => capabilities[index] === capability);
+  }
+
   owns(ownerId, characterId) {
     const owner = this.owners.get(ownerKey(ownerId));
     return owner?.binding.characterId === characterId && owner.binding.ownerId === ownerId;
@@ -118,9 +129,9 @@ export class CompanionPairingService {
     if (prior && prior.record.characterKey !== record.characterKey) throw new Error('collision');
     if (!prior && this.owners.size >= MAX_OWNERS) throw new Error('limit');
     const binding = h.agentControl.registerCreated({ ownerId: sessionOwner(session), characterId: record.characterKey,
-      capabilities: [...CAPABILITIES] });
+      capabilities: [...this.grant()] });
     if (!binding || binding.ownerId !== sessionOwner(session) || binding.characterId !== record.characterKey ||
-        !Array.isArray(binding.capabilities) || binding.capabilities.length !== 1 || binding.capabilities[0] !== 'chat' ||
+        !this.exactGrant(binding.capabilities) ||
         !h.companionControl.registerCreated(binding, record.control)) throw new Error('registration');
     const owner = prior ?? { binding, record, ownerSession: session, ownerSock: sock };
     owner.binding = binding; owner.record = record;
@@ -152,7 +163,9 @@ export class CompanionPairingService {
           this.revokeOwner(sessionOwner(session), 'revoked');
           return { why: null };
         }
-        if (await h.companionPresence?.pairingBlocked(sessionOwner(session), owner.record.characterKey)) return { why: 'busy' };
+        // With body presence on this answers "presence_body_required" unless the owner's body is live.
+        const blocked = await h.companionPresence?.pairingBlocked(sessionOwner(session), owner.record.characterKey);
+        if (blocked) return { why: typeof blocked === 'string' ? blocked : 'busy' };
         if (this.principal(sock) !== session || abandoned) throw new Error('session');
         if (!h.companionControl.allowed(owner.record.characterKey)) return { why: 'stopped' };
         // Replacing a code also invalidates any earlier admission and active socket.
@@ -166,6 +179,9 @@ export class CompanionPairingService {
             this.principal(sock) !== session || !validSession(session, h) || abandoned ||
             !h.companionControl.allowed(refreshed.characterKey)) return { why: 'forbidden' };
         owner.record = refreshed;
+        // L03g-b: the body may have left while the record reloaded; a code never outlives it.
+        if (h.companionPresence?.enabled &&
+            !h.companionPresence.liveBody(sessionOwner(session), refreshed.characterKey)) return { why: 'presence_body_required' };
         const ownerPeer = h.server.chat?.sessions?.get(owner.ownerSock.id)?.id;
         if (typeof ownerPeer !== 'string' || !UUID.test(ownerPeer)) return { why: 'unavailable' };
         const now = this.time(), code = randomBytes(32).toString('hex');
@@ -239,7 +255,7 @@ export class CompanionPairingService {
       this.revokeOwner(entry.ownerId, 'revoked'); return null;
     }
     const registered = h.agentControl.ownedBinding(entry.ownerId, entry.characterId);
-    if (!registered || registered.capabilities.length !== 1 || registered.capabilities[0] !== 'chat') return null;
+    if (!registered || !this.exactGrant(registered.capabilities)) return null;
     const record = validateCompanionRecord(entry.record);
     if (record.characterKey !== entry.characterId) return null;
     this.admitted.set(sock.id, { ownerId: entry.ownerId, characterId: entry.characterId, worldId: entry.worldId,
@@ -262,6 +278,10 @@ export class CompanionPairingService {
     if (!current) this.revokeOwner(entry.ownerId, 'revoked');
     return current;
   }
+
+  // L03g-b: a mind refused at HELLO keeps no admission, so closing its socket never revokes
+  // the owner's pairing or the mind already attached to the body.
+  forget(sock) { if (sock) this.admitted.delete(sock.id); }
 
   revokeOwner(ownerId, why = 'revoked') {
     if (!UUID.test(ownerId)) return false;

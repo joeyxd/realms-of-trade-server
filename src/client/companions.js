@@ -3,7 +3,7 @@ import { MSG } from '../net/protocol.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const WHY = new Set(['forbidden', 'invalid_request', 'stale_control', 'disabled', 'conflict', 'unavailable', 'busy', 'durable_control_required']);
-const CAPABILITIES = new Set(['move', 'aim', 'attack_pve', 'body_pve', 'chat', 'inventory_read', 'market_read', 'trade_buy', 'trade_sell']);
+const CAPABILITIES = new Set(['move', 'aim', 'attack_pve', 'body_pve', 'chat', 'presence', 'inventory_read', 'market_read', 'trade_buy', 'trade_sell']);
 const MAX_REVISION = 2147483647;
 const empty = (status = 'offline', message = '') => ({ status, enabled: false, companions: [], pendingStop: null, pendingOp: null, pendingCharacter: null, message });
 const exactKeys = (value, keys) => value && typeof value === 'object' && !Array.isArray(value)

@@ -32,6 +32,7 @@ export class CompanionPresenceClient {
     Object.assign(this, { transport, auth, joined, timeoutMs, makeRequestId });
     this.listeners = new Set(); this.authAccount = null; this.sessionAccount = null;
     this.generation = 0; this.pending = null; this.destroyed = false;
+    this.mind = null; // L03g-b: whether a paired mind is online for this companion, or null when unknown.
     this.state = empty('signed_out');
     this.unsubscribeAuth = auth.subscribe(value => this.authChanged(value));
     transport.onMessage(message => this.onMessage(message));
@@ -53,19 +54,29 @@ export class CompanionPresenceClient {
   authChanged(value) {
     const account = this.validAuth(value);
     if (account === this.authAccount) return;
-    this.authAccount = account; this.sessionAccount = null; this.invalidate();
+    this.authAccount = account; this.sessionAccount = null; this.mind = null; this.invalidate();
     this.publish(empty(account ? 'offline' : 'signed_out'));
   }
   setSession(accountId) {
     const account = typeof accountId === 'string' && UUID.test(accountId) ? accountId : null;
     if (account === this.sessionAccount) return;
-    this.sessionAccount = account; this.invalidate();
+    this.sessionAccount = account; this.mind = null; this.invalidate();
     this.publish(empty(this.authAccount ? 'offline' : 'signed_out'));
   }
   invalidate() { this.generation++; if (this.pending) { clearTimeout(this.pending.timer); this.pending = null; } }
   disconnect() {
-    this.sessionAccount = null; this.invalidate();
+    this.sessionAccount = null; this.mind = null; this.invalidate();
     this.publish(empty(this.authAccount ? 'offline' : 'signed_out'));
+  }
+  // The owner list on this same transport says whether the companion's paired mind is online.
+  mindConnected() { return this.mind; }
+  observeOwners(message) {
+    if (!this.online() || message.ok !== true || !Array.isArray(message.companions)) return;
+    const key = this.state.presence?.characterKey;
+    const row = key ? message.companions.find(item => item?.characterKey === key) : null;
+    const next = typeof row?.online === 'boolean' ? row.online : null;
+    if (next === this.mind) return;
+    this.mind = next; this.publish({ ...this.state });
   }
   current(generation, account, session) {
     return !this.destroyed && generation === this.generation && account === this.authAccount
@@ -118,6 +129,7 @@ export class CompanionPresenceClient {
     return true;
   }
   onMessage(message) {
+    if (message?.t === MSG.AGENT_OWNER_RESULT) { this.observeOwners(message); return; }
     const pending = this.pending;
     if (!pending || message?.t !== MSG.AGENT_COMPANION_PRESENCE_RESULT || message.requestId !== pending.requestId) return;
     if (!this.current(pending.generation, pending.account, pending.session)) { this.invalidate(); this.publish(empty(this.authAccount ? 'offline' : 'signed_out')); return; }

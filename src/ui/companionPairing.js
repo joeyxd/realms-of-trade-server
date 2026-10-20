@@ -9,6 +9,7 @@ const COPY = {
     command: url => `node tools/agent/pair-companion.mjs --url ${url || 'wss://TU-MUNDO/ws'} --directory RUTA_LOCAL --base-url http://127.0.0.1:8080/v1 --model qwen3.8-flash-next-coder-iq1_m --max-calls 8 --max-tokens 262144`,
     signed_out: 'Inicia sesión para emparejar un controlador local.', offline: 'Conéctate al mundo para emparejar un controlador local.', loading: 'Consultando el emparejamiento…', ready: 'Estado actualizado.', error: 'No se pudo completar la solicitud. Inténtalo de nuevo.', uncertain: 'No se pudo confirmar la operación. Actualiza el estado antes de generar otro código.',
     forbidden: 'Esta cuenta no puede emparejar el compañero.', invalid_request: 'La solicitud no es válida.', unavailable: 'El servicio de emparejamiento no está disponible.', busy: 'Hay otra operación en curso.', stopped: 'El compañero está detenido. Permite la conexión en el panel existente antes de emparejar.', not_created: 'Todavía no hay un compañero creado para esta cuenta.', timeout: 'La consulta tardó demasiado.',
+    presence_body_required: 'Invoca primero a tu compañero.',
   },
   en: {
     title: 'Connect on my PC', back: 'Back', allowFirst: 'First, use “Allow connection” in this companion’s existing panel. Then generate a pairing code here. Allowing a connection does not start the companion by itself.',
@@ -20,6 +21,7 @@ const COPY = {
     command: url => `node tools/agent/pair-companion.mjs --url ${url || 'wss://YOUR-WORLD/ws'} --directory LOCAL_PATH --base-url http://127.0.0.1:8080/v1 --model qwen3.8-flash-next-coder-iq1_m --max-calls 8 --max-tokens 262144`,
     signed_out: 'Sign in to pair a local controller.', offline: 'Connect to the world to pair a local controller.', loading: 'Checking pairing…', ready: 'Status updated.', error: 'The request could not be completed. Try again.', uncertain: 'The operation could not be confirmed. Reload status before generating another code.',
     forbidden: 'This account cannot pair the companion.', invalid_request: 'The request is invalid.', unavailable: 'The pairing service is unavailable.', busy: 'Another operation is in progress.', stopped: 'The companion is stopped. Allow the connection in its existing panel before pairing.', not_created: 'This account does not have a created companion yet.', timeout: 'The request took too long.',
+    presence_body_required: 'Summon your companion first.',
   },
 };
 
@@ -45,6 +47,7 @@ export class CompanionPairingUI {
     this.status = node('p', 'mn-companion-pairing-status'); this.status.setAttribute('role', 'status'); this.status.setAttribute('aria-live', 'polite');
     this.allowNote = node('p', 'mn-companion-pairing-note');
     this.disabledNote = node('p', 'mn-companion-pairing-note');
+    this.bodyNote = node('p', 'mn-companion-pairing-note'); this.bodyNote.hidden = true;
     this.revokeNote = node('p', 'mn-companion-pairing-note');
     this.codePanel = node('section', 'mn-companion-pairing-code'); this.codePanel.hidden = true;
     this.codeHeading = node('strong'); this.codeNote = node('p', 'mn-companion-pairing-note'); this.codeText = node('code', 'mn-companion-pairing-code-value');
@@ -57,7 +60,7 @@ export class CompanionPairingUI {
     this.revokeButton = node('button'); this.revokeButton.type = 'button'; this.revokeButton.addEventListener('click', () => this.revoke());
     this.reloadButton = node('button'); this.reloadButton.type = 'button'; this.reloadButton.addEventListener('click', () => this.reload());
     const actions = node('footer', 'mn-companion-pairing-actions'); actions.append(this.generateButton, this.revokeButton, this.reloadButton);
-    this.container.append(header, this.status, this.allowNote, this.disabledNote, this.revokeNote, this.codePanel, this.guide, actions);
+    this.container.append(header, this.status, this.allowNote, this.disabledNote, this.bodyNote, this.revokeNote, this.codePanel, this.guide, actions);
     this.element = this.container; parent.append(this.container); this.installStyles();
     this.unsubscribe = client.subscribe(state => this.onClientState(state));
     this.render();
@@ -83,7 +86,9 @@ export class CompanionPairingUI {
     this.statusKey = ['error', 'uncertain'].includes(state.status) ? state.message || state.status : '';
     if (this.active) this.render();
   }
-  generate() { if (!this.active || this.state.status !== 'ready' || !this.state.enabled) return false; this.statusKey = ''; return this.client.issue(); }
+  // With body presence on, a code is useful only while the companion's body is in the world.
+  needsBody() { return this.client.bodyGate?.()?.present === false; }
+  generate() { if (!this.active || this.state.status !== 'ready' || !this.state.enabled || this.needsBody()) return false; this.statusKey = ''; return this.client.issue(); }
   revoke() { if (!this.active || this.state.status !== 'ready' || !this.state.enabled) return false; this.statusKey = ''; return this.client.revoke(); }
   reload() {
     if (!this.active || !['error', 'uncertain'].includes(this.state.status)) return false;
@@ -105,8 +110,10 @@ export class CompanionPairingUI {
     this.generateButton.textContent = this.state.status === 'loading' ? c.generating : c.generate;
     this.revokeButton.textContent = c.revoke; this.reloadButton.textContent = c.reload; this.copyButton.textContent = c.copy;
     this.status.textContent = this.statusKey ? c[this.statusKey] || c.error : c[this.state.status] || c.error;
-    const busy = ['loading'].includes(this.state.status);
-    this.generateButton.disabled = busy || this.state.status !== 'ready' || !this.state.enabled;
+    const busy = ['loading'].includes(this.state.status), needsBody = this.needsBody();
+    this.generateButton.disabled = busy || this.state.status !== 'ready' || !this.state.enabled || needsBody;
+    this.bodyNote.textContent = c.presence_body_required;
+    this.bodyNote.hidden = !needsBody || this.state.status !== 'ready' || !this.state.enabled || Boolean(this.state.code);
     this.generateButton.hidden = Boolean(this.state.code);
     this.revokeButton.hidden = this.state.status !== 'ready' || !this.state.enabled; this.revokeButton.disabled = busy;
     this.revokeNote.hidden = this.revokeButton.hidden;

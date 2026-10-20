@@ -716,6 +716,7 @@ export class GameHost {
     if (this.#requiresPearlStartup) { this.#stopPearls(); return; }
     this.closing = true;
     clearInterval(this.timer); clearInterval(this.worldTimer);
+    this.companionPresence?.revokeMinds('fenced'); // Attached minds lose their pairing first (1008).
     for (const sock of [...this.sockets.values()]) {
       try { sock.ws.close(1011, 'storage'); } catch { /* gone */ }
       this.onClose(sock);
@@ -769,7 +770,8 @@ export class GameHost {
           pending: this.companionCreation.busy.size },
         companionPairing: { enabled: this.companionPairing.enabled, ready: this.companionPairing.ready },
         companionPresence: { enabled: this.companionPresence.enabled, ready: this.companionPresence.ready,
-          bodies: [...this.companionPresence.entries.values()].filter(e => e.body).length, pending: this.companionPresence.busy.size },
+          bodies: [...this.companionPresence.entries.values()].filter(e => e.body).length, pending: this.companionPresence.busy.size,
+          ...(this.companionPresence.enabled ? { minds: this.companionPresence.mindCount() } : {}) },
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
@@ -818,16 +820,20 @@ export class GameHost {
       this.agentMessage(sock, msg); return;
     }
     if (sock.agentIdentity) {
-      const state = this.agentControl?.byClient(sock.id);
+      const state = this.agentControl?.byClient(sock.id), mind = sock.companionMind;
       if (msg.t === MSG.INPUTS) {
-        if (!this.agentInputAllowed(sock.id, msg.control, null)) {
-          this.sendTo(sock.id, { t: MSG.AGENT_STATE, ok: false, why: 'control_mismatch', state: state ?? null }); return;
+        // L03g-b: inputs never drive a presence body; only its server-executed orders move it.
+        if (mind || !this.agentInputAllowed(sock.id, msg.control, null)) {
+          this.sendTo(sock.id, { t: MSG.AGENT_STATE, ok: false, why: mind ? 'forbidden' : 'control_mismatch', state: state ?? null }); return;
         }
       } else if (msg.t === MSG.CHAT_SEND) {
         if (!state?.grant.capabilities.includes('chat') || !this.agentControl.authorize(sock.id, msg.control?.epoch) ||
             Object.keys(msg.control ?? {}).length !== 1) return;
-        const { control, ...chat } = msg; this.server.receive(sock.id, chat); return;
+        // An attached mind speaks as its body, through the body's ordinary chat session and limits.
+        const { control, ...chat } = msg; this.server.receive(mind ? mind.body : sock.id, chat); return;
       } else if (![MSG.PING, MSG.HELLO].includes(msg.t)) return;
+      // An attached mind has no lane of its own: it never rejoins, and its heartbeat is answered for the body.
+      if (mind) { if (msg.t === MSG.PING) this.server.receive(mind.body, msg); return; }
     }
     if (this.loggingAim.handle(sock, msg)) return;
     if (msg.t === MSG.CMD && msg.type === 'freshwater' && ['fill', 'fillCanteen'].includes(msg.op) && this.freshwaterOperations && !this.economicAuthority?.busy) {
@@ -882,7 +888,9 @@ export class GameHost {
       this.server.receive(sock.id, msg); return;
     }
     if (sock.joining) return;
-    if (this.server.humans + this.pendingJoins + this.companionPresence.pendingSlots >= this.maxPlayers) {
+    // L03g-b: with presence on, a paired HELLO can only attach to an existing body, so it takes no slot.
+    const attaching = this.companionPresence.enabled && this.companionPairing.isCredential(msg.token);
+    if (!attaching && this.server.humans + this.pendingJoins + this.companionPresence.pendingSlots >= this.maxPlayers) {
       this.sendTo(sock.id, { t: MSG.FULL, max: this.maxPlayers }); return;
     }
     sock.joining = true; this.pendingJoins++;
@@ -1120,6 +1128,8 @@ export class GameHost {
       this.publishAgentState({ ok: true, state }, sock.id, true); return;
     }
     if (!sock.agentIdentity) { fail('forbidden'); return; }
+    // L03g-b: an attached mind gives only presence orders; tasks and leases belong to managed pilots.
+    if (sock.companionMind) { fail('forbidden'); return; }
     if (msg.t === MSG.AGENT_RELEASE) {
       if (!exact(['t', 'epoch']) || !this.agentControl.authorize(sock.id, msg.epoch)) { fail('control_mismatch'); return; }
       this.publishAgentState({ ok: true, state: this.agentControl.retire(sock.id, 'stop') }, sock.id, true); return;
@@ -1212,7 +1222,10 @@ export class GameHost {
       if (!this.sockets.has(sock.id) || signal.aborted) return;
       if (identity === null && Object.hasOwn(msg, 'characterId')) throw new StoreError('auth');
       if (msg.agent === true) {
-        if (this.companionPresence.fencedCharacter(identity)) throw new StoreError('auth');
+        // L03g-b: with presence on, a paired mind binds to the owner's live body instead of spawning one.
+        const mind = !!sock.pairedCompanion && this.companionPresence.enabled;
+        if (mind ? Object.hasOwn(msg, 'characterId') || !this.companionPresence.attachable(sock.companionPairOwner, identity)
+          : this.companionPresence.fencedCharacter(identity)) throw new StoreError('auth');
         if (!this.companionControl.allowed(identity)) throw new StoreError('auth');
         // Reserve synchronously before profile I/O; concurrent joins count toward the pilot ceiling.
         if (this.agentPilot && [...this.sockets.values()].filter((s) => s.agentIdentity).length >= this.agentPilot.maxAgents)
@@ -1225,6 +1238,12 @@ export class GameHost {
         sock.agentSessionId = admitted.state.grant.scope.sessionId;
         if (this.agentPilot || sock.pairedCompanion) sock.agentView = new AgentPerception();
         this.server.clients.get(sock.id).agentManaged = true;
+        if (mind) {
+          // No profile is opened and no entity spawned: the body's id stays the only world identity.
+          if (this.closing || !this.companionPairing.admissionCurrent(sock) || this.companionPresence.attach(sock,
+            sock.companionPairOwner, identity, admitted.state.grant.controlRevision) !== null) throw new StoreError('auth');
+          return;
+        }
       } else if (this.agentControl?.binding(identity)) throw new StoreError('auth');
       // This explicitly mounted recovery pilot has no guest/backfill authority.
       if ((this.agentPilot || this.#requiresPearlStartup || this.#combatDeaths || this.groundAuthority) && identity === null) throw new StoreError('auth');
@@ -1273,6 +1292,8 @@ export class GameHost {
         if (sock.agentIdentity) throw new StoreError('auth');
       }
     } catch (err) {
+      // L03g-b: a refused mind keeps no admission, so its socket can never revoke the body's current mind.
+      if (sock.pairedCompanion && this.companionPresence.enabled && !sock.companionMind) this.companionPairing.forget(sock);
       if (sock.agentIdentity) {
         this.agentControl.retire(sock.id, 'disconnect');
         // A partial spawn must never become a human lane after an admission error.
@@ -1495,8 +1516,12 @@ export class GameHost {
   }
 
   sendTo(id, msg) {
-    const sock = this.sockets.get(id);
-    if (!sock) return;
+    let sock = this.sockets.get(id);
+    if (!sock) {
+      // L03g-b: a presence body's own stream goes to its attached mind; with none it is dropped as before.
+      sock = this.companionPresence?.minds.get(id);
+      if (!sock || this.sockets.get(sock.id) !== sock) return;
+    }
     if (msg.t === MSG.WELCOME) {
       const c = this.server.clients.get(id), s = this.profiles.clients.get(id);
       msg = { ...msg, content: { ...(this.contentIdentity ?? { generation: 0, revisionId: null }) },
@@ -1522,12 +1547,16 @@ export class GameHost {
       }
       // A previously admitted trade can commit after stop. Its bounded private receipt still
       // resolves uncertainty; it grants no new read/control authority or current profile view.
+      // Control state is keyed by the socket, also when it receives a body's stream.
       if (sock.agentIdentity && !inventoryDenial && ![MSG.WELCOME, MSG.AGENT_STATE, MSG.AGENT_TRADE_RESULT, MSG.ERROR, MSG.FULL, MSG.PONG].includes(msg.t) &&
-          !this.agentControl.authorize(id, this.agentControl.byClient(id)?.grant.controlRevision)) return;
+          !this.agentControl.authorize(sock.id, this.agentControl.byClient(sock.id)?.grant.controlRevision)) return;
     }
-    if (msg.t === MSG.WELCOME && sock.agentIdentity) msg = { ...msg, control: this.agentControl.byClient(id),
+    if (msg.t === MSG.WELCOME && sock.agentIdentity) msg = { ...msg, control: this.agentControl.byClient(sock.id),
       ...(this.agentPilot || sock.pairedCompanion ? { perception: AGENT_PILOT_POLICY } : {}) };
-    const messages = sock.agentView ? sock.agentView.project(msg, this.server.world, this.server.clients.get(id)?.entity) : [msg];
+    // A mind perceives from its body; its presence receipts carry no world view to filter.
+    const self = sock.companionMind ? sock.companionMind.entity : this.server.clients.get(id)?.entity;
+    const messages = sock.companionMind && msg.t === MSG.AGENT_COMPANION_PRESENCE_RESULT ? [msg] :
+      sock.agentView ? sock.agentView.project(msg, this.server.world, self) : [msg];
     for (let message of messages) {
       if ((this.agentPilot || this.companionPairing?.enabled) && message.t === MSG.SPAWN) {
         const clientId = this.server.world.ecs.clientId[message.e.id];
@@ -1567,6 +1596,7 @@ export class GameHost {
     this.worldState?.cancelLoad();
     if (this.#deathDrops?.pending) this.#deathDrops.fail();
     if (this.#pearlGround?.pending) this.#pearlGround.fail();
+    this.companionPresence?.revokeMinds('server_close'); // Attached minds lose their pairing first (1008).
     for (const sock of [...this.sockets.values()]) { try { sock.ws.close(1001, 'server restart'); } catch { /* gone */ } this.onClose(sock); }
     if (this.wss) this.wss.close();
     this.worldState?.save(this.server.world.economy);

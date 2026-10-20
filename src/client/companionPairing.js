@@ -2,7 +2,7 @@
 import { MSG } from '../net/protocol.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-const WHY = new Set(['forbidden', 'invalid_request', 'unavailable', 'busy', 'stopped', 'not_created']);
+const WHY = new Set(['forbidden', 'invalid_request', 'unavailable', 'busy', 'stopped', 'not_created', 'presence_body_required']);
 const CODE = /^[0-9a-f]{64}$/i;
 const MAX_TTL_MS = 5 * 60 * 1000;
 const MAX_CLOCK_SKEW_MS = 30_000;
@@ -21,6 +21,7 @@ export class CompanionPairingClient {
     this.controllerUrl = this.safeControllerUrl(controllerUrl);
     this.listeners = new Set(); this.authAccount = null; this.sessionAccount = null;
     this.generation = 0; this.pending = null; this.destroyed = false; this.expiryTimer = null;
+    this.body = null; // L03g-b: { present } from the latest enabled presence receipt, or null when unknown/off.
     this.state = empty('signed_out');
     this.unsubscribeAuth = auth.subscribe(value => this.authChanged(value));
     transport.onMessage(message => this.onMessage(message));
@@ -56,19 +57,29 @@ export class CompanionPairingClient {
   authChanged(value) {
     const account = this.validAuth(value);
     if (account === this.authAccount) return;
-    this.authAccount = account; this.sessionAccount = null; this.invalidate(); this.clearPrivate();
+    this.authAccount = account; this.sessionAccount = null; this.body = null; this.invalidate(); this.clearPrivate();
     this.publish(empty(account ? 'offline' : 'signed_out'));
   }
   setSession(accountId) {
     const account = typeof accountId === 'string' && UUID.test(accountId) ? accountId : null;
     if (account === this.sessionAccount) return;
-    this.sessionAccount = account; this.invalidate(); this.clearPrivate();
+    this.sessionAccount = account; this.body = null; this.invalidate(); this.clearPrivate();
     this.publish(empty(this.authAccount ? 'offline' : 'signed_out'));
   }
   invalidate() { this.generation++; if (this.pending) { clearTimeout(this.pending.timer); this.pending = null; } }
   disconnect() {
-    this.sessionAccount = null; this.invalidate(); this.clearPrivate();
+    this.sessionAccount = null; this.body = null; this.invalidate(); this.clearPrivate();
     this.publish(empty(this.authAccount ? 'offline' : 'signed_out'));
+  }
+  // With body presence on, a code needs the owner's live body. Presence receipts share this
+  // authenticated transport, so the pairing view reads the latest one instead of asking again.
+  bodyGate() { return this.body ? { ...this.body } : null; }
+  observePresence(message) {
+    if (!this.online() || !exactKeys(message, ['t', 'requestId', 'ok', 'why', 'enabled', 'presence'])
+        || typeof message.enabled !== 'boolean') return;
+    const next = message.enabled ? { present: message.presence?.status === 'present' } : null;
+    if ((next?.present ?? null) === (this.body?.present ?? null)) return;
+    this.body = next; this.publish({ ...this.state });
   }
   current(generation, account, session) {
     return !this.destroyed && generation === this.generation && account === this.authAccount
@@ -123,6 +134,7 @@ export class CompanionPairingClient {
     return true;
   }
   onMessage(message) {
+    if (message?.t === MSG.AGENT_COMPANION_PRESENCE_RESULT) { this.observePresence(message); return; }
     const pending = this.pending;
     if (!pending || message?.t !== MSG.AGENT_COMPANION_PAIR_RESULT || message.requestId !== pending.requestId) return;
     if (!this.current(pending.generation, pending.account, pending.session)) { this.disconnect(); return; }
@@ -148,6 +160,7 @@ export class CompanionPairingClient {
       return;
     }
     this.clearPrivate();
+    if (message.why === 'presence_body_required') this.body = { present: false };
     this.publish({ status: message.why === 'unavailable' || message.why === 'busy' ? 'error' : 'error',
       enabled: message.enabled, code: null, expiresAtMs: null, message: message.why });
   }
