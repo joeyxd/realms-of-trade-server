@@ -147,6 +147,16 @@
       "notes": "Tripo fence-rope, 1500 tris, 512 desktop / 256 mobile texture. See docs/art/prop-fence-rope-v2/README.md."
     },
     {
+      "id": "prop:notice-board",
+      "kind": "prop",
+      "src": "models/prop-notice-board-v2-desktop.glb",
+      "mobileSrc": "models/prop-notice-board-v2-mobile.glb",
+      "props": [
+        "board"
+      ],
+      "notes": "Tripo notice-board, 2004 tris, 512 desktop / 256 mobile texture. See docs/art/prop-notice-board-v2/README.md."
+    },
+    {
       "id": "tex:raft-comic-v1",
       "kind": "tex",
       "src": "textures/raft/comic-materials-v1.webp",
