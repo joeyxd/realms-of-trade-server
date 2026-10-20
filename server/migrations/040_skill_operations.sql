@@ -152,6 +152,7 @@ BEGIN
          (np->'skills'->>node)::numeric<>COALESCE((bp->'skills'->>node)::numeric,0)+1 THEN RETURN false; END IF;
     ELSIF NOT public.mn_death_int(np->'skills'->node,1,3) THEN RETURN false; END IF;
   ELSE
+    -- src/data/skillTree.js: RESET_FREE = 1; SKILL_RESET_GOLD = 150.
     price:=CASE WHEN used>=1 THEN 150 ELSE 0 END;
     IF used>=1000 OR np->'skr' IS DISTINCT FROM (COALESCE(bp->'skr','{}'::jsonb)||pg_catalog.jsonb_build_object(tree,used+1)) OR
        (n->>'gold')::bigint<>(b->>'gold')::bigint-price THEN RETURN false; END IF;
@@ -187,6 +188,32 @@ CREATE OR REPLACE FUNCTION public.mn_skill_state(p_profile jsonb)
 RETURNS jsonb LANGUAGE sql IMMUTABLE SECURITY INVOKER SET search_path = '' AS $function$
   SELECT pg_catalog.jsonb_build_object('skills',p_profile->'progression'->'skills','skr',p_profile->'progression'->'skr',
     'skg',p_profile->'progression'->'skg','practice',COALESCE(p_profile->'progression'->'practice','{}'::jsonb)-'logging'::text);
+$function$;
+
+CREATE OR REPLACE FUNCTION public.mn_save_profile(p_player_id uuid,p_data jsonb,p_expected_version integer)
+RETURNS jsonb LANGUAGE plpgsql VOLATILE SECURITY INVOKER SET search_path = '' AS $function$
+DECLARE v_data jsonb; v_version integer;
+BEGIN
+  IF p_player_id IS NULL OR p_expected_version IS NULL OR p_expected_version<0 OR p_data IS NULL OR
+     pg_catalog.jsonb_typeof(p_data) IS DISTINCT FROM 'object' THEN RAISE EXCEPTION 'invalid profile save arguments' USING ERRCODE='22023'; END IF;
+  IF p_expected_version=0 THEN
+    IF p_data ? 'attr' OR (p_data->'progression') ?| ARRAY['skills','skr','skg'] OR
+       public.mn_skill_state(p_data) IS DISTINCT FROM public.mn_skill_state('{}'::jsonb) THEN
+      RETURN pg_catalog.jsonb_build_object('ok',false,'why','operation'); END IF;
+    INSERT INTO public.mn_profiles(player_id,data,version,updated_at) VALUES(p_player_id,p_data,1,pg_catalog.now())
+      ON CONFLICT(player_id) DO NOTHING RETURNING version INTO v_version;
+  ELSE
+    SELECT data INTO v_data FROM public.mn_profiles WHERE player_id=p_player_id AND version=p_expected_version FOR UPDATE;
+    IF FOUND AND (v_data->'attr') IS NOT DISTINCT FROM (p_data->'attr') AND
+       public.mn_skill_state(v_data) IS NOT DISTINCT FROM public.mn_skill_state(p_data) AND
+       (NOT (p_data ? 'attr') OR public.mn_starter_valid_pack(p_data) IS TRUE) THEN
+      UPDATE public.mn_profiles SET data=p_data,version=version+1,updated_at=pg_catalog.now()
+        WHERE player_id=p_player_id AND version=p_expected_version RETURNING version INTO v_version;
+    END IF;
+  END IF;
+  IF v_version IS NULL THEN RETURN pg_catalog.jsonb_build_object('ok',false,'why','conflict'); END IF;
+  RETURN pg_catalog.jsonb_build_object('ok',true,'version',v_version);
+END
 $function$;
 
 -- Every non-skill economic writer (logging beneficiaries and artisan included) keeps that state.
@@ -276,13 +303,19 @@ END
 $function$;
 
 -- Ready only when the live progression validator accepts a full v3 block (a later migration that
--- restored SQL016's body would fail this probe) and the skill lane is installed.
+-- restored SQL016's body would fail this probe), the skill lane and the autosave guard are live.
 CREATE OR REPLACE FUNCTION public.mn_skill_operations_ready()
 RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY INVOKER SET search_path = '' AS $function$
+DECLARE commit_source text; save_source text;
 BEGIN
+  SELECT pg_catalog.pg_get_functiondef('public.mn_commit_economic_operation(uuid,jsonb)'::pg_catalog.regprocedure) INTO commit_source;
+  SELECT pg_catalog.pg_get_functiondef('public.mn_save_profile(uuid,jsonb,integer)'::pg_catalog.regprocedure) INTO save_source;
   IF public.mn_valid_logging_progression('{"v":3,"practice":{"logging":60,"survival":1,"sailing":2,"crafting":3,"trade":4},"milestones":["logging_steady","pilot_coastal"],"knowledge":["raft_storage"],"skills":{"lunge":2,"blast":1,"pearl_affinity":0},"skr":{"combat":1},"skg":{"combat":2,"survival":0,"sailing":0,"crafting":0,"trade":0}}'::jsonb) IS TRUE AND
      pg_catalog.to_regprocedure('public.mn_valid_skill_request(uuid,jsonb)') IS NOT NULL AND
-     pg_catalog.to_regprocedure('public.mn_commit_economic_operation_skill_base(uuid,jsonb)') IS NOT NULL THEN
+     pg_catalog.to_regprocedure('public.mn_commit_economic_operation_skill_base(uuid,jsonb)') IS NOT NULL AND
+     position('''skills''' in commit_source)>0 AND position('mn_economic_preserves_skills' in commit_source)>0 AND
+     position('mn_skill_state(v_data) IS NOT DISTINCT FROM public.mn_skill_state(p_data)' in save_source)>0 AND
+     position('mn_skill_state(p_data) IS DISTINCT FROM public.mn_skill_state(' in save_source)>0 THEN
     RETURN pg_catalog.jsonb_build_object('version',1);
   END IF;
   RETURN pg_catalog.jsonb_build_object('version',0);
@@ -297,6 +330,7 @@ REVOKE ALL ON FUNCTION public.mn_commit_economic_operation_skill_base(uuid,jsonb
 REVOKE ALL ON FUNCTION public.mn_valid_skill_request(uuid,jsonb),public.mn_valid_logging_progression(jsonb),
   public.mn_valid_economic_request_skill_base(uuid,jsonb),public.mn_skill_operations_ready() FROM PUBLIC,anon,authenticated;
 REVOKE ALL ON FUNCTION public.mn_economic_preserves_skills(jsonb),public.mn_skill_state(jsonb) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.mn_skill_state(jsonb) TO service_role;
 GRANT EXECUTE ON FUNCTION public.mn_valid_skill_request(uuid,jsonb),public.mn_valid_logging_progression(jsonb),
   public.mn_valid_economic_request_skill_base(uuid,jsonb),public.mn_skill_operations_ready() TO service_role;
 REVOKE ALL ON FUNCTION public.mn_valid_economic_request(uuid,jsonb),public.mn_commit_economic_operation(uuid,jsonb) FROM PUBLIC,anon,authenticated;

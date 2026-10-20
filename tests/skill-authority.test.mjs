@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { economicOperationId } from '../server/economicAuthority.mjs';
 import { GameHost } from '../server/host.mjs';
 import { readProgression } from '../src/sim/systems/progression.js';
+import { NODES } from '../src/data/skillTree.js';
 import { MSG } from '../src/net/protocol.js';
 import { ACCOUNT_ONE, RESOURCE_WORLD, connect, copy, makeResourceHost, makeResourceStore, startResourceHost, submitAndApply, turn }
   from './helpers/resource-authority-fixture.mjs';
@@ -106,6 +107,30 @@ test('assign adopts and raises through one durable receipt, publishes status and
   const rebound = await submitAndApply(f.host, f.client, { ...command, node: 'wave', expectedRev: p.eco.tradeRev });
   assert.equal(rebound?.ok, false); assert.equal(rebound?.why, 'duplicate');
   assert.deepEqual(p, after);
+});
+
+test('an older catalog adoption replays historically through the memory store without fencing the authority', async t => {
+  const f = await fixture(t), p = await trained(f), command = assign(p, 'old-catalog');
+  const index = NODES.findIndex(n => n.id === 'haggling');
+  assert.ok(index >= 0);
+  const [node] = NODES.splice(index, 1);
+  let first;
+  try {
+    first = await submitAndApply(f.host, f.client, command);
+    assert.equal(first?.ok, true);
+    assert.equal(Object.hasOwn(p.progression.skills, node.id), false);
+  } finally { NODES.splice(index, 0, node); }
+  const before = copy(p), saved = await f.store.loadProfile(ACCOUNT_ONE);
+  const receipt = await f.base.loadEconomicOperation(receiptId(command.opId));
+  assert.equal(Object.hasOwn(receipt.request.profile.progression.skills, node.id), false);
+  const replay = await submitAndApply(f.host, f.client, command);
+  assert.deepEqual(replay, { ...first, replay: true, historical: true });
+  assert.equal(f.host.economicAuthority.failed, false);
+  assert.equal(f.host.worldState.ready, true);
+  assert.deepEqual(p, before);
+  assert.deepEqual(await f.store.loadProfile(ACCOUNT_ONE), saved);
+  assert.equal((await submitAndApply(f.host, f.client, reset(p, 'after-historical-replay')))?.ok, true);
+  assert.equal(f.host.economicAuthority.failed, false, 'subsequent economic commands stay usable');
 });
 
 test('free then paid reset charges the live gold once, and short gold or stale revisions are no-op receipts', async t => {

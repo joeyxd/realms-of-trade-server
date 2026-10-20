@@ -10,7 +10,8 @@ import { createLoggingChallenge } from '../src/sim/systems/loggingTiming.js';
 import { draftResource, upgradeTimingState } from '../server/resourceState.mjs';
 import { loggingParticipants } from '../server/loggingOperation.mjs';
 import { teachStorage } from '../server/artisanOperation.mjs';
-import { draftSkills } from '../server/skillOperation.mjs';
+import { draftSkills, validStoredSkillRequest } from '../server/skillOperation.mjs';
+import { RESET_FREE, SKILL_RESET_GOLD } from '../src/data/skillTree.js';
 
 // Every migration through SQL039 really executes in PGlite, then SQL040 (twice: it must be rerunnable).
 const MIGRATIONS = new URL('../server/migrations/', import.meta.url);
@@ -68,6 +69,7 @@ function skillRequest(f, command) {
 const assign = (f, opId, node = 'lunge') => ({ type: 'skills', op: 'assign', opId, expectedRev: f.p.eco.tradeRev, tree: 'combat', node });
 const reset = (f, opId) => ({ type: 'skills', op: 'reset', opId, expectedRev: f.p.eco.tradeRev, tree: 'combat' });
 async function accept(f, operationId, request) {
+  assert.equal(validStoredSkillRequest(request), true, 'the JS historical diff accepts the SQL receipt');
   const result = await commit(f.db, operationId, request);
   assert.equal(result.ok, true, JSON.stringify(result));
   assert.deepEqual(result.ack, request.ack);
@@ -85,6 +87,90 @@ async function skillFixture(t) {
 const V3_FULL = { v: 3, practice: { logging: 60, survival: 4, sailing: 3, crafting: 2, trade: 1 },
   milestones: ['logging_steady', 'pilot_coastal'], knowledge: ['raft_storage'], skills: { lunge: 2, tromba: 3, haggling: 0 },
   skr: { combat: 1, exploration: 1000 }, skg: { combat: 45, survival: 0, sailing: 0, crafting: 0, trade: 18 } };
+
+test('SQL040 reset literals match RESET_FREE and SKILL_RESET_GOLD', () => {
+  const price = SQL040.match(/price:=CASE WHEN used>=(\d+) THEN (\d+) ELSE 0 END;/);
+  assert.ok(price);
+  assert.equal(Number(price[1]), RESET_FREE);
+  assert.equal(Number(price[2]), SKILL_RESET_GOLD);
+});
+
+test('SQL040 readiness detects either pre-040 writer and recovers after rerunning the migration', async t => {
+  const db = await database(t, { skills: false });
+  const old = await one(db, `select
+    pg_get_functiondef('public.mn_commit_economic_operation(uuid,jsonb)'::regprocedure) commit,
+    pg_get_functiondef('public.mn_save_profile(uuid,jsonb,integer)'::regprocedure) save`);
+  await db.exec(SQL040);
+  for (const body of [old.commit, old.save]) {
+    await db.exec('SET ROLE service_role');
+    assert.deepEqual((await one(db, 'select public.mn_skill_operations_ready() r')).r, { version: 1 });
+    await db.exec('RESET ROLE');
+    await db.exec(body);
+    await db.exec('SET ROLE service_role');
+    assert.deepEqual((await one(db, 'select public.mn_skill_operations_ready() r')).r, { version: 0 });
+    await db.exec('RESET ROLE');
+    await db.exec(SQL040);
+    await db.exec('SET ROLE service_role');
+    assert.deepEqual((await one(db, 'select public.mn_skill_operations_ready() r')).r, { version: 1 });
+    await db.exec('RESET ROLE');
+  }
+});
+
+test('SQL040 autosave guards skill state on update and creation while allowing unchanged and legacy profiles', async t => {
+  const db = await database(t), p = character();
+  // Exercise the invoker RPC with the service role's production RLS behavior.
+  await db.exec('ALTER ROLE service_role BYPASSRLS');
+  p.progression = copy(V3_FULL);
+  await seed(db, [[ACCOUNT, p]], worldData());
+  const save = async (account, data, version) => (await one(db,
+    'select public.mn_save_profile($1::uuid,$2::jsonb,$3::integer) r', [account, json(data), version])).r;
+  for (const edit of [
+    p => { p.progression.skills.lunge++; }, p => { p.progression.skr.combat++; },
+    p => { p.progression.skg.combat--; }, p => { delete p.progression; },
+    ...['skills', 'skr', 'skg'].map(k => p => { delete p.progression[k]; }),
+    ...['survival', 'sailing', 'crafting', 'trade'].flatMap(k => [
+      p => { p.progression.practice[k]++; }, p => { delete p.progression.practice[k]; },
+    ]),
+  ]) {
+    const changed = copy(p); edit(changed);
+    assert.deepEqual(await save(ACCOUNT, changed, 1), { ok: false, why: 'conflict' }, String(edit));
+    assert.deepEqual(await stored(db), { data: p, version: 1 });
+  }
+  const equal = copy(p); equal.xp++; equal.progression.practice.logging++;
+  assert.deepEqual(await save(ACCOUNT, equal, 1), { ok: true, version: 2 });
+  assert.deepEqual(await stored(db), { data: equal, version: 2 });
+  for (const edit of [
+    ...['skills', 'skr', 'skg'].flatMap(k => [p => { p.progression[k] = {}; }, p => { p.progression[k] = null; }]),
+    ...['survival', 'sailing', 'crafting', 'trade'].map(k => p => { p.progression.practice[k] = 0; }),
+  ]) {
+    const changed = character(); changed.progression.v = 3; edit(changed);
+    assert.deepEqual(await save(CONTRIBUTOR, changed, 0), { ok: false, why: 'operation' });
+    assert.equal(await stored(db, CONTRIBUTOR), undefined);
+  }
+  for (const [n, data] of [[101, character()], [102, (({ progression, ...rest }) => rest)(character())],
+    [103, { ...character(), progression: { v: 3, practice: { logging: 0 }, milestones: [], knowledge: [] } }]]) {
+    assert.deepEqual(await save(id(n), data, 0), { ok: true, version: 1 });
+    assert.deepEqual(await save(id(n), data, 1), { ok: true, version: 2 });
+    assert.deepEqual((await stored(db, id(n))).data, data);
+    assert.deepEqual(await save(id(n), p, 2), { ok: false, why: 'conflict' }, 'autosave cannot adopt skills');
+  }
+});
+
+test('SQL040 and JS keep historical catalog shapes valid across receipt replay and migration reapplication', async t => {
+  const f = await skillFixture(t), request = skillRequest(f, assign(f, 'historical-catalog'));
+  delete request.profile.progression.skills.haggling;
+  request.profile.progression.skills.retired_node = 1;
+  request.profile.progression.skg.exploration = 4;
+  assert.equal(validStoredSkillRequest(request), true);
+  assert.equal((await one(f.db, 'select public.mn_valid_skill_request($1::uuid,$2::jsonb) ok',
+    [id(105), json(request)])).ok, true);
+  const result = await accept(f, id(105), request);
+  await f.db.exec('RESET ROLE');
+  await f.db.exec(SQL040);
+  await f.db.exec('SET ROLE service_role');
+  assert.deepEqual(await commit(f.db, id(105), request), { ...result, replay: true });
+  assert.deepEqual((await stored(f.db)).data, request.profile);
+});
 
 test('SQL040 is rerunnable, service-only, keeps SQL037 readiness, and its probe fails on SQL016\'s old validator', async t => {
   const db = await database(t);
@@ -194,6 +280,7 @@ test('SQL040 refuses forged skill receipts and leaves profile, world and receipt
   ];
   for (const [kind, forge] of forgeries) {
     const forged = copy(valid[kind]); forge(forged);
+    assert.equal(validStoredSkillRequest(forged), false, `JS historical diff: ${kind}: ${forge}`);
     const result = await commit(f.db, id(11), forged);
     assert.equal(result.ok, false, `${kind}: ${forge}`);
     assert.equal(await receipt(f.db, id(11)), 0);

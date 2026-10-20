@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 import { newProfile } from '../src/sim/systems/inventory.js';
 import { readProgression } from '../src/sim/systems/progression.js';
 import { Economy } from '../src/sim/economy/economy.js';
-import { createMemoryStore } from '../server/store.mjs';
-import { draftSkills, skillStatePreserved, skillWorldTransition } from '../server/skillOperation.mjs';
+import { createMemoryStore, createSupabaseStore } from '../server/store.mjs';
+import { draftSkills, skillStatePreserved, skillWorldTransition, validStoredSkillRequest } from '../server/skillOperation.mjs';
+import { NODES } from '../src/data/skillTree.js';
 import { teachStorage } from '../server/artisanOperation.mjs';
-import { economicOperation, EconomicOperationError } from '../server/economicOperation.mjs';
+import { economicOperation, EconomicOperationError, checkedEconomicReceipt } from '../server/economicOperation.mjs';
 import { economicCommand } from '../server/economicAuthority.mjs';
 import { upgradeTimingState } from '../server/resourceState.mjs';
 
@@ -38,6 +39,156 @@ const buy = (f, profile, opId) => ({ operationId: id(900 + opId.length), request
   command: { type: 'commerce', op: 'buy', opId, town: 'aldea', g: 'madera', n: 1, expectedTotal: 0 },
   expectedProfileVersion: f.pv, expectedWorldVersion: f.wv, profile, worldData: clone(f.w),
   ack: { type: 'commerce', op: 'buy', opId, ok: true, why: '', rev: profile.eco.tradeRev } } });
+
+const storedReceipt = request => ({ request: clone(request), result: { ok: true, replay: false,
+  profileVersion: request.expectedProfileVersion + 1, worldVersion: request.expectedWorldVersion + 1, ack: clone(request.ack) } });
+const receiptStore = raw => createSupabaseStore({ async rpc(name) {
+  assert.equal(name, 'mn_load_economic_operation');
+  return { data: clone(raw), error: null };
+} });
+
+test('memory loads an adopting receipt from an older catalog without re-drafting it', async () => {
+  const f = await fixture(), index = NODES.findIndex(n => n.id === 'haggling');
+  assert.ok(index >= 0);
+  const [node] = NODES.splice(index, 1);
+  let input, committed;
+  try {
+    input = proposal(f);
+    assert.equal(Object.hasOwn(input.request.profile.progression.skills, node.id), false);
+    committed = await accept(f, input);
+  } finally { NODES.splice(index, 0, node); }
+  assert.throws(() => economicOperation(input), EconomicOperationError, 'new input still needs today\'s exact adoption');
+  assert.deepEqual(await f.store.loadEconomicOperation(input.operationId), { request: input.request, result: committed });
+  assert.deepEqual(await receiptStore(storedReceipt(input.request)).loadEconomicOperation(input.operationId),
+    { request: input.request, result: committed }, 'the RPC adapter uses the same historical validation');
+});
+
+test('historical skills accept retired nodes and old grants, gates and point budgets only on receipt load', async () => {
+  const f = await fixture(), adoption = proposal(f);
+  adoption.request.profile.progression.skills.retired_node = 1;
+  adoption.request.profile.progression.skg.exploration = 4;
+  for (const input of [adoption, (() => {
+    const input = clone(adoption), b = input.request.profile;
+    b.mast = [[1, 0], [1, 0]]; b.progression.skills.retired_node = 0;
+    input.request.before = clone(b); input.request.command.node = 'retired_node';
+    input.request.command.expectedRev = b.eco.tradeRev;
+    b.progression.skills.retired_node = 1; b.eco.tradeRev++;
+    input.request.ack.rev = b.eco.tradeRev;
+    return input;
+  })()]) {
+    const raw = storedReceipt(input.request);
+    assert.equal(validStoredSkillRequest(input.request), true);
+    assert.deepEqual(checkedEconomicReceipt(raw, input.operationId), raw);
+    assert.deepEqual(await receiptStore(raw).loadEconomicOperation(input.operationId), raw);
+    assert.throws(() => economicOperation(input), EconomicOperationError);
+  }
+  await accept(f, proposal(f));
+  const oldRules = proposal(f, 'assign', 'old-rules', undefined, 16);
+  assert.equal(oldRules.request.ack.ok, true);
+  for (const p of [oldRules.request.before, oldRules.request.profile]) p.mast = [[1, 0], [1, 0]];
+  assert.equal(draftSkills(oldRules.request.before, oldRules.request.command).ack.ok, false);
+  const raw = storedReceipt(oldRules.request);
+  assert.deepEqual(await receiptStore(raw).loadEconomicOperation(oldRules.operationId), raw);
+  assert.throws(() => economicOperation(oldRules), EconomicOperationError);
+  const absentNode = clone(oldRules);
+  absentNode.request.command.node = 'constructor';
+  absentNode.request.profile.progression.skills = { ...clone(absentNode.request.before.progression.skills), constructor: 1 };
+  assert.equal(validStoredSkillRequest(absentNode.request), true, 'absent JSON keys start at zero, including inherited JS names');
+  assert.deepEqual(await receiptStore(storedReceipt(absentNode.request)).loadEconomicOperation(absentNode.operationId),
+    storedReceipt(absentNode.request));
+});
+
+test('loading a forged stored skill receipt refuses altered diffs, commands and acknowledgements', async () => {
+  const f = await fixture();
+  await accept(f, proposal(f));
+  const valid = { assign: proposal(f, 'assign', 'next', undefined, 11),
+    reset: proposal(f, 'reset', 'free', undefined, 12),
+    denial: proposal(f, 'assign', 'stale', { tree: 'combat', node: 'lunge', expectedRev: 0 }, 13) };
+  assert.equal(valid.assign.request.ack.ok, true);
+  assert.equal(valid.reset.request.ack.ok, true);
+  assert.equal(valid.denial.request.ack.ok, false);
+  for (const input of Object.values(valid)) {
+    const raw = storedReceipt(input.request);
+    assert.deepEqual(await receiptStore(raw).loadEconomicOperation(input.operationId), raw);
+  }
+  for (const [kind, edit] of [
+    ['assign', r => { r.profile.progression.skills.wave++; }],
+    ['assign', r => { r.profile.progression.skills.lunge = 1; }],
+    ['assign', r => { r.profile.progression.skills.lunge = 4; }],
+    ['assign', r => { r.profile.gold--; }],
+    ['assign', r => { r.profile.xp++; }],
+    ['assign', r => { r.profile.eco.pack.goods = { madera: 1 }; }],
+    ['assign', r => { r.profile.progression.practice.trade = 1; }],
+    ['assign', r => { r.profile.progression.skg.combat++; }],
+    ['assign', r => { r.profile.progression.skr.combat = 1; }],
+    ['assign', r => { r.command.extra = true; }],
+    ['assign', r => { r.command.tree = 'pirates'; }],
+    ['assign', r => { r.ack.extra = true; }],
+    ['assign', r => { r.ack.why = 'points'; }],
+    ['assign', r => { r.ack.rev++; r.profile.eco.tradeRev++; }],
+    ['reset', r => { r.profile.gold -= 150; }],
+    ['reset', r => { r.profile.progression.skr.combat++; }],
+    ['reset', r => { r.profile.progression.skills.lunge = 1; }],
+    ['reset', r => { r.profile.progression.skills = clone(r.before.progression.skills); }],
+    ['reset', r => { delete r.profile.progression.skills.wave; }],
+    ['denial', r => { r.profile.gold++; }],
+    ['denial', r => { r.ack.rev++; }],
+    ['denial', r => { r.ack.why = ''; }],
+  ]) {
+    const input = clone(valid[kind]); edit(input.request);
+    const raw = storedReceipt(input.request);
+    assert.equal(validStoredSkillRequest(input.request), false, `${kind}: ${edit}`);
+    await assert.rejects(receiptStore(raw).loadEconomicOperation(input.operationId), { code: 'response' });
+  }
+  await accept(f, valid.reset);
+  await accept(f, proposal(f, 'assign', 'after-free', undefined, 14));
+  const paid = proposal(f, 'reset', 'paid', undefined, 15);
+  assert.equal(validStoredSkillRequest(paid.request), true);
+  paid.request.profile.gold = paid.request.before.gold;
+  await assert.rejects(receiptStore(storedReceipt(paid.request)).loadEconomicOperation(paid.operationId), { code: 'response' });
+});
+
+test('memory autosave preserves skills, resets, grants and every non-logging practice counter', async () => {
+  const f = await fixture(p => {
+    p.progression = { v: 3, practice: { logging: 0, survival: 1, sailing: 2, crafting: 3, trade: 4 },
+      milestones: [], knowledge: [] };
+  });
+  await accept(f, proposal(f));
+  const edits = [p => { p.progression.skills.lunge++; }, p => { p.progression.skr.combat = 1; },
+    p => { p.progression.skg.combat++; }, p => { delete p.progression; },
+    ...['skills', 'skr', 'skg'].map(k => p => { delete p.progression[k]; }),
+    ...['survival', 'sailing', 'crafting', 'trade'].flatMap(k => [
+      p => { p.progression.practice[k]++; }, p => { delete p.progression.practice[k]; },
+    ])];
+  for (const edit of edits) {
+    const p = clone(f.p); edit(p);
+    assert.deepEqual(await f.store.saveProfile(account, p, f.pv), { ok: false, why: 'conflict' }, String(edit));
+    assert.deepEqual(await f.store.loadProfile(account), { data: f.p, version: f.pv });
+  }
+  const equal = clone(f.p); equal.xp++; equal.progression.practice.logging++;
+  assert.deepEqual(await f.store.saveProfile(account, equal, f.pv), { ok: true, version: f.pv + 1 });
+  assert.deepEqual((await f.store.loadProfile(account)).data, equal);
+  const legacy = await fixture(), added = clone(f.p);
+  assert.deepEqual(await legacy.store.saveProfile(account, added, 1), { ok: false, why: 'conflict' });
+});
+
+test('memory autosave creation refuses skill state and preserves optional legacy omissions', async () => {
+  const store = createMemoryStore(), p = newProfile();
+  p.progression.v = 3;
+  for (const edit of [
+    p => { p.progression.skills = {}; }, p => { p.progression.skr = {}; }, p => { p.progression.skg = {}; },
+    ...['survival', 'sailing', 'crafting', 'trade'].map(k => p => { p.progression.practice[k] = 0; }),
+  ]) {
+    const altered = clone(p); edit(altered);
+    assert.deepEqual(await store.saveProfile(account, altered, 0), { ok: false, why: 'conflict' });
+    assert.equal(await store.loadProfile(account), null);
+  }
+  for (const [n, data] of [[1, p], [2, newProfile()], [3, (({ progression, ...rest }) => rest)(newProfile())]]) {
+    assert.deepEqual(await store.saveProfile(id(n), data, 0), { ok: true, version: 1 });
+    assert.deepEqual(await store.saveProfile(id(n), data, 1), { ok: true, version: 2 });
+    assert.deepEqual((await store.loadProfile(id(n))).data, data);
+  }
+});
 
 test('the edge command and the storage contract accept exactly the skill command shape', () => {
   const assign = { type: 'skills', op: 'assign', opId: 'a', expectedRev: 0, tree: 'combat', node: 'lunge' };

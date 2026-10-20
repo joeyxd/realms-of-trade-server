@@ -269,6 +269,7 @@ export function createMemoryStore() {
       const current = profiles.get(id);
       if (!current && Object.hasOwn(data, 'attr')) return conflict();
       if (current && canonicalEconomicText(current.data.attr ?? null) !== canonicalEconomicText(data.attr ?? null)) return conflict();
+      if (!skillStatePreserved(current?.data, data)) return conflict();
       return save(profiles, id, data, expected);
     },
     async initializeProfile(id, data, importedKey = null) {

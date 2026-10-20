@@ -10,7 +10,7 @@ import { artisanMutation } from './artisanOperation.mjs';
 import { fireMutation } from './fireOperation.mjs';
 import { checkedFreshwaterCommand, freshwaterMutation } from '../src/sim/systems/freshwaterProfile.js';
 import { attributeMutation, draftAttributes } from './attributeOperation.mjs';
-import { draftSkills, skillMutation } from './skillOperation.mjs';
+import { draftSkills, skillMutation, validStoredSkillRequest } from './skillOperation.mjs';
 import { parseSkillCommand } from '../src/sim/systems/skillPlan.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -93,7 +93,7 @@ export function canonicalEconomicText(value) {
   return JSON.stringify(sort(value));
 }
 
-function checkedCommand(raw) {
+function checkedCommand(raw, storedSkills = false) {
   if (!object(raw)) fail('input');
   const id = commandId(raw.opId);
   if (raw.type === 'freshwater') { const checked = checkedFreshwaterCommand(raw); if (!checked) fail('input'); return checked; }
@@ -110,7 +110,7 @@ function checkedCommand(raw) {
   if (raw.type === 'skills') {
     if (!['assign', 'reset'].includes(raw.op)) fail('input');
     exact(raw, ['type', 'op', 'opId', 'expectedRev', 'tree', ...(raw.op === 'assign' ? ['node'] : [])]);
-    if (!parseSkillCommand(raw)) fail('input');
+    if (!storedSkills && !parseSkillCommand(raw)) fail('input');
     return jsonCopy(raw);
   }
   if (raw.type === 'fire') {
@@ -232,7 +232,17 @@ function checkedAck(raw, command) {
   return jsonCopy(raw);
 }
 
-function checkedRequest(input) {
+function checkedProfile(raw, storedSkills) {
+  const parsed = JSON.parse(bytes(raw, MAX_PROFILE_BYTES));
+  // Stored skills use SQL040's progression shape; the other profile fields keep their normal checks.
+  const candidate = storedSkills && object(parsed) ? { ...parsed } : parsed;
+  if (storedSkills && object(candidate)) delete candidate.progression;
+  const sanitized = candidate && sanitizeProfile(candidate);
+  if (!sanitized || canonicalEconomicText(candidate) !== canonicalEconomicText(sanitized)) fail('input');
+  return parsed;
+}
+
+function checkedRequest(input, source = 'input') {
   exact(input, [...REQUEST_FIELDS, ...(Object.hasOwn(input, 'beneficiaries') ? ['beneficiaries'] : []),
     ...(Object.hasOwn(input, 'before') ? ['before'] : [])]);
   // Validate every descriptor and aggregate bound before traversing optional participant data.
@@ -240,11 +250,9 @@ function checkedRequest(input) {
   const world = key(input.world), account = uuid(input.account);
   integer(input.expectedProfileVersion, 1, MAX_VERSION - 1);
   integer(input.expectedWorldVersion, 1, MAX_VERSION - 1);
-  const command = checkedCommand(input.command);
-  const profileText = bytes(input.profile, MAX_PROFILE_BYTES);
-  const parsedProfile = JSON.parse(profileText);
-  const profile = parsedProfile && sanitizeProfile(parsedProfile);
-  if (!profile || canonicalEconomicText(profile) !== canonicalEconomicText(parsedProfile)) fail('input');
+  const storedSkills = source === 'stored' && skillMutation(input.command);
+  const command = checkedCommand(input.command, storedSkills);
+  const profile = checkedProfile(input.profile, storedSkills);
   const worldData = checkedWorldData(input.worldData);
   if (command.type === 'resource' && !Object.hasOwn(worldData, 'resources')) fail('input');
   const ack = checkedAck(input.ack, command);
@@ -255,10 +263,11 @@ function checkedRequest(input) {
     expectedWorldVersion: input.expectedWorldVersion, profile, worldData, ack };
   if (artisanMutation(command) || fireMutation(command) || attributeMutation(command) || skillMutation(command) || freshwaterMutation(command)) {
     if (!Object.hasOwn(input, 'before') || Object.hasOwn(input, 'beneficiaries')) fail('input');
-    const before = JSON.parse(bytes(input.before, MAX_PROFILE_BYTES)), sanitized = sanitizeProfile(before);
-    if (!sanitized || canonicalEconomicText(before) !== canonicalEconomicText(sanitized)) fail('input');
+    const before = checkedProfile(input.before, storedSkills);
     request.before = before;
-    if (attributeMutation(command) || skillMutation(command)) {
+    if (storedSkills) {
+      if (!validStoredSkillRequest(request)) fail('input');
+    } else if (attributeMutation(command) || skillMutation(command)) {
       const planned = (skillMutation(command) ? draftSkills : draftAttributes)(before, command);
       if (canonicalEconomicText(planned.profile) !== canonicalEconomicText(profile) ||
           canonicalEconomicText(planned.ack) !== canonicalEconomicText(ack)) fail('input');
@@ -296,12 +305,11 @@ export function checkedEconomicResult(raw, requestRaw, replay = false) {
 }
 
 export function checkedEconomicReceipt(raw, operationIdRaw) {
-  const operationId = uuid(operationIdRaw);
+  uuid(operationIdRaw);
   if (raw === null) return null;
   try {
     exact(raw, ['request', 'result']);
-    const { operationId: requestId, request } = economicOperation({ operationId, request: raw.request });
-    if (requestId !== operationId) fail('response');
+    const request = checkedRequest(raw.request, 'stored');
     const result = resultShape(raw.result, request, false);
     if (!result.ok) fail('response');
     return { request, result };
