@@ -1,5 +1,20 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**SK01-SK03, 2026-10-19 — hoja de habilidades (pestaña T con cinco árboles, iconos pintados y héroes; perfil, lado lector), alpha.76/protocolo 62:**
+SK01 `src/data/skillTree.js`: catálogo de cinco árboles (Combate completo, tiers I-II del resto), curvas por árbol y
+helpers puros. SK02 `src/ui/skillSheet.js`: la pestaña T (etiqueta Habilidades; el id sigue `tattoo` hasta SK04) dibuja
+el tipo `tree` de solo lectura con estado real (maestría, tatuajes, perla), el atlas `ICON_ATLASES.skills` (21 iconos) y
+cinco héroes con variante móvil; el modo aprender de Doña Sepia conserva la vista antigua. SK03: `readProgression`
+acepta `progression` v3 (`skills`, `skr`, `skg` y práctica pacífica) validando solo la forma; v1 y v2 se leen igual.
+Nada escribe v3 todavía: el SQL de producción (`mn_valid_logging_progression`, 016:182, usado por 021 y 029) solo
+acepta v 1..2, así que la migración de SK04 debe ampliarlo antes del primer escritor. La práctica de Combate se deriva
+siempre de la maestría (`combatPractice`); la hoja suma la concesión de la migración de tatuajes (perfil nuevo:
+Ganados 2 / Gastados 2 / Libres 0). Tests: `tests/skill-progression.test.mjs` (15) más skill-tree y skill-sheet-*; seis
+fixtures de "versión futura" pasan de v3 a v4. Gate 202/202; suite completa sin fallos nuevos frente a la base (42
+previos; `paired-companion` falla a veces bajo carga y pasa aislado). Versión alpha.76 en los tres archivos.
+Pendiente: SK04 (gasto y reset: skillPlan, skillOperation, protocolo, SQL con readiness que acepte v3, flag; el id
+de la pestaña pasa a `skills`).
+
 **VR04, 2026-10-19 — aldea de noche, cuarto corte (16 luces en high/ultra y calentamiento de los shaders del DOF), alpha.75/protocolo 62:**
 `MAX_LIGHTS` sube a 16 en `toon.js` (array del shader; los bucles cortan en `mnLightCount`); preset high con `lights: 16`,
 ultra lo hereda, low 4 y medium 8 igual: 14 huecos clasificados más 2 de reserva. `Pipeline.warmDof()` compila
