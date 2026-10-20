@@ -12,7 +12,7 @@ import { createMemoryStore } from '../server/store.mjs';
 import { GAME } from '../src/data/meta.js';
 import { rollItem } from '../src/sim/items.js';
 
-const out = resolve('docs/delivery/ui-kit-v1');
+const out = resolve(process.env.MN_QA_OUT || 'docs/delivery/ui-kit-v1');
 await mkdir(out, { recursive: true });
 const { chromium } = await import(pathToFileURL(resolve(process.env.MN_PLAYWRIGHT
   || '.scratch/pilot-browser/node_modules/playwright/index.mjs')).href);
@@ -41,6 +41,13 @@ async function join(page, port) {
   await page.goto(`http://127.0.0.1:${port}/?debug&q=low`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__mn && !document.querySelector('#btn-play')?.disabled, null, { timeout: 180000 });
   await page.locator('#btn-play').click({ force: true });
+  // Character-slots roster: create a character and enter with it (the picker intercepts Play since alpha.6x).
+  await page.getByRole('button', { name: /Crear personaje/ }).first().click({ force: true });
+  await page.getByRole('button', { name: /Crear y continuar/ }).first().click({ force: true });
+  const go = page.getByRole('button', { name: /Jugar con este personaje/ }).first();
+  await go.waitFor({ state: 'visible', timeout: 30000 });
+  await page.waitForFunction(() => [...document.querySelectorAll('button')].some((b) => /Jugar con este personaje/.test(b.textContent) && !b.disabled), null, { timeout: 30000 });
+  await go.click({ force: true });
   await page.waitForFunction(() => window.__mn?.client?.joined && window.__mn.st.mode === 'playing'
     && window.__mn.input.enabled && !window.__mn.st.paused, null, { timeout: 90000 });
 }
