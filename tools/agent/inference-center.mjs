@@ -126,6 +126,22 @@ export async function createInferenceCenter({ inferenceHome = process.env.MN_INF
   const find = id => data.endpoints.find(endpoint => endpoint.id === id);
   return {
     view,
+    resolve(endpointId, modelId) {
+      const next = queue.then(async () => {
+        let current;
+        try { current = await readFile(file, 'utf8'); }
+        catch (error) { if (error.code === 'ENOENT') current = JSON.stringify(empty()); else return fail('storage_error'); }
+        try { current = JSON.parse(current); if (!validStore(current)) return fail('invalid_store'); }
+        catch { return fail('invalid_store'); }
+        if (typeof endpointId !== 'string' || !/^[a-f0-9]{16}$/.test(endpointId) || !model(modelId)) return fail('invalid_request');
+        const endpoint = current.endpoints.find(item => item.id === endpointId);
+        if (!endpoint) return fail('endpoint_unknown');
+        if (endpoint.defaultModel !== modelId && !current.catalog[endpointId]?.models.includes(modelId)) return fail('model_unknown');
+        return { ok: true, endpoint: { id: endpoint.id, baseUrl: endpoint.baseUrl, apiKey: endpoint.apiKey }, modelId };
+      });
+      queue = next.then(() => {});
+      return next;
+    },
     save(endpoint) { return run(async () => {
       const fields = ['id', 'label', 'baseUrl', 'defaultModel'];
       if (!exact(endpoint, Object.hasOwn(endpoint ?? {}, 'apiKey') ? [...fields, 'apiKey'] : fields) ||

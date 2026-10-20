@@ -148,3 +148,58 @@ test('expired allowances and filesystem failures fail closed', async (t) => {
   assert.equal(blocked.ok, false);
   assert.equal(blocked.why, 'budget_file_missing');
 });
+
+
+const registryPolicy = { endpointId: '0123456789abcdef', modelId: 'Provider model:1', thinkingMode: 'disabled' };
+async function registryBudget(t) {
+  const { config } = await harness(t); delete config.baseUrl; Object.assign(config, registryPolicy);
+  return { config, budget: await LocalResourceBudget.initialize({ ...config, limits }) };
+}
+
+test('registry policy is accepted, persisted and reopened without a URL or key', async t => {
+  const { config, budget } = await registryBudget(t);
+  assert.deepEqual(budget.snapshot.persistence.policy, registryPolicy);
+  budget.assertAdapter({ countMode: 'estimated_tokens', localResourcePolicy: registryPolicy });
+  assert.deepEqual((await LocalResourceBudget.open(config)).snapshot.persistence.policy, registryPolicy);
+});
+
+test('budget options reject both baseUrl and endpointId on initialize and open', async t => {
+  const { config } = await harness(t);
+  await assert.rejects(LocalResourceBudget.initialize({ ...config, limits, endpointId: registryPolicy.endpointId }), TypeError);
+  await assert.rejects(LocalResourceBudget.open({ ...config, endpointId: registryPolicy.endpointId }), TypeError);
+});
+
+test('budget options reject neither baseUrl nor endpointId on initialize and open', async t => {
+  const { config } = await harness(t); delete config.baseUrl;
+  await assert.rejects(LocalResourceBudget.initialize({ ...config, limits }), TypeError);
+  await assert.rejects(LocalResourceBudget.open(config), TypeError);
+});
+
+test('registry budget rejects a loopback adapter', async t => {
+  const { budget } = await registryBudget(t);
+  assert.throws(() => budget.assertAdapter({ countMode: 'estimated_tokens', localResourcePolicy: policy }), /local_resource_adapter_mismatch/);
+});
+
+test('loopback budget rejects a registry adapter', async t => {
+  const { budget } = await fresh(t);
+  assert.throws(() => budget.assertAdapter({ countMode: 'estimated_tokens', localResourcePolicy: registryPolicy }), /local_resource_adapter_mismatch/);
+});
+
+test('loopback budget written with the pre-binding schema loads unchanged', async t => {
+  const { directory, config } = await harness(t);
+  const bytes = JSON.stringify({ schema: 'agent-local-resource-budget/v1', scope, limits,
+    expiresAtMs: config.expiresAtMs, policy, events: [] });
+  const file = path.join(directory, 'inference-budget.json'); await writeFile(file, bytes);
+  const budget = await LocalResourceBudget.open(config);
+  assert.deepEqual(budget.snapshot.persistence.policy, policy);
+  budget.assertAdapter({ countMode: 'estimated_tokens', localResourcePolicy: policy });
+  assert.equal(await readFile(file, 'utf8'), bytes);
+});
+
+test('registry budget rejects invalid endpoint and model ids and extra policy fields', async t => {
+  const { config } = await registryBudget(t);
+  for (const change of [{ endpointId: 'A'.repeat(16) }, { modelId: ' ' }, { modelId: 'x'.repeat(129) },
+    { modelId: 'bad' + String.fromCharCode(10) }, { apiKey: 'forbidden' }, { thinkingMode: 'enabled' }]) {
+    await assert.rejects(LocalResourceBudget.open({ ...config, ...change }), TypeError);
+  }
+});

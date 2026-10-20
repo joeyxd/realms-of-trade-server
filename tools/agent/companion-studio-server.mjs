@@ -16,6 +16,7 @@ export async function createCompanionStudio({ directory, baseUrl, modelId, port 
   adapterFactory, inferenceHome, initialCompanion = null } = {}) {
   const root = resolve(directory);
   const inferenceCenter = await createInferenceCenter({ inferenceHome });
+  const resolveInference = (endpointId, modelId) => inferenceCenter.resolve(endpointId, modelId);
   const defaultDraft = validateCompanionDraft({ ...DEFAULT_COMPANION_DRAFT, skin: 1, baseUrl, modelId, thinkingMode: 'disabled' });
   let companion = initialCompanion, creating = false, closed = false, origin = null;
   const key = randomBytes(32).toString('hex');
@@ -27,14 +28,14 @@ export async function createCompanionStudio({ directory, baseUrl, modelId, port 
   staticFiles.set('/companionTemplates.js', { body: await readFile(new URL('../../src/net/companionTemplates.js', import.meta.url)), mime: 'text/javascript' });
   staticFiles.set('/protocol.js', { body: await readFile(new URL('../../src/net/protocol.js', import.meta.url)), mime: 'text/javascript' });
   if (!companion) {
-    try { await access(join(root, 'local-runtime.json')); companion = await LocalCompanion.open({ directory: root, ...(adapterFactory ? { adapterFactory } : {}) }); }
+    try { await access(join(root, 'local-runtime.json')); companion = await LocalCompanion.open({ directory: root, resolveInference, ...(adapterFactory ? { adapterFactory } : {}) }); }
     catch (error) { if (error.code !== 'ENOENT') throw error; }
   }
   async function view() {
     const state = companion ? await companion.view() : { ok: true, created: false, draft: defaultDraft, scope: null,
       status: { state: 'not_created', connected: false, inFlight: false, public: false }, files: {}, budget: null, transcript: [] };
     const inference = inferenceCenter.view();
-    return { ...state, models: [companion?.draft.modelId ?? modelId],
+    return { ...state, binding: state.binding ?? null, models: [companion?.draft.modelId ?? modelId],
       inference,
       templates: { roles: ROLE_TEMPLATES, personalities: PERSONALITY_TEMPLATES, traits: TRAIT_TEMPLATES }, looks: COMPANION_LOOKS };
   }
@@ -79,7 +80,7 @@ export async function createCompanionStudio({ directory, baseUrl, modelId, port 
       const input = await parseBody(request), route = request.url;
       const inferenceFields = { '/api/inference/endpoint': ['endpoint'], '/api/inference/endpoint/delete': ['id'],
         '/api/inference/probe': ['id'], '/api/inference/test': ['id', 'modelId', 'prompt'], '/api/inference/select': ['id', 'modelId'] };
-      const fields = inferenceFields[route] ?? (route === '/api/create' ? ['draft', 'limits'] : route === '/api/chat' ? ['text'] :
+      const fields = inferenceFields[route] ?? (route === '/api/create' ? ['draft', 'limits', ...(Object.hasOwn(input ?? {}, 'inference') ? ['inference'] : [])] : route === '/api/chat' ? ['text'] :
         route === '/api/memory/compact' ? ['sourceIds'] : route === '/api/continuity' ? ['autoCompact'] : []);
       if (!exact(input, fields)) { reply(response, 400, fail('invalid_request')); return; }
       if (route === '/api/memory/compact' && (!Array.isArray(input.sourceIds) || input.sourceIds.length < 1 || input.sourceIds.length > 8 ||
@@ -102,7 +103,18 @@ export async function createCompanionStudio({ directory, baseUrl, modelId, port 
         if (companion || creating) { reply(response, 409, fail('already_created')); return; }
         creating = true;
         try {
+          if (Object.hasOwn(input, 'inference')) {
+            if (!exact(input.inference, ['endpointId', 'modelId']) ||
+                typeof input.inference.endpointId !== 'string' || typeof input.inference.modelId !== 'string') {
+              reply(response, 400, fail('invalid_request')); return;
+            }
+            const resolved = await resolveInference(input.inference.endpointId, input.inference.modelId);
+            if (!resolved.ok) {
+              reply(response, resolved.why === 'endpoint_unknown' ? 404 : resolved.why === 'invalid_request' ? 400 : 409, fail(resolved.why)); return;
+            }
+          }
           companion = await LocalCompanion.create({ directory: root, draft: input.draft, limits: input.limits,
+            ...(Object.hasOwn(input, 'inference') ? { inference: input.inference } : {}), resolveInference,
             ...(adapterFactory ? { adapterFactory } : {}) });
           result = await view();
         } finally { creating = false; }

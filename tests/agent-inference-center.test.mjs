@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createServer } from 'node:http';
-import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, rm, writeFile, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createInferenceCenter } from '../tools/agent/inference-center.mjs';
@@ -186,4 +186,59 @@ test('first failed probe records checkedAt without inventing a successful catalo
   const saved = center.view().endpoints[0];
   assert.equal(saved.catalogUpdatedAt, null); assert.ok(Number.isFinite(Date.parse(saved.catalogCheckedAt)));
   assert.equal(saved.catalogError, 'http_status');
+});
+
+
+test('resolve returns the private endpoint and key for a cached model', async t => {
+  const { center } = await fixture(t);
+  const baseUrl = await fake(t, (_req, res) => send(res, { data: [{ id: 'cached-model' }] }));
+  const { id } = await center.save(endpoint(baseUrl)); await center.probe(id);
+  assert.deepEqual(await center.resolve(id, 'cached-model'), { ok: true,
+    endpoint: { id, baseUrl, apiKey: 'secret-1234' }, modelId: 'cached-model' });
+  assert.doesNotMatch(JSON.stringify(center.view()), /secret-1234|apiKey/);
+});
+
+test('resolve accepts defaultModel without a model probe', async t => {
+  const { center } = await fixture(t); const { id } = await center.save(endpoint());
+  assert.deepEqual(await center.resolve(id, 'test-model'), { ok: true,
+    endpoint: { id, baseUrl: 'https://example.invalid/v1', apiKey: 'secret-1234' }, modelId: 'test-model' });
+});
+
+test('resolve refuses an uncached model with model_unknown', async t => {
+  const { center } = await fixture(t); const { id } = await center.save(endpoint());
+  assert.deepEqual(await center.resolve(id, 'uncached'), { ok: false, why: 'model_unknown' });
+});
+
+test('resolve refuses an unknown endpoint with endpoint_unknown', async t => {
+  const { center } = await fixture(t);
+  assert.deepEqual(await center.resolve('0000000000000000', 'm'), { ok: false, why: 'endpoint_unknown' });
+});
+
+test('resolve reads current store contents and refuses a corrupt store', async t => {
+  const { center, home } = await fixture(t); const { id } = await center.save(endpoint());
+  await writeFile(join(home, 'inference.json'), '{broken');
+  assert.deepEqual(await center.resolve(id, 'test-model'), { ok: false, why: 'invalid_store' });
+  const reopened = await createInferenceCenter({ inferenceHome: home });
+  assert.deepEqual(await reopened.resolve(id, 'test-model'), { ok: false, why: 'invalid_store' });
+  assert.equal(await readFile(join(home, 'inference.json'), 'utf8'), '{broken');
+});
+
+test('resolve writes nothing, performs no provider requests and sees changes from another registry', async t => {
+  const { center, home } = await fixture(t); let requests = 0;
+  const baseUrl = await fake(t, (_req, res) => { requests++; send(res, { data: [] }); });
+  const { id } = await center.save(endpoint(baseUrl));
+  const file = join(home, 'inference.json'), before = await readFile(file), metadata = await stat(file);
+  const files = await readdir(home);
+  await center.resolve(id, 'test-model'); await center.resolve(id, 'missing');
+  assert.deepEqual(await readFile(file), before); assert.deepEqual(await readdir(home), files);
+  assert.equal((await stat(file)).mtimeMs, metadata.mtimeMs); assert.equal(requests, 0);
+  const other = await createInferenceCenter({ inferenceHome: home }); await other.delete(id);
+  assert.deepEqual(await center.resolve(id, 'test-model'), { ok: false, why: 'endpoint_unknown' });
+});
+
+test('resolve validates endpoint and model ids with the registry rules', async t => {
+  const { center } = await fixture(t); const { id } = await center.save(endpoint());
+  for (const [endpointId, modelId] of [['bad', 'm'], [id, ''], [id, 'm'.repeat(129)], [id, 'm' + String.fromCharCode(10)]]) {
+    assert.deepEqual(await center.resolve(endpointId, modelId), { ok: false, why: 'invalid_request' });
+  }
 });

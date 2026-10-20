@@ -43,6 +43,15 @@ previos; `paired-companion` falla a veces bajo carga y pasa aislado). Versión a
 Pendiente: SK04 (gasto y reset: skillPlan, skillOperation, protocolo, SQL con readiness que acepte v3, flag; el id
 de la pestaña pasa a `skills`).
 
+**IC02, 2026-10-19 — el compañero del Studio se vincula a un endpoint y un modelo del centro de inferencia, sin cambio de versión:**
+El asistente del Studio (paso "Modelo") ofrece "Centro de inferencia" (endpoint registrado, sus modelos en caché y su modelo por defecto) o "Local (127.0.0.1)".
+`/api/create` acepta `{draft, limits, inference: {endpointId, modelId}}`. El vínculo vive en `local-runtime.json` (`inference`, un campo opcional del esquema v1) y manda sobre
+`manifest.provider`, que no cambia (`companionTemplates.js` intacto). El presupuesto local acepta una segunda política `{endpointId, modelId, thinkingMode}` sin URL ni clave; la loopback
+sigue igual de estricta. `LocalCompanion.start()` resuelve el vínculo una vez con `inferenceCenter.resolve()` antes de conectar el runner y piensa con `createEndpointOpenAIMind`; si falla
+(`endpoint_unknown`, `model_unknown`, `invalid_store`, `inference_unavailable`) no arranca ni cae al modelo local. La clave nunca se escribe en la carpeta del compañero (lo prueba un escaneo recursivo).
+Pruebas: área 191 de 192 (1 omitida, symlink EPERM), UI 16/16, gate 202/202. Pendiente: prueba a mano con un endpoint real; IC03 (la mente en el cuerpo de presencia).
+Tickets T-1019-61 (Codex sol) y T-1019-62 (Sonnet, rework 1).
+
 **IC01, 2026-10-19 — centro de inferencia del Studio local (endpoints y claves, sondeo /models con caché, completado de prueba con uso), sin cambio de versión:**
 Primer corte de la nueva ruta AREA17 (IC01..IC07, tablero y `area17-market/context/`): las claves y los endpoints viven en el
 Studio del PC del dueño, el servidor sigue siendo solo metadatos (D-A3). Nuevo `tools/agent/inference-center.mjs` (registro en

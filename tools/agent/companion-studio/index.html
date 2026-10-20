@@ -42,7 +42,7 @@
 
     <section id="wizard" class="panel wizard" aria-labelledby="wizard-title">
       <div class="wizard-heading"><div><p class="eyebrow">NUEVO COMPAÑERO</p><h2 id="wizard-title">Arma su historia</h2></div><span id="step-count" class="pill muted">Paso 1 de 4</span></div>
-      <ol class="steps" aria-label="Pasos de creación"><li class="current" data-step-indicator="0">Identidad</li><li data-step-indicator="1">Carácter</li><li data-step-indicator="2">Modelo local</li><li data-step-indicator="3">Revisión</li></ol>
+      <ol class="steps" aria-label="Pasos de creación"><li class="current" data-step-indicator="0">Identidad</li><li data-step-indicator="1">Carácter</li><li data-step-indicator="2">Modelo</li><li data-step-indicator="3">Revisión</li></ol>
       <form id="create-form" novalidate>
         <section class="wizard-step" data-step="0" aria-labelledby="identity-title">
           <h3 id="identity-title">¿Quién llega al puerto?</h3>
@@ -59,9 +59,14 @@
         </section>
 
         <section class="wizard-step" data-step="2" aria-labelledby="model-title" hidden>
-          <h3 id="model-title">Elige el modelo local</h3>
+          <h3 id="model-title">Elige el modelo</h3>
+          <fieldset class="source-field"><legend>Origen del modelo</legend><div class="source-choices"><label class="source-choice"><input type="radio" id="source-center" name="modelSource" value="center"> Centro de inferencia</label><label class="source-choice"><input type="radio" id="source-local" name="modelSource" value="local" checked> Local (127.0.0.1)</label></div></fieldset>
+          <p id="source-hint" class="step-help" hidden></p>
+          <div id="center-fields" class="field-grid" hidden><label>Conexión<select id="centerEndpoint" name="centerEndpoint"></select></label><label>Modelo<select id="centerModel" name="centerModel"></select></label></div>
+          <div id="local-fields">
           <p class="step-help">La conexión se queda en este equipo. No hace falta una clave de proveedor.</p>
           <div class="field-grid"><label>Servidor compatible<input id="baseUrl" name="baseUrl" type="url" required value="http://127.0.0.1:8080/v1" autocomplete="url"></label><label>Modelo local<select id="modelId" name="modelId" required><option value="server_default">Modelo del servidor local</option><option value="local-model">local-model</option></select></label></div>
+          </div>
           <div class="field-grid"><label>Modo de razonamiento<select id="thinkingMode" name="thinkingMode"><option value="server_default">Predeterminado del servidor</option><option value="disabled">Sin razonamiento extendido</option></select></label><label>Llamadas máximas<input id="maxCalls" name="maxCalls" type="number" min="1" max="8" step="1" value="8" required></label><label>Tokens máximos<input id="maxTokens" name="maxTokens" type="number" min="32768" max="1000000" step="1" value="200000" required></label></div>
           <p class="meter-note">El consumo se informa en unidades locales. El costo monetario queda como desconocido.</p>
         </section>
@@ -78,7 +83,7 @@
     <section id="workspace" hidden>
       <section class="section-heading"><div><p class="eyebrow">01 / COMPAÑERO</p><h2>En cubierta</h2></div><span id="runner-badge" class="pill muted">Sin estado</span></section>
       <section class="workspace-grid">
-        <article class="panel status-panel"><div class="panel-top"><div><span class="card-label">ESTADO LOCAL</span><h3 id="runner-state">Detenido</h3></div><span id="identity-summary" class="subtle"></span></div><p id="runner-summary" class="subtle">El juego solo se marcará conectado cuando el servidor lo confirme.</p><div class="status-actions"><button id="start" class="button primary" type="button" disabled>Iniciar</button><button id="stop" class="button secondary" type="button" disabled>Detener</button><button id="reenter" class="button secondary" type="button" disabled>Volver a entrar</button></div></article>
+        <article class="panel status-panel"><div class="panel-top"><div><span class="card-label">ESTADO LOCAL</span><h3 id="runner-state">Detenido</h3></div><span id="identity-summary" class="subtle"></span></div><p id="model-summary" class="subtle"></p><p id="runner-summary" class="subtle">El juego solo se marcará conectado cuando el servidor lo confirme.</p><div class="status-actions"><button id="start" class="button primary" type="button" disabled>Iniciar</button><button id="stop" class="button secondary" type="button" disabled>Detener</button><button id="reenter" class="button secondary" type="button" disabled>Volver a entrar</button></div></article>
         <article class="panel usage-panel"><span class="card-label">USO LOCAL</span><div class="usage-grid"><div class="usage"><span>Confirmado</span><strong id="confirmed">—</strong></div><div class="usage held"><span>Reservado</span><strong id="held">—</strong></div><div class="usage unknown"><span>Sin resolver</span><strong id="unresolved">—</strong></div></div><p id="usage-note" class="meter-note">Costo monetario: desconocido.</p><p id="budget-note" class="subtle"></p></article>
       </section>
 

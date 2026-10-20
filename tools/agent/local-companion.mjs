@@ -14,7 +14,7 @@ import { runnerMindSnapshot } from './mind-snapshot.mjs';
 import { loadOwnerFiles } from './owner-files.mjs';
 import { createMemoryStore } from './memory-store.mjs';
 import { LocalResourceBudget } from './local-resource-budget.mjs';
-import { createLocalOpenAIMind } from './local-openai-mind.mjs';
+import { createLocalOpenAIMind, createEndpointOpenAIMind } from './local-openai-mind.mjs';
 import { LOCAL_CONTEXT_LIMITS, SUMMARY_IDLE_MS, continuationCue, measuredContinuityContext,
   automaticSummaryRemaining, automaticSummarySources, summaryCandidates, sameCapture, journalUsage } from './companion-continuity.mjs';
 
@@ -48,6 +48,17 @@ async function readLocalFile(directory, filename, max = 32768) {
 }
 const hash = text => createHash('sha256').update(text).digest('hex');
 const failure = why => ({ ok: false, why });
+function checkedBinding(value) {
+  if (value === undefined) return null;
+  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).length !== 2 ||
+      !Object.hasOwn(value, 'endpointId') || !Object.hasOwn(value, 'modelId') ||
+      typeof value.endpointId !== 'string' || !/^[a-f0-9]{16}$/.test(value.endpointId) ||
+      typeof value.modelId !== 'string' || !value.modelId.trim() || value.modelId.length > 128 ||
+      /[\u0000-\u001f\u007f-\u009f]/.test(value.modelId)) throw new TypeError('invalid_inference_binding');
+  return { endpointId: value.endpointId, modelId: value.modelId };
+}
+const inferencePolicy = (binding, draft) => ({ ...(binding ?? { baseUrl: draft.baseUrl, modelId: draft.modelId }),
+  thinkingMode: draft.thinkingMode });
 
 // A real local GameHost and C01 sockets; its account resolver is explicitly a local fixture.
 // This never starts another authority for the public world or sends a public account token.
@@ -61,9 +72,12 @@ export class LocalCompanion {
   #summaryBlocked = false; #automaticSummaryActive = false;
   #lastRefresh = { atMs: Date.now(), reason: 'process_open', revision: 0 };
   #lastCapture = null; #lastSummary = null; #contextReport = null;
+  #binding; #resolveInference; #endpointAdapterFactory;
 
-  static async create({ directory, draft, limits, adapterFactory = createLocalOpenAIMind }) {
+  static async create({ directory, draft, limits, inference, resolveInference,
+    adapterFactory = createLocalOpenAIMind, endpointAdapterFactory = createEndpointOpenAIMind }) {
     const checked = validateCompanionDraft(draft);
+    const binding = checkedBinding(inference);
     if (!limits || Object.keys(limits).length !== 2 || !Number.isInteger(limits.maxCalls) || limits.maxCalls < 1 || limits.maxCalls > 8 ||
       !Number.isSafeInteger(limits.maxTokens) || limits.maxTokens < 32768 || limits.maxTokens > 1000000) throw new TypeError('invalid_local_limits');
     const scope = { ownerId: randomUUID(), characterId: randomUUID(), worldId: `companion-local-${randomUUID().slice(0, 8)}` };
@@ -73,15 +87,17 @@ export class LocalCompanion {
     await mkdir(join(root, 'resource-budget'));
     const budget = await LocalResourceBudget.initialize({ directory: join(root, 'resource-budget'), scope,
       limits: { ...limits, maxCostUnits: limits.maxTokens, maxEntries: 16 }, expiresAtMs,
-      baseUrl: checked.baseUrl, modelId: checked.modelId, thinkingMode: checked.thinkingMode });
-    await writeFile(join(root, 'local-runtime.json'), JSON.stringify({ schema: 'mn.local-companion-runtime.v1', scope, expiresAtMs }, null, 2) + '\n',
+      ...inferencePolicy(binding, checked) });
+    await writeFile(join(root, 'local-runtime.json'), JSON.stringify({ schema: 'mn.local-companion-runtime.v1', scope, expiresAtMs,
+      ...(binding ? { inference: binding } : {}) }, null, 2) + '\n',
       { flag: 'wx', mode: 0o600 });
-    return new LocalCompanion({ directory: root, draft: checked, scope, budget, adapterFactory });
+    return new LocalCompanion({ directory: root, draft: checked, scope, budget, adapterFactory, binding, resolveInference, endpointAdapterFactory });
   }
-  static async open({ directory, adapterFactory = createLocalOpenAIMind }) {
+  static async open({ directory, resolveInference, adapterFactory = createLocalOpenAIMind, endpointAdapterFactory = createEndpointOpenAIMind }) {
     const root = resolve(directory), manifest = JSON.parse(await readLocalFile(root, 'companion-manifest.json'));
     const runtime = JSON.parse(await readLocalFile(root, 'local-runtime.json'));
     const draft = validateCompanionDraft(manifest.draft), scope = runtime.scope;
+    const binding = checkedBinding(runtime.inference);
     if (manifest.schema !== 'mn.local-companion.v1' || runtime.schema !== 'mn.local-companion-runtime.v1' ||
         JSON.stringify(scope) !== JSON.stringify(manifest.scope) || Object.keys(scope ?? {}).length !== 3 ||
         !['ownerId', 'characterId', 'worldId'].every(k => typeof scope[k] === 'string' && /^[A-Za-z0-9:_-]{1,100}$/.test(scope[k]))) {
@@ -89,12 +105,13 @@ export class LocalCompanion {
     }
     await loadOwnerFiles({ directory: root, scope });
     const budget = await LocalResourceBudget.open({ directory: join(root, 'resource-budget'), scope,
-      expiresAtMs: runtime.expiresAtMs, baseUrl: draft.baseUrl, modelId: draft.modelId, thinkingMode: draft.thinkingMode });
-    return new LocalCompanion({ directory: root, draft, scope, budget, adapterFactory });
+      expiresAtMs: runtime.expiresAtMs, ...inferencePolicy(binding, draft) });
+    return new LocalCompanion({ directory: root, draft, scope, budget, adapterFactory, binding, resolveInference, endpointAdapterFactory });
   }
-  constructor({ directory, draft, scope, budget, adapterFactory }) {
+  constructor({ directory, draft, scope, budget, adapterFactory, binding, resolveInference, endpointAdapterFactory }) {
     this.#directory = directory; this.#draft = draft; this.#scope = scope;
     this.#budget = budget; this.#adapterFactory = adapterFactory;
+    this.#binding = binding ?? null; this.#resolveInference = resolveInference; this.#endpointAdapterFactory = endpointAdapterFactory;
   }
   get scope() { return structuredClone(this.#scope); }
   get draft() { return structuredClone(this.#draft); }
@@ -153,6 +170,15 @@ export class LocalCompanion {
     const generation = ++this.#generation; this.#state = 'starting';
     const start = (async () => {
       try {
+        let boundAdapter;
+        if (this.#binding) {
+          if (typeof this.#resolveInference !== 'function') { this.#state = 'error'; return failure('inference_unavailable'); }
+          const resolved = await this.#resolveInference(this.#binding.endpointId, this.#binding.modelId);
+          if (generation !== this.#generation || this.#closed) return failure('start_cancelled');
+          if (!resolved.ok) { this.#state = 'error'; return failure(resolved.why); }
+          boundAdapter = this.#endpointAdapterFactory({ ...this.#binding, endpoint: resolved.endpoint,
+            thinkingMode: this.#draft.thinkingMode, maxCalls: 8, maxOutputTokens: 512, timeoutMs: 30000 });
+        }
         await this.#ensureWorld();
         if (generation !== this.#generation || this.#closed) return failure('start_cancelled');
         const grant = { v: 1, scope: { ...this.#scope, sessionId: randomUUID() }, controlRevision: 1,
@@ -164,7 +190,7 @@ export class LocalCompanion {
         if (generation !== this.#generation || this.#closed) { this.#runner.close(); return failure('start_cancelled'); }
         this.#sessions++;
         this.#files = await loadOwnerFiles({ directory: this.#directory, scope: this.#scope });
-        this.#adapter = this.#adapterFactory({ baseUrl: this.#draft.baseUrl, modelId: this.#draft.modelId,
+        this.#adapter = this.#binding ? boundAdapter : this.#adapterFactory({ baseUrl: this.#draft.baseUrl, modelId: this.#draft.modelId,
           thinkingMode: this.#draft.thinkingMode, maxCalls: 8, maxOutputTokens: 512, timeoutMs: 30000 });
         this.#mind = new AgentMind({ adapter: this.#adapter, budget: this.#budget,
           readSnapshot: () => this.#readSnapshot(),
@@ -329,7 +355,7 @@ export class LocalCompanion {
       atMs: latestEpisode.createdAtMs, reason: 'loaded_from_files' } : null);
     const lastSummary = this.#lastSummary ?? (latestSummary ? { ok: true, entryId: latestSummary.id,
       atMs: latestSummary.createdAtMs, reason: 'loaded_from_files', sourceIds: latestSummary.payload.sources.map(source => source.id) } : null);
-    return { ok: true, created: true, draft: this.draft, scope: this.scope, files,
+    return { ok: true, created: true, draft: this.draft, scope: this.scope, files, binding: structuredClone(this.#binding),
       models: [this.#draft.modelId], transcript: structuredClone(this.#transcript),
       status: { state: this.#state, connected: this.#state === 'ready' && this.#runner?.state === 'ready',
         name: this.#draft.name, inFlight: this.#busy, sessionId: this.#runner?.grant.scope.sessionId ?? null,

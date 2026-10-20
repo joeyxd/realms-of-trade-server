@@ -58,3 +58,20 @@ Fallos (409): `http_status`, `invalid_json`, `invalid_response`, `transport_erro
 `storage_error`: no se pudo persistir. No se devuelve texto de errores HTTP del proveedor.
 El transporte también da `aborted`, `busy`, `call_limit`, `uncertain_blocked`;
 una ejecución incierta bloquea llamadas adicionales en esa instancia.
+
+
+## Vincular un compañero
+
+`POST /api/create` admite `inference: { endpointId, modelId }` junto a `draft` y `limits`.
+El Studio resuelve la selección antes de crear archivos; el modelo debe estar en caché o ser `defaultModel`.
+La vinculación vive solo en `local-runtime.json` (esquema v1) y tiene precedencia sobre
+`manifest.provider` de `companion-manifest.json`; el draft y su configuración loopback se conservan.
+El snapshot expone `binding` con esos dos identificadores, o `null` para compañeros sin vincular.
+Al abrir no se resuelve; cada `start()` resuelve una vez el registro actual antes de abrir sesiones.
+Si falla, no hay fallback: `inference_unavailable` sin resolver, `endpoint_unknown` al borrar
+la conexión, `model_unknown` si el modelo dejó de estar disponible, `invalid_request`,
+`invalid_store` o `storage_error`. Crear devuelve 400 para `invalid_request`, 404 para
+`endpoint_unknown` y 409 para los otros fallos. No se modifica la vinculación tras crear.
+La clave queda únicamente en el almacén de inferencia y en memoria del transporte;
+nunca en archivos del compañero, vistas, snapshots, registros ni errores.
+Sin vinculación se conserva el transporte loopback y su presupuesto anterior.

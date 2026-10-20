@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { completionReport, inferenceUsageTiles, renderInference, checkedLimits, fixedWhy, isLocalEndpoint, keyFromFragment, normalizeChatInput, validateWizardDraft } from '../tools/agent/companion-studio/main.js';
+import { buildCreatePayload, centerModelChoices, centerUnavailable, completionReport, defaultSource, modelSummaryLine, resolveSource, inferenceUsageTiles, renderInference, checkedLimits, fixedWhy, isLocalEndpoint, keyFromFragment, normalizeChatInput, validateWizardDraft } from '../tools/agent/companion-studio/main.js';
 
 const draft = { v: 1, name: 'Brisa', role: 'harvester', personality: 'warm', traits: ['curious', 'kind', 'prudent'],
   skin: 0, modelId: 'local-model', baseUrl: 'http://127.0.0.1:8080/v1', thinkingMode: 'server_default' };
@@ -137,4 +137,69 @@ test('inference renderer keeps typed prompt and chosen model per endpoint across
     assert.match(completionReport({ ok: true, servedModel: 'm-2024-01-01' }), /Modelo servido: m-2024-01-01/);
     assert.match(completionReport({ ok: true, servedModel: 'other', modelMismatch: true }), /Difiere del solicitado/);
   } finally { if (previous === undefined) delete globalThis.document; else globalThis.document = previous; }
+});
+
+const centerEndpoint = { id: 'ep-1', label: 'Proveedor', baseUrl: 'https://example.invalid/v1', defaultModel: 'big', keyHint: '1234', models: ['small', 'big'] };
+const centerChoice = { source: 'center', endpointId: 'ep-1', modelId: 'big' };
+
+test('create payload is exactly draft, limits and inference for the center and draft, limits for local', () => {
+  assert.deepEqual(buildCreatePayload(draft, limits, centerChoice), { draft, limits, inference: { endpointId: 'ep-1', modelId: 'big' } });
+  assert.deepEqual(Object.keys(buildCreatePayload(draft, limits, centerChoice)), ['draft', 'limits', 'inference']);
+  assert.deepEqual(buildCreatePayload(draft, limits, { source: 'local', endpointId: 'ep-1', modelId: 'big' }), { draft, limits });
+  assert.deepEqual(Object.keys(buildCreatePayload(draft, limits, null)), ['draft', 'limits']);
+});
+
+test('model list for an endpoint includes defaultModel once even when it is also cached', () => {
+  assert.deepEqual(centerModelChoices(centerEndpoint), ['small', 'big']);
+  assert.deepEqual(centerModelChoices({ ...centerEndpoint, models: ['small'] }), ['small', 'big']);
+  assert.deepEqual(centerModelChoices({ ...centerEndpoint, defaultModel: null, models: [] }), []);
+});
+
+test('no endpoints or invalid_store disables the center option and selects local', () => {
+  for (const inference of [{ endpoints: [], active: null }, { endpoints: [centerEndpoint], active: { endpointId: 'ep-1', modelId: 'big' }, error: 'invalid_store' }, undefined]) {
+    assert.equal(centerUnavailable(inference), true);
+    const resolved = resolveSource(inference, { touched: true, source: 'center', endpointId: 'ep-1', modelId: 'big' });
+    assert.equal(resolved.centerDisabled, true); assert.equal(resolved.source, 'local');
+  }
+  assert.equal(centerUnavailable({ endpoints: [centerEndpoint], active: null }), false);
+});
+
+test('default source is center only when inference.active is set, and owner choices survive re-renders', () => {
+  const noActive = { endpoints: [centerEndpoint], active: null }, active = { endpoints: [centerEndpoint], active: { endpointId: 'ep-1', modelId: 'small' } };
+  assert.equal(defaultSource(noActive), 'local'); assert.equal(defaultSource(active), 'center');
+  assert.equal(defaultSource({ endpoints: [centerEndpoint], active: { endpointId: 'gone', modelId: 'x' } }), 'local');
+  assert.deepEqual(resolveSource(active, { touched: false }), { source: 'center', endpointId: 'ep-1', modelId: 'small', centerDisabled: false });
+  assert.equal(resolveSource(noActive, { touched: false }).modelId, 'big');
+  assert.deepEqual(resolveSource(active, { touched: true, source: 'local', endpointId: 'ep-1', modelId: 'big' }), { source: 'local', endpointId: 'ep-1', modelId: 'big', centerDisabled: false });
+});
+
+test('the center choice without an endpoint or model fails validation and loopback rejections still hold', () => {
+  assert.equal(validateWizardDraft(draft, limits, centerChoice), true);
+  assert.equal(validateWizardDraft(draft, limits, { source: 'center', endpointId: 'ep-1', modelId: '' }), false);
+  assert.equal(validateWizardDraft(draft, limits, { source: 'center', endpointId: '', modelId: 'big' }), false);
+  assert.equal(validateWizardDraft(draft, limits, { source: 'local' }), true);
+  assert.equal(validateWizardDraft({ ...draft, baseUrl: 'https://models.example/v1' }, limits, centerChoice), false);
+  assert.equal(validateWizardDraft({ ...draft, baseUrl: 'http://localhost:8080/v1' }, limits), false);
+  assert.equal(isLocalEndpoint('http://10.0.0.5:8080/v1'), false);
+});
+
+test('model step markup exposes the source controls and the companion model line prefers the binding', async () => {
+  const html = await readFile(new URL('../tools/agent/companion-studio/index.html', import.meta.url), 'utf8');
+  for (const id of ['source-center', 'source-local', 'centerEndpoint', 'centerModel', 'center-fields', 'local-fields', 'source-hint', 'model-summary']) assert.ok(html.includes(`id="${id}"`), id);
+  assert.match(html, />Modelo<\/li>/); assert.match(html, /Centro de inferencia<\/label>/); assert.match(html, /Local \(127\.0\.0\.1\)/);
+  const inference = { endpoints: [centerEndpoint], active: null };
+  assert.equal(modelSummaryLine({ binding: { endpointId: 'ep-1', modelId: 'big' }, inference, draft }), 'Modelo: Proveedor · big');
+  assert.equal(modelSummaryLine({ binding: { endpointId: 'gone', modelId: 'big' }, inference, draft }), 'Modelo: gone · big');
+  assert.equal(modelSummaryLine({ binding: null, inference, draft }), 'Modelo: local-model');
+  assert.equal(modelSummaryLine({ inference, draft }), 'Modelo: local-model');
+});
+
+test('center model ids follow the inference center rule, not the local model pattern', () => {
+  const cf = '@cf/meta/llama-3-8b-instruct';
+  const endpoint = { ...centerEndpoint, models: [cf, 'bad\u0007id', 'x'.repeat(129)], defaultModel: 'acme+v2#1' };
+  assert.deepEqual(centerModelChoices(endpoint), [cf, 'acme+v2#1']);
+  assert.deepEqual(centerModelChoices({ ...centerEndpoint, models: [], defaultModel: cf }), [cf]);
+  assert.deepEqual(centerModelChoices({ ...centerEndpoint, models: ['x'.repeat(128)], defaultModel: null }), ['x'.repeat(128)]);
+  assert.equal(validateWizardDraft(draft, limits, { source: 'center', endpointId: 'ep-1', modelId: cf }), true);
+  assert.equal(validateWizardDraft(draft, limits, { source: 'center', endpointId: 'ep-1', modelId: 'x'.repeat(129) }), false);
 });

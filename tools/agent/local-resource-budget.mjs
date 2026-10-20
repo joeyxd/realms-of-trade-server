@@ -19,7 +19,7 @@ const sameScope = (a, b) => scopeValid(a) && scopeValid(b) &&
   ['ownerId', 'characterId', 'worldId'].every((key) => a[key] === b[key]);
 const limitsValid = (value) => exact(value, ['maxCalls', 'maxTokens', 'maxCostUnits', 'maxEntries']) &&
   Object.values(value).every((item) => Number.isSafeInteger(item) && item > 0) && value.maxEntries <= 256;
-const policyValid = (value) => exact(value, ['baseUrl', 'modelId', 'thinkingMode']) &&
+const loopbackPolicyValid = (value) => exact(value, ['baseUrl', 'modelId', 'thinkingMode']) &&
   typeof value.baseUrl === 'string' && /^http:\/\/127\.0\.0\.1:[0-9]{1,5}\/v1\/?$/.test(value.baseUrl) &&
   typeof value.modelId === 'string' && /^[A-Za-z0-9._:/-]{1,160}$/.test(value.modelId) &&
   ['server_default', 'disabled'].includes(value.thinkingMode) && (() => {
@@ -29,8 +29,14 @@ const policyValid = (value) => exact(value, ['baseUrl', 'modelId', 'thinkingMode
         !url.username && !url.password && !url.search && !url.hash && ['/v1', '/v1/'].includes(url.pathname);
     } catch { return false; }
   })();
+const registryPolicyValid = (value) => exact(value, ['endpointId', 'modelId', 'thinkingMode']) &&
+  typeof value.endpointId === 'string' && /^[a-f0-9]{16}$/.test(value.endpointId) &&
+  typeof value.modelId === 'string' && value.modelId.trim().length > 0 && value.modelId.length <= 128 &&
+  !/[\u0000-\u001f\u007f-\u009f]/.test(value.modelId) && ['server_default', 'disabled'].includes(value.thinkingMode);
+const policyValid = (value) => loopbackPolicyValid(value) || registryPolicyValid(value);
 const samePolicy = (a, b) => policyValid(a) && policyValid(b) &&
-  a.baseUrl === b.baseUrl && a.modelId === b.modelId && a.thinkingMode === b.thinkingMode;
+  Object.hasOwn(a, 'baseUrl') === Object.hasOwn(b, 'baseUrl') &&
+  a.baseUrl === b.baseUrl && a.endpointId === b.endpointId && a.modelId === b.modelId && a.thinkingMode === b.thinkingMode;
 const inputValid = (value) => exact(value, ['requestId', 'kind', 'inputTokens', 'outputTokens', 'maxCostUnits', 'countMode']) &&
   id(value.requestId) && ['decision', 'compaction', 'embedding', 'retry'].includes(value.kind) &&
   safe(value.inputTokens) && value.inputTokens > 0 && safe(value.outputTokens) && value.outputTokens > 0 &&
@@ -45,14 +51,16 @@ const copyLimits = (value) => ({ maxCalls: value.maxCalls, maxTokens: value.maxT
 const activeWhy = (state, nowMs) => !safe(nowMs) ? 'invalid_clock' : nowMs >= state.expiresAtMs ? 'local_resource_budget_expired' : null;
 
 function validateOptions(options, { needsLimits = false } = {}) {
-  if (!exact(options, ['directory', 'scope', ...(needsLimits ? ['limits'] : []), 'expiresAtMs', 'baseUrl', 'modelId', 'thinkingMode', ...(Object.hasOwn(options ?? {}, 'now') ? ['now'] : [])]) ||
+  const field = Object.hasOwn(options ?? {}, 'endpointId') ? 'endpointId' : 'baseUrl';
+  const policy = { [field]: options?.[field], modelId: options?.modelId, thinkingMode: options?.thinkingMode };
+  if (!exact(options, ['directory', 'scope', ...(needsLimits ? ['limits'] : []), 'expiresAtMs', field, 'modelId', 'thinkingMode', ...(Object.hasOwn(options ?? {}, 'now') ? ['now'] : [])]) ||
       typeof options.directory !== 'string' || !path.isAbsolute(options.directory) || !scopeValid(options.scope) ||
-      !safe(options.expiresAtMs) || !policyValid({ baseUrl: options.baseUrl, modelId: options.modelId, thinkingMode: options.thinkingMode }) ||
+      !safe(options.expiresAtMs) || !policyValid(policy) ||
       (needsLimits && !limitsValid(options.limits)) || (options.now !== undefined && typeof options.now !== 'function')) {
     throw new TypeError('invalid local resource budget options');
   }
   return { ...options, directory: path.resolve(options.directory), scope: clone(options.scope),
-    policy: { baseUrl: options.baseUrl, modelId: options.modelId, thinkingMode: options.thinkingMode },
+    policy,
     ...(needsLimits ? { limits: copyLimits(options.limits) } : {}), now: options.now ?? Date.now };
 }
 
@@ -111,7 +119,7 @@ function replay(state, scope, policy, expiresAtMs = state?.expiresAtMs) {
   return { budget, lastAtMs, hasUnresolved };
 }
 
-/** Durable, non-monetary allowance for one loopback model policy and scope. */
+/** Durable, non-monetary allowance for one explicit model policy and scope. */
 export class LocalResourceBudget extends InferenceBudget {
   #file; #scope; #policy; #expiresAtMs; #now; #queue = Promise.resolve(); #snapshot; #restartBlocked = false;
 

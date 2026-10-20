@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import http from 'node:http';
 import { once } from 'node:events';
 import test from 'node:test';
-import { createLocalOpenAIMind } from '../tools/agent/local-openai-mind.mjs';
+import { createLocalOpenAIMind, createEndpointOpenAIMind } from '../tools/agent/local-openai-mind.mjs';
 import { parseDecision } from '../tools/agent/mind-contract.mjs';
 
 const MODEL = 'local-fixture-model:7b';
@@ -135,4 +135,22 @@ test('adapter rejects altered payload model, generation options, and output budg
   await assert.rejects(complete(adapter, prepared.body, { maxOutputTokens: 32 }), { message: 'invalid_local_completion' });
   assert.equal(hits, 0);
   assert.equal(adapter.transportState.calls, 0);
+});
+
+
+test('endpoint mind sends the registry key and bound model and converts native usage to costUnits', async t => {
+  const provider = await fakeProvider(t, async ({ res }) => response(res));
+  const endpointId = '0123456789abcdef', apiKey = 'bound-endpoint-secret-xyz';
+  const adapter = createEndpointOpenAIMind({ endpointId, endpoint: { baseUrl: provider.baseUrl, apiKey },
+    modelId: MODEL, thinkingMode: 'disabled', maxOutputTokens: 64, timeoutMs: 1000 });
+  const prepared = adapter.prepare(request(adapter));
+  const result = await complete(adapter, prepared.body);
+  assert.equal(provider.requests.length, 1);
+  assert.equal(provider.requests[0].headers.authorization, `Bearer ${apiKey}`);
+  assert.equal(provider.requests[0].body.model, MODEL);
+  assert.equal(provider.requests[0].raw.toString('utf8'), prepared.body);
+  assert.deepEqual(result.usage, { inputTokens: 19, outputTokens: 8, costUnits: 27 });
+  assert.deepEqual(adapter.localResourcePolicy, { endpointId, modelId: MODEL, thinkingMode: 'disabled' });
+  assert.equal(adapter.id, 'endpoint-openai-mind-v1');
+  assert.ok(!JSON.stringify({ prepared, result, policy: adapter.localResourcePolicy, records: adapter.records }).includes(apiKey));
 });

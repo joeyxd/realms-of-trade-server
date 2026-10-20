@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, rm, readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, rm, readFile, writeFile, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createServer, request as httpRequest } from 'node:http';
@@ -376,3 +376,60 @@ for (const [kind, bytes] of [
     assert.deepEqual(await readFile(file), bytes);
   });
 }
+
+
+test('api/create with inference creates a bound companion and snapshot.binding survives a Studio reopen', async t => {
+  const access = await studioFixture(t);
+  const endpoint = { id: null, label: 'Bound', baseUrl: 'https://example.invalid/v1', apiKey: 'studio-bound-secret', defaultModel: 'bound-model' };
+  const saved = await (await post(access, '/api/inference/endpoint', { endpoint })).json();
+  const inference = { endpointId: saved.id, modelId: 'bound-model' };
+  const created = await post(access, '/api/create', { draft, limits, inference });
+  assert.equal(created.status, 200); const snapshot = await created.json();
+  assert.deepEqual(snapshot.binding, inference); assert.deepEqual(snapshot.models, [draft.modelId]);
+  assert.equal(snapshot.draft.baseUrl, draft.baseUrl); assert.equal(snapshot.draft.modelId, draft.modelId);
+  assert.ok(!JSON.stringify(snapshot).includes(endpoint.apiKey));
+  assert.deepEqual((await json(await fetch(`${access.origin}/api/state`, { headers: headers(access) }))).binding, inference);
+  await access.studio.close();
+  const reopened = await createCompanionStudio({ directory: access.directory, inferenceHome: join(access.parent, 'inference'),
+    baseUrl: draft.baseUrl, modelId: draft.modelId }); access.replaceStudio(reopened);
+  const next = await reopened.listen(); assert.deepEqual((await reopened.view()).binding, inference);
+  assert.equal((await post(next, '/api/inference/endpoint/delete', { id: saved.id })).status, 200);
+  const start = await post(next, '/api/start', {});
+  assert.equal(start.status, 409); assert.deepEqual(await start.json(), { ok: false, why: 'endpoint_unknown' });
+  assert.equal(reopened.companion.diagnostics.sessions, 0);
+});
+
+test('api/create with an unknown endpoint refuses before creating any companion files', async t => {
+  const access = await studioFixture(t);
+  const response = await post(access, '/api/create', { draft, limits,
+    inference: { endpointId: '0000000000000000', modelId: 'm' } });
+  assert.equal(response.status, 404); assert.deepEqual(await response.json(), { ok: false, why: 'endpoint_unknown' });
+  await assert.rejects(readdir(access.directory), { code: 'ENOENT' });
+  assert.equal((await access.studio.view()).binding, null);
+});
+
+test('api/create without inference keeps the loopback draft and runtime unchanged', async t => {
+  const access = await studioFixture(t); const response = await post(access, '/api/create', { draft, limits });
+  assert.equal(response.status, 200); const snapshot = await response.json();
+  assert.equal(snapshot.binding, null); assert.deepEqual(snapshot.models, [draft.modelId]);
+  assert.deepEqual(snapshot.draft, draft);
+  assert.equal(Object.hasOwn(JSON.parse(await readFile(join(access.directory, 'local-runtime.json'))), 'inference'), false);
+  assert.deepEqual(snapshot.budget.persistence.policy, { baseUrl: draft.baseUrl, modelId: draft.modelId, thinkingMode: draft.thinkingMode });
+});
+
+test('api/create rejects malformed bindings, unknown models and corrupt stores with no files', async t => {
+  const access = await studioFixture(t);
+  const { id } = await (await post(access, '/api/inference/endpoint', { endpoint: {
+    id: null, label: 'Bound', baseUrl: 'https://example.invalid/v1', defaultModel: 'm' } })).json();
+  for (const inference of [null, { endpointId: id, modelId: 'm', extra: true }, { endpointId: id, modelId: 2 },
+    { endpointId: 'bad', modelId: 'm' }, { endpointId: id, modelId: 'm'.repeat(129) }]) {
+    const response = await post(access, '/api/create', { draft, limits, inference });
+    assert.equal(response.status, 400); assert.deepEqual(await response.json(), { ok: false, why: 'invalid_request' });
+  }
+  const missing = await post(access, '/api/create', { draft, limits, inference: { endpointId: id, modelId: 'missing' } });
+  assert.equal(missing.status, 409); assert.deepEqual(await missing.json(), { ok: false, why: 'model_unknown' });
+  await writeFile(join(access.parent, 'inference', 'inference.json'), '{corrupt');
+  const corrupt = await post(access, '/api/create', { draft, limits, inference: { endpointId: id, modelId: 'm' } });
+  assert.equal(corrupt.status, 409); assert.deepEqual(await corrupt.json(), { ok: false, why: 'invalid_store' });
+  await assert.rejects(readdir(access.directory), { code: 'ENOENT' });
+});

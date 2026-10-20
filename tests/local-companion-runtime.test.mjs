@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { createServer } from 'node:http';
+import { createInferenceCenter } from '../tools/agent/inference-center.mjs';
+import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DEFAULT_COMPANION_DRAFT } from '../src/net/companionTemplates.js';
@@ -206,4 +208,106 @@ test('stopping during a held local inference prevents late chat delivery', { tim
   assert.equal(result.ok, false);
   assert.equal((await companion.view()).transcript.some((message) => message.text === 'Te escucho, seguimos juntos.'), false);
   assert.equal((await companion.view()).budget.totals.calls, 1);
+});
+
+
+async function boundCompanion(t, { baseUrl = 'https://example.invalid/v1', withResolver = true, endpointAdapterFactory } = {}) {
+  const parent = await mkdtemp(join(tmpdir(), 'mn-bound-companion-')), directory = join(parent, 'companion');
+  const center = await createInferenceCenter({ inferenceHome: join(parent, 'inference') });
+  const apiKey = 'ic02-known-private-key-7d8c9b', modelId = 'bound/provider-model:2';
+  const { id: endpointId } = await center.save({ id: null, label: 'Bound test', baseUrl, apiKey, defaultModel: modelId });
+  const inference = { endpointId, modelId }; let resolutions = 0;
+  const resolveInference = (id, model) => { resolutions++; return center.resolve(id, model); };
+  const companion = await LocalCompanion.create({ directory, draft: { ...DEFAULT_COMPANION_DRAFT,
+    baseUrl: 'http://127.0.0.1:8080/v1', modelId: 'original-loopback-model', thinkingMode: 'disabled' },
+    limits: { maxCalls: 6, maxTokens: 100000 }, inference,
+    ...(withResolver ? { resolveInference } : {}), ...(endpointAdapterFactory ? { endpointAdapterFactory } : {}) });
+  t.after(async () => { await companion.close(); await rm(parent, { recursive: true, force: true }); });
+  return { companion, directory, center, inference, apiKey, resolveInference, resolutions: () => resolutions };
+}
+
+test('bound companion writes runtime binding and reopens without resolving or changing the manifest draft', async t => {
+  const { companion, directory, inference, resolveInference, resolutions } = await boundCompanion(t);
+  const runtime = JSON.parse(await readFile(join(directory, 'local-runtime.json')));
+  assert.equal(runtime.schema, 'mn.local-companion-runtime.v1'); assert.deepEqual(runtime.inference, inference);
+  const manifest = JSON.parse(await readFile(join(directory, 'companion-manifest.json')));
+  assert.equal(manifest.draft.modelId, 'original-loopback-model'); assert.equal(manifest.inference, undefined);
+  assert.deepEqual((await companion.view()).binding, inference);
+  assert.deepEqual(companion.diagnostics.budget.persistence.policy, { ...inference, thinkingMode: 'disabled' });
+  const reopened = await LocalCompanion.open({ directory, resolveInference });
+  try { assert.deepEqual((await reopened.view()).binding, inference); assert.equal(resolutions(), 0); }
+  finally { await reopened.close(); }
+  assert.deepEqual(JSON.parse(await readFile(join(directory, 'local-runtime.json'))), runtime);
+});
+
+test('bound start refuses a deleted endpoint before connecting a runner or starting a world', async t => {
+  const { companion, directory, center, inference, resolveInference, resolutions } = await boundCompanion(t);
+  await companion.close(); await center.delete(inference.endpointId);
+  const reopened = await LocalCompanion.open({ directory, resolveInference });
+  try {
+    assert.equal(resolutions(), 0, 'open does not resolve even when the endpoint is missing');
+    assert.deepEqual(await reopened.start(), { ok: false, why: 'endpoint_unknown' });
+    assert.equal(reopened.diagnostics.sessions, 0); assert.equal(reopened.diagnostics.runnerSessionId, null);
+    const view = await reopened.view(); assert.equal(view.status.connected, false); assert.equal(view.status.worldUrl, null);
+    assert.equal(resolutions(), 1);
+  } finally { await reopened.close(); }
+});
+
+test('bound start without a resolver fails with inference_unavailable and never falls back', async t => {
+  const { companion } = await boundCompanion(t, { withResolver: false });
+  assert.deepEqual(await companion.start(), { ok: false, why: 'inference_unavailable' });
+  assert.equal(companion.diagnostics.sessions, 0); assert.equal(companion.diagnostics.runnerSessionId, null);
+  assert.equal((await companion.view()).status.worldUrl, null);
+});
+
+
+test('bound create, start and chat keep the key out of every companion file and reuse one resolution', async t => {
+  let requests = 0;
+  const server = createServer(async (req, res) => {
+    const chunks = []; for await (const chunk of req) chunks.push(chunk);
+    const packet = JSON.parse(Buffer.concat(chunks)); requests++;
+    assert.equal(req.headers.authorization, 'Bearer ic02-known-private-key-7d8c9b');
+    assert.equal(packet.model, 'bound/provider-model:2');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ model: packet.model, choices: [{ index: 0, finish_reason: 'stop',
+      message: { role: 'assistant', content: JSON.stringify({ v: 1, decision: { type: 'reply', args: { text: 'Aquí sigo.' } } }) } }],
+      usage: { prompt_tokens: 100, completion_tokens: 10 } }));
+  });
+  await new Promise(done => server.listen(0, '127.0.0.1', done));
+  t.after(() => new Promise(done => { server.closeAllConnections(); server.close(done); }));
+  const { companion, directory, inference, apiKey, resolutions } = await boundCompanion(t,
+    { baseUrl: `http://127.0.0.1:${server.address().port}/v1` });
+  assert.equal((await companion.start()).ok, true);
+  assert.equal((await companion.chat('Hola, Brisa.')).ok, true);
+  assert.equal((await companion.chat('Seguimos juntos.')).ok, true);
+  assert.equal(resolutions(), 1); assert.equal(requests, 2);
+  assert.equal(companion.diagnostics.budget.totals.confirmedCostUnits, 220);
+  assert.ok(!JSON.stringify({ view: await companion.view(), diagnostics: companion.diagnostics }).includes(apiKey));
+  await companion.stop();
+  assert.deepEqual((await companion.view()).binding, inference);
+  assert.equal((await companion.start()).ok, true); assert.equal(resolutions(), 2);
+  assert.equal(requests, 2, 'starting never polls the provider');
+  async function scan(root) {
+    for (const entry of await readdir(root, { withFileTypes: true })) {
+      const file = join(root, entry.name);
+      if (entry.isDirectory()) await scan(file);
+      else assert.ok(!(await readFile(file)).includes(Buffer.from(apiKey)), `key leaked into ${entry.name}`);
+    }
+  }
+  await scan(directory);
+});
+
+test('local runtime binding validates exact fields, endpoint ids and registry model rules on create and open', async t => {
+  const { companion, directory, inference } = await boundCompanion(t);
+  for (const binding of [null, { ...inference, extra: true }, { ...inference, endpointId: 'A'.repeat(16) },
+    { ...inference, modelId: 'bad' + String.fromCharCode(10) }, { ...inference, modelId: 'x'.repeat(129) }, { ...inference, modelId: ' ' }]) {
+    const child = join(directory, 'invalid-child');
+    await assert.rejects(LocalCompanion.create({ directory: child, draft: companion.draft,
+      limits: { maxCalls: 6, maxTokens: 100000 }, inference: binding }), /invalid_inference_binding/);
+    await assert.rejects(readFile(join(child, 'local-runtime.json')), { code: 'ENOENT' });
+    const file = join(directory, 'local-runtime.json'), runtime = JSON.parse(await readFile(file));
+    await writeFile(file, JSON.stringify({ ...runtime, inference: binding }));
+    await assert.rejects(LocalCompanion.open({ directory }), /invalid_inference_binding/);
+    await writeFile(file, JSON.stringify(runtime));
+  }
 });

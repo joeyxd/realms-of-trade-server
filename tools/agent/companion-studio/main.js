@@ -45,6 +45,8 @@ let pending = new Set();
 let currentFile = 'personality';
 let currentFiles = null;
 let initialDraftLoaded = false;
+// Owner source choices; once touched, the poll re-render keeps them instead of the snapshot defaults.
+const sourceState = { touched: false, source: 'local', endpointId: null, modelId: null };
 const selectedEpisodeIds = new Set();
 
 export function keyFromFragment(fragment) {
@@ -75,7 +77,56 @@ export function normalizeChatInput(value) {
   return text;
 }
 
-export function validateWizardDraft(draft, limits) {
+// Same rule as the inference center model id (tools/agent/inference-center.mjs).
+const isCenterModelId = id => typeof id === 'string' && id.trim().length > 0 && id.length <= 128 && !/[\u0000-\u001f\u007f-\u009f]/.test(id);
+const ENDPOINT_ID_PATTERN = /^[A-Za-z0-9._:-]{1,128}$/;
+
+// Models offered for one inference-center endpoint: cached models first, then the default model once.
+export function centerModelChoices(endpoint) {
+  const cached = Array.isArray(endpoint?.models) ? endpoint.models : [];
+  const all = [...cached, ...(typeof endpoint?.defaultModel === 'string' && endpoint.defaultModel ? [endpoint.defaultModel] : [])];
+  return [...new Set(all.filter(isCenterModelId))];
+}
+
+export function centerUnavailable(inference) {
+  return !Array.isArray(inference?.endpoints) || inference.endpoints.length === 0 || inference.error === 'invalid_store';
+}
+
+// Center is the default only when the center has an active selection that still points at a known endpoint.
+export function defaultSource(inference) {
+  if (centerUnavailable(inference)) return 'local';
+  const active = inference.active;
+  return active && inference.endpoints.some(endpoint => endpoint.id === active.endpointId) ? 'center' : 'local';
+}
+
+// Resolve what the source controls show. `state` holds the owner choices once `touched` is true.
+export function resolveSource(inference, state) {
+  if (centerUnavailable(inference)) return { source: 'local', endpointId: '', modelId: '', centerDisabled: true };
+  const touched = state?.touched === true, active = inference.active;
+  const endpoint = inference.endpoints.find(item => item.id === (touched ? state.endpointId : active?.endpointId))
+    ?? inference.endpoints.find(item => item.id === active?.endpointId) ?? inference.endpoints[0];
+  const choices = centerModelChoices(endpoint);
+  const wanted = touched ? state.modelId : (active?.endpointId === endpoint.id ? active.modelId : endpoint.defaultModel);
+  const modelId = choices.includes(wanted) ? wanted : choices.includes(endpoint.defaultModel) ? endpoint.defaultModel : (choices[0] ?? '');
+  return { source: touched ? (state.source === 'center' ? 'center' : 'local') : defaultSource(inference), endpointId: endpoint.id, modelId, centerDisabled: false };
+}
+
+export function buildCreatePayload(draft, limits, choice) {
+  return choice?.source === 'center' ? { draft, limits, inference: { endpointId: choice.endpointId, modelId: choice.modelId } } : { draft, limits };
+}
+
+export function modelSummaryLine(state) {
+  const binding = state?.binding;
+  if (binding && typeof binding.endpointId === 'string' && typeof binding.modelId === 'string') {
+    const endpoint = state.inference?.endpoints?.find(item => item.id === binding.endpointId);
+    return `Modelo: ${endpoint?.label || binding.endpointId} · ${binding.modelId}`;
+  }
+  return typeof state?.draft?.modelId === 'string' && state.draft.modelId ? `Modelo: ${state.draft.modelId}` : '';
+}
+
+export function validateWizardDraft(draft, limits, choice = null) {
+  if (choice?.source === 'center' && (typeof choice.endpointId !== 'string' || !ENDPOINT_ID_PATTERN.test(choice.endpointId)
+      || !isCenterModelId(choice.modelId))) return false;
   if (!draft || draft.v !== 1 || typeof draft.name !== 'string' || !draft.name.trim() || draft.name.trim().length > 16
       || !Object.hasOwn(ROLE_LABELS, draft.role) || typeof draft.personality !== 'string' || !/^[a-z][a-z0-9_-]{0,39}$/.test(draft.personality)
       || !Array.isArray(draft.traits) || draft.traits.length > 3 || new Set(draft.traits).size !== draft.traits.length
@@ -161,6 +212,28 @@ function fillDraft(draft) {
   document.querySelectorAll('input[name="trait"]').forEach(el => { el.checked = (draft.traits || []).includes(el.value); });
   selectSkin(Number.isInteger(draft.skin) ? draft.skin : 0);
 }
+function collectChoice() {
+  return { source: $('source-center')?.checked ? 'center' : 'local', endpointId: $('centerEndpoint')?.value || '', modelId: $('centerModel')?.value || '' };
+}
+function endpointOptionText(endpoint) { return endpoint.keyHint != null ? `${endpoint.label} · …${endpoint.keyHint}` : endpoint.label; }
+function fillSelect(select, items, value) {
+  select.replaceChildren();
+  for (const [id, text] of items) { const option = document.createElement('option'); option.value = id; option.textContent = text; select.append(option); }
+  select.value = value;
+}
+function renderSource(inference) {
+  if (!$('source-center')) return;
+  const resolved = resolveSource(inference, sourceState), endpoints = resolved.centerDisabled ? [] : inference.endpoints;
+  const endpoint = endpoints.find(item => item.id === resolved.endpointId);
+  fillSelect($('centerEndpoint'), endpoints.map(item => [item.id, endpointOptionText(item)]), resolved.endpointId);
+  fillSelect($('centerModel'), centerModelChoices(endpoint).map(id => [id, id]), resolved.modelId);
+  $('source-center').disabled = resolved.centerDisabled;
+  $('source-center').checked = resolved.source === 'center'; $('source-local').checked = resolved.source !== 'center';
+  $('center-fields').hidden = resolved.source !== 'center'; $('local-fields').hidden = resolved.source === 'center';
+  const hint = $('source-hint');
+  hint.hidden = !resolved.centerDisabled;
+  hint.textContent = resolved.centerDisabled ? 'El centro de inferencia no tiene conexiones disponibles. Añade una en la sección «Centro de inferencia» o usa el modelo local.' : '';
+}
 function validateStep(index) {
   if (index === 0) {
     if (!$('name').value.trim() || $('name').value.trim().length > 16) return 'Escribe un nombre de hasta 16 caracteres.';
@@ -168,18 +241,22 @@ function validateStep(index) {
   }
   if (index === 1 && selectedTraits().length > 3) return 'Elige hasta tres rasgos.';
   if (index === 2) {
-    if (!isLocalEndpoint($('baseUrl').value.trim())) return 'Usa la dirección local del servidor de modelos.';
-    if (!$('modelId').value.trim() || $('modelId').value.trim().length > 160) return 'Elige un modelo local disponible.';
+    const choice = collectChoice();
+    if (choice.source === 'center' && (!choice.endpointId || !choice.modelId)) return 'Elige una conexión y un modelo del centro de inferencia.';
+    if (!isLocalEndpoint($('baseUrl').value.trim())) return choice.source === 'center' ? 'El borrador conserva una dirección local: corrígela en la opción Local.' : 'Usa la dirección local del servidor de modelos.';
+    if (!$('modelId').value.trim() || $('modelId').value.trim().length > 160) return choice.source === 'center' ? 'El borrador conserva un modelo local: corrígelo en la opción Local.' : 'Elige un modelo local disponible.';
     if (!checkedLimits($('maxCalls').value, $('maxTokens').value)) return 'Los límites deben ser números enteros finitos dentro del rango.';
   }
   return '';
 }
 function reviewDraft() {
-  const d = collectDraft(), role = templates.ROLE_TEMPLATES[d.role], personality = templates.PERSONALITY_TEMPLATES[d.personality];
+  const d = collectDraft(), choice = collectChoice(), role = templates.ROLE_TEMPLATES[d.role], personality = templates.PERSONALITY_TEMPLATES[d.personality];
   const look = templates.COMPANION_LOOKS.find(item => item.skin === d.skin);
   const lines = [['Nombre', d.name], ['Oficio', role?.label || ROLE_LABELS[d.role]], ['Aspecto', look?.name || 'Corsario'],
     ['Personalidad', personality?.label || d.personality], ['Rasgos', d.traits.map(id => templates.TRAIT_TEMPLATES[id]).join(', ') || 'Aún por definir'],
-    ['Modelo local', d.modelId], ['Servidor', d.baseUrl], ['Razonamiento', THINKING_LABELS[d.thinkingMode]],
+    ...(choice.source === 'center'
+      ? [['Modelo', `${snapshot?.inference?.endpoints?.find(item => item.id === choice.endpointId)?.label || choice.endpointId} · ${choice.modelId}`]]
+      : [['Modelo local', d.modelId], ['Servidor', d.baseUrl]]), ['Razonamiento', THINKING_LABELS[d.thinkingMode]],
     ['Límites', `${fmt(Number($('maxCalls').value))} llamadas · ${fmt(Number($('maxTokens').value))} tokens`]];
   const dl = $('review'); dl.replaceChildren();
   for (const [term, value] of lines) { dl.append(textNode('dt', term), textNode('dd', value)); }
@@ -200,10 +277,12 @@ function showWorkspace() {
   $('companion-name').textContent = exists ? (snapshot.draft?.name || snapshot.status?.name || 'Compañero local') : 'Aún sin crear';
   $('game-status').textContent = gameConnected() ? 'Juego: conectado (confirmado)' : 'Juego: sin conexión confirmada';
   $('scope-detail').textContent = snapshot?.scope?.worldId ? `Mundo ${snapshot.scope.worldId}` : 'Vinculado a este panel local.';
+  $('model-summary').textContent = exists ? modelSummaryLine(snapshot) : '';
   const modelSelect = $('modelId'), selectedModel = snapshot?.draft?.modelId || modelSelect.value;
   const modelIds = Array.isArray(snapshot?.models) ? snapshot.models.filter(id => typeof id === 'string' && /^[A-Za-z0-9._:/-]{1,160}$/.test(id)) : [];
   const choices = [...new Set([...(modelIds.length ? [] : ['local-model']), ...modelIds])];
   if (!exists) {
+    renderSource(snapshot?.inference);
     if (choices.length) {
       modelSelect.replaceChildren();
       for (const id of choices) { const option = document.createElement('option'); option.value = id; option.textContent = id; modelSelect.append(option); }
@@ -392,11 +471,12 @@ async function createCompanion(event) {
   if (invalid) { announce(invalid, true); return; }
   let draft = collectDraft();
   const limits = checkedLimits($('maxCalls').value, $('maxTokens').value);
-  if (!validateWizardDraft(draft, limits)) { announce('Revisa el nombre, oficio, rasgos, servidor local, modelo y límites.', true); return; }
+  const choice = collectChoice();
+  if (!validateWizardDraft(draft, limits, choice)) { announce('Revisa el nombre, oficio, rasgos, servidor local, modelo y límites.', true); return; }
   try { draft = templates.validateCompanionDraft(draft); }
   catch { announce('Revisa los datos del compañero.', true); return; }
   $('draft-state').textContent = 'Enviando borrador…';
-  await mutate('create', '/api/create', { draft, limits });
+  await mutate('create', '/api/create', buildCreatePayload(draft, limits, choice));
   $('draft-state').textContent = '';
 }
 async function sendChat(event) {
@@ -421,6 +501,13 @@ function setupEvents() {
   });
   $('previous').addEventListener('click', () => { step = Math.max(0, step - 1); announce(''); renderStep(); });
   $('create-form').addEventListener('submit', createCompanion);
+  const sourceChanged = reset => {
+    const choice = collectChoice();
+    Object.assign(sourceState, { touched: true, source: choice.source, endpointId: choice.endpointId || null, modelId: reset ? null : (choice.modelId || null) });
+    renderSource(snapshot?.inference);
+  };
+  for (const id of ['source-center', 'source-local', 'centerModel']) $(id).addEventListener('change', () => sourceChanged(false));
+  $('centerEndpoint').addEventListener('change', () => sourceChanged(true));
   $('randomize').addEventListener('click', () => {
     const current = collectDraft();
     const randomized = templates.randomizeCompanionDraft({ seed: crypto.randomUUID(), name: current.name,

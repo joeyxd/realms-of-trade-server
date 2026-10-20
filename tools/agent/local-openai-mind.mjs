@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { createLocalOpenAITransport } from './local-openai-transport.mjs';
+import { createEndpointOpenAITransport } from './endpoint-openai-transport.mjs';
 
 const bytes = text => Buffer.byteLength(text, 'utf8');
 const LANGUAGE = 'Responde siempre en español natural, incluido el texto de resúmenes. Eres el personaje descrito en context.required.personality. Mantén su nombre y voz sin inventar vivencias. Si la pregunta trata de recuerdos, busca en context.memory y distingue lo recordado de lo observado ahora. Si no hay fuente, di que no lo recuerdas. Devuelve únicamente el objeto JSON del esquema, sin markdown, comentarios ni razonamiento.';
@@ -10,6 +11,19 @@ export function createLocalOpenAIMind({ baseUrl, modelId, thinkingMode = 'disabl
   const transport = createLocalOpenAITransport({ baseUrl, modelId, thinkingMode, maxCalls,
     maxOutputTokens, timeoutMs, maxInputBytes: 65536, maxResponseBytes: 262144 });
   const localResourcePolicy = Object.freeze({ baseUrl, modelId, thinkingMode });
+  return buildMind({ transport, localResourcePolicy, modelId, thinkingMode, maxOutputTokens, id: 'local-openai-mind-v1' });
+}
+
+export function createEndpointOpenAIMind({ endpointId, endpoint, modelId, thinkingMode = 'disabled', maxCalls = 8,
+  maxOutputTokens = 512, timeoutMs = 30000 } = {}) {
+  if (typeof endpointId !== 'string' || !/^[a-f0-9]{16}$/.test(endpointId)) throw new TypeError('invalid_endpoint_mind_policy');
+  const transport = createEndpointOpenAITransport({ endpoint, modelId, thinkingMode, maxCalls,
+    maxOutputTokens, timeoutMs, maxInputBytes: 65536, maxResponseBytes: 262144 });
+  const localResourcePolicy = Object.freeze({ endpointId, modelId, thinkingMode });
+  return buildMind({ transport, localResourcePolicy, modelId, thinkingMode, maxOutputTokens, id: 'endpoint-openai-mind-v1' });
+}
+
+function buildMind({ transport, localResourcePolicy, modelId, thinkingMode, maxOutputTokens, id }) {
   const records = [];
   function payload(request) {
     if (!request || request.v !== 1 || typeof request.instructions !== 'string' || !request.responseSchema ||
@@ -24,7 +38,7 @@ export function createLocalOpenAIMind({ baseUrl, modelId, thinkingMode = 'disabl
     ...(thinkingMode === 'disabled' ? { chat_template_kwargs: { enable_thinking: false } } : {}) };
   }
   return Object.freeze({
-    id: 'local-openai-mind-v1', countMode: 'estimated_tokens', localResourcePolicy,
+    id, countMode: 'estimated_tokens', localResourcePolicy,
     countText: bytes,
     prepare(request) {
       const body = JSON.stringify(payload(request));
