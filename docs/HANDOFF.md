@@ -1,5 +1,21 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**SK04a, 2026-10-20 — gastar y resetear puntos de habilidad, lado servidor, a oscuras (T-1020-62, T-1020-63), alpha.83:**
+Nuevo `msg.type 'skills'` en el carril económico M5, calcado de Carga (`attributes`): plan puro
+`src/sim/systems/skillPlan.js` `planSkillChange` (`assign` sube un nodo un rango por un punto del árbol; `reset` pone
+el árbol a 0: el primero gratis, después `SKILL_RESET_GOLD` = 150 oro), `server/skillOperation.mjs`, cableado en
+economicAuthority/economicOperation/store/host. La primera operación adopta: los rangos heredados (tatuajes, artes por
+maestría) pasan a `progression.skills`, `skg` = concesión por árbol, v3. Puertas al gastar: tier, puntos (ganados + skg -
+gastados), maestría, conocimiento (Doña Sepia) y perla; el arma en mano no cuenta. Sin recuperación de puntos si baja la
+maestría. Flag `MN_SKILL_OPERATIONS` (por defecto apagado; exige `MN_STARTER_WORKSHOP`); con el flag encendido el host
+exige `mn_skill_operations_ready() = {"version":1}` al arrancar. SQL `server/migrations/041_skill_operations.sql` (NO
+aplicado): `mn_valid_logging_progression` acepta v3 (v1/v2 sin cambio), `mn_valid_skill_request`, guarda de que ningún
+otro comando económico ni el autosave (`mn_save_profile`) cambian skills/skr/skg ni la práctica pacífica, cadena de
+renombrado de commit y validador, readiness con sondas. Los recibos guardados de skills se validan por forma, no
+recalculando con el catálogo vivo (añadir nodos no cerca el carril). Sin cliente ni bump de protocolo: el botón Subir
+llega en SK04b. Antes de encender el flag: aplicar 041 en Supabase y comprobar readiness (context/ops/migration-check.md),
+y que `server/groundTransaction.mjs:22` valide los recibos de skills por la ruta guardada (hoy los recalcula; las
+transacciones de suelo están apagadas en producción). El catálogo solo puede crecer (quitar un nodo rompe readProgression).
 **AREA15, 2026-10-20 — recursos GM componen con Ground por SQL040; piloto común público apagado, alpha.82/protocolo 63:**
 [Entrega/evidencia](delivery/gm-ground-composition.md); segundo corte del paso 3 de la [matriz](CONTINUITY-MATRIX.md) (T-1020-70).
 `server/host.mjs` ya no rechaza `gmResources` junto con `groundTransactions` (arranque y `prepareContentResources`); bajo
