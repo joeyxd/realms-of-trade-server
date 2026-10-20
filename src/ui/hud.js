@@ -76,11 +76,11 @@ export class Hud {
       <div class="hud-player">
         <div class="portrait"><canvas width="128" height="128"></canvas><div class="lvl-badge">1</div></div>
         <div class="bars">
-          <div class="pname outlined">Grumete</div>
+          <div class="pname outlined">${ltext('account.defaultName')}</div>
           <div class="bar hp"><div class="ghost" style="width:100%"></div><div class="fill" style="width:100%"></div><div class="num">100 / 100</div></div>
-          <div class="bar en thin"><div class="fill" style="width:0%"></div><div class="num">RIPOSTE 0 %</div></div>
+          <div class="bar en thin"><div class="fill" style="width:0%"></div><div class="num">${ltext('hud.riposteProgress', { value: 0 })}</div></div>
           <div class="bar xp thin"><div class="fill" style="width:0%"></div><div class="num">0 / 100 XP</div></div>
-          <div class="needs" hidden><div class="bar need food thin" title="Hambre"><div class="fill" style="width:100%"></div><div class="num"></div></div><div class="bar need water thin" title="Sed"><div class="fill" style="width:100%"></div><div class="num"></div></div></div>
+          <div class="needs" hidden><div class="bar need food thin" data-l10n-title="hud.needHunger" data-l10n-params='{"value":100}' title="${attr('hud.needHunger', { value: 100 })}"><div class="fill" style="width:100%"></div><div class="num"></div></div><div class="bar need water thin" data-l10n-title="hud.needThirst" data-l10n-params='{"value":100}' title="${attr('hud.needThirst', { value: 100 })}"><div class="fill" style="width:100%"></div><div class="num"></div></div></div>
           <div class="gold-row outlined"><span class="coin">${ICONS.coin}</span><b class="gold-n">0</b><span class="tier-chip" hidden></span><span class="law-chip" hidden data-l10n-title="hud.lawTip" title="${attr('hud.lawTip')}">${ltext('hud.law')}</span><span class="load-chip" hidden data-l10n-title="hud.heavyTip" title="${attr('hud.heavyTip')}">${ltext('hud.heavy')}</span></div>
         </div>
       </div>
@@ -107,7 +107,7 @@ export class Hud {
         <div class="mast" title=""><div class="mfill"></div><span class="mtxt"></span></div>
         <div class="slot lmb-slot" data-slot="lmb" data-l10n-title="hud.comboTip" data-l10n-aria-label="hud.comboTip" title="${attr('hud.comboTip')}"><span class="kbd key">LMB</span><span class="ico">${ICONS.sword}</span><div class="combo"><i></i><i></i><i></i></div></div>
         <div class="slot rmb-slot" data-slot="rmb" data-l10n-title="hud.guardTip" data-l10n-aria-label="hud.guardTip" title="${attr('hud.guardTip')}"><span class="kbd key">RMB</span><span class="ico">${ICONS.shield}</span><div class="sweep"></div><div class="catch"><i></i><i></i><i></i></div></div>
-        <div class="slot dash-slot" data-slot="dash"><span class="kbd key">ESP</span>${ICONS.dash}<div class="sweep"></div><div class="charges"></div></div>
+        <div class="slot dash-slot" data-slot="dash"><span class="kbd key">${ltext('hud.spaceKey')}</span>${ICONS.dash}<div class="sweep"></div><div class="charges"></div></div>
         ${this.slot('q', 'Q', ICONS.lunge)}
         ${this.slot('e', 'E', ICONS.crescent)}
         ${this.slot('g', 'G', ICONS.comet)}
@@ -235,7 +235,7 @@ export class Hud {
     if (rp !== L.rp) {
       this.rpFill.style.width = rp + '%';
       if (rp >= 100) setText(this.rpNum, 'hud.ready');
-      else { delete this.rpNum.dataset.l10nKey; this.rpNum.textContent = `RIPOSTE ${rp} %`; }
+      else setText(this.rpNum, 'hud.riposteProgress', { value: rp });
       this.rpBar.classList.toggle('full', rp >= 100);
       this.rSlot.classList.toggle('ready', rp >= 100);
       this.rFill.style.height = rp + '%';
@@ -387,19 +387,27 @@ export class Hud {
 
   // Hunger and thirst meters are shown only for profiles with survival enabled.
   setNeeds({ needs = 0, sat = 100, hyd = 100, needPen = 0 } = {}) {
-    const on = Number(needs) > 0, language = String(getLocale()).toLowerCase().startsWith('en') ? 'en' : 'es';
+    const on = Number(needs) > 0;
     this.needsEl.hidden = !on;
     if (!on) return;
     const values = { sat: Number(sat), hyd: Number(hyd) };
     for (const item of this.needBars) {
       const value = Math.max(0, Math.min(100, Number.isFinite(values[item.key]) ? values[item.key] : 0));
       item.fill.style.width = `${value}%`;
-      item.num.textContent = `${language === 'en' ? (item.key === 'sat' ? 'FOOD' : 'WATER') : (item.key === 'sat' ? 'COMIDA' : 'AGUA')} ${Math.round(value)}`;
       item.bar.classList.toggle('low', value < 30);
-      item.bar.title = `${language === 'en' ? (item.key === 'sat' ? 'Hunger' : 'Thirst') : (item.key === 'sat' ? 'Hambre' : 'Sed')} ${Math.round(value)}`;
+      const shown = Math.round(value);
+      if (shown !== item.shown) {
+        setText(item.num, item.key === 'sat' ? 'hud.needFood' : 'hud.needWater', { value: shown });
+        setAttributeText(item.bar, 'title', item.key === 'sat' ? 'hud.needHunger' : 'hud.needThirst', { value: shown });
+        item.shown = shown;
+      }
     }
     const penalty = Math.max(0, Math.min(1, Number(needPen) || 0));
-    this.needsEl.setAttribute('aria-label', `${language === 'en' ? 'Needs' : 'Necesidades'} · ${Math.round(penalty * 100)}%`);
+    const shownPenalty = Math.round(penalty * 100);
+    if (shownPenalty !== this.lastNeedPen) {
+      setAttributeText(this.needsEl, 'aria-label', 'hud.needs', { value: shownPenalty });
+      this.lastNeedPen = shownPenalty;
+    }
   }
 
   // Potions you carry, and the cooldown left (s) out of max.

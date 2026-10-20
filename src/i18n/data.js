@@ -106,6 +106,13 @@ const DATA_ES_EN = {
   "Centinela: aviso tajo (s)": "Sentinel: slash warning (s)",
   "Centinela: vel. púas": "Sentinel: spike speed",
   "Coyote (s)": "Coyote (s)",
+  // Place, faction and weapon names added by the data-coverage audit (T-1019-44).
+  'Antorcha de piso':'Floor torch',
+  'Isla de la Marea':'Tide Isle','Isla del Sol':'Sun Isle','Isla Ceniza':'Ash Isle','Isla de la Corona':'Crown Isle','Arrecife de Coral':'Coral Reef',
+  'Aldea de la Marea':'Tide Village','Puerto Sol':'Sun Harbor','Bahía Ceniza':'Ash Bay','Fuerte Real':'Royal Fort','Arrecife':'Reef',
+  'La Corona':'The Crown','Sin ley':'No law',
+  'Pistola de latón':'Brass pistol','Pistola de acero':'Steel pistol',
+  'Izquierdo · rápida · mano izquierda':'Left · fast · left hand','Derecho · larga · mano derecha':'Right · long · right hand',
 
 };
 

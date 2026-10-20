@@ -1,5 +1,23 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA12 I18N04b2, 2026-10-20 — cobertura ES/EN de todo texto visible y cambio de idioma en vivo, alpha.77/protocolo 62:**
+Barrido de los textos que seguían saliendo en español con EN elegido. Roster de personajes: errores en el idioma
+elegido y refresco en vivo (`src/client/playerCharacters.js`, `src/ui/playerCharacters.js`). Compañeros IA: roles,
+personalidad, metas y errores visibles (`src/net/companionTemplates.js`, `src/ui/companion*.js`); lo que se envía al
+LLM no cambia y los campos editables muestran el texto guardado tal cual, con una nota bilingüe. Datos: armas, piezas
+de balsa, islas y antorcha en `src/i18n/data.js`; los nombres propios no se traducen. HUD (RIPOSTE se mantiene,
+necesidades, tecla de dash `SPC` en EN), `main.js`, `index.html`, natación, agua dulce y taller refrescan al cambiar de
+idioma sin escribir el DOM en cada frame. Acciones de recursos, ventana de tala, banco de trabajo y perlas
+(`src/ui/resourceActions.js`, `loggingTiming.js`, `workbench.js`, `pearlpanel.js`; claves `systems.resource.*` con
+plurales `{one, other}`); comandos al servidor, ids y tiempos sin cambios. Editor GM y cartel `LAWLESS →`.
+Anti-regresión: `tools/i18n/scan-hardcoded.mjs` con `tools/i18n/baseline.json` (la línea base solo puede bajar; hoy 0
+textos pendientes en 232 archivos) y `tests/i18n-hardcoded.test.mjs`, que falla con una frase visible nueva sin
+traducir. Tests nuevos: `tests/i18n-{companions,data-coverage,editor-sign,live-refresh,resource-actions,roster-errors}.test.mjs`.
+Suite completa contra la base c818fc2: 0 fallos nuevos; arregla `workshop-build-ui` ("Basic plank") y el panel de
+personaje. Pendiente menor: los avisos `onAim` de tala ya visibles no cambian de idioma en vivo
+(`tests/resources.test.mjs:147` fija el texto); "Hacha de piedra fabricado" (concordancia, `src/i18n/systems.js`
+`craftedTool`); `src/ui/workbench.js:68` elige "Torch" por `recipe.fire`. Sigue I18N04c (promoción).
+
 **SK01-SK03, 2026-10-19 — hoja de habilidades (pestaña T con cinco árboles, iconos pintados y héroes; perfil, lado lector), alpha.76/protocolo 62:**
 SK01 `src/data/skillTree.js`: catálogo de cinco árboles (Combate completo, tiers I-II del resto), curvas por árbol y
 helpers puros. SK02 `src/ui/skillSheet.js`: la pestaña T (etiqueta Habilidades; el id sigue `tattoo` hasta SK04) dibuja

@@ -47,7 +47,7 @@ function challengeOf(value, accountId, identity, origin, now) {
   const displayAddress = value.message.split('\n')[1];
   if (!/^0x[0-9a-fA-F]{40}$/.test(displayAddress) || displayAddress.toLowerCase() !== identity.address) fail('response');
   const expected = `${origin} wants you to sign in with your Ethereum account:\n${displayAddress}\n\n`
-    + `Vincular esta wallet a la cuenta ${accountId} de MAREA NEGRA. No autoriza compras ni transferencias.\n\n`
+    + `Vincular esta wallet a la cuenta ${accountId} de MAREA NEGRA. No autoriza compras ni transferencias.\n\n` // i18n-ok: SIWE statement, must match server/web3/walletLink.mjs byte for byte
     + `URI: ${origin}/web3/wallet\nVersion: 1\nChain ID: ${identity.chainId}\nNonce: ${value.nonce}`
     + `\nIssued At: ${new Date(value.issuedAt).toISOString()}\nExpiration Time: ${new Date(value.expiresAt).toISOString()}\nRequest ID: ${value.challengeId}`;
   if (value.message !== expected) fail('response');

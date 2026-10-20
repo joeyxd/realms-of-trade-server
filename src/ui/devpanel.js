@@ -23,7 +23,7 @@ const SLIDERS = [
   ['Guardia: aguante', 'tuning', 'guard.stamina', 10, 150, 5],
   ['Hitstop EXCELENTE (s)', 'tuning', 'sword.excellent.hitstop', 0, 0.25, 0.01],
   ['Hitstop golpe (s)', 'tuning', 'feel.hitstopMelee', 0, 0.15, 0.005],
-  ['Cámara lenta EXCELENTE ×', 'tuning', 'sword.excellent.slowmo', 0.1, 1, 0.05],
+  ['Cámara lenta EXCELENTE ×', 'tuning', 'sword.excellent.slowmo', 0.1, 1, 0.05], // i18n-ok: developer tuning panel, not player text
   ['Cámara lenta: duración (s)', 'tuning', 'feel.perfectSlowmoTime', 0, 0.8, 0.05],
   ['Proyectil: armado (s)', 'tuning', 'projectiles.armTime', 0, 0.4, 0.01],
   ['Roce: margen (u)', 'tuning', 'projectiles.graze', 0, 1, 0.05],

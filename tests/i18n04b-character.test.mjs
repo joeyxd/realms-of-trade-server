@@ -10,6 +10,7 @@ registerHooks({
   },
 });
 const { CharPanel } = await import('../src/ui/charpanel.js');
+const { AttributeControls } = await import('../src/ui/attributeControls.js');
 
 const markupText = html => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
 
@@ -23,7 +24,8 @@ function panel() {
   };
   const stats = () => ({ level: 5, atk: 18, def: 6, maxHp: 148, speed: 5, cdr: 0, ripMul: 1,
     reflMul: 1, guardMax: 100, dashRec: 1, winBonus: 0, potHeal: 1, xpMul: 1, weapon: 0, gold: 80, potions: 2 });
-  const ctx = { profile: () => profile, stats,
+  const attributes = new AttributeControls({ profile, enabled: false, submit: () => {}, onChange: () => {} });
+  const ctx = { profile: () => profile, stats, attributes,
     seen: new Set(), cell: (...args) => CharPanel.prototype.cell.call(ctx, ...args),
     tattooDetail: (...args) => CharPanel.prototype.tattooDetail.call(ctx, ...args),
     tattooNumbers: (...args) => CharPanel.prototype.tattooNumbers.call(ctx, ...args) };

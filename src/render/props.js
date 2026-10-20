@@ -2,6 +2,7 @@
 // instanced per kind. Glowing bits (lantern glass, coals, hut windows at night) use unlit materials.
 import * as THREE from 'three';
 import { assets } from './assets/registry.js';
+import { t } from '../core/i18n.js';
 import { part, merge, box, rbox, bbox, sphere, cyl, cone, torus, ico, lumpy, canvasTexture } from './geo.js';
 import { toon, normalMatFor, glowBasic } from './toon.js';
 import { LAYER } from './pipeline.js';
@@ -478,7 +479,7 @@ function signTexture(cala = false) {
       ctx.beginPath(); ctx.arc(s / 2 - 10, s * 0.6 - 2, 7, 0, Math.PI * 2); ctx.arc(s / 2 + 10, s * 0.6 - 2, 7, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#a3201e';
       ctx.font = 'bold 30px "Lilita One", "Titan One", sans-serif';
-      ctx.fillText('SIN LEY →', s / 2, s * 0.9);
+      ctx.fillText(t('sign.lawless'), s / 2, s * 0.9); // painted in the locale active when the texture is made
       return;
     }
     ctx.font = 'bold 44px "Lilita One", "Titan One", sans-serif';

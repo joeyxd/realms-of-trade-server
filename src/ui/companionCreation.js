@@ -1,5 +1,5 @@
 import { DEFAULT_COMPANION_PRESET, companionCreationConfig, randomCompanionPreset, validateCompanionPreset } from '../net/companionCreation.js';
-import { PERSONALITY_TEMPLATES, ROLE_TEMPLATES, TRAIT_TEMPLATES, COMPANION_LOOKS } from '../net/companionTemplates.js';
+import { PERSONALITY_TEMPLATES, ROLE_TEMPLATES, TRAIT_TEMPLATES, COMPANION_LOOKS, companionTemplateText } from '../net/companionTemplates.js';
 
 const COPY = {
   es: { title: 'Crear compañero', back: 'Volver', name: 'Nombre', role: 'Oficio y perspectiva', personality: 'Personalidad',
@@ -9,10 +9,10 @@ const COPY = {
     ready: 'Revisa el borrador y confirma cuando esté listo.', uncertain: 'No se pudo confirmar la creación. Recarga para comprobar el resultado; si sigue incierto puedes repetir la misma solicitud.',
     retry: 'Repetir la misma solicitud', forbidden: 'Esta cuenta no puede crear un compañero.', invalid_request: 'Revisa los datos del borrador.',
     conflict: 'Ya existe una creación para esta cuenta. Recarga el estado.', limit: 'Se alcanzó el límite de compañeros.', busy: 'Hay otra operación en curso.',
-    error: 'No se pudo completar la solicitud.', saved: 'Compañero preparado y detenido.', identity: 'Identidad', status: 'Estado', stopped: 'Detenido',
+    error: 'No se pudo completar la solicitud.', timeout: 'La consulta tardó demasiado. Recarga el estado.', saved: 'Compañero preparado y detenido.', identity: 'Identidad', status: 'Estado', stopped: 'Detenido',
     personalityDoc: 'Documento de personalidad guardado', goals: 'Objetivos guardados', prepared: 'Preparado', confirmationRequired: 'Confirma antes de crear.',
     nextStep: 'El siguiente paso será emparejar el runner local y entrar al mundo. Este estado no activa una conexión.',
-    looksNames: { Corsario: 'Corsair', Exploradora: 'Explorer', Bucanero: 'Buccaneer', Tormenta: 'Storm', Brasa: 'Ember' },
+    looksNames: { Corsario: 'Corsario', Exploradora: 'Exploradora', Bucanero: 'Bucanero', Tormenta: 'Tormenta', Brasa: 'Brasa' },
     roleNames: { sailor: 'Marinero', marine: 'Infante de marina', builder: 'Constructor', harvester: 'Recolector', resident: 'Residente de Salty Shore' },
     personalityNames: { warm: 'Cálida', calm: 'Serena', curious: 'Curiosa', direct: 'Directa', playful: 'Juguetona' },
     traitsNames: { curious: 'Curiosa', prudent: 'Prudente', kind: 'Bondadosa', brave: 'Valiente', patient: 'Paciente', resourceful: 'Ingeniosa', sociable: 'Sociable', steadfast: 'Firme' } },
@@ -23,7 +23,7 @@ const COPY = {
     ready: 'Review the draft and confirm when it is ready.', uncertain: 'Creation could not be confirmed. Reload to check the result; if it remains uncertain, retry the same request.',
     retry: 'Retry the same request', forbidden: 'This account cannot create a companion.', invalid_request: 'Check the draft fields.',
     conflict: 'A companion already exists for this account. Reload the status.', limit: 'The companion limit was reached.', busy: 'Another operation is in progress.',
-    error: 'The request could not be completed.', saved: 'Companion prepared and stopped.', identity: 'Identity', status: 'Status', stopped: 'Stopped',
+    error: 'The request could not be completed.', timeout: 'The request took too long. Reload the status.', saved: 'Companion prepared and stopped.', identity: 'Identity', status: 'Status', stopped: 'Stopped',
     personalityDoc: 'Saved personality document', goals: 'Saved goals', prepared: 'Prepared', confirmationRequired: 'Confirm before creating.',
     nextStep: 'Next, pair the local runner and enter the world. This prepared state does not activate a connection.',
     looksNames: { Corsario: 'Corsair', Exploradora: 'Explorer', Bucanero: 'Buccaneer', Tormenta: 'Storm', Brasa: 'Ember' },
@@ -183,7 +183,7 @@ export class CompanionCreationUI {
     for (const option of COMPANION_LOOKS) { const label = node('label', 'mn-companion-create-choice'); const radio = node('input'); radio.type = 'radio'; radio.name = `companion-look-${this.title.id}`; radio.value = String(option.skin); radio.dataset.field = 'skin'; radio.dataset.focusKey = `skin:${option.skin}`; radio.checked = this.draft?.skin === option.skin; radio.disabled = locked; label.append(radio, node('span', '', c.looksNames[option.name] || option.name)); this.looks.append(label); }
     this.randomButton.disabled = locked || !this.draft; this.reviewButton.disabled = locked || !this.draft;
     if (this.reviewing && this.draft && !record) {
-      try { const preview = companionCreationConfig(this.draft); this.reviewPersonality.textContent = preview.personality; this.reviewGoals.replaceChildren(...preview.goals.map(goal => node('li', '', `${goal.text}\n${goal.constraints.join('\n')}`))); }
+      try { const preview = companionCreationConfig(this.draft); this.reviewPersonality.textContent = companionTemplateText(preview.personality, this.lang); this.reviewGoals.replaceChildren(...preview.goals.map(goal => node('li', '', companionTemplateText(`${goal.text}\n${goal.constraints.join('\n')}`, this.lang)))); }
       catch { this.reviewPersonality.textContent = ''; this.reviewGoals.replaceChildren(); }
     }
     this.confirmInput.checked = this.confirmed; this.confirmInput.disabled = locked;
@@ -192,8 +192,8 @@ export class CompanionCreationUI {
       const config = record.configuration.config; this.savedHeading.textContent = c.saved; this.identity.textContent = `${c.identity}: ${record.characterKey}`;
       this.savedStatus.textContent = `${c.status}: ${record.control.stopped ? c.stopped : c.prepared}`; this.savedName.textContent = `${c.name}: ${record.preset.name}`;
       this.nextStep.textContent = c.nextStep;
-      this.savedPersonalityTitle.textContent = c.personalityDoc; this.savedPersonality.textContent = config.personality;
-      this.savedGoalsTitle.textContent = c.goals; this.savedGoals.replaceChildren(...config.goals.map(goal => node('li', '', `${goal.text}\n${goal.constraints.join('\n')}`)));
+      this.savedPersonalityTitle.textContent = c.personalityDoc; this.savedPersonality.textContent = companionTemplateText(config.personality, this.lang);
+      this.savedGoalsTitle.textContent = c.goals; this.savedGoals.replaceChildren(...config.goals.map(goal => node('li', '', companionTemplateText(`${goal.text}\n${goal.constraints.join('\n')}`, this.lang))));
     }
     if (priorFocus) [...this.container.querySelectorAll?.('[data-focus-key]') || []].find(item => item.dataset.focusKey === priorFocus)?.focus?.({ preventScroll: true });
   }

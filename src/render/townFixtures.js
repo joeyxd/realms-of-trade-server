@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { part, merge, rbox, bbox, cyl, cone, canvasTexture } from './geo.js';
 import { townPart, townRect, TOWN_NORMAL_STRENGTH } from './townMaterials.js';
 import { toon } from './toon.js';
+import { t } from '../core/i18n.js';
 
 export function townLanternGeometry(mapped = false) {
   const P = (g, color, transform, role) => townPart(g, color, transform, { mapped, role });
@@ -71,7 +72,7 @@ export function townSignInk(cala = false) {
       ctx.fillStyle = '#ffe5ad'; ctx.beginPath(); ctx.arc(128, 145, 22, 0, Math.PI * 2); ctx.fill();
       ctx.fillRect(113, 152, 30, 21); ctx.fillStyle = '#342318';
       for (const x of [120, 136]) { ctx.beginPath(); ctx.arc(x, 144, 5, 0, Math.PI * 2); ctx.fill(); }
-      label('SIN LEY →', 222, 30, '#ffad84');
+      label(t('sign.lawless'), 222, 30, '#ffad84'); // painted in the locale active when the texture is made
     } else {
       label('LA', 61, 38); label('CALDERA', 111, 42); label('↑', 219, 92);
     }

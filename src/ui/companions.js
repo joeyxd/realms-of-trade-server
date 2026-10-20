@@ -18,6 +18,7 @@ const COPY = {
     stale_control: 'El estado del compañero cambió. Actualiza la lista antes de volver a intentarlo.',
     conflict: 'El control cambió en otro lugar. Actualiza antes de volver a intentarlo.', unavailable: 'El control durable no está disponible. Actualiza para consultar de nuevo.',
     busy: 'El control está ocupado. Actualiza antes de volver a intentarlo.', durable_control_required: 'Este compañero requiere control durable. Actualiza el estado antes de continuar.',
+    forbidden: 'Esta cuenta no puede controlar este compañero.', invalid_request: 'La solicitud no es válida.', disabled: 'Los compañeros están deshabilitados en este servidor.',
   },
   en: {
     create: 'Create companion', prepared: 'View prepared companion', creationReady: 'You can create your companion profile. Local controller pairing is still being prepared.', preparedStatus: 'Your companion is prepared and stopped. Model connection is not available yet.',
@@ -37,6 +38,7 @@ const COPY = {
     stale_control: 'The companion state changed. Refresh the list before trying again.',
     conflict: 'Control changed elsewhere. Refresh before trying again.', unavailable: 'Durable control is unavailable. Refresh to check again.',
     busy: 'Control is busy. Refresh before trying again.', durable_control_required: 'This companion requires durable control. Refresh status before continuing.',
+    forbidden: 'This account cannot control this companion.', invalid_request: 'The request is invalid.', disabled: 'Companions are disabled on this server.',
   },
 };
 
@@ -372,7 +374,7 @@ export class CompanionsUI {
     this.refreshButton.textContent = this.refreshPending ? text.refreshing : text.refresh;
     this.refreshButton.disabled = this.refreshPending || !this.visible || ['signed_out', 'offline', 'loading'].includes(this.state.status);
     const status = this.state.message
-      ? text[this.state.message]
+      ? text[this.state.message] || text.error
       : this.state.status === 'ready'
         ? (creationAvailable && !this.state.enabled ? (creation?.record ? text.preparedStatus : text.noCompanions)
           : !this.state.enabled ? text.serverDisabled : this.state.companions.length === 0 ? text.noCompanions : text.ready)

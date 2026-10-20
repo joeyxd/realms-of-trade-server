@@ -139,7 +139,7 @@ export class WorldEditor {
 
   _buildUI() {
     this.ui = document.createElement('section'); this.ui.className = 'gm-editor'; this.ui.hidden = true;
-    this.ui.setAttribute('aria-label', 'World editor');
+    this.ui.setAttribute('aria-label', this._t('World editor', 'Editor del mundo'));
     this.ui.innerHTML = [
       '<header class="gm-topbar"><div class="gm-brand"><b data-i18n="brand"></b><small data-i18n="draftLocal"></small></div>',
       '<div class="gm-actions">',
@@ -173,8 +173,8 @@ export class WorldEditor {
       '<select data-setting="space"><option value="world" data-i18n="world"></option><option value="local" data-i18n="local"></option></select></div>',
       '<div class="gm-fields">',
       '<label><span>X</span><input data-field="x" type="number" step="0.25"></label><label><span>Y</span><input data-field="y" type="number" step="0.25"></label>',
-      '<label><span>Z</span><input data-field="z" type="number" step="0.25"></label><label><span>Rot X°</span><input data-field="rx" type="number" step="5"></label>',
-      '<label><span>Rot Y°</span><input data-field="ry" type="number" step="5"></label><label><span>Rot Z°</span><input data-field="rz" type="number" step="5"></label>',
+      '<label><span>Z</span><input data-field="z" type="number" step="0.25"></label><label><span data-i18n="rotX"></span><input data-field="rx" type="number" step="5"></label>',
+      '<label><span data-i18n="rotY"></span><input data-field="ry" type="number" step="5"></label><label><span data-i18n="rotZ"></span><input data-field="rz" type="number" step="5"></label>',
       '<label><span data-i18n="uniformScale"></span><input data-field="scale" type="number" min="0.001" max="1000" step="0.1"></label></div>',
       '<button type="button" data-action="ground" data-i18n="ground"></button>',
       '<p class="gm-group-note" data-role="group-note" data-i18n="groupNote" hidden></p>',
@@ -228,6 +228,7 @@ export class WorldEditor {
         'Botón derecho + ratón: mirar · WASD: volar · Q/E: altura · Shift: rápido · rueda: velocidad · F: enfocar'],
       inspector: ['Inspector', 'Inspector'], move: ['Move', 'Mover'], rotate: ['Rotate', 'Girar'], scale: ['Scale', 'Escala'],
       uniformScale: ['Uniform scale', 'Escala uniforme'],
+      rotX: ['Rot X°', 'Giro X°'], rotY: ['Rot Y°', 'Giro Y°'], rotZ: ['Rot Z°', 'Giro Z°'],
       snap: ['Snap', 'Rejilla'], world: ['World axes', 'Ejes del mundo'], local: ['Local axes', 'Ejes locales'],
       ground: ['Place on terrain', 'Apoyar en terreno'],
       colliderNote: ['Circles block movement at every height. Models are not walkable surfaces. Draft changes stay private until activation from Online.',
@@ -236,6 +237,7 @@ export class WorldEditor {
     for (const el of this.ui.querySelectorAll('[data-i18n]')) {
       const value = words[el.dataset.i18n]; if (value) el.textContent = value[this.lang === 'en' ? 0 : 1];
     }
+    this.ui.setAttribute('aria-label', this._t('World editor', 'Editor del mundo'));
     this.langButton.textContent = this.lang === 'es' ? 'EN' : 'ES';
     this.catalog?.setLanguage(this.lang); this.resourcePanel?.render(); this._renderInspector(); this._renderSceneList();
     this.remotePanel?.render();

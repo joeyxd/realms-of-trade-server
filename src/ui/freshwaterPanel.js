@@ -3,6 +3,7 @@ import { MEALS, MEAL_TICKS } from '../data/meals.js';
 import { atlasIcon, escHtml } from './kit.js';
 import { mealInfo, nutritionText, provisionsGuideHtml } from './provisionInfo.js';
 import { shoreBarrelNotice, shoreVoyageActive } from './shoreStopState.js';
+import { onLocaleChange } from '../core/locale.js';
 
 const RETRY_MS = 1000;
 const TIMEOUT_MS = 5000;
@@ -136,6 +137,7 @@ export class FreshwaterPanel {
     this.keyListener = event => {
       if (this.active && (event.code === 'Escape' || event.key === 'Escape')) { event.preventDefault(); event.stopPropagation(); this.close(); }
     };
+    this.unsubscribeLocale = onLocaleChange(() => { if (this.active) this.render(); });
     this.render();
   }
 
@@ -188,6 +190,10 @@ export class FreshwaterPanel {
   }
   toggle() { return this.active ? (this.close(), false) : this.open(); }
   resetSession() { this.pending = null; this.owner = null; this.session = null; this.close(); }
+  dispose() {
+    this.unsubscribeLocale?.(); this.unsubscribeLocale = null;
+    this.resetSession(); this.root?.remove?.(); this.root = null; this.$ = null;
+  }
   update() {
     const c = this.client?.();
     if (!c?.joined || c !== this.owner || c.youServer !== this.session) {

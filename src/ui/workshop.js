@@ -4,6 +4,7 @@ import { packLimitsForProfile } from '../sim/economy/carry.js';
 import { holdMass, holdUsed } from '../sim/economy/cargo.js';
 import { readProgression } from '../sim/systems/progression.js';
 import { newWorkshop, readWorkshop, workshopPlan } from '../sim/systems/workshop.js';
+import { onLocaleChange } from '../core/locale.js';
 
 const COSTS = Object.freeze({ 1: Object.freeze({ lona: 3, madera: 2 }), 2: Object.freeze({ lona: 5, madera: 4 }) });
 const COPY = {
@@ -66,6 +67,7 @@ export class WorkshopPanel {
       <p class="workshop-status" data-status aria-live="polite"></p><button type="button" data-retry hidden></button>
       <div class="workshop-actions"><button type="button" data-one></button><button type="button" data-max></button><button type="button" data-craft></button></div></div>`;
     parent.appendChild(this.root); this.$ = selector => this.root.querySelector(selector); this.bind(); this.render();
+    this.unsubscribeLocale = onLocaleChange(() => { if (this.active) this.render(); });
   }
   contextNow() { return call(this.context, null); }
   profileNow() { return this.contextNow()?.profile || call(this.profile); }
@@ -119,8 +121,8 @@ export class WorkshopPanel {
     } catch { return false; }
     const command = this.makeCommand(op, profile, amount);
     this.pending = { command, sentAt: performance.now(), expectedWorkshop, expectedCarry, ackRev: null };
-    this.status = this.copy().waiting;
-    if (!this.send(command)) { this.pending = null; this.status = this.copy().failed; this.render(); return false; }
+    this.status = 'waiting';
+    if (!this.send(command)) { this.pending = null; this.status = 'failed'; this.render(); return false; }
     this.render(); return true;
   }
   contribute(amount) { return this.act('contribute', amount); }
@@ -133,12 +135,12 @@ export class WorkshopPanel {
     const p = this.pending, profile = this.profileNow(), view = workshopPanelView(profile);
     if (!p || !Number.isSafeInteger(p.ackRev) || !view.valid || profile.eco.tradeRev < p.ackRev
         || !sameWorkshop(view.workshop, p.expectedWorkshop) || !sameCarry(view.carry, p.expectedCarry)) return false;
-    this.pending = null; this.status = this.copy().ready; this.render(); return true;
+    this.pending = null; this.status = 'ready'; this.render(); return true;
   }
   onResult(ev) {
     const p = this.pending;
     if (!p || ev?.type !== 'artisan' || ev.op !== p.command.op || ev.opId !== p.command.opId) return false;
-    if (ev.ok === false) { this.pending = null; this.status = this.copy()[ev.why] || this.copy().unknown; this.render(); return true; }
+    if (ev.ok === false) { this.pending = null; this.status = typeof this.copy()[ev.why] === 'string' ? ev.why : 'unknown'; this.render(); return true; }
     if (ev.ok !== true || ev.rev !== p.command.expectedRev + 1 || !sameWorkshop(ev.workshop, p.expectedWorkshop)
         || !sameCarry(ev.carry, p.expectedCarry)) return false;
     p.ackRev = ev.rev;
@@ -146,8 +148,8 @@ export class WorkshopPanel {
       const profile = this.profileNow(), view = workshopPanelView(profile);
       if (view.valid && Number.isSafeInteger(profile?.eco?.tradeRev) && profile.eco.tradeRev >= ev.rev) {
         this.pending = null;
-        this.status = this.copy().recovered || this.copy().ready;
-      } else { p.recovered = true; this.status = this.copy().recoveredWaiting || this.copy().waiting; }
+        this.status = 'recovered';
+      } else { p.recovered = true; this.status = 'recoveredWaiting'; }
     }
     this.render(); return true;
   }
@@ -182,10 +184,14 @@ export class WorkshopPanel {
     craft.disabled = busy || !ctx || !v.valid || !v.canCraft;
     this.$('[data-upgrade]').disabled = busy || !ctx || !v.valid || !v.canUpgrade;
     this.$('[data-status]').textContent = busy ? this.pending.recovered ? c.recoveredWaiting || c.waiting : c.waiting
-      : !ctx ? c.disabled : this.status || (v.valid ? c.ready : c.profile);
+      : !ctx ? c.disabled : c[this.status] || (v.valid ? c.ready : c.profile);
     const retry = this.$('[data-retry]'), retryReady = busy && performance.now() - this.pending.sentAt >= 5000;
     retry.hidden = !retryReady; retry.disabled = !retryReady || !ctx; retry.textContent = c.retry;
     this.root.classList.toggle('is-pending', busy);
   }
   reset() { this.pending = null; this.status = ''; this.close(); this.render(); }
+  dispose() {
+    this.unsubscribeLocale?.(); this.unsubscribeLocale = null;
+    this.reset(); this.root?.remove(); this.root = null;
+  }
 }

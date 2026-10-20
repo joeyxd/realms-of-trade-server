@@ -1,4 +1,4 @@
-import { catalogs, getLocale, t } from '../core/i18n.js';
+import { catalogs, getLocale, t, onLocaleChange } from '../core/i18n.js';
 import { tuning } from '../data/tuning.js';
 
 const number = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
@@ -47,7 +47,7 @@ export function swimStatusCopy(state, locale = undefined) {
 }
 
 export class SwimStatus {
-  constructor(parent, { locale = () => document.documentElement.lang || 'es' } = {}) {
+  constructor(parent, { locale = getLocale } = {}) {
     if (!parent?.appendChild) throw new TypeError('SwimStatus needs a parent element.');
     this.locale = locale;
     this.root = parent.ownerDocument.createElement('aside');
@@ -63,9 +63,11 @@ export class SwimStatus {
       @media(max-height:480px) and (pointer:coarse){body.touch .mn-swim-status{left:40%;bottom:max(.7rem,env(safe-area-inset-bottom));width:min(18rem,40vw);padding:.45rem .6rem;font-size:11px}}
     </style><header><span data-title></span><b data-value></b></header><progress max="100" value="100" data-meter></progress><div class="warning" data-warning></div><footer><span class="danger" data-brasa></span><span data-load></span><span data-advice></span></footer>`;
     parent.appendChild(this.root);
+    this.unsubscribeLocale = onLocaleChange(() => { if (this.current) this.update(this.current); });
   }
 
   update(current) {
+    this.current = current;
     const state = swimStatusState(current), copy = swimStatusCopy(state, this.locale);
     this.root.hidden = !state.visible;
     this.root.ownerDocument.body?.classList.toggle('is-swimming', state.visible);
@@ -89,5 +91,5 @@ export class SwimStatus {
     return state;
   }
 
-  dispose() { this.root.ownerDocument.body?.classList.remove('is-swimming'); this.root.remove(); }
+  dispose() { this.unsubscribeLocale?.(); this.root.ownerDocument.body?.classList.remove('is-swimming'); this.root.remove(); }
 }

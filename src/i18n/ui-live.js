@@ -14,4 +14,5 @@ export default {
   'nav.swimPrompt': ['Entra al agua desde tu barco', 'Enter the water from your boat'],
   'nav.waterReboard': ['Volver a bordo', 'Reboard your boat'],
   'nav.waterReboardPrompt': ['Acércate a tu barco para subir', 'Reach your boat to climb aboard'],
+  'sign.lawless': ['SIN LEY →', 'LAWLESS →'],
 };

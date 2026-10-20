@@ -4,6 +4,7 @@ import { ARTISAN } from '../src/data/artisan.js';
 import { workshopBuildPayment } from '../src/ui/raftEditor.js';
 import { workbenchPreview } from '../src/ui/workbench.js';
 import { packInventoryHtml } from '../src/ui/packInventory.js';
+import { getLocale, setLocale } from '../src/core/locale.js';
 
 const profile = (workshop = {}) => ({ progression: { v: 1, practice: { logging: 0 }, milestones: [], knowledge: [ARTISAN.lesson] },
   workshop: { v: 1, boards: 10, storageCredit: false, crateKits: 1, ...workshop },
@@ -38,12 +39,12 @@ test('workbench preview applies declared mass and volume limits, while legacy pa
 });
 
 test('basic plank and pack display use English label and real per-good dimensions', () => {
-  const oldDocument = globalThis.document;
-  globalThis.document = { documentElement: { lang: 'en' } };
+  const oldLocale = getLocale();
+  setLocale('en');
   try {
     const preview = workbenchPreview({ eco: { pack: { cap: 18, maxMass: 18, goods: { tronco: 2 } } } }, 1);
     assert.equal(preview.outputName, 'Basic plank');
     const html = packInventoryHtml({ carry: { v: 1, backpack: 0 }, eco: { pack: { cap: 18, maxMass: 18, goods: { madera: 1 } } } }, {}, 'en');
     assert.match(html, /Basic plank/); assert.match(html, /3 uV · 3 uM/);
-  } finally { globalThis.document = oldDocument; }
+  } finally { setLocale(oldLocale); }
 });

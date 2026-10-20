@@ -26,9 +26,9 @@ export class TerrainInteraction {
     this.editor.transform.enabled = !tool;
     this.panel.tool = tool; this.panel.render();
     this.cursor.visible = false;
-    if (tool) this.editor._setStatus(editorMessage(
-      tool === 'ramp' ? 'Ramp: click its start, then its end. Escape cancels.' : 'Drag on dry ground. Release to keep the stroke; Escape cancels.',
-      tool === 'ramp' ? 'Rampa: pulsa el inicio y luego el final. Escape cancela.' : 'Arrastra sobre suelo seco. Suelta para conservar el trazo; Escape cancela.'), 'info');
+    if (tool) this.editor._setStatus(tool === 'ramp'
+      ? editorMessage('Ramp: click its start, then its end. Escape cancels.', 'Rampa: pulsa el inicio y luego el final. Escape cancela.')
+      : editorMessage('Drag on dry ground. Release to keep the stroke; Escape cancels.', 'Arrastra sobre suelo seco. Suelta para conservar el trazo; Escape cancela.'), 'info');
   }
 
   move() {

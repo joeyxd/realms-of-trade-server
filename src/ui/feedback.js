@@ -783,6 +783,3 @@ export class Feedback {
 }
 
 export { ENEMIES };
-
-const WAVE_SUB = ['Refleja sus balas contra la manada', 'Diablillos: espirales de fuego', 'Chamanes: anillos ámbar y violeta',
-  'Cangrejos: flanquéalos o devuélveles las balas', 'Todo a la vez'];

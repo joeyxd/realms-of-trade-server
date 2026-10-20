@@ -2,7 +2,7 @@
 // land; the rest need the shore workbench. The server stays authoritative; this panel only previews and asks.
 import { CRAFT_RECIPES, HARVEST, WOOD_RECIPE } from '../data/resources.js';
 import { FIRE_SECONDS } from '../data/fire.js';
-import { onLocaleChange, formatNumber } from '../core/i18n.js';
+import { onLocaleChange, formatNumber, t, translateData } from '../core/i18n.js';
 import { GOODS, GOOD_IDS } from '../data/goods.js';
 import { goodMass, goodVolume, holdMass, holdUsed } from '../sim/economy/cargo.js';
 import { comfortMass } from '../data/carry.js';
@@ -67,7 +67,7 @@ export function workbenchPreview(profile, n, recipeId = WOOD_RECIPE.id, torchRul
   const english = craftLang() === 'en';
   const plankName = recipe.id === WOOD_RECIPE.id ? (english ? 'Basic plank' : 'Tabla básica') : GOODS[output]?.name || output;
   return { recipe: recipe.id, tool: recipe.tool || null, tier: recipe.tier || 0, hand: !!recipe.hand, fire: recipe.fire || null, inputs: needs,
-    input: needs[0]?.good, output, inputName: needs[0]?.name || '', outputName: noGoods ? recipe.name : plankName,
+    input: needs[0]?.good, output, inputName: needs[0]?.name || '', outputName: noGoods ? (recipe.fire ? t('systems.resource.torch') : translateData(recipe.name)) : plankName,
     n: requested, craftMax, packKnown, qtyValid, inputOwned: needs[0]?.owned || 0,
     inputNeeded: needs[0]?.count * requested || 0, outputAmount, usedBefore, usedAfter, massBefore, massAfter,
     massLimit: packKnown && Number.isFinite(pack.maxMass) ? pack.maxMass : null, massDeltaPerBatch,

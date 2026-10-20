@@ -1,9 +1,11 @@
 import { validateCompanionConfig } from '../net/companionConfig.js';
+import { companionTemplateText } from '../net/companionTemplates.js';
 
 const COPY = {
   es: {
     title: 'Configurar a {name}', back: 'Volver', personality: 'Personalidad',
     personalityHelp: 'Describe cómo quieres que se comunique y razone este compañero.',
+    storedNote: 'El perfil se guarda tal como está escrito; las plantillas iniciales están en español.',
     goals: 'Objetivos', addGoal: 'Añadir objetivo', removeGoal: 'Quitar objetivo',
     goalText: 'Objetivo', status: 'Estado', constraints: 'Condiciones (una por línea)',
     active: 'Activo', paused: 'En pausa', completed: 'Completado', blocked: 'Bloqueado',
@@ -23,6 +25,7 @@ const COPY = {
   en: {
     title: 'Configure {name}', back: 'Back', personality: 'Personality',
     personalityHelp: 'Describe how you want this companion to communicate and reason.',
+    storedNote: 'The profile is saved exactly as written; the starter templates are in Spanish.',
     goals: 'Goals', addGoal: 'Add goal', removeGoal: 'Remove goal',
     goalText: 'Goal', status: 'Status', constraints: 'Constraints (one per line)',
     active: 'Active', paused: 'Paused', completed: 'Completed', blocked: 'Blocked',
@@ -89,6 +92,8 @@ export class CompanionConfigUI {
     this.personalityLabel.append(this.personalityLabelText, this.personality);
     this.personalityHelp = node('small', 'mn-companion-config-note');
     this.personalityLabel.append(this.personalityHelp);
+    this.storedNote = node('small', 'mn-companion-config-note');
+    this.personalityLabel.append(this.storedNote);
     this.personality.addEventListener('input', () => {
       if (this.draft && !this.editingLocked()) this.draft.personality = this.personality.value;
     });
@@ -239,6 +244,7 @@ export class CompanionConfigUI {
     const locked = this.editingLocked();
     this.personality.disabled = locked || !this.draft;
     this.personalityHelp.textContent = copy.personalityHelp;
+    this.storedNote.textContent = copy.storedNote;
     this.goalsHeading.textContent = copy.goals;
     this.addButton.textContent = copy.addGoal;
     this.addButton.disabled = locked || !this.draft || this.draft.goals.length >= 16;
@@ -263,7 +269,7 @@ export class CompanionConfigUI {
     const top = node('div', 'mn-companion-config-goal-top');
     const statusLabel = node('label'); const statusName = node('span', '', copy.status);
     const select = node('select'); select.dataset.focusKey = `goal-status:${goal.id}`; select.disabled = this.editingLocked();
-    select.setAttribute('aria-label', `${copy.status}: ${goal.text || copy.goalText}`);
+    select.setAttribute('aria-label', `${copy.status}: ${companionTemplateText(goal.text, this.lang) || copy.goalText}`);
     for (const value of STATUSES) {
       const option = node('option', '', copy[value]); option.value = value; option.selected = goal.status === value; select.append(option);
     }

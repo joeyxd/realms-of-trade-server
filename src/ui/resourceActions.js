@@ -5,26 +5,20 @@ import { holdUsed, load } from '../sim/economy/cargo.js';
 import { loggingStatus } from '../sim/systems/progression.js';
 import { validateLoggingChallenge } from '../sim/systems/loggingTiming.js';
 import { LoggingTimingPanel } from './loggingTiming.js';
-import { t } from '../core/i18n.js';
+import { t, text, rich, dataParam, translateData, getLocale } from '../core/i18n.js';
 
 const MAX_GATHERS = 8, RETRY_MS = 5000;
 const TIMING_COPY = {
   es: { aim_busy: 'No se pudo iniciar el ritmo. Espera un momento e int\u00e9ntalo de nuevo.',
     aim_revision: 'La palmera cambi\u00f3. Ac\u00e9rcate e inicia otro ritmo.', aim_tool: 'Necesitas un hacha para talar.',
-    aim_cooldown: 'Espera a que termine tu acci\u00f3n antes de iniciar otro ritmo.',
-    timingExpired: 'Termin\u00f3 la ventana. Inicia otro intento.' },
+    aim_cooldown: 'Espera a que termine tu acci\u00f3n antes de iniciar otro ritmo.' },
   en: { aim_busy: 'Could not start the timing challenge. Wait a moment and try again.',
     aim_revision: 'The palm changed. Move closer and start a new challenge.', aim_tool: 'You need an axe to log.',
-    aim_cooldown: 'Wait for your action to finish before starting another challenge.',
-    timingExpired: 'The timing window expired. Start a new attempt.' },
+    aim_cooldown: 'Wait for your action to finish before starting another challenge.' },
 };
 const COPY = {
-  es: { account_required: 'Inicia sesión para recoger o fabricar en este servidor.', storage: 'El servidor no pudo confirmar el guardado. Vuelve a conectar.',
-    collecting: 'Recogiendo', working: 'Trabajando', retry: 'Reintentar', retryAction: 'Reintentar la recogida',
-    delayed: 'La conexión está tardando. Puedes reintentar la recogida.', full: 'La mochila está llena. Deposita materiales en tu balsa.' },
-  en: { account_required: 'Sign in to gather or craft on this server.', storage: 'The server could not confirm the save. Reconnect to continue.',
-    collecting: 'Collecting', working: 'Harvesting', retry: 'Retry', retryAction: 'Retry collection',
-    delayed: 'The connection is taking longer. You can retry collection.', full: 'Your backpack is full. Store materials on your raft.' },
+  es: { collecting: 'Recogiendo', retry: 'Reintentar', retryAction: 'Reintentar la recogida' },
+  en: { collecting: 'Collecting', retry: 'Retry', retryAction: 'Retry collection' },
 };
 
 const REASONS = {
@@ -51,7 +45,7 @@ const REASONS = {
 };
 
 export class ResourceActions {
-  constructor({ client, player, enabled, toast, sound, onGather, onChange, locale = () => 'es', now = () => performance.now() }) {
+  constructor({ client, player, enabled, toast, sound, onGather, onChange, locale = getLocale, now = () => performance.now() }) {
     Object.assign(this, { client, player, enabled, toast, sound, onGather, onChange, locale, now });
     this.craftPending = null; this.gathers = new Map(); this.predictedHits = new Set(); this.openWorkbench = null; this.gatherUntil = 0; this.latestGather = null;
     this.aim = null; this.aimRequest = null; this.timingPanel = null;
@@ -67,7 +61,7 @@ export class ResourceActions {
     if (c !== this.owner || c?.t?.closed) { if (this.pending || this.aim || this.aimRequest) this.reset(); this.owner = c; return; }
     if (this.aim && this.now() - this.aim.receivedAt > 90 * DT * 1000) {
       this.aim = null; this.timingPanel?.close();
-      this.toast(this.copy.timingExpired);
+      this.toast(text('systems.resource.timingExpired'));
     }
     let changed = false;
     for (const [id, pending] of this.gathers) {
@@ -77,7 +71,7 @@ export class ResourceActions {
       } else if (!pending.ack && !pending.expired && this.now() - pending.sentAt >= RETRY_MS) {
         // Uncertainty never turns a presentation preview into spendable inventory.
         pending.expired = true; changed = true;
-        if (!pending.ack) this.toast(this.copy.delayed);
+        if (!pending.ack) this.toast(text('systems.resource.delayed'));
       }
     }
     if (changed) this.onChange?.();
@@ -113,12 +107,12 @@ export class ResourceActions {
     if (this.craftPending) {
       if (this.openWorkbench) {
         if (!nearBench) return null;
-        return { html: '<span class="kbd">F</span> Banco de materiales · preparación pendiente', verb: 'Preparar',
+        return { html: `<span class="kbd">F</span> ${t('systems.resource.pendingCraft')}`, verb: t('systems.resource.prepare'),
           run: () => this.openWorkbench() };
       }
       const retry = this.now() - this.craftPending.sentAt >= RETRY_MS;
-      return { html: retry ? '<span class="kbd">F</span> Reintentar la solicitud' : 'Esperando confirmación…',
-        verb: retry ? 'Reintentar' : 'Esperando', run: () => { if (retry) this.send(this.craftPending.command); } };
+      return { html: retry ? `<span class="kbd">F</span> ${t('systems.resource.retryRequest')}` : t('systems.resource.waiting'),
+        verb: t(retry ? 'systems.resource.retry' : 'systems.resource.waitingShort'), run: () => { if (retry) this.send(this.craftPending.command); } };
     }
     const retry = [...this.gathers.values()].find((pending) => pending.expired && !pending.ack && this.now() - pending.sentAt >= RETRY_MS);
     if (retry) return { html: `<span class="kbd">F</span> ${this.copy.retryAction}`, verb: this.copy.retry,
@@ -134,9 +128,10 @@ export class ResourceActions {
     if (node) {
       const def = RESOURCE_KINDS[node.kind];
       const elapsed = Number.isFinite(c.resourceTick) ? Math.max(0, (c.serverTick?.() ?? c.resourceTick) - c.resourceTick) * DT : 0;
-      if (!node.ready) return { html: `${node.kind === 'palm' ? 'Tocón · la palmera crece' : def.name + ' agotado · vuelve'} en ${Math.ceil(Math.max(0, node.wait - elapsed))} s`, verb: 'Agotado', icon: def.tool === 'pickaxe' ? 'mine' : node.kind === 'palm' ? 'axe' : 'chest', run() {} };
+      if (!node.ready) return { html: t(node.kind === 'palm' ? 'systems.resource.palmRegrows' : 'systems.resource.regrows',
+        { resource: translateData(def.name), seconds: Math.ceil(Math.max(0, node.wait - elapsed)) }), verb: t('systems.resource.depletedShort'), icon: def.tool === 'pickaxe' ? 'mine' : node.kind === 'palm' ? 'axe' : 'chest', run() {} };
       const pack = this.backpack().pack;
-      const space = pack ? ` · mochila ${holdUsed(pack)}/${pack.cap}` : '';
+      const space = pack ? t('systems.resource.backpackSpace', { used: holdUsed(pack), capacity: pack.cap }) : '';
       const cutting = node.kind === 'palm', working = !!def.tool;
       const timingEnabled = cutting && (c.resources?.timing === true || node.timing === true);
       const maxHits = def.hits || HARVEST.palmHits;
@@ -147,27 +142,27 @@ export class ResourceActions {
       const needsTool = def.tool && !toolOwned;
       const wait = Math.max(0, this.gatherUntil - this.now());
       const icon = def.tool === 'pickaxe' ? 'mine' : cutting ? 'axe' : 'chest';
-      if (needsTool) return { html: `${def.name} · necesitas ${def.tool === 'pickaxe' ? 'pico' : 'hacha'} (banco)`,
-        verb: def.tool === 'pickaxe' ? 'Minar' : 'Cortar', icon,
-        run: () => this.toast(`Necesitas ${def.tool === 'pickaxe' ? 'un pico' : 'un hacha'} para trabajar este recurso.`) };
+      const verb = t(def.tool === 'pickaxe' ? 'systems.resource.mine' : cutting ? 'systems.resource.chop' : 'systems.resource.gather');
+      if (needsTool) return { html: t('systems.resource.needTool', { resource: translateData(def.name),
+        tool: t(def.tool === 'pickaxe' ? 'systems.resource.pickaxe' : 'systems.resource.axe') }),
+        verb, icon, run: () => this.toast(text(def.tool === 'pickaxe' ? 'systems.resource.needPickaxeToast' : 'systems.resource.needAxeToast')) };
       if (timingEnabled) {
         if (this.aim?.node === node.id && this.aim.rev === node.rev)
-          return { html: '<span class="kbd">F</span> Golpear al ritmo', verb: 'Talar', icon,
+          return { html: `<span class="kbd">F</span> ${t('systems.resource.strikeRhythm')}`, verb: t('systems.resource.log'), icon,
             run: () => this.submitTiming() };
         if (this.aimRequest?.node === node.id && this.aimRequest.rev === node.rev)
           return { html: this.now() - this.aimRequest.sentAt >= RETRY_MS
-            ? '<span class="kbd">F</span> Reintentar ritmo' : 'Preparando el ritmo…',
-          verb: 'Talar', icon, run: () => { if (this.now() - this.aimRequest.sentAt >= RETRY_MS) this.requestTiming(node); } };
-        return { html: '<span class="kbd">F</span> Iniciar ritmo de tala', verb: 'Talar', icon,
+            ? `<span class="kbd">F</span> ${t('systems.resource.retryRhythm')}` : t('systems.resource.preparingRhythm'),
+          verb: t('systems.resource.log'), icon, run: () => { if (this.now() - this.aimRequest.sentAt >= RETRY_MS) this.requestTiming(node); } };
+        return { html: `<span class="kbd">F</span> ${t('systems.resource.startRhythm')}`, verb: t('systems.resource.log'), icon,
           run: () => this.requestTiming(node) };
       }
-      if (wait > 0) return { html: `${def.tool === 'pickaxe' ? 'Picando' : cutting ? 'Hachazo' : 'Recogiendo'} · ${(wait / 1000).toFixed(1)} s${working ? ` · ${Math.max(0, remainingHits)}/${maxHits}` : ''}`,
-        verb: def.tool === 'pickaxe' ? 'Minar' : cutting ? 'Cortar' : 'Recoger', icon, run() {} };
-      const quantityLabel = def.good === 'piedra' ? (expectedYield === 1 ? 'piedra' : 'piedras')
-        : def.good === 'mineral_hierro' ? (expectedYield === 1 ? 'mineral de hierro' : 'minerales de hierro')
-          : expectedYield === 1 ? 'tronco' : 'troncos';
-      const compactProgress = working ? ` · ${hit}/${maxHits} · +${expectedYield} ${quantityLabel}` : '';
-      return { html: `<span class="kbd">F</span> ${def.verb}${compactProgress}${space}`, verb: def.tool === 'pickaxe' ? 'Minar' : cutting ? 'Cortar' : 'Recoger', icon,
+      if (wait > 0) return { html: t('systems.resource.working', { action: t(def.tool === 'pickaxe' ? 'systems.resource.mining' : cutting ? 'systems.resource.chopping' : 'systems.resource.gathering'),
+        seconds: (wait / 1000).toFixed(1), progress: working ? ` · ${Math.max(0, remainingHits)}/${maxHits}` : '' }), verb, icon, run() {} };
+      const quantityKey = def.good === 'piedra' ? 'systems.resource.quantity.stone'
+        : def.good === 'mineral_hierro' ? 'systems.resource.quantity.ore' : 'systems.resource.quantity.logs';
+      const compactProgress = working ? ` · ${hit}/${maxHits} · +${t(quantityKey, { count: expectedYield })}` : '';
+      return { html: `<span class="kbd">F</span> ${translateData(def.verb)}${compactProgress}${space}`, verb, icon,
         run: () => this.send({ t: 'cmd', type: 'resource', op: 'gather', node: node.id, expectedRev: node.rev,
           ...(node.kind === 'palm' && c.resources?.lootRules === 1 ? { lootRules: 1 } : {}) }) };
     }
@@ -176,9 +171,9 @@ export class ResourceActions {
     };
     if (nearBench) {
       const count = c.profile?.eco?.pack.goods.tronco || 0;
-      if (this.openWorkbench) return { html: `<span class="kbd">F</span> Banco de materiales · ${count} ${count === 1 ? 'tronco' : 'troncos'}`,
-        verb: 'Preparar', run: () => this.openWorkbench() };
-      return { html: `<span class="kbd">F</span> Preparar madera · 1 tronco → 1 madera (${count} ${count === 1 ? 'tronco' : 'troncos'})`, verb: 'Preparar',
+      if (this.openWorkbench) return { html: `<span class="kbd">F</span> ${t('systems.resource.benchCount', { count })}`,
+        verb: t('systems.resource.prepare'), run: () => this.openWorkbench() };
+      return { html: `<span class="kbd">F</span> ${t('systems.resource.prepareWoodCount', { count })}`, verb: t('systems.resource.prepare'),
         run: () => this.send({ t: 'cmd', type: 'resource', op: 'craft', recipe: 'madera', expectedRev: c.profile?.eco?.tradeRev ?? 0 }) };
     }
     return null;
@@ -265,7 +260,7 @@ export class ResourceActions {
     if (def.tool && c.profile?.tools?.[def.tool] !== 1) return false;
     const timedPalm = node.kind === 'palm' && (c.resources?.timing === true || node.timing === true);
     const pack = this.backpack().pack, yieldCount = timedPalm ? 6 : (def.yield || 1);
-    if (!pack || !load({ ...pack, goods: { ...pack.goods } }, def.good, yieldCount)) { this.toast(this.copy.full); return false; }
+    if (!pack || !load({ ...pack, goods: { ...pack.goods } }, def.good, yieldCount)) { this.toast(text('systems.resource.full')); return false; }
     const count = timedPalm ? 0 : (!def.hits || (node.hits || 0) + 1 >= def.hits ? yieldCount : 0);
     const pending = { command: { ...command }, sentAt: this.now(), def, good: def.good, count, timing: timedPalm };
     this.gathers.set(command.opId, pending);
@@ -278,7 +273,7 @@ export class ResourceActions {
     while (this.predictedHits.size > 32) this.predictedHits.delete(this.predictedHits.values().next().value);
     this.onGather?.({ type: 'resourceHit', e: c.youServer, node: node.id, kind: node.kind, x: node.x, y: node.y, z: node.z,
       rev: node.rev + 1, remaining: def.hits ? Math.max(0, def.hits - (node.hits || 0) - 1) : 0, tool: def.tool });
-    if (count) { this.sound?.(); this.toast(`<b>+${count} ${def.good === 'piedra' ? (this.locale() === 'en' ? 'stone' : 'piedra') : def.good === 'mineral_hierro' ? (this.locale() === 'en' ? 'iron ore' : 'mineral de hierro') : (this.locale() === 'en' ? 'log' : 'tronco')}</b>`); }
+    if (count) { this.sound?.(); this.toast(rich(def.good === 'piedra' ? 'systems.resource.gain.stone' : def.good === 'mineral_hierro' ? 'systems.resource.gain.ore' : 'systems.resource.gain.logs', { count })); }
     this.onChange?.();
     return true;
   }
@@ -308,27 +303,24 @@ export class ResourceActions {
     } else this.craftPending = null;
     if (!event.ok) {
       this.toast(event.why === 'tool'
-        ? t('systems.resource.needToolToast', { tool: t(event.tool === 'pickaxe' ? 'systems.resource.pickaxe' : 'systems.resource.axe') })
+        ? text(event.tool === 'pickaxe' ? 'systems.resource.needPickaxeToast' : 'systems.resource.needAxeToast')
         : event.why === 'full' && node?.kind === 'palm'
-        ? this.copy.full
-        : this.copy[event.why] || (REASONS[event.why] ? t(`systems.resource.reason.${event.why}`) : t('systems.resource.unknown')));
+        ? text('systems.resource.full')
+        : text(REASONS[event.why] || ['account_required', 'storage'].includes(event.why) ? `systems.resource.reason.${event.why}` : 'systems.resource.unknown'));
       return;
     }
     if (event.op === 'gather' && event.count === 0) {
       const mining = node?.kind === 'rock' || node?.kind === 'iron_ore';
-      this.toast(t(mining ? (event.remaining === 1 ? 'systems.resource.toast.hitLastRock' : 'systems.resource.toast.rockCracking')
+      this.toast(rich(mining ? (event.remaining === 1 ? 'systems.resource.toast.hitLastRock' : 'systems.resource.toast.rockCracking')
         : (event.remaining === 1 ? 'systems.resource.toast.hitLastPalm' : 'systems.resource.toast.palmBending')));
       return;
     }
     if (gather) {
-      if (gather.timing) this.toast(this.locale() === 'en'
-        ? `<b>+${event.count} logs</b> · ${event.timing?.quality ? 'perfect hit' : 'logging complete'}`
-        : `<b>+${event.count} troncos</b> · ${event.timing?.quality ? 'golpe perfecto' : 'tala completada'}`);
+      if (gather.timing) this.toast(`${rich('systems.resource.gain.logs', { count: event.count })} · ${text(event.timing?.quality ? 'systems.resource.perfectHit' : 'systems.resource.loggingComplete')}`);
       if (!event.replay && !event.historical && event.loot && typeof event.loot === 'object') {
         const bonus = Object.entries(event.loot).filter(([good, count]) => ['resina', 'coco'].includes(good) && Number.isSafeInteger(count) && count > 0);
         if (bonus.length) this.toast(bonus.map(([good, count]) => {
-          const names = this.locale() === 'en' ? { resina: 'resin', coco: 'coconut' } : { resina: 'resina', coco: 'coco' };
-          return `<b>+${count} ${names[good]}${count === 1 ? '' : 's'}</b>`;
+          return rich(good === 'resina' ? 'systems.resource.gain.resin' : 'systems.resource.gain.coconut', { count });
         }).join(' · '));
       }
       return;
@@ -336,9 +328,9 @@ export class ResourceActions {
     this.sound?.();
     const count = Number.isSafeInteger(event.count) && event.count > 0 ? event.count : 1;
     this.toast(event.op === 'craft' ? (event.tool
-      ? `<b>${event.tool === 'axe' ? 'Hacha' : 'Pico'} de piedra fabricado</b> · equipado en tu cinturón de utilidad.`
-      : `<b>+${count} madera preparada</b> · úsala en B / Construir.`)
-      : `<b>+${count} ${event.good === 'piedra' ? count === 1 ? 'piedra' : 'piedras' : event.good === 'mineral_hierro' ? count === 1 ? 'mineral de hierro' : 'minerales de hierro' : count === 1 ? 'tronco' : 'troncos'}</b> · ${event.good === 'piedra'
-        ? 'Material para fabricar herramientas.' : event.good === 'mineral_hierro' ? 'Mineral bruto; requiere fundición.' : 'Llévalo al banco del puerto para preparar madera.'}`);
+      ? rich('systems.resource.toast.craftedTool', { tool: dataParam(event.tool === 'axe' ? 'Hacha de piedra' : 'Pico de piedra') })
+      : rich('systems.resource.toast.woodMade', { count }))
+      : `${rich(event.good === 'piedra' ? 'systems.resource.gain.stone' : event.good === 'mineral_hierro' ? 'systems.resource.gain.ore' : 'systems.resource.gain.logs', { count })} · ${text(event.good === 'piedra'
+        ? 'systems.resource.toast.stoneHint' : event.good === 'mineral_hierro' ? 'systems.resource.toast.oreHint' : 'systems.resource.toast.logHint')}`);
   }
 }

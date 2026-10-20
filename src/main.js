@@ -1,4 +1,4 @@
-import { t, text as ltext, rich, attr, setText, setDataText, translateData, dataText, getLocale, onLocaleChange, initI18n } from './core/i18n.js';
+import { t, text as ltext, rich, attr, setText, setDataText, setAttributeText, translateData, dataText, getLocale, onLocaleChange, initI18n } from './core/i18n.js';
 // Entry point: boot, title, play loop. Every per-frame subsystem runs inside safe() so one failure
 // never freezes the game.
 import * as THREE from 'three';
@@ -438,17 +438,13 @@ async function boot() {
   const freshwaterTouchButton = document.createElement('button');
   freshwaterTouchButton.type = 'button'; freshwaterTouchButton.className = 'tbtn t-water';
   freshwaterTouchButton.hidden = !isTouch;
-  freshwaterTouchButton.textContent = getLocale() === 'en' ? 'Water' : 'Agua';
-  freshwaterTouchButton.setAttribute('aria-label', getLocale() === 'en' ? 'Fresh water' : 'Agua dulce');
+  setText(freshwaterTouchButton, 'systems.freshwater.touch');
+  setAttributeText(freshwaterTouchButton, 'aria-label', 'systems.freshwater.touchLabel');
   freshwaterTouchButton.addEventListener('click', () => {
     if (st.mode !== 'playing' || pause.open || !client?.joined) return;
     if (freshwaterPanel.active) freshwaterPanel.close(); else freshwaterPanel.open();
   });
   touch.root.querySelector('.t-cluster').appendChild(freshwaterTouchButton);
-  onLocaleChange(() => {
-    const en = getLocale() === 'en'; freshwaterTouchButton.textContent = en ? 'Water' : 'Agua';
-    freshwaterTouchButton.setAttribute('aria-label', en ? 'Fresh water' : 'Agua dulce');
-  });
   const pause = new PauseMenu($('#pause'), settings, {
     onChange: (key) => {
       saveSettings();
@@ -1761,9 +1757,8 @@ async function boot() {
         communityTrigger.disabled = !!community.active;
         artisan.update();
         artisanTrigger.hidden = !(st.online && st.mode === 'playing' && workbench.context());
-        artisanTrigger.textContent = client?.resources?.timing === true
-          ? (document.documentElement.lang.startsWith('en') ? 'Workshop and backpack' : 'Taller y mochila')
-          : (document.documentElement.lang.startsWith('en') ? 'Visit artisan' : 'Visitar artesano');
+        const artisanKey = client?.resources?.timing === true ? 'systems.workshop.trigger' : 'systems.artisan.trigger';
+        if (artisanTrigger.dataset.l10nKey !== artisanKey) setText(artisanTrigger, artisanKey);
       });
       safe('render', () => world.render());
       safe('quality', () => quality.frame(realDt, playing && !st.paused));

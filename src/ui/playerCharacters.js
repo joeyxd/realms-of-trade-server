@@ -63,6 +63,8 @@ const button = (className, text, action) => {
 };
 const fill = (value, params = {}) => String(value).replace(/\{([a-z]+)\}/gi, (_, key) => String(params[key] ?? ''));
 const validSkin = value => Number.isInteger(value) && value >= 0 && value <= 4;
+const errorMessage = (error, fallbackCopy) => typeof error?.l10nKey === 'string' && error.l10nKey
+  ? { key: error.l10nKey, params: error.l10nParams } : { copy: fallbackCopy };
 
 export class PlayerCharactersPanel {
   constructor({ parent = document.body, looks = [], onSelect = null, onCreate = null,
@@ -123,6 +125,12 @@ export class PlayerCharactersPanel {
   }
 
   copy() { return COPY[this.lang] || COPY.es; }
+  // Resolve a stored message descriptor ({ key, params } catalog entry or { copy } table entry) in the current locale.
+  _message(descriptor) {
+    if (!descriptor) return '';
+    if (descriptor.key) return t(descriptor.key, descriptor.params);
+    return this.copy()[descriptor.copy] || '';
+  }
   _buildLookGrid() {
     this.lookGrid.replaceChildren();
     this.lookButtons = [];
@@ -194,7 +202,7 @@ export class PlayerCharactersPanel {
     const character = this.roster.characters.find(item => item.id === id);
     if (!character) return;
     this.selectedId = id; this.error = ''; this.notice = '';
-    try { this.onSelect?.(id, character); } catch { this.error = this.copy().loadError; }
+    try { this.onSelect?.(id, character); } catch { this.error = { copy: 'loadError' }; }
     this.render();
   }
 
@@ -208,10 +216,10 @@ export class PlayerCharactersPanel {
   showCreate(mode) {
     if (this.busy) return;
     if (!['new', 'legacy', 'import'].includes(mode)) return;
-    if (mode === 'new' && this.roster.legacy) { this.error = this.copy().legacyFirst; this.render(); return; }
+    if (mode === 'new' && this.roster.legacy) { this.error = { copy: 'legacyFirst' }; this.render(); return; }
     if (mode === 'legacy' && !this.roster.legacy) return;
     if (mode === 'import' && (this.roster.mode !== 'account' || this.roster.characters.length || !this.roster.legacySave)) return;
-    if (mode === 'new' && this.roster.characters.length >= this.roster.limit) { this.error = this.copy().limit; this.render(); return; }
+    if (mode === 'new' && this.roster.characters.length >= this.roster.limit) { this.error = { copy: 'limit' }; this.render(); return; }
     this.createMode = mode; this.error = ''; this.notice = ''; this.createError.textContent = '';
     this.confirmInput.checked = false;
     this.nameInput.value = this.roster.current?.name || this.roster.selected?.name || 'Grumete';
@@ -241,13 +249,14 @@ export class PlayerCharactersPanel {
       }
       this.createMode = null; this.error = ''; this.render();
       if (this.selected()) this.onSelect?.(this.selected().id, this.selected());
-      this.notice = this.copy().created;
-      this.status.textContent = this.notice;
+      this.notice = { copy: 'created' };
+      this.status.textContent = this._message(this.notice);
       this.continueButton.focus({ preventScroll: true });
     } catch (error) {
-      this.error = error?.message || this.copy().createError;
-      this.createError.textContent = this.copy().createError;
-      this.status.textContent = this.error;
+      // Never show error.message: it may be Spanish prose or external text. Store the key so a locale change re-renders it.
+      this.error = errorMessage(error, 'createError');
+      this.createError.textContent = this._message(this.error);
+      this.status.textContent = this._message(this.error);
     } finally { this.busy = false; this.render(); }
   }
 
@@ -256,7 +265,7 @@ export class PlayerCharactersPanel {
     if (!character || this.busy || typeof this.onContinue !== 'function') return;
     this.busy = true; this.error = ''; this.render();
     try { await this.onContinue(character); }
-    catch (error) { this.notice = error?.message || this.copy().loadError; this.status.textContent = this.notice; }
+    catch (error) { this.notice = errorMessage(error, 'loadError'); this.status.textContent = this._message(this.notice); }
     finally { this.busy = false; this.render(); }
   }
 
@@ -292,7 +301,7 @@ export class PlayerCharactersPanel {
       this.nameInput.setAttribute('aria-label', T.name); this.lookLegend.textContent = T.look;
       this.confirmLabel.hidden = !['legacy', 'import'].includes(this.createMode);
       this.confirmText.textContent = this.createMode === 'legacy' ? T.confirmLegacy : T.confirmImport;
-      this.createError.textContent = this.error;
+      this.createError.textContent = this._message(this.error);
       this.createButton.textContent = T.create; this.backButton.textContent = T.cancel;
       this.createButton.disabled = this.busy || !this.nameInput.value.trim() || this.nameInput.value.trim().length > 16 ||
         (this.confirmLabel.hidden === false && !this.confirmInput.checked);
@@ -309,7 +318,7 @@ export class PlayerCharactersPanel {
     this.legacyButton.hidden = !this.roster.legacy;
     this.importButton.hidden = !(this.roster.mode === 'account' && this.roster.characters.length === 0 && !this.roster.legacy && !!this.roster.legacySave);
     if (this.roster.mode === 'guest') this.importButton.hidden = true;
-    this.status.textContent = this.error || this.notice || (!this.selected() && !this.roster.legacy ? T.noCharacter : '');
+    this.status.textContent = this._message(this.error) || this._message(this.notice) || (!this.selected() && !this.roster.legacy ? T.noCharacter : '');
     this.closeButton.disabled = this.busy;
     this.nameInput.disabled = this.busy; this.confirmInput.disabled = this.busy;
     this.backButton.disabled = this.busy;

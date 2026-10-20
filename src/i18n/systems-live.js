@@ -1,5 +1,16 @@
 // Strings for M5 systems added after the first localization catalog cut.
 export default {
+  'hud.riposteProgress': ['RIPOSTE {value} %', 'RIPOSTE {value} %'],
+  'hud.needFood': ['COMIDA {value}', 'FOOD {value}'],
+  'hud.needWater': ['AGUA {value}', 'WATER {value}'],
+  'hud.needHunger': ['Hambre {value}', 'Hunger {value}'],
+  'hud.needThirst': ['Sed {value}', 'Thirst {value}'],
+  'hud.needs': ['Necesidades · {value}%', 'Needs · {value}%'],
+  'hud.spaceKey': ['ESP', 'SPC'],
+  'systems.freshwater.touch': ['Agua', 'Water'],
+  'systems.freshwater.touchLabel': ['Agua dulce', 'Fresh water'],
+  'systems.workshop.trigger': ['Taller y mochila', 'Workshop and backpack'],
+  'systems.artisan.trigger': ['Visitar artesano', 'Visit artisan'],
   'systems.commerce.production.fuel': ['Sin fuego: carga madera y enciende la parrilla con V', 'No fire: load timber and light the grill with V'],
   'systems.logging.tab': ['Oficios', 'Trades'],
   'systems.logging.section': ['Tala', 'Logging'],
