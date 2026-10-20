@@ -196,13 +196,21 @@ test('CAS conflict and ambiguous SQL acknowledgement fence the host without inst
 });
 
 test('unsupported ground-authority resource admission rejects before roster writes', async t => {
-  const f = await prepared(t), { host, base } = f;
-  const before = await base.loadWorld(RESOURCE_WORLD);
-  // This fixture represents the alternate ground authority capability, which has no GM roster RPC.
-  host.groundAuthority = { ready: true, canMutate: () => true, status: () => ({ ready: true, failed: false }),
-    stop() {}, async settle() {} };
-  const resume = host.beginContentSwitch();
-  try { await assert.rejects(host.prepareContentResources(target(host)), { code: 'gm_resource_unavailable' }); }
-  finally { resume(); }
-  assert.deepEqual(await base.loadWorld(RESOURCE_WORLD), before);
+  for (const missing of ['capability', 'readiness']) await t.test(missing, async st => {
+    const f = await prepared(st), { host, base, store } = f;
+    const before = await base.loadWorld(RESOURCE_WORLD);
+    let admissions = 0;
+    // 'capability': an alternate ground authority with no GM roster family, on a store with SQL040 ready.
+    // 'readiness': the SQL040 capability exists, but the store does not report the SQL040 readiness.
+    store.checkGroundGmResources = async () => ({ version: missing === 'readiness' ? 0 : 1 });
+    store.admitGmResources = async () => { admissions++; throw new Error('SQL036 must not run'); };
+    host.groundAuthority = { ready: true, canMutate: () => true, status: () => ({ ready: true, failed: false }),
+      stop() {}, async settle() {},
+      ...(missing === 'readiness' ? { async admitGmResources() { admissions++; throw new Error('SQL040 must not run'); } } : {}) };
+    const resume = host.beginContentSwitch();
+    try { await assert.rejects(host.prepareContentResources(target(host)), { code: 'gm_resource_unavailable' }); }
+    finally { resume(); }
+    assert.equal(admissions, 0);
+    assert.deepEqual(await base.loadWorld(RESOURCE_WORLD), before);
+  });
 });

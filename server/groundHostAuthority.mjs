@@ -9,6 +9,7 @@ import { GroundTransactionSession } from './groundTransactionSession.mjs';
 import { groundTransactionOperation } from './groundTransaction.mjs';
 import { snapshotDropData } from './deathDropApply.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
+import { appendGmResourceRoster } from './gmResourceRoster.mjs';
 
 const same = (a, b) => canonicalText(a) === canonicalText(b);
 const fail = code => { throw new StoreError(code); };
@@ -238,6 +239,37 @@ export class GroundHostAuthority {
       return true;
     } catch (error) { this.#fence(error); return false; }
   }
+  // SQL040 GM roster admission for a content switch. This owner is the only world writer: no tick,
+  // player, checkpoint or family runs meanwhile, and the confirmed version is adopted before the
+  // caller may move the content pointer. Any failure after the first storage read fences the world.
+  async admitGmResources(nodes) {
+    this.#owner();
+    const ws = this.#worldState, h = this.#host, data = this.#session.worldData;
+    if (!h.contentSwitching || !this.canMutate() || h.closing || h.pendingJoins || this.#economic.busy ||
+        ws.operationBusy || h.profiles.tasks.size || !this.#session.ready || ws.version !== this.#session.worldVersion ||
+        !data.resources || !same(ws.resources, data.resources)) fail('busy');
+    // Validate the authored identities on the confirmed roster before any journal I/O.
+    appendGmResourceRoster(data.resources, nodes);
+    const a = { kind: 'gm', localTick: this.#world.tick };
+    this.#active = a; ws.operationBusy = true;
+    try {
+      a.task = this.#session.admitGmResources({ operationId: randomUUID(),
+        nodes: nodes.map(node => ({ id: node.id, kind: node.kind })) });
+      const admitted = await a.task;
+      this.#owner();
+      if (this.#active !== a || this.#stopping || this.#failed || this.#world.tick !== a.localTick ||
+          admitted.state !== 'ready' || admitted.worldVersion !== this.#session.worldVersion) fail('cancelled');
+      if (admitted.admitted) {
+        const confirmed = this.#session.worldData;
+        ws.version = this.#session.worldVersion;
+        ws.resources = structuredClone(confirmed.resources);
+        // SQL036 changed only resources in the last confirmed snapshot, not unsaved economy time.
+        ws.last = JSON.stringify({ ...JSON.parse(ws.last), resources: confirmed.resources });
+      }
+      ws.operationBusy = false; this.#active = null; this.#completed++;
+      return admitted.admitted;
+    } catch (error) { this.#fence(error); throw error; }
+  }
   commitWorld(world, data, expectedVersion) {
     if (world !== this.#worldState.id || expectedVersion !== this.#session.worldVersion) fail('conflict');
     const input = this.#input(randomUUID(), 'checkpoint', {}, data);
@@ -303,7 +335,7 @@ export class GroundHostAuthority {
     this.#stopping = true;
     if (!this.#loaded) this.#session.cancel();
     else if (this.#active?.kind === 'checkpoint') this.#drainCheckpoint();
-    else if (this.#active?.kind === 'family') this.#fence(new StoreError('cancelled'));
+    else if (this.#active?.kind === 'family' || this.#active?.kind === 'gm') this.#fence(new StoreError('cancelled'));
   }
   async settle() {
     await this.#session.settle();

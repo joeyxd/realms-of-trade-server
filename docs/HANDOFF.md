@@ -1,5 +1,20 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA15, 2026-10-20 — recursos GM componen con Ground por SQL040; piloto común público apagado, alpha.82/protocolo 63:**
+[Entrega/evidencia](delivery/gm-ground-composition.md); segundo corte del paso 3 de la [matriz](CONTINUITY-MATRIX.md) (T-1020-70).
+`server/host.mjs` ya no rechaza `gmResources` junto con `groundTransactions` (arranque y `prepareContentResources`); bajo
+Ground la admisión del roster es una familia del dueño Ground: intención en diario (`mn_prepare_ground_gm_admission`),
+un commit (`mn_commit_ground_gm_admission`) bajo los locks de SQL018 que delega el append-only en SQL036, y la sesión
+adopta versión y roster antes de que se mueva el puntero; el reloj no se mueve. Conflicto, respuesta perdida o parada
+cercan el mundo sin instalar el mapa. Parada tras commit: el host nuevo carga las filas actuales y reintentar no admite
+nada; parada tras la intención: el siguiente cambio la confirma una sola vez. Sin Ground nada cambia (ruta SQL036 igual).
+**SQL040 debe aplicarse a mano en Supabase antes de un piloto Ground con mapas GM**; hasta entonces el host falla cerrado
+(`configuration` al arrancar, `gm_resource_unavailable` al cambiar). Readiness: `mn_ground_gm_resources_ready()` = 1.
+Tests: `tests/gm-ground-sql.test.mjs` 10/10, `tests/gm-ground-host.test.mjs` 10/10; `gm-functional-authority` adapta el
+caso sin capacidad (dos subcasos). Conjunto dirigido de 12 archivos 76/76 (base 54/54); actualizador 202/202 (29 archivos).
+Los tests nuevos no están en TESTS del actualizador (decisión del operador). Sigue: aplicar SQL040, aceptación del piloto
+con mapa GM, y los demás cortes de composición (compañeros, bots, rutas autónomas), kill/cofre, adopción detenida y canario VPS.
+
 **VR06, 2026-10-20 — aldea de noche, sexto corte (siete props Tripo v2, ajustes y grading medidos, farol con vidrio y luz propios), alpha.81/protocolo 63:**
 Versión alpha.81 en package.json, package-lock.json (dos entradas) y src/data/meta.js; protocolo 63 sin cambios.
 Reutiliza los siete modelos ya importados del estudio Tripo: campfire-ring, crate-stack, fence-rope, notice-board,

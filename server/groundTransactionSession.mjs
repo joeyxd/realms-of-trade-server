@@ -7,6 +7,7 @@ import { groundTransactionOperation, checkedGroundTransactionResult, checkedGrou
 import { GroundClockSession } from './groundClockSession.mjs';
 import { assertGroundTransactionJournal, prepareGroundTransactionIntent, confirmGroundTransactionIntent,
   recoverGroundTransactionIntents } from './groundTransactionJournal.mjs';
+import { appendGmResourceRoster } from './gmResourceRoster.mjs';
 
 const MAX_VERSION = 2147483647;
 const integer = value => Number.isSafeInteger(value) && value >= 0;
@@ -25,6 +26,14 @@ function checkedRow(raw) {
   const data = checkedWorldData(value.data);
   if (!same(data, value.data)) fail('response');
   return { data, version: value.version };
+}
+// The SQL036 append contract, independent of key order (a journaled request returns as jsonb).
+function gmAppendOf(before, after) {
+  try {
+    if (!Array.isArray(after?.nodes) || after.nodes.length <= before.nodes.length) return false;
+    const added = after.nodes.slice(before.nodes.length).map(node => ({ id: node?.id, kind: node?.kind }));
+    return same(appendGmResourceRoster(before, added), after);
+  } catch { return false; }
 }
 function required(store) {
   const names = ['checkGroundTransactions', 'loadWorld', 'loadGroundClock', 'loadGroundClockOperation',
@@ -246,6 +255,65 @@ export class GroundTransactionSession {
     } catch (error) {
       this.#state = 'fenced'; this.#prepared = null;
       throw error instanceof StoreError ? error : new StoreError('operation');
+    }
+  }
+  // SQL040 family: append authored GM identities to the confirmed roster. The request pins this
+  // session's world version and clock (the clock does not move); its intent is journaled before
+  // the commit RPC, and the confirmed rows are adopted here, before any content pointer moves.
+  // A pending intent left by a stopped host is resolved first, on the same pin, exactly once.
+  admitGmResources(rawInput = {}) {
+    if (!this.ready || !this.#worldData?.resources) fail('busy');
+    const input = copyInput(rawInput);
+    if (!input || Array.isArray(input) || Object.keys(input).sort().join(',') !== 'nodes,operationId' ||
+        typeof input.operationId !== 'string' || !Array.isArray(input.nodes)) fail('operation');
+    if (['loadPendingGroundGmAdmission', 'prepareGroundGmAdmission', 'commitGroundGmAdmission']
+      .some(name => typeof this.#store[name] !== 'function')) fail('configuration');
+    // Invalid authored nodes fail here, before any journal I/O.
+    appendGmResourceRoster(this.#worldData.resources, input.nodes);
+    this.#prepared = null; this.#state = 'pending';
+    const generation = ++this.#generation;
+    const promise = this.#admitGm(generation, input.operationId, input.nodes);
+    this.#inflight = promise;
+    return promise;
+  }
+  #gmRequest(resources) {
+    return { world: this.#world, expectedWorldVersion: this.#worldVersion,
+      clock: { operationId: this.#clock.operationId, version: this.#clock.version, tick: this.#clock.tick }, resources };
+  }
+  #adoptGm(request, result) {
+    if (!result.ok || !same(request, this.#gmRequest(request.resources)) || result.worldVersion !== this.#worldVersion + 1 ||
+        !gmAppendOf(this.#worldData.resources, request.resources)) fail('response');
+    // SQL036 replaced only the resources of the confirmed world row and bumped its version.
+    this.#worldVersion = result.worldVersion;
+    this.#worldData = { ...this.#worldData, resources: clone(request.resources) };
+  }
+  async #admitGm(generation, operationId, nodes) {
+    try {
+      let admitted = 0;
+      const stale = await this.#store.loadPendingGroundGmAdmission(this.#world); this.#live(generation);
+      if (stale) {
+        if (stale.operationId === operationId || stale.request.world !== this.#world) fail('response');
+        const result = await this.#store.commitGroundGmAdmission({ operationId: stale.operationId, request: stale.request });
+        this.#live(generation);
+        // A conflict or rejection is terminal and wrote nothing; a commit is adopted like our own.
+        if (result.ok) { this.#adoptGm(stale.request, result); admitted += result.added; }
+      }
+      const resources = appendGmResourceRoster(this.#worldData.resources, nodes);
+      if (resources.nodes.length > this.#worldData.resources.nodes.length) {
+        const raw = { operationId, request: this.#gmRequest(resources) };
+        const intent = await this.#store.prepareGroundGmAdmission(clone(raw)); this.#live(generation);
+        if (intent.state !== 'pending' || intent.operationId !== operationId || !same(intent.request, raw.request)) fail('response');
+        const result = await this.#store.commitGroundGmAdmission(clone(raw)); this.#live(generation);
+        if (!result.ok) fail(result.why === 'conflict' ? 'conflict' : 'operation');
+        this.#adoptGm(raw.request, result); admitted += result.added;
+      }
+      this.#state = 'ready';
+      return { state: 'ready', admitted, worldVersion: this.#worldVersion };
+    } catch (error) {
+      if (generation !== this.#generation) throw new StoreError('cancelled');
+      // Every outcome after the first read is fenced: an unknown commit must be recovered by a restart.
+      this.#state = 'fenced';
+      throw error instanceof StoreError ? error : new StoreError('unavailable');
     }
   }
   async settle() {

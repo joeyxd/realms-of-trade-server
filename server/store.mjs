@@ -96,6 +96,59 @@ function checkedEconomicOutput(raw, request, replay = false) {
   try { return checkedEconomicResult(raw, request, replay); }
   catch (error) { throw new StoreError(error instanceof EconomicOperationError ? error.code : 'response'); }
 }
+// SQL040 GM roster admission under Ground: exact request, intent and receipt DTOs.
+const ZERO_UUID = '00000000-0000-0000-0000-000000000000';
+const exactKeys = (value, keys) => !!value && typeof value === 'object' && !Array.isArray(value) &&
+  Object.keys(value).sort().join(',') === keys;
+function groundGmAdmission(raw) {
+  try {
+    const value = json(raw);
+    if (!exactKeys(value, 'operationId,request')) throw new Error('shape');
+    const operationId = playerKey(value.operationId), request = value.request, clock = request?.clock;
+    if (operationId !== value.operationId || operationId === ZERO_UUID ||
+        !exactKeys(request, 'clock,expectedWorldVersion,resources,world') || typeof request.world !== 'string' ||
+        !/^[a-zA-Z0-9:_-]{1,100}$/.test(request.world) || !Number.isSafeInteger(request.expectedWorldVersion) ||
+        request.expectedWorldVersion < 1 || request.expectedWorldVersion > MAX_VERSION - 1 ||
+        !exactKeys(clock, 'operationId,tick,version') || playerKey(clock.operationId) !== clock.operationId ||
+        clock.operationId === ZERO_UUID || clock.operationId === operationId ||
+        !Number.isSafeInteger(clock.version) || clock.version < 1 || clock.version > MAX_VERSION ||
+        !Number.isSafeInteger(clock.tick) || clock.tick < 0) throw new Error('request');
+    const resources = checkedResourceState(request.resources);
+    if (canonicalText(resources) !== canonicalText(request.resources) || resources.tick !== clock.tick) throw new Error('resources');
+    return { operationId, request: { world: request.world, expectedWorldVersion: request.expectedWorldVersion,
+      clock: { operationId: clock.operationId, version: clock.version, tick: clock.tick }, resources } };
+  } catch { throw new StoreError('operation'); }
+}
+function checkedGroundGmResult(raw, request) {
+  if (exactKeys(raw, 'ok,why') && raw.ok === false && ['conflict', 'invalid', 'operation'].includes(raw.why)) {
+    return { ok: false, why: raw.why };
+  }
+  const clock = { world: request.world, tick: request.clock.tick, version: request.clock.version,
+    operationId: request.clock.operationId };
+  if (!exactKeys(raw, 'added,clock,ok,worldVersion') || raw.ok !== true ||
+      raw.worldVersion !== request.expectedWorldVersion + 1 || canonicalText(raw.clock) !== canonicalText(clock) ||
+      !Number.isSafeInteger(raw.added) || raw.added < 1 || raw.added > 128) throw new StoreError('response');
+  return { ok: true, worldVersion: raw.worldVersion, clock, added: raw.added };
+}
+function checkedGroundGmIntent(raw, expected = null) {
+  if (!exactKeys(raw, 'operationId,request,result,state') ||
+      !['pending', 'committed', 'conflict', 'rejected'].includes(raw.state)) throw new StoreError('response');
+  let input;
+  try { input = groundGmAdmission({ operationId: raw.operationId, request: raw.request }); }
+  catch { throw new StoreError('response'); }
+  if (canonicalText(input.request) !== canonicalText(raw.request) ||
+      expected && (input.operationId !== expected.operationId || canonicalText(input.request) !== canonicalText(expected.request))) {
+    throw new StoreError('response');
+  }
+  let result = null;
+  if (raw.state === 'pending') {
+    if (raw.result !== null) throw new StoreError('response');
+  } else {
+    result = checkedGroundGmResult(raw.result, input.request);
+    if ((result.ok ? 'committed' : result.why === 'conflict' ? 'conflict' : 'rejected') !== raw.state) throw new StoreError('response');
+  }
+  return { ...input, state: raw.state, result };
+}
 
 export function createMemoryStore() {
   const gmDraftMethods = createMemoryGmDraftMethods();
@@ -704,6 +757,30 @@ export function createSupabaseStore(client) {
       const result = await rpc('mn_admit_gm_resources', { p_world: key(id),
         p_expected_version: version(expected, 1, MAX_VERSION - 1), p_resources: checkedResourceState(resources) });
       return written(result);
+    },
+    // SQL040: the Ground family for GM roster admission. Readiness answers 0 unless exactly 1.
+    async checkGroundGmResources() {
+      const raw = await rpc('mn_ground_gm_resources_ready', {});
+      return exactKeys(raw, 'version') && raw.version === 1 ? { version: 1 } : { version: 0 };
+    },
+    async prepareGroundGmAdmission(raw) {
+      const input = groundGmAdmission(raw);
+      return checkedGroundGmIntent(await rpc('mn_prepare_ground_gm_admission', {
+        p_operation_id: input.operationId, p_request: input.request }), input);
+    },
+    async commitGroundGmAdmission(raw) {
+      const input = groundGmAdmission(raw);
+      return checkedGroundGmResult(await rpc('mn_commit_ground_gm_admission', {
+        p_operation_id: input.operationId, p_request: input.request }), input.request);
+    },
+    async loadPendingGroundGmAdmission(id) {
+      const world = key(id);
+      if (!/^[a-zA-Z0-9:_-]{1,100}$/.test(world)) throw new StoreError('key');
+      const raw = await rpc('mn_pending_ground_gm_admission', { p_world: world });
+      if (raw === null) return null;
+      const intent = checkedGroundGmIntent(raw);
+      if (intent.state !== 'pending' || intent.request.world !== world) throw new StoreError('response');
+      return intent;
     },
     async saveWorld(id, data, expected) {
       return written(await rpc('mn_save_world', { p_world: key(id), p_data: json(data), p_expected_version: version(expected, 0, MAX_VERSION - 1) }));

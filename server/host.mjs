@@ -609,8 +609,9 @@ export class GameHost {
       if ((this.worldState.resources?.v >= 2 && !this.loggingOperations) ||
           (this.worldState.resources?.v === 3 && !this.workshopOperations)) throw new StoreError('configuration');
       if (this.resourceOperations) {
-        if (this.server.world.map.gmResources?.length && (this.groundAuthority ||
-            typeof this.store.checkGmResourceRoster !== 'function' || (await this.store.checkGmResourceRoster())?.version !== 1)) {
+        if (this.server.world.map.gmResources?.length && (
+            typeof this.store.checkGmResourceRoster !== 'function' || (await this.store.checkGmResourceRoster())?.version !== 1 ||
+            this.groundAuthority && !(await this.#groundGmResourcesReady()))) {
           throw new StoreError('configuration');
         }
         const adopting = !this.worldState.resources || this.loggingOperations && this.worldState.resources.v === 1 || this.workshopOperations && this.worldState.resources.v < 3;
@@ -659,16 +660,27 @@ export class GameHost {
     return () => { this.contentSwitching = false; this.server.last = performance.now(); this.server.acc = 0; };
   }
 
+  // Under Ground a GM roster needs the SQL040 family: the authority capability and installed readiness.
+  // A missing or failing readiness probe is not ready; the caller fails closed before any roster write.
+  async #groundGmResourcesReady() {
+    if (typeof this.groundAuthority?.admitGmResources !== 'function' ||
+        typeof this.store.checkGroundGmResources !== 'function') return false;
+    try { return (await this.store.checkGroundGmResources())?.version === 1; } catch { return false; }
+  }
+
   /** Empty-world preflight; admission precedes the durable map pointer and never resets existing work. */
   async prepareContentResources(targetMap) {
     const nodes = targetMap.gmResources || [];
     if (!nodes.length) return;
-    if (!this.contentSwitching || !this.resourceOperations || this.groundAuthority || !this.worldState?.ready ||
+    if (!this.contentSwitching || !this.resourceOperations || !this.worldState?.ready ||
         !this.worldState.resources || typeof this.store.admitGmResources !== 'function' ||
         typeof this.store.checkGmResourceRoster !== 'function' ||
-        (await this.store.checkGmResourceRoster())?.version !== 1) {
+        (await this.store.checkGmResourceRoster())?.version !== 1 ||
+        this.groundAuthority && !(await this.#groundGmResourcesReady())) {
       throw Object.assign(new Error('gm_resource_unavailable'), { code: 'gm_resource_unavailable' });
     }
+    // Ground is the only world writer: SQL040 journals, commits and adopts the append (it fences on failure).
+    if (this.groundAuthority) { await this.groundAuthority.admitGmResources(nodes); return; }
     const next = appendGmResourceRoster(this.worldState.resources, nodes);
     if (next.nodes.length === this.worldState.resources.nodes.length) return;
     try {

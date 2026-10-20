@@ -56,6 +56,9 @@ La matriz no copia sus parámetros para evitar balances divergentes.
    [antorchas/resina/coco](briefs/torch-resin-coconut.md), integrado desde `5338538`, añade SQL037
    y rechazaba `torchResinCoconutOperations` junto con `groundTransactions`. Sus costes, extras de tala y
    consumo ya componen con Ground y el guard se quitó ([entrega T-1020-05](delivery/torch-ground-composition.md)); publicar código no activa su flag.
+   Recursos GM (`gmResources`) componen con Ground por SQL040 ([entrega T-1020-70](delivery/gm-ground-composition.md)):
+   la admisión es una familia Ground (intención en diario, un commit bajo los locks de SQL018, versión adoptada antes del
+   puntero) y se quitaron sus dos guards. Hasta aplicar SQL040 en Supabase el host falla cerrado con mapas GM bajo Ground.
    Mantener los guards mientras falte aceptación; activar el piloto no debe apagar features silenciosamente.
    [L03g presencia](delivery/l03g-companion-presence/README.md), integrado desde `5ad1029`,
    añade SQL039 para ingreso durable antes de publicar el cuerpo. Sigue excluido de Ground;
