@@ -23,6 +23,16 @@ agotado devuelve `memory_commit_busy` sin `uncertain`, que no bloquea la mente. 
 Tests: 4 de Windows en agent-memory-store, 1 en agent-memory-mind; el test C01 espera el resultado del compañero
 antes de leer el fichero (20/20). Pendiente: jitter en el backoff y el mismo patrón en objective-store, budget-file
 e inference-center.
+**AW06a, 2026-10-20 — puente GM: publicación al catálogo del editor, alpha.88/protocolo 63:**
+[Entrega](delivery/asset-workshop/PUBLICACION.md). `assets/workshop/published.json` registra en git la decisión «Usar»
+(schema `marea.asset-published.v1`) y `tools/asset-workshop/publish-editor.mjs` la vuelca en `assets/editor/catalog.json`
+y `thumbnails.json` con sha256 verificado contra `prepared.json` (`--check` no escribe). Publica los cuatro pilotos:
+caldero (size 0,9), palmera (height 7), puerta (height 2,2) y bote (size 6), estado `ready`, para colocarlos desde el editor GM.
+Las claves del taller en `thumbnails.json` se reconocen por su imagen en `assets/workshop/thumbnails/`. `gm-assets.test.mjs`
+fija las cuatro entradas `gm-*` ignorando las del taller; el índice reclama `published.json` como archivo de catálogo.
+Medidas decididas por Joi, pendientes de verificar en pantalla; la insignia «Publicado» del taller es el siguiente corte.
+Sin cambios de gameplay, SQL ni protocolo (63).
+
 **AW01, 2026-10-14 (integrado 2026-10-20) — Taller de assets, alpha.87/protocolo 63:**
 [Contrato](briefs/AW01-asset-workshop.md), [entrega](delivery/asset-workshop/README.md).
 Entrada GM y revisión local, categorías/packs, 28 fichas y 18 pruebas navegables,

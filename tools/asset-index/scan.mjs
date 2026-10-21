@@ -19,7 +19,8 @@ export const PROBLEMS = Object.freeze({
 const NAME = /^[A-Za-z0-9._-]+$/;
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const CATALOG_FILES = new Set(['assets/manifest.json', 'assets/editor/catalog.json', 'assets/editor/thumbnails.json',
-  'assets/workshop/catalog.json', 'assets/workshop/prepared.json', 'assets/workshop/thumbnails.json']);
+  'assets/workshop/catalog.json', 'assets/workshop/prepared.json', 'assets/workshop/thumbnails.json',
+  'assets/workshop/published.json']);
 const RUNTIME_CLAIMS = new Set(['catalogo', 'objetos', 'manifest', 'editor', 'niagara', 'taller', 'codigo', 'sistema']);
 const PATH_RE = /(?:assets|docs\/art|materials)\/[^\s'"`)<>,;]+/g;
 const EXT_RE = /\.[A-Za-z0-9]{2,5}$/;

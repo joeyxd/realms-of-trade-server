@@ -1,6 +1,6 @@
 # AW01 — Taller de assets
 
-La pantalla inicial incorpora **Taller de assets**. En línea usa la comprobación GM existente; en modo solo permite revisión local. Abre una escena privada, sin entrar a una partida ni modificar el mundo. El corte es alpha.87 y mantiene el protocolo 63.
+La pantalla inicial incorpora **Taller de assets**. En línea usa la comprobación GM existente; en modo solo permite revisión local. Abre una escena privada, sin entrar a una partida ni modificar el mundo. El corte es alpha.88 y mantiene el protocolo 63.
 
 Buscar y combinar categoría/pack/decisión conserva una misma ficha. Las vistas Biblioteca, Nuevos, Listos para probar, Mi colección y Pendientes incluyen miniaturas del render real, paginación y carga por selección. El visor permite PBR, toon, A/B, diagnóstico neutro, wireframe, giro/cámara/luz y perfil escritorio/móvil. Las notas y decisiones se guardan por cuenta/servidor/fuente/variante y pueden exportarse/importarse.
 
@@ -36,3 +36,5 @@ Regresión focal: 50 pruebas de catálogo, revisiones, liberación/render, permi
 **Usar**, **Adaptar**, **Reservar**, **Descartar para este uso** y **Necesita inspección** son decisiones de investigación. Las tareas incluyen retexturizar, optimizar, preparar rig, ajustar pivote, revisar materiales/dependencias y versión móvil. Exportar un lote produce una solicitud declarativa para preparar localmente; aún no hay worker remoto automático. La revisión compartida y la integración jugable tienen entregas posteriores propias.
 
 [Contrato del corte](../../briefs/AW01-asset-workshop.md). La publicación se comprueba por revisión activa, archivos y entrada de navegador; las pruebas locales por sí solas no acreditan el despliegue.
+
+Publicación al editor GM (alpha.88): [PUBLICACION.md](PUBLICACION.md) describe `published.json` y la herramienta que vuelca las fichas «Usar» en el catálogo del editor.

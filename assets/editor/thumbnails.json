@@ -359,6 +359,50 @@
         "bytes": 90248
       },
       "model": true
+    },
+    "model:aw-pilot-01": {
+      "thumbnail": "assets/workshop/thumbnails/aw-pilot-01.webp",
+      "label": {
+        "es": "Caldero nuevo",
+        "en": "New cauldron"
+      },
+      "stats": {
+        "bytes": 23440,
+        "triangles": 398
+      }
+    },
+    "model:aw-pilot-05": {
+      "thumbnail": "assets/workshop/thumbnails/aw-pilot-05.webp",
+      "label": {
+        "es": "Palma Kobo",
+        "en": "Kobo palm"
+      },
+      "stats": {
+        "bytes": 571416,
+        "triangles": 6656
+      }
+    },
+    "model:aw-pilot-06": {
+      "thumbnail": "assets/workshop/thumbnails/aw-pilot-06.webp",
+      "label": {
+        "es": "Puerta",
+        "en": "Door"
+      },
+      "stats": {
+        "bytes": 4267972,
+        "triangles": 876
+      }
+    },
+    "model:aw-pilot-07": {
+      "thumbnail": "assets/workshop/thumbnails/aw-pilot-07.webp",
+      "label": {
+        "es": "Barco de referencia",
+        "en": "Reference boat"
+      },
+      "stats": {
+        "bytes": 3308964,
+        "triangles": 7786
+      }
     }
   }
 }

@@ -16,7 +16,7 @@ for (const entry of prepared.entries) for (const preview of [entry.preview, ...(
 for (const row of thumbnails.entries) files.add(row.url);
 let browser;
 try {
-  const status = await (await fetch(`${origin}/status`, { signal: AbortSignal.timeout(15000) })).json(); assert.equal(status.version, '0.6.0-alpha.87'); evidence.status = status;
+  const status = await (await fetch(`${origin}/status`, { signal: AbortSignal.timeout(15000) })).json(); assert.equal(status.version, '0.6.0-alpha.88'); evidence.status = status;
   for (const file of files) {
     const response = await fetch(`${origin}/${file}`, { cache: 'no-cache', signal: AbortSignal.timeout(30000) }); assert.equal(response.status, 200, file);
     const data = Buffer.from(await response.arrayBuffer()), local = fs.readFileSync(path.join(root, file)); assert.equal(hash(data), hash(local), file);

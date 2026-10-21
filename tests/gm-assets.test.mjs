@@ -29,16 +29,18 @@ test('editor catalog exposes only the four hashed GM00 candidates with verified 
   const catalog = JSON.parse(await readFile(CATALOG, 'utf8'));
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
   assert.equal(catalog.version, 1);
-  assert.equal(catalog.assets.length, 4);
+  const gmAssets = catalog.assets.filter((asset) => !asset.workshop);
+  assert.equal(gmAssets.length, 4);
+  for (const asset of catalog.assets.filter((entry) => entry.workshop)) assert.equal(asset.status, 'ready');
   assert.equal(receipt.visualReview, 'pending');
   assert.equal(receipt.originalsModified, false);
   assert.equal(receipt.toolchain['@gltf-transform/core'], '4.5.0');
   assert.equal(receipt.toolchain['meshoptimizer'], '0.22.0');
 
   const expectedIds = ['model:gm-rock-2k', 'model:gm-rock-1k', 'model:gm-coral-200k', 'model:gm-coral-50k'];
-  assert.deepEqual(catalog.assets.map(asset => asset.id), expectedIds);
+  assert.deepEqual(gmAssets.map(asset => asset.id), expectedIds);
   const receiptRows = new Map(receipt.assets.map(row => [row.id, row]));
-  for (const asset of catalog.assets) {
+  for (const asset of gmAssets) {
     assert.equal(asset.status, 'candidate');
     assert.equal(asset.kind, 'model');
     assert.equal(asset.fit, 'size');
