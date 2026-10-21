@@ -23,6 +23,15 @@ agotado devuelve `memory_commit_busy` sin `uncertain`, que no bloquea la mente. 
 Tests: 4 de Windows en agent-memory-store, 1 en agent-memory-mind; el test C01 espera el resultado del compañero
 antes de leer el fichero (20/20). Pendiente: jitter en el backoff y el mismo patrón en objective-store, budget-file
 e inference-center.
+**AW01, 2026-10-14 (integrado 2026-10-20) — Taller de assets, alpha.87/protocolo 63:**
+[Contrato](briefs/AW01-asset-workshop.md), [entrega](delivery/asset-workshop/README.md).
+Entrada GM y revisión local, categorías/packs, 28 fichas y 18 pruebas navegables,
+PBR/toon A/B, geometría neutra/wireframe y notas/decisiones por fuente/variante.
+22 derivados nuevos y 18 miniaturas reales; fuentes intactas por 92 cotejos.
+50 pruebas focales y Chrome local 14/14, escritorio/móvil emulado; publicación
+se verifica por recibo aparte. Materiales incompletos y diez fichas pendientes
+quedan visibles. Sigue AW02 (índice/preparación por lotes), luego rigs/audio/VFX
+y revisiones compartidas. No coloca objetos ni cambia gameplay, SQL o protocolo.
 
 **IC03c, 2026-10-20 — el CLI de emparejamiento muestra el modo cuerpo (sin subir versión; sigue alpha.85):**
 `tools/agent/pair-companion.mjs` exporta `connectedMessage` (con presence concedida anuncia el cuerpo y las órdenes

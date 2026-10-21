@@ -1,5 +1,14 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AW01, 2026-10-14 (integrado 2026-10-20) — Taller de assets, alpha.87/protocolo 63:**
+[Contrato](docs/briefs/AW01-asset-workshop.md), [entrega](docs/delivery/asset-workshop/README.md).
+Primer corte del plan aprobado: 28 fichas, 18 pruebas navegables, filtros por pack/categoría,
+comparación PBR/toon y diagnóstico de geometría, decisiones locales con recuperación/exportación.
+22 derivados nuevos, 18 miniaturas y 92 cotejos de fuentes/copias; 50 focales y Chrome local
+14/14 con móvil emulado. La aceptación pública usa su recibo separado. Sigue AW02 para
+ampliar índice/lotes; AW03/AW04 para rigs/audio/VFX, AW05 para revisión compartida.
+Los materiales pendientes siguen visibles; no hay nuevas reglas de gameplay o SQL.
+
 **ST01c, 2026-10-14 — atlas lossless y herramienta repetible de presupuesto:**
 [Entrega](docs/delivery/st01c/ATLAS-LAB.md): descarga -59,64 %, RGBA y 268 renders
 exactos del original; 1.072 pares repetidos iguales. 17/17 Node +5/5 Python y Chrome.

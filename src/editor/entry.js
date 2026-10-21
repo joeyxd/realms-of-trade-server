@@ -68,7 +68,8 @@ export class GmEntry {
       if (this.online && !(await this.check())) return;
       if (!this.available()) return;
       const epoch = this.epoch;
-      await this.onOpen(this.accountId);
+      const opened = await this.onOpen(this.accountId);
+      if (opened === false) return;
       // A sign-out while the lazy module is loading cannot leave an admitted editor behind.
       if (this.online && (epoch !== this.epoch || !this.allowed)) { this.onRevoke(); return; }
       this.active = true;

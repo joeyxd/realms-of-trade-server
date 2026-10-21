@@ -1,6 +1,6 @@
 // Asset index: every art and game file joined with the catalogs that claim it. Read-only.
 // Authorities stay where they are: art-catalog rows (pieces), docs/art/items-index.json (Tripo items),
-// assets/manifest.json + assets/editor/*.json + the Niagara catalog (what the game loads).
+// assets/manifest.json + assets/editor/*.json + the Niagara catalog + assets/workshop/*.json (what the game loads).
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
@@ -18,8 +18,9 @@ export const PROBLEMS = Object.freeze({
 });
 const NAME = /^[A-Za-z0-9._-]+$/;
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-const CATALOG_FILES = new Set(['assets/manifest.json', 'assets/editor/catalog.json', 'assets/editor/thumbnails.json']);
-const RUNTIME_CLAIMS = new Set(['catalogo', 'objetos', 'manifest', 'editor', 'niagara', 'codigo', 'sistema']);
+const CATALOG_FILES = new Set(['assets/manifest.json', 'assets/editor/catalog.json', 'assets/editor/thumbnails.json',
+  'assets/workshop/catalog.json', 'assets/workshop/prepared.json', 'assets/workshop/thumbnails.json']);
+const RUNTIME_CLAIMS = new Set(['catalogo', 'objetos', 'manifest', 'editor', 'niagara', 'taller', 'codigo', 'sistema']);
 const PATH_RE = /(?:assets|docs\/art|materials)\/[^\s'"`)<>,;]+/g;
 const EXT_RE = /\.[A-Za-z0-9]{2,5}$/;
 
@@ -142,6 +143,12 @@ export async function scanAssets(root) {
   const thumbnails = json('assets/editor/thumbnails.json');
   for (const [id, entry] of Object.entries(thumbnails?.assets ?? {})) {
     for (const s of strings(entry).filter(s => EXT_RE.test(s) && !s.includes(' '))) claim(toAsset(s), 'editor', id, 'miniatura', true);
+  }
+  // The asset workshop's own catalogs; Unreal package paths in them (preview, source) are not repo files.
+  for (const [file, role] of [['catalog', 'juego'], ['prepared', 'juego'], ['thumbnails', 'miniatura']]) {
+    for (const entry of json(`assets/workshop/${file}.json`)?.entries ?? []) {
+      for (const s of strings(entry).filter(s => EXT_RE.test(s) && !s.includes(' ') && norm(s).startsWith('assets/'))) claim(norm(s), 'taller', entry.id, role, true);
+    }
   }
   let niagara = [];
   if (existsSync(path.join(root, 'src/editor/niagaraCatalog.js'))) {

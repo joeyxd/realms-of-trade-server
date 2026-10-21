@@ -1,0 +1,150 @@
+{
+  "schema": "marea.asset-workshop.browser.v1",
+  "at": "2026-10-14T16:55:55.427Z",
+  "simulatedAuth": true,
+  "checks": [
+    "GM admission opens private workshop without joining",
+    "new cauldron renders real geometry with honest material limitation",
+    "earlier cauldron control loads the original baked textures",
+    "PBR / actual toon material use the same geometry in A/B",
+    "pack and accent-insensitive category search retain one identity",
+    "cotton states and device profile load distinct validated outputs",
+    "decision, adaptation tasks and notes survive switch, close and reopen",
+    "unprepared rig stays explicit, without last model or procedural substitute",
+    "real source leather texture and icon render under mobile budget",
+    "export and declarative preparation batch preserve identity",
+    "rapid selection cancellation and close release resources",
+    "fresh browser reload restores the account-scoped review",
+    "mobile landscape controls, actual smaller texture URL and isolated render",
+    "authenticated account without GM capability cannot open"
+  ],
+  "screenshots": [
+    "desktop-cauldron.png",
+    "textured-cauldron-control.png",
+    "desktop-compare.png",
+    "cotton-harvested.png",
+    "pending-creature.png",
+    "leather-texture.png",
+    "leather-icon.png",
+    "mobile-cauldron.png",
+    "mobile-review.png"
+  ],
+  "errors": [],
+  "writes": [],
+  "commands": [],
+  "loaded": [
+    {
+      "status": "ready",
+      "url": "assets/workshop/aw-pilot-01/desktop.glb",
+      "quality": "desktop",
+      "bytes": 23440,
+      "triangles": 398,
+      "materialCount": 1,
+      "textureDimensions": [],
+      "estimatedTextureBytes": 0,
+      "sourceBounds": [
+        1.034534275,
+        0.9434486457,
+        1.068993807
+      ],
+      "clips": 0,
+      "geometryCount": 1
+    },
+    {
+      "status": "ready",
+      "url": "assets/workshop/aw-pilot-02/desktop.glb",
+      "quality": "desktop",
+      "bytes": 1110716,
+      "triangles": 9150,
+      "materialCount": 2,
+      "textureDimensions": [
+        {
+          "width": 1024,
+          "height": 1024
+        }
+      ],
+      "estimatedTextureBytes": 5592405.333333333,
+      "sourceBounds": [
+        1.07967341,
+        0.56692873932,
+        1.079673171
+      ],
+      "clips": 0,
+      "geometryCount": 2
+    },
+    {
+      "status": "ready",
+      "url": "assets/workshop/aw-pilot-03/harvested/mobile.glb",
+      "quality": "mobile",
+      "bytes": 59384,
+      "triangles": 1091,
+      "materialCount": 2,
+      "textureDimensions": [
+        {
+          "width": 1,
+          "height": 1
+        }
+      ],
+      "estimatedTextureBytes": 5.333333333333333,
+      "sourceBounds": [
+        0.818871439,
+        1.3813539022248,
+        0.798385829
+      ],
+      "clips": 0,
+      "geometryCount": 2
+    },
+    {
+      "status": "ready",
+      "url": "assets/workshop/aw-pilot-11/desktop.png",
+      "quality": "desktop",
+      "bytes": 493306,
+      "triangles": 2,
+      "materialCount": 1,
+      "textureDimensions": [
+        {
+          "width": 1024,
+          "height": 1024
+        }
+      ],
+      "estimatedTextureBytes": 5592405.333333333,
+      "clips": 0,
+      "geometryCount": 1
+    },
+    {
+      "status": "ready",
+      "url": "assets/workshop/aw-pilot-19/desktop.png",
+      "quality": "desktop",
+      "bytes": 61470,
+      "triangles": 2,
+      "materialCount": 1,
+      "textureDimensions": [
+        {
+          "width": 256,
+          "height": 256
+        }
+      ],
+      "estimatedTextureBytes": 349525.3333333333,
+      "clips": 0,
+      "geometryCount": 1
+    },
+    {
+      "status": "ready",
+      "url": "assets/workshop/aw-pilot-01/mobile.glb",
+      "quality": "mobile",
+      "bytes": 23440,
+      "triangles": 398,
+      "materialCount": 1,
+      "textureDimensions": [],
+      "estimatedTextureBytes": 0,
+      "sourceBounds": [
+        1.034534275,
+        0.9434486457,
+        1.068993807
+      ],
+      "clips": 0,
+      "geometryCount": 1
+    }
+  ],
+  "ok": true
+}

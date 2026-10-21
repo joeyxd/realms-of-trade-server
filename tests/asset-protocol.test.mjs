@@ -66,6 +66,16 @@ test('no new asset problems beyond the inherited baseline', { skip }, async () =
   assert.deepEqual(fresh.map(p => p.key), [], 'run `npm run assets:check` and follow docs/art/PROTOCOLO.md');
 });
 
+test('the asset workshop catalogs claim the files under assets/workshop/', { skip }, async () => {
+  const { scanAssets } = await import(pathToFileURL(path.join(root, 'tools/asset-index/scan.mjs')).href);
+  const scan = await scanAssets(root);
+  assert.deepEqual(scan.problems.filter(p => p.kind === 'sin-ficha' && p.path.startsWith('assets/workshop/')).map(p => p.key), []);
+  for (const f of ['assets/workshop/aw-pilot-01/desktop.glb', 'assets/workshop/thumbnails/aw-pilot-01.webp']) {
+    const rec = scan.files.find(r => r.path === f);
+    assert.ok(rec?.sources.includes('taller'), `${f} should be claimed by the taller source`);
+  }
+});
+
 test('the baseline only lists real, sorted, unique problem keys', { skip }, async () => {
   const { PROBLEMS } = await import(pathToFileURL(path.join(root, 'tools/asset-index/scan.mjs')).href);
   const { problems } = readJson('tools/asset-index/baseline.json');

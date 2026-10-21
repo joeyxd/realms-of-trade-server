@@ -47,6 +47,12 @@ async function settle(predicate, message = 'condition did not settle') {
   assert.fail(message);
 }
 
+test('canceled lazy workshop opening does not leave an active GM entry', async () => {
+  const state = setup({ online: false, onOpen: async () => false });
+  try { await state.entry.open(); assert.equal(state.entry.active, false); assert.equal(state.entry.busy, false); }
+  finally { state.restore(); }
+});
+
 test('allowlisted session opens through bearer check without storing the token', async () => {
   let opened = 0;
   let requestOptions;

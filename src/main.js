@@ -679,6 +679,8 @@ async function boot() {
   const initializeAccount = () => accountReady ??= accountAuth.bootstrap({ online: st.online });
   let gmEditor = null;
   let skillStudio = null;
+  let assetWorkshop = null;
+  const assetWorkshops = new Map();
   let gmOwner = null;
   let gmCameraPose = null;
   let gmWorldUIHidden = false;
@@ -791,6 +793,43 @@ async function boot() {
     },
   });
   onLocaleChange(() => skillEntry.render());
+  const assetEntry = new GmEntry({
+    parent: title.root.querySelector('.title-row'), auth: accountAuth, online: st.online,
+    httpBase: st.online ? httpUrlFor(transport.url) : location.href,
+    buttonId: 'btn-asset-workshop', buttonLabel: () => 'Taller de assets',
+    available: () => st.mode === 'title' && !st.boarding && !st.gmOpening && !client.joined && !pause.open,
+    onRevoke: () => assetWorkshop?.close({ force: true }),
+    onOpen: async accountId => {
+      if (st.mode !== 'title' || st.boarding || client.joined) return;
+      st.gmOpening = true;
+      try {
+        const { AssetWorkshop } = await import('./editor/assetWorkshop.js');
+        const scope = { accountId: accountId || 'local', serverId: st.online ? httpUrlFor(transport.url) : 'solo' };
+        const key = JSON.stringify(scope);
+        assetWorkshop = assetWorkshops.get(key);
+        if (!assetWorkshop) {
+          assetWorkshop = new AssetWorkshop({ parent: $('#ui'), renderer: world.renderer, scope,
+            onClose: () => {
+              st.mode = 'title'; title.root.hidden = false; title.pulse?.resume(); worldUI.root.hidden = gmWorldUIHidden;
+              world.pipeline.markDirty(); world.renderer.shadowMap.needsUpdate = true;
+              assetEntry.closed(); gmEntry.render(); skillEntry.render(); input.clearActions(); input.keys.clear();
+              canvas.focus({ preventScroll: true });
+            },
+          });
+          assetWorkshops.set(key, assetWorkshop);
+        }
+        input.enabled = false; input.clearActions(); input.keys.clear(); aimCtl.reset();
+        gmWorldUIHidden = worldUI.root.hidden;
+        await assetWorkshop.open();
+        if (!assetWorkshop.active) return false;
+        st.mode = 'asset-workshop'; title.root.hidden = true; title.pulse?.pause(); worldUI.root.hidden = true;
+      } catch (error) {
+        assetWorkshop?.close({ force: true }); st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();
+        title.message('No se pudo abrir el taller de assets. Las revisiones locales se conservan.');
+        throw error;
+      } finally { st.gmOpening = false; gmEntry.render(); skillEntry.render(); assetEntry.render(); }
+    },
+  });
   bus.on('save', (m) => { if (m && typeof m.blob === 'string') playerCharacters.save(m.blob); });
   addEventListener('pagehide', () => safe('save', () => {
     if (st.online || !client.joined || !client.profile) return;
@@ -816,6 +855,7 @@ async function boot() {
     companionsPanel?.close(); companions.disconnect(); companionConfig.disconnect(); inferenceConfig.disconnect(); companionCreation.disconnect(); companionPairing.disconnect(); companionPresence.disconnect();
     if (gmEditor?.active) void gmEditor.close({ force: true });
     if (skillStudio?.active) skillStudio.close({ force: true });
+    if (assetWorkshop?.active) assetWorkshop.close({ force: true });
     chatPanel.disconnected();
     chatBubbles.disconnected();
     artisan.close(); community.close(); firePanel.close(); freshwaterPanel.close();
@@ -1425,6 +1465,10 @@ async function boot() {
         hud.setParty(st.mode === 'playing' ? party : []);
       });
       const playing = st.mode === 'playing' && client.joined;
+      if (st.mode === 'asset-workshop' && assetWorkshop?.active) {
+        safe('assetWorkshop', () => assetWorkshop.update(realDt));
+        return;
+      }
       if (st.mode === 'skill-studio' && skillStudio?.active) {
         safe('skillStudio', () => skillStudio.update(realDt));
         return;
@@ -1798,9 +1842,10 @@ async function boot() {
   document.getElementById('bootstrap-locale').hidden = true;
   gmEntry.ready = true; gmEntry.render();
   skillEntry.ready = true; skillEntry.render();
+  assetEntry.ready = true; assetEntry.render();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount().then(() => accountSetup?.consumeLink());
-  window.__mn = { world, client, settings, st, ps, map, gmContent, gmContentLayer, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, skillEntry, companions, get skillStudio() { return skillStudio; }, get gmEditor() { return gmEditor; }, panels: { firePanel, freshwaterPanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
+  window.__mn = { world, client, settings, st, ps, map, gmContent, gmContentLayer, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, skillEntry, assetEntry, companions, get assetWorkshop() { return assetWorkshop; }, get skillStudio() { return skillStudio; }, get gmEditor() { return gmEditor; }, panels: { firePanel, freshwaterPanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

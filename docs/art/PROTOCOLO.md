@@ -26,6 +26,7 @@ y, como mucho, una imagen principal.
 - Lo que el juego carga por manifiesto queda en `assets/manifest.json` (`src` y `mobileSrc` relativos a
   `assets/`). Una entrada del manifiesto sin fila aparece en el índice como «Registro del juego»; conviene
   darle ficha.
+- Los catálogos del taller de assets (`assets/workshop/catalog.json`, `prepared.json`, `thumbnails.json`) reclaman los archivos de `assets/workshop/`.
 
 ## Nombres y versiones
 
