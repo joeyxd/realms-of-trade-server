@@ -502,6 +502,29 @@ tiene coste cuadrático; sectores/tiles y carga por región se evalúan para exp
 condicionar el editor inicial ni prometer un mundo infinito. Cruza [cartografía](docs/delivery/cartography.md)
 y A3/A8 de [PLAN-ALFA-MUNDO](PLAN-ALFA-MUNDO.md).
 
+### GM07 Terreno por teselas (diseño 2026-10-21, pendiente de aprobación de Joi)
+
+Contrato completo: [GM07](docs/briefs/gm07-terrain-tiles.md). Absorbe GM06a (bounds, costa, chunks, documentos
+viejos) y deja a GM06b la costa y la tierra nueva. Decisiones propuestas:
+
+- **Teselas ancladas al mundo** de 70 m (70 x 70 vértices propios, sin bordes compartidos). Sus claves no cambian
+  al crecer el dominio: el cuadrado actual son 8 x 8 teselas y la propuesta oeste X -840..280 son 16 x 8.
+- **El dominio pertenece a la revisión base**, no al documento; el anillo exterior no se edita.
+- **Alturas como delta en milímetros sobre la base** (int16 o int32 por tesela; 0 = intacto) con la misma fórmula
+  de compilación de hoy: los documentos v3/v4 convertidos dan alturas idénticas bit a bit. Rango absoluto
+  [-40, +200] m sin tope de +/-12 m; suelo de 0,75 m y zonas protegidas siguen hasta GM06b.
+- **Pintura de hasta 8 canales por tesela** con ids globales de material (1..4 = las familias actuales).
+- **Documento v5** con referencias `[tx, tz, sha256, bytes]`; los blobs `MNT1` (máximo 64 KiB) viven aparte: en
+  IndexedDB, en Postgres (migración nueva con readiness y gate) y en el registro de contenido al preparar.
+- **Identidad del contenido sin el runtime:** un push deja de exigir volver a la base (cierra la "migración
+  explícita entre runtimes" de la sección 13).
+- **Carga del jugador:** `/api/world/terrain-tiles/<sha256>` inmutable y cacheable; la carga por zonas es GM06b.
+- El mapa en ejecución sigue siendo una rejilla 561 x 561 compilada; dominios rectangulares, agua, minimapa y
+  costa son GM06b.
+
+Cortes: GM07b0 identidad del contenido; GM07b1 formato y editor; GM07b2 servidor, SQL, publicación y carga;
+GM07c malla por tesela con reconstrucción parcial (requisito de los pinceles grandes de GM08).
+
 ## 10 Arquitectura de implementación propuesta
 
 | Área | Base existente y cambio necesario |
@@ -540,6 +563,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | GM05a | Escultura de suelo seco existente; publicada alpha.45/protocolo 51 | [Entrega](docs/delivery/gm05a/DELIVERY.md): 309/309, imagen 20/20 y actualizador 127/127; 11 controles públicos y cadena autenticada completa, rollback a generación 6 y borrador restaurado |
 | GM05b | Pintar cuatro familias de suelo seco y borrar; formas circular/cuadrada/elíptica | Publicado alpha.48/protocolo 53; [entrega](docs/delivery/gm05b/DELIVERY.md). 267/267 acotadas, imagen 37/37, público 11/11 y cadena durable restaurada; SQL033/readiness real |
 | GM06 | Nueva tierra/islas y ampliación del dominio | Bordes y rutas continuos, identidad previa conservada, presupuestos medidos y admisión coherente |
+| GM07 | Diseño: terreno por teselas, documento v5, identidad del contenido sin runtime y carga por tesela; [contrato](docs/briefs/gm07-terrain-tiles.md), pendiente de aprobación | Cortes b0/b1/b2/c con conversión exacta v3/v4, mapa entero editable preparado bajo 2 MiB, SQL en PGlite y deploy con revisión activa |
 
 **Orden:** GM00 produjo cuatro candidatos; ya tienen comparación visual registrada, pero no están aceptados para gameplay.
 GM01 permite construir un borrador local de decoraciones nuevas y GM02 editar la decoración base segura
