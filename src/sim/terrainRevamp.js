@@ -4,7 +4,9 @@ import { makeNoise2D } from './noise.js';
 import { resourceLayout } from '../data/resources.js';
 import { tuning } from '../data/tuning.js';
 
-export const TERRAIN_REVISION = 'island-terraces-v1';
+export const TERRAIN_REVISION = 'island-terraces-v2';
+const TOWN_SLOPE = .68; // design slope of the town embankments, under the sim's maxSlope 1.0
+export const TOWN_PALM_FLATS = [[-108.95, -11.35], [-90.02, 12.02]]; // (u, v) footing flats of two village palms, see townHeight
 export const TERRAIN_SIZE = 560;
 
 function sampler(heights, size, res, N) {
@@ -45,15 +47,47 @@ export function revampTerrain(source) {
     const p = source.toWorld(link.from.u, link.from.v), end = source.toWorld(link.to.u, link.to.v);
     return { ...link, startY: source.heightAt(p.x, p.z), endY: 6.7, access: end };
   });
-  const townWeight = (u, v) => (1 - smoothstep(.67, 1, Math.hypot((u + 102) / 43, (v + 6) / 39))) * smoothstep(-132, -124, u);
-  const terrace = u => 2.4 + 4 * smoothstep(-108, -105, u) + 4 * smoothstep(-95, -92, u);
-  const ramp = u => 2.4 + 8 * smoothstep(-122, -83, u);
-  const townHeight = (u, v) => lerp(terrace(u), ramp(u), 1 - smoothstep(3, 8, Math.abs(v + 6)));
+  const townWeight = (u, v) => (1 - smoothstep(.58, 1, Math.hypot((u + 102) / 43, (v + 6) / 39))) * smoothstep(-132, -124, u);
+  const pathWeight = (u, v) => (1 - smoothstep(.67, 1, Math.hypot((u + 102) / 43, (v + 6) / 39))) * smoothstep(-132, -124, u); // the dirt mask keeps its v1 extent
+  // Town ground: flat levels joined by embankments no steeper than TOWN_SLOPE, so a walker is never stopped by a step.
+  // Every flat (a terrace band, a building pad, the ramp line) is a plateau with a 1-Lipschitz distance d >= 0. The envelopes
+  // lower = max(y - s d) and upper = min(y + s d) are s-Lipschitz, so their mean is too and equals y on a plateau, unless another
+  // sits closer than their level gap allows (the stall below): then both lean by half the shortfall.
+  const ramp = u => 2.4 + 8 * smoothstep(-122, -83, u), rampV = -6, corridor = 4.5;
+  const bands = [{ y: 2.4, lo: -Infinity, hi: -110.5 }, { y: 6.4, lo: -104.5, hi: -97.5 }, { y: 10.4, lo: -91.5, hi: Infinity }];
+  // Buildings keep their original footprint and doorway; the whole pad shares one level (the band its door sits on).
+  // Huts keep their band level; the stall keeps its band level too on a small flat (0.7) and tilts gently toward the bank of the
+  // 10.4 hut 8.94 away, so the hut stays level and no step is left next to the vendor.
   const pads = source.props.filter(p => ['hut', 'stall'].includes(p.kind)).map(p => {
-    const { u } = source.toUV(p.x, p.z);
-    // Every building keeps its original footprint and doorway. Its whole pad shares one elevation.
-    return { ...p, padY: terrace(u), inner: p.kind === 'hut' ? 4.4 : 3, outer: p.kind === 'hut' ? 7 : 5.5 };
+    const { u, v } = source.toUV(p.x, p.z);
+    return { x: p.x, z: p.z, u, v, y: u < -106.5 ? 2.4 : u < -93.5 ? 6.4 : 10.4, r: p.kind === 'hut' ? 3.3 : 0.7 };
   });
+  const rampLine = []; for (let u = -134; u <= -58; u += .5) rampLine.push({ u, y: ramp(u) });
+  const heightOver = list => (u, v) => {
+    let lo = -Infinity, hi = Infinity;
+    const add = (y, d) => { lo = Math.max(lo, y - TOWN_SLOPE * d); hi = Math.min(hi, y + TOWN_SLOPE * d); };
+    for (const b of bands) { // the band's two sides of the ramp corridor, minus a clearance around pads on another level
+      let d = Math.hypot(Math.max(b.lo - u, 0, u - b.hi), Math.max(corridor - Math.abs(v - rampV), 0));
+      for (const p of list) if (p.y !== b.y) d = Math.max(d, p.r + Math.abs(b.y - p.y) / TOWN_SLOPE - Math.hypot(u - p.u, v - p.v));
+      add(b.y, d);
+    }
+    for (const p of list) add(p.y, Math.max(0, Math.hypot(u - p.u, v - p.v) - p.r));
+    for (const q of rampLine) add(q.y, Math.hypot(u - q.u, v - rampV));
+    return (lo + hi) / 2;
+  };
+  // Two village palms (worldgen.js VILLAGE_PALMS.AT rows 9 and 16, from 0) have no level spot within reach of their row: each
+  // stands on a footing flat at its spot (u, v) the size of its footing window (0.8), at the bank's own level clamped to what
+  // every pad and the ramp line allow at TOWN_SLOPE, so no pad tilts; the bands yield around it as around a pad.
+  const natural = heightOver([...pads]), ridge = rampLine.map(q => ({ u: q.u, v: rampV, y: q.y, r: 0 }));
+  for (const [u, v] of TOWN_PALM_FLATS) {
+    let lo = -Infinity, hi = Infinity;
+    for (const p of [...pads, ...ridge]) {
+      const d = Math.max(0, Math.hypot(u - p.u, v - p.v) - p.r - .8);
+      lo = Math.max(lo, p.y - TOWN_SLOPE * d); hi = Math.min(hi, p.y + TOWN_SLOPE * d);
+    }
+    pads.push({ u, v, y: Math.min(hi, Math.max(lo, natural(u, v))), r: .8 });
+  }
+  const townHeight = heightOver(pads);
   for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
     const x = -half + i / res, z = -half + j / res, { u, v } = source.toUV(x, z), was = oldHeight(x, z);
     const coastNoise = fbm(x * .014 + 3, z * .014 - 2, 3) * .035;
@@ -82,7 +116,6 @@ export function revampTerrain(source) {
     const tw = townWeight(u, v);
     if (tw > 0 && was > .25) {
       h = lerp(h, townHeight(u, v), tw);
-      for (const p of pads) h = lerp(h, p.padY, (1 - smoothstep(p.inner, p.outer, dist(x, z, p))) * tw);
     }
     heights[j * N + i] = h;
   }
@@ -94,7 +127,7 @@ export function revampTerrain(source) {
   });
   const masks = (x, z) => {
     const m = source.masks(x, z), { u, v } = source.toUV(x, z);
-    return { ...m, path: Math.max(m.path, townWeight(u, v) * .82) };
+    return { ...m, path: Math.max(m.path, pathWeight(u, v) * .82) };
   };
   const materialAt = (x, z) => {
     if (source.onDock(x, z)) return 'wood';

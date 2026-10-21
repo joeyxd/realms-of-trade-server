@@ -4,12 +4,15 @@ import { readFileSync } from 'node:fs';
 import { generateWorld } from '../src/sim/worldgen.js';
 import { resourceLayout } from '../src/data/resources.js';
 import { World } from '../src/sim/world.js';
+import { tuning } from '../src/data/tuning.js';
 import { canStand, moveWithCollision } from '../src/sim/systems/movement.js';
 import { preserveTerrainSites } from '../src/render/terrainSites.js';
 import { buildShrubs } from '../src/render/shrubPlacement.js';
 import { buildGrassPatches } from '../src/render/grassPlacement.js';
 import { buildPalmBases } from '../src/render/palmBaseGeometry.js';
 import { buildBeachDetails } from '../src/render/beachDetails.js';
+import { surveyTown } from '../tools/town-slope-survey.mjs';
+import { TOWN_PALM_FLATS } from '../src/sim/terrainRevamp.js';
 
 const dir = new URL('../docs/art/map-revamp/', import.meta.url);
 const baseline = JSON.parse(readFileSync(new URL('baseline-v1.json', dir), 'utf8'));
@@ -132,6 +135,26 @@ test('town hut pads sit on their intended terrace with level support footprints'
   }
 });
 
+test('town stall footing stays on its band level with only a gentle tilt', () => {
+  const map = generateWorld(seed);
+  const stalls = map.props.filter(p => p.kind === 'stall');
+  assert.equal(stalls.length, 1);
+  const stall = stalls[0];
+  near(map.heightAt(stall.x, stall.z), 6.4, 0.3);
+  let lo = Infinity, hi = -Infinity;
+  for (let z = -1.8; z <= 1.8; z += 1) for (let x = -1.8; x <= 1.8; x += 1) {
+    if (x * x + z * z > 3.24) continue;
+    const h = map.heightAt(stall.x + x, stall.z + z); lo = Math.min(lo, h); hi = Math.max(hi, h);
+  }
+  // The vendor stall sits against the bank toward the 10.4 hut 8.94 away, so it tilts gently instead of leaving a step next to the vendor.
+  assert.ok(hi - lo < 0.6, `stall footprint varied ${lo}..${hi}`);
+});
+
+test('every palm footing flat of the town still carries its village palm', () => {
+  const map = generateWorld(seed), palms = map.props.filter(p => p.kind === 'palm').map(p => map.toUV(p.x, p.z));
+  for (const [u, v] of TOWN_PALM_FLATS) assert.ok(palms.some(p => Math.hypot(p.u - u, p.v - v) < .05), `no palm on the flat at ${u},${v}`);
+});
+
 test('resources preserve their baseline identity and horizontal layout while returning fresh records', () => {
   const map = generateWorld(seed), first = resourceLayout(map), second = resourceLayout(map);
   assert.equal(first.nodes.length, 206);
@@ -224,4 +247,58 @@ test('spawn can navigate to town services, the arena gate, Cala entry, and both 
   assert.equal(map.lawlessAt(pvp.x,pvp.z), false);
   assert.equal(map.lawlessAt(cala.x,cala.z), true);
   assert.equal(map.zoneAt(cala.x,cala.z), 'calavera');
+});
+
+test('town ground has no embankment steeper than the walking limit (slope survey over the whole town)', () => {
+  const world = new World(seed), survey = surveyTown(world);
+  assert.ok(survey.cells > 10000, `survey covered only ${survey.cells} cells`);
+  assert.equal(survey.over100, 0, 'a town cell is steeper than maxSlope');
+  assert.equal(survey.over080, 0, `town cells above slope 0.80, worst ${JSON.stringify(survey.worst[0])}`);
+  assert.ok(survey.maxSlope <= 0.8, `town max slope ${survey.maxSlope}`);
+});
+
+test('a walker from spawn reaches every standable cell of the town (live collision and slope rules)', () => {
+  const world = new World(seed), map = world.map, player = world.spawnPlayer({ name: 'town-walk' });
+  const step = 1.5, origin = -map.half + 2, dirs = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+  const pointAt = (i, j) => ({ x: origin + i * step, z: origin + j * step });
+  const inTown = (x, z) => { const { u, v } = map.toUV(x, z); return u >= -132 && Math.hypot((u + 102) / 43, (v + 6) / 39) <= 1; };
+  // The grid is the town plus the beach strip the player crosses from the spawn (u -142..-132) into it.
+  const inArea = (x, z) => { const { u, v } = map.toUV(x, z); return inTown(x, z) || (u >= -142 && u < -132 && Math.abs(v + 6) <= 39); };
+  const nodes = new Map(), width = Math.ceil(map.size / step);
+  for (let j = 0; j < width; j++) for (let i = 0; i < width; i++) {
+    const p = pointAt(i, j);
+    if (inArea(p.x, p.z) && canStand(world, p.x, p.z, world.ecs.radius[player])) nodes.set(`${i},${j}`, [i, j]);
+  }
+  const town = [...nodes].filter(([, [i, j]]) => { const p = pointAt(i, j); return inTown(p.x, p.z); });
+  assert.ok(town.length > 1500, `only ${town.length} standable town cells`);
+  let start = null, best = Infinity;
+  for (const [key, [i, j]] of nodes) { const p = pointAt(i, j), d = Math.hypot(p.x - map.landmarks.spawn.x, p.z - map.landmarks.spawn.z); if (d < best) { best = d; start = key; } }
+  const seen = new Set([start]), queue = [nodes.get(start)];
+  for (let q = 0; q < queue.length; q++) {
+    const [i, j] = queue[q], p = pointAt(i, j);
+    for (const [di, dj] of dirs) {
+      const nk = `${i + di},${j + dj}`;
+      if (seen.has(nk) || !nodes.has(nk)) continue;
+      const np = pointAt(i + di, j + dj), steps = Math.ceil(Math.hypot(np.x - p.x, np.z - p.z) / 0.15);
+      world.ecs.x[player] = p.x; world.ecs.z[player] = p.z; world.ecs.y[player] = map.groundAt(p.x, p.z);
+      for (let s = 0; s < steps; s++) moveWithCollision(world, player, (np.x - p.x) / steps, (np.z - p.z) / steps);
+      if (Math.hypot(world.ecs.x[player] - np.x, world.ecs.z[player] - np.z) > 0.05) continue;
+      seen.add(nk); queue.push([i + di, j + dj]);
+    }
+  }
+  // No invisible edge: no step between two neighbouring town cells is refused because the ground climbs faster than maxSlope
+  // (a refusal by a collider in the way is not a ground defect).
+  let steep = 0, first = null;
+  for (const [, [i, j]] of town) for (const [di, dj] of dirs) {
+    if (!nodes.has(`${i + di},${j + dj}`)) continue;
+    const p = pointAt(i, j), np = pointAt(i + di, j + dj), len = Math.hypot(np.x - p.x, np.z - p.z), steps = Math.ceil(len / 0.15);
+    for (let s = 0; s < steps; s++) {
+      const x0 = p.x + (np.x - p.x) * s / steps, z0 = p.z + (np.z - p.z) * s / steps, x1 = p.x + (np.x - p.x) * (s + 1) / steps, z1 = p.z + (np.z - p.z) * (s + 1) / steps;
+      const rate = (map.groundAt(x1, z1) - map.groundAt(x0, z0)) / (len / steps);
+      if (rate > tuning.world.maxSlope) { steep++; first ||= { x: x0, z: z0, rate }; }
+    }
+  }
+  assert.equal(steep, 0, `${steep} town steps climb faster than maxSlope, first ${JSON.stringify(first)}`);
+  const missed = town.filter(([key]) => !seen.has(key)).map(([, [i, j]]) => pointAt(i, j));
+  assert.equal(missed.length, 0, `${missed.length} town cells unreachable, first ${JSON.stringify(missed.slice(0, 5))}`);
 });

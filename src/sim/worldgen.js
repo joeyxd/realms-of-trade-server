@@ -724,15 +724,15 @@ export function generateWorld(seed) {
       // du, dv (from the village point), rot, scale, h, form (0 tall, 1 curved, 2 short). A curved palm leans along its local +x,
       // so its rot points the crown away from the hut or the plaza it stands by. Crowns at 5.5 to 6 u (short ones about 4).
       AT: [
-        [10.5, -2, 0.4, 1.0, 5.6, 0], [10, 3.5, 1.571, 1.04, 5.8, 1],                         // ring, up the screen behind the plaza
+        [10.6, -1.8, 0.4, 1.0, 5.6, 0], [10, 3.5, 1.571, 1.04, 5.8, 1],                       // ring, up the screen behind the plaza
         [9.9, -7.5, 2.356, 1.0, 5.8, 1], [11.3, -14.2, 5.3, 1.03, 5.6, 0],                     // beside the upper-left hut
-        [-0.3, -12, 1.9, 1.05, 5.6, 0], [2.4, -10, 3.927, 1.02, 5.8, 1], [-0.5, -9, 3.1, 0.98, 5.6, 0], // ring, left of the plaza
+        [-2.3, -11.2, 1.9, 1.05, 5.6, 0], [1, -11.4, 3.927, 1.02, 5.8, 1], [-0.5, -9, 3.1, 0.98, 5.6, 0], // ring, left of the plaza
         [1, -16.7, 4.4, 1.05, 5.6, 2],                                                        // behind the left hut
-        [-8.6, -8.4, 4.712, 1.06, 5.8, 1], [-8.6, -5.4, 2.6, 1.07, 5.6, 0],                    // camera side, lower left
+        [-8.6, -8.4, 4.712, 1.06, 5.8, 1], [-8.9, -5.4, 2.6, 1.07, 5.6, 0],                    // camera side, lower left
         [-12.1, -11.5, 0.9, 1.02, 5.6, 0],                                                    // behind the lower-left hut
-        [-9.7, 5.4, 0, 1.06, 5.8, 1], [-12.2, 12.3, 3.7, 1.0, 5.6, 0],                         // camera side, lower right, and its hut
+        [-10.2, 5.2, 0, 1.06, 5.8, 1], [-12.2, 12.3, 3.7, 1.0, 5.6, 0],                        // camera side, lower right, and its hut
         [13.4, 14.5, 1.2, 1.05, 5.6, 2],                                                      // behind the upper-right hut
-        [4.8, 19.6, 1.6, 1.03, 5.8, 1], [-0.7, 19.2, 5.9, 1.04, 5.6, 0], [10, 18, 0.785, 1.0, 5.8, 1], // the stall and the right hut
+        [2.5, 20.2, 1.6, 1.03, 5.8, 1], [-0.7, 19.2, 5.9, 1.04, 5.6, 0], [10, 18, 0.785, 1.0, 5.8, 1], // the stall and the right hut
       ],
     };
     // The town props the palms and the plants keep clear of (with every palm). propGap: the gap from the edge of one;
@@ -801,16 +801,16 @@ export function generateWorld(seed) {
       // du, dv (from the village point), kind, rot, scale. Fitted at scale 1 (props.js PLANT_BOX): fern 1.11 x 0.68 u,
       // flowerbush 1.27 x 0.85, broadleaf 1.21 x 1.0.
       AT: [
-        [9.2, -14, 'fern', 2.1, 1.05], [7.3, -9.4, 'flowerbush', 0.6, 1.1], [12.6, -12.5, 'broadleaf', 4.0, 1.1],   // upper-left hut
+        [9.2, -14, 'fern', 2.1, 1.05], [7.4, -9.4, 'flowerbush', 0.6, 1.1], [12.6, -12.5, 'broadleaf', 4.0, 1.1],   // upper-left hut
         [-2, -12, 'flowerbush', 1.3, 1.0], [-4.6, -16.5, 'fern', 5.2, 1.1], [-2.8, -18.1, 'broadleaf', 3.3, 1.05], // left hut
         [-9.9, -5.9, 'flowerbush', 2.8, 1.05], [-15, -7.2, 'fern', 0.9, 1.0], [-14.6, -9.5, 'broadleaf', 5.6, 1.15], // lower-left hut
         [-11, 12, 'flowerbush', 4.4, 1.05], [-14, 9, 'fern', 1.7, 1.1], [-12.5, 6.4, 'broadleaf', 0.4, 1.0],        // lower-right hut
         [10.2, 10.2, 'fern', 3.6, 1.05], [11.5, 13.6, 'broadleaf', 2.5, 1.1],                                       // upper-right hut
-        [1.2, 19.9, 'fern', 4.9, 1.0], [3.5, 19.6, 'broadleaf', 1.1, 1.05],                                         // right hut
-        [-3.9, -8.9, 'fern', 0.3, 0.95], [-2.5, -9.5, 'flowerbush', 3.9, 0.9],  // rim, lower left between the ring palms
-        [0.9, -9.2, 'fern', 5.0, 1.0], [1.6, -10.6, 'flowerbush', 2.2, 0.95],   // rim, left, under the ring palms
-        [-9, 0.9, 'fern', 1.4, 0.9], [-9.6, -0.2, 'flowerbush', 4.7, 1.0],      // rim, camera side
-        [5.6, 18.5, 'broadleaf', 3.0, 1.0], [4.6, 18.6, 'fern', 0.8, 0.95],     // behind the vendor stall, under its palm
+        [1.2, 19.9, 'fern', 4.9, 1.0], [2.5, 21.2, 'broadleaf', 1.1, 1.05],                                         // right hut
+        [-1.9, -8.8, 'fern', 0.3, 0.95], [-2.5, -9.5, 'flowerbush', 3.9, 0.9],  // rim, lower left between the ring palms
+        [0.9, -9.2, 'fern', 5.0, 1.0], [0.8, -10.5, 'flowerbush', 2.2, 0.95],   // rim, left, under the ring palms
+        [-9, 0.5, 'fern', 1.4, 0.9], [-9.6, -0.2, 'flowerbush', 4.7, 1.0],      // rim, camera side
+        [4, 19.3, 'broadleaf', 3.0, 1.0], [4.6, 18.6, 'fern', 0.8, 0.95],       // behind the vendor stall, under its palm
       ],
     };
     {
