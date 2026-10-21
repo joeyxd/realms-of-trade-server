@@ -6,7 +6,7 @@ import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { makeResourceStore, startResourceHost, connect, turn } from './helpers/resource-authority-fixture.mjs';
 
 test('the protocol carries the SK04b skills flag', () => {
-  assert.equal(PROTOCOL_VERSION, 65);
+  assert.ok(PROTOCOL_VERSION >= 65);
 });
 
 test('skill receipts are private client events and never combat feedback', () => {

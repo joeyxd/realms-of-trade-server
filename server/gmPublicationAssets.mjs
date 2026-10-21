@@ -20,6 +20,9 @@ const RUNTIME_FILES = [
   'index.html', 'package.json', 'package-lock.json',
   'assets/manifest.json', 'assets/editor/catalog.json',
 ];
+// The asset indexes are read from root, where resolution reads them; every other runtime file from runtimeRoot,
+// which tests point at another release's code. In production both are the release root.
+const INDEX_FILES = new Set(['assets/manifest.json', 'assets/editor/catalog.json']);
 
 export class GmPublicationAssetsError extends Error {
   constructor(code) { super(`GM publication assets unavailable: ${code}`); this.name = 'GmPublicationAssetsError'; this.code = code; }
@@ -115,9 +118,10 @@ async function listFiles(root, dir) {
   return files;
 }
 
-export function createGmPublicationAssets({ root }) {
+export function createGmPublicationAssets({ root, runtimeRoot = root }) {
   if (typeof root !== 'string' || !path.isAbsolute(root)) throw new TypeError('root must be absolute');
-  const absoluteRoot = path.resolve(root);
+  if (typeof runtimeRoot !== 'string' || !path.isAbsolute(runtimeRoot)) throw new TypeError('runtimeRoot must be absolute');
+  const absoluteRoot = path.resolve(root), codeRoot = path.resolve(runtimeRoot);
   let prepared = null;
 
   async function prepare() {
@@ -145,10 +149,10 @@ export function createGmPublicationAssets({ root }) {
       const indexed = new Map(rawEntries.map((raw) => [raw.id, { entry: normalized.entries.get(raw.id), raw }]));
 
       const files = new Set(RUNTIME_FILES);
-      for (const dir of RUNTIME_DIRS) for (const rel of await listFiles(absoluteRoot, dir)) files.add(rel);
+      for (const dir of RUNTIME_DIRS) for (const rel of await listFiles(codeRoot, dir)) files.add(rel);
       const runtimeFiles = [];
       for (const rel of [...files].sort()) {
-        const bytes = await readBounded(path.join(absoluteRoot, rel), MAX_INDEX_BYTES);
+        const bytes = await readBounded(path.join(INDEX_FILES.has(rel) ? absoluteRoot : codeRoot, rel), MAX_INDEX_BYTES);
         runtimeFiles.push({ path: rel, sha256: sha256(bytes), bytes: bytes.length });
       }
       const runtimeDigest = sha256(jsonBytes(runtimeFiles));

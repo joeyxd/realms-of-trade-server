@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 65; // SK04b: skills command and the WELCOME skills flag
+export const PROTOCOL_VERSION = 66; // GM07b0: content identity
 
 export const MSG = {
   // client -> server

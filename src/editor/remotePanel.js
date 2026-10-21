@@ -215,7 +215,7 @@ export class RemoteDraftPanel {
       gm_content_busy: ['Players, a save, or an update are active. Try again when the world is empty.', 'Hay jugadores, un guardado o una actualización en curso. Reintenta cuando el mundo esté vacío.'],
       gm_content_conflict: ['The active revision changed. Refresh before choosing again.', 'Cambió la revisión activa. Actualiza antes de elegir otra vez.'],
       gm_content_changed: ['The preparation changed. Validate the saved design again.', 'La preparación cambió. Vuelve a validar el diseño guardado.'],
-      gm_content_incompatible: ['This revision belongs to another code version. Activate the base before updating code.', 'Esta revisión pertenece a otra versión de código. Activa la base antes de actualizar el código.'],
+      gm_content_incompatible: ['This revision no longer rebuilds the same with this code version. Prepare it again or activate the base.', 'Esta revisión ya no se reconstruye igual con esta versión del código. Vuelve a prepararla o activa la base.'],
       gm_content_candidate: ['This revision includes art candidates. Use integrated models for activation.', 'Esta revisión incluye candidatos de arte. Usa modelos integrados para activar.'],
       gm_content_routes: ['The revision blocks a protected route.', 'La revisión bloquea una ruta protegida.'],
       gm_content_occupied: ['The revision overlaps a saved boat or an item on the ground.', 'La revisión invade un barco guardado o un objeto en el suelo.'],
@@ -235,7 +235,7 @@ export class RemoteDraftPanel {
         <option value="">${text(this.t('Base map', 'Mapa base'))}</option>
         ${data.revisions.map((row) => `<option value="${row.revisionId}" ${selected === row.revisionId ? 'selected' : ''}>${row.revisionId.slice(0, 12)} · ${row.objects} ${text(this.t('models', 'modelos'))} · ${row.baseChanges} ${text(this.t('base changes', 'cambios'))}</option>`).join('')}</select></label>
         ${button('content-activate', this.t('Activate / roll back…', 'Activar / volver atrás…'), this.busy || !!this.contentClient.pending)}
-        <p>${text(this.t('Saved revisions keep their files. Code updates require returning to the base if the runtime changes.', 'Las revisiones guardadas conservan sus archivos. Si cambia el runtime, hay que volver a la base para actualizar el código.'))}</p>` : ''}
+        <p>${text(this.t('Saved revisions keep their files. A code update keeps the active revision when it rebuilds identically; older revisions need the base first.', 'Las revisiones guardadas conservan sus archivos. Una actualización de código conserva la revisión activa si se reconstruye igual; las revisiones antiguas necesitan volver a la base.'))}</p>` : ''}
       ${this.contentReview ? `<div class="gm-remote-review"><b>${text(this.t('Activate this revision for everyone?', '¿Activar esta revisión para todos?'))}</b>
         <p>${text(this.contentReview.revisionId?.slice(0, 12) || this.t('Base map', 'Mapa base'))} · g${this.contentReview.expectedGeneration}</p>
         ${button('content-confirm', this.t('Activate now', 'Activar ahora'), this.busy)} ${button('content-cancel', this.t('Cancel', 'Cancelar'), this.busy)}</div>` : ''}

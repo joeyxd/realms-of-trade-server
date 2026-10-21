@@ -502,7 +502,7 @@ tiene coste cuadrático; sectores/tiles y carga por región se evalúan para exp
 condicionar el editor inicial ni prometer un mundo infinito. Cruza [cartografía](docs/delivery/cartography.md)
 y A3/A8 de [PLAN-ALFA-MUNDO](PLAN-ALFA-MUNDO.md).
 
-### GM07 Terreno por teselas (diseño 2026-10-21, pendiente de aprobación de Joi)
+### GM07 Terreno por teselas (diseño 2026-10-21, aprobado por Joi el 2026-10-21, T-1021-25; GM07b0 construido)
 
 Contrato completo: [GM07](docs/briefs/gm07-terrain-tiles.md). Absorbe GM06a (bounds, costa, chunks, documentos
 viejos) y deja a GM06b la costa y la tierra nueva. Decisiones propuestas:
@@ -524,6 +524,7 @@ viejos) y deja a GM06b la costa y la tierra nueva. Decisiones propuestas:
 
 Cortes: GM07b0 identidad del contenido; GM07b1 formato y editor; GM07b2 servidor, SQL, publicación y carga;
 GM07c malla por tesela con reconstrucción parcial (requisito de los pinceles grandes de GM08).
+**GM07b0 construido** (T-1021-25, alpha.91): el id de esquema 2 nombra el contenido y lo que usa; un deploy conserva la revisión activa.
 
 ## 10 Arquitectura de implementación propuesta
 
@@ -563,7 +564,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | GM05a | Escultura de suelo seco existente; publicada alpha.45/protocolo 51 | [Entrega](docs/delivery/gm05a/DELIVERY.md): 309/309, imagen 20/20 y actualizador 127/127; 11 controles públicos y cadena autenticada completa, rollback a generación 6 y borrador restaurado |
 | GM05b | Pintar cuatro familias de suelo seco y borrar; formas circular/cuadrada/elíptica | Publicado alpha.48/protocolo 53; [entrega](docs/delivery/gm05b/DELIVERY.md). 267/267 acotadas, imagen 37/37, público 11/11 y cadena durable restaurada; SQL033/readiness real |
 | GM06 | Nueva tierra/islas y ampliación del dominio | Bordes y rutas continuos, identidad previa conservada, presupuestos medidos y admisión coherente |
-| GM07 | Diseño: terreno por teselas, documento v5, identidad del contenido sin runtime y carga por tesela; [contrato](docs/briefs/gm07-terrain-tiles.md), pendiente de aprobación | Cortes b0/b1/b2/c con conversión exacta v3/v4, mapa entero editable preparado bajo 2 MiB, SQL en PGlite y deploy con revisión activa |
+| GM07 | Diseño: terreno por teselas, documento v5, identidad del contenido sin runtime y carga por tesela; [contrato](docs/briefs/gm07-terrain-tiles.md), aprobado por Joi el 2026-10-21 (T-1021-25); **GM07b0 construido** (alpha.91/protocolo 66) | Cortes b0/b1/b2/c con conversión exacta v3/v4, mapa entero editable preparado bajo 2 MiB, SQL en PGlite y deploy con revisión activa |
 
 **Orden:** GM00 produjo cuatro candidatos; ya tienen comparación visual registrada, pero no están aceptados para gameplay.
 GM01 permite construir un borrador local de decoraciones nuevas y GM02 editar la decoración base segura

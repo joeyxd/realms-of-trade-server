@@ -1,4 +1,4 @@
-import { verifyPreparedRevision, canonicalJson } from './publicationArtifact.js';
+import { verifyPreparedRevision, canonicalJson, PREPARATION_VERSION } from './publicationArtifact.js';
 import { installGmContent, projectGmContent } from './contentProjection.js';
 import { resourceLayout } from '../data/resources.js';
 import { TERRAIN_GRID_SIZE } from './terrainData.js';
@@ -30,8 +30,10 @@ export async function loadGmWorldContent({ httpBase, map, baseMap, gameVersion, 
     if (revision !== null) throw new Error('content_invalid');
   } else {
     const content = revision?.content, document = content?.document;
-    if (revision?.revisionId !== body.revisionId || content?.runtime?.gameVersion !== gameVersion ||
-        content?.runtime?.protocolVersion !== protocolVersion) throw new Error('content_incompatible');
+    // Schema 2 (GM07b0) does not name a release: the hashes recomputed below decide, and HELLO checks the protocol.
+    // Schema 1 still has to come from this exact game and protocol version.
+    if (revision?.revisionId !== body.revisionId || revision.version !== PREPARATION_VERSION &&
+        (content?.runtime?.gameVersion !== gameVersion || content?.runtime?.protocolVersion !== protocolVersion)) throw new Error('content_incompatible');
     await verifyPreparedRevision(revision, { scope: { worldId: content.worldId, seed: baseMap.seed >>> 0,
       baseRevision: 'terrain-s21-v1' }, draftRevision: content.sourceRevision, document });
     const baseline = body.baseline ?? { props: baseMap.props, colliders: baseMap.colliders, resources: resourceLayout(baseMap) };

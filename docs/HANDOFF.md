@@ -1,5 +1,30 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**GM07b0, 2026-10-21 — identidad del contenido sin el runtime: un mundo GM publicado sobrevive a un deploy (alpha.91, protocolo 66, renumerado sobre SK04b):**
+Decisión D10 de [GM07](briefs/gm07-terrain-tiles.md). Sin SQL ni cambios en el actualizador; versión 0.6.0-alpha.91,
+`PROTOCOL_VERSION` 66 (formato de revisión nuevo). Las preparaciones nuevas escriben el esquema 2 (`version: 2` de
+`marea.gm.prepared-revision`): `revisionId` = sha256 del `content` canónico, que lleva solo el contenido y lo que usa:
+mundo, revisión origen, documento y `documentHash`, base (semilla, revisión, huellas de props, colisiones y recursos),
+colisión, recursos, terreno, `validation`, `assets` (cada modelo referenciado: src, sha256, bytes, loader y status) y
+`baselineAssets` reducido a los ficheros del manifiesto de esos modelos (la variante móvil la dibujan los teléfonos; la
+roca costera entra si el contenido toca rocas costeras). `content.runtime` queda `{files: []}`. Fuera del hash, en
+`preparedWith: {gameVersion, protocolVersion, runtime: {sha256, files}, baselineAssets}`, solo para auditoría: versiones,
+todos los ficheros runtime (código, `assets/manifest.json`, `assets/editor/catalog.json`) y todos los ficheros del
+manifiesto; el registro los sigue guardando como blobs. Regla (`sameRevisionIdentity`, `src/editor/publicationArtifact.js`):
+el esquema 2 es compatible si la reconstrucción con la release en marcha da el mismo id y los mismos hashes derivados
+(documento, base, colisión, recursos, terreno); el esquema 1 conserva la regla de siempre y sigue bloqueando un deploy.
+La aplican el arranque y la activación (`server/gmContent.mjs`) y el checker del actualizador (`server/gmContentCheck.mjs`;
+`gameVersion`, `protocolVersion` y `runtimeRoot` son opciones para tests, el CLI no cambia). El cliente
+(`src/editor/activeContent.js`) deja de exigir el mismo `gameVersion` en el esquema 2 y sigue recalculando colisión,
+terreno, recursos y base; el HELLO sigue comprobando el protocolo. Registrar el mismo contenido preparado por otra
+release es idempotente y conserva el primer `preparedWith`; las revisiones v1 retenidas no se migran.
+Pasan el deploy: código nuevo, un asset nuevo en el manifiesto o en el catálogo, bytes nuevos de un modelo no usado.
+Bloquean: un modelo usado (también su variante móvil) o su entrada de loader, worldgen (huellas base) y el informe de
+validación (`content.validation` sigue en la identidad: acoplamiento conocido, falla en seguro). Las texturas que el
+código aplica a un modelo (palmeras, arbustos) cuentan como código. Tests: gm-content-identity (a-f); gm-publication-service
+lee versiones y manifiesto en `preparedWith`. Ticket T-1021-25. Pendiente: `tools/qa-gm-preparation-checks.mjs` (QA de
+navegador) aún espera `content.baselineAssets` completo.
+
 **IC05a, 2026-10-21 — el cuerpo del compañero recoge madera y piedra (alpha.89, protocolo 64):**
 [Entrega](delivery/ic05a-companion-gather.md). Sin SQL; versión 0.6.0-alpha.89, `PROTOCOL_VERSION` 64 (el valor de
 orden `gather` es nuevo y los clientes viejos lo rechazan). La zona de presencia pasa de 12 a 30

@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, open, readFile, readdir, rename, stat } from 'node:fs/promises';
 import path from 'node:path';
-import { canonicalJson, PREPARATION_SCHEMA } from '../src/editor/publicationArtifact.js';
+import { canonicalJson, PREPARATION_SCHEMA, PREPARATION_VERSION } from '../src/editor/publicationArtifact.js';
 import { createGmContentLock } from './gmContentLock.mjs';
 
 const MAX_REVISIONS = 100;
@@ -143,20 +143,33 @@ export function createGmContentRegistry({ directory, root, worldId, lock = null,
         if (old.sha256 !== digest || old.bytes !== size) fail('artifact');
       } else files.set(relative, { path: relative, sha256: digest, bytes: size });
     };
-    for (const item of [...content.assets, ...content.baselineAssets]) {
+    // Schema 2 keeps the release's runtime files and manifest files in its audit record; they are retained
+    // like every other dependency, as schema 1 retains them from its content.
+    const audit = revision.preparedWith;
+    for (const item of [...content.assets, ...content.baselineAssets, ...(audit?.baselineAssets ?? [])]) {
       if (!isObject(item) || typeof item.src !== 'string' || !item.src.startsWith('assets/')) fail('artifact');
       add(item.src, item.sha256, item.bytes);
     }
-    for (const item of content.runtime.files) {
+    for (const item of [...content.runtime.files, ...(audit?.runtime.files ?? [])]) {
       if (!isObject(item)) fail('artifact');
       add(item.path, item.sha256, item.bytes);
     }
     return [...files.values()].sort((a, b) => a.path.localeCompare(b.path));
   }
 
+  function validPreparedWith(value) {
+    return isObject(value) && Object.keys(value).sort().join(',') === 'baselineAssets,gameVersion,protocolVersion,runtime' &&
+      typeof value.gameVersion === 'string' && value.gameVersion.length <= 64 && Number.isSafeInteger(value.protocolVersion) &&
+      isObject(value.runtime) && HASH.test(value.runtime.sha256) && Array.isArray(value.runtime.files) &&
+      Array.isArray(value.baselineAssets);
+  }
+
   function validateRevision(revision) {
-    if (!isObject(revision) || Object.keys(revision).sort().join(',') !== 'content,revisionId,schema,version' ||
-        revision.schema !== PREPARATION_SCHEMA || revision.version !== 1 || !HASH.test(revision.revisionId) ||
+    const current = revision?.version === PREPARATION_VERSION;
+    if (!isObject(revision) || Object.keys(revision).sort().join(',') !==
+          (current ? 'content,preparedWith,revisionId,schema,version' : 'content,revisionId,schema,version') ||
+        revision.schema !== PREPARATION_SCHEMA || ![1, PREPARATION_VERSION].includes(revision.version) ||
+        (current && !validPreparedWith(revision.preparedWith)) || !HASH.test(revision.revisionId) ||
         !isObject(revision.content) || revision.content.worldId !== worldId || hash(bytes(revision.content)) !== revision.revisionId) fail('artifact');
     const files = revisionFiles(revision);
     const total = files.reduce((sum, item) => sum + item.bytes, 0);
@@ -234,7 +247,10 @@ export function createGmContentRegistry({ directory, root, worldId, lock = null,
     const id = revision.revisionId, target = path.join(revisionDir, `${id}.json`);
     try {
       const existing = await loadRevision(id);
-      if (canonicalJson(existing) !== canonicalJson(revision)) fail('artifact');
+      // A schema 2 id names the content only: the same content prepared by another release is already retained,
+      // and the first audit record stays.
+      if (existing.version === PREPARATION_VERSION && revision.version === PREPARATION_VERSION
+        ? canonicalJson(existing.content) !== canonicalJson(revision.content) : canonicalJson(existing) !== canonicalJson(revision)) fail('artifact');
       return { revisionId: id, objects: revision.content.document.objects.length, baseChanges: revision.content.document.baseOverrides.length };
     } catch (error) {
       if (!(error instanceof GmContentRegistryError) || error.code !== 'revision_missing') throw error;

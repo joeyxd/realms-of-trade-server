@@ -45,12 +45,19 @@ test('empty preparation is stable, scoped, hashed, and verifiable', async () => 
   assert.equal(first.revision.content.worldId, WORLD);
   assert.equal(first.revision.content.sourceRevision, 7);
   assert.equal(first.revision.content.documentHash.length, 64);
-  assert.equal(first.revision.content.runtime.gameVersion, GAME_VERSION);
-  assert.equal(first.revision.content.runtime.protocolVersion, PROTOCOL_VERSION);
-  const coast = first.revision.content.baselineAssets.find((asset) => asset.id === 'model:coast-rock-v1');
-  assert.ok(coast, 'an empty draft still pins the coastal models rendered by its base map');
+  // Schema 2 (GM07b0): the preparing release is audit data beside the hashed content.
+  assert.equal(first.revision.version, 2);
+  assert.equal(first.revision.preparedWith.gameVersion, GAME_VERSION);
+  assert.equal(first.revision.preparedWith.protocolVersion, PROTOCOL_VERSION);
+  assert.equal(first.revision.content.runtime.gameVersion, undefined);
+  assert.equal(first.revision.content.runtime.protocolVersion, undefined);
+  // An empty draft uses no release file: the manifest files it was prepared with are audit data.
+  assert.deepEqual(first.revision.content.runtime, { files: [] });
+  assert.deepEqual(first.revision.content.baselineAssets, []);
+  const coast = first.revision.preparedWith.baselineAssets.find((asset) => asset.id === 'model:coast-rock-v1');
+  assert.ok(coast, 'the audit record still pins the coastal models rendered by its base map');
   assert.equal(coast.sha256, (await import('node:crypto')).createHash('sha256').update(await readFile(path.join(ROOT, coast.src))).digest('hex'));
-  assert.ok(first.revision.content.baselineAssets.some((asset) => asset.variant === 'mobile'));
+  assert.ok(first.revision.preparedWith.baselineAssets.some((asset) => asset.variant === 'mobile'));
   await assert.doesNotReject(verifyPreparedRevision(first.revision, {
     scope: { worldId: WORLD, seed: map.seed, baseRevision: BASE }, draftRevision: 7, document,
   }));
@@ -103,6 +110,8 @@ test('coastal base overrides and base clones resolve the coast dependency', asyn
   const override = await service.build({ document: overrideDocument, draftRevision: 2 });
   assert.equal(override.report.valid, true, JSON.stringify(override.report.issues));
   assert.ok(override.revision.content.assets.some((asset) => asset.id === 'model:coast-rock-v1'));
+  assert.deepEqual(override.revision.content.baselineAssets.map((asset) => asset.id), ['model:coast-rock-v1'],
+    'the coast model it edits keeps its manifest file in the identity');
 
   const cloneDocument = documentFor(map, { objects: [createDecoration({ id: 'coast-clone', assetId: coast.id,
     position: { x: coast.prop.x + 5, y: coast.prop.y, z: coast.prop.z + 5 }, collider: 'none' })] });

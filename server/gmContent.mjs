@@ -2,6 +2,7 @@ import { projectGmContent, installGmContent, validateGmRoutes } from '../src/edi
 import { createGmContentRegistry } from './gmContentRegistry.mjs';
 import { validateGmContentObstacles } from './gmContentObstacles.mjs';
 import { resourceLayout } from '../src/data/resources.js';
+import { sameRevisionIdentity } from '../src/editor/publicationArtifact.js';
 
 const error = (code) => Object.assign(new Error(code), { code });
 const clone = (value) => structuredClone(value);
@@ -14,8 +15,11 @@ export function createGmContentService({ directory, root, worldId, baseMap, base
     if (id === null) return null;
     const revision = await registry.load(id);
     if (!revision) throw error('gm_content_missing');
-    const built = await publication.build({ document: revision.content.document, draftRevision: revision.content.sourceRevision });
-    if (!built.revision || built.revision.revisionId !== id) throw error('gm_content_incompatible');
+    // Rebuild with the running code under the revision's own schema (GM07b0): schema 2 survives a code change
+    // when the content and its derived hashes rebuild identically; schema 1 still needs the same runtime.
+    const built = await publication.build({ document: revision.content.document, draftRevision: revision.content.sourceRevision,
+      version: revision.version });
+    if (!built.revision || built.revision.revisionId !== id || !sameRevisionIdentity(revision, built.revision)) throw error('gm_content_incompatible');
     if (revision.content.assets.some((item) => item.status === 'candidate')) throw error('gm_content_candidate');
     return revision;
   }

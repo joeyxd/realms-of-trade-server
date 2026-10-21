@@ -67,9 +67,9 @@ export async function runGmPreparationChecks({ page, origin, check, shot, out = 
       assert.equal(prepared.content.assets[0].id, 'prop:storage-crate');
       assert.match(prepared.content.assets[0].sha256, /^[a-f0-9]{64}$/);
       const manifest = await (await fetch(origin + '/assets/manifest.json')).json();
-      assert.equal(prepared.content.baselineAssets.length, manifest.assets.reduce((sum, entry) => sum + 1 + (entry.mobileSrc ? 1 : 0), 0));
-      const coast = prepared.content.baselineAssets.find((asset) => asset.id === 'model:coast-rock-v1');
-      const mobile = prepared.content.baselineAssets.find((asset) => asset.variant === 'mobile');
+      assert.equal(prepared.preparedWith.baselineAssets.length, manifest.assets.reduce((sum, entry) => sum + 1 + (entry.mobileSrc ? 1 : 0), 0));
+      const coast = prepared.preparedWith.baselineAssets.find((asset) => asset.id === 'model:coast-rock-v1');
+      const mobile = prepared.preparedWith.baselineAssets.find((asset) => asset.variant === 'mobile');
       assert.ok(coast); assert.ok(mobile);
       for (const dependency of [prepared.content.assets[0], coast, mobile]) {
         const bytes = Buffer.from(await (await fetch(new URL(dependency.src, origin))).arrayBuffer());
@@ -118,7 +118,7 @@ export async function runGmPreparationChecks({ page, origin, check, shot, out = 
     });
   }
   return { schema: 'gm03b1-preparation-browser/v1', revisionId: prepared?.revisionId,
-    sourceRevision: prepared?.content.sourceRevision, baselineAssetCount: prepared?.content.baselineAssets?.length ?? null,
+    sourceRevision: prepared?.content.sourceRevision, baselineAssetCount: prepared?.preparedWith?.baselineAssets?.length ?? null,
     restoredRevision: last.revision, originalRevision: baseline.revision };
 }
 
