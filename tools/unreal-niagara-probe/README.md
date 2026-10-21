@@ -123,10 +123,29 @@ runpy.run_path('C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/cap
 ```
 
 Run with a **fresh** bounded name (the checked evidence uses `reference11` and
-`reference12`). The output stays under `.scratch/unreal`; don't use NullRHI here:
+`reference12`) and the system spec (`-SystemSpec=<absolute systems/*.json>`, as the probes take it;
+no spec, no run: there is no default system). The output stays under `.scratch/unreal`; don't use NullRHI here:
 
 ```powershell
-& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -d3d11 -RenderOffscreen -unattended -nop4 -nosplash -nosound '-ExecCmds=Automation RunTests Editor.Python.ST01c_Pilot.test_st01c_reference' '-TestExit=Automation Test Queue Empty' -CaptureRun=reference13
+& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -d3d11 -RenderOffscreen -unattended -nop4 -nosplash -nosound '-ExecCmds=Automation RunTests Editor.Python.ST01c_Pilot.test_st01c_reference' '-TestExit=Automation Test Queue Empty' -CaptureRun=reference13 '-SystemSpec=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/systems/ns-flame-single.json'
+```
+
+The system, its source SHA and the whole capture window come from the spec. Its `capture` block holds exactly:
+`dt`, `lastStep` (states 0..lastStep), `imageSteps` (steps with PNG frames), `linearStep` (one of imageSteps; the
+HDR export), `imageSize` (square), `cameras` (`{name, yaw, pitch}`, the first one also takes the step 0 baseline),
+`cameraTarget` `[x, y, z]`, `cameraDistance`, `orthoWidth` and `textures` (full `/Game` package paths exported to
+`textures/<name>.png` and forced resident). Python validates the block and names a missing or mistyped key; the
+plugin reads only `textures`, and `ConfigureSystem` records that list and the system path, which
+`ReadParticles`, `PrepareCapture` and `ReadColorTarget` then accept (any other asset is refused).
+`capture_depth.py`/`capture_color.py` keep importing `capture_reference.py` as a library and read their pilot
+constants from `systems/ns-flame-single.json`.
+
+Compare two runs of one system (particles and HDR byte for byte, PNG by decoded pixels, textures by sha256,
+report settings, seed_configuration and counts; exit 0 only when equal) and check the spec loader without Unreal:
+
+```powershell
+python tools/unreal-niagara-probe/compare_reference_runs.py --spec tools/unreal-niagara-probe/systems/ns-flame-single.json --a .scratch/unreal/reference11 --b .scratch/unreal/reference-gen01 [--png-max N] [--json <out>]
+python tools/unreal-niagara-probe/capture_spec_test.py
 ```
 
 The scheduler advances a single activation by 240 ticks at 1/60 s, pausing before any
@@ -155,7 +174,7 @@ saves assets. Rebuild/copy the plugin as above, then use a fresh run:
 ```
 
 The plugin functions are `ConfigureSystem`/`ReadCompiledSystem` (scope from the spec text); the older
-`ConfigurePilot`/`ReadCompiledPilot` keep the pilot scope for the capture scripts. With the pilot spec the compiled
+`ConfigurePilot`/`ReadCompiledPilot` keep the pilot scope for `capture_color.py` and `capture_depth.py`. With the pilot spec the compiled
 `report.json` is byte-identical to `compiled02` and the native-values file to `native-values02/03`; the
 T3D exports and the material defaults are not byte-stable (see `compare_t3d.py`; the original material probe
 printed an object representation with a memory address).

@@ -29,10 +29,16 @@ namespace
             FPaths::GetBaseFilename(FPaths::GetProjectFilePath()) == TEXT("ST01c_Pilot") &&
             FPaths::ProjectDir().Contains(TEXT("/.scratch/"));
     }
-    // Older capture scripts only ever probe the exact pilot.
+    // The scope the last successful Configure* call accepted (the pilot until then). The
+    // capture functions take no spec, so they gate on this one system and still reject any other.
+    FST01cScope& ActiveScope()
+    {
+        static FST01cScope Scope = ST01cSpec::Pilot();
+        return Scope;
+    }
     bool Allowed(const UNiagaraSystem* System)
     {
-        return Allowed(System, ST01cSpec::Pilot());
+        return Allowed(System, ActiveScope());
     }
     // The listed handles (when the spec lists them) must match in count, name and order.
     bool HandlesMatch(const UNiagaraSystem* System, const FST01cScope& Scope)
@@ -123,6 +129,7 @@ static FString ConfigureWithScope(UNiagaraSystem* System, const FST01cScope& Sco
     System->RequestCompile(true);
     System->WaitForCompilationComplete(false, false);
     Result->SetArrayField(TEXT("emitters"), Rows);
+    ActiveScope() = Scope;
     return Encode(Result);
 }
 
@@ -230,7 +237,7 @@ FString UST01cRuntimeProbe::ReadParticles(UNiagaraComponent* Component)
         const auto Age = FNiagaraDataSetAccessor<float>(Data, TEXT("Age")).GetReader(Data);
         const auto Lifetime = FNiagaraDataSetAccessor<float>(Data, TEXT("Lifetime")).GetReader(Data);
         const auto Id = FNiagaraDataSetAccessor<int32>(Data, TEXT("UniqueID")).GetReader(Data);
-        if (!Position.IsValid() || !Color.IsValid() || !Size.IsValid() || !Rotation.IsValid() || !SubImage.IsValid())
+        if (!Position.IsValid() || !Color.IsValid() || !Size.IsValid() || !Rotation.IsValid())
         {
             Result->SetStringField(TEXT("error"), TEXT("renderer attribute missing"));
             TArray<TSharedPtr<FJsonValue>> Variables;
@@ -248,7 +255,7 @@ FString UST01cRuntimeProbe::ReadParticles(UNiagaraComponent* Component)
             P->SetArrayField(TEXT("color"), Numbers({ Col.R, Col.G, Col.B, Col.A }));
             P->SetArrayField(TEXT("size"), Numbers({ Sz.X, Sz.Y }));
             P->SetNumberField(TEXT("rotation"), Rotation.Get(i));
-            P->SetNumberField(TEXT("subImage"), SubImage.Get(i));
+            if (SubImage.IsValid()) P->SetNumberField(TEXT("subImage"), SubImage.Get(i)); // only emitters with a SubUV module carry SubImageIndex
             if (Velocity.IsValid()) { auto V = Velocity.Get(i); P->SetArrayField(TEXT("velocity"), Numbers({ V.X, V.Y, V.Z })); }
             if (Age.IsValid()) P->SetNumberField(TEXT("age"), Age.Get(i));
             if (Lifetime.IsValid()) P->SetNumberField(TEXT("lifetime"), Lifetime.Get(i));
@@ -267,11 +274,11 @@ FString UST01cRuntimeProbe::PrepareCapture(UNiagaraComponent* Component)
     if (!Component || !Allowed(Component->GetAsset()) || !Component->IsPaused())
         return TEXT("{\"error\":\"paused scoped component required\"}");
     FAssetCompilingManager::Get().FinishAllCompilation();
-    for (const TCHAR* Name : { TEXT("T_FlameUV_2"), TEXT("T_Smoke_1") })
+    // Textures come from the configured spec's capture.textures.
+    for (const FString& Path : ActiveScope().CaptureTextures)
     {
-        const FString Path = FString::Printf(TEXT("/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/%s.%s"), Name, Name);
         UTexture2D* Texture = LoadObject<UTexture2D>(nullptr, *Path);
-        if (!Texture) return TEXT("{\"error\":\"pilot texture missing\"}");
+        if (!Texture) return FString::Printf(TEXT("{\"error\":\"capture texture missing: %s\"}"), *Path);
         Texture->SetForceMipLevelsToBeResident(60.0f);
         Texture->WaitForStreaming();
     }

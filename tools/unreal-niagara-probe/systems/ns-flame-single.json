@@ -57,5 +57,24 @@
       "a",
       "b"
     ]
+  },
+  "capture": {
+    "dt": 0.016666666666666666,
+    "lastStep": 240,
+    "imageSteps": [30, 60, 120, 180, 240],
+    "linearStep": 120,
+    "imageSize": 512,
+    "cameras": [
+      { "name": "front", "yaw": 0, "pitch": 0 },
+      { "name": "oblique", "yaw": 45, "pitch": 20 },
+      { "name": "side", "yaw": 90, "pitch": 0 }
+    ],
+    "cameraTarget": [0, 0, 100],
+    "cameraDistance": 500,
+    "orthoWidth": 400,
+    "textures": [
+      "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_2",
+      "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1"
+    ]
   }
 }

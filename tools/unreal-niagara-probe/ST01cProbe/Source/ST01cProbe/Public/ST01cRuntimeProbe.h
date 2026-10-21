@@ -28,6 +28,9 @@ public:
     UFUNCTION(BlueprintCallable, Category="ST01c")
     static FString ReadCompiledSystem(UNiagaraSystem* System, const FString& SpecJson);
 
+    // ReadParticles, PrepareCapture and ReadColorTarget accept only the system the last
+    // successful ConfigurePilot/ConfigureSystem call configured; PrepareCapture forces the
+    // spec's capture.textures resident (the pilot's two textures after ConfigurePilot).
     UFUNCTION(BlueprintCallable, Category="ST01c")
     static FString ReadParticles(UNiagaraComponent* Component);
 

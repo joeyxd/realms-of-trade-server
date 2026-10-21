@@ -19,6 +19,9 @@ struct FST01cScope
     int32 ExpectedScripts = -1;
     // /Niagara/Enums names whose entries the compiled probe records, in order.
     TArray<FString> SourceEnums;
+    // Object paths (Package.Name) of the capture.textures the capture forces resident.
+    // Empty when the spec has no capture block; the capture script validates the rest of it.
+    TArray<FString> CaptureTextures;
 };
 
 namespace ST01cSpec
@@ -39,6 +42,8 @@ namespace ST01cSpec
         Scope.SeedBase = 6371;
         Scope.ExpectedScripts = 10;
         Scope.SourceEnums = DefaultEnums();
+        const FString TextureRoot = TEXT("/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/");
+        Scope.CaptureTextures = { TextureRoot + TEXT("T_FlameUV_2.T_FlameUV_2"), TextureRoot + TEXT("T_Smoke_1.T_Smoke_1") };
         return Scope;
     }
 
@@ -149,6 +154,38 @@ namespace ST01cSpec
         {
             Out.SourceEnums.Reset();
             if (!CollectStrings(*EnumValues, TEXT("sourceEnums"), Out.SourceEnums, Error)) return false;
+        }
+        // The capture block is optional here (probe-only specs): C++ reads only capture.textures,
+        // the capture script validates every other key. A present block needs a typed textures list.
+        Out.CaptureTextures.Reset();
+        const TSharedPtr<FJsonValue> CaptureValue = Root->TryGetField(TEXT("capture"));
+        if (CaptureValue.IsValid() && !CaptureValue->IsNull())
+        {
+            const TSharedPtr<FJsonObject>* CaptureObject = nullptr;
+            if (CaptureValue->Type != EJson::Object || !CaptureValue->TryGetObject(CaptureObject) || !CaptureObject->IsValid())
+            {
+                Error = TEXT("spec capture must be an object");
+                return false;
+            }
+            const TArray<TSharedPtr<FJsonValue>>* TextureValues = nullptr;
+            const TSharedPtr<FJsonValue> TexturesField = (*CaptureObject)->TryGetField(TEXT("textures"));
+            if (!TexturesField.IsValid() || TexturesField->Type != EJson::Array || !TexturesField->TryGetArray(TextureValues))
+            {
+                Error = TEXT("spec capture.textures must be an array of /Game package paths");
+                return false;
+            }
+            for (const TSharedPtr<FJsonValue>& Value : *TextureValues)
+            {
+                FString TexturePackage;
+                int32 TextureSlash = INDEX_NONE;
+                if (!Value.IsValid() || Value->Type != EJson::String || !Value->TryGetString(TexturePackage)
+                    || !TexturePackage.StartsWith(TEXT("/Game/")) || !TexturePackage.FindLastChar(TEXT('/'), TextureSlash) || TextureSlash + 1 >= TexturePackage.Len())
+                {
+                    Error = TEXT("spec capture.textures must be an array of /Game package paths");
+                    return false;
+                }
+                Out.CaptureTextures.Add(TexturePackage + TEXT(".") + TexturePackage.Mid(TextureSlash + 1));
+            }
         }
         return true;
     }

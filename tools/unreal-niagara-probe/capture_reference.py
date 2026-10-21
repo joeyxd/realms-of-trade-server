@@ -1,7 +1,9 @@
-"""Capture one continuous NS_Flame_Single run at fixed simulation steps.
+"""Capture one continuous Niagara system run at fixed simulation steps.
 
-Run only in the isolated ST01c_Pilot editor project. Outputs are kept under
-.scratch/unreal/reference-capture/<run-id>/ and the destination must be fresh.
+Run only in the isolated ST01c_Pilot editor project with -SystemSpec=<absolute
+systems/*.json> (system, source SHA and the spec capture block) and
+-CaptureRun=<fresh name>. Outputs are kept under .scratch/unreal/<run>/ and the
+destination must be fresh.
 """
 import hashlib
 import json
@@ -19,29 +21,114 @@ unreal.AutomationScheduler = AutomationScheduler
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 PROJECT_FILE = os.path.join(PROJECT_ROOT, ".scratch", "unreal", "ST01c_Pilot.uproject")
-SYSTEM_PATH = "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single"
-SOURCE_SHA256 = "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165"
-DT = 1.0 / 60.0
-LAST_STEP = 240
-IMAGE_STEPS = (30, 60, 120, 180, 240)
-WIDTH = HEIGHT = 512
-CAPTURES = (
-    ("front", 0.0, 0.0),
-    ("oblique", 45.0, 20.0),
-    ("side", 90.0, 0.0),
-)
-CAMERA_TARGET = (0.0, 0.0, 100.0)
-CAMERA_DISTANCE = 500.0
-ORTHO_WIDTH = 400.0
+# Spec the library mode (capture_color.py, capture_depth.py) takes its pilot constants from.
+PILOT_SPEC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "systems", "ns-flame-single.json")
+# The capture block of a spec holds exactly these keys; the set is fixed.
+CAPTURE_KEYS = ("dt", "lastStep", "imageSteps", "linearStep", "imageSize", "cameras",
+                "cameraTarget", "cameraDistance", "orthoWidth", "textures")
 _LIVE_ACTORS = []
+
+
+def _number(value, key, positive=False):
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) \
+            or (positive and value <= 0):
+        raise ValueError("spec %s must be a%s number" % (key, " positive" if positive else " finite"))
+    return float(value)
+
+
+def _integer(value, key, minimum):
+    if isinstance(value, bool) or not isinstance(value, int) or value < minimum:
+        raise ValueError("spec %s must be an integer >= %d" % (key, minimum))
+    return value
+
+
+def load_capture_spec(path):
+    """Read and validate a systems/*.json spec for the capture. Every problem raises
+    ValueError naming the offending key (capture keys are named capture.<key>)."""
+    with open(path, "r", encoding="utf-8") as stream:
+        spec = json.load(stream)
+    if not isinstance(spec, dict) or spec.get("schema") != "st01c-system-spec/v1":
+        raise ValueError("spec schema must be st01c-system-spec/v1")
+    package = spec.get("systemPackage")
+    if not isinstance(package, str) or not package.startswith("/Game/"):
+        raise ValueError("spec systemPackage must be a /Game package path")
+    sha = spec.get("sourceSystemSha256")
+    if not isinstance(sha, str) or not re.fullmatch(r"[0-9a-f]{64}", sha):
+        raise ValueError("spec sourceSystemSha256 must be 64 lowercase hex characters")
+    block = spec.get("capture")
+    if not isinstance(block, dict):
+        raise ValueError("spec capture must be an object with the keys: " + ", ".join(CAPTURE_KEYS))
+    for key in block:
+        if key not in CAPTURE_KEYS:
+            raise ValueError("spec capture.%s is not a capture key" % key)
+    for key in CAPTURE_KEYS:
+        if key not in block:
+            raise ValueError("spec capture.%s is required" % key)
+    dt = _number(block["dt"], "capture.dt", True)
+    last_step = _integer(block["lastStep"], "capture.lastStep", 1)
+    image_steps = block["imageSteps"]
+    if not isinstance(image_steps, list) or not image_steps:
+        raise ValueError("spec capture.imageSteps must be a non-empty list of integers")
+    image_steps = tuple(_integer(step, "capture.imageSteps", 1) for step in image_steps)
+    if len(set(image_steps)) != len(image_steps) or max(image_steps) > last_step:
+        raise ValueError("spec capture.imageSteps must be unique and not beyond capture.lastStep")
+    linear_step = _integer(block["linearStep"], "capture.linearStep", 1)
+    if linear_step not in image_steps:
+        raise ValueError("spec capture.linearStep must be one of capture.imageSteps")
+    size = _integer(block["imageSize"], "capture.imageSize", 16)
+    cameras = block["cameras"]
+    if not isinstance(cameras, list) or not cameras:
+        raise ValueError("spec capture.cameras must be a non-empty list of {name, yaw, pitch}")
+    rows = []
+    for camera in cameras:
+        if not isinstance(camera, dict) or sorted(camera) != ["name", "pitch", "yaw"]:
+            raise ValueError("spec capture.cameras entries must be exactly {name, yaw, pitch}")
+        if not isinstance(camera["name"], str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,24}", camera["name"]):
+            raise ValueError("spec capture.cameras name must be 1-24 letters, digits, _ or -")
+        rows.append((camera["name"], _number(camera["yaw"], "capture.cameras yaw"),
+                     _number(camera["pitch"], "capture.cameras pitch")))
+    if len(set(row[0] for row in rows)) != len(rows):
+        raise ValueError("spec capture.cameras names must be unique")
+    target = block["cameraTarget"]
+    if not isinstance(target, list) or len(target) != 3:
+        raise ValueError("spec capture.cameraTarget must be a list of 3 numbers")
+    target = tuple(_number(v, "capture.cameraTarget") for v in target)
+    distance = _number(block["cameraDistance"], "capture.cameraDistance", True)
+    ortho = _number(block["orthoWidth"], "capture.orthoWidth", True)
+    textures = block["textures"]
+    if not isinstance(textures, list):
+        raise ValueError("spec capture.textures must be a list of /Game package paths")
+    for texture in textures:
+        if not isinstance(texture, str) or not re.fullmatch(r"/Game/[A-Za-z0-9_/-]+/[A-Za-z0-9_-]+", texture):
+            raise ValueError("spec capture.textures must be a list of /Game package paths")
+    if len(set(t.rsplit("/", 1)[1] for t in textures)) != len(textures):
+        raise ValueError("spec capture.textures must not repeat a texture name")
+    return {"system_path": package, "source_sha256": sha, "dt": dt, "last_step": last_step,
+            "image_steps": image_steps, "linear_step": linear_step, "size": size, "cameras": tuple(rows),
+            "target": target, "distance": distance, "ortho_width": ortho, "textures": tuple(textures)}
+
+
+def _command_line_value(name):
+    """Value of -name=... from the command line; handles a whole-argument quote and spaces."""
+    line = unreal.SystemLibrary.get_command_line()
+    match = re.search(r'-' + name + '=', line, re.IGNORECASE)
+    if not match:
+        return None
+    rest = line[match.end():]
+    if match.start() > 0 and line[match.start() - 1] == '"':
+        return rest.split('"', 1)[0]
+    if rest.startswith('"'):
+        return rest[1:].split('"', 1)[0]
+    return rest.split()[0] if rest.split() else None
 
 
 def _args():
     raw = unreal.SystemLibrary.get_command_line()
-    options = {}
+    options = {"spec": _command_line_value("SystemSpec")}
     run_id = re.search(r'-CaptureRun=([A-Za-z0-9_-]{1,40})(?:\s|$)', raw)
     if run_id:
-        return {"output": os.path.join(PROJECT_ROOT, '.scratch', 'unreal', run_id.group(1))}
+        options["output"] = os.path.join(PROJECT_ROOT, '.scratch', 'unreal', run_id.group(1))
+        return options
     match = re.search(r'-CaptureOutput=(?:"([^"]+)"|([^\s]+))', raw)
     if match:
         options["output"] = match.group(1) or match.group(2)
@@ -88,13 +175,14 @@ def _cleanup_actors():
     _LIVE_ACTORS = []
 
 
-def _capture_pose(capture_component, label, yaw, pitch, rt, linear_rt, world, output, step):
+def _capture_pose(capture_component, label, yaw, pitch, rt, linear_rt, world, output, step, spec):
     yaw_r = math.radians(yaw)
     pitch_r = math.radians(pitch)
-    target = CAMERA_TARGET
-    offset = (CAMERA_DISTANCE * math.cos(pitch_r) * math.cos(yaw_r),
-              CAMERA_DISTANCE * math.cos(pitch_r) * math.sin(yaw_r),
-              CAMERA_DISTANCE * math.sin(pitch_r))
+    target = spec["target"]
+    distance = spec["distance"]
+    offset = (distance * math.cos(pitch_r) * math.cos(yaw_r),
+              distance * math.cos(pitch_r) * math.sin(yaw_r),
+              distance * math.sin(pitch_r))
     origin = tuple(target[i] + offset[i] for i in range(3))
     capture_component.set_world_location(unreal.Vector(*origin), False, False)
     capture_component.set_world_rotation(_look_at(origin, target), False, False)
@@ -115,7 +203,7 @@ def _capture_pose(capture_component, label, yaw, pitch, rt, linear_rt, world, ou
     fullpath = os.path.join(output, "frames", filename)
     unreal.RenderingLibrary.export_render_target(world, rt, os.path.dirname(fullpath), filename)
     linear = None
-    if step == 120:
+    if step == spec["linear_step"]:
         capture_component.texture_target = linear_rt
         capture_component.capture_source = unreal.SceneCaptureSource.SCS_SCENE_COLOR_HDR
         capture_component.capture_scene()
@@ -129,7 +217,7 @@ def _capture_pose(capture_component, label, yaw, pitch, rt, linear_rt, world, ou
         capture_component.capture_source = unreal.SceneCaptureSource.SCS_FINAL_COLOR_LDR
     return {"file": os.path.relpath(fullpath, output).replace("\\", "/"), "linear": linear,
             "visible_pixels_gt16": visible_pixels, "capture_attempts": attempt + 1,
-            "step": step, "time_seconds": step * DT, "camera": label,
+            "step": step, "time_seconds": step * spec["dt"], "camera": label,
             "yaw_degrees": yaw, "pitch_degrees": pitch,
             "position_cm": list(origin), "target_cm": list(target),
             "rotation_degrees": {"pitch": capture_component.get_world_rotation().pitch,
@@ -140,6 +228,21 @@ def _capture_pose(capture_component, label, yaw, pitch, rt, linear_rt, world, ou
 
 def run():
     args = _args()
+    # No default system: a missing spec stops here, before anything touches Unreal.
+    spec_path = args.get("spec")
+    if not spec_path:
+        raise RuntimeError("Pass -SystemSpec=<absolute path of systems/*.json>; there is no default system")
+    if not os.path.isabs(spec_path) or not os.path.isfile(spec_path):
+        raise RuntimeError("-SystemSpec must be an absolute path of an existing spec file: " + spec_path)
+    spec = load_capture_spec(spec_path)
+    system_path = spec["system_path"]
+    dt = spec["dt"]
+    last_step = spec["last_step"]
+    image_steps = spec["image_steps"]
+    cameras = spec["cameras"]
+    size = spec["size"]
+    with open(spec_path, "r", encoding="utf-8") as stream:
+        spec_text = stream.read()
     output = os.path.abspath(args["output"])
     if os.path.normcase(os.path.abspath(PROJECT_FILE)) != os.path.normcase(os.path.abspath(unreal.Paths.get_project_file_path())):
         raise RuntimeError("Refusing to capture outside the isolated ST01c_Pilot project")
@@ -155,10 +258,10 @@ def run():
 
     started = time.time()
     world = unreal.EditorLevelLibrary.get_editor_world()
-    system = unreal.load_asset(SYSTEM_PATH)
+    system = unreal.load_asset(system_path)
     if not system:
-        raise RuntimeError("Could not load exact pilot system: " + SYSTEM_PATH)
-    if _copied_package_hash(SYSTEM_PATH) != SOURCE_SHA256:
+        raise RuntimeError("Could not load exact pilot system: " + system_path)
+    if _copied_package_hash(system_path) != spec["source_sha256"]:
         raise RuntimeError('Pilot package hash mismatch')
 
     # Actor is created once and remains active for the entire timeline.
@@ -175,17 +278,17 @@ def run():
     component.set_force_solo(True)
     seed_status = {"available": False, "result": None}
     probe = getattr(unreal, "ST01cRuntimeProbe", None)
-    if probe and hasattr(probe, "configure_pilot"):
-        result = probe.configure_pilot(system)
+    if probe and hasattr(probe, "configure_system"):
+        # The plugin gates ReadParticles and PrepareCapture on this system and its capture textures.
+        result = probe.configure_system(system, spec_text)
         seed_status = {"available": True, "result": json.loads(result) if isinstance(result, str) else result}
         if isinstance(seed_status["result"], dict) and seed_status["result"].get("error"):
             raise RuntimeError("Deterministic seed setup failed: " + str(seed_status["result"]))
     component.set_asset(system)
 
     texture_rows = []
-    texture_root = "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/"
-    for texture_name in ("T_FlameUV_2", "T_Smoke_1"):
-        texture_path = texture_root + texture_name
+    for texture_path in spec["textures"]:
+        texture_name = texture_path.rsplit("/", 1)[1]
         texture = unreal.load_asset(texture_path)
         if not texture:
             raise RuntimeError("Missing renderer texture: " + texture_path)
@@ -208,9 +311,9 @@ def run():
                              "source_copy_package_sha256": _copied_package_hash(texture_path),
                              "sha256": _sha256(export_path)})
 
-    rt = unreal.RenderingLibrary.create_render_target2d(world, WIDTH, HEIGHT, unreal.TextureRenderTargetFormat.RTF_RGBA8,
+    rt = unreal.RenderingLibrary.create_render_target2d(world, size, size, unreal.TextureRenderTargetFormat.RTF_RGBA8,
                                                        unreal.LinearColor(0.0, 0.0, 0.0, 1.0), False, False)
-    linear_rt = unreal.RenderingLibrary.create_render_target2d(world, WIDTH, HEIGHT, unreal.TextureRenderTargetFormat.RTF_RGBA16F,
+    linear_rt = unreal.RenderingLibrary.create_render_target2d(world, size, size, unreal.TextureRenderTargetFormat.RTF_RGBA16F,
                                                        unreal.LinearColor(0.0, 0.0, 0.0, 1.0), False, False)
     capture_actor = unreal.EditorLevelLibrary.spawn_actor_from_class(
         unreal.SceneCapture2D, unreal.Vector(0.0, 0.0, 0.0), unreal.Rotator(0.0, 0.0, 0.0))
@@ -226,7 +329,7 @@ def run():
     capture.capture_on_movement = False
     capture.set_editor_property('show_flag_settings', [unreal.EngineShowFlagsSetting(name, False) for name in
         ('Atmosphere', 'Fog', 'VolumetricFog', 'Cloud', 'DeferredAtmospherePass', 'SkyLighting', 'MotionBlur', 'Vignette')])
-    capture.ortho_width = ORTHO_WIDTH
+    capture.ortho_width = spec["ortho_width"]
     capture.projection_type = unreal.CameraProjectionMode.ORTHOGRAPHIC
     capture.post_process_blend_weight = 1.0
     pp = capture.post_process_settings
@@ -256,8 +359,8 @@ def run():
         yield
     images = []
     particle_steps = []
-    counts = {"simulation_steps": 0, "image_frames_expected": len(IMAGE_STEPS) * len(CAPTURES),
-              "image_frames_written": 0, "particle_steps_expected": LAST_STEP + 1,
+    counts = {"simulation_steps": 0, "image_frames_expected": len(image_steps) * len(cameras),
+              "image_frames_written": 0, "particle_steps_expected": last_step + 1,
               "particle_steps_written": 0}
 
     def read_particles(step):
@@ -273,28 +376,30 @@ def run():
         path = os.path.join(output, "particles", "step_%04d.json" % step)
         with open(path, "w", encoding="utf-8") as stream:
             json.dump(data, stream, ensure_ascii=False, separators=(",", ":"))
-        particle_steps.append({"step": step, "time_seconds": step * DT,
+        particle_steps.append({"step": step, "time_seconds": step * dt,
                                "file": os.path.relpath(path, output).replace("\\", "/"),
                                "particle_count": sum(len(e.get("particles", [])) for e in data.get("emitters", []))})
         counts["particle_steps_written"] += 1
 
     try:
         read_particles(0)
-        baseline = yield from _capture_pose(capture, 'front', 0, 0, rt, linear_rt, world, output, 0)
-        for step in range(1, LAST_STEP + 1):
+        # The baseline is the first camera of the spec at step 0 (empty effect).
+        baseline = yield from _capture_pose(capture, cameras[0][0], cameras[0][1], cameras[0][2],
+                                            rt, linear_rt, world, output, 0, spec)
+        for step in range(1, last_step + 1):
             component.set_paused(False)
-            component.advance_simulation(1, DT)
+            component.advance_simulation(1, dt)
             component.set_paused(True)
             counts["simulation_steps"] += 1
             read_particles(step)
-            if step in IMAGE_STEPS:
+            if step in image_steps:
                 preparation = json.loads(probe.prepare_capture(component))
                 if preparation.get('error'):
                     raise RuntimeError('Capture preparation failed: ' + str(preparation))
                 for _ in range(3):
                     yield
-                for label, yaw, pitch in CAPTURES:
-                    images.append((yield from _capture_pose(capture, label, yaw, pitch, rt, linear_rt, world, output, step)))
+                for label, yaw, pitch in cameras:
+                    images.append((yield from _capture_pose(capture, label, yaw, pitch, rt, linear_rt, world, output, step, spec)))
                     counts["image_frames_written"] += 1
         missing = [row["file"] for row in images if not row["sha256"]]
         if missing:
@@ -302,21 +407,22 @@ def run():
         report = {
             "status": "complete", "visual_acceptance": False, "project": unreal.Paths.get_project_file_path(),
             "capture_script_sha256": _sha256(__file__),
-            "system_path": SYSTEM_PATH, "source_sha256": SOURCE_SHA256,
-            "source_copy_package_sha256": _copied_package_hash(SYSTEM_PATH),
+            "system_path": system_path, "source_sha256": spec["source_sha256"],
+            "source_copy_package_sha256": _copied_package_hash(system_path),
+            "system_spec": {"file": os.path.basename(spec_path), "sha256": _sha256(spec_path)},
             "capture_started_unix": started, "capture_finished_unix": time.time(),
-            "settings": {"fixed_dt_seconds": DT, "steps": LAST_STEP, "duration_seconds": LAST_STEP * DT,
-                         "image_steps": list(IMAGE_STEPS), "views": [x[0] for x in CAPTURES],
-                         "resolution": [WIDTH, HEIGHT], "projection": "orthographic",
-                         "orthographic_width_cm": ORTHO_WIDTH, "target_cm": list(CAMERA_TARGET),
-                         "camera_distance_cm": CAMERA_DISTANCE, "capture_source": "FinalColorLDR",
+            "settings": {"fixed_dt_seconds": dt, "steps": last_step, "duration_seconds": last_step * dt,
+                         "image_steps": list(image_steps), "views": [x[0] for x in cameras],
+                         "resolution": [size, size], "projection": "orthographic",
+                         "orthographic_width_cm": spec["ortho_width"], "target_cm": list(spec["target"]),
+                         "camera_distance_cm": spec["distance"], "capture_source": "FinalColorLDR",
                          "background": "black opaque", "show_only": "pilot Niagara actor",
                          "exposure": "manual 0 bias, physical camera exposure disabled; bloom 0"},
             "seed_configuration": seed_status, "counts": counts,
             "renderer_textures": texture_rows,
             "particle_probe_available": bool(probe and hasattr(probe, "read_particles")),
             "particle_samples": particle_steps, "images": images, "empty_baseline": baseline,
-            "linear_reference": 'RGB SceneColor HDR before tone mapping at step120; Radiance export discards alpha',
+            "linear_reference": 'RGB SceneColor HDR before tone mapping at step%d; Radiance export discards alpha' % spec["linear_step"],
             "limitations": ["LDR tone-mapped output; alpha/transparency is not evidence.",
                             "Camera framing and manual exposure need visual review on the rendered pilot."]}
         with open(os.path.join(output, "capture-report.json"), "w", encoding="utf-8") as stream:
@@ -341,5 +447,12 @@ def capture_reference():
 
 
 # Share bounded capture utilities without scheduling the original experiment.
-if not globals().get('ST01C_LIBRARY_ONLY', False):
+if globals().get('ST01C_LIBRARY_ONLY', False):
+    # Library users (capture_color.py, capture_depth.py) work on the pilot: read their constants
+    # from its spec file. Nothing is taken from the command line here.
+    _PILOT = load_capture_spec(PILOT_SPEC)
+    SYSTEM_PATH = _PILOT["system_path"]
+    SOURCE_SHA256 = _PILOT["source_sha256"]
+    CAPTURES = _PILOT["cameras"]
+else:
     AutomationScheduler.add_latent_command(capture_reference)
