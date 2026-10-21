@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**IC03c, 2026-10-20 — el CLI de emparejamiento muestra el modo cuerpo (sin subir versión; sigue alpha.85):**
+`tools/agent/pair-companion.mjs` exporta `connectedMessage` (con presence concedida anuncia el cuerpo y las órdenes
+sígueme / espera / vuelve; sin ella mantiene el texto "Solo chat") y `presenceMessage`, que traduce cada evento
+`presence_order` a una línea fija en español (orden, estado del cuerpo, motivo de rechazo de tabla; nunca repite un
+why o estado desconocido). `local-openai-mind.mjs` añade una pista en español sobre `args.body` solo cuando el
+contexto trae `required.tools.presence`; sin esa clave el cuerpo de la petición no cambia. El manifest emparejado
+escribe `requestedCapabilities` (lo pedido, no lo concedido; nadie lo lee). Tests: tests/pair-companion-cli.test.mjs
+y uno en local-openai-mind; gate 202/202. Ticket T-1020-102.
+
 **IC03b, 2026-10-20 — el runner emparejado conduce su cuerpo de presencia (alpha.85, protocolo 63 sin cambio):**
 [Entrega](delivery/ic03b-runner-presence.md). Lado runner de IC03a; sin cambios en servidor, SQL ni protocolo.
 `tools/agent/contract.mjs` añade `presence` a NETWORK_CAPABILITIES; PairedCompanion pide `["chat","presence"]` y entra

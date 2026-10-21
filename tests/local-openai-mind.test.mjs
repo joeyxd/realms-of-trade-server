@@ -154,3 +154,14 @@ test('endpoint mind sends the registry key and bound model and converts native u
   assert.equal(adapter.id, 'endpoint-openai-mind-v1');
   assert.ok(!JSON.stringify({ prepared, result, policy: adapter.localResourcePolicy, records: adapter.records }).includes(apiKey));
 });
+
+test('body-mode presence key adds the Spanish body-order hint; without the key the prompt has none', () => {
+  const adapter = createLocalOpenAIMind({ baseUrl: 'http://127.0.0.1:1/v1', modelId: MODEL, thinkingMode: 'disabled',
+    maxCalls: 2, maxOutputTokens: 64, timeoutMs: 1000 });
+  const system = tools => JSON.parse(adapter.prepare(request(adapter, 'Choose wait.', { required: { tools } })).body).messages[0].content;
+  const conversation = { source: { text: 'sígueme' } };
+  const withKey = system({ conversation, presence: null }), without = system({ conversation });
+  assert.match(withKey, /decision\.args\.body/);
+  assert.match(withKey, /"follow", "wait" o "return"/);
+  assert.doesNotMatch(without, /decision\.args\.body/);
+});

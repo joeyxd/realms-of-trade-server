@@ -54,6 +54,34 @@ export function statusMessage(status) {
   return null;
 }
 
+const ORDER_NAMES = { follow: 'seguirte', wait: 'esperar', return: 'volver' };
+const BODY_STATUS = { present: 'presente en el mundo', resting: 'descansando', recovery: 'recuperándose', unavailable: 'no disponible' };
+const ORDER_WHY = { conflict: 'el cuerpo cambió mientras tanto y no se aplicó; inténtalo de nuevo', paced: 'diste demasiadas órdenes seguidas; espera un momento', superseded: 'una orden más reciente la reemplazó',
+  unavailable: 'el cuerpo no está disponible', closed: 'la sesión ya se cerró', timeout: 'se agotó el tiempo de espera', busy: 'otra orden seguía en curso' };
+const own = (o, k) => { const d = Object.getOwnPropertyDescriptor(o, k); return d && Object.hasOwn(d, 'value') ? d : null; };
+const plain = o => !!o && typeof o === 'object' && !Array.isArray(o) && Object.getPrototypeOf(o) === Object.prototype;
+
+export function connectedMessage(result, modelId) {
+  const model = modelId ?? 'qwen3.8-flash-next-coder-iq1_m';
+  if (Array.isArray(result?.capabilities) && result.capabilities.includes('presence'))
+    return `Conectado: ${result.name}. Tu compañero tiene cuerpo en el mundo y obedece "sígueme", "espera" y "vuelve" en el chat (el servidor valida cada orden); modelo ${model}. Escribe r y Enter para actualizar contexto; Ctrl+C para detener.`;
+  return `Conectado: ${result.name}. Solo chat; modelo ${model}. Escribe r y Enter para actualizar contexto; Ctrl+C para detener.`;
+}
+
+export function presenceMessage(event) {
+  if (!plain(event) || !own(event, 'type') || event.type !== 'presence_order') return null;
+  const dataD = own(event, 'data');
+  if (!dataD || !plain(dataD.value)) return null;
+  const data = dataD.value, op = own(data, 'op')?.value, ok = own(data, 'ok')?.value, why = own(data, 'why')?.value;
+  const presence = own(data, 'presence')?.value, st = plain(presence) ? own(presence, 'status')?.value : undefined;
+  const status = typeof st === 'string' && Object.hasOwn(BODY_STATUS, st) ? BODY_STATUS[st] : null;
+  if (op === 'load') return ok === true ? (status ? `Estado del cuerpo: ${status}.` : null) : ok === false ? 'No se pudo leer el estado del cuerpo de tu compañero.' : null;
+  if (typeof op !== 'string' || !Object.hasOwn(ORDER_NAMES, op)) return null;
+  if (ok === true) return `Tu compañero acepta ${ORDER_NAMES[op]}${status ? `; cuerpo ${status}` : ''}.`;
+  if (ok === false) return `Tu compañero no pudo ${ORDER_NAMES[op]}: ${typeof why === 'string' && Object.hasOwn(ORDER_WHY, why) ? ORDER_WHY[why] : 'no se pudo completar la orden'}.`;
+  return null;
+}
+
 async function main() {
   let options;
   try { options = argumentsOf(process.argv.slice(2)); }
@@ -62,14 +90,14 @@ async function main() {
   try { companion = new PairedCompanion({ ...options, onStatus: status => {
     const message = statusMessage(status);
     if (message) process.stdout.write(`${message}\n`);
-  } }); }
+  }, onFeedback: event => { const m = presenceMessage(event); if (m) process.stdout.write(m + '\n'); } }); }
   catch { process.stderr.write('Opciones de emparejamiento inválidas. Revisa la URL segura, el modelo y la dirección local.\n'); process.exitCode = 2; return; }
   let code;
   try { code = await privateLine(process.stdin, process.stdout); }
   catch (error) { process.stderr.write(error.message === 'private_terminal_required' ? 'Se requiere una terminal interactiva para ocultar el código.\n' : 'Emparejamiento cancelado.\n'); process.exitCode = 2; return; }
   const result = await companion.start(code); code = '';
   if (!result.ok) { process.stderr.write('No se pudo iniciar la sesión emparejada. Revisa el código, el control del compañero y la conexión local.\n'); process.exitCode = 1; await companion.close(); return; }
-  process.stdout.write(`Conectado: ${result.name}. Solo chat; modelo ${options.modelId ?? 'qwen3.8-flash-next-coder-iq1_m'}. Escribe r y Enter para actualizar contexto; Ctrl+C para detener.\n`);
+  process.stdout.write(connectedMessage(result, options.modelId) + '\n');
   const stop = () => { companion.close(); process.exitCode = 0; };
   emitKeypressEvents(process.stdin);
   const onCommand = async (text, key = {}) => {

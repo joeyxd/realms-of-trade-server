@@ -183,7 +183,7 @@ export class PairedCompanion {
         provider: { kind: 'loopback-openai-compatible', ...this.#policy, apiKey: null },
         serverBinding: { ownerId: scope.ownerId, characterId: scope.characterId, worldId: scope.worldId,
           configurationRevision: record.configuration.revision, controlRevision: record.control.revision },
-        capabilities: ['chat', 'presence'], activated: true }, null, 2) + '\n', { mode: 0o600 });
+        requestedCapabilities: ['chat', 'presence'], activated: true }, null, 2) + '\n', { mode: 0o600 });
       const budgetExpiresAtMs = Date.now() + MAX_MINUTES * 60_000;
       await mkdir(path.join(dir, 'resource-budget'));
       budget = await LocalResourceBudget.initialize({ directory: path.join(dir, 'resource-budget'), scope,

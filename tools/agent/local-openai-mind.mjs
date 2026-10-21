@@ -30,7 +30,9 @@ function buildMind({ transport, localResourcePolicy, modelId, thinkingMode, maxO
       !request.context || request.maxOutputTokens !== maxOutputTokens) throw new TypeError('invalid_local_mind_request');
     const conversation = request.context.required?.tools?.conversation;
     const maxReply = Math.min(240, request.context.required?.tools?.chat?.config?.maxLength ?? 240);
-    const channelRules = conversation ? ` El mensaje seleccionado está en context.required.tools.conversation.source.text. Responde a ese mensaje. Si respondes, decision.args.text debe ser una sola línea de 1 a ${maxReply} caracteres: breve, sin saltos de línea ni espacios al principio o al final.` : '';
+    const bodyHint = conversation && request.context.required.tools && typeof request.context.required.tools === 'object' && Object.hasOwn(request.context.required.tools, 'presence')
+      ? ' Si el dueño te pide que lo sigas (sígueme), que esperes (espera) o que vuelvas (vuelve), añade decision.args.body con "follow", "wait" o "return"; es solo una propuesta que el servidor valida y puede rechazar, no digas que tu cuerpo ya se movió.' : '';
+    const channelRules = conversation ? ` El mensaje seleccionado está en context.required.tools.conversation.source.text. Responde a ese mensaje. Si respondes, decision.args.text debe ser una sola línea de 1 a ${maxReply} caracteres: breve, sin saltos de línea ni espacios al principio o al final.${bodyHint}` : '';
     return { model: modelId, messages: [
       { role: 'system', content: request.instructions + '\n' + LANGUAGE + channelRules + '\nJSON schema: ' + JSON.stringify(request.responseSchema) },
       { role: 'user', content: JSON.stringify({ context: request.context }) },
