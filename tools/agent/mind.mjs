@@ -255,7 +255,8 @@ export class AgentMind {
     // A rate-derived charge is not a provider invoice. Unknown usage keeps its full durable hold.
     if (this.#nativeMetering && !settlement.ok) { this.#finish(flight, { ok: false, why: 'native_usage_unavailable' }); return; }
     if (settlement.overrun) { this.#finish(flight, { ok: false, why: 'provider_limit_overrun' }); return; }
-    const decision = parseDecision(response?.text, this.#limits.maxResponseBytes, flight.mode, { body: flight.body });
+    const decision = parseDecision(response?.text, this.#limits.maxResponseBytes, flight.mode,
+      { body: flight.body, world: snapshot.required?.observation?.confirmed?.world });
     if (!decision) { this.#finish(flight, { ok: false, why: 'invalid_decision' }); return; }
     const outputTokens = this.#nativeMetering ? settlement.entry.usage.outputTokens : this.#adapter.countText(response.text);
     if (!integer(outputTokens) || outputTokens > this.#limits.maxOutputTokens) {
@@ -347,7 +348,8 @@ export class AgentMind {
         return;
       }
       // The body order is returned, never executed here: it rides only on an accepted reply.
-      const body = flight.body && action.ok === true && decision.args.body ? { body: decision.args.body } : {};
+      const body = flight.body && action.ok === true && decision.args.body ? { body: decision.args.body,
+        ...(decision.args.body === 'gather' ? { node: decision.args.node } : {}) } : {};
       this.#finish(flight, { ok: action.ok === true, ...(action.ok ? {} : { why: action.why ?? 'chat_rejected' }), action, ...body });
       return;
     }

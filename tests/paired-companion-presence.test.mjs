@@ -16,6 +16,8 @@ import { AgentNetworkRunner } from '../tools/agent/network-runner.mjs';
 import { PairedCompanion, claimPairCode } from '../tools/agent/paired-companion.mjs';
 import { PresenceDriver, PRESENCE_PACING } from '../tools/agent/presence-driver.mjs';
 import { NETWORK_CAPABILITIES, validGrant } from '../tools/agent/contract.mjs';
+import { presenceAnchor, presenceWorkPoint, pointOnRouteReason } from '../server/companionPresencePolicy.mjs';
+import { RESOURCE_KINDS } from '../src/data/resources.js';
 import { CONVERSATION_BODY_INSTRUCTION, CONVERSATION_RESPONSE_SCHEMA, CONVERSATION_BODY_RESPONSE_SCHEMA,
   parseDecision } from '../tools/agent/mind-contract.mjs';
 
@@ -333,7 +335,7 @@ test('(b) an owner chat answered with reply text and body follow orders the body
   assert.equal(model.requests.length, 1, 'one model request for one owner message');
   const system = model.requests[0].messages[0].content;
   assert.ok(system.includes(CONVERSATION_BODY_INSTRUCTION), 'body mode adds its instruction sentence');
-  assert.ok(system.includes('"enum":["follow","wait","return"]'), 'body mode selects the body schema');
+  assert.ok(system.includes('"enum":["follow","wait","return","gather"]'), 'body mode selects the body schema');
   const context = JSON.parse(model.requests[0].messages[1].content).context;
   assert.deepEqual(context.required.tools.capabilities, ['chat', 'presence']);
   assert.deepEqual(Object.keys(context.required.tools.presence).sort(), ['order', 'reason', 'revision', 'status']);
@@ -391,7 +393,7 @@ test('(e) flag off: adopted chat only, a body key in the reply is rejected and n
   assert.equal(model.requests.length, 1);
   const system = model.requests[0].messages[0].content;
   assert.equal(system.includes(CONVERSATION_BODY_INSTRUCTION), false);
-  assert.equal(system.includes('"enum":["follow","wait","return"]'), false);
+  assert.equal(system.includes('"enum":["follow","wait","return","gather"]'), false);
   assert.equal(JSON.parse(model.requests[0].messages[1].content).context.required.tools.presence, undefined);
   await pause(100);
   assert.equal(owner.messages.some(m => m.t === MSG.CHAT_MESSAGE && m.text === 'Te sigo.'), false);
@@ -421,4 +423,81 @@ test('(f) pairing revoked while an order is pending: the order resolves closed a
   const outcome = presenceEvents(events, 'presence_order').find(event => event.op === 'follow');
   assert.deepEqual([outcome.ok, outcome.why], [false, 'closed']);
   assert.equal(r.log.some(message => message.op === 'follow'), false, 'the held order never reached the server');
+});
+
+// IC05a: a gather body order names a wood or stone node of the observed world; the server stays the authority.
+const worldWith = (...nodes) => ({ hours: 12, truncated: false, water: null, bench: null,
+  nodes: nodes.map(([nodeId, kind]) => ({ ref: { nodeId }, kind, position: { x: 1, y: 0, z: 1 }, ready: true, wait: 0 })) });
+test('IC05a parse: gather keeps a wood or stone node of confirmed.world and drops any other node, keeping the reply', () => {
+  const reply = (args) => JSON.stringify({ v: 1, decision: { type: 'reply', args } });
+  const world = worldWith(['coast-4', 'wood'], ['stone-1030', 'stone'], ['palm-121', 'palm']);
+  const body = { body: true, world };
+  assert.deepEqual(parseDecision(reply({ text: 'Voy.', body: 'gather', node: 'coast-4' }), 8192, 'conversation', body),
+    { type: 'reply', args: { text: 'Voy.', body: 'gather', node: 'coast-4' } });
+  assert.deepEqual(parseDecision(reply({ text: 'Voy.', body: 'gather', node: 'stone-1030' }), 8192, 'conversation', body).args.node, 'stone-1030');
+  for (const node of ['palm-121', 'coast-99', 'bad id'])
+    assert.deepEqual(parseDecision(reply({ text: 'Voy.', body: 'gather', node }), 8192, 'conversation', body),
+      { type: 'reply', args: { text: 'Voy.' } }, `${node}: the body proposal is dropped, the reply survives`);
+  assert.deepEqual(parseDecision(reply({ text: 'Voy.', body: 'gather', node: 'coast-4' }), 8192, 'conversation', { body: true }),
+    { type: 'reply', args: { text: 'Voy.' } }, 'no observed world, no gather');
+  assert.equal(parseDecision(reply({ text: 'Voy.', body: 'gather' }), 8192, 'conversation', body), null, 'gather requires args.node');
+  assert.equal(parseDecision(reply({ text: 'Voy.', body: 'follow', node: 'coast-4' }), 8192, 'conversation', body), null, 'only gather takes a node');
+  assert.equal(parseDecision(reply({ text: 'Voy.', node: 'coast-4' }), 8192, 'conversation', body), null);
+  assert.equal(parseDecision(reply({ text: 'Voy.', body: 'gather', node: 'coast-4' }), 8192, 'conversation', { world }), null, 'chat-only mode is unchanged');
+  const args = CONVERSATION_BODY_RESPONSE_SCHEMA.properties.decision.oneOf[1].properties.args;
+  assert.deepEqual(args.properties.body.enum, ['follow', 'wait', 'return', 'gather']);
+  assert.deepEqual(args.required, ['text']);
+  assert.equal(args.properties.node.type, 'string');
+  assert.match(CONVERSATION_BODY_INSTRUCTION, /confirmed\.world/); assert.match(CONVERSATION_BODY_INSTRUCTION, /args\.node/);
+});
+
+test('IC05a driver: gather sends its node with the revision of its own load; malformed gathers send nothing', async () => {
+  const calls = [];
+  const driver = new PresenceDriver({ ...fakeTiming(), request: async (op, options) => {
+    calls.push({ op, options });
+    return { ok: true, why: null, enabled: true, presence: { status: 'present', order: op === 'load' ? 'wait' : op, revision: 5, reason: null } };
+  } });
+  for (const [op, node] of [['gather', undefined], ['gather', 'bad id'], ['gather', 7], ['follow', 'coast-4']])
+    assert.deepEqual(await driver.order(op, node), { ok: false, why: 'invalid_request' }, `${op} ${node}`);
+  assert.equal(calls.length, 0);
+  assert.equal((await driver.order('gather', 'coast-4')).presence.order, 'gather');
+  assert.deepEqual(calls, [{ op: 'load', options: {} }, { op: 'gather', options: { expectedRevision: 5, node: 'coast-4' } }]);
+  assert.deepEqual((await driver.order('follow')).ok, true);
+  assert.deepEqual(calls.at(-1), { op: 'follow', options: { expectedRevision: 5 } });
+});
+
+test('IC05a an owner chat answered with body gather walks the body to the node and gathers; the runner stays healthy', { timeout: 60000 }, async t => {
+  const r = await room(t), { owner } = await ownerCompanion(r);
+  const w = r.app.game.server.world, anchor = presenceAnchor(w);
+  // Found by script: the nearest ready wood or stone node beyond the old 12 zone that the body perceives (24),
+  // with a clear straight route inside the 30 zone.
+  const far = n => Math.hypot(n.x - anchor.x, n.z - anchor.z);
+  const node = [...w.resources.nodes.values()].filter(n => ['wood', 'stone'].includes(n.kind) && n.readyTick <= w.tick &&
+    far(n) > 12 && far(n) <= 22 && presenceWorkPoint(w, n, anchor) &&
+    pointOnRouteReason(w, anchor.x, anchor.z, presenceWorkPoint(w, n, anchor).x, presenceWorkPoint(w, n, anchor).z) === null)
+    .sort((a, b) => far(a) - far(b))[0];
+  assert.ok(node, 'a perceivable wood or stone node');
+  const entry = r.app.game.companionPresence.entries.get(OWNER), good = RESOURCE_KINDS[node.kind].good;
+  const before = w.profiles.get(entry.body.entity).eco.pack.goods[good] ?? 0;
+  const { model, events, captured } = await paired(t, r, owner, { decision: { type: 'reply', args: { text: 'Voy por ello.', body: 'gather', node: node.id } } });
+  await until(() => presenceEvents(events).find(event => event.op === 'load' && event.ok), 'first load');
+  await until(() => captured.runner.observation?.confirmed?.world?.nodes.some(n => n.ref.nodeId === node.id), 'the node in the observed world');
+  await ownerSay(owner, 'owner-gather-1', 'Brisa, recoge madera.');
+  await owner.next(m => m.t === MSG.CHAT_MESSAGE && m.text === 'Voy por ello.');
+  const order = await until(() => presenceEvents(events, 'presence_order').find(event => event.op === 'gather'), 'gather outcome');
+  assert.equal(order.ok, true, JSON.stringify(order));
+  assert.equal(order.presence.order, 'gather');
+  const sent = r.log.find(message => message.op === 'gather');
+  assert.deepEqual(Object.keys(sent).sort(), ['expectedRevision', 'node', 'op', 'requestId', 't']);
+  assert.equal(sent.node, node.id);
+  const system = model.requests[0].messages[0].content;
+  assert.ok(system.includes(CONVERSATION_BODY_INSTRUCTION) && system.includes('"gather"') && system.includes('recojas o juntes madera o piedra'));
+  await until(() => entry.order === 'wait', 'the body finished', 30000);
+  assert.equal(entry.reason, 'gathered');
+  assert.equal(w.profiles.get(entry.body.entity).eco.pack.goods[good], before + 1);
+  assert.equal(captured.runner.state, 'ready', 'the runner stays connected after the body gather');
+  assert.deepEqual(captured.closes, []);
+  const loaded = await captured.driver.load();
+  assert.equal(loaded.ok, true, JSON.stringify(loaded));
+  assert.deepEqual([loaded.presence.order, loaded.presence.reason], ['wait', 'gathered']);
 });

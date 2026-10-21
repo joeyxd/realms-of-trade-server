@@ -97,6 +97,41 @@ test('IC03b presence requests: exact wire keys, receipt matching and the adopted
   assert.deepEqual(reported, [['load', true, null], ['follow', false, 'conflict'], ['wait', false, 'invalid_receipt']]);
 });
 
+// IC05a: gather carries exactly one node id; its receipts (order gather) are adopted like the other orders.
+test('IC05a presence gather: the node key only for gather, local validation and gather receipts', async (t) => {
+  const { client, transport, feedback } = await welcomed(t);
+  for (const options of [{ expectedRevision: 1 }, { expectedRevision: 1, node: '' }, { expectedRevision: 1, node: 'bad id' },
+    { expectedRevision: 1, node: 'x'.repeat(65) }, { expectedRevision: 1, node: 7 }, { expectedRevision: -1, node: 'coast-4' },
+    { expectedRevision: 1, node: 'coast-4', extra: true }, { node: 'coast-4' }])
+    assert.deepEqual(await client.presence('gather', options), { ok: false, why: 'invalid_request' }, JSON.stringify(options));
+  assert.deepEqual(await client.presence('follow', { expectedRevision: 1, node: 'coast-4' }), { ok: false, why: 'invalid_request' },
+    'only gather names a node');
+  assert.equal(transport.sent.some((m) => m.t === MSG.AGENT_COMPANION_PRESENCE), false);
+  const gather = client.presence('gather', { expectedRevision: 7, node: 'coast-4' });
+  const sent = transport.sent.at(-1);
+  assert.deepEqual(Object.keys(sent), ['t', 'requestId', 'op', 'expectedRevision', 'node']);
+  assert.deepEqual([sent.op, sent.expectedRevision, sent.node], ['gather', 7, 'coast-4']);
+  const gathering = { characterKey: SCOPE.characterId, name: 'Brisa', status: 'present', order: 'gather', revision: 8, entity: 12, reason: null };
+  transport.deliver(presenceReceipt(sent.requestId, { presence: gathering }));
+  assert.deepEqual(await gather, { ok: true, why: null, enabled: true, presence: gathering });
+  assert.deepEqual(client.presenceState, { status: 'present', order: 'gather', revision: 8, reason: null });
+  // A later receipt reports the outcome as a reason; new refusal codes are plain why codes.
+  const load = client.presence('load');
+  transport.deliver(presenceReceipt(transport.sent.at(-1).requestId, { presence: { ...gathering, order: 'wait', revision: 9, reason: 'gathered' } }));
+  assert.equal((await load).presence.reason, 'gathered');
+  const refused = client.presence('gather', { expectedRevision: 9, node: 'palm-121' });
+  transport.deliver(presenceReceipt(transport.sent.at(-1).requestId, { ok: false, why: 'unsupported_node',
+    presence: { ...gathering, order: 'wait', revision: 9, reason: 'gathered' } }));
+  assert.deepEqual([(await refused).ok, (await refused).why], [false, 'unsupported_node']);
+  // An unknown order value stays invalid.
+  const forged = client.presence('load');
+  transport.deliver(presenceReceipt(transport.sent.at(-1).requestId, { presence: { ...gathering, order: 'harvest' } }));
+  assert.deepEqual(await forged, { ok: false, why: 'invalid_receipt' });
+  assert.equal(client.presenceState.revision, 9);
+  const reported = feedback.filter((event) => event.type === 'presence').map((event) => [event.data.op, event.data.ok, event.data.why]);
+  assert.deepEqual(reported, [['gather', true, null], ['load', true, null], ['gather', false, 'unsupported_node'], ['load', false, 'invalid_receipt']]);
+});
+
 test('IC03b presence requests time out, close with the socket, and need the adopted grant', async (t) => {
   const slow = await welcomed(t, { presenceTimeoutMs: 20 });
   assert.deepEqual(await slow.client.presence('load'), { ok: false, why: 'timeout' });

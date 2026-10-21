@@ -4,7 +4,7 @@ import { C } from '../src/sim/ecs.js';
 import { beamSeg, segDist } from '../src/sim/projectiles.js';
 import { canStand, moveWithCollision } from '../src/sim/systems/movement.js';
 
-export const PRESENCE_RADIUS = 12;
+export const PRESENCE_RADIUS = 30; // IC05a: the port work zone (was 12).
 export const PRESENCE_ANCHOR_RADIUS = 3;
 const DANGER_RADIUS = 24;
 const ROUTE_STEP = 0.15;
@@ -116,7 +116,7 @@ export function presenceSafety(world, entity, { anchor = false, fullHealth = fal
   return null;
 }
 
-function pointOnRouteReason(world, x0, z0, x1, z1) {
+export function pointOnRouteReason(world, x0, z0, x1, z1) {
   const length = distance(x0, z0, x1, z1), steps = Math.max(1, Math.ceil(length / ROUTE_STEP));
   for (let i = 0; i <= steps; i++) {
     const t = i / steps;
@@ -125,6 +125,15 @@ function pointOnRouteReason(world, x0, z0, x1, z1) {
     if (!canStand(world, x, z, tuning.player.radius)) return 'blocked';
   }
   return null;
+}
+
+// IC05a: where a body stands to work a node: the allowed point nearest to `from`, the node itself or
+// one within 1.8 of it, so that stopping within 2 of the node stays inside the 2.5 reach.
+export function presenceWorkPoint(world, node, from) {
+  const points = [{ x: node.x, z: node.z }];
+  for (const r of [1, 1.8]) for (let i = 0; i < 8; i++) points.push({ x: node.x + r * Math.cos(i * Math.PI / 4), z: node.z + r * Math.sin(i * Math.PI / 4) });
+  return points.filter(p => presencePointAllowed(world, p.x, p.z))
+    .sort((a, b) => distance(from.x, from.z, a.x, a.z) - distance(from.x, from.z, b.x, b.z))[0] ?? null;
 }
 
 // Moves one ordinary walking step. Invalid collision resolution is rolled back to the

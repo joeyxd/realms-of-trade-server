@@ -8,7 +8,9 @@ export const LAB_LIMITS = Object.freeze({
 export const LAB_CAPABILITIES = Object.freeze(['move', 'aim', 'attack_pve']);
 export const NETWORK_CAPABILITIES = Object.freeze([...LAB_CAPABILITIES, 'chat', 'body_pve', 'inventory_read', 'market_read', 'trade_buy', 'trade_sell', 'presence']);
 // IC03b: an attached mind may only ask the server to run these presence orders on its body.
-export const PRESENCE_ORDERS = Object.freeze(['follow', 'wait', 'return']);
+// IC05a: gather names one wood or stone node id (the server validates the node, zone and yield).
+export const PRESENCE_ORDERS = Object.freeze(['follow', 'wait', 'return', 'gather']);
+export const PRESENCE_NODE = /^[A-Za-z0-9:_-]{1,64}$/;
 export const MOVEMENT_TYPES = Object.freeze(['go_to', 'follow', 'keep_distance']);
 
 const object = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);

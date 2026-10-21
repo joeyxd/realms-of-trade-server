@@ -1532,9 +1532,18 @@ export class GameHost {
     if (this.unsavedProfiles.has(sock.id) && !this.closing) this.fenceWorld('profile_unflushed');
   }
 
+  // IC05a: a presence body's own command enters the lane a player's CMD takes on this host: the economic
+  // authority when it owns the command, else the LocalServer. The body has no socket; results reach sendTo.
+  residentCommand(id, msg) {
+    if (this.closing || this.contentSwitching) return false;
+    if (!this.economicAuthority?.handle({ id }, msg)) this.server.receive(id, msg);
+    return true;
+  }
+
   sendTo(id, msg) {
     let sock = this.sockets.get(id);
     if (!sock) {
+      this.companionPresence?.observe(id, msg); // IC05a: the body's own gather results.
       // L03g-b: a presence body's own stream goes to its attached mind; with none it is dropped as before.
       sock = this.companionPresence?.minds.get(id);
       if (!sock || this.sockets.get(sock.id) !== sock) return;

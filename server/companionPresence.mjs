@@ -1,14 +1,35 @@
 // Safe-port presence owns the body, independently of controller grants and provider work.
 import { randomUUID } from 'node:crypto';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
+import { DT, TICK_RATE } from '../src/data/tuning.js';
+import { TRADE } from '../src/sim/systems/trade.js';
 import { attachProfile, detachProfile } from '../src/sim/systems/inventory.js';
-import { presenceAnchor, presencePointAllowed, presenceSafety, advancePresence } from './companionPresencePolicy.mjs';
+import { presenceAnchor, presencePointAllowed, presenceSafety, advancePresence, presenceWorkPoint, pointOnRouteReason } from './companionPresencePolicy.mjs';
 
 const REQUEST = /^[A-Za-z0-9:_-]{1,100}$/;
-const OPS = ['load', 'join', 'follow', 'wait', 'return', 'retire'];
+const NODE = /^[A-Za-z0-9:_-]{1,64}$/;
+const OPS = ['load', 'join', 'follow', 'wait', 'return', 'retire', 'gather'];
 // L03g-b: an attached mind may read its body and give the safe orders; join and retire stay with the owner.
-const MIND_OPS = ['load', 'follow', 'wait', 'return'];
-const exact = (v, keys) => v && typeof v === 'object' && !Array.isArray(v) &&
+const MIND_OPS = ['load', 'follow', 'wait', 'return', 'gather'];
+// IC05a: one tool-free, single-action gather per order; a busy lane is retried 3 times, 1 s apart.
+const GATHER_KINDS = ['wood', 'stone'];
+const GATHER_RETRIES = 3, GATHER_TIMEOUT = 10 * TICK_RATE;
+// Only safety reasons clear by themselves; outcomes (blocked, gathered, full, ...) stay until the next order.
+const TRANSIENT = ['dead', 'outside_zone', 'danger'];
+const outcomeWhy = why => {
+  const r = why === 'node' ? 'no_node' : String(why).replace(/[A-Z]/g, c => `_${c.toLowerCase()}`);
+  return /^[a-z0-9_]{1,64}$/.test(r) ? r : 'refused';
+};
+// Every route sample is tested against the zone alone: an earlier blocked sample must not hide a later exit.
+const leavesZone = (world, a, b) => {
+  const n = Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.z - a.z) / 0.15));
+  for (let i = 0; i <= n; i++) {
+    const x = a.x + (b.x - a.x) * i / n, z = a.z + (b.z - a.z) * i / n;
+    if (pointOnRouteReason(world, x, z, x, z) === 'outside_zone') return true;
+  }
+  return false;
+};
+const exact =(v, keys) => v && typeof v === 'object' && !Array.isArray(v) &&
   Object.keys(v).length === keys.length && keys.every(k => Object.hasOwn(v, k));
 // Companions belong to the account; a human session's key is its selected character.
 const sessionOwner = session => session.ownerKey ?? session.key;
@@ -153,9 +174,10 @@ export class CompanionPresenceService {
         enabled: this.ready, presence: session || mind ? this.projection(this.entries.get(owner)) : null });
     };
     if (!session && !mind) return reply('forbidden');
-    const keys = message.op === 'load' ? ['t', 'requestId', 'op'] : ['t', 'requestId', 'op', 'expectedRevision'];
+    const keys = message.op === 'load' ? ['t', 'requestId', 'op'] : ['t', 'requestId', 'op', 'expectedRevision', ...(message.op === 'gather' ? ['node'] : [])];
     if (!requestId || !OPS.includes(message.op) || !exact(message, keys) ||
-        (message.op !== 'load' && (!Number.isSafeInteger(message.expectedRevision) || message.expectedRevision < 0))) return reply('invalid_request');
+        (message.op !== 'load' && (!Number.isSafeInteger(message.expectedRevision) || message.expectedRevision < 0)) ||
+        (message.op === 'gather' && (typeof message.node !== 'string' || !NODE.test(message.node)))) return reply('invalid_request');
     if (!this.ready) return reply('unavailable');
     if (mind && (!MIND_OPS.includes(message.op) || !this.mindCurrent(sock))) return reply('forbidden');
     if (this.busy.has(owner) || this.busy.size >= 8 || !this.rate(owner)) return reply('busy');
@@ -193,6 +215,16 @@ export class CompanionPresenceService {
       }
       const why = presenceSafety(world, e.body.entity) || presenceSafety(world, ownerEntity);
       if (why) return why;
+      if (message.op === 'gather') {
+        // IC05a: a ready wood or stone node with a standing point and a straight route inside the zone.
+        const node = world.resources?.nodes.get(message.node), from = { x: world.ecs.x[e.body.entity], z: world.ecs.z[e.body.entity] };
+        if (!node) return 'no_node';
+        if (!GATHER_KINDS.includes(node.kind)) return 'unsupported_node';
+        const point = presenceWorkPoint(world, node, from);
+        if (!point || leavesZone(world, from, point)) return 'outside_zone';
+        if (node.readyTick > world.tick) return 'depleted';
+        e.gather = { node: node.id, point, tries: 0, at: 0, opId: null, sent: 0 };
+      }
       e.order = message.op; e.reason = null; e.stagnant = 0; e.revision++;
       return null;
     });
@@ -307,16 +339,19 @@ export class CompanionPresenceService {
     for (const e of this.entries.values()) {
       if (!e.body || e.operation || e.unavailable) continue;
       const entity = e.body.entity, ecs = w.ecs;
+      // A resident body runs no commands, so its out-of-combat clock advances here as a player's would.
+      ecs.regenT[entity] += DT;
       let reason = presenceSafety(w, entity);
       const owner = e.ownerSock && this.principal(e.ownerSock) === e.ownerSession && h.server.clients.get(e.ownerSock.id)?.entity;
       if (!owner && e.order !== 'return') { e.order = 'return'; e.revision++; }
-      if (!reason && e.order === 'follow') reason = presenceSafety(w, owner);
+      if (!reason && (e.order === 'follow' || e.order === 'gather')) reason = presenceSafety(w, owner);
       if (reason) {
         if (e.reason !== reason) { e.reason = reason; e.revision++; }
         ecs.moveMag[entity] = 0; continue;
       }
-      if (e.reason && e.reason !== 'blocked') { e.reason = null; e.revision++; }
+      if (TRANSIENT.includes(e.reason)) { e.reason = null; e.revision++; }
       if (e.order === 'wait') { ecs.moveMag[entity] = 0; continue; }
+      if (e.order === 'gather') { this.gatherStep(e, w, entity); continue; }
       const target = e.order === 'return' ? presenceAnchor(w) : { x: ecs.x[owner], z: ecs.z[owner] };
       const distance = Math.hypot(target.x - ecs.x[entity], target.z - ecs.z[entity]);
       if (distance <= (e.order === 'return' ? 0.8 : 2)) {
@@ -331,6 +366,46 @@ export class CompanionPresenceService {
       e.stagnant = result.moved > 0.001 ? 0 : (e.stagnant ?? 0) + 1;
       if (result.reason || e.stagnant >= 180) { e.reason = result.reason ?? 'blocked'; e.order = 'wait'; e.revision++; }
     }
+  }
+  // IC05a: walk to the node's work point, settle, then submit one gather through the lane a player uses.
+  gatherStep(e, w, entity) {
+    const ecs = w.ecs, g = e.gather, node = w.resources?.nodes.get(g.node);
+    ecs.moveMag[entity] = 0;
+    if (g.opId) { if (w.tick - g.sent > GATHER_TIMEOUT) this.outcome(e, g, 'unavailable'); return; }
+    if (!node) { this.outcome(e, g, 'node'); return; }
+    if (Math.hypot(node.x - ecs.x[entity], node.z - ecs.z[entity]) > 2) {
+      const result = advancePresence(w, entity, g.point);
+      e.stagnant = result.moved > 0.001 ? 0 : (e.stagnant ?? 0) + 1;
+      if (result.reason || e.stagnant >= 180) { e.reason = result.reason ?? 'blocked'; e.order = 'wait'; e.revision++; }
+      return;
+    }
+    e.stagnant = 0;
+    // The stationary and calm preconditions of resourceCmd; the authority still checks every rule.
+    if (w.tick < g.at || ecs.regenT[entity] < TRADE.calm || Math.hypot(ecs.vx[entity], ecs.vz[entity]) > 1e-6 || ecs.dashT[entity] >= 0 ||
+        ecs.dashBuffer[entity] > 0 || ecs.castK[entity] > 0 || ecs.castLock[entity] > 0 || ecs.atkStage[entity] > 0) return;
+    const opId = `presence-${randomUUID()}`;
+    g.opId = opId; g.sent = w.tick;
+    // Submitted between ticks, where a player's command arrives, never from inside this tick.
+    queueMicrotask(() => this.submit(e, g, opId));
+  }
+  submit(e, g, opId) {
+    const h = this.host, w = h.server.world, node = w.resources?.nodes.get(g.node);
+    if (e.order !== 'gather' || e.gather !== g || g.opId !== opId || !e.body || !node) return;
+    if (presenceSafety(w, e.body.entity)) { g.opId = null; return; }
+    if (!h.residentCommand(e.body.id, { t: MSG.CMD, type: 'resource', op: 'gather', opId, node: node.id, expectedRev: node.rev })) this.outcome(e, g, 'busy');
+  }
+  // host.sendTo hands every message for a socketless body here: the authoritative result of its own gather.
+  observe(id, message) {
+    const ev = message?.t === MSG.EVENT ? message.ev : null;
+    if (ev?.type !== 'resource' && ev?.type !== 'commandDenied') return;
+    const e = [...this.entries.values()].find(row => row.body?.id === id), g = e?.gather;
+    if (!g?.opId || e.order !== 'gather' || ev.to !== e.body.entity || (ev.type === 'resource' && ev.opId !== g.opId)) return;
+    this.outcome(e, g, ev.type === 'commandDenied' ? 'busy' : ev.ok === true ? null : ev.why);
+  }
+  outcome(e, g, why) {
+    g.opId = null;
+    if (why === 'busy' && ++g.tries <= GATHER_RETRIES) { g.at = this.host.server.world.tick + TICK_RATE; return; }
+    e.order = 'wait'; e.reason = why === null ? 'gathered' : outcomeWhy(why); e.stagnant = 0; e.revision++;
   }
   autoRetire(e) {
     if (this.busy.has(e.owner)) return;

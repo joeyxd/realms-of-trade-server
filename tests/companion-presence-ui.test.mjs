@@ -73,3 +73,14 @@ test('disabled host keeps the received state visible and recovery prevents every
     assert.equal(ui.buttons.retire.disabled, true);
   } finally { ui.destroy(); restore(); }
 });
+
+test('IC05a the card labels the gather order in both languages', () => {
+  const { ui, client, restore } = setup();
+  try {
+    const presence = { characterKey: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', name: 'Brisa', status: 'present', order: 'gather', revision: 6, entity: 7, reason: null };
+    client.set({ status: 'ready', enabled: true, presence });
+    assert.match(ui.stateText.textContent, /Orden: recolectar\./);
+    ui.setLanguage('en');
+    assert.match(ui.stateText.textContent, /Order: gather\./);
+  } finally { ui.destroy(); restore(); }
+});

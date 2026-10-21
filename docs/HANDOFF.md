@@ -1,5 +1,22 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**IC05a, 2026-10-21 — el cuerpo del compañero recoge madera y piedra (alpha.89, protocolo 64):**
+[Entrega](delivery/ic05a-companion-gather.md). Sin SQL; versión 0.6.0-alpha.89, `PROTOCOL_VERSION` 64 (el valor de
+orden `gather` es nuevo y los clientes viejos lo rechazan). La zona de presencia pasa de 12 a 30
+(`PRESENCE_RADIUS`, decisión del dueño); el resto del perímetro no cambia. Nueva op `gather` con claves exactas
+`[t, requestId, op, expectedRevision, node]`, para el dueño y para la mente acoplada, con las reglas de `follow` y
+luego `no_node`, `unsupported_node` (solo wood y stone), `outside_zone` (sin punto de trabajo o ruta recta fuera) y
+`depleted`. El cuerpo camina hasta quedar a 2 del nodo, espera quieto y en calma y envía una sola recolección por
+`host.residentCommand`, el mismo carril que la de un jugador: `EconomicAuthority.handle({ id })` con las operaciones
+de recursos activas (commit CAS duradero), `resourceCmd` directo si no. El resultado sale del ack de la autoridad que
+`sendTo` entrega a `companionPresence.observe`: `wait`/`gathered`, `wait`/<motivo>, o `busy` reintentado 3 veces a
+60 ticks y luego `wait`/`busy`. El cuerpo residente no corría su reloj fuera de combate (`regenT` quedaba en 0 y la
+autoridad respondía `combat`): `step()` ahora lo avanza un tick por tick. Runner, mente y CLI: `gather` con `node`,
+`parseDecision` solo lo conserva si el nodo es wood o stone de `confirmed.world` (si no, queda la respuesta sin
+cuerpo), una frase EN y una ES explican `world` y cómo recolectar. Tests: 9 nuevos en companion-presence-gather y
+8 más en los de presencia, runner y CLI. Ticket T-1021-16. Pendiente: textos de la tarjeta que dicen "no habilita
+recolección" y "solo seguir, esperar o volver"; el cliente web no tiene botón de recolectar.
+
 **IC04, 2026-10-21 — la mente del compañero ve el mundo alrededor de su cuerpo (alpha.86):**
 [Entrega](delivery/ic04-observation-v2.md). Sin SQL ni protocolo; versión 0.6.0-alpha.86. `server/agentPerception.mjs` exporta
 `AGENT_WORLD_POLICY` ({v:1, radius 24, maxNodes 16}) y cada SNAPSHOT proyectado al agente gana una clave `world` para su

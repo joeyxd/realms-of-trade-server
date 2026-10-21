@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 63; // L03g-b: a paired mind attaches to the live presence body (grant chat+presence).
+export const PROTOCOL_VERSION = 64; // IC05a: presence gather order
 
 export const MSG = {
   // client -> server
@@ -17,7 +17,7 @@ export const MSG = {
   AGENT_COMPANION_CONFIG: 'agent_companion_config', // private metadata load/save; owner/world come from the admitted session
   AGENT_COMPANION_CREATE: 'agent_companion_create', // private load/create; authenticated principal supplies owner/world
   AGENT_COMPANION_PAIR: 'agent_companion_pair', // private owner load/issue/revoke or pre-admission one-use claim
-  AGENT_COMPANION_PRESENCE: 'agent_companion_presence', // owner load/order, or its attached mind load/follow/wait/return; host chooses identity and anchor
+  AGENT_COMPANION_PRESENCE: 'agent_companion_presence', // owner load/order, or its attached mind load/follow/wait/return/gather; host chooses identity and anchor
   INFERENCE_CONFIG: 'inference_config', // private owner/world configuration only; no provider call or credentials
   AGENT_INVENTORY: 'agent_inventory', // managed pilot read: {requestId,epoch,sessionId}; no account/entity selector
   AGENT_MARKET: 'agent_market', // managed pilot read: {requestId,epoch,sessionId,op,g?,n?,side?}; server selects town

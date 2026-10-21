@@ -1,4 +1,4 @@
-import { PRESENCE_ORDERS } from './contract.mjs';
+import { PRESENCE_ORDERS, PRESENCE_NODE } from './contract.mjs';
 
 // IC03b: paced, latest-wins sender of the presence orders that one owner-message turn produced.
 // It never decides or polls: one load on connect, then load + order (+ one CAS retry) per turn.
@@ -18,15 +18,19 @@ export class PresenceDriver {
   get closed() { return this.#closed; }
   get presence() { return view(this.#presence); }
   load() { return this.#run(null); }
-  order(op) { return PRESENCE_ORDERS.includes(op) ? this.#run(op) : Promise.resolve(this.#report('invalid', fail('invalid_request'))); }
+  // IC05a: gather carries its node id; the other orders carry none.
+  order(op, node) {
+    const valid = PRESENCE_ORDERS.includes(op) && (op === 'gather' ? typeof node === 'string' && PRESENCE_NODE.test(node) : node === undefined);
+    return valid ? this.#run(op, node) : Promise.resolve(this.#report('invalid', fail('invalid_request')));
+  }
   close() {
     if (this.#closed) return;
     this.#closed = true;
     for (const token of this.#tokens) token.wake?.();
   }
-  async #run(op) {
+  async #run(op, node) {
     if (this.#closed) return this.#report(op, fail('closed'));
-    const token = { op, superseded: false, wake: null };
+    const token = { op, node, superseded: false, wake: null };
     if (op !== null) {
       // Latest wins: the earlier order stops after its current send, or at once if it is not sending.
       if (this.#current) { this.#current.superseded = true; this.#current.wake?.(); }
@@ -83,7 +87,7 @@ export class PresenceDriver {
     if (this.#sends.length + needed > PRESENCE_PACING.maxSends) return fail('paced');
     this.#sends.push(now); this.#lastSendAt = now;
     let receipt;
-    try { receipt = await this.#request(op, op === 'load' ? {} : { expectedRevision }); }
+    try { receipt = await this.#request(op, op === 'load' ? {} : { expectedRevision, ...(op === 'gather' ? { node: token.node } : {}) }); }
     catch { receipt = null; }
     if (!receipt || typeof receipt !== 'object' || typeof receipt.ok !== 'boolean') receipt = fail('request_failed');
     if (receipt.presence) this.#presence = view(receipt.presence);

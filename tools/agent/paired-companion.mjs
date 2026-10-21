@@ -336,7 +336,7 @@ export class PairedCompanion {
       this.#status('inference', BUDGET_FAILURES.has(result?.why) ? 'budget_exhausted' : 'failed');
       return;
     }
-    if (result.body) this.#order(result.body, generation);
+    if (result.body) this.#order(result.body, generation, result.node);
     const requestId = result?.action?.request?.order?.actionId ?? result?.action?.order?.actionId;
     const delivered = requestId ? await this.#waitForReply(requestId, generation) : false;
     if (generation !== this.#generation || this.#state !== 'ready') return;
@@ -350,10 +350,10 @@ export class PairedCompanion {
   }
   // The body order rides on the accepted reply of this owner turn. Not awaited: the driver paces,
   // supersedes and reports it, and the server validates and executes it.
-  #order(op, generation) {
+  #order(op, generation, node) {
     const driver = this.#driver;
     if (!driver || generation !== this.#generation || this.#state !== 'ready' || !PRESENCE_ORDERS.includes(op)) return;
-    void driver.order(op).catch(() => {});
+    void driver.order(op, node).catch(() => {});
   }
   #snapshot(runner = this.#runner, files = this.#latestFiles) {
     if (!runner || !files?.ok) throw new Error('paired_documents_invalid');

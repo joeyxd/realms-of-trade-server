@@ -80,3 +80,15 @@ test('account changes, disconnects and timeout discard stale replies and keep ac
   f.close(); assert.equal(f.client.snapshot().status, 'offline');
   f.client.destroy();
 });
+
+test('IC05a a receipt whose presence order is gather is adopted; unknown orders stay ignored', () => {
+  const f = fixture(); f.client.load(); const load = f.sent.at(-1);
+  f.reply(load, { presence: { ...present(3), order: 'gather' } });
+  assert.equal(f.client.snapshot().status, 'ready');
+  assert.equal(f.client.snapshot().presence.order, 'gather');
+  f.client.load({ refresh: true }); const again = f.sent.at(-1);
+  f.reply(again, { presence: { ...present(4), order: 'harvest' } });
+  assert.equal(f.client.snapshot().status, 'loading', 'an unknown order value is not adopted');
+  assert.equal(f.client.command('gather'), false, 'the web panel has no gather command');
+  f.client.destroy();
+});

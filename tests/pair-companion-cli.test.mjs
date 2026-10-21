@@ -47,3 +47,23 @@ test('presenceMessage handles load, ignored events and malformed input', () => {
   class Ev { constructor() { this.type = 'presence_order'; this.data = order('follow', true).data; } }
   assert.equal(presenceMessage(new Ev()), null);
 });
+
+test('IC05a presenceMessage: fixed Spanish lines for gather, its refusals and the gathered outcome', () => {
+  const body = connectedMessage({ name: 'Luna', capabilities: ['chat', 'presence'] }, 'm1');
+  assert.ok(body.includes('recoge madera o piedra'), body);
+  const accepted = presenceMessage(order('gather', true, null, { status: 'present', order: 'gather', revision: 2, reason: null }));
+  assert.equal(accepted, 'Tu compañero acepta recolectar; cuerpo presente en el mundo.');
+  const lines = new Set();
+  for (const why of ['no_node', 'unsupported_node', 'depleted']) {
+    const m = presenceMessage(order('gather', false, why));
+    assert.ok(m.startsWith('Tu compañero no pudo recolectar: ') && m.length < 120, m);
+    assert.notEqual(m, presenceMessage(order('gather', false, 'EVIL<script>')), `${why} has its own line`);
+    lines.add(m);
+  }
+  assert.equal(lines.size, 3);
+  assert.equal(presenceMessage(order('gather', false, 'depleted')), 'Tu compañero no pudo recolectar: ese recurso está agotado; vuelve a salir en un rato.');
+  assert.equal(presenceMessage(order('load', true, null, { status: 'present', order: 'wait', revision: 3, reason: 'gathered' })),
+    'Estado del cuerpo: presente en el mundo. Ya recogió el recurso que le pediste.');
+  assert.equal(presenceMessage(order('load', true, null, { status: 'present', order: 'wait', revision: 3, reason: 'full' })),
+    'Estado del cuerpo: presente en el mundo.', 'other reasons keep the plain status line');
+});

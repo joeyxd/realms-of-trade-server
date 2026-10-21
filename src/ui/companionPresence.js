@@ -16,7 +16,7 @@ const COPY = {
     recovery_required: 'El compañero quedó fuera durante un reinicio. Su presencia requiere revisión; no se invocará de nuevo.',
     blocked: 'El servidor bloqueó esta orden por seguridad.',
     mindOn: 'Mente conectada: habla por este cuerpo y solo puede pedirle seguir, esperar o volver.', mindOff: 'Ninguna mente conectada a este cuerpo.',
-    state: p => p ? `${p.name}: ${({ resting: 'en reposo', present: 'presente', recovery: 'requiere revisión', unavailable: 'no disponible' })[p.status]}. Orden: ${{ wait: 'esperar', follow: 'seguir', return: 'volver' }[p.order]}.` : 'Sin presencia activa.',
+    state: p => p ? `${p.name}: ${({ resting: 'en reposo', present: 'presente', recovery: 'requiere revisión', unavailable: 'no disponible' })[p.status]}. Orden: ${{ wait: 'esperar', follow: 'seguir', return: 'volver', gather: 'recolectar' }[p.order]}.` : 'Sin presencia activa.',
     reason: value => value === 'recovery' ? 'El compañero quedó fuera durante un reinicio. Su presencia requiere revisión; no se invocará de nuevo.' : '',
   },
   en: {
@@ -36,7 +36,7 @@ const COPY = {
     recovery_required: 'The companion was left out during a restart. Its presence needs review; it will not be summoned again.',
     blocked: 'The server blocked this order for safety.',
     mindOn: 'Mind connected: it speaks through this body and may only ask it to follow, wait, or return.', mindOff: 'No mind is connected to this body.',
-    state: p => p ? `${p.name}: ${{ resting: 'resting', present: 'present', recovery: 'needs review', unavailable: 'unavailable' }[p.status]}. Order: ${{ wait: 'wait', follow: 'follow', return: 'return' }[p.order]}.` : 'No active presence.',
+    state: p => p ? `${p.name}: ${{ resting: 'resting', present: 'present', recovery: 'needs review', unavailable: 'unavailable' }[p.status]}. Order: ${{ wait: 'wait', follow: 'follow', return: 'return', gather: 'gather' }[p.order]}.` : 'No active presence.',
     reason: value => value === 'recovery' ? 'The companion was left out during a restart. Its presence needs review; it will not be summoned again.' : '',
   },
 };

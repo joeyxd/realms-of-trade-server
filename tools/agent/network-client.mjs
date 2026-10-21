@@ -12,7 +12,7 @@ import { AgentChat } from './chat.mjs';
 import { AgentInventory } from './inventory.mjs';
 import { AgentMarket } from './market.mjs';
 import { AgentTrade } from './trade.mjs';
-import { labLimits, validGrant, validWorld, integer, PRESENCE_ORDERS, WORLD_MAX_NODES } from './contract.mjs';
+import { labLimits, validGrant, validWorld, integer, PRESENCE_ORDERS, PRESENCE_NODE, WORLD_MAX_NODES } from './contract.mjs';
 
 const fields = Object.fromEntries(PLAYER_FIELDS.map((name, i) => [name, i]));
 const neutral = () => ({ mx: 0, mz: 0, ax: 0, az: 0, btn: 0, prs: 0, w: 0 });
@@ -456,16 +456,17 @@ export class AgentNetworkClient {
   // validates and executes it; this only shapes the exact wire keys and settles the promise.
   presence(op, options = {}) {
     const fail = (why) => Promise.resolve({ ok: false, why });
-    const load = op === 'load';
+    const load = op === 'load', gather = op === 'gather';
     if ((!load && !PRESENCE_ORDERS.includes(op)) || !(load ? exactKeys(options, []) :
-        exactKeys(options, ['expectedRevision']) && integer(options.expectedRevision))) return fail('invalid_request');
+        exactKeys(options, gather ? ['expectedRevision', 'node'] : ['expectedRevision']) && integer(options.expectedRevision) &&
+        (!gather || (typeof options.node === 'string' && PRESENCE_NODE.test(options.node))))) return fail('invalid_request');
     if (['stopping', 'stopped'].includes(this.#state)) return fail('closed');
     if (!this.#client || this.#t.closed || this.#t.ws.readyState !== 1) return fail('not_connected');
     if (!this.#authority || !this.grant.capabilities.includes('presence')) return fail('forbidden');
     if (this.#presencePending.size >= MAX_PRESENCE_PENDING) return fail('busy');
     const requestId = `presence:${randomUUID()}`;
     const message = load ? { t: MSG.AGENT_COMPANION_PRESENCE, requestId, op } :
-      { t: MSG.AGENT_COMPANION_PRESENCE, requestId, op, expectedRevision: options.expectedRevision };
+      { t: MSG.AGENT_COMPANION_PRESENCE, requestId, op, expectedRevision: options.expectedRevision, ...(gather ? { node: options.node } : {}) };
     return new Promise((resolve) => {
       const pending = { requestId, op, expectedRevision: load ? null : options.expectedRevision, resolve, timer: null };
       pending.timer = setTimeout(() => this.#settlePresence(pending, { ok: false, why: 'timeout' }), this.#presenceTimeoutMs);

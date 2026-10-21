@@ -4,7 +4,7 @@ import { World } from '../src/sim/world.js';
 import { DT } from '../src/data/tuning.js';
 import { PTYPE } from '../src/sim/projectiles.js';
 import {
-  advancePresence, presenceAnchor, presencePointAllowed, presenceSafety,
+  advancePresence, presenceAnchor, presencePointAllowed, presenceSafety, presenceWorkPoint, pointOnRouteReason,
   PRESENCE_ANCHOR_RADIUS, PRESENCE_RADIUS,
 } from '../server/companionPresencePolicy.mjs';
 
@@ -201,4 +201,30 @@ test('advancePresence stops when the body is hurt or an incoming hazard is nearb
   assert.deepEqual(result, { moved: 0, reason: 'danger' });
   assert.equal(ecs.moveMag[entity], 0);
   assert.equal(ecs.x[entity], anchor.x);
+});
+
+test('IC05a the port work zone is 30 and a work point stands within reach of its node', async () => {
+  const { installResources } = await import('../src/sim/systems/resources.js');
+  const { world, entity, ecs, anchor } = setup();
+  installResources(world);
+  assert.equal(PRESENCE_RADIUS, 30);
+  assert.equal(PRESENCE_ANCHOR_RADIUS, 3, 'admission and retirement still happen at the anchor');
+  const nodes = [...world.resources.nodes.values()].filter(n => ['wood', 'stone'].includes(n.kind));
+  // Beyond the old 12 zone, inside the new one: a standing point within 1.8 of the node, nearest to the anchor.
+  const near = nodes.map(node => ({ node, d: Math.hypot(node.x - anchor.x, node.z - anchor.z), point: presenceWorkPoint(world, node, anchor) }))
+    .filter(row => row.d > 12 && row.d <= PRESENCE_RADIUS && row.point && pointOnRouteReason(world, anchor.x, anchor.z, row.point.x, row.point.z) === null)
+    .sort((a, b) => a.d - b.d)[0];
+  assert.ok(near, 'seed 42 has a reachable wood or stone node beyond 12');
+  assert.ok(Math.hypot(near.point.x - near.node.x, near.point.z - near.node.z) <= 1.8 + 1e-9);
+  assert.equal(presencePointAllowed(world, near.point.x, near.point.z), true);
+  // The straight walk gets within 2 of the node, inside the 2.5 harvest reach.
+  let steps = 0;
+  while (Math.hypot(ecs.x[entity] - near.node.x, ecs.z[entity] - near.node.z) > 2 && steps++ < 600) {
+    assert.equal(advancePresence(world, entity, near.point).reason, null);
+  }
+  assert.ok(steps < 600);
+  assert.equal(presenceSafety(world, entity), null);
+  const far = nodes.find(node => Math.hypot(node.x - anchor.x, node.z - anchor.z) > PRESENCE_RADIUS + 2);
+  assert.ok(far);
+  assert.equal(presenceWorkPoint(world, far, anchor), null, 'no standing point inside the zone');
 });

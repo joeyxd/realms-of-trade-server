@@ -15,7 +15,7 @@ function validPresence(value) {
   if (!exactKeys(value, ['characterKey', 'name', 'status', 'order', 'revision', 'entity', 'reason'])
       || typeof value.characterKey !== 'string' || !UUID.test(value.characterKey)
       || typeof value.name !== 'string' || value.name.length > 64
-      || !PRESENCE.has(value.status) || !['wait', 'follow', 'return'].includes(value.order)
+      || !PRESENCE.has(value.status) || !['wait', 'follow', 'return', 'gather'].includes(value.order)
       || !Number.isSafeInteger(value.revision) || value.revision < 0
       || !(value.entity === null || (Number.isSafeInteger(value.entity) && value.entity > 0))
       || !(value.reason === null || typeof value.reason === 'string')) return undefined;
