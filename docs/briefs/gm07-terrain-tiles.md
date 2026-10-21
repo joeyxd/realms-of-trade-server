@@ -1,6 +1,6 @@
 # GM07 terrain tiles and the domain contract
 
-Status: DESIGN (T-1021-20, 2026-10-21), waiting for Joi's approval. No code until approved.
+Status: APPROVED by Joi on 2026-10-21 (T-1021-25), all five open points as recommended. GM07b0 first.
 Inputs: [census](../../context/gm-editor-census-2026-10-21.md) (git-ignored area context), client map T-1021-18, server map T-1021-19.
 GM07 absorbs GM06a (bounds, coast contract, chunks, legacy documents). GM06b (coast, new land) builds on it.
 
@@ -143,10 +143,11 @@ re-checked after every fetch.
   readiness `{version: 1}`.
 - Deploy: with a schema v2 revision active, a release that changes `src/` passes the content check and keeps it.
 
-## Open for Joi
+## Decided by Joi (2026-10-21)
 
-1. Tile size 70 m (recommended: fits today's square and the western proposal exactly) or 56 m (100 tiles).
-2. Height range [-40, +200] m.
+1. Tile size 70 m.
+2. Height range [-40, +200] m. Joi wants snow by altitude when terrain paint gets rules (GM10); 200 m is a
+   validation constant, not a format limit (int32 deltas hold any height), so it can grow later.
 3. Floor 0.75 m and protected zones stay until GM06b.
 4. GM07b0 first, so a published world survives pushes.
-5. Draft tiles in Postgres (recommended: durable like drafts today) or on the VPS disk like revisions.
+5. Draft tiles in Postgres.
