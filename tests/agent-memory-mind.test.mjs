@@ -220,3 +220,14 @@ test('ambiguous memory writer blocks further writes and protects its unknown out
   assert.equal((await mind.decide()).ok, true);
   assert.ok(context.required.pending.some((r) => r.kind === 'memory_commit' && r.state === 'uncertain' && r.retryAllowed === false));
 });
+
+test('a definite memory_commit_busy receipt does not latch the mind and the next remember proceeds', async () => {
+  const f = fixture(), real = f.appendMemory; let calls = 0;
+  f.appendMemory = async (request) => (++calls === 1 ? { ok: false, why: 'memory_commit_busy' } : real(request));
+  const mind = makeMind(f);
+  const first = await mind.remember();
+  assert.equal(first.ok, false); assert.equal(first.why, 'memory_commit_busy');
+  const next = await mind.remember();
+  assert.equal(next.ok, true);
+  assert.equal(calls, 2);
+});

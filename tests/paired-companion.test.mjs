@@ -269,7 +269,7 @@ test('claim transport sends only the pairing envelope and rejects malformed boot
 });
 
 test('live owner C01 delivery gets one local-model reply and a durable scoped memory episode', { timeout: 30000 }, async t => {
-  const { owner, other, pair, parent, model } = await livePairFixture(t);
+  const { owner, other, pair, parent, statuses, model } = await livePairFixture(t);
   await until(() => pair.state === 'ready', 'paired runner ready');
   assert.equal(pair.scope.ownerId, OWNER);
   assert.equal(pair.scope.characterId, CHARACTER);
@@ -287,9 +287,11 @@ test('live owner C01 delivery gets one local-model reply and a durable scoped me
   assert.equal(model.calls, 1);
   assert.equal(model.modelId, 'qwen3.8-flash-next-coder-iq1_m');
   const memoryPath = join(parent, 'companion', 'memory.jsonl');
-  const contents = await until(async () => {
-    const text = await readFile(memoryPath, 'utf8'); return text.trim() ? text : null;
-  }, 'delivered exchange memory');
+  // Do not poll memory.jsonl while a commit can run: an open read handle makes the commit rename fail on Windows.
+  await until(() => statuses.length > 0 || pair.diagnostics.mind?.records?.some(record => record.mode === 'remember'), 'delivered exchange memory');
+  assert.deepEqual(statuses, [], 'companion reported a delivery or memory failure');
+  const contents = await readFile(memoryPath, 'utf8');
+  assert.ok(contents.trim(), 'delivered exchange memory');
   const episode = JSON.parse(contents.trim().split(/\r?\n/)[0]);
   assert.equal(episode.scope.ownerId, OWNER);
   assert.equal(episode.scope.characterId, CHARACTER);

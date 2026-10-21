@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, open, readFile, rm, writeFile } from 'node:fs/promises';
 import { readdirSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { loadOwnerFiles } from '../tools/agent/owner-files.mjs';
 import { createMemoryStore } from '../tools/agent/memory-store.mjs';
+import { proposeMemoryRemoval } from '../tools/agent/memory-management.mjs';
 import { createMemoryEpisode, createMemorySummary, buildMemoryTurn, parseMemoryJournal, MEMORY_MAX_BYTES } from '../tools/agent/memory-journal.mjs';
 
 const scope = { ownerId: 'owner-test', characterId: 'agent-test', worldId: 'world-test' };
@@ -145,4 +146,57 @@ test('refuses memory symlinks when the platform permits creating one', async (t)
   try { const { symlink } = await import('node:fs/promises'); await symlink(backup, file, 'file'); }
   catch (error) { if (['EPERM', 'EACCES', 'ENOTSUP'].includes(error.code)) return t.skip(`symlink creation unavailable: ${error.code}`); throw error; }
   assert.notEqual((await store.append(args(current, episode()))).ok, true);
+});
+
+// Windows refuses rename over a file another handle holds open: the store must retry, then fail definitely without latching.
+const windowsOnly = { skip: process.platform !== 'win32' && 'needs Windows sharing semantics' };
+const tempLeft = (directory) => readdirSync(directory).filter((name) => /^\.memory-.*\.tmp$/.test(name));
+const laterEpisode = () => episode({ observation: { receivedAtMs: 2000, source: 'server', revision: 3, tick: 51, confirmed: { self: { position: { x: 1, y: 2, z: 3 }, hp: 80, maxHp: 100, dead: false } } } });
+async function holdMemory(directory, releaseAfterMs) {
+  const handle = await open(path.join(directory, 'memory.jsonl'), 'r');
+  if (releaseAfterMs === undefined) return handle;
+  setTimeout(() => { handle.close().catch(() => {}); }, releaseAfterMs);
+  return handle;
+}
+const ownerSnapshot = (current) => ({ expectedRevision: current.files.memory.revision, expectedHashes: Object.fromEntries(Object.entries(current.files).map(([key, value]) => [key, value.sha256])) });
+
+test('append retries a transient sharing violation on memory.jsonl and commits', windowsOnly, async (t) => {
+  const { directory, current, store } = await setup(t), item = episode();
+  await holdMemory(directory, 30);
+  const result = await store.append(args(current, item));
+  assert.equal(result.ok, true); assert.equal(result.revision, 1);
+  assert.equal(await readFile(path.join(directory, 'memory.jsonl'), 'utf8'), `${JSON.stringify(item)}\n`);
+  assert.deepEqual(tempLeft(directory), []);
+});
+
+test('append reports a definite memory_commit_busy while the file stays locked and releases the lock', windowsOnly, async (t) => {
+  const { directory, current, store } = await setup(t), item = episode(), file = path.join(directory, 'memory.jsonl');
+  const before = await readFile(file), handle = await holdMemory(directory);
+  let result;
+  try { result = await store.append(args(current, item)); } finally { await handle.close(); }
+  assert.equal(result.ok, false); assert.equal(result.why, 'memory_commit_busy');
+  assert.equal(Object.hasOwn(result, 'uncertain'), false);
+  assert.deepEqual(await readFile(file), before);
+  assert.deepEqual(tempLeft(directory), []);
+  const again = await store.append(args(current, item));
+  assert.equal(again.ok, true); assert.equal(again.revision, 1);
+});
+
+test('remove retries a transient sharing violation on memory.jsonl and commits', windowsOnly, async (t) => {
+  const a = episode(), b = laterEpisode(), { directory, current, store } = await setup(t, `${JSON.stringify(a)}\n${JSON.stringify(b)}\n`);
+  const snap = ownerSnapshot(current), plan = proposeMemoryRemoval({ journal: current.files.memory.journal, scope, ids: [a.id], nowMs: 10000 }).plan;
+  await holdMemory(directory, 30);
+  const result = await store.remove({ ...snap, plan });
+  assert.equal(result.ok, true);
+  assert.equal(await readFile(path.join(directory, 'memory.jsonl'), 'utf8'), `${JSON.stringify(b)}\n`);
+  assert.deepEqual(tempLeft(directory), []);
+});
+
+test('migrate retries a transient sharing violation on memory.jsonl and commits', windowsOnly, async (t) => {
+  const item = episode(), { directory, current, store } = await setup(t, `  ${JSON.stringify(item)}  \r\n`);
+  await holdMemory(directory, 30);
+  const result = await store.migrate(ownerSnapshot(current));
+  assert.equal(result.ok, true); assert.equal(result.replay, false);
+  assert.equal(await readFile(path.join(directory, 'memory.jsonl'), 'utf8'), `${JSON.stringify(item)}\n`);
+  assert.deepEqual(tempLeft(directory), []);
 });

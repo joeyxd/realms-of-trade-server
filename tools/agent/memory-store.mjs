@@ -71,6 +71,27 @@ function cleanupOwned(file, identity, token) {
     } finally { closeSync(fd); }
   } catch { /* Preserve unproven files. */ }
 }
+const BUSY_CODES = new Set(['EPERM', 'EACCES', 'EBUSY']), BUSY_BACKOFF_MS = [10, 20, 40, 80, 160], COMMIT_BUSY = Symbol('commit_busy');
+// Windows refuses rename over a file another handle holds open. Busy is only claimed when the temp is intact and memory.jsonl still has the verified hash.
+function renameOrBusy(root, tempPath, tempIdentity, nextBytes, memoryHash) {
+  try { renameSync(tempPath, path.join(root, FILES.memory)); return false; }
+  catch (error) {
+    if (!BUSY_CODES.has(error?.code)) throw error;
+    let proven = false;
+    try { readSafeTempSync(tempPath, tempIdentity, nextBytes); proven = sha256(readSafeSync(root, FILES.memory, LIMITS.memory)) === memoryHash; } catch { /* Unproven stays uncertain. */ }
+    if (!proven) throw error;
+    return true;
+  }
+}
+// Each attempt is one synchronous commit window; awaits happen only between attempts.
+async function runCommitWindows(window) {
+  for (let attempt = 0; ; attempt += 1) {
+    const result = window();
+    if (result !== COMMIT_BUSY) return result;
+    if (attempt === BUSY_BACKOFF_MS.length) return fail('memory_commit_busy');
+    await new Promise((resolve) => setTimeout(resolve, BUSY_BACKOFF_MS[attempt]));
+  }
+}
 function checkGuard(guard) {
   if (!guard) return null;
   let verdict;
@@ -195,22 +216,24 @@ export function createMemoryStore({ directory, scope } = {}) {
         tempHandle = await fs.open(tempPath, 'wx', 0o600); tempIdentity = await tempHandle.stat();
         await tempHandle.writeFile(nextBytes); tempToken = nextBytes.toString('utf8'); await tempHandle.sync().catch(() => {}); await tempHandle.close(); tempHandle = undefined;
         try {
-          const rejected = checkGuard(guard); if (rejected) return rejected;
-          directoryFence(ownerDirectory, original); readSafeTempSync(tempPath, tempIdentity, nextBytes);
-          const { bytes: beforeBytes, hashes: beforeHashes } = syncOwnerHashes(root, ownerDirectory, original);
-          if (KEYS.some((key) => beforeHashes[key] !== fixedHashes[key])) return fail('owner_hash_conflict');
-          let verified; try { verified = parseMemoryJournal(decode(beforeBytes.memory), fixedScope); } catch { return fail('invalid_memory_journal'); }
-          if (verified.revision !== expectedRevision) return fail('memory_revision_conflict');
-          const freshProposal = fixedPlan.retention === null
-            ? proposeMemoryRemoval({ journal: verified, scope: fixedScope, ids: fixedPlan.requestedIds, nowMs: fixedPlan.nowMs })
-            : proposeMemoryRemoval({ journal: verified, scope: fixedScope, retention: fixedPlan.retention, nowMs: fixedPlan.nowMs });
-          if (!freshProposal.ok || canonicalJson(freshProposal.plan) !== canonicalJson(fixedPlan)) return fail('memory_plan_conflict');
-          const rejectedAgain = checkGuard(guard); if (rejectedAgain) return rejectedAgain;
-          const { hashes: finalHashes } = syncOwnerHashes(root, ownerDirectory, original);
-          if (KEYS.some((key) => finalHashes[key] !== fixedHashes[key])) return fail('owner_hash_conflict');
-          directoryFence(ownerDirectory, original); readSafeTempSync(tempPath, tempIdentity, nextBytes);
-          renameAttempted = true; renameSync(tempPath, path.join(root, FILES.memory)); renamed = true;
-          return { ok: true, replay: false, revision: nextJournal.revision, sha256: sha256(nextBytes), removedIds: fixedPlan.removeIds, derivedIds: fixedPlan.derivedIds, affectedRecords: fixedPlan.affectedRecords };
+          return await runCommitWindows(() => {
+            const rejected = checkGuard(guard); if (rejected) return rejected;
+            directoryFence(ownerDirectory, original); readSafeTempSync(tempPath, tempIdentity, nextBytes);
+            const { bytes: beforeBytes, hashes: beforeHashes } = syncOwnerHashes(root, ownerDirectory, original);
+            if (KEYS.some((key) => beforeHashes[key] !== fixedHashes[key])) return fail('owner_hash_conflict');
+            let verified; try { verified = parseMemoryJournal(decode(beforeBytes.memory), fixedScope); } catch { return fail('invalid_memory_journal'); }
+            if (verified.revision !== expectedRevision) return fail('memory_revision_conflict');
+            const freshProposal = fixedPlan.retention === null
+              ? proposeMemoryRemoval({ journal: verified, scope: fixedScope, ids: fixedPlan.requestedIds, nowMs: fixedPlan.nowMs })
+              : proposeMemoryRemoval({ journal: verified, scope: fixedScope, retention: fixedPlan.retention, nowMs: fixedPlan.nowMs });
+            if (!freshProposal.ok || canonicalJson(freshProposal.plan) !== canonicalJson(fixedPlan)) return fail('memory_plan_conflict');
+            const rejectedAgain = checkGuard(guard); if (rejectedAgain) return rejectedAgain;
+            const { hashes: finalHashes } = syncOwnerHashes(root, ownerDirectory, original);
+            if (KEYS.some((key) => finalHashes[key] !== fixedHashes[key])) return fail('owner_hash_conflict');
+            directoryFence(ownerDirectory, original); readSafeTempSync(tempPath, tempIdentity, nextBytes);
+            renameAttempted = true; if (renameOrBusy(root, tempPath, tempIdentity, nextBytes, fixedHashes.memory)) { renameAttempted = false; return COMMIT_BUSY; } renamed = true;
+            return { ok: true, replay: false, revision: nextJournal.revision, sha256: sha256(nextBytes), removedIds: fixedPlan.removeIds, derivedIds: fixedPlan.derivedIds, affectedRecords: fixedPlan.affectedRecords };
+          });
         } catch (error) {
           if (renameAttempted) return { ...fail('memory_commit_uncertain'), uncertain: true };
           if (['owner_file_changed', 'unsafe_owner_file'].includes(error?.message)) return fail('owner_hash_conflict');
@@ -267,17 +290,19 @@ export function createMemoryStore({ directory, scope } = {}) {
         tempHandle = await fs.open(tempPath, 'wx', 0o600); tempIdentity = await tempHandle.stat();
         await tempHandle.writeFile(nextBytes); tempToken = nextBytes.toString('utf8'); await tempHandle.sync().catch(() => {}); await tempHandle.close(); tempHandle = undefined;
         try {
-          const rejected = checkGuard(guard); if (rejected) return rejected;
-          const { bytes: beforeBytes, hashes } = syncOwnerHashes(root, ownerDirectory, original);
-          if (KEYS.some((key) => hashes[key] !== fixedHashes[key])) return fail('owner_hash_conflict');
-          const verified = parseMemoryJournal(decode(beforeBytes.memory), fixedScope);
-          if (verified.revision !== expectedRevision || canonicalJson(verified.entries) !== canonicalJson(journal.entries)) return fail('memory_revision_conflict');
-          const rejectedAgain = checkGuard(guard); if (rejectedAgain) return rejectedAgain;
-          const { hashes: finalHashes } = syncOwnerHashes(root, ownerDirectory, original);
-          if (KEYS.some((key) => finalHashes[key] !== fixedHashes[key])) return fail('owner_hash_conflict');
-          directoryFence(ownerDirectory, original); readSafeTempSync(tempPath, tempIdentity, nextBytes);
-          renameAttempted = true; renameSync(tempPath, path.join(root, FILES.memory)); renamed = true;
-          return { ok: true, migration: 'canonical_jsonl', fromRevision: journal.revision, revision: nextJournal.revision, sha256: sha256(nextBytes), replay: false };
+          return await runCommitWindows(() => {
+            const rejected = checkGuard(guard); if (rejected) return rejected;
+            const { bytes: beforeBytes, hashes } = syncOwnerHashes(root, ownerDirectory, original);
+            if (KEYS.some((key) => hashes[key] !== fixedHashes[key])) return fail('owner_hash_conflict');
+            const verified = parseMemoryJournal(decode(beforeBytes.memory), fixedScope);
+            if (verified.revision !== expectedRevision || canonicalJson(verified.entries) !== canonicalJson(journal.entries)) return fail('memory_revision_conflict');
+            const rejectedAgain = checkGuard(guard); if (rejectedAgain) return rejectedAgain;
+            const { hashes: finalHashes } = syncOwnerHashes(root, ownerDirectory, original);
+            if (KEYS.some((key) => finalHashes[key] !== fixedHashes[key])) return fail('owner_hash_conflict');
+            directoryFence(ownerDirectory, original); readSafeTempSync(tempPath, tempIdentity, nextBytes);
+            renameAttempted = true; if (renameOrBusy(root, tempPath, tempIdentity, nextBytes, fixedHashes.memory)) { renameAttempted = false; return COMMIT_BUSY; } renamed = true;
+            return { ok: true, migration: 'canonical_jsonl', fromRevision: journal.revision, revision: nextJournal.revision, sha256: sha256(nextBytes), replay: false };
+          });
         } catch (error) {
           if (renameAttempted) return { ...fail('memory_commit_uncertain'), uncertain: true };
           if (['owner_file_changed', 'unsafe_owner_file'].includes(error?.message)) return fail('owner_hash_conflict');
@@ -359,16 +384,18 @@ export function createMemoryStore({ directory, scope } = {}) {
 
         // Final owner checks, guard evaluations, and rename stay synchronous as one commit window.
         try {
-          const rejected = checkGuard(guard); if (rejected) return rejected;
-          const { bytes: beforeBytes, hashes: beforeHashes } = syncOwnerHashes(root, ownerDirectory, original);
-          if (KEYS.some((key) => beforeHashes[key] !== fixedHashes[key])) return fail('owner_hash_conflict');
-          let verified;
-          try { verified = parseMemoryJournal(decode(beforeBytes.memory), fixedScope); } catch { return fail('invalid_memory_journal'); }
-          if (verified.revision !== expectedRevision) return fail('memory_revision_conflict');
-          directoryFence(ownerDirectory, original); readSafeTempSync(tempPath, tempIdentity, nextBytes);
-          const rejectedAgain = checkGuard(guard); if (rejectedAgain) return rejectedAgain;
-          renameAttempted = true; renameSync(tempPath, path.join(root, FILES.memory)); renamed = true;
-          return { ok: true, replay: false, revision: expectedRevision + 1, sha256: sha256(nextBytes), entryId: fixedEntry.id };
+          return await runCommitWindows(() => {
+            const rejected = checkGuard(guard); if (rejected) return rejected;
+            const { bytes: beforeBytes, hashes: beforeHashes } = syncOwnerHashes(root, ownerDirectory, original);
+            if (KEYS.some((key) => beforeHashes[key] !== fixedHashes[key])) return fail('owner_hash_conflict');
+            let verified;
+            try { verified = parseMemoryJournal(decode(beforeBytes.memory), fixedScope); } catch { return fail('invalid_memory_journal'); }
+            if (verified.revision !== expectedRevision) return fail('memory_revision_conflict');
+            directoryFence(ownerDirectory, original); readSafeTempSync(tempPath, tempIdentity, nextBytes);
+            const rejectedAgain = checkGuard(guard); if (rejectedAgain) return rejectedAgain;
+            renameAttempted = true; if (renameOrBusy(root, tempPath, tempIdentity, nextBytes, fixedHashes.memory)) { renameAttempted = false; return COMMIT_BUSY; } renamed = true;
+            return { ok: true, replay: false, revision: expectedRevision + 1, sha256: sha256(nextBytes), entryId: fixedEntry.id };
+          });
         } catch (error) {
           if (renameAttempted) return { ...fail('memory_commit_uncertain'), uncertain: true };
           if (['owner_file_changed', 'unsafe_owner_file'].includes(error?.message)) return fail('owner_hash_conflict');

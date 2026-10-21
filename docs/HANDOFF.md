@@ -1,5 +1,17 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**C01 memoria en Windows, 2026-10-20 — un lector abierto ya no pierde recuerdos (sin subir versión; sigue alpha.85):**
+Causa (T-1020-104, reproducida): en Windows `renameSync(temp, memory.jsonl)` falla con EPERM si otro handle tiene
+abierto memory.jsonl (el sondeo del test C01, owner-panel-server, Defender, el indexador, OneDrive). El almacén lo
+trataba como commit incierto, borraba el temporal (se perdía el episodio) y la mente se bloqueaba: cada remember()
+posterior devolvía memory_commit_uncertain hasta volver a emparejar. Arreglo (T-1020-108) en
+`tools/agent/memory-store.mjs`: con EPERM/EACCES/EBUSY, si el temporal sigue intacto y memory.jsonl conserva el hash
+verificado, el fallo es seguro y la ventana síncrona entera se repite tras 10/20/40/80/160 ms con el lock tomado;
+agotado devuelve `memory_commit_busy` sin `uncertain`, que no bloquea la mente. Cualquier otro caso sigue igual.
+Tests: 4 de Windows en agent-memory-store, 1 en agent-memory-mind; el test C01 espera el resultado del compañero
+antes de leer el fichero (20/20). Pendiente: jitter en el backoff y el mismo patrón en objective-store, budget-file
+e inference-center.
+
 **IC03c, 2026-10-20 — el CLI de emparejamiento muestra el modo cuerpo (sin subir versión; sigue alpha.85):**
 `tools/agent/pair-companion.mjs` exporta `connectedMessage` (con presence concedida anuncia el cuerpo y las órdenes
 sígueme / espera / vuelve; sin ella mantiene el texto "Solo chat") y `presenceMessage`, que traduce cada evento
