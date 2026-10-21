@@ -100,10 +100,11 @@ export function parseDecision(text, maxResponseBytes, mode = 'decision', { body 
   // Only a body-mode conversation accepts args.body, and only with one of the presence orders; args.node only with gather.
   const reply = response.decision.args, conversing = body === true && mode === 'conversation',
     withBody = conversing && exact(reply, ['text', 'body']) && PRESENCE_ORDERS.includes(reply.body) && reply.body !== 'gather',
-    withGather = conversing && exact(reply, ['text', 'body', 'node']) && reply.body === 'gather';
-  if (response.decision.type === 'reply' && (!(exact(reply, ['text']) || withBody || withGather) || typeof reply.text !== 'string')) return null;
-  // The server stays the authority; an unknown or unsupported node only drops the body proposal.
-  if (withGather && !gatherable(world, reply.node)) return { type: 'reply', args: { text: reply.text } };
+    withGather = conversing && exact(reply, ['text', 'body', 'node']) && reply.body === 'gather',
+    bareGather = conversing && exact(reply, ['text', 'body']) && reply.body === 'gather';
+  if (response.decision.type === 'reply' && (!(exact(reply, ['text']) || withBody || withGather || bareGather) || typeof reply.text !== 'string')) return null;
+  // The server stays the authority; an unknown or missing node only drops the body proposal.
+  if (bareGather || withGather && !gatherable(world, reply.node)) return { type: 'reply', args: { text: reply.text } };
   return response.decision;
 }
 

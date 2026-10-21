@@ -440,7 +440,9 @@ test('IC05a parse: gather keeps a wood or stone node of confirmed.world and drop
       { type: 'reply', args: { text: 'Voy.' } }, `${node}: the body proposal is dropped, the reply survives`);
   assert.deepEqual(parseDecision(reply({ text: 'Voy.', body: 'gather', node: 'coast-4' }), 8192, 'conversation', { body: true }),
     { type: 'reply', args: { text: 'Voy.' } }, 'no observed world, no gather');
-  assert.equal(parseDecision(reply({ text: 'Voy.', body: 'gather' }), 8192, 'conversation', body), null, 'gather requires args.node');
+  assert.deepEqual(parseDecision(reply({ text: 'Voy.', body: 'gather' }), 8192, 'conversation', body), { type: 'reply', args: { text: 'Voy.' } }, 'a gather without a node drops only the body');
+  assert.equal(parseDecision(reply({ text: 5, body: 'gather' }), 8192, 'conversation', body), null);
+  assert.equal(parseDecision(reply({ text: 'Voy.', body: 'gather' }), 8192, 'conversation', { world }), null);
   assert.equal(parseDecision(reply({ text: 'Voy.', body: 'follow', node: 'coast-4' }), 8192, 'conversation', body), null, 'only gather takes a node');
   assert.equal(parseDecision(reply({ text: 'Voy.', node: 'coast-4' }), 8192, 'conversation', body), null);
   assert.equal(parseDecision(reply({ text: 'Voy.', body: 'gather', node: 'coast-4' }), 8192, 'conversation', { world }), null, 'chat-only mode is unchanged');

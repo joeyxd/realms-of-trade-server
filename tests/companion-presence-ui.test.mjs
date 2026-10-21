@@ -33,7 +33,7 @@ test('initial panel explains the anchor and safe-zone limits without issuing an 
   try {
     assert.equal(ui.title.textContent, 'Presencia en Salty Shore');
     assert.equal(ui.anchorNote.textContent, 'Primero vuelve al punto de llegada de Salty Shore.');
-    assert.match(ui.safeNote.textContent, /no habilita combate ni recolección/);
+    assert.match(ui.safeNote.textContent, /sin combate\. Con una mente conectada, recolecta madera y piedra/);
     assert.equal(ui.buttons.join.hidden, true, 'actions stay hidden until host enablement is received');
     assert.deepEqual(client.commands, []);
     assert.equal(client.loads.length, 0);
