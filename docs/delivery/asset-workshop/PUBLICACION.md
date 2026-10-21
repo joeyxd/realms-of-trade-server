@@ -33,5 +33,5 @@ La decisión «Usar» deja de ser solo una nota: queda como registro versionado 
 ## Pendiente
 
 - Joi verifica en pantalla las medidas (están decididas, no vistas en escena).
-- Insignia «Publicado en el editor GM» en el taller: siguiente corte.
+- La insignia «Publicado en el editor GM» llegó en AW06b: el taller lee `published.json` y la muestra en la ficha y el detalle.
 - Sin límites de colisión ni bounds en las entradas; el piloto 01 es geometría sin texturas.

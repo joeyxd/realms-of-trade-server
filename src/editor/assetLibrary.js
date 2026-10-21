@@ -1,5 +1,24 @@
 const CATALOG_SCHEMA = 'marea.asset-workshop.catalog.v1';
 const PREPARED_SCHEMA = 'marea.asset-prepared.v1';
+const PUBLISHED_SCHEMA = 'marea.asset-published.v1';
+
+/** Index the operator publication record by workshop id; any other schema yields an empty index. */
+export function indexPublished(doc) {
+  const index = new Map();
+  if (!doc || doc.schema !== PUBLISHED_SCHEMA || !Array.isArray(doc.entries)) return index;
+  for (const row of doc.entries) {
+    if (!row || typeof row.id !== 'string' || typeof row.editorId !== 'string') continue;
+    index.set(row.id, { editorId: row.editorId, sourceRevision: row.sourceRevision, publishedAt: row.publishedAt });
+  }
+  return index;
+}
+
+/** "published" when id and sourceRevision match, "published-other-revision" when only the id does, else null. */
+export function publicationState(entry, index) {
+  const row = entry && index?.get?.(entry.id);
+  if (!row) return null;
+  return row.sourceRevision === entry.sourceRevision ? 'published' : 'published-other-revision';
+}
 
 function validateEntry(entry) {
   return entry && typeof entry === 'object' && !Array.isArray(entry) &&
@@ -125,6 +144,7 @@ export async function loadAssetLibrary({
   url = 'assets/workshop/catalog.json',
   preparedUrl = 'assets/workshop/prepared.json',
   thumbnailsUrl = 'assets/workshop/thumbnails.json',
+  publishedUrl = 'assets/workshop/published.json',
   signal,
 } = {}) {
   if (typeof fetchImpl !== 'function') throw new TypeError('Se requiere una función fetch.');
@@ -178,7 +198,11 @@ export async function loadAssetLibrary({
       if (thumbnail) { entry.thumbnail = thumbnail.url; entry.thumbnailLabel = thumbnail.label; }
     }
   }
-  return { entries, coverage: catalog.coverage, warnings };
+  // The publication record is optional: a missing or unreadable file means no badges.
+  let published = new Map();
+  try { published = indexPublished(publishedUrl ? await fetchJson(publishedUrl, true) : null); }
+  catch (error) { if (requestSignal.aborted) throw error; }
+  return { entries, coverage: catalog.coverage, warnings, published };
 }
 
 const fold = (value) => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es');

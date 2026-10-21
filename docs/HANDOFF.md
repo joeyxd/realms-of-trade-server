@@ -30,7 +30,7 @@ y `thumbnails.json` con sha256 verificado contra `prepared.json` (`--check` no e
 caldero (size 0,9), palmera (height 7), puerta (height 2,2) y bote (size 6), estado `ready`, para colocarlos desde el editor GM.
 Las claves del taller en `thumbnails.json` se reconocen por su imagen en `assets/workshop/thumbnails/`. `gm-assets.test.mjs`
 fija las cuatro entradas `gm-*` ignorando las del taller; el índice reclama `published.json` como archivo de catálogo.
-Medidas decididas por Joi, pendientes de verificar en pantalla; la insignia «Publicado» del taller es el siguiente corte.
+Medidas decididas por Joi, pendientes de verificar en pantalla; la insignia «Publicado en el editor GM» del taller llegó en AW06b (T-1020-100).
 Sin cambios de gameplay, SQL ni protocolo (63).
 
 **AW01, 2026-10-14 (integrado 2026-10-20) — Taller de assets, alpha.87/protocolo 63:**

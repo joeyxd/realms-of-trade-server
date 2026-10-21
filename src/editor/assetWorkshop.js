@@ -1,12 +1,16 @@
-import { loadAssetLibrary, filterAssets, assetFacets, hasAssetPreview } from './assetLibrary.js';
+import { loadAssetLibrary, filterAssets, assetFacets, hasAssetPreview, publicationState } from './assetLibrary.js';
 import { AssetReviewStore, DECISIONS, REVIEW_TASKS } from './assetReview.js';
 import { AssetPreview } from '../render/assetPreview.js';
+import { getLocale } from '../core/locale.js';
 
 const node = (tag, cls, text) => { const el = document.createElement(tag); if (cls) el.className = cls; if (text !== undefined) el.textContent = text; return el; };
 const button = (text, action, cls = '') => { const el = node('button', cls, text); el.type = 'button'; el.dataset.action = action; return el; };
 const safeStorage = () => { try { return localStorage; } catch { return null; } };
 const bytes = value => value ? `${(value / 1048576).toFixed(2)} MiB` : 'sin medir';
 const typeNames = { 'static-mesh': 'Malla estática', 'skeletal-mesh': 'Malla con rig', animation: 'Animación', texture: 'Textura', material: 'Material', icon: 'Icono', vfx: 'Efecto', audio: 'Sonido', model: 'Modelo' };
+const publishedText = { published: { es: 'Publicado en el editor GM', en: 'Published to the GM editor' }, 'published-other-revision': { es: 'Publicado (otra revisión)', en: 'Published (other revision)' } };
+const useHint = { es: 'Usar recomienda la pieza; publicarla al editor GM es un paso del operador (PUBLICACION.md)', en: 'Usar recommends the piece; publishing it to the GM editor is an operator step (PUBLICACION.md)' };
+const lang = () => (getLocale() === 'en' ? 'en' : 'es');
 const symbols = { texture: '▧', material: '◉', icon: '✦', 'skeletal-mesh': '♙', animation: '↝', vfx: '✧', audio: '♪' };
 
 /** A private asset review session. It never publishes content or joins a gameplay body. */
@@ -29,7 +33,7 @@ export class AssetWorkshop {
     this.root.focus();
     try {
       const result = await this.libraryLoader({ signal: this.events.signal }); if (!this.active || epoch !== this.epoch) return;
-      this.entries = result.entries; this.coverage = result.coverage; this.warnings = result.warnings || [];
+      this.entries = result.entries; this.published = result.published || new Map(); this.coverage = result.coverage; this.warnings = result.warnings || [];
       const facets = assetFacets(this.entries);
       this.addOptions(this.category, facets.categories.map(id => ({ id, name: id })));
       this.addOptions(this.pack, facets.packs);
@@ -92,7 +96,9 @@ export class AssetWorkshop {
     for (const decision of DECISIONS) { const control = button(decision.label, 'decision'); control.dataset.decision = decision.id; this.decisionButtons.append(control); }
     this.use = node('input'); this.use.maxLength = 160; this.use.placeholder = 'Ej. estación de cocina'; this.use.dataset.reviewField = 'use';
     this.collection = node('input'); this.collection.maxLength = 100; this.collection.placeholder = 'Ej. taller de cuero'; this.collection.dataset.reviewField = 'collection';
-    this.inspector.append(this.decisionButtons, this.field('Uso previsto', this.use), this.field('Colección de trabajo', this.collection));
+    this.publishedBadge = node('p', 'aw-published'); this.publishedBadge.hidden = true;
+    const hint = node('p', 'aw-note aw-use-hint', `${useHint[lang()]}.`);
+    this.inspector.append(this.decisionButtons, hint, this.publishedBadge, this.field('Uso previsto', this.use), this.field('Colección de trabajo', this.collection));
     const tasks = node('fieldset', 'aw-tasks'); tasks.append(node('legend', '', 'Trabajo que necesita'));
     for (const task of REVIEW_TASKS) { const label = node('label'), input = node('input'); input.type = 'checkbox'; input.value = task.id; input.dataset.reviewTask = task.id; label.append(input, node('span', '', task.label)); tasks.append(label); }
     this.inspector.append(tasks);
@@ -172,6 +178,8 @@ export class AssetWorkshop {
       const geometryOnly = limits.some(text => /geometry|geometría|placeholder|retextur/i.test(text));
       const badge = node('span', `aw-badge ${ready ? 'is-ready' : ''}`, ready ? geometryOnly ? 'Geometría · material pendiente' : 'Prueba disponible' : 'Preparación pendiente');
       const decision = reviews[entry.id]?.decision; copy.append(badge);
+      const publication = publicationState(entry, this.published);
+      if (publication) copy.append(node('span', `aw-published${publication === 'published' ? '' : ' is-other-revision'}`, publishedText[publication][lang()]));
       if (decision && decision !== 'unreviewed') copy.append(node('small', 'aw-card-decision', DECISIONS.find(d => d.id === decision)?.label || decision));
       card.append(visual, copy); this.list.append(card);
     }
@@ -196,7 +204,13 @@ export class AssetWorkshop {
     this.presentation.value = limits.some(text => /geometry|geometría|placeholder|retextur/i.test(text)) ? 'geometry' : 'pbr';
     this.preview.mode = this.presentation.value;
     this.root.classList.remove('aw-show-library'); this.mobileSwitches.querySelector('[data-action="library-panel"]').setAttribute('aria-expanded', 'false');
-    this.renderReview(); this.renderProvenance(); this.renderLibrary(); await this.loadPreview();
+    this.renderPublication(); this.renderReview(); this.renderProvenance(); this.renderLibrary(); await this.loadPreview();
+  }
+  renderPublication() {
+    const publication = publicationState(this.selected, this.published);
+    this.publishedBadge.hidden = !publication;
+    this.publishedBadge.className = `aw-published${publication === 'published-other-revision' ? ' is-other-revision' : ''}`;
+    this.publishedBadge.textContent = publication ? publishedText[publication][lang()] : '';
   }
   async changeVariant(id) { this.flushCurrent(); this.variantId = id; this.renderReview(); this.renderProvenance(); await this.loadPreview(); }
   async loadPreview() {

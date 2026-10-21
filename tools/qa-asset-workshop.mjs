@@ -60,6 +60,11 @@ try {
     assert.ok(await page.locator('.aw-source-warning').isVisible());
     await capture('desktop-cauldron');
   });
+  await check('published cauldron shows the GM editor badge', async () => {
+    await select('aw-pilot-01');
+    assert.ok((await page.locator('.aw-card.is-selected .aw-published').innerText()).includes('Publicado en el editor GM'));
+    assert.ok((await page.locator('p.aw-published').innerText()).includes('Publicado en el editor GM'));
+  });
   await check('earlier cauldron control loads the original baked textures', async () => {
     await select('aw-pilot-02'); const state = await page.evaluate(() => __mn.assetWorkshop.preview.state); assert.ok(state.textureDimensions.some(t => t.width >= 512)); evidence.loaded.push(state); await capture('textured-cauldron-control');
     await select('aw-pilot-01');

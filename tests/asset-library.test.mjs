@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { assetFacets, filterAssets, hasAssetPreview, loadAssetLibrary, paginateAssets } from '../src/editor/assetLibrary.js';
+import fs from 'node:fs';
+import { assetFacets, filterAssets, hasAssetPreview, indexPublished, loadAssetLibrary, paginateAssets, publicationState } from '../src/editor/assetLibrary.js';
 
 const entry = (overrides = {}) => ({
   id: 'aw-pilot-03', name: 'Algodón intacto y cosechado', originalName: 'SM_Cotton_A + SM_Cotton_A_Harvested',
@@ -131,4 +132,48 @@ test('facets and pagination are bounded and report exact totals', () => {
     { id: 'other', name: 'Otro' }, { id: 'UltimateFarming', name: 'Ultimate Farming' },
   ], types: ['model', 'texture'] });
   assert.deepEqual(paginateAssets(items, { page: 4, pageSize: 1 }), { items: [items[1]], page: 2, pageSize: 1, pages: 2, total: 2 });
+});
+
+test('indexPublished reads the real publication record and ignores foreign documents', () => {
+  const doc = JSON.parse(fs.readFileSync(new URL('../assets/workshop/published.json', import.meta.url), 'utf8'));
+  const index = indexPublished(doc);
+  assert.deepEqual([...index.keys()], ['aw-pilot-01', 'aw-pilot-05', 'aw-pilot-06', 'aw-pilot-07']);
+  assert.deepEqual([...index.values()].map((row) => row.editorId), ['model:aw-pilot-01', 'model:aw-pilot-05', 'model:aw-pilot-06', 'model:aw-pilot-07']);
+  assert.equal(indexPublished(null).size, 0);
+  assert.equal(indexPublished({ schema: 'other', entries: doc.entries }).size, 0);
+});
+
+test('publicationState tells published, other revision and unknown fichas apart', () => {
+  const index = indexPublished({ schema: 'marea.asset-published.v1', entries: [{ id: 'a', sourceRevision: 'r1', editorId: 'model:a', publishedAt: 't' }] });
+  assert.equal(publicationState({ id: 'a', sourceRevision: 'r1' }, index), 'published');
+  assert.equal(publicationState({ id: 'a', sourceRevision: 'r2' }, index), 'published-other-revision');
+  assert.equal(publicationState({ id: 'b', sourceRevision: 'r1' }, index), null);
+});
+
+test('library exposes the publication index and survives a missing published.json', async () => {
+  const catalog = { schema: 'marea.asset-workshop.catalog.v1', coverage: {}, entries: [entry()] };
+  const published = { schema: 'marea.asset-published.v1', entries: [{ id: 'aw-pilot-03', sourceRevision: 'snapshot-a', editorId: 'model:aw-pilot-03', publishedAt: 't' }] };
+  const load = (withPublished) => loadAssetLibrary({ url: 'c', preparedUrl: 'p', thumbnailsUrl: 't', publishedUrl: 'u',
+    fetchImpl: async (url) => url === 'c' ? { ok: true, json: async () => catalog } : url === 'u' && withPublished ? { ok: true, json: async () => published } : { ok: false, status: 404 } });
+  const library = await load(true);
+  assert.equal(publicationState(library.entries[0], library.published), 'published');
+  const missing = await load(false);
+  assert.equal(missing.published.size, 0);
+  assert.equal(missing.warnings.length, 1);
+});
+
+test('indexPublished skips malformed rows and publicationState tolerates a missing index', () => {
+  const index = indexPublished({ schema: 'marea.asset-published.v1', entries: [null, { id: 3 }, { id: 'ok', editorId: 'model:ok', sourceRevision: 'r' }] });
+  assert.deepEqual([...index.keys()], ['ok']);
+  assert.equal(indexPublished({ schema: 'marea.asset-published.v1', entries: 'x' }).size, 0);
+  assert.equal(publicationState({ id: 'ok', sourceRevision: 'r' }, null), null);
+  assert.equal(publicationState(null, index), null);
+});
+
+test('a failing published.json request yields an empty index without breaking the library', async () => {
+  const catalog = { schema: 'marea.asset-workshop.catalog.v1', coverage: {}, entries: [entry()] };
+  const library = await loadAssetLibrary({ url: 'c', preparedUrl: 'p', thumbnailsUrl: 't', publishedUrl: 'u',
+    fetchImpl: async (url) => { if (url === 'u') throw new TypeError('network'); return url === 'c' ? { ok: true, json: async () => catalog } : { ok: false, status: 404 }; } });
+  assert.equal(library.published.size, 0);
+  assert.equal(library.entries.length, 1);
 });
