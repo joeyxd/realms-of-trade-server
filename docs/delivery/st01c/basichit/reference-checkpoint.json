@@ -1,0 +1,1826 @@
+{
+  "aliveAtSteps": {
+    "12": {
+      "NE_Basic_Flash001": 1,
+      "NE_Flame_Basic_001": 1,
+      "NE_SimpleBurst": 196
+    },
+    "18": {
+      "NE_Basic_Flash001": 0,
+      "NE_Flame_Basic_001": 1,
+      "NE_SimpleBurst": 147
+    },
+    "2": {
+      "NE_Basic_Flash001": 1,
+      "NE_Flame_Basic_001": 1,
+      "NE_SimpleBurst": 250
+    },
+    "24": {
+      "NE_Basic_Flash001": 0,
+      "NE_Flame_Basic_001": 0,
+      "NE_SimpleBurst": 104
+    },
+    "30": {
+      "NE_Basic_Flash001": 0,
+      "NE_Flame_Basic_001": 0,
+      "NE_SimpleBurst": 44
+    },
+    "35": {
+      "NE_Basic_Flash001": 0,
+      "NE_Flame_Basic_001": 0,
+      "NE_SimpleBurst": 9
+    },
+    "6": {
+      "NE_Basic_Flash001": 1,
+      "NE_Flame_Basic_001": 1,
+      "NE_SimpleBurst": 250
+    }
+  },
+  "blankFrameAttempts": [
+    {
+      "action": "that step and every later one removed from capture.imageSteps",
+      "camera": "front",
+      "failingStep": 30,
+      "imageSize": 512,
+      "run": "basichit-ref-probe01",
+      "visiblePixels": null,
+      "visiblePixelsNote": "the gate raises after three attempts and does not report the count"
+    },
+    {
+      "action": "that step and every later one removed from capture.imageSteps",
+      "camera": "front",
+      "failingStep": 30,
+      "imageSize": 1024,
+      "run": "basichit-blank-attempt01",
+      "visiblePixels": null,
+      "visiblePixelsNote": "the gate raises after three attempts and does not report the count"
+    }
+  ],
+  "burst": {
+    "NE_Basic_Flash001": {
+      "birthSteps": [
+        1
+      ],
+      "birthsAfterStep60": false,
+      "countAtFirstStep": 1,
+      "firstStep": 1,
+      "lastStepAlive": 17,
+      "lifetimeMax": 0.30000001192092896,
+      "lifetimeMin": 0.30000001192092896,
+      "maxAlive": 1,
+      "particlesSpawned": 1,
+      "spriteSizeMax": 188.88890075683594,
+      "spriteSizeMin": 11.111111640930176
+    },
+    "NE_Flame_Basic_001": {
+      "birthSteps": [
+        1
+      ],
+      "birthsAfterStep60": false,
+      "countAtFirstStep": 1,
+      "firstStep": 1,
+      "lastStepAlive": 23,
+      "lifetimeMax": 0.4000000059604645,
+      "lifetimeMin": 0.4000000059604645,
+      "maxAlive": 1,
+      "particlesSpawned": 1,
+      "spriteSizeMax": 230.0000762939453,
+      "spriteSizeMin": 10
+    },
+    "NE_SimpleBurst": {
+      "birthSteps": [
+        1
+      ],
+      "birthsAfterStep60": false,
+      "countAtFirstStep": 250,
+      "firstStep": 1,
+      "lastStepAlive": 35,
+      "lifetimeMax": 0.5950140357017517,
+      "lifetimeMin": 0.10039026290178299,
+      "maxAlive": 250,
+      "particlesSpawned": 250,
+      "spriteSizeMax": 6.459887981414795,
+      "spriteSizeMin": 0.009453723207116127
+    }
+  },
+  "captureRuns": [
+    {
+      "framing": {
+        "cameraDistance": 800,
+        "cameraTarget": [
+          20,
+          0,
+          -10
+        ],
+        "orthoWidth": 850
+      },
+      "imageSize": 1024,
+      "imageSteps": [
+        2,
+        6,
+        12,
+        18,
+        24
+      ],
+      "name": "basichit-reference03",
+      "outcome": "complete",
+      "role": "final",
+      "wallSeconds": 44.9
+    },
+    {
+      "framing": {
+        "cameraDistance": 800,
+        "cameraTarget": [
+          20,
+          0,
+          -10
+        ],
+        "orthoWidth": 850
+      },
+      "imageSize": 1024,
+      "imageSteps": [
+        2,
+        6,
+        12,
+        18,
+        24
+      ],
+      "name": "basichit-reference04",
+      "outcome": "complete",
+      "role": "final",
+      "wallSeconds": 42.9
+    },
+    {
+      "framing": {
+        "cameraDistance": 500,
+        "cameraTarget": [
+          0,
+          0,
+          100
+        ],
+        "orthoWidth": 400
+      },
+      "imageSize": 512,
+      "imageSteps": [
+        2,
+        6,
+        12,
+        18,
+        30,
+        60,
+        120,
+        240
+      ],
+      "name": "basichit-ref-probe01",
+      "note": "first framing pass with the provisional capture block (imageSteps 2..240, 512 px)",
+      "outcome": "failed: RuntimeError: Blank reference capture at step 30 / front",
+      "role": "probe",
+      "wallSeconds": 32.4
+    },
+    {
+      "framing": {
+        "cameraDistance": 500.0,
+        "cameraTarget": [
+          0.0,
+          0.0,
+          100.0
+        ],
+        "orthoWidth": 400.0
+      },
+      "imageSize": 512,
+      "imageSteps": [
+        2,
+        6,
+        12,
+        18
+      ],
+      "name": "basichit-ref-probe02",
+      "note": "imageSteps cut to 2, 6, 12, 18 after the blank frame of probe01; full 241 particle files at the provisional framing",
+      "outcome": "complete: 12 image frames, 241 particle steps",
+      "role": "probe",
+      "wallSeconds": 32.1
+    },
+    {
+      "framing": {
+        "cameraDistance": 800.0,
+        "cameraTarget": [
+          20.0,
+          0.0,
+          -10.0
+        ],
+        "orthoWidth": 850.0
+      },
+      "imageSize": 512,
+      "imageSteps": [
+        2,
+        6,
+        12,
+        18
+      ],
+      "name": "basichit-ref-probe03",
+      "note": "recommended framing applied; particle files equal to probe02",
+      "outcome": "complete: 12 image frames, 241 particle steps",
+      "role": "probe",
+      "wallSeconds": 31.1
+    },
+    {
+      "framing": {
+        "cameraDistance": 800.0,
+        "cameraTarget": [
+          20.0,
+          0.0,
+          -10.0
+        ],
+        "orthoWidth": 850.0
+      },
+      "imageSize": 512,
+      "imageSteps": [
+        2,
+        6,
+        12,
+        18
+      ],
+      "name": "basichit-overlap01",
+      "note": "meant as reference01; a second Unreal instance started while it ran, so the pair was renamed and repeated",
+      "outcome": "complete: 12 image frames, 241 particle steps",
+      "role": "discarded",
+      "wallSeconds": 32.5
+    },
+    {
+      "framing": {
+        "cameraDistance": 800.0,
+        "cameraTarget": [
+          20.0,
+          0.0,
+          -10.0
+        ],
+        "orthoWidth": 850.0
+      },
+      "imageSize": 512,
+      "imageSteps": [
+        2,
+        6,
+        12,
+        18
+      ],
+      "name": "basichit-overlap02",
+      "note": "meant as reference02; it overlapped basichit-overlap01 and is not used (it also compared equal to it)",
+      "outcome": "complete: 12 image frames, 241 particle steps",
+      "role": "discarded",
+      "wallSeconds": 29.9
+    },
+    {
+      "framing": {
+        "cameraDistance": 800.0,
+        "cameraTarget": [
+          20.0,
+          0.0,
+          -10.0
+        ],
+        "orthoWidth": 850.0
+      },
+      "imageSize": 512,
+      "imageSteps": [
+        2,
+        6,
+        12,
+        18
+      ],
+      "name": "basichit-reference01",
+      "note": "first serial pair at 512 px (about 80 px of effect); superseded by the 1024 px pair",
+      "outcome": "complete: 12 image frames, 241 particle steps",
+      "role": "superseded",
+      "wallSeconds": 30.9
+    },
+    {
+      "framing": {
+        "cameraDistance": 800.0,
+        "cameraTarget": [
+          20.0,
+          0.0,
+          -10.0
+        ],
+        "orthoWidth": 850.0
+      },
+      "imageSize": 512,
+      "imageSteps": [
+        2,
+        6,
+        12,
+        18
+      ],
+      "name": "basichit-reference02",
+      "note": "repeat of basichit-reference01 at 512 px; compared equal to it",
+      "outcome": "complete: 12 image frames, 241 particle steps",
+      "role": "superseded",
+      "wallSeconds": 31.8
+    },
+    {
+      "framing": {
+        "cameraDistance": 800,
+        "cameraTarget": [
+          20,
+          0,
+          -10
+        ],
+        "orthoWidth": 850
+      },
+      "imageSize": 1024,
+      "imageSteps": [
+        2,
+        6,
+        12,
+        18,
+        24,
+        30
+      ],
+      "name": "basichit-blank-attempt01",
+      "note": "1024 px with imageSteps 2, 6, 12, 18, 24, 30; first attempt of the name basichit-reference03, renamed after the failure",
+      "outcome": "failed: RuntimeError: Blank reference capture at step 30 / front",
+      "role": "blank-frame-attempt",
+      "wallSeconds": 48.4
+    }
+  ],
+  "cmPerPixel": 0.830078125,
+  "codeHashes": {
+    "tools/unreal-niagara-probe/build_reference_checkpoint.py": "d979bc3330eac44dc73bf19631e9eceb3b676cc3f57261dea826eb907f92be02",
+    "tools/unreal-niagara-probe/capture_reference.py": "ffd69e33d0e6746b9ea18eb501cefc748ca38a4c3e13f7d597168dba5e391d8f",
+    "tools/unreal-niagara-probe/check_reference_checkpoint.py": "eb9e3d64f11c4bf18e46993087768a59606d4bdad7f126fe41697495ccb6dc59",
+    "tools/unreal-niagara-probe/compare_reference_runs.py": "dfbcb9f854dc99fdc44477847c7c854d19e3d74bf16482afbdd63b54208cf6a1",
+    "tools/unreal-niagara-probe/frame_from_particles.py": "b11c4cdef08a673c8001e95b1a17340d5149d64e68ee4a8387ffca663f8fd01d",
+    "tools/unreal-niagara-probe/render_reference_md.py": "8db112fa94e937364dd1813d72862ff481dd74126fafd8ebdfaccc6e314ee570"
+  },
+  "counts": {
+    "hdr": 3,
+    "images": 16,
+    "particleSteps": 241,
+    "referenceFiles": 265,
+    "steps": 240,
+    "textures": 4
+  },
+  "effectLastStepAlive": 35,
+  "engine": "5.8.0-55116800+++UE5+Release-5.8",
+  "framing": {
+    "applied": {
+      "cameraDistance": 800,
+      "cameraTarget": [
+        20,
+        0,
+        -10
+      ],
+      "orthoWidth": 850
+    },
+    "appliedRule": "recommendation of frame_from_particles.py on firstPass; the width is the larger of 1.2 x the largest extent and the width that puts every projected corner inside 90%",
+    "box": {
+      "center": [
+        19.709365844726562,
+        -2.41424560546875,
+        -7.716606140136719
+      ],
+      "extent": [
+        530.5168609619141,
+        503.43589782714844,
+        511.2296142578125
+      ],
+      "max": [
+        284.9677963256836,
+        249.30370330810547,
+        247.89820098876953
+      ],
+      "min": [
+        -245.54906463623047,
+        -254.13219451904297,
+        -263.33141326904297
+      ]
+    },
+    "cameras": {
+      "front": {
+        "fits": true,
+        "maxAbsRight": 254.13219451904297,
+        "maxAbsUp": 257.89820098876953
+      },
+      "oblique": {
+        "fits": true,
+        "maxAbsRight": 367.0591236401809,
+        "maxAbsUp": 368.0272271561159
+      },
+      "side": {
+        "fits": true,
+        "maxAbsRight": 265.54906463623047,
+        "maxAbsUp": 257.89820098876953
+      }
+    },
+    "firstPass": {
+      "box": {
+        "center": [
+          19.709365844726562,
+          -2.41424560546875,
+          -7.716606140136719
+        ],
+        "extent": [
+          530.5168609619141,
+          503.43589782714844,
+          511.2296142578125
+        ],
+        "max": [
+          284.9677963256836,
+          249.30370330810547,
+          247.89820098876953
+        ],
+        "min": [
+          -245.54906463623047,
+          -254.13219451904297,
+          -263.33141326904297
+        ]
+      },
+      "cameras": {
+        "front": {
+          "fits": false,
+          "maxAbsRight": 254.13219451904297,
+          "maxAbsUp": 363.33141326904297
+        },
+        "oblique": {
+          "fits": false,
+          "maxAbsRight": 381.2012592639119,
+          "maxAbsUp": 470.63061196714654
+        },
+        "side": {
+          "fits": false,
+          "maxAbsRight": 284.9677963256836,
+          "maxAbsUp": 363.33141326904297
+        }
+      },
+      "fits": false,
+      "largestSpriteSize": 230.0000762939453,
+      "recommendation": {
+        "cameraDistance": 800,
+        "cameraTarget": [
+          20,
+          0,
+          -10
+        ],
+        "orthoWidth": 850,
+        "orthoWidthFromExtent": 650
+      },
+      "run": "basichit-ref-probe02",
+      "specFraming": {
+        "cameraDistance": 500.0,
+        "cameraTarget": [
+          0.0,
+          0.0,
+          100.0
+        ],
+        "limitCm": 180.0,
+        "orthoWidth": 400.0
+      }
+    },
+    "fits": true,
+    "largestSpriteSize": 230.0000762939453,
+    "particleRecords": 5103,
+    "particleSteps": 241,
+    "specFraming": {
+      "cameraDistance": 800,
+      "cameraTarget": [
+        20,
+        0,
+        -10
+      ],
+      "limitCm": 382.5,
+      "orthoWidth": 850
+    }
+  },
+  "referenceFiles": [
+    {
+      "file": "frames/t0000_front.png",
+      "sha256": "4339ffdf7895f1cab4fe26cd55374ec0cacd71e186976c5271924655d71958dd"
+    },
+    {
+      "file": "frames/t0002_front.png",
+      "sha256": "4ab91fc267de8f07d540ce21d33c3160e3dddff633dd1e62008e7f82fdbd28ae"
+    },
+    {
+      "file": "frames/t0002_oblique.png",
+      "sha256": "612025fc5d50370338ca4acd7300c3ec67a946bbb637e5595d3875f5bffdb6da"
+    },
+    {
+      "file": "frames/t0002_side.png",
+      "sha256": "b8e5d140d4b16cc4a4398a0e730043e4cce4fa7e794faeb3f424fab510bac89a"
+    },
+    {
+      "file": "frames/t0006_front.png",
+      "sha256": "0f200251fefc6471020394b63863fd2542bd059ac9bd656e18c92f62a5436533"
+    },
+    {
+      "file": "frames/t0006_oblique.png",
+      "sha256": "7cf67f3ddc895fb02a8c6b3a8eea9b1203ef7f879f8d4d60983be44a83086817"
+    },
+    {
+      "file": "frames/t0006_side.png",
+      "sha256": "1221a3851eadeefb56ac0934849c7a65840f85e3109df76b593333437aae5091"
+    },
+    {
+      "file": "frames/t0012_front.png",
+      "sha256": "1189cdfe9e6dcb9e673bf9c07456d3a5ffbc52b7db9394787d34f3607ed01bf9"
+    },
+    {
+      "file": "frames/t0012_oblique.png",
+      "sha256": "af938512e9924cb279343dd307be47938d86737dd3c2bc4eb81aee4fc623da48"
+    },
+    {
+      "file": "frames/t0012_side.png",
+      "sha256": "33a8122ff10b039d7f0b07ec0626e5cafe3e0e3a54320d48ac2d3423a97961ed"
+    },
+    {
+      "file": "frames/t0018_front.png",
+      "sha256": "cd68c857708821bee884dec7455bb9018f0065ba67480f4fd4cfc38acc06747b"
+    },
+    {
+      "file": "frames/t0018_oblique.png",
+      "sha256": "42f6c7c7e746c69f25885c951de3402c6b490fa432c6efd23e35b194c71a1635"
+    },
+    {
+      "file": "frames/t0018_side.png",
+      "sha256": "5fcea9c3816060cb182a293d429cc48a472ff147383253b58df52563da4dfed5"
+    },
+    {
+      "file": "frames/t0024_front.png",
+      "sha256": "c903236d5b9eeae7b5fae3b0f9a1b47ea1a7e571cf204a1b3310c4f308b43f24"
+    },
+    {
+      "file": "frames/t0024_oblique.png",
+      "sha256": "83d1e84daa06beba45fe184809cb622388f1d35966862726b7778f7301df8f79"
+    },
+    {
+      "file": "frames/t0024_side.png",
+      "sha256": "4d5fadc4a75368380f56fafad27be4bff7fe143f021efb6fea277b008544693e"
+    },
+    {
+      "file": "frames/t0012_front_linear.hdr",
+      "sha256": "93e95c59ab37da72b9732aa7eb075ae1cba39d8833807f2f0a8bf1b185599642"
+    },
+    {
+      "file": "frames/t0012_oblique_linear.hdr",
+      "sha256": "d1a4f7bc3eef6b9e8f2d8e93a2d80535c60eaae1e5071ba60d1dad360ed838d0"
+    },
+    {
+      "file": "frames/t0012_side_linear.hdr",
+      "sha256": "14e4c542bf2221a6edf1cacf260f1db6911dddcee303b712e647162157f15aab"
+    },
+    {
+      "file": "particles/step_0000.json",
+      "sha256": "0445ffd55d5f65fb60a3ad177ef196e02dd817d1ce367cb3de83f516125f1198"
+    },
+    {
+      "file": "particles/step_0001.json",
+      "sha256": "66bd021bc5e4242f7ff74289dd57a8acb855a12527f2780cc3787bbd788991fc"
+    },
+    {
+      "file": "particles/step_0002.json",
+      "sha256": "a37f3e3b94dcbc18a56dd8a4a2ea31daa1304575f147d5f36c616cb9d757b51c"
+    },
+    {
+      "file": "particles/step_0003.json",
+      "sha256": "17b559e714c5e4c3264fad2e341bfdce0496b6e6507a4a9e4e1215c125857529"
+    },
+    {
+      "file": "particles/step_0004.json",
+      "sha256": "9a934122efa8b8f635d48429f2a43317523b15b74c41903fd864df7b10ffed1d"
+    },
+    {
+      "file": "particles/step_0005.json",
+      "sha256": "dfe595979e1b003011b8773edc13fdd4898b5c40f328a8f59849271a100501a3"
+    },
+    {
+      "file": "particles/step_0006.json",
+      "sha256": "7b5a80dfbc7116ecbdaad70dc58a63b8cbfa84aea64a549d9d6eb69d83b7ee63"
+    },
+    {
+      "file": "particles/step_0007.json",
+      "sha256": "1ab112666ae965f18dca5e88bc0784b5fea87bf780cf3144bf365be4fb181429"
+    },
+    {
+      "file": "particles/step_0008.json",
+      "sha256": "47268c44921c702b76d2fa55ea969156834bd8695a1016956ef58ad08501dd56"
+    },
+    {
+      "file": "particles/step_0009.json",
+      "sha256": "f1b93a0f89bfd8ae8ce9bdbb9b374780fc5885ba18cd97d2386d942e23f82538"
+    },
+    {
+      "file": "particles/step_0010.json",
+      "sha256": "bc6769d42d2cfe699ed6732c5cbcf3e901b2d2d451d539133249e6944b17f686"
+    },
+    {
+      "file": "particles/step_0011.json",
+      "sha256": "035027b59bc8881d7c2c09cef55f138c1cd379576416aefd871154c0f4d78694"
+    },
+    {
+      "file": "particles/step_0012.json",
+      "sha256": "5dc4d78a9cf78c9772eaea1f5e39e342214e480f93adb9a9890747dd5812cf4f"
+    },
+    {
+      "file": "particles/step_0013.json",
+      "sha256": "d3cba491d2106477bc286cfdcc84037b783445c07597c7602e89a0b2b4a0d71d"
+    },
+    {
+      "file": "particles/step_0014.json",
+      "sha256": "9878f6d15cc65cc65a5b2f6e4996e659b58f0dabdfc8eccde5b1150138e2361b"
+    },
+    {
+      "file": "particles/step_0015.json",
+      "sha256": "6e59256b3edc72865d8e0d58abe0ac6e401588bc1f70ddeea3472a35e9e0d2a4"
+    },
+    {
+      "file": "particles/step_0016.json",
+      "sha256": "3c361744104dcb7d8c2a780d93da216ec80845695c825210f28a79a2833ffcf1"
+    },
+    {
+      "file": "particles/step_0017.json",
+      "sha256": "2d14337a6f204c9ce714417fc93849a5e1ff91a12fab22883e89b08f4b22eb8b"
+    },
+    {
+      "file": "particles/step_0018.json",
+      "sha256": "58e2e02107c45a66474638c2fb9dc97c22a22758daf81e1c16bd662a5bc22878"
+    },
+    {
+      "file": "particles/step_0019.json",
+      "sha256": "ed7f166953c623b75aa6675bc8e5fa2631710a14592c2e0bec8e463708ca9b59"
+    },
+    {
+      "file": "particles/step_0020.json",
+      "sha256": "3b27561e6fbcd9e60fa99c4d22ff01f5ea4191ca9db41372168720423c886387"
+    },
+    {
+      "file": "particles/step_0021.json",
+      "sha256": "eb5283e91fc2d1eb611d839fa013bd53d66e2ab0b34ca7b031b8f42ddd3f0d5a"
+    },
+    {
+      "file": "particles/step_0022.json",
+      "sha256": "e35690e3fccd51ef0b51c6cfccd1f20733def1316df88eb4b28b98c05780ec77"
+    },
+    {
+      "file": "particles/step_0023.json",
+      "sha256": "673d8f3bb2bf6d0c70e97d9330924b43428d18d9e31462652ceb14e60f59b2f1"
+    },
+    {
+      "file": "particles/step_0024.json",
+      "sha256": "d5d175bb8f6b1289ff05da4991f88c8cb7152905b0aced79d7bfa9f6d548c68c"
+    },
+    {
+      "file": "particles/step_0025.json",
+      "sha256": "3d847d418404b902b2744f2c1d276f5a85149c5b7bbd512d0c528cb875c83dfe"
+    },
+    {
+      "file": "particles/step_0026.json",
+      "sha256": "7f33ff0c22fe18b2c90c27b7d2d64ee419fc3e5990967c3a032ee045852bef0c"
+    },
+    {
+      "file": "particles/step_0027.json",
+      "sha256": "068ae46248fa9899fe8c4ae54d7adcf5e397b78e2428387c6b7c2f17efb03834"
+    },
+    {
+      "file": "particles/step_0028.json",
+      "sha256": "d043bee6c093516d422be0b17d231d8d4a03df6e567e2261b58f5c92c933dcc0"
+    },
+    {
+      "file": "particles/step_0029.json",
+      "sha256": "9a4f819bc8869e9693a4dab6999404a1afa61030d8c89d5028656dd159fd0423"
+    },
+    {
+      "file": "particles/step_0030.json",
+      "sha256": "755d90b332c7621e6309a6163788748d91d59d40e1c56341da2740a292b1510a"
+    },
+    {
+      "file": "particles/step_0031.json",
+      "sha256": "4f1dc9c27e06aa579d9d1ae4380158715a7e4492a19fb97552be1d540edbccf4"
+    },
+    {
+      "file": "particles/step_0032.json",
+      "sha256": "7f4d21ee240e4adac2cdbc1ef7e6bb786f0a1cfa1a36c9419f9bac4725676540"
+    },
+    {
+      "file": "particles/step_0033.json",
+      "sha256": "8d70cf5000d3486f5100302b6e12e1ba59565accbaafef8fc8b5dc2e5b04612f"
+    },
+    {
+      "file": "particles/step_0034.json",
+      "sha256": "7303df29564134df2b0def6ca97146fcbbe5ab0ed04287fb9383ed439e6fa356"
+    },
+    {
+      "file": "particles/step_0035.json",
+      "sha256": "ebf0275348db90a7e65111cc8601c253b14cf7c461aa7b15f074039af4fbf802"
+    },
+    {
+      "file": "particles/step_0036.json",
+      "sha256": "7f9e3558a783040caa562cf033792cbd7ae5a43d34efa48611d8e4b576bd7b0a"
+    },
+    {
+      "file": "particles/step_0037.json",
+      "sha256": "1c949c1ac99d5939d6009a4144bd85a7e506c7c5b666d78761e80e634beeb3b2"
+    },
+    {
+      "file": "particles/step_0038.json",
+      "sha256": "6fdacf5397d2f72b7c0624ea23e0176748cdc320e91cb0164254cea05b93aace"
+    },
+    {
+      "file": "particles/step_0039.json",
+      "sha256": "daf5f7fecf1527fd3b20bebc0844734cc11d0162f4ad394da530661b8a9f9a9c"
+    },
+    {
+      "file": "particles/step_0040.json",
+      "sha256": "5456bfdeb048710ed5239a458f3f916d863f41a682dfdbd9f7db04e3c83faa83"
+    },
+    {
+      "file": "particles/step_0041.json",
+      "sha256": "e6701d529fb62d1c3c31d28e662b9be0cba86796640ba82c939fbf59688895f2"
+    },
+    {
+      "file": "particles/step_0042.json",
+      "sha256": "c78966980cfd9401f76d8da766d6621a0d7f1c5f182ffe4db8ddc3a7c15b1e4d"
+    },
+    {
+      "file": "particles/step_0043.json",
+      "sha256": "7d0da1b514cc9bd5e77f41da67186a2e84f900381ece49281b87ddb7ed461188"
+    },
+    {
+      "file": "particles/step_0044.json",
+      "sha256": "d82bddb612f59ec1983ff049d061ba11b644f054c4365c9735f47bf4015a72b9"
+    },
+    {
+      "file": "particles/step_0045.json",
+      "sha256": "f6a3edd4d62a2fef35c0e796c5ec99e1d0ffc8eae462221c4da9a074b2ada0a5"
+    },
+    {
+      "file": "particles/step_0046.json",
+      "sha256": "308626454dc4d81a126b36e4ba2c7f81b9f48943dbc772497d5476fd49e0762f"
+    },
+    {
+      "file": "particles/step_0047.json",
+      "sha256": "fef77167b2e45c25a99103800e919a447d5a40c2f0edbcda01c7c9703f7b5230"
+    },
+    {
+      "file": "particles/step_0048.json",
+      "sha256": "f19d88ffe2010bea3079671a720adb91f755ca2df483adef6ee4d040b66b4c0b"
+    },
+    {
+      "file": "particles/step_0049.json",
+      "sha256": "777b0f54000b9869ecfa4321da92f3d862f34451be2e24ea4d48dfeac3aaf6c2"
+    },
+    {
+      "file": "particles/step_0050.json",
+      "sha256": "ed4453ada7cdb6aa7ddc40c29d7aaae74eb3c1645535b12cef919e13fef9a34c"
+    },
+    {
+      "file": "particles/step_0051.json",
+      "sha256": "bf920ef526d241a32b5a7ed53c05038cdde7a90717492ce27772968bb85d85d5"
+    },
+    {
+      "file": "particles/step_0052.json",
+      "sha256": "ec014bf49d4b19b0dd75a96ce934ac8cbab5f8810ab29a3f05b78104d2d2acca"
+    },
+    {
+      "file": "particles/step_0053.json",
+      "sha256": "399eace076212f8a5b99819937fd864052adf482f30719cb96f637981b0c9f22"
+    },
+    {
+      "file": "particles/step_0054.json",
+      "sha256": "6fe48059dba93ac0a5488175217cc990ff5fd4cc4a61a8fcd9496ccd5cf2903d"
+    },
+    {
+      "file": "particles/step_0055.json",
+      "sha256": "cdd0fd59ce56e60be482a31fe4310ab10bc3c9e15ea40213dafb076fd4d2309a"
+    },
+    {
+      "file": "particles/step_0056.json",
+      "sha256": "e14d9a3c347ab6d33be3494068b4785ab237389bb1cddb12926912deacc3d391"
+    },
+    {
+      "file": "particles/step_0057.json",
+      "sha256": "4a05dd766a54fd618aad6d76b222f569474abfaafb3f2a5106873a98655307c4"
+    },
+    {
+      "file": "particles/step_0058.json",
+      "sha256": "3db2e53ccfada896e1bb782ef2b72c684854bd8dc6fdd66c27a6a661fe4fa878"
+    },
+    {
+      "file": "particles/step_0059.json",
+      "sha256": "db1778c724ffbe5069886299d4aafde15f142e98e81f9e088e5109a656bdd9d1"
+    },
+    {
+      "file": "particles/step_0060.json",
+      "sha256": "fb028b0fd7b58afc48fcefd5862b1cc0e80ed1a905fba779d2f4f9cc3ec0217d"
+    },
+    {
+      "file": "particles/step_0061.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0062.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0063.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0064.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0065.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0066.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0067.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0068.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0069.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0070.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0071.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0072.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0073.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0074.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0075.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0076.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0077.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0078.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0079.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0080.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0081.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0082.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0083.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0084.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0085.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0086.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0087.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0088.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0089.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0090.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0091.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0092.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0093.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0094.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0095.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0096.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0097.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0098.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0099.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0100.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0101.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0102.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0103.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0104.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0105.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0106.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0107.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0108.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0109.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0110.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0111.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0112.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0113.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0114.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0115.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0116.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0117.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0118.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0119.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0120.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0121.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0122.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0123.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0124.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0125.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0126.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0127.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0128.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0129.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0130.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0131.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0132.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0133.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0134.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0135.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0136.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0137.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0138.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0139.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0140.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0141.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0142.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0143.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0144.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0145.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0146.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0147.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0148.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0149.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0150.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0151.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0152.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0153.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0154.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0155.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0156.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0157.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0158.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0159.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0160.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0161.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0162.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0163.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0164.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0165.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0166.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0167.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0168.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0169.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0170.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0171.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0172.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0173.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0174.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0175.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0176.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0177.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0178.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0179.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0180.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0181.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0182.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0183.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0184.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0185.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0186.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0187.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0188.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0189.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0190.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0191.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0192.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0193.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0194.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0195.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0196.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0197.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0198.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0199.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0200.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0201.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0202.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0203.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0204.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0205.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0206.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0207.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0208.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0209.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0210.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0211.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0212.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0213.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0214.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0215.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0216.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0217.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0218.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0219.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0220.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0221.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0222.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0223.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0224.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0225.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0226.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0227.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0228.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0229.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0230.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0231.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0232.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0233.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0234.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0235.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0236.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0237.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0238.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0239.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "particles/step_0240.json",
+      "sha256": "51db4746f11deb06d91d2440c84a213b2d8c7f768a8ca10814b4c084d8d8f4ac"
+    },
+    {
+      "file": "textures/T_FireBall.png",
+      "sha256": "6be3a6e443561c262ff7e992758059d01068da88b78254af3a6379d807be0a1c"
+    },
+    {
+      "file": "textures/T_FlameUV_1.png",
+      "sha256": "18d1ebcaee3e1898979e8ea80c1423c541b298c683b1dcc7ef71aa87356ee25e"
+    },
+    {
+      "file": "textures/T_Ground_Crack.png",
+      "sha256": "048ff832cb6a67a19607059a3dbfe5ebf3da458924947db58ff79ac494585cf9"
+    },
+    {
+      "file": "textures/T_Hit_Circle.png",
+      "sha256": "e8187ccaa8d3733447e635c01cae3f4340204d1e54091a9eec8727a8e287094b"
+    },
+    {
+      "file": "capture-report.json",
+      "sha256": "a461ac3ef86cf8113cacd094c50a6ef2947e04a3651269263dd56eee10f38cc9"
+    }
+  ],
+  "referenceRun": "basichit-reference03",
+  "repeat": {
+    "cpuFramesExpected": 241,
+    "cpuFramesIdentical": 241,
+    "hdrFilesByteIdentical": 3,
+    "hdrFilesExpected": 3,
+    "ldrDecodedPixelDifferences": [
+      {
+        "file": "t0000_front.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0002_front.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0002_oblique.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0002_side.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0006_front.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0006_oblique.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0006_side.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0012_front.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0012_oblique.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0012_side.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0018_front.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0018_oblique.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0018_side.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0024_front.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0024_oblique.png",
+        "maxChannelDifference": 0
+      },
+      {
+        "file": "t0024_side.png",
+        "maxChannelDifference": 0
+      }
+    ],
+    "pngBinaryHashesMayDiffer": "PNG metadata is not used as pixel equality",
+    "reportKeysEqual": {
+      "counts": true,
+      "seed_configuration": true,
+      "settings": true
+    },
+    "result": "equal",
+    "runB": "basichit-reference04",
+    "texturesEqual": 4,
+    "texturesExpected": 4
+  },
+  "schema": "st01c-reference-checkpoint/1",
+  "scope": "Reference capture of the by-spec tools only; no visual fidelity, native simulation or final framing is claimed.",
+  "seedConfiguration": {
+    "fixtureSeedBase": 6371,
+    "handles": [
+      {
+        "name": "NE_Flame_Basic_001",
+        "originalDeterminism": false,
+        "seed": 6371
+      },
+      {
+        "name": "NE_Basic_Flash001",
+        "originalDeterminism": false,
+        "seed": 6372
+      },
+      {
+        "name": "NE_SimpleBurst",
+        "originalDeterminism": false,
+        "seed": 6373
+      }
+    ],
+    "scope": "in-memory comparison fixture only; originals not saved"
+  },
+  "settings": {
+    "cameraDistance": 800,
+    "cameraTarget": [
+      20,
+      0,
+      -10
+    ],
+    "cameras": [
+      {
+        "name": "front",
+        "pitch": 0,
+        "yaw": 0
+      },
+      {
+        "name": "oblique",
+        "pitch": 20,
+        "yaw": 45
+      },
+      {
+        "name": "side",
+        "pitch": 0,
+        "yaw": 90
+      }
+    ],
+    "dt": 0.016666666666666666,
+    "imageSize": 1024,
+    "imageSteps": [
+      2,
+      6,
+      12,
+      18,
+      24
+    ],
+    "lastStep": 240,
+    "linearStep": 12,
+    "orthoWidth": 850
+  },
+  "system": {
+    "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit",
+    "sourceSystemSha256": "97a82bae61b292371a78cadc6ffef2f7dcae3ea39ac0a9ccb6b5ed2ee57e18cf",
+    "spec": {
+      "file": "tools/unreal-niagara-probe/systems/ns-basichit.json",
+      "sha256": "955ab039b555d68ad37a044f8c7eea78e2008adec63014161c5dc8aeab2436f3"
+    }
+  },
+  "textureExports": [
+    {
+      "asset": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall",
+      "file": "textures/T_FireBall.png",
+      "height": 1024,
+      "sha256": "6be3a6e443561c262ff7e992758059d01068da88b78254af3a6379d807be0a1c",
+      "source_copy_package_sha256": "1d5c64ec6742cb1b37e1237b96f4736cce439f661d64ca90467482cfb77288ab",
+      "srgb": true,
+      "width": 2048
+    },
+    {
+      "asset": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1",
+      "file": "textures/T_FlameUV_1.png",
+      "height": 1024,
+      "sha256": "18d1ebcaee3e1898979e8ea80c1423c541b298c683b1dcc7ef71aa87356ee25e",
+      "source_copy_package_sha256": "4866b9058807eeef9a3da577670e150c6606d5b8d38eaedffc8579bfc36e00d4",
+      "srgb": true,
+      "width": 2048
+    },
+    {
+      "asset": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Ground_Crack",
+      "file": "textures/T_Ground_Crack.png",
+      "height": 2048,
+      "sha256": "048ff832cb6a67a19607059a3dbfe5ebf3da458924947db58ff79ac494585cf9",
+      "source_copy_package_sha256": "d7e4250127f10753b7e1c34ca62cbf784a96162643909bf25e703a8de6eef343",
+      "srgb": true,
+      "width": 2048
+    },
+    {
+      "asset": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Hit_Circle",
+      "file": "textures/T_Hit_Circle.png",
+      "height": 2048,
+      "sha256": "e8187ccaa8d3733447e635c01cae3f4340204d1e54091a9eec8727a8e287094b",
+      "source_copy_package_sha256": "0835a472b1ba3d7f9205aec8cd6adf0f64f0b66c908efe3fd731bcc8ddef40b1",
+      "srgb": true,
+      "width": 2048
+    }
+  ],
+  "visibleExtentPx": {
+    "t0000_front.png": [
+      0,
+      0
+    ],
+    "t0002_front.png": [
+      33,
+      35
+    ],
+    "t0002_oblique.png": [
+      35,
+      35
+    ],
+    "t0002_side.png": [
+      37,
+      35
+    ],
+    "t0006_front.png": [
+      84,
+      91
+    ],
+    "t0006_oblique.png": [
+      88,
+      87
+    ],
+    "t0006_side.png": [
+      92,
+      91
+    ],
+    "t0012_front.png": [
+      158,
+      158
+    ],
+    "t0012_oblique.png": [
+      170,
+      157
+    ],
+    "t0012_side.png": [
+      171,
+      158
+    ],
+    "t0018_front.png": [
+      216,
+      219
+    ],
+    "t0018_oblique.png": [
+      231,
+      206
+    ],
+    "t0018_side.png": [
+      233,
+      218
+    ],
+    "t0024_front.png": [
+      258,
+      278
+    ],
+    "t0024_oblique.png": [
+      294,
+      258
+    ],
+    "t0024_side.png": [
+      291,
+      277
+    ]
+  },
+  "visiblePixelsGt16": {
+    "frames/t0002_front.png": 845,
+    "frames/t0002_oblique.png": 890,
+    "frames/t0002_side.png": 936,
+    "frames/t0006_front.png": 5314,
+    "frames/t0006_oblique.png": 5494,
+    "frames/t0006_side.png": 5583,
+    "frames/t0012_front.png": 18027,
+    "frames/t0012_oblique.png": 18325,
+    "frames/t0012_side.png": 18242,
+    "frames/t0018_front.png": 9519,
+    "frames/t0018_oblique.png": 9281,
+    "frames/t0018_side.png": 9357,
+    "frames/t0024_front.png": 1151,
+    "frames/t0024_oblique.png": 1157,
+    "frames/t0024_side.png": 1144
+  }
+}

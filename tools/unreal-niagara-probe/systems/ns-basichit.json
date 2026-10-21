@@ -78,17 +78,17 @@
   "capture": {
     "dt": 0.016666666666666666,
     "lastStep": 240,
-    "imageSteps": [2, 6, 12, 18, 30, 60, 120, 240],
+    "imageSteps": [2, 6, 12, 18, 24],
     "linearStep": 12,
-    "imageSize": 512,
+    "imageSize": 1024,
     "cameras": [
       { "name": "front", "yaw": 0, "pitch": 0 },
       { "name": "oblique", "yaw": 45, "pitch": 20 },
       { "name": "side", "yaw": 90, "pitch": 0 }
     ],
-    "cameraTarget": [0, 0, 100],
-    "cameraDistance": 500,
-    "orthoWidth": 400,
+    "cameraTarget": [20, 0, -10],
+    "cameraDistance": 800,
+    "orthoWidth": 850,
     "textures": [
       "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall",
       "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1",

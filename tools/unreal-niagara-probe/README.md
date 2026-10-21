@@ -160,6 +160,34 @@ baseline, visible effect, source hashes and repeatability; compare with the
 [private Three.js lab](../niagara-native-lab/README.md). Engine launch success alone
 is insufficient (automation failures can still exit with status 0).
 
+### NS_BasicHit reference capture
+
+The by-spec capture works for a second system with its own spec (`systems/ns-basichit.json`, fixture seeds 6371/6372/6373).
+Window: dt 1/60, 240 steps, three cameras, 1024², image steps 2, 6, 12, 18, 24, linear step 12. Never run two Unreal instances at once. Same command as above, other spec and fresh run names:
+
+```powershell
+& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -d3d11 -RenderOffscreen -unattended -nop4 -nosplash -nosound '-ExecCmds=Automation RunTests Editor.Python.ST01c_Pilot.test_st01c_reference' '-TestExit=Automation Test Queue Empty' -CaptureRun=basichit-reference03 '-SystemSpec=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/systems/ns-basichit.json'
+```
+
+The capture raises when an image step after 0 renders fewer than 100 visible pixels (`capture-error.txt` names the step):
+remove that step and every later one from `capture.imageSteps` and repeat with a fresh name (for NS_BasicHit step 30 is blank, so the
+final spec ends at 24). The final pair is `basichit-reference03` and `basichit-reference04`, run one after the other. Framing comes from the
+particles, not from the eye:
+
+```powershell
+python tools/unreal-niagara-probe/frame_from_particles.py --spec tools/unreal-niagara-probe/systems/ns-basichit.json --run .scratch/unreal/basichit-reference03 [--json <out>]
+python tools/unreal-niagara-probe/build_reference_checkpoint.py --spec tools/unreal-niagara-probe/systems/ns-basichit.json --a .scratch/unreal/basichit-reference03 --b .scratch/unreal/basichit-reference04 --out docs/delivery/st01c/basichit/reference-checkpoint.json
+python tools/unreal-niagara-probe/render_reference_md.py --checkpoint docs/delivery/st01c/basichit/reference-checkpoint.json --out docs/delivery/st01c/basichit/REFERENCE.md
+python tools/unreal-niagara-probe/check_reference_checkpoint.py docs/delivery/st01c/basichit/reference-checkpoint.json --root .
+```
+
+`frame_from_particles.py` takes the box of all particle positions grown by half the largest sprite size and tests it against every
+camera (orthographic, 90% of the half width); exit 0 when it fits, otherwise it prints the recommended `cameraTarget`, `orthoWidth`
+and `cameraDistance`. `build_reference_checkpoint.py` writes the audit (compare numbers, framing, burst facts, file and texture
+hashes, code hashes); `render_reference_md.py` writes the Spanish `REFERENCE.md` from that checkpoint (the committed document equals its
+regeneration); `check_reference_checkpoint.py` re-hashes all of it and exits 0 only when everything matches. Read
+[the BasicHit reference](../../docs/delivery/st01c/basichit/REFERENCE.md) for the numbers and what is not accepted.
+
 ## Effective compiled CPU pilot
 
 `ReadCompiledPilot` exposes the effective system and particle CPU HLSL after the

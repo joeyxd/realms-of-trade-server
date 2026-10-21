@@ -61,9 +61,9 @@ check(pilot["textures"] == (TEXTURES + "T_FlameUV_2", TEXTURES + "T_Smoke_1"), "
 
 hit = load(os.path.join(SYSTEMS, "ns-basichit.json"))
 check(hit["dt"] == pilot["dt"] and hit["last_step"] == 240, "basichit window is the pilot window")
-check(hit["image_steps"] == (2, 6, 12, 18, 30, 60, 120, 240) and hit["linear_step"] == 12, "basichit steps")
-check(hit["cameras"] == pilot["cameras"] and hit["target"] == pilot["target"], "basichit cameras")
-check(hit["distance"] == 500.0 and hit["ortho_width"] == 400.0 and hit["size"] == 512, "basichit framing")
+check(hit["image_steps"] == (2, 6, 12, 18, 24) and hit["linear_step"] == 12, "basichit steps")
+check(hit["cameras"] == pilot["cameras"] and hit["target"] == (20.0, 0.0, -10.0), "basichit cameras")
+check(hit["distance"] == 800.0 and hit["ortho_width"] == 850.0 and hit["size"] == 1024, "basichit framing")
 check(hit["textures"] == tuple(TEXTURES + n for n in ("T_FireBall", "T_FlameUV_1", "T_Ground_Crack", "T_Hit_Circle")), "basichit textures")
 
 # The names the library users import keep existing, taken from the pilot spec.

@@ -3,7 +3,7 @@
   "system": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit",
   "systemSpec": {
     "file": "tools/unreal-niagara-probe/systems/ns-basichit.json",
-    "sha256": "60622885ea17620af3bb2353fc03f97dc92215f58a38889974690d77dd630661"
+    "sha256": "955ab039b555d68ad37a044f8c7eea78e2008adec63014161c5dc8aeab2436f3"
   },
   "engine": "5.8.0-55116800+++UE5+Release-5.8",
   "completed": true,
