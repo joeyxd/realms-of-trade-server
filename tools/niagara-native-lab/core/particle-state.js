@@ -13,3 +13,7 @@ export function ageParticle(p, dt, killEpsilon) {
 export function integrateVelocity(p, dt) {
   p.position = p.position.map((v, axis) => f32(v + f32(p.velocity[axis] * dt)));
 }
+// ScaleColor over Particles.Initial.Color: RGB times 1, alpha times the scale.
+export const scaleColor = (initial, alpha) => initial.map((c, i) => f32(c * f32(1 * (i < 3 ? 1 : alpha))));
+// ScaleSpriteSize / SpriteSizeScale over Particles.Initial.SpriteSize: both axes times the factor.
+export const scaleSpriteSize = (initial, factor) => initial.map(s => f32(s * f32(factor * 1)));

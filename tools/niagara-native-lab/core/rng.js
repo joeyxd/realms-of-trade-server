@@ -23,3 +23,13 @@ export function random4(id, tick, seed, counter) {
   return [x, y, z, w].map(v => (v >>> 8) / 16777216);
 }
 export const uniformRange = (a, b, r) => f32(f32(a) + f32(f32(f32(b) - f32(a)) * r));
+// RandomRangeFloat as compiled: the VM table holds Min and the folded Max - Min (span), so the draw is
+// Min + span * r. uniformRange(a, b, r) equals uniformSpan(a, f32(f32(b) - f32(a)), r).
+export const uniformSpan = (min, span, r) => f32(f32(min) + f32(f32(span) * r));
+// RandomUnitVector (Unit Vector 3D): phi and cos(theta) from one float2 draw (min + span * r).
+// JS cos/sin stand in for the VM's, which differ by 1-2 ulp (RECIPE.md, unresolved 1).
+export function randomUnitVector(random, min, span) {
+  const phi = uniformSpan(min[0], span[0], random[0]), c = uniformSpan(min[1], span[1], random[1]);
+  const planar = f32(Math.sqrt(f32(1 - f32(c * c))));
+  return [f32(f32(Math.cos(phi)) * planar), f32(f32(Math.sin(phi)) * planar), c];
+}

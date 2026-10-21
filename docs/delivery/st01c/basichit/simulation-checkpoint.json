@@ -1,0 +1,29 @@
+{
+  "schema": "st01c-basichit-simulation-checkpoint/v1",
+  "scope": "Digests of BasicHitSimulation snapshots, steps 0..480 then seek(12); verify-basichit.mjs also compares basichit-reference03.",
+  "source": {
+    "file": "tools/niagara-native-lab/basichit-source.json",
+    "sha256": "6388736b01d507edeeb18db23193be9ba4646185f3362332be2778d62f49950b",
+    "hashing": "sha256 of the work-tree bytes, LF (tools/niagara-native-lab/** text eol=lf)"
+  },
+  "steps": 480,
+  "replayStep": 12,
+  "configurations": {
+    "basichit.default": {},
+    "basichit.seed0": {
+      "seed": 0
+    },
+    "basichit.seed12345": {
+      "seed": 12345
+    },
+    "basichit.seed65533": {
+      "seed": 65533
+    }
+  },
+  "digests": {
+    "basichit.default": "edf4115394be6f61bca9da3a9c9dd5fe79a632254c14a9afb3b09e336b945139",
+    "basichit.seed0": "71eaeddf2f77f65bf2653b8ef396defa1b72939c5ea9e442420b08e14759107b",
+    "basichit.seed12345": "9ac644b75858ced0b11138bc8e6440e019e413dfe5f33b670970549bb22a8e58",
+    "basichit.seed65533": "16570bdc8882a7ebc52d0ea71fba5bac3e06bde85ae26dd16d41312c0c8c0b7f"
+  }
+}

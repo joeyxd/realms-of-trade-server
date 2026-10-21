@@ -112,6 +112,21 @@ node tools/niagara-native-lab/verify-core.mjs
 node --test tools/niagara-native-lab/core.test.mjs
 ```
 
+# NS_BasicHit nativo, 2026-10-21
+
+`basichit-simulation.js` simula los tres emisores de `NS_BasicHit` sobre `core/` (ráfaga única,
+EmitterState Once) con la fuente versionada `basichit-source.json`, que escribe
+`prepare-basichit-source.mjs` desde las tablas VM y las LUT del T3D fijados por hash.
+`verify-basichit.mjs` lo compara con `basichit-reference03` (241 pasos, tolerancias de
+`verify-native.mjs`) y con los digests de `docs/delivery/st01c/basichit/simulation-checkpoint.json`;
+sale con código 1 ante cualquier fallo. Ver [entrega](../../docs/delivery/st01c/basichit/SIMULATION.md).
+
+```powershell
+node tools/niagara-native-lab/prepare-basichit-source.mjs
+node tools/niagara-native-lab/verify-basichit.mjs
+node --test tools/niagara-native-lab/basichit-simulation.test.mjs
+```
+
 # Profundidad del piloto
 
 `depth.html?run=depth02` compara las partículas nativas a 2 s con el mismo piloto

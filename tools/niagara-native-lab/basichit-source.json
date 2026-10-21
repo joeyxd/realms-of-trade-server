@@ -1,0 +1,1714 @@
+{
+  "schema": "st01c-basichit-source/v1",
+  "system": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit",
+  "engine": "5.8.0-55116800+++UE5+Release-5.8",
+  "recipe": "docs/delivery/st01c/basichit/RECIPE.md",
+  "scope": "Compiled CPU recipe of NS_BasicHit: burst-only births, EmitterState Once, system at the origin in world space. Values from the VM constant tables, LUTs and user parameters of system.t3d; no captured particle state is read.",
+  "emitterNames": [
+    "NE_Flame_Basic_001",
+    "NE_Basic_Flash001",
+    "NE_SimpleBurst"
+  ],
+  "fixtureSeeds": [
+    6371,
+    6372,
+    6373
+  ],
+  "emitters": [
+    {
+      "name": "NE_Flame_Basic_001",
+      "scripts": {
+        "spawn": "02-ParticleSpawnScriptInterpolated.hlsl",
+        "update": "03-ParticleUpdateScript.hlsl"
+      },
+      "emitterState": {
+        "mode": "Once",
+        "loopSeconds": 1,
+        "loopEnd": "01-SystemUpdateScript.hlsl:1338"
+      },
+      "burst": {
+        "count": 1,
+        "spawnTime": 0,
+        "intervalDt": 0,
+        "window": "01-SystemUpdateScript.hlsl:1372"
+      },
+      "killEpsilon": 0.00009999999747378752,
+      "lifetime": 0.4000000059604645,
+      "spriteSize": {
+        "min": 120,
+        "span": 0,
+        "counter": 1
+      },
+      "colorScale": {
+        "min": [
+          0.699999988079071,
+          0.699999988079071,
+          0.699999988079071,
+          1
+        ],
+        "span": [
+          0.30000001192092896,
+          0.30000001192092896,
+          0.30000001192092896,
+          0
+        ],
+        "counter": 2
+      },
+      "colorBase": [
+        3470,
+        468.9200134277344,
+        65.64869689941406,
+        1
+      ],
+      "writeSpriteRotation": true,
+      "rotation": {
+        "min": 0.25,
+        "span": 0.25,
+        "counter": 3
+      },
+      "subUVFrames": 40,
+      "curves": {
+        "alpha": {
+          "object": "NE_Flame_Basic_001.UpdateScript.NiagaraDataInterfaceCurve_0 (T3D:3343)",
+          "binding": "T3D:3489",
+          "keysLine": 3344,
+          "lutLines": "3345-3398",
+          "sampleCount": 54,
+          "rangeDefaulted": true,
+          "minTime": 0,
+          "inverseRange": 1,
+          "samples": [
+            1.0113190412521362,
+            1.0102529525756836,
+            1.0071070194244385,
+            1.001965045928955,
+            0.994907021522522,
+            0.9860150218009949,
+            0.9753710031509399,
+            0.9630550146102905,
+            0.949150025844574,
+            0.9337369799613953,
+            0.9168969988822937,
+            0.8987119793891907,
+            0.8792639970779419,
+            0.8586329817771912,
+            0.8369020223617554,
+            0.8141530156135559,
+            0.7904660105705261,
+            0.765923023223877,
+            0.7406049966812134,
+            0.7145950198173523,
+            0.6879730224609375,
+            0.6608219742774963,
+            0.6332219839096069,
+            0.6052550077438354,
+            0.577003002166748,
+            0.5485470294952393,
+            0.5199689865112305,
+            0.491349995136261,
+            0.462772011756897,
+            0.4343160092830658,
+            0.4060640037059784,
+            0.3780980110168457,
+            0.3504979908466339,
+            0.32334598898887634,
+            0.29672399163246155,
+            0.27071401476860046,
+            0.24539700150489807,
+            0.2208539992570877,
+            0.19716599583625793,
+            0.17441700398921967,
+            0.1526859998703003,
+            0.13205599784851074,
+            0.11260700225830078,
+            0.09442199766635895,
+            0.07758300006389618,
+            0.06216900050640106,
+            0.048264000564813614,
+            0.035948000848293304,
+            0.025304000824689865,
+            0.016411999240517616,
+            0.009353999979794025,
+            0.0042119999416172504,
+            0.0010659999679774046,
+            0
+          ],
+          "spawnCopy": "NE_Flame_Basic_001.SpawnScript.NiagaraDataInterfaceCurve_0 (T3D:3193)"
+        },
+        "size": {
+          "object": "NE_Flame_Basic_001.UpdateScript.NiagaraDataInterfaceCurve_1 (T3D:3401)",
+          "binding": "T3D:3490",
+          "keysLine": 3402,
+          "lutLines": "3403-3480",
+          "sampleCount": 79,
+          "rangeDefaulted": true,
+          "minTime": 0,
+          "inverseRange": 1,
+          "samples": [
+            0,
+            0.025640999898314476,
+            0.05128199979662895,
+            0.07692299783229828,
+            0.1025639995932579,
+            0.12820500135421753,
+            0.15384599566459656,
+            0.17948700487613678,
+            0.2051279991865158,
+            0.23076899349689484,
+            0.25641000270843506,
+            0.2820509970188141,
+            0.3076919913291931,
+            0.33333298563957214,
+            0.35897400975227356,
+            0.3846150040626526,
+            0.4102559983730316,
+            0.43589699268341064,
+            0.4615379869937897,
+            0.4871790111064911,
+            0.5128210186958313,
+            0.5384619832038879,
+            0.5641030073165894,
+            0.589743971824646,
+            0.6153849959373474,
+            0.6410260200500488,
+            0.6666669845581055,
+            0.6923080086708069,
+            0.7179489731788635,
+            0.7435899972915649,
+            0.7692310214042664,
+            0.794871985912323,
+            0.8205130100250244,
+            0.846153974533081,
+            0.8717949986457825,
+            0.8974360227584839,
+            0.9230769872665405,
+            0.9487180113792419,
+            0.9743589758872986,
+            1,
+            1.0256409645080566,
+            1.0512820482254028,
+            1.0769230127334595,
+            1.1025639772415161,
+            1.1282049417495728,
+            1.153846025466919,
+            1.1794869899749756,
+            1.2051279544830322,
+            1.2307690382003784,
+            1.256410002708435,
+            1.2820509672164917,
+            1.307692050933838,
+            1.3333330154418945,
+            1.3589739799499512,
+            1.3846149444580078,
+            1.410256028175354,
+            1.4358969926834106,
+            1.4615379571914673,
+            1.4871799945831299,
+            1.5128200054168701,
+            1.5384620428085327,
+            1.5641030073165894,
+            1.589743971824646,
+            1.6153850555419922,
+            1.6410260200500488,
+            1.6666669845581055,
+            1.692307949066162,
+            1.7179490327835083,
+            1.743589997291565,
+            1.7692309617996216,
+            1.7948720455169678,
+            1.8205130100250244,
+            1.846153974533081,
+            1.8717950582504272,
+            1.8974360227584839,
+            1.9230769872665405,
+            1.9487179517745972,
+            1.9743590354919434,
+            2
+          ],
+          "spawnCopy": "NE_Flame_Basic_001.SpawnScript.NiagaraDataInterfaceCurve_1 (T3D:3251)"
+        }
+      },
+      "randomCalls": [
+        {
+          "counter": 1,
+          "fn": "random3",
+          "component": "x",
+          "role": "SpriteSize 120..120",
+          "hlsl": "02-ParticleSpawnScriptInterpolated.hlsl:1348"
+        },
+        {
+          "counter": 2,
+          "fn": "random4",
+          "component": "xyzw",
+          "role": "color scale (0.7,0.7,0.7,1)..1",
+          "hlsl": "02-ParticleSpawnScriptInterpolated.hlsl:1361"
+        },
+        {
+          "counter": 3,
+          "fn": "random3",
+          "component": "x",
+          "role": "SpriteRotation 0.25..0.5",
+          "hlsl": "02-ParticleSpawnScriptInterpolated.hlsl:1385"
+        },
+        {
+          "counter": 4,
+          "fn": "random3",
+          "component": "x",
+          "role": "MaterialRandom 0..1 (not simulated)",
+          "hlsl": "02-ParticleSpawnScriptInterpolated.hlsl:1402"
+        }
+      ]
+    },
+    {
+      "name": "NE_Basic_Flash001",
+      "scripts": {
+        "spawn": "06-ParticleSpawnScriptInterpolated.hlsl",
+        "update": "07-ParticleUpdateScript.hlsl"
+      },
+      "emitterState": {
+        "mode": "Once",
+        "loopSeconds": 0.9708330035209656,
+        "loopEnd": "01-SystemUpdateScript.hlsl:1015"
+      },
+      "burst": {
+        "count": 1,
+        "spawnTime": 0,
+        "intervalDt": 0,
+        "window": "01-SystemUpdateScript.hlsl:1049"
+      },
+      "killEpsilon": 0.00009999999747378752,
+      "lifetime": 0.30000001192092896,
+      "spriteSize": [
+        100,
+        100
+      ],
+      "color": [
+        37,
+        6,
+        0.699999988079071,
+        1
+      ],
+      "writeSpriteRotation": false,
+      "curves": {
+        "alpha": {
+          "object": "NE_Basic_Flash001_3.UpdateScript.NiagaraDataInterfaceCurve_0 (T3D:1767)",
+          "binding": "T3D:1916",
+          "keysLine": 1768,
+          "lutLines": "1769-1822",
+          "sampleCount": 54,
+          "rangeDefaulted": false,
+          "minTime": -0.0045980000868439674,
+          "inverseRange": 0.9942860007286072,
+          "samples": [
+            1.0113190412521362,
+            1.010254979133606,
+            1.0071159601211548,
+            1.0019830465316772,
+            0.9949390292167664,
+            0.9860640168190002,
+            0.9754400253295898,
+            0.9631479978561401,
+            0.9492700099945068,
+            0.9338870048522949,
+            0.917078971862793,
+            0.898930013179779,
+            0.879518985748291,
+            0.8589289784431458,
+            0.8372399806976318,
+            0.8145340085029602,
+            0.790893018245697,
+            0.7663969993591309,
+            0.7411289811134338,
+            0.7151690125465393,
+            0.6885979771614075,
+            0.6614990234375,
+            0.6339529752731323,
+            0.6060400009155273,
+            0.5778430104255676,
+            0.5494419932365417,
+            0.5209190249443054,
+            0.49235600233078003,
+            0.4638330042362213,
+            0.43543198704719543,
+            0.4072349965572357,
+            0.37932199239730835,
+            0.35177600383758545,
+            0.3246769905090332,
+            0.29810601472854614,
+            0.27214598655700684,
+            0.2468779981136322,
+            0.22238199412822723,
+            0.19874100387096405,
+            0.17603500187397003,
+            0.15434600412845612,
+            0.13375599682331085,
+            0.1143449991941452,
+            0.0961960032582283,
+            0.07938800007104874,
+            0.06400500237941742,
+            0.050126999616622925,
+            0.03783499822020531,
+            0.02721099928021431,
+            0.01833599992096424,
+            0.01129200030118227,
+            0.006159000098705292,
+            0.003019999945536256,
+            0.001955999992787838
+          ],
+          "spawnCopy": "NE_Basic_Flash001_3.SpawnScript.NiagaraDataInterfaceCurve_0 (T3D:1614)"
+        },
+        "size": {
+          "object": "NE_Basic_Flash001_3.UpdateScript.NiagaraDataInterfaceCurve_1 (T3D:1828)",
+          "binding": "T3D:1917",
+          "keysLine": 1829,
+          "lutLines": "1830-1907",
+          "sampleCount": 79,
+          "rangeDefaulted": true,
+          "minTime": 0,
+          "inverseRange": 1,
+          "samples": [
+            0,
+            0.025640999898314476,
+            0.05128199979662895,
+            0.07692299783229828,
+            0.1025639995932579,
+            0.12820500135421753,
+            0.15384599566459656,
+            0.17948700487613678,
+            0.2051279991865158,
+            0.23076899349689484,
+            0.25641000270843506,
+            0.2820509970188141,
+            0.3076919913291931,
+            0.33333298563957214,
+            0.35897400975227356,
+            0.3846150040626526,
+            0.4102559983730316,
+            0.43589699268341064,
+            0.4615379869937897,
+            0.4871790111064911,
+            0.5128210186958313,
+            0.5384619832038879,
+            0.5641030073165894,
+            0.589743971824646,
+            0.6153849959373474,
+            0.6410260200500488,
+            0.6666669845581055,
+            0.6923080086708069,
+            0.7179489731788635,
+            0.7435899972915649,
+            0.7692310214042664,
+            0.794871985912323,
+            0.8205130100250244,
+            0.846153974533081,
+            0.8717949986457825,
+            0.8974360227584839,
+            0.9230769872665405,
+            0.9487180113792419,
+            0.9743589758872986,
+            1,
+            1.0256409645080566,
+            1.0512820482254028,
+            1.0769230127334595,
+            1.1025639772415161,
+            1.1282049417495728,
+            1.153846025466919,
+            1.1794869899749756,
+            1.2051279544830322,
+            1.2307690382003784,
+            1.256410002708435,
+            1.2820509672164917,
+            1.307692050933838,
+            1.3333330154418945,
+            1.3589739799499512,
+            1.3846149444580078,
+            1.410256028175354,
+            1.4358969926834106,
+            1.4615379571914673,
+            1.4871799945831299,
+            1.5128200054168701,
+            1.5384620428085327,
+            1.5641030073165894,
+            1.589743971824646,
+            1.6153850555419922,
+            1.6410260200500488,
+            1.6666669845581055,
+            1.692307949066162,
+            1.7179490327835083,
+            1.743589997291565,
+            1.7692309617996216,
+            1.7948720455169678,
+            1.8205130100250244,
+            1.846153974533081,
+            1.8717950582504272,
+            1.8974360227584839,
+            1.9230769872665405,
+            1.9487179517745972,
+            1.9743590354919434,
+            2
+          ],
+          "spawnCopy": "NE_Basic_Flash001_3.SpawnScript.NiagaraDataInterfaceCurve_1 (T3D:1675)"
+        }
+      },
+      "randomCalls": [
+        {
+          "counter": 1,
+          "fn": "random3",
+          "component": "x",
+          "role": "MaterialRandom 0..1 (not simulated)",
+          "hlsl": "06-ParticleSpawnScriptInterpolated.hlsl:1009"
+        }
+      ]
+    },
+    {
+      "name": "NE_SimpleBurst",
+      "scripts": {
+        "spawn": "10-ParticleSpawnScriptInterpolated.hlsl",
+        "update": "11-ParticleUpdateScript.hlsl"
+      },
+      "emitterState": {
+        "mode": "Once",
+        "loopSeconds": 1,
+        "loopEnd": "01-SystemUpdateScript.hlsl:692"
+      },
+      "burst": {
+        "count": 250,
+        "spawnTime": 0,
+        "intervalDt": 0,
+        "window": "01-SystemUpdateScript.hlsl:726"
+      },
+      "killEpsilon": 0.00009999999747378752,
+      "lifetime": {
+        "min": 0.10000000149011612,
+        "span": 0.5,
+        "counter": 2
+      },
+      "mass": {
+        "min": 0.4000000059604645,
+        "span": 1.600000023841858,
+        "counter": 3
+      },
+      "sizeFromMass": {
+        "densityMaterial": "steel",
+        "density": 8050,
+        "volumeScale": 1000000,
+        "exponent": 0.33333298563957214,
+        "spriteDimension": 1,
+        "calculateMeshScale": false
+      },
+      "color": [
+        36,
+        7,
+        0.699999988079071,
+        1
+      ],
+      "writeSpriteRotation": false,
+      "speed": {
+        "min": 75,
+        "span": 325,
+        "counter": 6
+      },
+      "direction": {
+        "min": [
+          0,
+          -1
+        ],
+        "span": [
+          6.28318977355957,
+          2
+        ],
+        "counter": 7
+      },
+      "velocityFromPoint": {
+        "useFalloffDistance": false,
+        "thresholdSquared": 9.999999439624929e-11
+      },
+      "drag": 0.75,
+      "curves": {
+        "alpha": {
+          "object": "NE_SimpleBurst.UpdateScript.NiagaraDataInterfaceCurve_1 (T3D:5310)",
+          "binding": "T3D:5378",
+          "keysLine": 5311,
+          "lutLines": "5312-5365",
+          "sampleCount": 54,
+          "rangeDefaulted": false,
+          "minTime": -0.0045980000868439674,
+          "inverseRange": 0.9942860007286072,
+          "samples": [
+            1.0113190412521362,
+            1.010254979133606,
+            1.0071159601211548,
+            1.0019830465316772,
+            0.9949390292167664,
+            0.9860640168190002,
+            0.9754400253295898,
+            0.9631479978561401,
+            0.9492700099945068,
+            0.9338870048522949,
+            0.917078971862793,
+            0.898930013179779,
+            0.879518985748291,
+            0.8589289784431458,
+            0.8372399806976318,
+            0.8145340085029602,
+            0.790893018245697,
+            0.7663969993591309,
+            0.7411289811134338,
+            0.7151690125465393,
+            0.6885979771614075,
+            0.6614990234375,
+            0.6339529752731323,
+            0.6060400009155273,
+            0.5778430104255676,
+            0.5494419932365417,
+            0.5209190249443054,
+            0.49235600233078003,
+            0.4638330042362213,
+            0.43543198704719543,
+            0.4072349965572357,
+            0.37932199239730835,
+            0.35177600383758545,
+            0.3246769905090332,
+            0.29810601472854614,
+            0.27214598655700684,
+            0.2468779981136322,
+            0.22238199412822723,
+            0.19874100387096405,
+            0.17603500187397003,
+            0.15434600412845612,
+            0.13375599682331085,
+            0.1143449991941452,
+            0.0961960032582283,
+            0.07938800007104874,
+            0.06400500237941742,
+            0.050126999616622925,
+            0.03783499822020531,
+            0.02721099928021431,
+            0.01833599992096424,
+            0.01129200030118227,
+            0.006159000098705292,
+            0.003019999945536256,
+            0.001955999992787838
+          ],
+          "spawnCopy": "NE_SimpleBurst.SpawnScript.NiagaraDataInterfaceCurve_1 (T3D:5138)"
+        },
+        "size": {
+          "object": "NE_SimpleBurst.UpdateScript.NiagaraDataInterfaceCurve_0 (T3D:5209)",
+          "binding": "T3D:5377",
+          "keysLine": 5210,
+          "lutLines": "5211-5304",
+          "sampleCount": 94,
+          "rangeDefaulted": false,
+          "minTime": -0.0045980000868439674,
+          "inverseRange": 0.9942860007286072,
+          "samples": [
+            1.0113190412521362,
+            1.0113860368728638,
+            1.0115790367126465,
+            1.0118900537490845,
+            1.0123100280761719,
+            1.01282799243927,
+            1.013435959815979,
+            1.0141249895095825,
+            1.0148839950561523,
+            1.015705943107605,
+            1.0165799856185913,
+            1.0174980163574219,
+            1.0184489488601685,
+            1.0194250345230103,
+            1.0204169750213623,
+            1.021414041519165,
+            1.0224080085754395,
+            1.0233910083770752,
+            1.0243510007858276,
+            1.0252799987792969,
+            1.0261679887771606,
+            1.027006983757019,
+            1.0277869701385498,
+            1.0284990072250366,
+            1.0291329622268677,
+            1.0296809673309326,
+            1.0301320552825928,
+            1.0304780006408691,
+            1.0307090282440186,
+            1.0308170318603516,
+            1.0307899713516235,
+            1.0306220054626465,
+            1.0303009748458862,
+            1.0298190116882324,
+            1.0291670560836792,
+            1.0283349752426147,
+            1.0273139476776123,
+            1.0260950326919556,
+            1.0246679782867432,
+            1.0230239629745483,
+            1.0211540460586548,
+            1.0190479755401611,
+            1.0166980028152466,
+            1.014093041419983,
+            1.0112249851226807,
+            1.008085012435913,
+            1.004662036895752,
+            1.0009479522705078,
+            0.9969339966773987,
+            0.992609977722168,
+            0.987966001033783,
+            0.982994019985199,
+            0.9776849746704102,
+            0.9720280170440674,
+            0.9660149812698364,
+            0.9596359729766846,
+            0.9528830051422119,
+            0.9457449913024902,
+            0.9382140040397644,
+            0.9302800297737122,
+            0.9219340085983276,
+            0.9131669998168945,
+            0.9039679765701294,
+            0.8943309783935547,
+            0.8842430114746094,
+            0.8736969828605652,
+            0.8610649704933167,
+            0.8436539769172668,
+            0.8218029737472534,
+            0.7959110140800476,
+            0.7663779854774475,
+            0.7336050271987915,
+            0.6979910135269165,
+            0.6599360108375549,
+            0.6198400259017944,
+            0.5781019926071167,
+            0.5351229906082153,
+            0.4913020133972168,
+            0.44703900814056396,
+            0.40273401141166687,
+            0.35878700017929077,
+            0.3155969977378845,
+            0.27356499433517456,
+            0.23308999836444855,
+            0.19457200169563293,
+            0.15841199457645416,
+            0.1250070035457611,
+            0.094760000705719,
+            0.06806900352239609,
+            0.04533499851822853,
+            0.026955999433994293,
+            0.013333999551832676,
+            0.004867000039666891,
+            0.001955999992787838
+          ],
+          "spawnCopy": "NE_SimpleBurst.SpawnScript.NiagaraDataInterfaceCurve_0 (T3D:5037)"
+        }
+      },
+      "randomCalls": [
+        {
+          "counter": 1,
+          "fn": "random3",
+          "component": "x",
+          "role": "SpriteSize 0.2..0.5, overwritten by the size from mass",
+          "hlsl": "10-ParticleSpawnScriptInterpolated.hlsl:1741"
+        },
+        {
+          "counter": 2,
+          "fn": "random3",
+          "component": "x",
+          "role": "Lifetime 0.1..0.6",
+          "hlsl": "10-ParticleSpawnScriptInterpolated.hlsl:1755"
+        },
+        {
+          "counter": 3,
+          "fn": "random3",
+          "component": "x",
+          "role": "Mass 0.4..2",
+          "hlsl": "10-ParticleSpawnScriptInterpolated.hlsl:1768"
+        },
+        {
+          "counter": 4,
+          "fn": "random3",
+          "component": "x",
+          "role": "SpriteRotation 0..1, discarded (WriteSpriteRotation false)",
+          "hlsl": "10-ParticleSpawnScriptInterpolated.hlsl:1783"
+        },
+        {
+          "counter": 5,
+          "fn": "random3",
+          "component": "x",
+          "role": "MaterialRandom 0..1 (not simulated)",
+          "hlsl": "10-ParticleSpawnScriptInterpolated.hlsl:1807"
+        },
+        {
+          "counter": 6,
+          "fn": "random3",
+          "component": "x",
+          "role": "VelocityStrength 75..400",
+          "hlsl": "10-ParticleSpawnScriptInterpolated.hlsl:1855"
+        },
+        {
+          "counter": 7,
+          "fn": "random3",
+          "component": "xy",
+          "role": "fallback unit vector (phi, cos theta)",
+          "hlsl": "10-ParticleSpawnScriptInterpolated.hlsl:1272"
+        },
+        {
+          "counter": 8,
+          "fn": "random3",
+          "component": "x",
+          "role": "unit circle angle, discarded",
+          "hlsl": "10-ParticleSpawnScriptInterpolated.hlsl:1294"
+        }
+      ]
+    }
+  ],
+  "disabledNodes": [
+    {
+      "emitter": "NE_Flame_Basic_001",
+      "module": "AddVelocity",
+      "t3dLine": 2703
+    },
+    {
+      "emitter": "NE_Flame_Basic_001",
+      "module": "SphereLocation",
+      "t3dLine": 2730
+    },
+    {
+      "emitter": "NE_Flame_Basic_001",
+      "module": "SpawnRate",
+      "t3dLine": 2969
+    },
+    {
+      "emitter": "NE_SimpleBurst",
+      "module": "GravityForce",
+      "t3dLine": 4754
+    },
+    {
+      "emitter": "NE_SimpleBurst",
+      "module": "SphereLocation",
+      "t3dLine": 4819
+    }
+  ],
+  "constants": [
+    {
+      "key": "NE_Flame_Basic_001.emitterState.loopSeconds",
+      "value": 1,
+      "bits": [
+        "0000803f"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_7"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:1282"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.burst.count",
+      "value": 1,
+      "bits": [
+        "0000803f"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_7"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:1381"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.burst.spawnTime",
+      "value": 0,
+      "bits": [
+        "00000000"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_3"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:1368"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.burst.intervalDt",
+      "value": 0,
+      "bits": [
+        "00000000"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_3"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:1409"
+      ]
+    },
+    {
+      "key": "NE_Basic_Flash001.emitterState.loopSeconds",
+      "value": 0.9708330035209656,
+      "bits": [
+        "8388783f"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_14"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:959"
+      ]
+    },
+    {
+      "key": "NE_Basic_Flash001.burst.count",
+      "value": 1,
+      "bits": [
+        "0000803f"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_7"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:1058"
+      ]
+    },
+    {
+      "key": "NE_Basic_Flash001.burst.spawnTime",
+      "value": 0,
+      "bits": [
+        "00000000"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_3"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:1045"
+      ]
+    },
+    {
+      "key": "NE_Basic_Flash001.burst.intervalDt",
+      "value": 0,
+      "bits": [
+        "00000000"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_3"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:1086"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.emitterState.loopSeconds",
+      "value": 1,
+      "bits": [
+        "0000803f"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_7"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:636"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.burst.count",
+      "value": 250,
+      "bits": [
+        "00007a43"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_11"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:735"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.burst.spawnTime",
+      "value": 0,
+      "bits": [
+        "00000000"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_3"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:722"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.burst.intervalDt",
+      "value": 0,
+      "bits": [
+        "00000000"
+      ],
+      "vm": {
+        "script": "SystemUpdateScript",
+        "names": [
+          "InternalConstant_3"
+        ],
+        "t3dLine": 5657
+      },
+      "hlsl": [
+        "01-SystemUpdateScript.hlsl:763"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.lifetime",
+      "value": 0.4000000059604645,
+      "bits": [
+        "cdcccc3e"
+      ],
+      "user": {
+        "parameter": "User.LifeTime",
+        "t3dLine": 5671
+      },
+      "hlsl": [
+        "02-ParticleSpawnScriptInterpolated.hlsl:1392"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.killEpsilon",
+      "value": 0.00009999999747378752,
+      "bits": [
+        "17b7d138"
+      ],
+      "vm": {
+        "script": "NE_Flame_Basic_001.UpdateScript",
+        "names": [
+          "InternalConstant_4"
+        ],
+        "t3dLine": 3488
+      },
+      "hlsl": [
+        "03-ParticleUpdateScript.hlsl:415"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.killEpsilon.spawnPass",
+      "value": 0.00009999999747378752,
+      "bits": [
+        "17b7d138"
+      ],
+      "vm": {
+        "script": "NE_Flame_Basic_001.SpawnScript",
+        "names": [
+          "InternalConstant_13"
+        ],
+        "t3dLine": 3338
+      },
+      "hlsl": [
+        "02-ParticleSpawnScriptInterpolated.hlsl:1053"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.spriteSize.min",
+      "value": 120,
+      "bits": [
+        "0000f042"
+      ],
+      "vm": {
+        "script": "NE_Flame_Basic_001.SpawnScript",
+        "names": [
+          "InternalConstant_2"
+        ],
+        "t3dLine": 3338
+      },
+      "hlsl": [
+        "02-ParticleSpawnScriptInterpolated.hlsl:697",
+        "02-ParticleSpawnScriptInterpolated.hlsl:698"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.spriteSize.span",
+      "value": 0,
+      "bits": [
+        "00000000"
+      ],
+      "vm": {
+        "script": "NE_Flame_Basic_001.SpawnScript",
+        "names": [
+          "InternalConstant_1"
+        ],
+        "t3dLine": 3338
+      },
+      "hlsl": [
+        "02-ParticleSpawnScriptInterpolated.hlsl:697",
+        "02-ParticleSpawnScriptInterpolated.hlsl:698"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.colorScale.min",
+      "value": [
+        0.699999988079071,
+        0.699999988079071,
+        0.699999988079071,
+        1
+      ],
+      "bits": [
+        "3333333f",
+        "3333333f",
+        "3333333f",
+        "0000803f"
+      ],
+      "vm": {
+        "script": "NE_Flame_Basic_001.SpawnScript",
+        "names": [
+          "InternalConstant_4",
+          "InternalConstant_4",
+          "InternalConstant_4",
+          "InternalConstant_5"
+        ],
+        "t3dLine": 3338
+      },
+      "hlsl": [
+        "02-ParticleSpawnScriptInterpolated.hlsl:755",
+        "02-ParticleSpawnScriptInterpolated.hlsl:756"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.colorScale.span",
+      "value": [
+        0.30000001192092896,
+        0.30000001192092896,
+        0.30000001192092896,
+        0
+      ],
+      "bits": [
+        "9a99993e",
+        "9a99993e",
+        "9a99993e",
+        "00000000"
+      ],
+      "vm": {
+        "script": "NE_Flame_Basic_001.SpawnScript",
+        "names": [
+          "InternalConstant_3",
+          "InternalConstant_3",
+          "InternalConstant_3",
+          "InternalConstant_1"
+        ],
+        "t3dLine": 3338
+      },
+      "hlsl": [
+        "02-ParticleSpawnScriptInterpolated.hlsl:755",
+        "02-ParticleSpawnScriptInterpolated.hlsl:756"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.colorBase",
+      "value": [
+        3470,
+        468.9200134277344,
+        65.64869689941406,
+        1
+      ],
+      "bits": [
+        "00e05845",
+        "c375ea43",
+        "224c8342",
+        "0000803f"
+      ],
+      "vm": {
+        "script": "NE_Flame_Basic_001.SpawnScript",
+        "names": [
+          "InternalConstant_6",
+          "InternalConstant_7",
+          "InternalConstant_8",
+          "InternalConstant_5"
+        ],
+        "t3dLine": 3338
+      },
+      "hlsl": [
+        "02-ParticleSpawnScriptInterpolated.hlsl:787"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.rotation.min",
+      "value": 0.25,
+      "bits": [
+        "0000803e"
+      ],
+      "vm": {
+        "script": "NE_Flame_Basic_001.SpawnScript",
+        "names": [
+          "InternalConstant_9"
+        ],
+        "t3dLine": 3338
+      },
+      "hlsl": [
+        "02-ParticleSpawnScriptInterpolated.hlsl:794",
+        "02-ParticleSpawnScriptInterpolated.hlsl:795"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.rotation.span",
+      "value": 0.25,
+      "bits": [
+        "0000803e"
+      ],
+      "vm": {
+        "script": "NE_Flame_Basic_001.SpawnScript",
+        "names": [
+          "InternalConstant_9"
+        ],
+        "t3dLine": 3338
+      },
+      "hlsl": [
+        "02-ParticleSpawnScriptInterpolated.hlsl:794",
+        "02-ParticleSpawnScriptInterpolated.hlsl:795"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.subUVFrames",
+      "value": 40,
+      "bits": [
+        "00002042"
+      ],
+      "vm": {
+        "script": "NE_Flame_Basic_001.UpdateScript",
+        "names": [
+          "InternalConstant_11"
+        ],
+        "t3dLine": 3488
+      },
+      "hlsl": [
+        "03-ParticleUpdateScript.hlsl:566"
+      ]
+    },
+    {
+      "key": "NE_Flame_Basic_001.subUVFrames.spawnPass",
+      "value": 40,
+      "bits": [
+        "00002042"
+      ],
+      "vm": {
+        "script": "NE_Flame_Basic_001.SpawnScript",
+        "names": [
+          "InternalConstant_18"
+        ],
+        "t3dLine": 3338
+      },
+      "hlsl": [
+        "02-ParticleSpawnScriptInterpolated.hlsl:1203"
+      ]
+    },
+    {
+      "key": "NE_Basic_Flash001.killEpsilon",
+      "value": 0.00009999999747378752,
+      "bits": [
+        "17b7d138"
+      ],
+      "vm": {
+        "script": "NE_Basic_Flash001_3.UpdateScript",
+        "names": [
+          "InternalConstant_4"
+        ],
+        "t3dLine": 1915
+      },
+      "hlsl": [
+        "07-ParticleUpdateScript.hlsl:406"
+      ]
+    },
+    {
+      "key": "NE_Basic_Flash001.lifetime",
+      "value": 0.30000001192092896,
+      "bits": [
+        "9a99993e"
+      ],
+      "vm": {
+        "script": "NE_Basic_Flash001_3.SpawnScript",
+        "names": [
+          "InternalConstant_7"
+        ],
+        "t3dLine": 1762
+      },
+      "hlsl": [
+        "06-ParticleSpawnScriptInterpolated.hlsl:636"
+      ]
+    },
+    {
+      "key": "NE_Basic_Flash001.spriteSize",
+      "value": [
+        100,
+        100
+      ],
+      "bits": [
+        "0000c842",
+        "0000c842"
+      ],
+      "vm": {
+        "script": "NE_Basic_Flash001_3.SpawnScript",
+        "names": [
+          "InternalConstant_13",
+          "InternalConstant_13"
+        ],
+        "t3dLine": 1762
+      },
+      "hlsl": [
+        "06-ParticleSpawnScriptInterpolated.hlsl:669"
+      ]
+    },
+    {
+      "key": "NE_Basic_Flash001.color",
+      "value": [
+        37,
+        6,
+        0.699999988079071,
+        1
+      ],
+      "bits": [
+        "00001442",
+        "0000c040",
+        "3333333f",
+        "0000803f"
+      ],
+      "vm": {
+        "script": "NE_Basic_Flash001_3.SpawnScript",
+        "names": [
+          "InternalConstant_9",
+          "InternalConstant_10",
+          "InternalConstant_11",
+          "InternalConstant_1"
+        ],
+        "t3dLine": 1762
+      },
+      "hlsl": [
+        "06-ParticleSpawnScriptInterpolated.hlsl:647"
+      ]
+    },
+    {
+      "key": "NE_Basic_Flash001.killThreshold.spawnPass",
+      "value": 0.29990002512931824,
+      "bits": [
+        "7f8c993e"
+      ],
+      "vm": {
+        "script": "NE_Basic_Flash001_3.SpawnScript",
+        "names": [
+          "InternalConstant_4"
+        ],
+        "t3dLine": 1762
+      },
+      "hlsl": [
+        "06-ParticleSpawnScriptInterpolated.hlsl:722"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.killEpsilon",
+      "value": 0.00009999999747378752,
+      "bits": [
+        "17b7d138"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.UpdateScript",
+        "names": [
+          "InternalConstant_4"
+        ],
+        "t3dLine": 5376
+      },
+      "hlsl": [
+        "11-ParticleUpdateScript.hlsl:410"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.killEpsilon.spawnPass",
+      "value": 0.00009999999747378752,
+      "bits": [
+        "17b7d138"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_22"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:1445"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.lifetime.min",
+      "value": 0.10000000149011612,
+      "bits": [
+        "cdcccc3d"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_2"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:762",
+        "10-ParticleSpawnScriptInterpolated.hlsl:763"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.lifetime.span",
+      "value": 0.5,
+      "bits": [
+        "0000003f"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_1"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:762",
+        "10-ParticleSpawnScriptInterpolated.hlsl:763"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.mass.min",
+      "value": 0.4000000059604645,
+      "bits": [
+        "cdcccc3e"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_4"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:786",
+        "10-ParticleSpawnScriptInterpolated.hlsl:787"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.mass.span",
+      "value": 1.600000023841858,
+      "bits": [
+        "cdcccc3f"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_3"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:786",
+        "10-ParticleSpawnScriptInterpolated.hlsl:787"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.sizeFromMass.density",
+      "value": 8050,
+      "bits": [
+        "0090fb45"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_7"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:987"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.sizeFromMass.volumeScale",
+      "value": 1000000,
+      "bits": [
+        "00247449"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_8"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:1078"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.sizeFromMass.exponent",
+      "value": 0.33333298563957214,
+      "bits": [
+        "9faaaa3e"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_10"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:1080"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.sizeFromMass.spriteDimension",
+      "value": 1,
+      "bits": [
+        "0000803f"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_5"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:1052"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.color",
+      "value": [
+        36,
+        7,
+        0.699999988079071,
+        1
+      ],
+      "bits": [
+        "00001042",
+        "0000e040",
+        "3333333f",
+        "0000803f"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_27",
+          "InternalConstant_28",
+          "InternalConstant_29",
+          "InternalConstant_5"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:907"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.speed.min",
+      "value": 75,
+      "bits": [
+        "00009642"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_12"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:1124",
+        "10-ParticleSpawnScriptInterpolated.hlsl:1125"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.speed.span",
+      "value": 325,
+      "bits": [
+        "0080a243"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_11"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:1124",
+        "10-ParticleSpawnScriptInterpolated.hlsl:1125"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.direction.min",
+      "value": [
+        0,
+        -1
+      ],
+      "bits": [
+        "00000000",
+        "000080bf"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_9",
+          "InternalConstant_16"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:1269",
+        "10-ParticleSpawnScriptInterpolated.hlsl:1270"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.direction.span",
+      "value": [
+        6.28318977355957,
+        2
+      ],
+      "bits": [
+        "e40fc940",
+        "00000040"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_14",
+          "InternalConstant_15"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:1269",
+        "10-ParticleSpawnScriptInterpolated.hlsl:1270"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.velocityFromPoint.thresholdSquared",
+      "value": 9.999999439624929e-11,
+      "bits": [
+        "fee6db2e"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_17"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:1350"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.drag",
+      "value": 0.75,
+      "bits": [
+        "0000403f"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.UpdateScript",
+        "names": [
+          "InternalConstant_11"
+        ],
+        "t3dLine": 5376
+      },
+      "hlsl": [
+        "11-ParticleUpdateScript.hlsl:433"
+      ]
+    },
+    {
+      "key": "NE_SimpleBurst.drag.spawnPass",
+      "value": 0.75,
+      "bits": [
+        "0000403f"
+      ],
+      "vm": {
+        "script": "NE_SimpleBurst.SpawnScript",
+        "names": [
+          "InternalConstant_31"
+        ],
+        "t3dLine": 5204
+      },
+      "hlsl": [
+        "10-ParticleSpawnScriptInterpolated.hlsl:1468"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "file": "docs/delivery/st01c/basichit/source-export-manifest.json",
+      "sha256": "8f4d6fc208b836e32ce46ddec800f161c97394dde3f731d056e3e2ef37422cd5"
+    },
+    {
+      "file": ".scratch/unreal/basichit-compiled/report.json",
+      "sha256": "bf7dbf1828993ec89ec41a46e048f39a634d57f94250ff0f8a5039aad7868ea8"
+    },
+    {
+      "file": ".scratch/unreal/basichit-compiled/01-SystemUpdateScript.hlsl",
+      "sha256": "396a436f3098cb2d9aebc530a01ab66749b5bca6c6bae47d9fb2e26c1e9ae985"
+    },
+    {
+      "file": ".scratch/unreal/basichit-compiled/02-ParticleSpawnScriptInterpolated.hlsl",
+      "sha256": "8e0463fcad6217f00d3d5f02f05a5e7e12c4ba52c68662ff023718d62e7597e7"
+    },
+    {
+      "file": ".scratch/unreal/basichit-compiled/03-ParticleUpdateScript.hlsl",
+      "sha256": "104ae5eff280edd2c6a179028c80d7990460593bab1fcc8f413a267dd99dfb79"
+    },
+    {
+      "file": ".scratch/unreal/basichit-compiled/06-ParticleSpawnScriptInterpolated.hlsl",
+      "sha256": "3cc4052f6bcadfc1684b20186347e2891160338fa5522b921a0ec8633c7a0384"
+    },
+    {
+      "file": ".scratch/unreal/basichit-compiled/07-ParticleUpdateScript.hlsl",
+      "sha256": "7eb7cb31db3ffe028778921387b164400e895536c84341cf0f4d2664a68f1985"
+    },
+    {
+      "file": ".scratch/unreal/basichit-compiled/10-ParticleSpawnScriptInterpolated.hlsl",
+      "sha256": "4c3dca93808d50199bf0471e26ecac5d12af4c7692a4f8ee126b4a83f43df0bb"
+    },
+    {
+      "file": ".scratch/unreal/basichit-compiled/11-ParticleUpdateScript.hlsl",
+      "sha256": "779de30d447b01b365d12c53783fd9b6efa15c9b8bfd3f00f991f324877460fd"
+    },
+    {
+      "file": ".scratch/unreal/basichit-source/system.t3d",
+      "sha256": "9d563be84e24a7381cd7c83ffc364402c50ddc1337fa230c3bc6fa77d9e54969"
+    }
+  ]
+}
