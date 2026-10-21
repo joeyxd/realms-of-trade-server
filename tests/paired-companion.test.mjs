@@ -147,7 +147,7 @@ test('pairing keeps the one-use credential in memory and reuses the scoped durab
   assert.equal(captures.claims[0].code, CODE);
   assert.equal(captures.runners[0].options.authorization.token, TOKEN);
   assert.deepEqual(captures.runners[0].options.content, CONTENT);
-  assert.equal(captures.runners[0].options.grant.capabilities.join(','), 'chat');
+  assert.equal(captures.runners[0].options.grant.capabilities.join(','), 'chat,presence');
   const before = companion.budget;
   const memoryBefore = await readFile(join(directory, 'memory.jsonl'), 'utf8');
   await companion.stop();

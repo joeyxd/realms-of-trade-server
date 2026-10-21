@@ -6,7 +6,9 @@ export const LAB_LIMITS = Object.freeze({
   maxTaskHorizonMs: 30000, movementBlockedAfterMs: 1500, movementMinProgressMm: 150,
 });
 export const LAB_CAPABILITIES = Object.freeze(['move', 'aim', 'attack_pve']);
-export const NETWORK_CAPABILITIES = Object.freeze([...LAB_CAPABILITIES, 'chat', 'body_pve', 'inventory_read', 'market_read', 'trade_buy', 'trade_sell']);
+export const NETWORK_CAPABILITIES = Object.freeze([...LAB_CAPABILITIES, 'chat', 'body_pve', 'inventory_read', 'market_read', 'trade_buy', 'trade_sell', 'presence']);
+// IC03b: an attached mind may only ask the server to run these presence orders on its body.
+export const PRESENCE_ORDERS = Object.freeze(['follow', 'wait', 'return']);
 export const MOVEMENT_TYPES = Object.freeze(['go_to', 'follow', 'keep_distance']);
 
 const object = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);

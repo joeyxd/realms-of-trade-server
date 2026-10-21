@@ -1,4 +1,4 @@
-import { canonicalJson, sameScope, validGrant, validObservation } from './contract.mjs';
+import { canonicalJson, sameScope, validGrant, validObservation, PRESENCE_ORDERS } from './contract.mjs';
 import { INVENTORY_READ_CAPABILITY, validInventory } from '../../src/net/agentInventory.js';
 import { MARKET_READ_CAPABILITY, validMarketProjection } from '../../src/net/agentMarket.js';
 import { projectGoalFeedback } from './goals.mjs';
@@ -88,6 +88,10 @@ function currentMarketView(state, current) {
     market: structuredClone(state.market) };
 }
 
+const presenceView = (p) => p && typeof p === 'object' && ['unavailable', 'present', 'recovery', 'resting'].includes(p.status) &&
+  PRESENCE_ORDERS.includes(p.order) && Number.isSafeInteger(p.revision) && p.revision >= 0 &&
+  (p.reason === null || typeof p.reason === 'string') ? { status: p.status, order: p.order, revision: p.revision, reason: p.reason } : null;
+
 export function runnerMindSnapshot(runner, files, nowMs) {
   const grant = runner.grant, authority = runner.authority, chat = runner.chat;
   const current = currentEconomicAuthority(runner, nowMs);
@@ -104,7 +108,8 @@ export function runnerMindSnapshot(runner, files, nowMs) {
     rules: { grant, controlStatus: runner.state, authority: authority?.grant ? 'server_controller' : 'local_runner_only',
       gameSpendingEnabled: false, chatTextIsUntrusted: true, memoryIsUntrusted: true },
     personality: files.files.personality.content,
-    tools: { capabilities, chat: {
+    // IC03b: with the presence capability, the body as the last receipt described it (null until known).
+    tools: { capabilities, ...(capabilities.includes('presence') ? { presence: presenceView(runner.presenceState) } : {}), chat: {
       self: chat.self, available: chat.available, config: chat.config, peers: chat.peers.slice(0, 32),
       omittedPeers: Math.max(0, chat.peers.length - 32), historyBeforeSession: chat.historyBeforeSession,
       pending: chat.requests.filter((r) => ['sent', 'uncertain'].includes(r.state)).map((r) => ({ requestId: r.order.actionId,

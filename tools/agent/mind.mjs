@@ -67,7 +67,7 @@ export class AgentMind {
     if (!integer(startedAtMs)) return Promise.resolve({ ok: false, why: 'invalid_clock' });
     this.#requests++;
     const flight = { requestId: `mind:${randomUUID()}`, startedAtMs, cancelled: false, completed: false,
-      controller: new AbortController(), dispatched: false, report: null, timer: null, resolve: null, mode, messageId, turn: null, providerContext: null };
+      controller: new AbortController(), dispatched: false, report: null, timer: null, resolve: null, mode, messageId, turn: null, providerContext: null, body: false };
     const result = new Promise((resolve) => { flight.resolve = resolve; });
     this.#flight = flight;
     flight.timer = setTimeout(() => this.#interrupt(flight, 'inference_timeout'), this.#limits.timeoutMs);
@@ -162,6 +162,8 @@ export class AgentMind {
       const admitted = this.#conversation.begin(snapshot, flight.messageId, this.#now());
       if (!admitted.ok) { this.#finish(flight, { ok: false, why: admitted.why }); return; }
       flight.turn = admitted.turn;
+      // IC03b body mode: only a server-granted presence capability lets the reply carry a body order.
+      flight.body = Array.isArray(snapshot.required?.tools?.capabilities) && snapshot.required.tools.capabilities.includes('presence');
       // Protect the selected message, route and policy even if optional chat is pruned.
       snapshot.required.tools = { ...(plain(snapshot.required.tools) ? snapshot.required.tools : { body: snapshot.required.tools }),
         conversation: { ...copy(flight.turn), policy: this.#conversation.state.policy,
@@ -186,7 +188,7 @@ export class AgentMind {
       [flight.turn?.source?.text ?? '', snapshot.memoryQueryText ?? '', ...(snapshot.goalFeedback ?? []).map((f) => `${f.type} ${f.state}`)].join(' ').slice(0, 8000), this.#now());
     this.#budget.assertAdapter?.(this.#adapter);
     const context = buildMindContext({ snapshot, adapter: this.#adapter, requestId: flight.requestId,
-      limits: this.#limits, contextLimits: this.#contextLimits, nowMs: this.#now(), mode: flight.mode });
+      limits: this.#limits, contextLimits: this.#contextLimits, nowMs: this.#now(), mode: flight.mode, body: flight.body });
     flight.report = context.report ?? null;
     if (!context.ok) { this.#finish(flight, { ok: false, why: context.why }); return; }
     // A selected historical source may expire while its interpretation is in flight.
@@ -253,7 +255,7 @@ export class AgentMind {
     // A rate-derived charge is not a provider invoice. Unknown usage keeps its full durable hold.
     if (this.#nativeMetering && !settlement.ok) { this.#finish(flight, { ok: false, why: 'native_usage_unavailable' }); return; }
     if (settlement.overrun) { this.#finish(flight, { ok: false, why: 'provider_limit_overrun' }); return; }
-    const decision = parseDecision(response?.text, this.#limits.maxResponseBytes, flight.mode);
+    const decision = parseDecision(response?.text, this.#limits.maxResponseBytes, flight.mode, { body: flight.body });
     if (!decision) { this.#finish(flight, { ok: false, why: 'invalid_decision' }); return; }
     const outputTokens = this.#nativeMetering ? settlement.entry.usage.outputTokens : this.#adapter.countText(response.text);
     if (!integer(outputTokens) || outputTokens > this.#limits.maxOutputTokens) {
@@ -344,7 +346,9 @@ export class AgentMind {
         this.#finish(flight, { ok: false, why: 'chat_submission_uncertain', action: { ok: false, state: 'uncertain', actionId: order.actionId } });
         return;
       }
-      this.#finish(flight, { ok: action.ok === true, ...(action.ok ? {} : { why: action.why ?? 'chat_rejected' }), action });
+      // The body order is returned, never executed here: it rides only on an accepted reply.
+      const body = flight.body && action.ok === true && decision.args.body ? { body: decision.args.body } : {};
+      this.#finish(flight, { ok: action.ok === true, ...(action.ok ? {} : { why: action.why ?? 'chat_rejected' }), action, ...body });
       return;
     }
     if (decision.type === 'wait') { this.#finish(flight, { ok: true, action: null }); return; }

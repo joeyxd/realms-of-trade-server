@@ -13,6 +13,8 @@ import { loadOwnerFiles } from './owner-files.mjs';
 import { createMemoryStore } from './memory-store.mjs';
 import { LocalResourceBudget } from './local-resource-budget.mjs';
 import { createLocalOpenAIMind } from './local-openai-mind.mjs';
+import { PresenceDriver } from './presence-driver.mjs';
+import { PRESENCE_ORDERS } from './contract.mjs';
 
 const fail = why => ({ ok: false, why });
 const exact = (value, keys) => value && typeof value === 'object' && !Array.isArray(value) &&
@@ -99,19 +101,21 @@ async function readManifest(file) {
 
 /** Local controller for an existing public companion. It never creates a GameHost. */
 export class PairedCompanion {
-  #directory; #url; #policy; #limits; #claim; #runnerFactory; #adapterFactory;
-  #onStatus;
-  #runner = null; #mind = null; #budget = null; #scope = null; #record = null; #ownerPeer = null; #latestFiles = null; #contextRevision = 0; #state = 'stopped';
+  #directory; #url; #policy; #limits; #claim; #runnerFactory; #adapterFactory; #driverFactory;
+  #onStatus; #onFeedback;
+  #runner = null; #mind = null; #driver = null; #budget = null; #scope = null; #record = null; #ownerPeer = null; #latestFiles = null; #contextRevision = 0; #state = 'stopped';
   #closed = false; #generation = 0; #queue = Promise.resolve(); #prepareTail = Promise.resolve(); #seen = new Set(); #waiters = new Set();
   #stopWaiters = new Set();
   constructor({ directory, url, baseUrl = DEFAULTS.baseUrl, modelId = DEFAULTS.modelId, thinkingMode = DEFAULTS.thinkingMode,
     maxCalls = 8, maxTokens = 1_000_000, claim = claimPairCode, runnerFactory = options => new AgentNetworkRunner(options),
-    adapterFactory = createLocalOpenAIMind, onStatus = () => {} } = {}) {
+    adapterFactory = createLocalOpenAIMind, onStatus = () => {}, onFeedback = () => {},
+    presenceDriverFactory = options => new PresenceDriver(options) } = {}) {
     if (typeof directory !== 'string' || !path.isAbsolute(directory) || typeof url !== 'string' ||
         !/^wss:\/\//i.test(url) || !Number.isInteger(maxCalls) || maxCalls < 1 || maxCalls > 8 ||
         !Number.isSafeInteger(maxTokens) || maxTokens < 32768 || maxTokens > 1_000_000 ||
         typeof claim !== 'function' || typeof runnerFactory !== 'function' || typeof adapterFactory !== 'function' ||
-        typeof onStatus !== 'function') throw new TypeError('invalid_paired_companion_options');
+        typeof onStatus !== 'function' || typeof onFeedback !== 'function' || typeof presenceDriverFactory !== 'function')
+      throw new TypeError('invalid_paired_companion_options');
     let endpoint;
     try { endpoint = new URL(url); } catch { throw new TypeError('invalid_paired_companion_options'); }
     if (endpoint.protocol !== 'wss:' || endpoint.username || endpoint.password || endpoint.search || endpoint.hash || !endpoint.hostname)
@@ -120,7 +124,7 @@ export class PairedCompanion {
     const draft = validateCompanionDraft({ ...DEFAULT_COMPANION_DRAFT, modelId, baseUrl, thinkingMode });
     this.#directory = path.resolve(directory); this.#url = url; this.#policy = { baseUrl: draft.baseUrl, modelId: draft.modelId, thinkingMode: draft.thinkingMode };
     this.#limits = { maxCalls, maxTokens }; this.#claim = claim; this.#runnerFactory = runnerFactory; this.#adapterFactory = adapterFactory;
-    this.#onStatus = onStatus;
+    this.#onStatus = onStatus; this.#onFeedback = onFeedback; this.#driverFactory = presenceDriverFactory;
   }
   get state() { return this.#state; }
   get scope() { return this.#scope && structuredClone(this.#scope); }
@@ -131,6 +135,10 @@ export class PairedCompanion {
   #notifyStopped() { for (const resolve of this.#stopWaiters) resolve(); this.#stopWaiters.clear(); }
   #status(phase, result) {
     try { this.#onStatus(Object.freeze({ phase, result })); } catch {}
+  }
+  // IC03b: presence receipts ('presence', from the runner) and order outcomes ('presence_order', from the driver).
+  #forward(event) {
+    try { this.#onFeedback(structuredClone(event)); } catch {}
   }
   #isCurrentPairing(generation) { return generation === this.#generation && !this.#closed && this.#state === 'pairing'; }
   #isCurrentSession(generation, runner) { return generation === this.#generation && !this.#closed &&
@@ -175,7 +183,7 @@ export class PairedCompanion {
         provider: { kind: 'loopback-openai-compatible', ...this.#policy, apiKey: null },
         serverBinding: { ownerId: scope.ownerId, characterId: scope.characterId, worldId: scope.worldId,
           configurationRevision: record.configuration.revision, controlRevision: record.control.revision },
-        capabilities: ['chat'], activated: true }, null, 2) + '\n', { mode: 0o600 });
+        capabilities: ['chat', 'presence'], activated: true }, null, 2) + '\n', { mode: 0o600 });
       const budgetExpiresAtMs = Date.now() + MAX_MINUTES * 60_000;
       await mkdir(path.join(dir, 'resource-budget'));
       budget = await LocalResourceBudget.initialize({ directory: path.join(dir, 'resource-budget'), scope,
@@ -194,11 +202,12 @@ export class PairedCompanion {
     if (this.#state !== 'stopped' || this.#runner) return fail('session_active');
     if (!/^[a-f0-9]{64}$/.test(code ?? '')) return fail('invalid_pair_code');
     this.#state = 'pairing'; const generation = ++this.#generation;
-    let runner = null, mind = null;
+    let runner = null, mind = null, driver = null;
     const disposeAttempt = () => {
-      mind?.close(); runner?.close();
+      driver?.close(); mind?.close(); runner?.close();
       if (this.#runner === runner) this.#runner = null;
       if (this.#mind === mind) this.#mind = null;
+      if (this.#driver === driver) this.#driver = null;
     };
     try {
       const bootstrap = await this.#claim({ url: this.#url, code });
@@ -207,8 +216,10 @@ export class PairedCompanion {
       if (!this.#isCurrentPairing(generation)) return fail('pair_cancelled');
       this.#budget = budget;
       this.#scope = bootstrap.scope; this.#record = bootstrap.record; this.#ownerPeer = bootstrap.ownerPeer;
+      // The server answers ['chat','presence'] for a mind attached to a live body and ['chat'] otherwise;
+      // WELCOME adopts the intersection, so a flag-off server keeps this runner chat-only.
       const grant = { v: 1, scope: { ...bootstrap.scope, sessionId: randomUUID() }, controlRevision: 1,
-        expiresAtMs: bootstrap.expiresAtMs, capabilities: ['chat'] };
+        expiresAtMs: bootstrap.expiresAtMs, capabilities: ['chat', 'presence'] };
       runner = this.#runnerFactory({ url: this.#url, grant, name: bootstrap.record.preset.name,
         skin: bootstrap.record.preset.skin, authorization: { token: bootstrap.token }, content: bootstrap.content,
         onFeedback: event => this.#feedback(event, generation) });
@@ -238,9 +249,19 @@ export class PairedCompanion {
       if (!this.#isCurrentPairing(generation)) { disposeAttempt(); return fail('pair_cancelled'); }
       await runner.connect();
       if (!this.#isCurrentPairing(generation) || runner.state !== 'ready') throw new Error('pair_session_stopped');
+      // Body mode only when the server adopted the presence capability for this attached mind.
+      if (runner.authority?.grant && runner.grant.capabilities.includes('presence')) {
+        const sessionId = runner.grant.scope.sessionId;
+        driver = this.#driverFactory({ request: (op, options) => runner.presence(op, options),
+          onEvent: data => this.#forward({ type: 'presence_order', data, sessionId }) });
+        this.#driver = driver;
+      }
       this.#state = 'ready';
+      // One load populates the body state; every later load precedes an owner-turn order.
+      if (driver) void driver.load().catch(() => {});
       return { ok: true, scope: this.scope, sessionId: runner.grant.scope.sessionId, name: bootstrap.record.preset.name,
-        expiresAtMs: bootstrap.expiresAtMs, authority: runner.authority?.grant ? 'server_controller' : 'server_admitted' };
+        expiresAtMs: bootstrap.expiresAtMs, authority: runner.authority?.grant ? 'server_controller' : 'server_admitted',
+        capabilities: [...runner.grant.capabilities] };
     } catch {
       disposeAttempt();
       if (this.#isCurrentPairing(generation)) this.#state = 'stopped';
@@ -250,6 +271,7 @@ export class PairedCompanion {
 
   #feedback(event, generation) {
     if (generation !== this.#generation) return;
+    if (event.type === 'presence') this.#forward(event);
     if (event.type === 'chat_message') {
       const message = event.data?.message;
       if (message && !event.data.fromHistory && message.sender?.id === this.#ownerPeer &&
@@ -260,9 +282,9 @@ export class PairedCompanion {
     }
     if (event.type === 'stopped') {
       this.#generation++;
-      const runner = this.#runner, mind = this.#mind;
-      this.#runner = null; this.#mind = null;
-      mind?.close(); runner?.close();
+      const runner = this.#runner, mind = this.#mind, driver = this.#driver;
+      this.#runner = null; this.#mind = null; this.#driver = null;
+      driver?.close(); mind?.close(); runner?.close();
       this.#state = 'stopped'; this.#notifyStopped();
     }
     for (const notify of this.#waiters) notify(event);
@@ -314,6 +336,7 @@ export class PairedCompanion {
       this.#status('inference', BUDGET_FAILURES.has(result?.why) ? 'budget_exhausted' : 'failed');
       return;
     }
+    if (result.body) this.#order(result.body, generation);
     const requestId = result?.action?.request?.order?.actionId ?? result?.action?.order?.actionId;
     const delivered = requestId ? await this.#waitForReply(requestId, generation) : false;
     if (generation !== this.#generation || this.#state !== 'ready') return;
@@ -324,6 +347,13 @@ export class PairedCompanion {
         if (!remembered?.ok) this.#status('memory', 'failed');
       } catch { this.#status('memory', 'failed'); }
     }
+  }
+  // The body order rides on the accepted reply of this owner turn. Not awaited: the driver paces,
+  // supersedes and reports it, and the server validates and executes it.
+  #order(op, generation) {
+    const driver = this.#driver;
+    if (!driver || generation !== this.#generation || this.#state !== 'ready' || !PRESENCE_ORDERS.includes(op)) return;
+    void driver.order(op).catch(() => {});
   }
   #snapshot(runner = this.#runner, files = this.#latestFiles) {
     if (!runner || !files?.ok) throw new Error('paired_documents_invalid');
@@ -348,10 +378,10 @@ export class PairedCompanion {
   async compactMemory(sourceIds) { return this.#state === 'ready' ? this.#mind.compactMemory({ sourceIds }) : fail('not_connected'); }
   stop() {
     if (this.#state === 'stopped') return { ok: true, state: 'stopped' };
-    ++this.#generation; this.#mind?.close(); this.#state = 'stopping';
+    ++this.#generation; this.#driver?.close(); this.#mind?.close(); this.#state = 'stopping';
     const runner = this.#runner;
     if (runner) { runner.stop(this.#scope.ownerId); runner.close(); }
-    this.#runner = null; this.#mind = null; this.#state = 'stopped'; this.#notifyStopped();
+    this.#runner = null; this.#mind = null; this.#driver = null; this.#state = 'stopped'; this.#notifyStopped();
     return { ok: true, state: 'stopped' };
   }
   close() { this.#closed = true; return this.stop(); }

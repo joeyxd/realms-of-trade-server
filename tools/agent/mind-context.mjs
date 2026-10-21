@@ -1,14 +1,15 @@
 import { createHash } from 'node:crypto';
 import { buildRunnerContext } from './runner-context.mjs';
-import { MIND_INSTRUCTIONS, MIND_RESPONSE_SCHEMA, CONVERSATION_INSTRUCTIONS, CONVERSATION_RESPONSE_SCHEMA, GOAL_INSTRUCTIONS, GOAL_RESPONSE_SCHEMA, MEMORY_INSTRUCTIONS, MEMORY_RESPONSE_SCHEMA, measuredRequest, bytes, mindLimits, validateAdapter, plain } from './mind-contract.mjs';
+import { MIND_INSTRUCTIONS, MIND_RESPONSE_SCHEMA, CONVERSATION_INSTRUCTIONS, CONVERSATION_RESPONSE_SCHEMA, CONVERSATION_BODY_INSTRUCTION, CONVERSATION_BODY_RESPONSE_SCHEMA, GOAL_INSTRUCTIONS, GOAL_RESPONSE_SCHEMA, MEMORY_INSTRUCTIONS, MEMORY_RESPONSE_SCHEMA, measuredRequest, bytes, mindLimits, validateAdapter, plain } from './mind-contract.mjs';
 
 // Count the exact adapter body on every context candidate. Required instructions and schema
 // remain outside the prunable document but inside the measured, transmitted request.
-export function buildMindContext({ snapshot, adapter, requestId, limits = {}, contextLimits = {}, nowMs, mode = 'decision' }) {
+export function buildMindContext({ snapshot, adapter, requestId, limits = {}, contextLimits = {}, nowMs, mode = 'decision', body = false }) {
   const config = mindLimits(limits); validateAdapter(adapter);
-  if (!['decision', 'conversation', 'goals', 'compaction'].includes(mode)) throw new TypeError('invalid mind mode');
-  const instructions = mode === 'conversation' ? CONVERSATION_INSTRUCTIONS : mode === 'goals' ? GOAL_INSTRUCTIONS : mode === 'compaction' ? MEMORY_INSTRUCTIONS : MIND_INSTRUCTIONS;
-  const responseSchema = mode === 'conversation' ? CONVERSATION_RESPONSE_SCHEMA : mode === 'goals' ? GOAL_RESPONSE_SCHEMA : mode === 'compaction' ? MEMORY_RESPONSE_SCHEMA : MIND_RESPONSE_SCHEMA;
+  if (!['decision', 'conversation', 'goals', 'compaction'].includes(mode) || typeof body !== 'boolean' || (body && mode !== 'conversation')) throw new TypeError('invalid mind mode');
+  // IC03b: a body-mode conversation adds one instruction sentence and the optional args.body order.
+  const instructions = mode === 'conversation' ? (body ? `${CONVERSATION_INSTRUCTIONS} ${CONVERSATION_BODY_INSTRUCTION}` : CONVERSATION_INSTRUCTIONS) : mode === 'goals' ? GOAL_INSTRUCTIONS : mode === 'compaction' ? MEMORY_INSTRUCTIONS : MIND_INSTRUCTIONS;
+  const responseSchema = mode === 'conversation' ? (body ? CONVERSATION_BODY_RESPONSE_SCHEMA : CONVERSATION_RESPONSE_SCHEMA) : mode === 'goals' ? GOAL_RESPONSE_SCHEMA : mode === 'compaction' ? MEMORY_RESPONSE_SCHEMA : MIND_RESPONSE_SCHEMA;
   if (!plain(contextLimits) || Object.keys(contextLimits).some((k) => !['maxMemoryUnits', 'maxCandidates', 'maxSelected'].includes(k)))
     throw new TypeError('invalid mind context limits');
   const packet = (context) => ({ v: 1, model: adapter.id, requestId, instructions,

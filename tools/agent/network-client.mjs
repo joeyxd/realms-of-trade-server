@@ -12,13 +12,28 @@ import { AgentChat } from './chat.mjs';
 import { AgentInventory } from './inventory.mjs';
 import { AgentMarket } from './market.mjs';
 import { AgentTrade } from './trade.mjs';
-import { labLimits, validGrant, integer } from './contract.mjs';
+import { labLimits, validGrant, integer, PRESENCE_ORDERS } from './contract.mjs';
 
 const fields = Object.fromEntries(PLAYER_FIELDS.map((name, i) => [name, i]));
 const neutral = () => ({ mx: 0, mz: 0, ax: 0, az: 0, btn: 0, prs: 0, w: 0 });
 const kinds = { [KIND.PLAYER]: 'player', [KIND.NPC]: 'npc', [KIND.ENEMY]: 'enemy' };
 const copy = (v) => structuredClone(v);
 const clock = () => Math.floor(performance.timeOrigin + performance.now());
+const plainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v) && Object.getPrototypeOf(v) === Object.prototype;
+const exactKeys = (v, keys) => plainObject(v) && Object.keys(v).length === keys.length && keys.every((k) => Object.hasOwn(v, k));
+const PRESENCE_STATUSES = ['unavailable', 'present', 'recovery', 'resting'];
+const MAX_PRESENCE_PENDING = 4;
+const presenceWhy = (v) => typeof v === 'string' && /^[a-z0-9_]{1,64}$/.test(v);
+// IC03b: a presence receipt exactly as server/companionPresence.mjs replies. Anything else is not adopted.
+function validPresenceReceipt(m, characterId) {
+  const p = m.presence;
+  return exactKeys(m, ['t', 'requestId', 'ok', 'why', 'enabled', 'presence']) && typeof m.ok === 'boolean' &&
+    (m.ok ? m.why === null : presenceWhy(m.why)) && typeof m.enabled === 'boolean' &&
+    (p === null || (exactKeys(p, ['characterKey', 'name', 'status', 'order', 'revision', 'entity', 'reason']) &&
+      p.characterKey === characterId && typeof p.name === 'string' && p.name.length <= 80 &&
+      PRESENCE_STATUSES.includes(p.status) && PRESENCE_ORDERS.includes(p.order) && integer(p.revision) &&
+      (p.entity === null || integer(p.entity)) && (p.reason === null || presenceWhy(p.reason))));
+}
 const networkTransport = (address, { origin } = {}) => {
   const WebSocketImpl = origin ? class OriginWebSocket extends WebSocket {
     constructor(url) { super(url, { origin }); }
@@ -37,9 +52,10 @@ export class AgentNetworkClient {
   #life = randomUUID(); #termination = null; #closedPromise; #closedResolve;
   #actionMeta = new Map(); #receipt = 0; #name; #skin; #weapon; #facade; #inventory; #market; #trade;
   #authorization; #authority = null; #controlAwaiting = null; #directPending = null;
+  #presencePending = new Map(); #presenceState = null; #presenceTimeoutMs;
   constructor({ url, grant, name = 'Brisa [IA]', skin = 0, weapon = 0, now = clock,
     onFeedback = () => {}, limits = {}, chatTimeoutMs = 6000, inventoryTimeoutMs = 3000, marketTimeoutMs = 3000,
-    tradeTimeoutMs = 5000, tradeOperations = new Map(), authorization = null, content = null, transportFactory = networkTransport }) {
+    tradeTimeoutMs = 5000, presenceTimeoutMs = 10000, tradeOperations = new Map(), authorization = null, content = null, transportFactory = networkTransport }) {
     const address = new URL(url);
     if (!['ws:', 'wss:'].includes(address.protocol) || address.username || address.password || address.search || address.hash) throw new TypeError('invalid game URL');
     if (!validGrant(grant) || typeof now !== 'function' || typeof onFeedback !== 'function') throw new TypeError('invalid agent configuration');
@@ -51,9 +67,13 @@ export class AgentNetworkClient {
         !(content.revisionId === null || typeof content.revisionId === 'string' && /^[a-f0-9]{64}$/.test(content.revisionId)))) throw new TypeError('invalid content revision');
     const contentIdentity = content === null ? null : copy(content);
     if (typeof name !== 'string' || name.length > 32 || !integer(skin) || skin > 4 || weapon !== 0) throw new TypeError('invalid character configuration');
-    this.#limits = labLimits(limits); this.#now = now; this.#feedback = onFeedback;
+    if (!integer(presenceTimeoutMs) || presenceTimeoutMs < 1 || presenceTimeoutMs > 60000) throw new TypeError('invalid presence timeout');
+    this.#limits = labLimits(limits); this.#now = now; this.#feedback = onFeedback; this.#presenceTimeoutMs = presenceTimeoutMs;
     this.#name = name; this.#skin = skin; this.#weapon = weapon;
-    this.#session = new AgentSession({ grant, limits, source: 'server' });
+    // Only the server grants presence, and only to an attached mind: a guest connection never holds it.
+    const local = authorization === null && grant.capabilities.includes('presence') ?
+      { ...grant, capabilities: grant.capabilities.filter((cap) => cap !== 'presence') } : grant;
+    this.#session = new AgentSession({ grant: local, limits, source: 'server' });
     this.#chat = new AgentChat({ characterId: grant.scope.characterId, limits: this.#limits, now,
       timeoutMs: chatTimeoutMs, onFeedback: (type, data) => this.#emit(type, data), send: (message) => {
         if (this.#state !== 'ready' || this.#t.closed || this.#t.ws.readyState !== 1) throw new Error('transport_closed');
@@ -111,6 +131,8 @@ export class AgentNetworkClient {
   get maxObservationAgeMs() { return this.#limits.maxObservationAgeMs; }
   get grant() { return this.#session.grant; }
   get termination() { return copy(this.#termination); }
+  // The body as the last presence receipt described it: { status, order, revision, reason }, or null.
+  get presenceState() { return copy(this.#presenceState); }
   async waitClosed(timeoutMs = 2000) {
     if (!integer(timeoutMs) || timeoutMs < 1 || timeoutMs > 60000) throw new TypeError('invalid close timeout');
     if (this.#t.closed) return true;
@@ -146,6 +168,7 @@ export class AgentNetworkClient {
   #message(m) {
     if (m?.t === MSG.AGENT_STATE && this.#authorization) { this.#serverControl(m); return; }
     if (!m || typeof m !== 'object' || this.#state === 'stopped') return;
+    if (m.t === MSG.AGENT_COMPANION_PRESENCE_RESULT) { this.#presenceReceipt(m); return; }
     if (m.t === MSG.AGENT_INVENTORY_RESULT) { this.#inventory.receive(m); return; }
     if (m.t === MSG.AGENT_MARKET_RESULT) { this.#market.receive(m); return; }
     if (m.t === MSG.AGENT_TRADE_RESULT) {
@@ -395,6 +418,42 @@ export class AgentNetworkClient {
     this.#emit('order', result);
     return result;
   }
+  // IC03b: one presence request on the attached body, matched to its receipt by requestId. The server
+  // validates and executes it; this only shapes the exact wire keys and settles the promise.
+  presence(op, options = {}) {
+    const fail = (why) => Promise.resolve({ ok: false, why });
+    const load = op === 'load';
+    if ((!load && !PRESENCE_ORDERS.includes(op)) || !(load ? exactKeys(options, []) :
+        exactKeys(options, ['expectedRevision']) && integer(options.expectedRevision))) return fail('invalid_request');
+    if (['stopping', 'stopped'].includes(this.#state)) return fail('closed');
+    if (!this.#client || this.#t.closed || this.#t.ws.readyState !== 1) return fail('not_connected');
+    if (!this.#authority || !this.grant.capabilities.includes('presence')) return fail('forbidden');
+    if (this.#presencePending.size >= MAX_PRESENCE_PENDING) return fail('busy');
+    const requestId = `presence:${randomUUID()}`;
+    const message = load ? { t: MSG.AGENT_COMPANION_PRESENCE, requestId, op } :
+      { t: MSG.AGENT_COMPANION_PRESENCE, requestId, op, expectedRevision: options.expectedRevision };
+    return new Promise((resolve) => {
+      const pending = { requestId, op, expectedRevision: load ? null : options.expectedRevision, resolve, timer: null };
+      pending.timer = setTimeout(() => this.#settlePresence(pending, { ok: false, why: 'timeout' }), this.#presenceTimeoutMs);
+      this.#presencePending.set(requestId, pending);
+      try { this.#t.send(message); }
+      catch { this.#settlePresence(pending, { ok: false, why: 'closed' }); }
+    });
+  }
+  #presenceReceipt(m) {
+    const pending = typeof m.requestId === 'string' ? this.#presencePending.get(m.requestId) : undefined;
+    if (!pending) return; // Unsolicited, timed out or already settled: never adopted.
+    if (!validPresenceReceipt(m, this.grant.scope.characterId)) { this.#settlePresence(pending, { ok: false, why: 'invalid_receipt' }); return; }
+    if (m.presence) this.#presenceState = { status: m.presence.status, order: m.presence.order, revision: m.presence.revision, reason: m.presence.reason };
+    this.#settlePresence(pending, { ok: m.ok, why: m.why, enabled: m.enabled, presence: copy(m.presence) });
+  }
+  #settlePresence(pending, receipt) {
+    if (this.#presencePending.get(pending.requestId) !== pending) return;
+    this.#presencePending.delete(pending.requestId); clearTimeout(pending.timer);
+    this.#emit('presence', { requestId: pending.requestId, op: pending.op, expectedRevision: pending.expectedRevision,
+      ok: receipt.ok, why: receipt.why, enabled: receipt.enabled ?? null, presence: receipt.presence ?? null });
+    pending.resolve(copy(receipt));
+  }
   sendChat(order) {
     if (this.actions.some((a) => a.order.actionId === order?.actionId)) return { ok: false, why: 'action_id_conflict' };
     const result = this.#chat.send(order, { grant: this.grant, observation: this.observation, ready: this.#state === 'ready' });
@@ -475,6 +534,7 @@ export class AgentNetworkClient {
     this.#inventory.stop(reason);
     this.#market.stop(reason);
     this.#trade.stop(reason);
+    for (const pending of [...this.#presencePending.values()]) this.#settlePresence(pending, { ok: false, why: 'closed' });
     // Drop any unsent outbox before sending a final neutral command on the live socket.
     this.#t.outbox.length = 0;
     if (sendNeutral && !this.#authority && this.#client?.joined && this.#t.ws.readyState === 1) {
@@ -495,7 +555,9 @@ export class AgentNetworkClient {
   }
   stop(ownerId) {
     if (ownerId !== this.grant.scope.ownerId) return { ok: false, why: 'owner_mismatch' };
-    if (this.#authority?.state === 'active' && this.#state === 'ready') {
+    // An attached mind (presence grant) holds no lease to release: the server refuses AGENT_RELEASE
+    // from it, so it ends by closing its socket, which leaves the body with its current order.
+    if (this.#authority?.state === 'active' && this.#state === 'ready' && !this.grant.capabilities.includes('presence')) {
       const epoch = this.#authority.grant.controlRevision;
       clearInterval(this.#timer); this.#session.interrupt('stop', this.#now()); this.#chat.stop('stop');
       this.#inventory.stop('stop');

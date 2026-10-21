@@ -1,5 +1,23 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**IC03b, 2026-10-20 — el runner emparejado conduce su cuerpo de presencia (alpha.85, protocolo 63 sin cambio):**
+[Entrega](delivery/ic03b-runner-presence.md). Lado runner de IC03a; sin cambios en servidor, SQL ni protocolo.
+`tools/agent/contract.mjs` añade `presence` a NETWORK_CAPABILITIES; PairedCompanion pide `["chat","presence"]` y entra
+en modo cuerpo solo si el servidor concede presence (bandera MN_COMPANION_PRESENCE); con la bandera apagada adopta
+`["chat"]` y nada cambia. `AgentNetworkClient.presence(op, { expectedRevision })` envía un `agent_companion_presence`
+con las claves exactas y resuelve con el recibo del mismo requestId (why locales: invalid_request, not_connected,
+forbidden, busy, timeout 10 s, closed, invalid_receipt). En modo cuerpo la respuesta del modelo admite `body`
+follow/wait/return junto al texto (esquema y una frase de instrucción extra; el chat sigue siendo dato no fiable y el
+servidor valida cada orden); la mente nunca ejecuta: `tools/agent/presence-driver.mjs` hace load, op con la revisión
+del recibo, un reintento en conflict, el último pedido gana (superseded), mínimo 1000 ms entre envíos y 20 por minuto
+(paced). Eventos `presence` y `presence_order` por onFeedback. Tests: tests/paired-companion-presence.test.mjs (casos
+a-f sobre servidor real con presencia encendida y apagada) y 2 en agent-network-client; gate 202/202. Incluye f2471f5
+(T-1020-84): un socket de mente revocado ya no cuenta como emparejado, 3 tests de revocación y nota de la tarjeta de
+presencia. Pendiente (IC03c): pair-companion.mjs aún imprime «Solo chat» y no muestra los resultados de presencia;
+pista en español para args.body en local-openai-mind.mjs; el test «live owner C01 delivery» de paired-companion es
+inestable desde antes (1/10 en HEAD limpio, 0/10 con este cambio). Prueba a mano: emparejar con la bandera encendida
+y decir sígueme / espera / vuelve.
+
 **ST01c, 2026-10-20 — decisión del autor: UASTC automático, deriva fijada, memoria móvil aceptada:**
 [Entrega](delivery/st01c/ATLAS-LAB.md) sección «Decisión del autor (2026-10-20)»,
 [aceptación](delivery/st01c/atlas-drift-acceptance.json). El autor vio la comparación visual (celdas de humo

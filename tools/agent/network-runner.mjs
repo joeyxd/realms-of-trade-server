@@ -58,6 +58,7 @@ export class AgentNetworkRunner {
   get nowMs() { return this.#active.nowMs; }
   get maxObservationAgeMs() { return this.#active.maxObservationAgeMs; }
   get viewReport() { return this.#active.viewReport; }
+  get presenceState() { return this.#active.presenceState; }
   waitClosed(timeoutMs = 2000) { return this.#active.waitClosed(timeoutMs); }
   get lifecycle() {
     return copy({ v: 1, policy: 'explicit_fresh_session', authority: this.authority?.grant ? 'server_controller' : 'local_runner_only', durability: 'process_only',
@@ -133,6 +134,7 @@ export class AgentNetworkRunner {
   readInventory(query) { return this.#retiredIds.has(query?.requestId) ? { ok: false, why: 'retired_request_id' } : this.#active.readInventory(query); }
   readMarket(query) { return this.#retiredIds.has(query?.requestId) ? { ok: false, why: 'retired_request_id' } : this.#active.readMarket(query); }
   trade(operation) { return this.#active.tradeGoods(operation); }
+  presence(op, options) { return this.#active.presence(op, options); }
   cancel(actionId, ownerId) { return this.#active.cancel(actionId, ownerId); }
   pump() { return this.#active.pump(); }
   stop(ownerId) {
