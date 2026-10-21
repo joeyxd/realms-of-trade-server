@@ -1,5 +1,17 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**IC04, 2026-10-21 — la mente del compañero ve el mundo alrededor de su cuerpo (alpha.86):**
+[Entrega](delivery/ic04-observation-v2.md). Sin SQL ni protocolo; versión 0.6.0-alpha.86. `server/agentPerception.mjs` exporta
+`AGENT_WORLD_POLICY` ({v:1, radius 24, maxNodes 16}) y cada SNAPSHOT proyectado al agente gana una clave `world` para su
+propio cuerpo: nodos de recurso a menos de 24 (el más cercano primero, máximo 16, `truncated` si hay más), hora del
+día, fuente de agua dulce y banco de trabajo (null si están fuera de radio o la función está apagada), todo redondeado a
+0,1; `null` si el cuerpo está muerto o sin posición. `AGENT_PILOT_POLICY` y la comprobación del WELCOME no cambian: los
+runners viejos ignoran la clave y un runner nuevo con un servidor viejo no la ve. `network-client.mjs` la normaliza a
+`confirmed.world` (descarta nodos a más de 24 y limita a 16; si falta o está mal formada no hay clave) y `contract.mjs`
+la acepta como clave opcional exacta (`validWorld`). El bloque serializado en el tope cabe en 2.400 bytes. Tests: 6 en
+agent-perception, 2 en agent-interface, 4 en agent-network-client (uno con servidor real). Ticket T-1021-08. Pendiente:
+que los prompts expliquen `world` (el modelo ya lo recibe dentro de la observación, sin instrucciones).
+
 **C01 memoria en Windows, 2026-10-20 — un lector abierto ya no pierde recuerdos (sin subir versión; sigue alpha.85):**
 Causa (T-1020-104, reproducida): en Windows `renameSync(temp, memory.jsonl)` falla con EPERM si otro handle tiene
 abierto memory.jsonl (el sondeo del test C01, owner-panel-server, Defender, el indexador, OneDrive). El almacén lo

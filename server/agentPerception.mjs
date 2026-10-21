@@ -1,6 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import { C, KIND } from '../src/sim/ecs.js';
 import { encodeEntity, MSG } from '../src/net/protocol.js';
+import { DT } from '../src/data/tuning.js';
+import { hourOfDay } from '../src/data/clock.js';
+import { RESOURCE_KINDS } from '../src/data/resources.js';
+import { freshwaterSource } from '../src/data/freshwater.js';
 
 // This pilot exposes nearby character entities only. It does not model hazards,
 // resources, vehicles, or other global world systems as agent perception.
@@ -13,6 +17,10 @@ export const AGENT_PILOT_POLICY = Object.freeze({
   occlusion: 'static_circles',
 });
 
+// IC04: the world block of an agent snapshot. Public catalogue facts around the body, radius gated
+// like entities but without occlusion (every human client already receives the node catalogue).
+export const AGENT_WORLD_POLICY = Object.freeze({ v: 1, radius: 24, maxNodes: 16 });
+
 const PASS_THROUGH = new Set([
   MSG.WELCOME, MSG.CHAT_STATE, MSG.CHAT_MESSAGE, MSG.CHAT_RESULT,
   MSG.AGENT_STATE, MSG.AGENT_INVENTORY_RESULT, MSG.AGENT_MARKET_RESULT, MSG.AGENT_TRADE_RESULT,
@@ -23,6 +31,9 @@ function positioned(ecs, id) {
   return Number.isInteger(id) && id > 0 && id < ecs.cap && ecs.alive[id] && (ecs.mask[id] & C.POS) !== 0 &&
     Number.isFinite(ecs.x[id]) && Number.isFinite(ecs.y[id]) && Number.isFinite(ecs.z[id]);
 }
+
+// One decimal, never -0 (deepEqual and JSON would otherwise disagree).
+const round1 = (v) => Math.round(v * 10) / 10 + 0;
 
 function blocked(map, ax, ay, az, bx, by, bz) {
   for (const c of map?.colliders || []) {
@@ -58,6 +69,7 @@ export class AgentPerception {
   #lives = new Map();
   #serial = 0;
   #revision = 0;
+  #spring = null;
 
   constructor() {}
 
@@ -143,8 +155,50 @@ export class AgentPerception {
       ents: entTuples,
       enc: [], frost: [], storm: [], ink: { clouds: [], marks: [] }, rafts: [],
       perception: { ...AGENT_PILOT_POLICY, revision: this.#revision, tick: message.tick, truncated: this.#visibleIds(world, selfEntity, Infinity).length > AGENT_PILOT_POLICY.maxEntities + 1 },
+      world: this.#worldView(world, selfEntity, message.tick),
     });
     return out;
+  }
+
+  // IC04 observation v2. Fails closed (null) for a dead, missing or unpositioned self.
+  #worldView(world, selfEntity, tick) {
+    const ecs = world?.ecs;
+    if (!ecs || !positioned(ecs, selfEntity) || ecs.hp[selfEntity] <= 0 || ecs.dead?.[selfEntity] > 0) return null;
+    const sx = ecs.x[selfEntity], sy = ecs.y[selfEntity], sz = ecs.z[selfEntity];
+    const r2 = AGENT_WORLD_POLICY.radius ** 2;
+    const dist = (p) => Math.hypot(p.x - sx, p.y - sy, p.z - sz);
+    const now = Number.isFinite(world.tick) ? world.tick : tick;
+    // Only the nodes in radius are collected; views are built for the nearest few.
+    const near = [];
+    const nodes = world.resources?.nodes;
+    if (nodes && typeof nodes.values === 'function') for (const n of nodes.values()) {
+      if (!n || ![n.x, n.y, n.z].every(Number.isFinite) || !Object.hasOwn(RESOURCE_KINDS, n.kind)) continue;
+      const dx = n.x - sx, dy = n.y - sy, dz = n.z - sz;
+      const d2 = dx * dx + dy * dy + dz * dz;
+      if (d2 <= r2) near.push({ n, d2 });
+    }
+    near.sort((a, b) => a.d2 - b.d2 || (a.n.id < b.n.id ? -1 : a.n.id > b.n.id ? 1 : 0));
+    const views = near.slice(0, AGENT_WORLD_POLICY.maxNodes).map(({ n }) => {
+      const wait = Math.max(0, (Number.isFinite(n.readyTick) ? n.readyTick : 0) - now);
+      const view = { id: n.id, kind: n.kind, x: round1(n.x), y: round1(n.y), z: round1(n.z),
+        ready: wait === 0, wait: round1(wait * DT) };
+      const hits = RESOURCE_KINDS[n.kind].hits;
+      if (hits) {
+        const used = n.readyTick > 0 && n.readyTick <= now ? 0 : (n.hits || 0);
+        view.remaining = Math.max(0, hits - used);
+      }
+      return view;
+    });
+    const point = (p) => p && [p.x, p.y, p.z].every(Number.isFinite) && dist(p) <= AGENT_WORLD_POLICY.radius ?
+      { x: round1(p.x), y: round1(p.y), z: round1(p.z), distance: round1(dist(p)) } : null;
+    let water = null;
+    if (world.freshwaterEnabled === true) {
+      if (!this.#spring || this.#spring.map !== world.map) this.#spring = { map: world.map, source: freshwaterSource(world.map) };
+      water = point(this.#spring.source);
+    }
+    const hours = typeof world.gameHoursAt === 'function' ? world.gameHoursAt() : NaN;
+    return { v: AGENT_WORLD_POLICY.v, tick, hours: Number.isFinite(hours) ? round1(hourOfDay(round1(hours))) : null,
+      nodes: views, truncated: near.length > AGENT_WORLD_POLICY.maxNodes, water, bench: point(world.resources?.bench) };
   }
 
   #newLife(id) {

@@ -446,3 +446,49 @@ test('pure validation rejects missing grants and malformed observations safely',
   assert.equal(validateOrder(fixtureOrder(), { grant: null, observation: null, nowMs: 0 }).why, 'invalid_grant');
   assert.equal(validateOrder(fixtureOrder(), { grant: fixtureGrant(), observation: {}, nowMs: 0 }).why, 'stale_observation');
 });
+
+// IC04: confirmed.world is an optional exact-key block; an observation without it stays valid.
+const worldBlock = (extra = {}) => ({ hours: 13.5,
+  nodes: [{ ref: { nodeId: 'palm-1' }, kind: 'palm', position: { x: 3, y: 0, z: 4 }, ready: true, wait: 0, remaining: 3 },
+    { ref: { nodeId: 'coast-2' }, kind: 'wood', position: { x: 5, y: 0, z: 1 }, ready: false, wait: 12.5 }],
+  truncated: false, water: { position: { x: -9, y: 1, z: 2 }, distance: 9.2 }, bench: null, ...extra });
+const withWorld = (world, combat) => {
+  const observation = fixtureObservation();
+  if (combat) observation.confirmed.combat = { weapon: 0, attackStage: 0, stagger: 0, castLock: 0, guardStamina: 60, potions: 0,
+    potionCooldown: 0, playerNearby: false, guardRaised: false };
+  observation.confirmed.world = world;
+  return observation;
+};
+
+test('IC04 validObservation accepts confirmed.world with or without combat and without it', () => {
+  assert.equal(validObservation(fixtureObservation()), true);
+  assert.equal(validObservation(withWorld(worldBlock())), true);
+  assert.equal(validObservation(withWorld(worldBlock(), true)), true);
+  assert.equal(validObservation(withWorld(worldBlock({ nodes: [], water: null, bench: { position: { x: 1, y: 0, z: 1 }, distance: 1.4 } }))), true);
+  assert.equal(validObservation(withWorld(worldBlock({ truncated: true, nodes: Array.from({ length: 16 }, (_, i) =>
+    ({ ref: { nodeId: `stone-${i}` }, kind: 'stone', position: { x: i, y: 0, z: 0 }, ready: true, wait: 0 })) }))), true);
+  assert.equal(new AgentLabSession({ grant: fixtureGrant() }).observe(withWorld(worldBlock()), 0).ok, true);
+});
+
+test('IC04 validObservation rejects extra keys, 17 nodes and malformed world blocks', () => {
+  const node = (i) => ({ ref: { nodeId: `stone-${i}` }, kind: 'stone', position: { x: i, y: 0, z: 0 }, ready: true, wait: 0 });
+  const bad = [
+    worldBlock({ extra: 1 }),
+    worldBlock({ nodes: Array.from({ length: 17 }, (_, i) => node(i)) }),
+    worldBlock({ nodes: [{ ...node(1), extra: true }] }),
+    worldBlock({ nodes: [{ ...node(1), ref: { nodeId: 'a', life: 'x' } }] }),
+    worldBlock({ nodes: [{ ...node(1), ref: { nodeId: 'bad id' } }] }),
+    worldBlock({ nodes: [node(1), node(1)] }),
+    worldBlock({ nodes: [{ ...node(1), remaining: -1 }] }),
+    worldBlock({ nodes: [{ ...node(1), position: { x: NaN, y: 0, z: 0 } }] }),
+    worldBlock({ nodes: [{ ...node(1), wait: -1 }] }),
+    worldBlock({ nodes: 'palm' }), worldBlock({ hours: NaN }), worldBlock({ hours: 30 }), worldBlock({ truncated: 0 }),
+    worldBlock({ water: { position: { x: 0, y: 0, z: 0 } } }), worldBlock({ bench: { position: { x: 0, y: 0, z: 0 }, distance: -1 } }),
+    worldBlock({ water: undefined }), null, [],
+  ];
+  for (const world of bad) assert.equal(validObservation(withWorld(world)), false, JSON.stringify(world));
+  const missing = worldBlock(); delete missing.bench;
+  assert.equal(validObservation(withWorld(missing)), false);
+  const extraConfirmed = withWorld(worldBlock()); extraConfirmed.confirmed.hidden = true;
+  assert.equal(validObservation(extraConfirmed), false);
+});

@@ -12,7 +12,7 @@ import { AgentChat } from './chat.mjs';
 import { AgentInventory } from './inventory.mjs';
 import { AgentMarket } from './market.mjs';
 import { AgentTrade } from './trade.mjs';
-import { labLimits, validGrant, integer, PRESENCE_ORDERS } from './contract.mjs';
+import { labLimits, validGrant, validWorld, integer, PRESENCE_ORDERS, WORLD_MAX_NODES } from './contract.mjs';
 
 const fields = Object.fromEntries(PLAYER_FIELDS.map((name, i) => [name, i]));
 const neutral = () => ({ mx: 0, mz: 0, ax: 0, az: 0, btn: 0, prs: 0, w: 0 });
@@ -33,6 +33,38 @@ function validPresenceReceipt(m, characterId) {
       p.characterKey === characterId && typeof p.name === 'string' && p.name.length <= 80 &&
       PRESENCE_STATUSES.includes(p.status) && PRESENCE_ORDERS.includes(p.order) && integer(p.revision) &&
       (p.entity === null || integer(p.entity)) && (p.reason === null || presenceWhy(p.reason))));
+}
+// IC04: the server world block (v:1) as the observation's confirmed.world, or null when absent or malformed.
+// Defense in depth like entities: nodes beyond the radius are dropped and the list is capped. The slack covers
+// the 0.1 rounding of the wire coordinates; anything the contract would reject also yields null, never a lost observation.
+const WORLD_RADIUS = 24, WORLD_SLACK = 0.09;
+const num = (v) => typeof v === 'number' && Number.isFinite(v);
+function worldSpot(raw, self) {
+  if (raw === null) return { ok: true, value: null };
+  if (!plainObject(raw) || ![raw.x, raw.y, raw.z, raw.distance].every(num)) return { ok: false };
+  const position = { x: raw.x, y: raw.y, z: raw.z };
+  const local = Math.hypot(position.x - self.x, position.y - self.y, position.z - self.z);
+  return { ok: true, value: local <= WORLD_RADIUS + WORLD_SLACK ? { position, distance: raw.distance } : null };
+}
+function normalizeWorld(raw, self) {
+  if (!plainObject(raw) || raw.v !== 1 || !integer(raw.tick) || !num(raw.hours) || !Array.isArray(raw.nodes) ||
+      raw.nodes.length > 4 * WORLD_MAX_NODES || typeof raw.truncated !== 'boolean') return null;
+  const nodes = [];
+  for (const n of raw.nodes) {
+    if (!plainObject(n) || typeof n.id !== 'string' || typeof n.kind !== 'string' || ![n.x, n.y, n.z, n.wait].every(num) ||
+        typeof n.ready !== 'boolean' || (Object.hasOwn(n, 'remaining') && !integer(n.remaining))) return null;
+    const position = { x: n.x, y: n.y, z: n.z };
+    const distance = Math.hypot(position.x - self.x, position.y - self.y, position.z - self.z);
+    if (distance > WORLD_RADIUS + WORLD_SLACK) continue;
+    nodes.push({ distance, node: { ref: { nodeId: n.id }, kind: n.kind, position, ready: n.ready, wait: n.wait,
+      ...(Object.hasOwn(n, 'remaining') ? { remaining: n.remaining } : {}) } });
+  }
+  nodes.sort((a, b) => a.distance - b.distance || (a.node.ref.nodeId < b.node.ref.nodeId ? -1 : a.node.ref.nodeId > b.node.ref.nodeId ? 1 : 0));
+  const water = worldSpot(raw.water, self), bench = worldSpot(raw.bench, self);
+  if (!water.ok || !bench.ok) return null;
+  const world = { hours: raw.hours, nodes: nodes.slice(0, WORLD_MAX_NODES).map((entry) => entry.node),
+    truncated: raw.truncated || nodes.length > WORLD_MAX_NODES, water: water.value, bench: bench.value };
+  return validWorld(world) ? world : null;
 }
 const networkTransport = (address, { origin } = {}) => {
   const WebSocketImpl = origin ? class OriginWebSocket extends WebSocket {
@@ -257,9 +289,11 @@ export class AgentNetworkClient {
     const combat = { weapon: a[fields.weapon], attackStage: a[fields.atkStage], stagger: a[fields.stagger],
       castLock: a[fields.castLock], guardStamina: Math.max(0, a[fields.guardSt]), potions: a[fields.potions],
       potionCooldown: a[fields.potCd], playerNearby: nearbyPlayer, guardRaised: a[fields.guardT] >= 0 };
+    const world = normalizeWorld(s.world, self.position);
     const observation = { v: 1, scope: this.grant.scope, controlRevision: this.grant.controlRevision,
       revision: this.#revision + 1, tick: s.tick, receivedAtMs: this.#now(), source: 'server',
-      confirmed: { self, entities: entities.slice(0, this.#limits.maxEntities).map(({ distance, ...e }) => e), combat },
+      confirmed: { self, entities: entities.slice(0, this.#limits.maxEntities).map(({ distance, ...e }) => e), combat,
+        ...(world ? { world } : {}) },
       predicted: null, chat: this.#chat.observation, historyGap: this.#chat.historyGap };
     const accepted = this.#session.observe(observation, observation.receivedAtMs);
     if (!accepted.ok) { if (accepted.why === 'dead' || accepted.why === 'authorization_expired') this.#halt(accepted.why === 'dead' ? 'death' : 'expired', true); return; }

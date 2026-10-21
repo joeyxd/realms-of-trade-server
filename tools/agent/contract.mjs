@@ -66,11 +66,29 @@ export function validCombat(v) {
     ['stagger', 'castLock', 'guardStamina', 'potionCooldown'].every((k) => finite(v[k]) && v[k] >= 0) &&
     integer(v.potions) && v.potions <= 5 && typeof v.playerNearby === 'boolean' && typeof v.guardRaised === 'boolean';
 }
+// IC04: the optional world block. Node refs are catalogue ids; no life, since nodes are not entities.
+export const WORLD_MAX_NODES = 16;
+const nodeRef = (v) => exact(v, ['nodeId']) && typeof v.nodeId === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(v.nodeId);
+const spot = (v) => exact(v, ['position', 'distance']) && position(v.position) && finite(v.distance) && v.distance >= 0;
+function validWorldNode(v) {
+  const hits = exact(v, ['ref', 'kind', 'position', 'ready', 'wait', 'remaining']);
+  return (hits || exact(v, ['ref', 'kind', 'position', 'ready', 'wait'])) && nodeRef(v.ref) &&
+    typeof v.kind === 'string' && /^[a-z][a-z0-9_]{0,23}$/.test(v.kind) && position(v.position) &&
+    typeof v.ready === 'boolean' && finite(v.wait) && v.wait >= 0 && (!hits || (integer(v.remaining) && v.remaining <= 1000));
+}
+export function validWorld(v) {
+  return exact(v, ['hours', 'nodes', 'truncated', 'water', 'bench']) && finite(v.hours) && v.hours >= 0 && v.hours <= 24 &&
+    Array.isArray(v.nodes) && v.nodes.length <= WORLD_MAX_NODES && v.nodes.every(validWorldNode) &&
+    new Set(v.nodes.map((n) => n.ref.nodeId)).size === v.nodes.length && typeof v.truncated === 'boolean' &&
+    (v.water === null || spot(v.water)) && (v.bench === null || spot(v.bench));
+}
 export function validObservation(v, limits = LAB_LIMITS, source = 'fixture') {
   return exact(v, ['v', 'scope', 'controlRevision', 'revision', 'tick', 'receivedAtMs', 'source', 'confirmed', 'predicted', 'chat', 'historyGap']) &&
     v.v === AGENT_INTERFACE_VERSION && validScope(v.scope) && integer(v.controlRevision) && integer(v.revision) &&
     integer(v.tick) && integer(v.receivedAtMs) && ['fixture', 'server'].includes(source) && v.source === source &&
-    (exact(v.confirmed, ['self', 'entities']) || (exact(v.confirmed, ['self', 'entities', 'combat']) && validCombat(v.confirmed.combat))) &&
+    (exact(v.confirmed, ['self', 'entities']) || (exact(v.confirmed, ['self', 'entities', 'combat']) && validCombat(v.confirmed.combat)) ||
+      (exact(v.confirmed, ['self', 'entities', 'world']) && validWorld(v.confirmed.world)) ||
+      (exact(v.confirmed, ['self', 'entities', 'combat', 'world']) && validCombat(v.confirmed.combat) && validWorld(v.confirmed.world))) &&
     validSelf(v.confirmed.self) && Array.isArray(v.confirmed.entities) &&
     v.confirmed.entities.length <= limits.maxEntities && v.confirmed.entities.every(validEntity) &&
     new Set(v.confirmed.entities.map((e) => e.ref.entityId)).size === v.confirmed.entities.length &&
