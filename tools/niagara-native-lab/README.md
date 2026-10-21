@@ -112,6 +112,35 @@ node tools/niagara-native-lab/verify-core.mjs
 node --test tools/niagara-native-lab/core.test.mjs
 ```
 
+# Núcleo común de render, 2026-10-21
+
+`core/` reúne también las primitivas de render del piloto: `depth-fade.js` (DepthFade en JS y GLSL, distancia por
+defecto 100 cm), `subuv-atlas.js` (UV del atlas SubUV), `sprite-shader.js` (shaders del sprite y opciones por capa:
+rejilla, textura, DepthFade) y `frame-spec.js` (`validateFrame(frame, spec)` y `BASICHIT_FRAME_SPEC`). `particles.js`
+construye el material Three.js con ellas; su API no cambia. `check-pixels.py` compara dos carpetas de corridas PNG a PNG
+sobre píxeles RGBA decodificados (Pillow): una línea por archivo, `identical N/N` al final y código 1 ante cualquier
+diferencia o archivo ausente; `--exclude <glob>` aparta capturas no deterministas. Ver
+[entrega](../../docs/delivery/st01c/CORE-MODULES.md), sección Render.
+
+```powershell
+node --test tools/niagara-native-lab/render-core.test.mjs
+python -B tools/niagara-native-lab/check-pixels.py .scratch/render-core/base-a/depth-lab .scratch/render-core/after/depth-lab
+```
+
+Corrida nueva de profundidad contra la base, desde la raíz del worktree en Git Bash (servidor propio, parado por su PID):
+
+```bash
+PW="C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs"
+python -m http.server 5197 --bind 127.0.0.1 > /dev/null 2>&1 &
+SERVER=$!
+until curl -s -o /dev/null http://127.0.0.1:5197/; do sleep 0.2; done
+node tools/niagara-native-lab/qa-depth.mjs "$PW" depth02
+FRESH=".scratch/render-core/verify-$(date +%Y%m%d-%H%M%S)"
+mkdir "$FRESH" && cp .scratch/depth-lab/depth02/*.png "$FRESH"/
+python -B tools/niagara-native-lab/check-pixels.py .scratch/render-core/base-a/depth-lab "$FRESH"
+kill $SERVER
+```
+
 # NS_BasicHit nativo, 2026-10-21
 
 `basichit-simulation.js` simula los tres emisores de `NS_BasicHit` sobre `core/` (ráfaga única,

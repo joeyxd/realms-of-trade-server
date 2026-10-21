@@ -64,6 +64,22 @@ autoridad respondía `combat`): `step()` ahora lo avanza un tick por tick. Runne
 cuerpo), una frase EN y una ES explican `world` y cómo recolectar. Tests: 9 nuevos en companion-presence-gather y
 8 más en los de presencia, runner y CLI. Ticket T-1021-16. Pendiente: textos de la tarjeta que dicen "no habilita
 recolección" y "solo seguir, esperar o volver"; el cliente web no tiene botón de recolectar.
+**ST01c, 2026-10-21 — primitivas de render comunes en core (piloto idéntico píxel a píxel):**
+[Entrega](delivery/st01c/CORE-MODULES.md), sección Render. Solo refactor, parte 1 de 2; sin página de BasicHit ni
+versión nueva. `tools/niagara-native-lab/core/` gana `depth-fade.js` (DepthFade en JS y GLSL con la distancia como
+uniform; único valor por defecto `DEPTH_FADE_DISTANCE` = 100 cm = 1,0), `subuv-atlas.js` (UV del atlas SubUV, clamp
+actual), `sprite-shader.js` (shaders del sprite; opciones por capa como datos con `spriteLayer`: rejilla 1x1 permitida,
+textura sí/no, DepthFade apagado o con distancia; FaceCameraPosition tiene su lugar con nombre, sin implementar) y
+`frame-spec.js` (`validateFrame(frame, spec)` y `BASICHIT_FRAME_SPEC`: Flame con subImage obligatorio, Flash y
+SimpleBurst opcional). `particles.js` arma el material con ellas y conserva su API y su `validateFrame(frame)` con los
+mismos mensajes; `depth-stage.js` reexporta `depthFactor`. Tests: `render-core.test.mjs` (9), suite 53/53; los cinco
+verify sin cambios (8d46fe1f, 984ad3fe, 2b3558e2, b2e81759, 117f90cf). Píxeles con `check-pixels.py` (RGBA decodificado):
+base-a vs base-b y after vs base-a idénticos en browser-lab 16, native-birth 12, native-update 8, depth-lab 50,
+color-lab 23 y atlas 2152 (2.194 canvas); fuera, `atlas/*/mobile-layout.png` (8): el suavizado del texto cambió 1 píxel
+entre las dos bases. Evidencia en `.scratch/render-core/` (pre, base-a, base-b, after). Pendiente de aceptación del
+autor. Sigue: la atadura de render de BasicHit (FaceCameraPosition, material radial, política SubUV de 40 fotogramas).
+Ticket T-1021-22.
+
 **IC04, 2026-10-21 — la mente del compañero ve el mundo alrededor de su cuerpo (alpha.86):**
 [Entrega](delivery/ic04-observation-v2.md). Sin SQL ni protocolo; versión 0.6.0-alpha.86. `server/agentPerception.mjs` exporta
 `AGENT_WORLD_POLICY` ({v:1, radius 24, maxNodes 16}) y cada SNAPSHOT proyectado al agente gana una clave `world` para su

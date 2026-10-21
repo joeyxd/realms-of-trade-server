@@ -1,72 +1,20 @@
 // Isolated renderer experiment. Observed or locally evolved attributes, never Niagara bytecode.
 import * as THREE from 'three';
+import { frameSpec, validateFrame as validateFrameSpec } from './core/frame-spec.js';
+import { spriteLayer, SPRITE_VERTEX_SHADER, SPRITE_FRAGMENT_SHADER } from './core/sprite-shader.js';
+import { DEPTH_FADE_DISTANCE } from './core/depth-fade.js';
 
 export const toScene = ([x, y, z]) => [y / 100, z / 100, -x / 100];
-const LIMIT = 512;
-const NAMES = ['NE_Flame_Basic_001', 'NE_Smoke_Basic'];
+// Pilot bindings: the three frame schemas of the two NS_Flame_Single emitters, and their sprite layers
+// (MI_Flame_2 8x4 and MI_Smoke_1 10x6 over the M_Smoke parent: textured, DepthFade 100 cm).
+const PILOT_FRAME = frameSpec({ schemas: ['st01c-cpu-frame/v1', 'st01c-update-frame/v1', 'st01c-native-frame/v1'], limit: 512,
+  emitters: [{ name: 'NE_Flame_Basic_001', subImage: 'required' }, { name: 'NE_Smoke_Basic', subImage: 'required' }] });
+const LIMIT = PILOT_FRAME.limit;
+const FLAME = spriteLayer({ grid: [8, 4], texture: true, depthFade: DEPTH_FADE_DISTANCE });
+const SMOKE = spriteLayer({ grid: [10, 6], texture: true, depthFade: DEPTH_FADE_DISTANCE });
 export function validateFrame(frame) {
-  if (!frame || !['st01c-cpu-frame/v1', 'st01c-update-frame/v1', 'st01c-native-frame/v1'].includes(frame.schema) || frame.emitters?.length !== 2 ||
-      !Number.isFinite(frame.systemAge) || frame.systemAge < 0) throw new Error('Invalid observed frame');
-  for (let index = 0; index < 2; index++) {
-    const emitter = frame.emitters[index];
-    if (emitter.name !== NAMES[index] || !Array.isArray(emitter.particles) || emitter.particles.length > LIMIT)
-      throw new Error('Unexpected emitter or particle bounds');
-    for (const p of emitter.particles) {
-      for (const [field, length] of [['position', 3], ['size', 2], ['color', 4]]) {
-        if (!Array.isArray(p[field]) || p[field].length !== length || !p[field].every(Number.isFinite))
-          throw new Error(`Invalid particle ${field}`);
-      }
-      if (!Number.isFinite(p.rotation) || !Number.isFinite(p.subImage) || p.subImage < 0 ||
-          p.size.some(x => x < 0)) throw new Error('Invalid sprite attributes');
-    }
-  }
-  return frame;
+  return validateFrameSpec(frame, PILOT_FRAME);
 }
-const vertexShader = `
-attribute vec3 particlePosition;
-attribute vec2 particleSize;
-attribute vec4 particleColor;
-attribute float particleRotation;
-attribute float particleFrame;
-varying vec2 atlasUv;
-varying vec4 tint;
-uniform vec2 grid;
-void main() {
-  // UE's sprite UV Y points down. Its positive rotation uses that down basis.
-  float a = radians(particleRotation);
-  vec2 q = position.xy * particleSize;
-  q = mat2(cos(a), -sin(a), sin(a), cos(a)) * q;
-  vec4 center = viewMatrix * vec4(particlePosition, 1.0);
-  gl_Position = projectionMatrix * (center + vec4(q, 0.0, 0.0));
-  float frame = clamp(floor(particleFrame), 0.0, grid.x * grid.y - 1.0);
-  atlasUv = vec2((mod(frame, grid.x) + uv.x) / grid.x,
-    1.0 - (floor(frame / grid.x) + 1.0 - uv.y) / grid.y);
-  tint = particleColor;
-}`;
-const fragmentShader = `
-uniform sampler2D atlas;
-uniform sampler2D opaqueDepth;
-uniform vec2 depthSize;
-uniform vec2 nearFar;
-uniform bool orthographic;
-uniform bool depthFadeEnabled;
-varying vec2 atlasUv;
-varying vec4 tint;
-float viewDepth(float z) {
-  return orthographic ? mix(nearFar.x, nearFar.y, z)
-    : nearFar.x * nearFar.y / (nearFar.y - z * (nearFar.y - nearFar.x));
-}
-void main() {
-  vec3 texel = texture2D(atlas, atlasUv).rgb;
-  float fade = 1.0;
-  if (depthFadeEnabled) {
-    float sceneDepth = viewDepth(texture2D(opaqueDepth, gl_FragCoord.xy / depthSize).r);
-    // Source DepthFade: saturate((opaque view depth - fragment view depth) / 100 cm).
-    // Scene units are metres. This is axial separation, not Euclidean distance.
-    fade = clamp((sceneDepth - viewDepth(gl_FragCoord.z)) / 1.0, 0.0, 1.0);
-  }
-  gl_FragColor = vec4(texel * tint.rgb, clamp(texel.r * tint.a, 0.0, 1.0) * fade);
-}`;
 
 export class PilotParticles {
   constructor(scene, textures) {
@@ -82,10 +30,13 @@ export class PilotParticles {
         geometry.setAttribute(name, new THREE.InstancedBufferAttribute(new Float32Array(LIMIT * size), size).setUsage(THREE.DynamicDrawUsage));
       }
       geometry.instanceCount = 0;
-      const material = new THREE.ShaderMaterial({ vertexShader, fragmentShader,
-        uniforms: { atlas: { value: texture }, grid: { value: new THREE.Vector2(...(index ? [10, 6] : [8, 4])) },
+      const layer = index ? SMOKE : FLAME;
+      const material = new THREE.ShaderMaterial({ vertexShader: SPRITE_VERTEX_SHADER, fragmentShader: SPRITE_FRAGMENT_SHADER,
+        defines: { ...layer.defines },
+        uniforms: { atlas: { value: texture }, grid: { value: new THREE.Vector2(...layer.grid) },
           opaqueDepth: { value: texture }, depthSize: { value: new THREE.Vector2(512, 512) },
-          nearFar: { value: new THREE.Vector2(.01, 100) }, orthographic: { value: true }, depthFadeEnabled: { value: false } },
+          nearFar: { value: new THREE.Vector2(.01, 100) }, orthographic: { value: true }, depthFadeEnabled: { value: false },
+          ...(layer.depthFade === null ? {} : { depthFadeDistance: { value: layer.depthFade } }) },
         transparent: true, toneMapped: false, depthWrite: false, depthTest: true, side: THREE.DoubleSide });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.frustumCulled = false;

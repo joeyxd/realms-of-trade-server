@@ -77,3 +77,106 @@ Las dos reglas de edad y de muerte son hechos distintos de cada etapa y se conse
   pasa de 29 a 44.
 - Ningún `codeHashes` fechado (render/update/native/depth/color) fija archivos de `core/`, y `native-simulation.js` y
   `update-simulation.js` no cambian: esos checkpoints no varían con este encargo. `core-checkpoint.json` tampoco.
+
+## Render (T-1021-22)
+
+2026-10-21. Base: commit `2b01a28`. Parte 1 de 2: las primitivas de render del piloto (shader del sprite, UV del
+atlas SubUV, DepthFade y validación de frames) pasan a `tools/niagara-native-lab/core/`, con la forma que necesitarán
+los tres emisores de `NS_BasicHit` en el próximo encargo. Solo refactor: sin página de BasicHit y sin comportamiento
+nuevo en el shader del piloto. La salida del piloto no cambia ni un píxel. Los cuatro módulos son ES puros, sin
+Three.js ni E/S: GLSL como cadenas exportadas y funciones JS; el material Three.js se sigue construyendo en
+`particles.js`.
+
+| Primitiva | Módulo | Export | Quién la llama |
+|---|---|---|---|
+| DepthFade, fuente única | `core/depth-fade.js` | `DEPTH_FADE_DISTANCE` (el único valor por defecto: 100 cm = 1,0 unidad de escena), `depthFactor(escena, píxel, distancia)` (JS) y `DEPTH_FADE_GLSL` (uniforms `opaqueDepth`, `depthSize`, `nearFar`, `orthographic`, `depthFadeDistance`; `viewDepth`, `depthFade()`) | `particles.js` (la constante; el GLSL llega por `sprite-shader.js`); `depth-stage.js` reexporta `depthFactor` para `depth-stage.test.mjs` |
+| UV del atlas SubUV | `core/subuv-atlas.js` | `SUBUV_ATLAS_UV_GLSL` (`subUVAtlasUv`: floor y clamp a la última celda, filas desde arriba), su gemelo JS `subUVAtlasUv`, `validateGrid` (enteros >= 1; 1x1 permitido) | `sprite-shader.js`; tests |
+| Shader del sprite | `core/sprite-shader.js` | `SPRITE_CORNER_GLSL` (rotación con la base Y hacia abajo de UE), `SPRITE_FACING_GLSL` y `SPRITE_FACINGS` (solo `camera-plane`), `SPRITE_VERTEX_SHADER`, `SPRITE_FRAGMENT_SHADER` (`#ifdef SPRITE_TEXTURE`, `#ifdef DEPTH_FADE`), `spriteLayer({ grid, texture, depthFade, facing })` | `particles.js` |
+| Validación de frames | `core/frame-spec.js` | `frameSpec({ schemas, emitters: [{ name, subImage }], limit })`, `validateFrame(frame, spec)`, `BASICHIT_FRAME_SPEC` | `particles.js` (su `validateFrame(frame)` es la atadura del piloto); tests |
+
+- Opciones por capa como datos: `spriteLayer` valida la rejilla, la textura (sí/no), el DepthFade (`null` = apagado, o
+  la distancia en unidades de escena) y la orientación, y devuelve los `#define` del material. Un único par de shaders
+  sirve a todas las capas. Sin textura, el texel es blanco: hueco para SimpleBurst; su material radial no se porta aquí.
+- DepthFade: la distancia es un uniform (`depthFadeDistance`) en lugar del `1.0` fijo. El interruptor de ejecución
+  `depthFadeEnabled` (hay superficie opaca y la casilla está activa) sigue igual, y solo existe en capas con `DEPTH_FADE`.
+- Orientación: sigue el billboard en el plano de la cámara. `SPRITE_FACINGS` y `spriteViewPosition` en
+  `SPRITE_FACING_GLSL` son el lugar con nombre donde irá FaceCameraPosition; `spriteLayer` rechaza hoy cualquier otro valor.
+- SubUV: la política sigue siendo el clamp actual a `columnas*filas - 1`. Wrap o clamp más allá de la rejilla se decide
+  en el próximo encargo (la Flame de BasicHit pasa de 32 en el paso 20 con 40 fotogramas sobre 8x4).
+
+**Lo que sigue siendo del piloto** (`particles.js`): `PILOT_FRAME` (los tres esquemas `st01c-cpu-frame/v1`,
+`st01c-update-frame/v1` y `st01c-native-frame/v1`; `NE_Flame_Basic_001` y `NE_Smoke_Basic` con `subImage` obligatorio;
+512 partículas), las capas `FLAME` (8x4) y `SMOKE` (10x6) con textura y DepthFade de 100 cm (MI_Flame_2 y MI_Smoke_1
+sobre el padre M_Smoke), `toScene`, el paso de tamaño de cm a m, los búferes de 512 y la clase `PilotParticles`. Su API
+no cambia: constructor, `setDepth`, `update`, `dispose` y los exports `PilotParticles`, `toScene` y `validateFrame`; la
+capa de índice >= 1 sigue usando la rejilla del humo. `lab.js`, `depth-lab.js`, `color-lab.js` y `budget-lab.js` no cambian.
+
+**Spec de BasicHit.** `BASICHIT_FRAME_SPEC`: esquema `st01c-basichit-frame/v1`; `NE_Flame_Basic_001` con `subImage`
+obligatorio; `NE_Basic_Flash001` y `NE_SimpleBurst` con `subImage` opcional (puede faltar; si está, finito y >= 0);
+límite 512 por emisor. Los nombres son los `emitterNames` de `basichit-source.json` (lo comprueba un test). Acepta todos
+los frames de `BasicHitSimulation` con la semilla por defecto, pasos 0..240, y rechaza dos emisores, un nombre o un orden
+cambiado, una Flame sin `subImage`, un `subImage` opcional NaN, infinito, null, texto o negativo, 513 partículas y el
+esquema del piloto. Vive en `core/` porque aún no existe la atadura de render de BasicHit.
+
+### Prueba
+
+- Tests: `render-core.test.mjs` añade 9; la suite pasa de 44 a 53, sin fallos. La tabla del piloto (4 aceptaciones,
+  25 rechazos con su clase de error y su mensaje, y los frames nativos 0..480) se escribió y pasó contra `2b01a28` antes
+  del refactor, y pasa igual después.
+- Los cinco gates numéricos no cambian: `verify-core` 8d46fe1f, `verify-native` 984ad3fe, `verify-update` 2b3558e2,
+  `verify-depth` b2e81759, `verify-basichit` 117f90cf (sha256 de la salida, primeros 8 caracteres).
+- Píxeles: `check-pixels.py <carpeta-a> <carpeta-b> [--exclude <glob>]` decodifica cada PNG a RGBA con Pillow y exige
+  igualdad exacta; imprime una línea por archivo y `identical N/N`, y sale con 1 ante una diferencia, un archivo que
+  falta o nada comparado. Protocolo: copia de la evidencia previa en `.scratch/render-core/pre/`; con el código sin
+  cambiar, dos corridas de cada página QA del piloto (`base-a`, `base-b`); con el código final, una (`after`). Cada
+  carpeta guarda solo los archivos que escribió esa corrida; las corridas de atlas usan nombres nuevos (`rcore-*`),
+  movidos después a `render-core`.
+
+| Familia | Script | PNG comparados (canvas) | base-a vs base-b | after vs base-a |
+|---|---|---|---|---|
+| browser-lab | `qa.mjs` (reference11) | 16 (3) | 16/16 | 16/16 |
+| native-birth | `qa-native.mjs` | 12 (6) | 12/12 | 12/12 |
+| native-update | `qa-update.mjs` | 8 (3) | 8/8 | 8/8 |
+| depth-lab | `qa-depth.mjs depth02` | 50 (22) | 50/50 | 50/50 |
+| color-lab | `qa-color.mjs color07` | 23 (16) | 23/23 | 23/23 |
+| atlas | `qa-atlas.mjs`, 8 variantes | 2152 (2144) | 2152/2152 | 2152/2152 |
+
+- Los 2.194 PNG de canvas son idénticos en las dos comparaciones. También lo son las capturas de página completa,
+  salvo una clase: `atlas/*/mobile-layout.png` (8) queda excluida porque base-a y base-b difieren en
+  `quarter/mobile-layout.png` en 1 píxel (56, 1079), azul 82 frente a 81, dentro del texto de estado «22 partículas»:
+  suavizado de texto del navegador, no WebGL. Sin la exclusión, base-a vs base-b y after vs base-a dan 2159/2160, y
+  after vs base-b da 2160/2160.
+- En el primer intento de la corrida final, `qa-update.mjs` agotó su espera de 30 s al volver al modo observado
+  (`qa-update.mjs:57`, 241 frames pedidos a la vez); pasó en dos repeticiones aisladas y en las otras tres corridas, y la
+  corrida `after` completa se repitió desde cero. Una corrida intermedia (`after-r1`, el mismo código salvo un comentario
+  de `particles.js`) también dio todos los PNG idénticos a `base-a`, con la misma exclusión.
+- Corrida nueva reproducible (`qa-depth.mjs` contra `base-a`) en el [README](../../../tools/niagara-native-lab/README.md).
+- Las variantes que el piloto no usa (1x1, sin textura, sin DepthFade) solo se compilaron y dibujaron en Chrome headless
+  con una comprobación local no versionada: cuatro programas, sin errores de shader. Ningún corpus las cubre todavía.
+
+sha256 de los archivos de este encargo:
+
+| Archivo | sha256 |
+|---|---|
+| `tools/niagara-native-lab/particles.js` | `fa848316e2e19ee9a23689dbe4647c6e2d88b30cc4c8ad8f1e31959c7278a38a` |
+| `tools/niagara-native-lab/depth-stage.js` | `3e349e914598478eb84f8b12fefe76a91a83d0d12195a290bd2d57d450d4fa81` |
+| `tools/niagara-native-lab/core/depth-fade.js` | `133024f304b6695c6951fb2ca1fdea18bfcb270f43fe5dbe355c11fec03c4b10` |
+| `tools/niagara-native-lab/core/subuv-atlas.js` | `5b6108149362c2bab3daf2ce3e3f645942441bf72af2325fa3e4becb6cf322f1` |
+| `tools/niagara-native-lab/core/sprite-shader.js` | `f892de19848d27452a856ce174a83b112bbe4e84450a3c9c2909b235916fce82` |
+| `tools/niagara-native-lab/core/frame-spec.js` | `3a62eb522e2129bb4a27e62b67bd11dcf81922531521d0bb8f903a6f9b6534e5` |
+
+### No aceptado / pendiente
+
+- Todo lo anterior está pendiente de aceptación del autor.
+- No hecho aquí (próximo encargo): página, QA y comparación de BasicHit; FaceCameraPosition; el material radial de
+  SimpleBurst; la política SubUV más allá de la rejilla; el orden de dibujo; los umbrales de BasicHit. El texel blanco sin
+  textura es un hueco, no el material de ningún emisor.
+- `BASICHIT_FRAME_SPEC` vive en `core/` hasta que exista la atadura de render de BasicHit; `toScene` y el paso de tamaño
+  cm a m siguen en `particles.js`.
+- Los `codeHashes` de `depth-checkpoint.json` (que fija `particles.js` 1e936b7c y `depth-stage.js` a6882c90),
+  `native-checkpoint.json`, `render-checkpoint.json` y `update-checkpoint.json` y las listas de peticiones de los
+  checkpoints de color y profundidad quedan como historia: las páginas piden ahora también los cuatro módulos de `core/`
+  (por eso `nativeOnlyRequests` de `qa-native` pasa de 23 a 27 y `updateOnlyRequestCount` de `qa-update` de 24 a 28). No
+  se regeneró ninguno.
+- `qa-depth.mjs` y `verify-depth.mjs` conservan su propio valor esperado (`gap / 100` saturado): es el oráculo de la
+  comparación, no el shader.

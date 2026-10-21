@@ -1,11 +1,7 @@
 // Private opaque-scene input, never a gameplay collision or particle simulation.
 import * as THREE from 'three';
-
-export function depthFactor(sceneDepth, pixelDepth, fadeDistance = 1) {
-  if (![sceneDepth, pixelDepth, fadeDistance].every(Number.isFinite) || fadeDistance <= 0)
-    throw new Error('Invalid linear depth');
-  return Math.max(0, Math.min(1, (sceneDepth - pixelDepth) / fadeDistance));
-}
+// DepthFade has one source, core/depth-fade.js; re-exported for this stage's tests.
+export { depthFactor } from './core/depth-fade.js';
 
 export class DepthStage {
   constructor(size = 512) {
