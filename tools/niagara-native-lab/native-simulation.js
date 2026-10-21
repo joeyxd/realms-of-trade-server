@@ -1,6 +1,11 @@
 // Bounded presentation port of the exact compiled CPU pilot. No captured births.
-import { DT, SOURCE_SHA, sampleCurve, CONTROL_SPEC as UPDATE_CONTROLS } from './update-simulation.js';
+import { SOURCE_SHA, CONTROL_SPEC as UPDATE_CONTROLS } from './update-simulation.js';
 import { SUPPORTED_BEHAVIOR } from './source-identity.js';
+import { random3, random4, uniformRange as range } from './core/rng.js';
+import { sampleCurve, validateCurve } from './core/curve.js';
+import { rateStep, rateBirthAge } from './core/spawn-rate.js';
+import { DT, normalizedAge, ageParticle, integrateVelocity } from './core/particle-state.js';
+import { subUVFrame } from './core/subuv.js';
 const f32 = Math.fround;
 const NAMES = ['NE_Flame_Basic_001', 'NE_Smoke_Basic'];
 export const CONTROL_SPEC = Object.freeze({
@@ -12,30 +17,7 @@ export const CONTROL_SPEC = Object.freeze({
     help: 'Otra distribución repetible de tamaños, color y posiciones; conserva tiempos y cantidades.' }
 });
 
-// NiagaraEmitterInstanceShader.usf shared VM/GPU rand3/rand4: signed 32-bit mixing,
-// upper 24 bits. Math.imul preserves overflow, including the high-bit seed cases.
-export function random3(id, tick, seed, counter) {
-  let x = (Math.imul(id, 1664525) + 1013904223) | 0;
-  let y = (Math.imul(tick, 1664525) + 1013904223) | 0;
-  let z = (Math.imul(counter | (seed << 16), 1664525) + 1013904223) | 0;
-  for (let i = 0; i < 2; i++) {
-    x = (x + Math.imul(y, z)) | 0;
-    y = (y + Math.imul(z, x)) | 0;
-    z = (z + Math.imul(x, y)) | 0;
-  }
-  return [x, y, z].map(v => (v >>> 8) / 16777216);
-}
-export function random4(id, tick, seed, counter) {
-  let [x, y, z, w] = [counter, id, tick, seed].map(v => (Math.imul(v, 1664525) + 1013904223) | 0);
-  for (let i = 0; i < 2; i++) {
-    x = (x + Math.imul(y, w)) | 0;
-    y = (y + Math.imul(z, x)) | 0;
-    z = (z + Math.imul(x, y)) | 0;
-    w = (w + Math.imul(y, z)) | 0;
-  }
-  return [x, y, z, w].map(v => (v >>> 8) / 16777216);
-}
-const range = (a, b, r) => f32(f32(a) + f32(f32(f32(b) - f32(a)) * r));
+export { random3, random4 };
 function validate(source) {
   if (JSON.stringify([source?.flame, source?.smoke, source?.alphaCurve]) !== SUPPORTED_BEHAVIOR)
     throw new Error('Unreviewed native source behavior');
@@ -58,10 +40,7 @@ function validate(source) {
       [source.flame, source.smoke].some(s => s.size[0] <= 0 || s.size[1] < s.size[0]) ||
       source.smoke.velocityCm[0] !== 0 || source.smoke.velocityCm[1] !== 0)
     throw new Error('Unsupported native source geometry');
-  const c = source.alphaCurve;
-  if (!c || !Number.isFinite(c.minTime) || !Number.isFinite(c.inverseRange) || c.inverseRange <= 0 ||
-      !Array.isArray(c.samples) || c.samples.length !== 54 || !c.samples.every(v => Number.isFinite(v) && v >= 0 && v <= 2))
-    throw new Error('Invalid native alpha curve');
+  validateCurve(source.alphaCurve, { sampleCount: 54, min: 0, max: 2, message: 'Invalid native alpha curve' });
   return source;
 }
 
@@ -80,8 +59,8 @@ export class NativeSimulation {
   }
   reset() { this.step = 0; this.live = [[], []]; this.remainders = [0, 0]; this.ids = [0, 0]; }
   evaluate(p, emitter) {
-    const normalized = f32(p.age / p.lifetime);
-    p.subImage = f32(normalized * (emitter ? 60 : 32));
+    const normalized = normalizedAge(p.age, p.lifetime);
+    p.subImage = subUVFrame(normalized, emitter ? 60 : 32);
     if (emitter) p.color[3] = sampleCurve(this.source.alphaCurve, normalized);
   }
   birth(emitter, id, age) {
@@ -119,24 +98,21 @@ export class NativeSimulation {
     if (this.step >= 480) throw new Error('Private sequence ends at 8 seconds');
     this.step++;
     this.live = this.live.map((list, emitter) => list.filter(p => {
-      p.age = f32(p.age + DT);
       // The compiled ParticleState kills at lifetime - 0.0001, not at lifetime.
-      if (p.age >= f32(p.lifetime - f32(.0001))) return false;
-      p.position = p.position.map((v, axis) => f32(v + f32(p.velocity[axis] * DT)));
+      if (!ageParticle(p, DT, .0001)) return false;
+      integrateVelocity(p, DT);
       this.evaluate(p, emitter); return true;
     }));
     // The first activated system update uses UE's update-on-spawn microtick.
     const delta = this.step === 1 ? f32(this.source.activationDeltaSeconds) : DT;
     for (let emitter = 0; emitter < 2; emitter++) {
-      const old = this.remainders[emitter], interval = this.source.vmReciprocalEstimates[emitter];
-      const start = f32(interval * f32(1 - old));
-      const total = f32(f32(this.source.rates[emitter] * delta) + old), count = Math.floor(total);
-      this.remainders[emitter] = f32(total - count);
+      const interval = this.source.vmReciprocalEstimates[emitter];
+      const { count, remainder, start } = rateStep(this.remainders[emitter], this.source.rates[emitter], interval, delta);
+      this.remainders[emitter] = remainder;
       for (let i = 0; i < count; i++) {
         const id = this.ids[emitter]++;
         if (this.step / 60 > this.options.stopAt) continue;
-        const age = f32(DT - f32(start + f32(interval * i)));
-        if (age < 0 || age >= DT) throw new Error('Unsupported native birth timing');
+        const age = rateBirthAge(start, interval, i, DT);
         this.live[emitter].push(this.birth(emitter, id, age));
       }
       if (this.live[emitter].length > 512) throw new Error('Native particle bounds');

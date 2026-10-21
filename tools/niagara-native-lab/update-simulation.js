@@ -1,6 +1,9 @@
 // Presentation-only evolution. Initial states are explicit UE spawn fixtures, not a ported RNG.
+import { sampleCurve, validateCurve } from './core/curve.js';
+import { DT, normalizedAgeByReciprocal, ageParticle, integrateVelocity } from './core/particle-state.js';
+import { subUVFrame } from './core/subuv.js';
 const f32 = Math.fround;
-export const DT = f32(1 / 60);
+export { DT, sampleCurve };
 export const SOURCE_SHA = '985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165';
 const NAMES = ['NE_Flame_Basic_001', 'NE_Smoke_Basic'];
 export const CONTROL_SPEC = Object.freeze({
@@ -22,24 +25,13 @@ function controls(input) {
   }));
 }
 
-export function sampleCurve(curve, age) {
-  // NiagaraDataInterfaceCurve::SampleCurveInternal<true>: clamped linear LUT lookup.
-  const at = Math.max(0, Math.min(curve.samples.length - 1,
-    f32(f32(f32(age - curve.minTime) * curve.inverseRange) * (curve.samples.length - 1))));
-  const i = Math.floor(at), j = Math.min(i + 1, curve.samples.length - 1);
-  return f32(curve.samples[i] + f32((curve.samples[j] - curve.samples[i]) * f32(at - i)));
-}
-
 function validate(fixture) {
   if (fixture?.schema !== 'st01c-spawn-fixture/v1' || fixture.sourceSha256 !== SOURCE_SHA ||
       fixture.sourceStepCount !== 240 || fixture.sourceStepSeconds !== 1 / 60 ||
       JSON.stringify(fixture.emitterNames) !== JSON.stringify(NAMES) ||
       !Array.isArray(fixture.births) || fixture.births.length > 512)
     throw new Error('Invalid spawn fixture');
-  const curve = fixture.alphaCurve;
-  if (!curve || !Number.isFinite(curve.minTime) || !Number.isFinite(curve.inverseRange) || curve.inverseRange <= 0 ||
-      !Array.isArray(curve.samples) || curve.samples.length !== 54 || !curve.samples.every(v => Number.isFinite(v) && v >= 0 && v <= 2))
-    throw new Error('Invalid source alpha LUT');
+  validateCurve(fixture.alphaCurve, { sampleCount: 54, min: 0, max: 2, message: 'Invalid source alpha LUT' });
   const seen = new Set(); let previousStep = 0;
   for (const row of fixture.births) {
     const p = row.particle, key = `${row.emitter}:${p?.uniqueId}`;
@@ -69,9 +61,8 @@ export class UpdateSimulation {
     this.step++;
     // The known pilot has constant velocity, no forces, and age-based alpha/SubUV.
     this.live = this.live.map((list, emitter) => list.filter(p => {
-      p.age = f32(p.age + DT);
-      if (p.age >= p.lifetime) return false;
-      p.position = p.position.map((v, axis) => f32(v + f32(p.velocity[axis] * DT)));
+      if (!ageParticle(p, DT, null)) return false;
+      integrateVelocity(p, DT);
       this.evaluate(p, emitter); return true;
     }));
     const rows = this.fixture.births;
@@ -88,9 +79,9 @@ export class UpdateSimulation {
     }
   }
   evaluate(p, emitter) {
-    const normalizedAge = f32(p.age * f32(1 / p.lifetime));
-    p.subImage = f32(normalizedAge * (emitter ? 60 : 32));
-    if (emitter) p.color[3] = sampleCurve(this.fixture.alphaCurve, normalizedAge);
+    const normalized = normalizedAgeByReciprocal(p.age, p.lifetime);
+    p.subImage = subUVFrame(normalized, emitter ? 60 : 32);
+    if (emitter) p.color[3] = sampleCurve(this.fixture.alphaCurve, normalized);
   }
   seek(step) {
     if (!Number.isInteger(step) || step < 0 || step > 480) throw new Error('Invalid fixed step');

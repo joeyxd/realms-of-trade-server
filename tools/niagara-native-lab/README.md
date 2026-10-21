@@ -97,6 +97,21 @@ Unreal está fijada solo en memoria para comparar; el asset fuente no era determ
 Sigue DepthFade con escena, color final y presupuesto por dispositivo, antes de integrar
 el piloto al taller. El generador está cotejado para la fixture; otras semillas y otros
 sistemas necesitan sus comparaciones específicas.
+# Núcleo común de simulación, 2026-10-20
+
+`core/` reúne las primitivas de simulación del piloto para reutilizarlas en la segunda
+familia: `rng.js` (`random3`, `random4`, `uniformRange`), `curve.js` (`sampleCurve`,
+`validateCurve`), `spawn-rate.js` (`rateStep`, `rateBirthAge`), `particle-state.js` (`DT`,
+edad normalizada, `ageParticle`, `integrateVelocity`) y `subuv.js` (`subUVFrame`). Son módulos
+ES puros, sin imports externos. `verify-core.mjs` recalcula los digests del piloto y los compara
+con `docs/delivery/st01c/core-checkpoint.json`; sale con código 1 si alguno difiere.
+Ver [entrega](../../docs/delivery/st01c/CORE-MODULES.md).
+
+```powershell
+node tools/niagara-native-lab/verify-core.mjs
+node --test tools/niagara-native-lab/core.test.mjs
+```
+
 # Profundidad del piloto
 
 `depth.html?run=depth02` compara las partículas nativas a 2 s con el mismo piloto
