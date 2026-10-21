@@ -96,6 +96,23 @@ y decir sígueme / espera / vuelve.
 
 **ST01c, 2026-10-20 — cadena de sondas generalizada y NS_BasicHit extraído (3 emisores, 14 scripts, cierre de 58 paquetes):**
 [Extracción](delivery/st01c/basichit/EXTRACTION.md), [copia con SHA](delivery/st01c/basichit/source-copy-audit.json), [manifiesto](delivery/st01c/basichit/source-export-manifest.json), [valores nativos](delivery/st01c/basichit/native-values.json), [materiales](delivery/st01c/basichit/material-defaults.json). Las tres sondas Python y el comandlet reciben `-SystemSpec=<ruta absoluta>` y `-ProbeRun=<nombre fresco>` (sin spec no hay ejecución; `-run=` es de Unreal); un JSON por sistema en `tools/unreal-niagara-probe/systems/` (`ns-flame-single.json` reproduce las constantes del piloto, `ns-basichit.json` describe NS_BasicHit; semilla 6371 + índice, 6371-6373). El plugin gana `ConfigureSystem`/`ReadCompiledSystem` y conserva las funciones del piloto para los scripts de captura; nuevas herramientas: `closure_copy.py`, `probe_closure.py`, `check_copy_audit.py`, `build_export_manifest.py`, `compare_t3d.py`. Piloto con el spec: el informe compilado (`gen-pilot-compiled`, 842837…) y los valores nativos (`gen-pilot-native-values`, 869842…) salen idénticos byte a byte; `system.t3d` y `material-defaults.json` NO pueden igualar sus pines (d7d78b…, 0c9d93…): Unreal asigna ChangeId aleatorios en cada carga (la sonda original también da otro hash, `oldcheck-source`) y el pin de materiales contiene una dirección de memoria; con los GUID enmascarados los 7 T3D coinciden (`compare_t3d.py`) y los materiales solo difieren en esa línea (el script del repo ya escribía la ruta del asset, ec98890f…, igual que la copia de entrega). NS_BasicHit: cierre de 15 paquetes `/Game` (3 copiados, 12 ya presentes) más 43 de motor = 58, 3 handles (`NE_Flame_Basic_001`, `NE_Basic_Flash001`, `NE_SimpleBurst`), 14 scripts, nuevas capacidades frente al laboratorio en EXTRACTION.md (ráfaga, Drag, AddVelocityFromPoint, ScaleSpriteSize, SystemLocation, FaceCameraPosition, dos materiales nuevos). Sin cambio de runtime ni versión; sin captura de referencia ni simulación.
+**SK04b, 2026-10-20 — Subir y Reiniciar árbol en vivo en la hoja de habilidades, cliente del comando `skills` (T-1020-90..92), alpha.90, protocolo 65 (renumerado sobre alpha.89 en T-1021-29):**
+La pestaña T pasa a id `skills` (era `tattoo`; etiqueta, tecla T y clave i18n sin cambio; tools/qa-*.mjs y el test de
+presentación al día). Nuevo `src/ui/skillControls.js` (SkillControls, calcado de AttributeControls): `act('assign', {tree,
+node})` envía `{type:'skills', op:'assign', opId, expectedRev, tree, node}` y `act('reset', {tree})` el reset; pendiente,
+validación estricta del ack (claves exactas type/op/opId/ok/why/rev más to/durable/replay/historical; ok exige rev =
+expectedRev + 1; una denegación acepta rev 0 y limpia el pendiente), estados idle/waiting/denial/synced/sessionOnly,
+Reintentar a los 5 s sin ack (botón, nunca automático), resetSession en `you:welcome`. gameClient lee `skills.enabled` del
+WELCOME y reenvía el evento `skills` solo si `to === youServer`; charpanel opción `skillsEnabled`; characterScreen despacha
+`[data-skill-op]`. La hoja (módulo puro) recibe `controls` = SkillControls.view(): Subir lleva `data-skill-op="assign"` solo
+cuando pasa el chequeo local (flag, tier abierto, rango < 3, punto libre, gate contra el arma del nodo, no borrador; el mismo
+orden que skillPlan), si no va deshabilitado con el motivo en el title; «Reiniciar árbol» en el resumen del árbol con su
+precio (el primero gratis, después 150 de `profile.gold`, el campo que lee skillPlan.js:163); línea `.sk-status` con texto
+ES/EN por cada código `why`. Con el flag apagado (producción hoy) nada lleva `data-skill-op`: se ve la nota «Las acciones
+están deshabilitadas.», el reset deshabilitado y la línea de precio. Protocolo 64 -> 65 (el 64 lo tomó IC05a). Tests nuevos: skill-client (6),
+skill-controls (13), presentación +9; gate de 29 archivos 200/202 con 2 timeouts de world-host por carga de la máquina (8/8
+solo). Antes de encender MN_SKILL_OPERATIONS: 041 aplicado y readiness OK (hecho el 2026-10-20), y groundTransaction.mjs:22
+sigue pendiente. Sigue: QA en navegador con el flag encendido en local (qa-character.mjs no pulsa celdas todavía); SK05.
 
 **ST01c, 2026-10-20 — decisión del autor: UASTC automático, deriva fijada, memoria móvil aceptada:**
 [Entrega](delivery/st01c/ATLAS-LAB.md) sección «Decisión del autor (2026-10-20)»,
