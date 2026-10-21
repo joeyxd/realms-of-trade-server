@@ -207,3 +207,135 @@ test('skills atlas: every tree and combat node has a painted cell; the five hero
   assert.ok(html.includes('skills/hero-combat.webp') && html.includes('skills/hero-combat-mobile.webp'));
   assert.ok(html.includes('data-atlas="skills"'));
 });
+
+// SK04b: the Subir and Reiniciar arbol buttons and the status line. The sheet only renders the controller view.
+const open = { enabled: true, busy: false, statusKey: 'idle', statusWhy: '' };
+const adopted = (profile, extra = {}) => ({ ...profile, gold: 200, progression: { skills: {}, skg: { combat: 2 }, ...extra } });
+const rightOf = (profile, node, lang, controls) => {
+  const state = skillSheetState(profile, 0);
+  return skillRightHtml(state, { tree: 'combat', node }, lang, {}, controls);
+};
+const buttonOf = (html, cls) => html.match(new RegExp(`<button class="btn ${cls}"[^>]*>`))[0];
+const statusOf = (html) => html.match(/<p class="sk-status"[^>]*>([^<]*)/);
+
+test('flag off: Subir and the reset are disabled and the locked note is shown in both languages', () => {
+  const { profile } = fixture();
+  const p = adopted(profile);
+  for (const [lang, note] of [['es', 'Las acciones están deshabilitadas.'], ['en', 'Actions are disabled.']]) {
+    const node = rightOf(p, 'lunge', lang);
+    assert.match(buttonOf(node, 'sk-raise'), /disabled/);
+    assert.doesNotMatch(buttonOf(node, 'sk-raise'), /data-skill-op/);
+    assert.ok(text(node).includes(note), lang);
+    const summary = rightOf(p, null, lang, { enabled: false });
+    assert.match(buttonOf(summary, 'sk-reset'), /disabled/);
+    assert.ok(text(summary).includes(note), lang);
+  }
+});
+
+test('flag on with free points and an open tier: Subir carries the assign action, tree and node', () => {
+  const { profile } = fixture();
+  const html = rightOf(adopted(profile), 'lunge', 'es', open);
+  const button = buttonOf(html, 'sk-raise');
+  assert.match(button, /data-skill-op="assign" data-tree="combat" data-node="lunge"/);
+  assert.doesNotMatch(button, /disabled/);
+  assert.doesNotMatch(html, /sk-note/);
+  assert.match(html, /<p class="sk-status" data-status="idle"/);
+});
+
+test('Subir names its reason: no free points, closed tier, max rank, draft node', () => {
+  const { profile } = fixture();
+  const none = adopted(profile, { skg: { combat: 0 }, skills: { lunge: 3, wave: 3 } }); // 6 spent, 4 earned
+  assert.match(buttonOf(rightOf(none, 'blast', 'es', open), 'sk-raise'), /disabled title="Sin puntos libres"/);
+  assert.match(buttonOf(rightOf(none, 'blast', 'en', open), 'sk-raise'), /disabled title="No free points"/);
+  // Tier III of combat is closed at rank 3.
+  assert.match(buttonOf(rightOf(adopted(profile), 'storm', 'es', open), 'sk-raise'), /disabled title="Nivel cerrado"/);
+  assert.match(buttonOf(rightOf(adopted(profile, { skills: { lunge: 3 } }), 'lunge', 'en', open), 'sk-raise'), /disabled title="Max rank reached"/);
+  assert.match(buttonOf(rightOf(adopted(profile), 'temple', 'es', open), 'sk-raise'), /disabled title="Bloqueada"/); // saber mastery 5 needed
+  assert.match(buttonOf(rightOf(adopted(profile), 'pearl_affinity', 'es', open), 'sk-raise'), /disabled title="Disponible pronto"/);
+});
+
+test('the reset shows the free line at skr 0 and the 150 gold line after a reset', () => {
+  const { profile } = fixture();
+  const spent = { skills: { lunge: 1 } };
+  const first = rightOf(adopted(profile, spent), null, 'es', open);
+  assert.match(buttonOf(first, 'sk-reset'), /data-skill-op="reset" data-tree="combat"/);
+  assert.doesNotMatch(buttonOf(first, 'sk-reset'), /disabled/);
+  assert.ok(text(first).includes('Reiniciar árbol'));
+  assert.ok(text(first).includes('Primer reinicio gratis'));
+  assert.ok(text(rightOf(adopted(profile, spent), null, 'en', open)).includes('First reset is free'));
+  const again = rightOf(adopted(profile, { ...spent, skr: { combat: 1 } }), null, 'es', open);
+  assert.ok(text(again).includes('Cuesta 150 de oro'));
+  assert.ok(!text(again).includes('Primer reinicio gratis'));
+  assert.ok(text(rightOf(adopted(profile, { ...spent, skr: { combat: 1 } }), null, 'en', open)).includes('Costs 150 gold'));
+  assert.match(buttonOf(again, 'sk-reset'), /data-skill-op="reset"/); // gold 200 covers the price
+  const poor = rightOf({ ...adopted(profile, { ...spent, skr: { combat: 1 } }), gold: 149 }, null, 'es', open);
+  assert.match(buttonOf(poor, 'sk-reset'), /disabled title="Oro insuficiente"/);
+  const free = rightOf({ ...adopted(profile, spent), gold: 0 }, null, 'es', open);
+  assert.doesNotMatch(buttonOf(free, 'sk-reset'), /disabled/); // the first reset costs nothing
+  assert.match(buttonOf(rightOf(adopted(profile), null, 'es', open), 'sk-reset'), /disabled title="No hay puntos gastados"/);
+});
+
+test('busy disables both buttons and the status line says waiting; denials and saves are localized', () => {
+  const { profile } = fixture();
+  const busy = { ...open, busy: true, statusKey: 'waiting' };
+  const p = adopted(profile, { skills: { lunge: 1 } });
+  const node = rightOf(p, 'wave', 'es', busy), summary = rightOf(p, null, 'en', busy);
+  assert.match(buttonOf(node, 'sk-raise'), /disabled/);
+  assert.match(buttonOf(summary, 'sk-reset'), /disabled/);
+  assert.match(node, /data-status="waiting"[^>]*>Enviando\.\.\./);
+  assert.match(summary, /data-status="waiting"[^>]*>Sending\.\.\./);
+  const status = (statusKey, statusWhy, lang) => statusOf(rightOf(p, 'wave', lang, { ...open, statusKey, statusWhy }))[1];
+  assert.equal(status('denial', 'points', 'es'), 'No hay puntos libres.');
+  assert.equal(status('denial', 'gold', 'en'), 'Not enough gold.');
+  assert.equal(status('denial', 'storage', 'es'), 'No se pudo confirmar el guardado.');
+  assert.equal(status('denial', 'nonsense', 'es'), 'La operación fue rechazada.');
+  assert.equal(status('denial', 'constructor', 'en'), 'The operation was rejected.');
+  assert.equal(status('synced', '', 'es'), 'Guardado');
+  assert.equal(status('sessionOnly', '', 'en'), 'Saved for this session only');
+  assert.equal(status('sessionOnly', '', 'es'), 'Guardado solo en esta sesión');
+  assert.equal(status('idle', '', 'es'), '');
+});
+
+test('every server denial code has its own text in both languages', () => {
+  const { profile } = fixture();
+  for (const why of ['command', 'profile', 'limit', 'conflict', 'draft', 'tier', 'max', 'points', 'gate', 'empty', 'gold', 'disabled', 'account_required', 'busy', 'storage']) {
+    for (const [lang, generic] of [['es', 'La operación fue rechazada.'], ['en', 'The operation was rejected.']]) {
+      const line = statusOf(rightOf(profile, 'lunge', lang, { ...open, statusKey: 'denial', statusWhy: why }))[1];
+      assert.ok(line.length > 0 && line !== generic, `${why} ${lang}`);
+    }
+  }
+});
+
+test('clicking Subir and the reset sends the controller command with the tree and node, then renders', () => {
+  const { screen } = fixture();
+  const sent = [];
+  let renders = 0;
+  screen.skills = { act: (op, args) => { sent.push([op, args]); return true; } };
+  screen.render = () => { renders++; };
+  const click = (dataset, disabled = false) => screen.onClick({ target: { closest: (s) => (s === '[data-skill-op]' ? { dataset, disabled } : null) } });
+  click({ skillOp: 'assign', tree: 'combat', node: 'lunge' });
+  click({ skillOp: 'reset', tree: 'combat' });
+  click({ skillOp: 'assign', tree: 'combat', node: 'wave' }, true);
+  click({ skillOp: 'retry', tree: 'combat' });
+  assert.deepEqual(sent, [['assign', { tree: 'combat', node: 'lunge' }], ['reset', { tree: 'combat', node: undefined }], ['retry', { tree: 'combat', node: undefined }]]);
+  assert.equal(renders, 3);
+});
+
+test('the retry button renders only while retryReady, in both languages and both columns', () => {
+  const { profile } = fixture();
+  const p = adopted(profile, { skills: { lunge: 1 } });
+  const ready = { enabled: true, busy: true, retryReady: true, statusKey: 'waiting' };
+  for (const [lang, label] of [['es', 'Reintentar'], ['en', 'Retry']]) {
+    for (const html of [rightOf(p, 'wave', lang, ready), rightOf(p, null, lang, ready)]) {
+      const retry = buttonOf(html, 'sk-retry');
+      assert.match(retry, /data-skill-op="retry"/);
+      assert.doesNotMatch(retry, /disabled/);
+      assert.ok(text(html).includes(label), lang);
+      assert.match(buttonOf(html, html.includes('sk-raise') ? 'sk-raise' : 'sk-reset'), /disabled/);
+    }
+  }
+  for (const controls of [{ ...ready, retryReady: false }, { enabled: true, busy: false, retryReady: true, statusKey: 'idle' }, { enabled: false, busy: true, retryReady: true, statusKey: 'waiting' }]) {
+    assert.doesNotMatch(rightOf(p, 'wave', 'es', controls), /sk-retry|data-skill-op="retry"/);
+    assert.doesNotMatch(rightOf(p, null, 'en', controls), /sk-retry|data-skill-op="retry"/);
+  }
+});

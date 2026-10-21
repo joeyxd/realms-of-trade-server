@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 64; // IC05a: presence gather order
+export const PROTOCOL_VERSION = 65; // SK04b: skills command and the WELCOME skills flag
 
 export const MSG = {
   // client -> server
@@ -25,7 +25,7 @@ export const MSG = {
   AGENT_GOODS_BUDGET: 'agent_goods_budget', // authenticated owner: create/read/revoke for a configured character
   // server -> client
   READY: 'ready',     // transport is up (worker booted)
-  WELCOME: 'welcome', // {v,you,tick,seed,attributes?:{enabled},control?: server-owned managed grant/task state}
+  WELCOME: 'welcome', // {v,you,tick,seed,attributes?:{enabled},skills?:{enabled},control?: server-owned managed grant/task state}
   SNAPSHOT: 'snap',   // {tick, ack, ents, you, rafts, resources, naval?, deck?, voyage?, route?, lesson?: private activity/learning}
   SPAWN: 'spawn',     // {e: {id, kind, name, title, skin, level}}
   DESPAWN: 'despawn', // {id}

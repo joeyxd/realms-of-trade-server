@@ -249,13 +249,15 @@ async function boot() {
     reducedMotion: () => settings.reducedMotion,
     slots: () => { const d = readSlots(); return { q: d.q.id, e: d.e.id, g: d.g.id, r: d.r.id }; },
     attributeEnabled: () => client?.joined === true && !client.t.closed && client.attributes?.enabled === true,
+    skillsEnabled: () => client?.joined === true && !client.t.closed && client.skills?.enabled === true,
     onFood: () => freshwaterPanel?.open(), // RNV07b: eating and drinking are durable water/provisions operations
     nearby: () => [...client.entities.values()].filter((r) => r.human && r.id !== client.youServer && r.ready && !r.dying && Math.hypot(r.r.x - ps.x, r.r.z - ps.z) <= 3.5).map((r) => ({ id: r.id, name: r.name })),
     portrait: (c) => drawPortrait(c, settings.skin, portrait(settings.skin)),
     onClose: () => { hud.setBagDot(charPanel.hasNew()); canvas.focus({ preventScroll: true }); },
   });
   bus.on('attributes', ev => safe('attributes', () => charPanel.attributes.onResult(ev)));
-  bus.on('you:welcome', () => charPanel.attributes.resetSession());
+  bus.on('skills', ev => safe('skills', () => charPanel.skills.onResult(ev)));
+  bus.on('you:welcome', () => { charPanel.attributes.resetSession(); charPanel.skills.resetSession(); });
   const dialog = new Dialog($('#dialog'), { send: sendCmd, onShop: () => charPanel.open('gear', { shop: true }), onTattoo: () => charPanel.open('skills', { learn: true }), onMarket: (town) => commercePanel.openMarket(town) });
   const mapView = new MapView($('#mapview'), map);
   const miniMap = new MiniMap($('#hud'), map, { isTouch, onOpen: () => {
@@ -1041,6 +1043,7 @@ async function boot() {
   // Your profile (M4): gold, the tracker, and on the first one, how far the tutorial went.
   bus.on('profile', (p) => safe('profile', () => {
     charPanel.attributes.update();
+    charPanel.skills.update();
     if (!st.profileSeen) {
       st.profileSeen = true;
       const k = p.flags ? p.flags.tut | 0 : 0;
@@ -1793,6 +1796,7 @@ async function boot() {
       });
       safe('raftEditor', () => raftEditor.update());
       safe('attributes', () => charPanel.attributes.update());
+      safe('skills', () => charPanel.skills.update());
       safe('commerce', () => commercePanel.update());
       safe('workbench', () => workbench.update());
       safe('community', () => {

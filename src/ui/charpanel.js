@@ -22,6 +22,7 @@ import { pearlHtml } from './pearlpanel.js';
 import { packInventoryHtml } from './packInventory.js';
 import { loggingSkillHtml } from './loggingSkill.js';
 import { AttributeControls } from './attributeControls.js';
+import { SkillControls } from './skillControls.js';
 import { dataText, dataParam, text as ltext, rich, translateData, t, formatNumber, onLocaleChange } from '../core/i18n.js';
 
 const TABS = [['gear', 'adventure.tab.gear', 'I'], ['stats', 'adventure.tab.stats', 'C'], ['quests', 'adventure.tab.quests', 'L'], ['skills', 'adventure.tab.tattoos', 'T'], ['pearl', 'adventure.tab.pearls', 'P'], ['logging', 'systems.logging.tab', '']];
@@ -29,7 +30,7 @@ const DOLL = [['head', 'top'], ['weapon', 'left'], ['chest', 'left2'], ['ring1',
 const pct = (v, d = 0) => formatNumber(v * 100, { maximumFractionDigits: d, minimumFractionDigits: d }) + ' %';
 
 export class CharPanel {
-  constructor(root, { send, profile, stats, portrait, onClose, nearby, backpack, attributeEnabled, locale = 'es' }) {
+  constructor(root, { send, profile, stats, portrait, onClose, nearby, backpack, attributeEnabled, skillsEnabled, locale = 'es' }) {
     Object.assign(this, { root, send, profile, stats, portrait, onClose, nearby, backpack, locale });
     this.tab = 'gear';
     this.shop = false;
@@ -39,6 +40,7 @@ export class CharPanel {
     this.seen = new Set(); // uids already shown (the rest get «NUEVO»)
     this.isOpen = false;
     this.attributes = new AttributeControls({ profile, enabled: attributeEnabled, submit: send, onChange: () => this.refresh() });
+    this.skills = new SkillControls({ profile, enabled: skillsEnabled, submit: send, onChange: () => this.refresh() });
     this.unsubscribeLocale = onLocaleChange(() => this.refresh());
     root.addEventListener('click', (e) => this.onClick(e));
     root.addEventListener('dblclick', (e) => { const c = e.target.closest('[data-bag]'); if (c) this.equip(+c.dataset.bag); });

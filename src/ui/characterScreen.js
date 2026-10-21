@@ -142,6 +142,8 @@ export class CharacterScreen extends CharPanel {
     if (t.closest('[data-view-reset]')) { this.cam = { yaw: HOME_YAW, zoom: 1 }; this.requestFigure(); return; }
     if (this.kind() === 'tree') {
       const tree = t.closest('[data-tree]'), node = t.closest('[data-node]');
+      const op = t.closest('[data-skill-op]');
+      if (op) { if (!op.disabled) { this.skills.act(op.dataset.skillOp, { tree: op.dataset.tree, node: op.dataset.node }); this.render(); sfx.click(); } return; }
       if (tree && TREES.some((x) => x.id === tree.dataset.tree && !x.hidden)) { this.skTree = tree.dataset.tree; this.skNode = null; this.render(); sfx.click(); return; }
       if (node && nodeById(node.dataset.node)?.tree === this.skSelection().tree) { this.skNode = this.skNode === node.dataset.node ? null : node.dataset.node; this.render(); sfx.click(); return; }
     }
@@ -258,8 +260,9 @@ export class CharacterScreen extends CharPanel {
   }
   treeParts(p, lang) {
     const state = skillSheetState(p, this.stats().weapon | 0), sel = this.skSelection(), node = sel.node ? nodeById(sel.node) : null;
-    return { left: skillListHtml(state, sel, lang), center: skillCenterHtml(state, sel, lang),
-      right: skillRightHtml(state, sel, lang, { tattoo: node ? this.skillTattooBlock(p, node) : '' }) };
+    const controls = this.skills?.view();
+    return { left: skillListHtml(state, sel, lang), center: skillCenterHtml(state, sel, lang, controls),
+      right: skillRightHtml(state, sel, lang, { tattoo: node ? this.skillTattooBlock(p, node) : '' }, controls) };
   }
   // The existing tattoo card (Poner en Q / E, forms) for an active node whose art or tattoo can be used now.
   skillTattooBlock(p, node) {

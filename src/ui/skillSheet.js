@@ -4,7 +4,7 @@
 // columns: the tree list, the 5x3 node grid and the node detail. The character screen owns selection and clicks.
 import { WEAPON_KINDS } from '../data/weapons.js';
 import {
-  CURVES, MAX_NODE_RANK, MAX_TREE_RANK, TIERS, TREES, combatPractice, gateState, legacySkills, nodeById, nodeRank,
+  CURVES, MAX_NODE_RANK, MAX_TREE_RANK, SKILL_RESET_GOLD, TIERS, TREES, combatPractice, gateState, legacySkills, nodeById, nodeRank,
   nodesByTier, pointsEarned, pointsFree, pointsSpent, practiceOf, practiceToNext, skillGrant, tierOpen, treeRank,
 } from '../data/skillTree.js';
 import { skillIcon } from './hud.js';
@@ -31,7 +31,17 @@ const COPY = {
     nextRank: 'Siguiente rango', onePoint: '1 punto de {tree}', tierNeed: 'Requiere rango {n} de {tree}', maxed: 'Rango máximo alcanzado',
     requires: 'Requiere', needWeapon: '{weapon} en mano', needMastery: 'Maestría de {lower} {n}', needSepia: 'Aprendido con Doña Sepia', needPearl: 'Perla tragada',
     weapons: { sable: 'Sable', pistolas: 'Pistolas' },
-    raise: 'Subir', soon: 'Disponible pronto', locked: 'Bloqueada', tierClosed: 'Nivel cerrado',
+    raise: 'Subir', soon: 'Disponible pronto', locked: 'Bloqueada', tierClosed: 'Nivel cerrado', noPoints: 'Sin puntos libres',
+    reset: 'Reiniciar árbol', resetFree: 'Primer reinicio gratis', resetGold: 'Cuesta {gold} de oro', resetEmpty: 'No hay puntos gastados',
+    resetNoGold: 'Oro insuficiente', actionsOff: 'Las acciones están deshabilitadas.', retry: 'Reintentar',
+    waiting: 'Enviando...', synced: 'Guardado', sessionOnly: 'Guardado solo en esta sesión', deniedGeneric: 'La operación fue rechazada.',
+    denied: {
+      command: 'Operación inválida.', profile: 'Perfil inválido.', limit: 'Se alcanzó el límite de reinicios.', conflict: 'El perfil cambió; inténtalo de nuevo.',
+      draft: 'Esta habilidad aún no está disponible.', tier: 'Nivel cerrado.', max: 'Rango máximo alcanzado.', points: 'No hay puntos libres.',
+      gate: 'No cumples los requisitos.', empty: 'No hay puntos gastados en este árbol.', gold: 'No tienes oro suficiente.',
+      disabled: 'Las acciones están deshabilitadas.', account_required: 'Necesitas una cuenta para esto.', busy: 'Hay otra operación pendiente.',
+      storage: 'No se pudo confirmar el guardado.',
+    },
     fx: { dmg: 'Daño', win: 'Margen de parry', fireCut: 'Intervalo de disparo', stormR: 'Alcance de la Tormenta', rainDur: 'Duración de la Lluvia', rainR: 'Radio de la Lluvia' },
     activity: {
       survival: 'tala, agua dulce, comida y rescate (hoy solo cuenta la tala)', sailing: 'pilotar la nave, atracar y reparar la balsa',
@@ -47,7 +57,17 @@ const COPY = {
     nextRank: 'Next rank', onePoint: '1 {tree} point', tierNeed: 'Needs {tree} rank {n}', maxed: 'Max rank reached',
     requires: 'Requires', needWeapon: '{weapon} in hand', needMastery: '{weapon} mastery {n}', needSepia: 'Learned from Doña Sepia', needPearl: 'Swallowed pearl',
     weapons: { sable: 'Saber', pistolas: 'Pistols' },
-    raise: 'Raise', soon: 'Coming soon', locked: 'Locked', tierClosed: 'Tier closed',
+    raise: 'Raise', soon: 'Coming soon', locked: 'Locked', tierClosed: 'Tier closed', noPoints: 'No free points',
+    reset: 'Reset tree', resetFree: 'First reset is free', resetGold: 'Costs {gold} gold', resetEmpty: 'No points spent',
+    resetNoGold: 'Not enough gold', actionsOff: 'Actions are disabled.', retry: 'Retry',
+    waiting: 'Sending...', synced: 'Saved', sessionOnly: 'Saved for this session only', deniedGeneric: 'The operation was rejected.',
+    denied: {
+      command: 'Invalid operation.', profile: 'Invalid profile.', limit: 'Reset limit reached.', conflict: 'The profile changed; try again.',
+      draft: 'This skill is not available yet.', tier: 'Tier closed.', max: 'Max rank reached.', points: 'No free points.',
+      gate: 'Requirements not met.', empty: 'No points spent in this tree.', gold: 'Not enough gold.',
+      disabled: 'Actions are disabled.', account_required: 'You need an account for this.', busy: 'Another operation is pending.',
+      storage: 'The save could not be confirmed.',
+    },
     fx: { dmg: 'Damage', win: 'Parry margin', fireCut: 'Fire interval', stormR: 'Storm reach', rainDur: 'Lead Rain duration', rainR: 'Lead Rain radius' },
     activity: {
       survival: 'logging, fresh water, food and rescue (only logging counts today)', sailing: 'steering the ship, docking and repairing the raft',
@@ -83,7 +103,8 @@ export function skillSheetState(profile, weaponIndex = 0) {
   const knows = (id) => !!id && Object.hasOwn(has, id) && !!has[id];
   return {
     practice, skills, weapon, mastery, pearl, progression: progression || undefined,
-    knows,
+    knows, gold: count(p?.gold),
+    resets: (treeId) => (Object.hasOwn(progression?.skr ?? {}, treeId) ? count(progression.skr[treeId]) : 0),
     ctxFor: (node) => ({ weapon, mastery: { ...mastery }, knowledge: knows(node?.skill) ? ['tattoo'] : [], pearl }),
     points: (treeId) => {
       const grant = adopted ? count(progression?.skg?.[treeId]) : skillGrant(treeId, practice, skills);
@@ -132,6 +153,41 @@ export function nodeView(state, node) {
   return { rank, open, gate, locked, cls: [locked ? 'is-locked' : rank === 0 ? 'is-open' : '', rank > 0 ? 'is-ranked' : ''].filter(Boolean).join(' ') };
 }
 
+// ---- Controls (SK04b) ---------------------------------------------------------------------------------------------------
+
+// What the screen passes from SkillControls.view(); the default is the closed sheet (flag off), so plain calls stay read-only.
+const CLOSED = { enabled: false, busy: false, retryReady: false, statusKey: 'idle', statusWhy: '' };
+const controlsOf = (controls) => ({ ...CLOSED, ...(isObj(controls) ? controls : {}) });
+
+// Why Subir is off, as a COPY key, or '' when the local check passes. It mirrors the server (skillPlan.js): the gate is
+// checked against the weapon the node asks for, not the one in hand.
+function raiseWhy(state, node, view, ctl) {
+  if (!ctl.enabled || node.draft) return 'soon';
+  if (ctl.busy) return 'waiting';
+  if (!view.open) return 'tierClosed';
+  if (view.rank >= MAX_NODE_RANK) return 'maxed';
+  if (state.points(node.tree).free < 1) return 'noPoints';
+  return gateState(node, { ...state.ctxFor(node), weapon: node.gate?.weapon }).ok ? '' : 'locked';
+}
+
+// Why the tree reset is off, as a COPY key, or ''. The first reset of a tree is free, then SKILL_RESET_GOLD.
+function resetWhy(state, tree, ctl) {
+  if (!ctl.enabled) return 'actionsOff';
+  if (ctl.busy) return 'waiting';
+  if (state.points(tree).spent < 1) return 'resetEmpty';
+  return state.resets(tree) < 1 || state.gold >= SKILL_RESET_GOLD ? '' : 'resetNoGold';
+}
+
+// The locked note (flag off) and the status line of the last operation.
+function statusHtml(ctl, T) {
+  const text = ctl.statusKey === 'denial' ? (Object.hasOwn(T.denied, ctl.statusWhy) ? T.denied[ctl.statusWhy] : T.deniedGeneric)
+    : ctl.statusKey === 'idle' ? '' : (T[ctl.statusKey] || '');
+  // After a lost ack the sheet stays busy: the retry button (the one enabled while busy) resends the same command.
+  const retry = ctl.retryReady === true && ctl.enabled && ctl.busy
+    ? `<button class="btn sk-retry" type="button" data-skill-op="retry" data-tree="${esc(ctl.pendingTree ?? '')}">${esc(T.retry)}</button>` : '';
+  return `${ctl.enabled ? '' : `<p class="sk-note">${esc(T.actionsOff)}</p>`}<p class="sk-status" data-status="${esc(ctl.statusKey)}" role="status">${esc(text)}</p>${retry}`;
+}
+
 // ---- Left column: tree list, painting, points ---------------------------------------------------------------------------
 
 export function skillListHtml(state, sel, lang) {
@@ -156,7 +212,8 @@ export function skillListHtml(state, sel, lang) {
 
 // ---- Center column: header and the 5x3 grid -----------------------------------------------------------------------------
 
-export function skillCenterHtml(state, sel, lang) {
+// `controls` is accepted so the screen passes one view to both columns; the grid itself has no actions.
+export function skillCenterHtml(state, sel, lang, controls) {
   lang = langOf(lang);
   const T = copy(lang), tree = treeById(sel?.tree) || visibleTrees()[0];
   const rank = treeRank(tree.id, state.practice), pr = progress(tree.id, state.practice);
@@ -213,7 +270,14 @@ function requirementsHtml(node, ctx, T) {
   return `<ul class="sk-req">${rows || `<li class="is-ok"><i>✓</i>${esc(T.none)}</li>`}</ul>`;
 }
 
-function nodeDetailHtml(state, node, lang, extra) {
+// The Subir button: it carries its action only when the local check passes; otherwise it is disabled with the reason.
+function raiseButtonHtml(state, node, v, ctl, T) {
+  const why = raiseWhy(state, node, v, ctl);
+  return why ? `<button class="btn sk-raise" type="button" disabled title="${esc(T[why])}">${esc(T.raise)}</button>`
+    : `<button class="btn sk-raise" type="button" data-skill-op="assign" data-tree="${node.tree}" data-node="${node.id}">${esc(T.raise)}</button>`;
+}
+
+function nodeDetailHtml(state, node, lang, extra, ctl) {
   const T = copy(lang), tree = treeById(node.tree) || TREES.find((t) => t.id === node.tree);
   const v = nodeView(state, node), tierN = TIERS[node.tier - 1];
   const treeName = tr(tree.name, lang);
@@ -228,11 +292,21 @@ function nodeDetailHtml(state, node, lang, extra) {
     <h3 class="ch-h2">${esc(T.rank)}</h3><div class="sk-fxs">${ranksHtml(node, v.rank, T, lang)}</div>
     <h3 class="ch-h2">${esc(T.nextRank)}</h3><ul class="sk-req">${nextLine}</ul>
     <h3 class="ch-h2">${esc(T.requires)}</h3>${requirementsHtml(node, state.ctxFor(node), T)}
-    <div class="sk-act"><button class="btn sk-raise" type="button" disabled title="${esc(T.soon)}">${esc(T.raise)}</button></div>
+    <div class="sk-act">${raiseButtonHtml(state, node, v, ctl, T)}</div>
+    ${statusHtml(ctl, T)}
     ${extra?.tattoo || ''}</div>`;
 }
 
-function treeSummaryHtml(state, tree, lang) {
+// The tree reset: the button, what it costs, and the status line (the summary is where no node is selected).
+function resetHtml(state, tree, ctl, T) {
+  const why = resetWhy(state, tree.id, ctl);
+  const price = state.resets(tree.id) < 1 ? T.resetFree : fill(T.resetGold, { gold: SKILL_RESET_GOLD });
+  const button = why ? `<button class="btn sk-reset" type="button" disabled title="${esc(T[why])}">${esc(T.reset)}</button>`
+    : `<button class="btn sk-reset" type="button" data-skill-op="reset" data-tree="${tree.id}">${esc(T.reset)}</button>`;
+  return `<div class="sk-act sk-reset-row"><small class="sk-price">${esc(price)}</small>${button}</div>${statusHtml(ctl, T)}`;
+}
+
+function treeSummaryHtml(state, tree, lang, ctl) {
   const T = copy(lang), rank = treeRank(tree.id, state.practice), pr = progress(tree.id, state.practice), pts = state.points(tree.id);
   const trained = Object.hasOwn(T.activity, tree.id) ? `<p class="sk-trained">${esc(fill(T.trained, { activity: T.activity[tree.id] }))}</p>` : '';
   const combat = tree.id === 'combat' ? `<p class="sk-trained">${esc(T.combatPractice)}</p>` : '';
@@ -246,16 +320,18 @@ function treeSummaryHtml(state, tree, lang) {
     <div class="sk-points-row is-free"><span>${esc(T.free)}</span><b>${pts.free}</b></div>
     ${combat}${trained}
     <p class="sk-pick">${esc(T.pick)}</p>
+    ${resetHtml(state, tree, ctl, T)}
     ${tree.id === 'survival' ? loggingSkillHtml(state.progression, lang) : ''}</div>`;
 }
 
 /**
  * Right column. With a node selected: its detail (`extra.tattoo` is appended, the screen's existing tattoo card);
- * otherwise the tree summary.
+ * otherwise the tree summary. `controls` is SkillControls.view(): without it the actions stay closed.
  */
-export function skillRightHtml(state, sel, lang, extra = {}) {
+export function skillRightHtml(state, sel, lang, extra = {}, controls) {
   lang = langOf(lang);
   const tree = treeById(sel?.tree) || visibleTrees()[0];
   const node = sel?.node ? nodeById(sel.node) : null;
-  return node && node.tree === tree.id ? nodeDetailHtml(state, node, lang, extra) : treeSummaryHtml(state, tree, lang);
+  const ctl = controlsOf(controls);
+  return node && node.tree === tree.id ? nodeDetailHtml(state, node, lang, extra, ctl) : treeSummaryHtml(state, tree, lang, ctl);
 }
