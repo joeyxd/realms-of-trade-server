@@ -491,7 +491,7 @@ async function serve(handler, run) {
   finally { await new Promise((resolve) => server.close(resolve)); }
 }
 
-test('draft save and prepare of a document v5 answer terrain_tiles_not_ready', async () => {
+test('draft HTTP save and prepare of a document v5 answer terrain_tiles_not_ready; the memory store saves it', async () => {
   const headers = { authorization: 'Bearer gm', 'content-type': 'application/json' };
   const saving = draftHandler();
   assert.equal(await saving.handler.prepare(), true);
@@ -517,9 +517,13 @@ test('draft save and prepare of a document v5 answer terrain_tiles_not_ready', a
   const publication = createGmPublicationService({ root: ROOT, map, baseRevision: BASE, worldId: 'tiles-world',
     validateReferences: () => { throw new Error('a document v5 must not be validated'); }, gameVersion: 'test', protocolVersion: 1 });
   await assert.rejects(publication.build({ document: tilesDocument(map.seed), draftRevision: 1 }), notReady);
+  // GM07b2a: the store itself holds a document v5 now (tile references; tiles in its tile store); the draft route
+  // and the validator above keep refusing it until GM07b2b.
   const store = createMemoryGmDraftMethods();
-  await assert.rejects(store.saveGmDraft({ world: 'tiles-world', owner: GM, operationId: OPERATION, expectedRevision: 0,
-    document: tilesDocument() }), notReady);
+  const stored = await store.saveGmDraft({ world: 'tiles-world', owner: GM, operationId: OPERATION, expectedRevision: 0,
+    document: tilesDocument() });
+  assert.equal(stored.ok, true);
+  assert.deepEqual(stored.head.document, tilesDocument());
 });
 
 test('player install, publication validation, world content load and the registry refuse a document v5', async () => {
