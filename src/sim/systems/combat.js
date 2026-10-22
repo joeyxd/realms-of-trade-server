@@ -705,7 +705,8 @@ export function stepPlayerCombat(world, e, cmd, dt) {
       swingActive(world, e, st, stage, pt, seq);
     }
     if (t1 >= a1 && ecs.atkBuf[e] > 0 && stage < 3 && canAct) swingStage(world, e, stage + 1, cmd);
-    else if (t1 >= a1 + st.recover) { ecs.lastStage[e] = stage; ecs.atkStage[e] = 0; ecs.comboT[e] = 0; }
+    // The recovery ends by time, or as soon as the stick asks to move (a buffered press above still chains first).
+    else if (t1 >= a1 + st.recover || (t1 >= a1 && Math.hypot(cmd.mx || 0, cmd.mz || 0) > 0.2)) { ecs.lastStage[e] = stage; ecs.atkStage[e] = 0; ecs.comboT[e] = 0; }
   }
 
   // R: a full RIPOSTE meter. The cutlass's is the Tormenta (the reflecting wave).
@@ -745,8 +746,11 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   if (ecs.dead[e] > 0) { ecs.moveMul[e] = 0; setAct(ecs, e, ACT.DEAD); return; }
   const cp = castPose(ecs, e);
   const firing = pistol && (ecs.shotCd[e] > 0 || ecs.shotAltCd[e] > 0);
-  ecs.moveMul[e] = cp ? cp.move : ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1].move : ecs.guardT[e] >= 0 ? G.move
-    : ecs.stagger[e] > 0 ? 0 : firing ? SKILLS.pistol.move : 1;
+  const swingSt = ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1] : null;
+  const committed = swingSt && ecs.atkT[e] < swingSt.windup + swingSt.active; // the recovery runs at full speed
+  const triggerSlow = (trigger && ecs.shotCd[e] > 0) || (triggerSecondary && ecs.shotAltCd[e] > 0); // slow only while a trigger is held
+  ecs.moveMul[e] = cp ? cp.move : committed ? swingSt.move : ecs.guardT[e] >= 0 ? G.move
+    : ecs.stagger[e] > 0 ? 0 : triggerSlow ? SKILLS.pistol.move : 1;
   let a = ACT.IDLE;
   if (ecs.stagger[e] > 0) a = ACT.STAGGER;
   else if (cp) a = cp.act;

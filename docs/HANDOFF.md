@@ -15,6 +15,20 @@ no hay desenfoque (decisión de gusto pendiente de Joi). QA: `tools/shot.mjs --p
 un punto a 3 u de profundidad y los dos faroles del muelle. Tests de agua 12/12, tests que cargan el pipeline 31/31;
 capturas fuera de git (visual-revamp/.scratch/t1022-21-*, t1022-33-dof). Pendiente: Joi lo revisa en el servidor y en
 una GPU real.
+**PT08, 2026-10-21 — se vuelve a correr justo después de los espadazos (sin versión: la pone el push):**
+Sin SQL ni protocolo, sin campos nuevos en ecs. No existía un modo caminar: lo que el tester vio como «caminar» era el
+frenado de combate, que duraba todo el golpe incluida la recuperación (golpes 1 y 2 al 30 %, el tercero al 15 % durante
+0,54 s) y la recuperación solo acababa por tiempo. Ahora (src/sim/systems/combat.js `stepPlayerCombat`) el golpe frena
+solo en windup y frames activos; en la recuperación el cuerpo va a velocidad plena, y un stick por encima de 0,2 termina
+la recuperación igual que el fin por tiempo (`lastStage`, `comboT` = 0: una pulsación dentro de `comboGap` sigue el combo;
+la pulsación guardada en los frames activos sigue encadenando primero). El tercer golpe frena al 30 % (tuning.js
+`melee.stages[2].move` 0,15 → 0,3). Pistolas: el frenado 0,85 solo mientras el gatillo de esa pistola está pulsado, ya no
+mientras corre el enfriamiento (la derecha, 0,6 s). La embestida, los golpes de los frames activos y su compromiso no
+cambian; `ACT.SHOOT` sigue mirando el enfriamiento. Lee `cmd.mx/mz` cuantizados igual en servidor y predicción. Medido
+(vuelta a 0,98 × runSpeed con el stick): golpe 1 de 236 a 70 ms, golpe 3 de 393 a 77 ms, pistola derecha de 500 a 33 ms.
+Ojo de diseño: moviéndote y machacando, el combo enlaza 1-2-3-1 sin la pausa del tercer golpe; si pega demasiado, la
+palanca es excluir el golpe 3 de la cancelación. Test nuevo tests/combat-recovery.test.mjs (9 tests, fuera del gate).
+Ticket T-1021-54. Pendiente: prueba a mano de Joi en el teléfono.
 
 **PT01, 2026-10-21 — el suelo del pueblo ya no tiene escalones invisibles (alpha.92):**
 Sin SQL ni protocolo. Las terrazas del pueblo (2,4 / 6,4 / 10,4) subían 4 unidades en 3 con un smoothstep cúbico: fuera

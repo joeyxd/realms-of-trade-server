@@ -96,7 +96,7 @@ export const tuning = {
     stages: [
       { windup: 0.06, active: 0.12, recover: 0.16, arc: 150, range: 2.1, mult: 1.0, lunge: 0.55, move: 0.3 },
       { windup: 0.06, active: 0.12, recover: 0.18, arc: 150, range: 2.1, mult: 1.15, lunge: 0.55, move: 0.3 },
-      { windup: 0.1, active: 0.14, recover: 0.3, arc: 360, range: 2.5, mult: 1.6, lunge: 0, move: 0.15 },
+      { windup: 0.1, active: 0.14, recover: 0.3, arc: 360, range: 2.5, mult: 1.6, lunge: 0, move: 0.3 },
     ],
     comboGap: 0.3,
     knock: 6, // enemy knockback u/s (decays at 10/s → 0.6 u, DESIGN §7)
