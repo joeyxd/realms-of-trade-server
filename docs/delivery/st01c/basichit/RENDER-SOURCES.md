@@ -13,12 +13,20 @@ Escritos antes de la primera ejecución del binding. Se reutiliza el precedente 
 
 - IoU de máscara >= 0,94 contra la imagen final de Unreal.
 - Diferencia RGB media <= 10/255 sobre la unión visible.
-- Mismas definiciones de máscara y unión que el gate del piloto: máscara = canal máximo > 32 en cada imagen; unión
-  visible = canal máximo > 8 en cualquiera de las dos; 512 px; misma presentación ACES para ambas
-  (`tools/niagara-native-lab/compare-depth.py` líneas 15-24 y `compare-color.py` líneas 28-37).
+- Mismas definiciones que el gate de color final del piloto (`tools/niagara-native-lab/compare-color.py` líneas 28-37):
+  máscara = canal máximo > 32 en cada imagen; unión visible = canal máximo > 8 en cualquiera de las dos. Lado nativo:
+  simulación nativa -> destino HDR de media precisión -> LUT Filmic del laboratorio de color (`film-color.js`) -> lienzo,
+  contra el `FinalColorLDR` de `basichit-reference03` a su tamaño nativo de 1024 px, sin remuestreo; 15 imágenes (pasos
+  2, 6, 12, 18 y 24 x frontal, oblicua y lateral).
+- Precondición de transferencia, la misma del gate del piloto: la misma LUT aplicada al HDR de UE contra el LDR de UE en
+  el paso 12 (el único con HDR, tres cámaras): MAE <= 2/255 y percentil 95 del error de canal <= 4/255 sobre la unión.
+  Si falla, la referencia LDR no está bajo el perfil controlado y no se declara ningún resultado nativo.
+- Orden de dibujo del gate: el de los emisores (Flame, Flash, SimpleBurst); el orden inverso solo como diagnóstico.
 - Dos ejecuciones idénticas.
 
-No se ajusta ningún umbral después de ver resultados.
+No se ajusta ningún umbral después de ver resultados. Corrección del 2026-10-21 (T-1021-44), antes de cualquier ejecución
+del binding: la primera versión citaba la presentación ACES y los 512 px del gate de profundidad, que compara contra el
+HDR de UE y no contra la imagen final; los números no cambian.
 
 ## RadialGradientExponential
 

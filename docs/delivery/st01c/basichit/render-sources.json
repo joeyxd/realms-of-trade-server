@@ -4,7 +4,19 @@
     "maskIoUMin": 0.94,
     "meanRgbMax255": 10,
     "identicalRuns": 2,
-    "definitions": "Same as the pilot gate: docs/briefs/st01c-niagara-native-fidelity.md lines 88 and 103-104; mask = max channel > 32 on both images, visible union = max channel > 8 on either image, 512 px, shared ACES presentation (tools/niagara-native-lab/compare-depth.py lines 15-24, compare-color.py lines 28-37). Author decision 2026-10-21, written before the first binding run."
+    "definitions": "Same as the pilot final-color gate (tools/niagara-native-lab/compare-color.py lines 28-37): mask = max channel > 32 on each image, visible union = max channel > 8 on either image. Native side: native simulation -> half-float HDR target -> color-lab Filmic LUT (film-color.js) -> canvas, against basichit-reference03 FinalColorLDR at its native 1024 px, no resampling; 15 images (steps 2, 6, 12, 18, 24 x front, oblique, side). Gate draw order: emitter order (Flame, Flash, SimpleBurst); reverse order diagnostic only. Author decision 2026-10-21; definitions corrected by T-1021-44 before the first binding run (the first version cited the depth gate's ACES presentation and 512 px); numbers unchanged.",
+    "transferPrecondition": {
+      "step": 12,
+      "cameras": [
+        "front",
+        "oblique",
+        "side"
+      ],
+      "transferMae255Max": 2,
+      "transferP95ChannelError255Max": 4,
+      "meaning": "The same Filmic LUT applied to the UE HDR must match the UE LDR; if it fails, no native result is declared."
+    },
+    "resolutionPx": 1024
   },
   "radialGradientExponential": {
     "asset": "/Engine/Functions/Engine_MaterialFunctions01/Gradient/RadialGradientExponential.RadialGradientExponential",
