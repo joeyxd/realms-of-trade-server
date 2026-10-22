@@ -407,6 +407,7 @@ export class GameScene {
     WATER_LIGHT.uSparkle.value = p.sparkle;
     WATER_LIGHT.uFoamLight.value = p.foam;
     WATER_LIGHT.uGlints.value = p.glints;
+    WATER_LIGHT.uSkyFill.value.copy(p.hemiSky).multiplyScalar(p.hemiI); // the sky light on the sand, for the night foam
     const wm = this.props.windowMat;
     if (wm) {
       wm.userData.mesh.visible = p.windows > 0.02;

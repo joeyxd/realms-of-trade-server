@@ -18,8 +18,9 @@ import { getWaveTexture } from './noiseTex.js';
 import { WATER_DETAIL_DEFAULTS, WATER_DETAIL_UNIFORMS, CAUSTIC_PARS } from './waterDetail.js';
 
 export const WATER_LOOK = {
-  absorb: new THREE.Vector3(0.46, 0.2, 0.15), // per-channel extinction per unit of path (red dies first)
-  scatterShallow: new THREE.Color(0x2fd3c8),
+  absorb: new THREE.Vector3(1.0, 0.045, 0.1), // per-channel extinction per unit of path (red dies first, clear shelf)
+  inscatter: new THREE.Vector3(0.8, 0.38, 1.0), // per-channel in-scatter build-up per unit of path (blue tints the edge aqua)
+  scatterShallow: new THREE.Color(0x4e99a9),
   scatterDeep: new THREE.Color(0x0b3f8f),
   foam: new THREE.Color(0xfffbf0),
   caustic: new THREE.Color(0xfff3cf),
@@ -31,6 +32,7 @@ export const WATER_LIGHT = {
   uSparkle: { value: 1 },
   uFoamLight: { value: 1 },
   uGlints: { value: 0.2 }, // how much the sparkles bloom
+  uSkyFill: { value: new THREE.Color(0, 0, 0) }, // sky (hemisphere) light on flat ground: lights the foam at night
 };
 
 const VERT = /* glsl */ `
@@ -71,7 +73,8 @@ uniform vec3 uWaterLight;
 uniform float uSparkle;
 uniform float uFoamLight;
 uniform float uGlints;
-uniform vec3 uAbsorb, uScatterShallow, uScatterDeep, uFoam, uCaustic;
+uniform vec3 uSkyFill;
+uniform vec3 uAbsorb, uInscatter, uScatterShallow, uScatterDeep, uFoam, uCaustic;
 uniform float uWaves, uRefract;
 #ifdef MN_WATER_SSR
 uniform sampler2D tRefract;
@@ -92,9 +95,11 @@ void main() {
   float camDist = length(toCam);
   vec3 V = toCam / camDist;
 
-  // Wave slopes: two scrolling layers of the tileable wave texture.
-  vec2 s1 = texture2D(tWave, xz * 0.035 + mnWind * t * 0.010).rg * 2.0 - 1.0;
-  vec2 s2 = texture2D(tWave, xz * 0.083 + vec2(-mnWind.y, mnWind.x) * t * 0.018 + 0.37).rg * 2.0 - 1.0;
+  // Wave slopes (RG) and heights (B): two scrolling layers of the tileable wave texture, read once.
+  vec4 w1 = texture2D(tWave, xz * 0.035 + mnWind * t * 0.010);
+  vec4 w2 = texture2D(tWave, xz * 0.083 + vec2(-mnWind.y, mnWind.x) * t * 0.018 + 0.37);
+  vec2 s1 = w1.rg * 2.0 - 1.0;
+  vec2 s2 = w2.rg * 2.0 - 1.0;
   // Distance LOD: calm the normals far away (no moiré on the horizon, cheaper to read).
   float far = smoothstep(45.0, 220.0, camDist);
   vec2 slope = (s1 * 0.65 + s2 * 0.45) * uWaves * (1.0 - far * 0.85);
@@ -120,7 +125,8 @@ void main() {
   float th = (huv.x < 0.0 || huv.y < 0.0 || huv.x > 1.0 || huv.y > 1.0) ? -20.0 : texture2D(uHeight, huv).r;
   float depth = max(vWorld.y - th, 0.0);
   float path = depth / max(V.y, 0.25);
-  vec3 under = vec3(0.0);
+  // No refraction: a sand-toned bed lit like the water stands in for what is under it (see the alpha below).
+  vec3 under = vec3(0.58, 0.35, 0.115) * (1.0 - 0.68 * smoothstep(0.5, 7.0, depth)) * uWaterLight;
   vec2 bedXZ = xz;
 #endif
 
@@ -131,26 +137,30 @@ void main() {
 #ifdef MN_WATER_SSR
   if (depth < 4.5) {
     // Warped by the waves so the cells read as wobbly light ribbons, not a polygon grid.
-    vec2 warp = (texture2D(tWave, bedXZ * 0.05 + t * 0.01).rg - 0.5) * 0.9;
-    vec2 cuv = bedXZ * 0.11 + warp;
+    vec2 warp = (texture2D(tWave, bedXZ * 0.07 + t * 0.01).rg - 0.5) * 0.9;
+    vec2 cuv = bedXZ * 0.16 + warp;
     float c1 = texture2D(mnNoiseTex, cuv + vec2(t * 0.013, t * 0.009)).g;
     float c2 = texture2D(mnNoiseTex, cuv * 1.29 - vec2(t * 0.011, -t * 0.014) + 0.41).g;
     float caust = mnCausticMask(c1, c2);
-    under += uCaustic * uWaterLight * caust * mnCausticStrength * (1.0 - smoothstep(0.2, 2.6, depth)) * smoothstep(0.05, 0.3, depth) * (0.3 + 0.7 * vis);
+    // The refracted bed takes a stronger web than the terrain's own (low) path, which shares the strength.
+    under += uCaustic * uWaterLight * caust * mnCausticStrength * 4.2 * (1.0 - smoothstep(1.0, 3.0, depth)) * smoothstep(0.05, 0.25, depth) * (0.3 + 0.7 * vis);
   }
 #endif
 
-  // Beer–Lambert absorption along the path + in-scattered water color.
-  vec3 T = exp(-path * uAbsorb);
-  vec3 scatter = mix(uScatterShallow, uScatterDeep, smoothstep(1.5, 11.0, path)) * uWaterLight;
-  vec3 col = under * T + scatter * (1.0 - T);
+  // Beer–Lambert absorption along the path; the in-scatter builds up faster in blue (aqua over the sand at the edge).
+  // Past the shelf a murk hides the bed and the color follows the depth, so open water is one deep blue from any angle.
+  float murk = 1.0 - 0.98 * smoothstep(5.2, 7.4, depth);
+  vec3 T = exp(-path * uAbsorb) * murk;
+  vec3 S = 1.0 - exp(-path * uInscatter) * murk;
+  vec3 scatter = mix(uScatterShallow, uScatterDeep, smoothstep(1.0, 6.3, depth)) * uWaterLight;
+  vec3 col = under * T + scatter * S;
 
   // Surface light: shared toon bands (subtle on water) and a soft light web.
   float ndl = mix(-1.0, dot(n, sunDir), vis);
   col *= mix(0.82, 1.04, mnBand(ndl));
   // Soft wavy light patches on the surface (from the wave heights, not a cell grid).
-  float h1 = texture2D(tWave, xz * 0.035 + mnWind * t * 0.010).b;
-  float h2 = texture2D(tWave, xz * 0.083 + vec2(-mnWind.y, mnWind.x) * t * 0.018 + 0.37).b;
+  float h1 = w1.b;
+  float h2 = w2.b;
   float glow = smoothstep(0.6, 0.7, h1 * 0.55 + h2 * 0.45);
   col += vec3(0.8, 1.0, 1.0) * uWaterLight * glow * mnWaterSurfaceLight * (0.35 + 0.65 * vis) * smoothstep(0.15, 1.0, depth);
 
@@ -158,19 +168,30 @@ void main() {
   float fr = 0.02 + 0.98 * pow(1.0 - max(dot(n, V), 0.0), 5.0);
   col = mix(col, skyColor(reflect(-V, n), 0.0), clamp(fr * 0.9, 0.0, 0.6));
 
+#ifdef MN_WATER_SSR
+  // Fine ripples (SSR only) break the moon glitter and the light pools into small facets.
+  vec2 s3 = texture2D(tWave, xz * 0.21 - mnWind * t * 0.03 + 0.61).rg * 2.0 - 1.0;
+  vec3 nr = normalize(vec3(-(slope.x + s3.x * 0.6), 1.0, -(slope.y + s3.y * 0.6)));
+#else
+  vec3 nr = n;
+#endif
   // Sun sparkles: sharp highlight broken into twinkling cells.
   vec3 H = normalize(sunDir + V);
   float spec = pow(max(dot(n, H), 0.0), 140.0) * vis;
   vec4 cell = texture2D(mnNoiseTex, xz * 0.42 + slope * 0.1);
   float twinkle = 0.5 + 0.5 * sin(t * 5.0 + cell.a * 40.0);
   float spark = step(cell.r, 0.1 * clamp(spec * 2.5, 0.0, 1.0)) * step(0.6, twinkle);
+  // Moon glitter: under a dim (moon) light, sparse twinkles on the wave facets tilted toward it, away from the
+  // shallows; the diorama camera rarely sees the mirror path itself.
+  float moonW = 1.0 - smoothstep(0.15, 0.5, max(sunColor.r, max(sunColor.g, sunColor.b)));
+  float glit = step(cell.r, 0.35 * smoothstep(0.0, 0.06, dot(nr, sunDir) - sunDir.y)) * step(0.7, cell.a) * step(0.5, twinkle) * moonW * smoothstep(0.8, 2.0, depth);
   // Solid glint patches fade faster than the twinkles (the moon gives a glitter path, not blobs).
-  col += sunColor * uSparkle * (step(0.55, spec) * 0.45 * uSparkle + spark * 1.1) * (1.0 - far);
+  col += sunColor * (uSparkle * (step(0.55, spec) * 0.45 * uSparkle + spark * 1.1) + glit * 2.5) * (1.0 - far); // the moon glitter keeps its own gain (moonW is 0 outside the night)
   // Lanterns, fires and lava reflected in the waves.
-  vec3 lw = mnLocalWater(vWorld, n, V);
+  vec3 lw = mnLocalWater(vWorld, nr, V);
   col += lw;
   // Glow mask: light glints and the twinkling sparkles bloom (more at night, see uGlints).
-  float glowW = clamp(max(lw.r, max(lw.g, lw.b)) * 0.7 + spark * (1.0 - far) * uGlints, 0.0, 1.0);
+  float glowW = clamp(max(lw.r, max(lw.g, lw.b)) * 0.7 + (spark + glit) * (1.0 - far) * uGlints, 0.0, 1.0);
 
   // ---- Foam --------------------------------------------------------------------------------------
   float nz = texture2D(mnNoiseTex, xz * 0.05 + vec2(t * 0.012, t * 0.009)).b;
@@ -181,25 +202,47 @@ void main() {
   float contactAA = max(fwidth(depth) * 0.7, 0.008);
   float contact = 1.0 - smoothstep(max(0.0, edgeW - contactAA), edgeW + contactAA, depth);
   contact *= mix(0.55, 1.0, smoothstep(0.28, 0.65, nz2));
-  // Thin, broken lace leaves open water between moving patches. Reuse the sampled wave slopes.
-  float lace = texture2D(mnNoiseTex, xz * 0.11 + vec2(t * 0.014, t * 0.01) + s1 * 0.16 + s2 * 0.07).g;
-  float reach = 0.42 + 0.16 * sin(t * 0.85 + nz * 6.0);
-  float laceW = mix(mnFoamLaceWidth, mnFoamLaceWidth * 0.4, smoothstep(0.03, reach, depth));
+  // Lace band behind the waterline: its outer edge (in water depth) laps in and out with the swash.
+  float reach = mix(0.5, 1.3, 0.5 + 0.5 * sin(t * 0.9 + nz * 6.0));
+  float band = depth / reach; // 0 at the waterline, 1 at the band's outer edge
+  // Cell walls of the noise, warped by the wave slopes: thick at the waterline (foam with holes), thinning seaward
+  // into broken threads.
+  float lace = texture2D(mnNoiseTex, xz * 0.3 + vec2(t * 0.03, t * 0.02) + s1 * 0.14 + s2 * 0.08).g;
+#ifdef MN_WATER_SSR
+  // A finer second web punches smaller holes and its fbm thins the walls in patches (SSR only: the low path
+  // keeps its fetch count).
+  vec4 lz = texture2D(mnNoiseTex, xz * 0.71 - vec2(t * 0.04, -t * 0.03) + s2 * 0.1);
+  lace = min(lace, lz.g * 1.4 + 0.04);
+  float thin = lz.b;
+#else
+  float thin = nz2 * 0.8; // one web only: thinner, more broken walls
+#endif
+  float laceW = mnFoamLaceWidth * mix(1.0, 0.22, smoothstep(0.0, 1.0, band)) * mix(0.55, 1.2, smoothstep(0.3, 0.7, thin));
   float laceAA = fwidth(lace) * 0.7 + 0.003;
-  float laceFoam = (1.0 - smoothstep(max(0.0, laceW - laceAA), laceW + laceAA, lace)) * (1.0 - smoothstep(reach * 0.8, reach + 0.15, depth));
-  laceFoam *= smoothstep(0.25, 0.45, nz + 0.1); // patchy, not a uniform band
-  laceFoam *= smoothstep(0.35, 0.58, nz2);
-  // Wave lines pushing toward the shore.
-  float wv = sin(depth * 5.5 - t * 1.25 + nz * 7.0);
+  float laceFoam = 1.0 - smoothstep(max(0.0, laceW - laceAA), laceW + laceAA, lace);
+  laceFoam *= (1.0 - smoothstep(0.75, 1.0, band)) * mix(1.0, 0.55, clamp(band, 0.0, 1.0));
+  laceFoam *= 1.0 - smoothstep(0.3, 0.8, band) * (1.0 - smoothstep(0.4, 0.6, thin)); // seaward threads break up
+  laceFoam *= smoothstep(0.3, 0.5, nz2 + 0.08); // gaps along the shore, not a uniform band
+  // Wave lines rolling in toward the shore, broken into threads by the lace; fainter further out.
+  float wv = sin(depth * 4.2 + t * 1.25 + nz * 7.0);
   float waveAA = fwidth(wv) * 0.7 + 0.001;
-  float lines = smoothstep(0.985 - waveAA, 0.995 + waveAA, wv) * (1.0 - smoothstep(0.6, 1.7, depth)) * step(0.22, depth) * smoothstep(0.42, 0.62, nz2);
+  float lines = smoothstep(0.95 - waveAA, 0.985 + waveAA, wv) * (1.0 - smoothstep(1.6, 2.8, depth)) * smoothstep(0.3, 0.55, depth) * smoothstep(0.42, 0.62, nz2);
+  lines *= (1.0 - 0.8 * smoothstep(0.2, 0.45, lace)) * mix(1.0, 0.5, smoothstep(0.9, 2.0, depth));
   float foam = clamp(max(contact * 0.82, max(laceFoam * mnFoamLaceStrength, lines * mnFoamWaveStrength)), 0.0, 1.0);
-  col = mix(col, uFoam * (mix(0.8, 1.02, vis) * uWaterLight * uFoamLight + mnLocalLight(vWorld, vec3(0.0, 1.0, 0.0)) * 0.3), foam);
+  // Foam light: the sun-lit term by day. Under the moon the water light is near black, so the foam takes the sky
+  // (hemisphere) light that lights the sand (uSkyFill: the water pass renders without the scene lights), at a
+  // sand-like albedo: the shoreline reads about as bright as the moonlit sand. Lights on the water also light the
+  // foam, and foam is never darker than the water it floats on.
+  vec3 foamLight = max(mix(0.8, 1.02, vis) * uWaterLight * uFoamLight, BRDF_Lambert(vec3(0.65)) * uSkyFill * moonW);
+  vec3 foamCol = uFoam * (foamLight + mnLocalLight(vWorld, vec3(0.0, 1.0, 0.0)) * 0.3) + lw * 0.3;
+  foamCol *= max(1.0, luminance(col) * 1.25 / max(luminance(foamCol), 1e-4));
+  col = mix(col, foamCol, foam);
 
 #ifdef MN_WATER_SSR
   gl_FragColor = vec4(col, 1.0 - glowW * (1.0 - foam));
 #else
-  float a = clamp(1.0 - dot(T, vec3(0.333)), 0.22, 0.97);
+  // The real seabed shows through near the edge; deeper the water carries the stand-in bed and the SSR colors.
+  float a = clamp(0.22 + 0.6 * smoothstep(0.0, 1.6, depth) + 0.15 * smoothstep(3.0, 7.0, depth), 0.22, 0.97);
   gl_FragColor = vec4(col, max(a, foam));
 #endif
   #include <colorspace_fragment>
@@ -219,6 +262,7 @@ function makeMaterial(map, heightTex, ssr) {
     ...WATER_DETAIL_UNIFORMS,
     tWave: { value: getWaveTexture() },
     uAbsorb: { value: WATER_LOOK.absorb },
+    uInscatter: { value: WATER_LOOK.inscatter },
     uScatterShallow: { value: WATER_LOOK.scatterShallow },
     uScatterDeep: { value: WATER_LOOK.scatterDeep },
     uFoam: { value: WATER_LOOK.foam },

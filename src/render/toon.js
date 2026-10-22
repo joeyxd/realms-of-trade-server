@@ -151,7 +151,8 @@ vec3 mnLocalOmni(vec3 wp) {
   }
   return sum;
 }
-// Water: glints where each light reflects in the waves + a faint glow on the surface below it.
+// Water: glints where each light reflects in the waves, a faint glow on the surface below it, and warm ripples
+// on the wave facets tilted toward the light (seen from any camera, broken by the wave pattern).
 vec3 mnLocalWater(vec3 wp, vec3 n, vec3 V) {
   vec3 sum = vec3(0.0);
   for (int i = 0; i < MN_MAX_LIGHTS; i++) {
@@ -160,8 +161,15 @@ vec3 mnLocalWater(vec3 wp, vec3 n, vec3 V) {
     vec3 d = lp.xyz - wp;
     float dist = length(d);
     float x = clamp(1.0 - dist / (lp.w * 1.6), 0.0, 1.0);
-    float spec = pow(max(dot(n, normalize(d / max(dist, 1e-3) + V)), 0.0), 48.0);
-    sum += mnLightCol[i].rgb * (x * x * 0.08 + spec * x * 0.9);
+    vec3 L = d / max(dist, 1e-3);
+    float spec = pow(max(dot(n, normalize(L + V)), 0.0), 48.0);
+    // Ripples: a thin band of the wave flanks tilted toward the light catches it, so the pool breaks into wobbly
+    // lines that move with the waves (not round blobs); capped so a lantern never outshines what it lights.
+    vec2 lh = L.xz / max(length(L.xz), 1e-3);
+    float q = dot(n.xz, lh);
+    float rip = smoothstep(0.08, 0.1, q) * (1.0 - smoothstep(0.13, 0.17, q));
+    rip *= 1.0 - smoothstep(0.08, 0.14, abs(dot(n.xz, vec2(-lh.y, lh.x)))); // flanks turned sideways break the loops into arcs
+    sum += mnLightCol[i].rgb * (x * x * 0.025 + rip * min(x * x * 0.3, 0.035) + spec * x * 0.5);
   }
   return sum;
 }
