@@ -1,6 +1,11 @@
 // Automated screenshots + console check (Playwright, headless Chromium with SwiftShader WebGL).
 // Usage: node tools/shot.mjs [outDir] [--quality=high] [--scenario=all|title|play|village-night] [--dof=0|1]
 //   [--tod=night|golden|day] (village-night scenario: the light preset, default night)
+//   [--pose=plaza|props|fence-east|fence-north|board] (village-night scenario: plaza = the campfire view, default; props = three
+//   frames in one session, fence-east, fence-north and board, files village-<pose>-<tod>-<quality>.png, each with its own JSON
+//   line {subjects: [{kind, x, z, inFrame, visible, samples}], ok}; fence-east, fence-north or board = that one frame only)
+//   [--x=<u> --z=<u> --yaw=<deg> --zoom=<0..2>] (village-night scenario: camera placement, offsets from the village centre;
+//   defaults x 2 z 4 yaw 45 zoom 1 for plaza, a fixed pose per prop frame; an explicit option wins on a single pose, props ignores them)
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -102,38 +107,136 @@ if (scenario !== 'title') {
   }
   await page.waitForFunction(() => !window.__mn.world.rig.blend, null, { timeout: 90000 });
   if (scenario === 'village-night') {
-    const x = +(opt.x ?? 2), z = +(opt.z ?? 4), zoom = +(opt.zoom ?? 1);
-    await page.evaluate(([x, z, zoom, tod]) => {
-      const m = window.__mn, r = m.world.rig, V = m.map.landmarks.village;
-      m.teleport(V.x + x, V.z + z);
-      r.yaw = r.yawTarget = Math.PI / 4;
-      r.zoom(zoom - r.zoomIdx);
-      // The server clock overrides tod() in gameplay unless setGameplay is neutralised first.
-      const L = m.world.lighting;
-      L.setGameplay = function () { this.gameplay = false; };
-      m.tod(tod);
-    }, [x, z, zoom, tod]);
-    // night: the sun is out; day: full sun and the windows unlit; golden: the golden preset's lit windows (0.45).
-    // Day and golden give up after 20 s and shoot anyway.
-    await page.waitForFunction((t) => {
-      const c = window.__mn.world.lighting.cur;
-      return t === 'night' ? c.sunI <= 0.02 : t === 'day' ? c.sunI >= 0.5 && c.windows < 0.05 : c.sunI >= 0.5 && Math.abs(c.windows - 0.45) < 0.03;
-    }, tod, { timeout: tod === 'night' ? 60000 : 20000 }).catch((e) => { if (tod === 'night') throw e; console.log('TOD WAIT TIMEOUT', tod, e.message); });
-    await wait(9000);
-    await page.evaluate(() => new Promise((done) => {
-      let n = 10;
-      const frame = () => --n ? requestAnimationFrame(frame) : done();
-      requestAnimationFrame(frame);
-    }));
-    const stats = await page.evaluate(() => {
+    // Pose defaults (offsets from the village centre). plaza is the campfire view. fence-east, fence-north and board are
+    // close-ups picked by a grid search of the camera (position, yaw, zoom) with the occlusion rule below: the player stands on
+    // clear ground a few u from the subjects, so they sit near the screen centre, inside the sharp band of the depth of field.
+    const POSES = {
+      plaza: { x: 2, z: 4, yaw: 45, zoom: 1 },
+      'fence-east': { x: -12.4, z: -3.1, yaw: 255, zoom: 1 },
+      'fence-north': { x: -2.7, z: 13.3, yaw: 315, zoom: 1 },
+      board: { x: 3.2, z: -0.8, yaw: 285, zoom: 0 },
+    };
+    const pose = opt.pose === 'props' || Object.hasOwn(POSES, opt.pose) ? opt.pose : 'plaza';
+    const frames = pose === 'props' ? ['fence-east', 'fence-north', 'board'] : [pose];
+    const getStats = () => page.evaluate(() => {
       const w = window.__mn.world, i = w.renderer.info;
       const c = w.lighting.cur;
       return { calls: i.render.calls, triangles: i.render.triangles, programs: i.programs.length,
         sunI: c.sunI, windows: c.windows, hemiI: c.hemiI, lightSoft: c.lightSoft, lightBounce: c.lightBounce, dof: !!w.pipeline.dofActive,
         lights: w.lights?.picked?.filter((s) => s.w > 0).map((s) => s.kind) ?? [] };
     });
-    await shot(`village-${tod}-${quality}`);
-    console.log(JSON.stringify({ scenario, quality, tod, ...stats }));
+    if (pose !== 'plaza') {
+      // Occlusion check for the prop poses. Rays go only against static world meshes: the terrain, the props group, the
+      // vegetation group (palms) and the resource-node group. Characters (players, bots, NPCs, the local avatar), sprites, points,
+      // lines, labels and the effect layers (particles, mist) are not in those groups, and meshes whose material does not write
+      // depth (glows, mist cards) are skipped. A sample is visible when it projects inside the frame and the ray from the camera
+      // hits nothing nearer than (distance to the sample - 0.4 u).
+      await page.evaluate(async () => {
+        const THREE = await import('three');
+        const m = window.__mn, w = m.world;
+        const statics = [];
+        for (const r of [w.terrain, w.props.group, w.vegetation, w.resources.group]) r.traverse((o) => {
+          if (!o.isMesh) return;
+          if ((Array.isArray(o.material) ? o.material : [o.material]).some((q) => q.depthWrite === false)) return;
+          statics.push(o);
+        });
+        const rc = new THREE.Raycaster();
+        rc.layers.enableAll();
+        const tmp = new THREE.Vector3();
+        const inside = (n) => Math.abs(n.x) <= 1 && Math.abs(n.y) <= 1 && n.z <= 1;
+        // The two fence runs differ in axis: the east run (along v) has cos(rot) * -sin(rot) < 0, the north run (along u) has >= 0.
+        const isEast = (p) => Math.cos(p.rot) * -Math.sin(p.rot) < 0;
+        window.__measure = (group) => {
+          const cam = w.camera, V = m.map.landmarks.village, props = m.map.props;
+          cam.updateMatrixWorld();
+          const fences = props.filter((p) => p.kind === 'fence'), board = props.filter((p) => p.kind === 'board');
+          const fires = props.filter((p) => p.kind === 'campfire').sort((a, b) => Math.hypot(a.x - V.x, a.z - V.z) - Math.hypot(b.x - V.x, b.z - V.z));
+          const list = group === 'board' ? board : fences.filter((p) => isEast(p) === (group === 'fence-east'));
+          const proj = (x, y, z) => tmp.set(x, y, z).project(cam).clone();
+          const sample = (x, y, z) => {
+            if (!inside(proj(x, y, z))) return false;
+            const dir = new THREE.Vector3(x, y, z).sub(cam.position), dist = dir.length();
+            rc.set(cam.position, dir.normalize()); rc.near = 0; rc.far = Math.max(0, dist - 0.4);
+            return rc.intersectObjects(statics, false).length === 0;
+          };
+          // Fence segment: centre and +/- 0.6 u along its axis at 0.8 u; board: centre and +/- 0.5 u along its width at 1.0 u.
+          const subjects = list.map((p) => {
+            const ax = Math.cos(p.rot), az = -Math.sin(p.rot);
+            const ks = group === 'board' ? [0, -0.5, 0.5] : [0, -0.6, 0.6], h = group === 'board' ? 1.0 : 0.8;
+            const samples = ks.filter((k) => sample(p.x + ax * k, p.y + h, p.z + az * k)).length;
+            return { kind: p.kind, x: +p.x.toFixed(2), z: +p.z.toFixed(2), inFrame: inside(proj(p.x, p.y + h, p.z)), visible: samples >= 2, samples };
+          });
+          const out = { subjects };
+          let ok = subjects.length === (group === 'board' ? 1 : 3) && fences.length === 6 && board.length === 1 && subjects.every((s) => s.inFrame && s.visible);
+          if (group === 'board') {
+            const f = fires[0];
+            out.fireInFrame = inside(proj(f.x, f.y + 0.7, f.z));
+            out.boardRot = +board[0].rot.toFixed(4);
+            out.bearingToFire = +Math.atan2(f.x - board[0].x, f.z - board[0].z).toFixed(4); // radians, same convention as rot (local +z toward the fire)
+            ok = ok && out.fireInFrame;
+          }
+          out.ok = ok;
+          return out;
+        };
+      });
+    }
+    for (let fi = 0; fi < frames.length; fi++) {
+      const fp = frames[fi], d = POSES[fp], o = pose === 'props' ? {} : opt; // explicit --x/--z/--yaw/--zoom only for a single frame
+      const x = +(o.x ?? d.x), z = +(o.z ?? d.z), zoom = +(o.zoom ?? d.zoom), yawDeg = +(o.yaw ?? d.yaw);
+      await page.evaluate(([x, z, zoom, tod, yawDeg]) => {
+        const m = window.__mn, r = m.world.rig, V = m.map.landmarks.village;
+        m.teleport(V.x + x, V.z + z);
+        r.yaw = r.yawTarget = yawDeg * Math.PI / 180;
+        r.zoom(zoom - r.zoomIdx);
+        // The server clock overrides tod() in gameplay unless setGameplay is neutralised first.
+        const L = m.world.lighting;
+        L.setGameplay = function () { this.gameplay = false; };
+        m.tod(tod);
+      }, [x, z, zoom, tod, yawDeg]);
+      // night: the sun is out; day: full sun and the windows unlit; golden: the golden preset's lit windows (0.45).
+      // Day and golden give up after 20 s and shoot anyway.
+      await page.waitForFunction((t) => {
+        const c = window.__mn.world.lighting.cur;
+        return t === 'night' ? c.sunI <= 0.02 : t === 'day' ? c.sunI >= 0.5 && c.windows < 0.05 : c.sunI >= 0.5 && Math.abs(c.windows - 0.45) < 0.03;
+      }, tod, { timeout: tod === 'night' ? 60000 : 20000 }).catch((e) => { if (tod === 'night') throw e; console.log('TOD WAIT TIMEOUT', tod, e.message); });
+      await wait(9000);
+      await page.evaluate(() => new Promise((done) => {
+        let n = 10;
+        const frame = () => --n ? requestAnimationFrame(frame) : done();
+        requestAnimationFrame(frame);
+      }));
+      // The rig keeps blending after a teleport: wait until the camera stops moving (10 frames within 0.01 u).
+      if (pose !== 'plaza') await page.evaluate(() => new Promise((done) => {
+        const cam = window.__mn.world.camera, last = cam.position.clone(), t0 = performance.now();
+        let still = 0;
+        const frame = () => {
+          still = cam.position.distanceTo(last) < 0.01 ? still + 1 : 0;
+          last.copy(cam.position);
+          if (still >= 10 || performance.now() - t0 > 30000) done(); else requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+      }));
+      const stats = await getStats();
+      if (pose === 'plaza') {
+        // Fence and board props whose projected centre (0.7 u above the base) lies inside the frame (NDC within [-1, 1] on both axes).
+        const frame = await page.evaluate(() => {
+          const cam = window.__mn.world.camera;
+          cam.updateMatrixWorld();
+          const subs = window.__mn.map.props.filter((p) => p.kind === 'fence' || p.kind === 'board');
+          const inFrame = subs.filter((p) => {
+            const n = cam.position.clone().set(p.x, p.y + 0.7, p.z).project(cam);
+            return Math.abs(n.x) <= 1 && Math.abs(n.y) <= 1 && n.z <= 1;
+          }).length;
+          return { inFrame, subjects: subs.length };
+        });
+        await shot(`village-${tod}-${quality}`);
+        console.log(JSON.stringify({ scenario, quality, tod, pose, x, z, yaw: yawDeg, zoom, ...frame, ...stats }));
+      } else {
+        const meas = await page.evaluate((g) => window.__measure(g), fp);
+        await shot(`village-${fp}-${tod}-${quality}`);
+        console.log(JSON.stringify({ scenario, quality, tod, pose: fp, x, z, yaw: yawDeg, zoom, ...meas, ...stats }));
+      }
+    }
   } else {
   // Enemies fight back since M2: god mode keeps the tour from ending at a checkpoint.
   await page.evaluate(() => window.__mn.client.send({ t: 'cmd', type: 'dev', op: 'god', on: true }));
