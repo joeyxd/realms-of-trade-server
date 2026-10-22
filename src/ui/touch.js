@@ -6,10 +6,12 @@ import { t, text as ltext, rich, attr, setText, setDataText, translateData, data
 // the button cancels. ATK and the guard / second gun are held buttons that can be dragged too: the aim line shows
 // and the fire keeps going that way until the finger lifts (no shot on release). Pointer events arrive in screen
 // coordinates: the joystick and the aim line are placed with stage.toLocal and every drag delta goes through stage.vec (the stage may be rotated).
-// Size: --tb = the setting (0.85 / 1 / 1.18) x auto (follows the stage height), set on the root.
+// Size and place (PT03): touchLayout.js turns the stage size, the setting (0.85 / 1 / 1.18) and the safe-area insets into
+// --tb (the scale) and the centre of every button and of the resting joystick (--l-<slot>-x / -y, stage px), set on the root.
 import { BTN } from '../sim/systems/movement.js';
 import { stage } from './stage.js';
 import { holdAim } from './touchGesture.js';
+import { touchLayout, SLOTS } from './touchLayout.js';
 
 // Icons: 24x24 line art. Every path is drawn twice (ink under-stroke, white stroke) so it reads on any
 // background. Styled in hud.css (`#touch .tbtn svg`).
@@ -65,7 +67,7 @@ export class TouchControls {
     this.root = root;
     this.input = input;
     this.user = 1; this.tb = 1; this.locked = {}; this.lbls = {};
-    root.innerHTML = `<div class="joy-zone"></div><div class="joy-rest"></div><div class="joy"><i></i></div><div class="aimline"><i></i></div>
+    root.innerHTML = `<div class="joy-zone"></div><div class="joy-rest"></div><div class="joy"><i></i></div><div class="aimline"><i></i></div><div class="safe-probe"></div>
       <div class="t-cluster">
         <button class="tbtn t-atk" data-l10n-aria-label="touch.attack" aria-label="${attr('touch.attack')}">${face('sword', 'ATK')}</button>
         <button class="tbtn t-dash" aria-label="Dash"><span class="sweep"></span>${face('dash', 'DASH')}<span class="pips"></span></button>
@@ -77,8 +79,11 @@ export class TouchControls {
         <button class="tbtn t-pot" data-l10n-aria-label="touch.potion" aria-label="${attr('touch.potion')}"><span class="sweep"></span>${face('flask', null)}<b class="cnt">0</b></button>
         <button class="tbtn t-act" data-l10n-aria-label="touch.interact" aria-label="${attr('touch.interact')}" hidden>${face('talk', '')}</button>
       </div>`;
+    this.probe = root.querySelector('.safe-probe'); // its padding is the safe-area insets (already remapped when the stage turns)
     this.update();
     stage.onChange(() => this.update());
+    // A landscape flip (left <-> right) keeps the stage size but swaps the notch side: look again once the turn settles.
+    if (typeof addEventListener === 'function') addEventListener('orientationchange', () => { this.update(); setTimeout(() => this.update(), 300); });
     // Pressed look: `.on` from pointerdown until the finger lifts (or the touch is cancelled).
     // Haptics: a short tick on the buttons that are not spammed (ATK is not), a stronger one when a skill casts.
     this.haptics = true;
@@ -210,12 +215,25 @@ export class TouchControls {
     this.btns = { atk: this.atkBtn, parry: this.parryBtn, q: this.qBtn, e: this.eBtn, r: this.rBtn, g: this.gBtn };
   }
 
-  // --tb = the user's setting x an automatic factor that follows the stage height (small phones shrink, tall grow).
+  // The safe-area insets in stage px: the probe's padding is var(--safe-*), which stage.js remaps while the stage is turned.
+  readInsets() {
+    if (typeof getComputedStyle !== 'function' || !this.probe?.isConnected) return this.insets || { l: 0, r: 0, t: 0, b: 0 };
+    const cs = getComputedStyle(this.probe), px = (v) => parseFloat(v) || 0;
+    return (this.insets = { l: px(cs.paddingLeft), r: px(cs.paddingRight), t: px(cs.paddingTop), b: px(cs.paddingBottom) });
+  }
+
+  // --tb and the button positions come from the real stage size (both sides), the setting and the insets (touchLayout.js).
   update() {
-    const h = stage.h || 420, auto = Math.min(1.15, Math.max(0.78, h / 420));
-    // The arc is 18 + 310 tb tall: on a short stage it must not climb into the top-right HUD buttons (top 54 px).
-    this.tb = Math.min(this.user * auto, Math.max(0.78, (h - 72) / 310));
-    this.root.style.setProperty('--tb', this.tb.toFixed(3));
+    const w = stage.w || 844, h = stage.h || 390, safe = this.readInsets();
+    const key = [w, h, this.user, safe.l, safe.r, safe.t, safe.b].join();
+    if (key === this.layoutKey) return;
+    this.layoutKey = key;
+    const L = touchLayout({ w, h, safe, user: this.user }), set = (k, v) => this.root.style.setProperty(k, v.toFixed(1));
+    this.tb = L.tb;
+    this.root.style.setProperty('--tb', L.tb.toFixed(3));
+    set('--l-joy-x', L.joy.x); set('--l-joy-y', L.joy.y);
+    // The jump slot (L.buttons.jump) is reserved: PT06 places the jump button there.
+    for (const k of SLOTS) { set(`--l-${k}-x`, L.buttons[k].x); set(`--l-${k}-y`, L.buttons[k].y); }
   }
 
   // The settings' touchSize (0.85 / 1 / 1.18), live.
@@ -356,6 +374,6 @@ export class TouchControls {
     if (!was) { b.hidden = false; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
   }
 
-  show() { this.root.hidden = false; }
+  show() { this.root.hidden = false; this.update(); }
   hide() { this.root.hidden = true; }
 }

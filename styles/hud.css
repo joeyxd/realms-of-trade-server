@@ -396,13 +396,16 @@ body.touch .actionbar { display: none; }
 @container stage (max-width: 760px) { .actionbar .mast { width: 120px; } }
 
 /* ---- Touch controls v2 (M4.6): tinted glass, one colour per function --------------------------------------- */
-/* --tb (set by touch.js) = the user's button size x an automatic factor; every size and offset scales with it. */
+/* touch.js (touchLayout.js) sets, on #touch: --tb = the user's button size x an automatic factor of the stage (every
+   size scales with it), and --l-<slot>-x / -y = the centre of each button and of the resting joystick in stage px, laid
+   out from the real stage size and the safe-area insets: ATK in the bottom-right corner, the middle of the stage free. */
 #touch { position: fixed; inset: 0; pointer-events: none; --tb: 1; }
+#touch .safe-probe { position: absolute; left: 0; top: 0; width: 0; height: 0; visibility: hidden; pointer-events: none; padding: var(--safe-t) var(--safe-r) var(--safe-b) var(--safe-l); }
 #touch .joy-zone { position: absolute; left: 0; top: 30%; bottom: 0; width: 50%; pointer-events: auto; }
 /* Where the stick usually appears: a faint ring (gone while it is live). */
 #touch .joy-rest {
-  position: absolute; left: calc(34px + var(--safe-l)); bottom: calc(34px + var(--safe-b));
-  width: calc(104px * var(--tb)); height: calc(104px * var(--tb)); border-radius: 50%;
+  position: absolute; left: calc(var(--l-joy-x, 86) * 1px); top: calc(var(--l-joy-y, 300) * 1px);
+  width: calc(104px * var(--tb)); height: calc(104px * var(--tb)); margin: calc(-52px * var(--tb)) 0 0 calc(-52px * var(--tb)); border-radius: 50%;
   border: 2px dashed rgb(255 255 255 / 0.2); transition: opacity 0.15s; pointer-events: none;
 }
 #touch .joy-rest::after { content: ''; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: rgb(255 255 255 / 0.24); }
@@ -421,14 +424,12 @@ body.touch .actionbar { display: none; }
   border: 2.5px solid rgb(18 10 36 / 0.7); box-shadow: 0 3px 8px rgb(0 0 0 / 0.3);
 }
 
-/* The arc is centred on ATK (a zero-size box at its centre); each button sets its colour, size and offset. */
-#touch .t-cluster {
-  position: absolute; width: 0; height: 0; pointer-events: none;
-  right: calc(18px + var(--safe-r) + 46px * var(--tb)); bottom: calc(18px + var(--safe-b) + 46px * var(--tb));
-}
+/* The buttons are placed by the stage's top-left corner (a zero-size box there); each one sets its colour, size and
+   which slot's centre it takes (--lx / --ly come from the --l-<slot>-x / -y that touch.js writes). */
+#touch .t-cluster { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; }
 #touch .tbtn {
-  --c: 255 255 255; --d: 60; --x: 0; --y: 0;
-  position: absolute; left: calc(var(--x) * var(--tb) * 1px); top: calc(var(--y) * var(--tb) * 1px);
+  --c: 255 255 255; --d: 60;
+  position: absolute; left: calc(var(--lx, 0) * 1px); top: calc(var(--ly, 0) * 1px);
   width: calc(var(--d) * var(--tb) * 1px); height: calc(var(--d) * var(--tb) * 1px);
   margin: 0; padding: 0 0 calc(2px * var(--tb)); border-radius: 50%; pointer-events: auto; cursor: pointer;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(1px * var(--tb));
@@ -442,17 +443,19 @@ body.touch .actionbar { display: none; }
 }
 #touch .tbtn > * { pointer-events: none; }
 #touch .tbtn.on { background: radial-gradient(circle at 50% 32%, rgb(var(--c) / 0.58), rgb(var(--c) / 0.26) 72%); transform: translate(-50%, -50%) scale(0.92); }
-#touch .t-atk { --c: 255 98 64; --d: 92; }
-#touch .t-dash { --c: 40 224 204; --d: 70; --x: -104; --y: 8; padding-bottom: calc(9px * var(--tb)); }
-#touch .t-parry { --c: 84 156 255; --d: 62; --x: -6; --y: -104; }
-#touch .t-q { --c: 176 112 255; --d: 58; --x: -172; --y: -34; }
-#touch .t-e { --c: 176 112 255; --d: 58; --x: -124; --y: -124; }
-#touch .t-r { --c: 255 204 64; --d: 54; --x: -34; --y: -172; }
-#touch .t-g { --c: 255 121 59; --d: 54; --x: -208; --y: -138; }
+#touch .t-atk { --c: 255 98 64; --d: 92; --lx: var(--l-atk-x); --ly: var(--l-atk-y); }
+#touch .t-dash { --c: 40 224 204; --d: 70; --lx: var(--l-dash-x); --ly: var(--l-dash-y); padding-bottom: calc(9px * var(--tb)); }
+#touch .t-parry { --c: 84 156 255; --d: 62; --lx: var(--l-parry-x); --ly: var(--l-parry-y); }
+#touch .t-q { --c: 176 112 255; --d: 58; --lx: var(--l-q-x); --ly: var(--l-q-y); }
+#touch .t-e { --c: 176 112 255; --d: 58; --lx: var(--l-e-x); --ly: var(--l-e-y); }
+#touch .t-r { --c: 255 204 64; --d: 54; --lx: var(--l-r-x); --ly: var(--l-r-y); }
+#touch .t-g { --c: 255 121 59; --d: 54; --lx: var(--l-g-x); --ly: var(--l-g-y); }
 .slot[data-slot='g'] { border-color: #ff793b; }
 .slot[data-slot='g'].empty { opacity: 0.5; }
-#touch .t-pot { --c: 255 84 128; --d: 48; --x: -262; --y: 14; padding: 0; }
-#touch .t-act { --c: 255 172 40; --d: 64; --x: -118; --y: -232; }
+#touch .t-pot { --c: 255 84 128; --d: 48; --lx: var(--l-potion-x); --ly: var(--l-potion-y); padding: 0; }
+#touch .t-act { --c: 255 172 40; --d: 64; --lx: var(--l-act-x); --ly: var(--l-act-y); }
+/* The freshwater button (main.js adds it to the cluster; freshwater.css gives its colour and size). */
+#touch .t-water { --lx: var(--l-water-x); --ly: var(--l-water-y); }
 #touch .t-parry .lbl, #touch .t-r .lbl { font-size: calc(9.5px * var(--tb)); }
 
 /* Icon (~56 % of the button, white line over an ink under-stroke) and the short label under it. */
@@ -637,3 +640,7 @@ body.is-naval:not(.is-naval-touch) .personal-lantern { bottom: 188px; }
 @container stage (max-height: 480px) {
   .personal-lantern { top: 111px; bottom: auto; right: calc(9px + var(--safe-r)); min-width: 68px; }
 }
+/* Touch (PT03): the lantern waits in the bottom strip between the joystick half and the button cluster, so no touch button
+   (nor the minimap's label) sits under it. Its right edge is at 70 % of the stage width, 12 px in. touchLayout.js keeps a
+   keep-out box over this spot (LANTERN_*): change both together. Naval stages keep their own rule above. */
+body.touch:not(.is-naval) .personal-lantern { top: auto; bottom: calc(8px + var(--safe-b)); right: calc(30cqw + 12px + var(--safe-r)); }

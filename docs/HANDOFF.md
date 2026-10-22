@@ -15,6 +15,51 @@ no hay desenfoque (decisión de gusto pendiente de Joi). QA: `tools/shot.mjs --p
 un punto a 3 u de profundidad y los dos faroles del muelle. Tests de agua 12/12, tests que cargan el pipeline 31/31;
 capturas fuera de git (visual-revamp/.scratch/t1022-21-*, t1022-33-dof). Pendiente: Joi lo revisa en el servidor y en
 una GPU real.
+**PT03, 2026-10-22 — HUD táctil por el tamaño real de la pantalla (sin versión: la pone el push):**
+Sin SQL, sin protocolo, sin cambios en sim, servidor ni datos. Queja de la prueba R1: botones pequeños, agrupados hacia el centro.
+Ahora `src/ui/touchLayout.js` (puro, sin DOM) calcula la escala y la posición de cada botón desde ambos lados del stage, el ajuste
+de tamaño (0.85 / 1 / 1.18) y los insets de safe-area; `src/ui/touch.js` los lee (una sonda `.safe-probe` dentro de #touch cuyo padding
+es `var(--safe-*)`, que stage.js ya reasigna cuando el stage gira) y los escribe en #touch como `--tb` y `--l-<slot>-x/-y` (px del
+stage, centro del botón; `--l-joy-*` para el joystick en reposo). Se recalcula en cada camino que ya recalculaba `--tb` (stage.onChange,
+setScale) y además en `show()` y `orientationchange` (girar el móvil de un lado a otro cambia el lado de la muesca sin cambiar el
+stage). `touchScale(w, h, user)` = user × clamp(0.93 + k (√(w·h / (844·390)) − 1), 0.78, 1.35), k = 2 por encima de 844×390 y 0.8 por debajo: 844×390
+sigue en 0.93, 915×412 = 1.07, 932×430 = 1.14, 1024×768 = 1.35, 667×375 = 0.83. `touchLayout` baja `tb` de 0.001 en 0.001 si hace falta (así subir el
+ajuste nunca encoge los botones): primero hasta cumplir las reglas (dentro de la safe-area con 8 px, centro del stage x 35-65 % y
+20-80 % libre, mitad del joystick libre, los keep-outs de abajo, todo botón por debajo de 0.2 h, o 0.56 h si el stage mide más de 480 px
+por el tracker de la derecha), sin pasar de 0.78; luego, en pantallas diminutas, hasta que al menos quepa. ATK abraza la esquina
+inferior derecha (12 px), DASH a su izquierda, el hueco de SALTO (`jump`, 62, sin elemento: lo coloca PT06) encima de DASH, GUARDIA
+encima de ATK, Q/E/R en el segundo anillo. Los botones ocasionales van abajo para que el HUD de arriba a la derecha nunca los
+alcance: G en la columna izquierda (hasta x -189 tb), ACT en el extremo izquierdo de la fila de DASH, el botón de agua dulce
+(`.t-water`, de freshwater.css, ahora también con slot `water`) sobre GUARDIA y POCIÓN arriba. Los diámetros no cambian.
+Revisión (rework 1): el primer paso ponía ACT encima de la linterna (`.personal-lantern`, "Farol N") en todo stage de 480 px o menos de
+alto y de la etiqueta del minimapa. Ahora hud.css tiene UNA regla nueva, `body.touch:not(.is-naval) .personal-lantern { top: auto;
+bottom: calc(8px + var(--safe-b)); right: calc(30cqw + 12px + var(--safe-r)); }`: la linterna espera en la franja inferior entre la
+mitad del joystick y el grupo de botones (cqw se resuelve contra #stage, el contenedor); en móvil con muesca y 844×390 cualquier
+bottom mayor la metería en la zona central. Tamaño, colores y comportamiento no cambian; naval y escritorio, tampoco (ya no tapa
+GUARDIA en stages altos). touchLayout.js lleva `keepOuts(w, h, safe)`, una caja por cada trozo de HUD que ningún botón puede pisar,
+cada una con una constante con nombre que cita el CSS que refleja: `lantern` (80×52 anclada como la regla de arriba), `minimap`
+(`.world-minimap.is-touch` 84 px más su etiqueta de lugar, 122 px de ancho × 120 + safe-t de alto) y `toprow` (la fila de cuenta de
+`@container (721-900 px) and (max-height: 480px)`: top 92, 44 px, termina a 120 px + safe-r del borde; solo 844×390 de los stages
+probados). La reserva de 0.56 h es la altura del tracker de un personaje nuevo, NO un tope: el tracker crece hasta max-height
+100cqh − 140px − 204px (styles/minimap.css 26-33) y una lista larga aún puede llegar al grupo; un ticket de seguimiento hará que el
+tracker reserve el grupo. Revisión (rework 2): con muesca (insets 47/47/0/21) el primer ajuste encogía los botones por debajo de lo que daba el código viejo
+(844×390 0.83 en vez de 0.93), lo contrario de la queja. Dos cambios: (1) la zona central pasa a x 35-65 % (y sigue 20-80 %; la linterna y su
+keep-out no se mueven: borde derecho en 0.70 w − 12 px − safe-r); (2) a 844×390 con muesca la POCIÓN chocaba con la fila de cuenta
+(keep-out `toprow`, y 92..138), así que POCIÓN pasa de [-113, -186] a [-137, -165] y G de [-162, -122] a [-162, -115] (offsets en tb desde
+ATK; el resto del anillo y ACT/agua no se mueven). Regla 10 (test nuevo): con muesca y usuario 1 `tb` ≥ 0.92 a 844×390, 1.00 a 915×412,
+1.08 a 932×430, 1.15 a 1024×768; sin muesca no baja de 0.930 / 1.070 / 1.137 / 1.256. Resultado usuario 1, muesca: 0.93, 1.07, 1.137, 1.274
+(sin muesca 0.93, 1.07, 1.137, 1.307); con usuario 1.18 el ajuste sigue recortando (muesca 0.931, 1.111, 1.137, 1.274), nunca por debajo del
+valor de usuario 1.
+hud.css: `.t-cluster` ya no es una caja en el centro de ATK sino un punto en la esquina del stage; cada `.t-*` toma su `--lx/--ly` de
+`--l-<slot>-*`; `--x/--y` de los botones desaparecieron (freshwater.css aún declara los suyos, sin efecto). Tests nuevos:
+tests/touch-layout.test.mjs (18, fuera del gate; reglas 1-10 sobre 4 stages × 3 tamaños × 2 insets más 667×375 y 740×360, un test por
+keep-out, la regla 9 con el insets remapeado del stage girado, y la conexión con touch.js). QA de navegador:
+tools/qa-touch-layout.mjs (MN_QA_ALLOW_BROWSER=1, MN_QA_OUT fuera del repo): mide con todos los `.tbtn` y la linterna forzados visibles
+(G, ACT y agua dulce los oculta el estado del juego), sin lista de excepciones; exige que ningún elemento del HUD toque un botón, que la
+linterna no toque ningún botón ni otro elemento, y que quede dentro del stage con 8 px, fuera de la zona central y de la mitad del joystick.
+Pendiente fuera de este ticket: el botón Chat sobre el joystick en reposo (chat.css), tools/qa-live-hud.mjs falla en HEAD antes de
+llegar al HUD (el selector de personajes intercepta Jugar) y necesita gsap local.
+
 **PT02, 2026-10-21 — disparo apuntado con el pulgar y bloqueo de piratas (sin versión: la pone el push):**
 Sin SQL, sin protocolo, sin cambios en sim, servidor ni datos. Los botones ATK y el segundo disparo/guardia del HUD táctil
 (`.t-atk`, `.t-parry`) se pueden arrastrar como un stick (src/ui/touchGesture.js `holdAim`, cableado en src/ui/touch.js).
