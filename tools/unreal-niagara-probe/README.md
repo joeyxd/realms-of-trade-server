@@ -202,6 +202,54 @@ hashes, code hashes); `render_reference_md.py` writes the Spanish `REFERENCE.md`
 regeneration); `check_reference_checkpoint.py` re-hashes all of it and exits 0 only when everything matches. Read
 [the BasicHit reference](../../docs/delivery/st01c/basichit/REFERENCE.md) for the numbers and what is not accepted.
 
+### NS_BasicHit reference under the controlled color profile
+
+`capture_reference_profiled.py` recaptures a system under the controlled SDR profile of the pilot color lab
+(`controlled-sdr/v1`, see `capture_color.py` and [COLOR-LAB](../../docs/delivery/st01c/COLOR-LAB.md)) with a raw RGBA16F HDR beside
+every LDR image. It runs `capture_reference.py` as a library: its `run()` loads the spec, refuses, seeds, exports the textures,
+steps the simulation and reads the particles unchanged; the driver only replaces its per-pose capture (`_capture_pose`). The
+profile lives in `capture_profile.py`, copied from `capture_color.py` with the source line range on every piece
+(`capture_color.py` itself is unchanged and does not import it). While `run()` waits its first editor frames, before the effect
+is activated, the driver disables world post-process volumes, sets and reads back the cvars of `capture_color.py:166-173`, creates
+an RGBA8 LDR target with target gamma 2.2 and an RGBA16F HDR target at the spec `imageSize`, keeps a persistent view state,
+turns the show flags off (AntiAliasing included) and applies `profile()` at 0 EV. Every image step and camera, and the step-0
+baseline, writes `frames/tNNNN_<camera>.png` (FinalColorLDR) and `frames/tNNNN_<camera>_hdr.rgba16f` (SceneColor HDR,
+little-endian float16 RGBA, top row first, 8 bytes per pixel), each after 4 warm-up captures; the linear step keeps the Radiance
+`tNNNN_<camera>_linear.hdr` as a diagnostic (shared exponent: not for the transfer). `capture-report.json` gains
+`capture_profile` (id, cvar read-back, targets, flags, post-process values), `capture_code` (hashes of the driver, the profile,
+the library and the wrapper) and `files` (every run file with its sha256). Same arguments and refusals as
+`capture_reference.py`; the driver raises the plugin's latent timeout from 300 to 540 s (one run takes about 100 s of wall time,
+40 to 74 s of it inside the test).
+
+Create the local wrapper `.scratch/unreal/Content/Python/test_st01c_reference_profiled.py`:
+
+```python
+import runpy
+runpy.run_path('C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/capture_reference_profiled.py')
+```
+
+```powershell
+& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -d3d11 -RenderOffscreen -unattended -nop4 -nosplash -nosound '-ExecCmds=Automation RunTests Editor.Python.ST01c_Pilot.test_st01c_reference_profiled' '-TestExit=Automation Test Queue Empty' -CaptureRun=basichit-reference07 '-SystemSpec=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/systems/ns-basichit.json'
+```
+
+The final pair is `basichit-reference05` and `basichit-reference06` (fresh names only; one Unreal instance at a time). Then:
+
+```powershell
+python -B tools/unreal-niagara-probe/capture_profile_test.py
+python -B tools/unreal-niagara-probe/compare_reference_runs.py --spec tools/unreal-niagara-probe/systems/ns-basichit.json --a .scratch/unreal/basichit-reference05 --b .scratch/unreal/basichit-reference06
+python -B tools/unreal-niagara-probe/build_profiled_checkpoint.py --spec tools/unreal-niagara-probe/systems/ns-basichit.json --a .scratch/unreal/basichit-reference05 --b .scratch/unreal/basichit-reference06 --base .scratch/unreal/basichit-reference03 --out docs/delivery/st01c/basichit/reference-profiled-checkpoint.json
+python -B tools/unreal-niagara-probe/check_profiled_checkpoint.py
+node tools/niagara-native-lab/transfer-basichit.mjs --run basichit-reference05
+```
+
+`capture_profile_test.py` parses `capture_color.py` and fails when a copied value, the warm-up loop or the `profile()` body
+drifts. `check_profiled_checkpoint.py` (default checkpoint `docs/delivery/st01c/basichit/reference-profiled-checkpoint.json`)
+re-hashes both runs, recomputes the pair identity (decoded PNG pixels, raw HDR bytes, Radiance bytes, particle states, textures,
+report keys) and the particle equality with `basichit-reference03`, and checks the profile read-back, the code hashes (text with
+LF line endings) and the plugin binary. `transfer-basichit.mjs` measures the transfer precondition offline: the exact
+`film-color.js` Filmic on the Unreal HDR against the Unreal LDR, with the metric of `compare-basichit.py`. Results and limits:
+[the profiled BasicHit reference](../../docs/delivery/st01c/basichit/REFERENCE-PROFILED.md).
+
 ## Effective compiled CPU pilot
 
 `ReadCompiledPilot` exposes the effective system and particle CPU HLSL after the

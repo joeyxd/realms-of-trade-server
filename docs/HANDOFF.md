@@ -64,6 +64,23 @@ autoridad respondía `combat`): `step()` ahora lo avanza un tick por tick. Runne
 cuerpo), una frase EN y una ES explican `world` y cómo recolectar. Tests: 9 nuevos en companion-presence-gather y
 8 más en los de presencia, runner y CLI. Ticket T-1021-16. Pendiente: textos de la tarjeta que dicen "no habilita
 recolección" y "solo seguir, esperar o volver"; el cliente web no tiene botón de recolectar.
+**ST01c, 2026-10-22 - referencia de BasicHit recapturada con el perfil de color controlado (pasa la transferencia):**
+[Entrega](delivery/st01c/basichit/REFERENCE-PROFILED.md), [checkpoint](delivery/st01c/basichit/reference-profiled-checkpoint.json). Solo
+laboratorio, sin versión nueva. Nuevo `tools/unreal-niagara-probe/capture_profile.py` (el perfil `controlled-sdr/v1` de `capture_color.py` como
+funciones, cada pieza con su rango de origen; `capture_profile_test.py` analiza `capture_color.py` y falla si algo se separa) y
+`capture_reference_profiled.py`, que usa `capture_reference.py` como biblioteca (su `run()` pone spec, negativas, semillas, texturas, pasos y
+partículas sin cambios) y solo aplica el perfil antes de activar el efecto y sustituye la captura por pose: PNG `FinalColorLDR` en un RGBA8 con
+`target_gamma` 2,2 y HDR crudo RGBA16F (`frames/*_hdr.rgba16f`) en cada paso de imagen y en la base, con 4 capturas de calentamiento.
+Par `basichit-reference05`/`06` (100,9 s y 102,7 s, sin intentos fallidos): PNG 16/16 sin píxeles distintos, RGBA16F 16/16 y Radiance 3/3 byte a byte,
+241/241 estados; los estados y las texturas son idénticos a `basichit-reference03` (el perfil no toca la simulación). `build_profiled_checkpoint.py` y
+`check_profiled_checkpoint.py` (281 archivos por ejecución, perfil leído, 13 archivos de código como texto LF, binario del plugin).
+`tools/niagara-native-lab/transfer-basichit.mjs` mide la transferencia fuera del navegador (Filmic exacto de `film-color.js` sobre el HDR de Unreal
+contra el LDR, métrica de `compare-basichit.py`): calibrado sobre `basichit-reference03` da 24,67/25,16/25,06 y P95 70/71/71 (T-1021-46:
+24,77/25,26/25,16, 71); sobre `basichit-reference05` el paso 12 pasa en las tres cámaras (MAE 0,121/0,126/0,122, P95 1) y los pasos 2, 6, 18 y 24
+quedan por debajo de 0,21. El Radiance del mismo paso daría MAE 2,9 y P95 15 (azul −7,7): la transferencia usa el crudo. Ojo:
+`compare_reference_runs.py` tenía CRLF en disco (git tiene LF) y `reference-checkpoint.json` fallaba su `codeHashes`; se restauró desde git y
+vuelve a pasar. Sigue: el retrabajo de la atadura de render (T-1021-46) apuntando a `basichit-reference05` y al HDR crudo. Ticket T-1022-10.
+
 **ST01c, 2026-10-21 - fuentes de render de BasicHit leídas del motor (sin atadura de render):**
 [Entrega](delivery/st01c/basichit/RENDER-SOURCES.md), [datos](delivery/st01c/basichit/render-sources.json). Solo laboratorio, sin
 versión nueva. Nuevo sondeo `tools/unreal-niagara-probe/probe_engine_assets.py` (consulta estricta `queries/basichit-render.json`):
