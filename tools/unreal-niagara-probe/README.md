@@ -101,6 +101,20 @@ from arrays. Limits: 32 MiB input, 4 MiB line, depth 64, 10,000 object records, 
 output. The line cap accepts the pilot's 2.1 MiB embedded texture-source records.
 Declaration and definition records must not be counted as distinct active objects.
 
+### Engine assets (render sources)
+
+`probe_engine_assets.py` exports engine assets (for example material functions) to T3D and reads texture fields, in the
+isolated project, without saving anything. Arguments: `-AssetQuery=<absolute query json>` (schema `st01c-asset-query/v1`,
+strict keys `schema`, `exportT3D`, `textures`, `textureFields`; example `queries/basichit-render.json`) and `-ProbeRun=<name>`.
+It writes the fresh folder `<project>/<name>/` with one `<AssetName>.t3d` per `exportT3D` entry and `textures.json`; it refuses an
+existing folder. Results and formulas: [render sources](../../docs/delivery/st01c/basichit/RENDER-SOURCES.md).
+
+```powershell
+$q = 'C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/queries/basichit-render.json'
+& $ue $proj -run=pythonscript '-script=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/probe_engine_assets.py' "-AssetQuery=$q" -ProbeRun=engine-assets01 -unattended -nop4 -nosplash -nosound -NullRHI
+python tools/unreal-niagara-probe/compare_t3d.py .scratch/unreal/engine-assets01 .scratch/unreal/engine-assets02
+```
+
 See [the extraction delivery](../../docs/delivery/st01c/DELIVERY.md) for measured
 results and what remains before a visual port can be accepted.
 

@@ -64,6 +64,17 @@ autoridad respondía `combat`): `step()` ahora lo avanza un tick por tick. Runne
 cuerpo), una frase EN y una ES explican `world` y cómo recolectar. Tests: 9 nuevos en companion-presence-gather y
 8 más en los de presencia, runner y CLI. Ticket T-1021-16. Pendiente: textos de la tarjeta que dicen "no habilita
 recolección" y "solo seguir, esperar o volver"; el cliente web no tiene botón de recolectar.
+**ST01c, 2026-10-21 - fuentes de render de BasicHit leídas del motor (sin atadura de render):**
+[Entrega](delivery/st01c/basichit/RENDER-SOURCES.md), [datos](delivery/st01c/basichit/render-sources.json). Solo laboratorio, sin
+versión nueva. Nuevo sondeo `tools/unreal-niagara-probe/probe_engine_assets.py` (consulta estricta `queries/basichit-render.json`):
+exporta a T3D `RadialGradientExponential` y `ExponentialDensity` y lee los campos de las cuatro texturas, sin guardar assets;
+dos ejecuciones (`engine-assets01`, `engine-assets02`) idénticas byte a byte y una tercera con el nombre repetido que se
+niega. Fórmula del grafo exportado: `salida = 1 - ED(1 - d, Density)`, `ED(t,k) = t > 1e-5 ? 1/pow(2.718282, (t*k)^2) : 1`,
+`d = length(uv - centro)/Radius`; en M_Master_RadialBeam solo Radius está cableado (0,5), el resto usa los valores por defecto
+(centro 0,5; Density 2,333; Invert falso). Las cuatro texturas están en Wrap/Wrap (el SubUV pasado de la última fila da idx mod 32).
+Umbrales del binding, decisión del autor: IoU de máscara >= 0,94 y diferencia RGB media <= 10/255 como el gate del piloto,
+dos ejecuciones idénticas, escritos antes de la primera ejecución. Pendiente: la atadura de render de BasicHit. Ticket T-1021-41.
+
 **ST01c, 2026-10-21 — primitivas de render comunes en core (piloto idéntico píxel a píxel):**
 [Entrega](delivery/st01c/CORE-MODULES.md), sección Render. Solo refactor, parte 1 de 2; sin página de BasicHit ni
 versión nueva. `tools/niagara-native-lab/core/` gana `depth-fade.js` (DepthFade en JS y GLSL con la distancia como
