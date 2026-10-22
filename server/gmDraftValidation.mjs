@@ -1,6 +1,7 @@
 import { validateDocument } from '../src/editor/document.js';
 import { gmEditableBaseProps } from '../src/editor/baseIdentity.js';
 import { compileTerrainMap, validateTerrainForMap } from '../src/editor/terrainData.js';
+import { TERRAIN_TILES_NOT_READY, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
 import { resourceDescriptor, sourceAssetId, validateAuthoredResources } from '../src/editor/resourceAdapters.js';
 
 const COAST_ROCK_ID = 'model:coast-rock-v1';
@@ -44,6 +45,8 @@ export function createGmDraftValidator({ map, baseRevision, manifest, editorCata
     .map((entry) => entry.id));
 
   return function validate(doc) {
+    // GM07b1: a document v5 (terrain tiles) is refused until GM07b2 stores and validates its tiles.
+    if (isTerrainTilesDocument(doc)) throw new GmDraftValidationError(TERRAIN_TILES_NOT_READY);
     let checked;
     try { checked = validateDocument(doc); }
     catch (error) { throw new GmDraftValidationError(error?.code || 'document'); }

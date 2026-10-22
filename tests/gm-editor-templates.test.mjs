@@ -91,7 +91,7 @@ test('template, library, import bytes, base mismatch, and malformed selection re
     { id: 'base:tree:1:deadbeef', assetId: 'base:tree:1:deadbeef', transform: transform(0), collider: 'none', base: true, hidden: false },
   ] }), { code: 'template_selection' });
   assert.throws(() => createTemplate({ id: 'tpl-c', name: 'Bad', document: source, items: [
-    { id: 'base:rock:1:deadbeef', assetId: 'base:rock:1:deadbeef', transform: transform(0, 101), collider: 'none', base: true, hidden: false },
+    { id: 'base:rock:1:deadbeef', assetId: 'base:rock:1:deadbeef', transform: transform(0, 257), collider: 'none', base: true, hidden: false },
   ] }), { code: 'template_selection' });
   const bad = { ...template, objects: [{ ...template.objects[0], transform: transform(561) }] };
   assert.throws(() => validateTemplate(bad), { code: 'template_transform' });

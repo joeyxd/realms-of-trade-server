@@ -3,6 +3,7 @@ import { gmEditableBaseProps } from './baseIdentity.js';
 import { resourceLayout } from '../data/resources.js';
 import { freshwaterSource } from '../data/freshwater.js';
 import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
+import { isTerrainTilesDocument, terrainTilesNotReady } from './terrainTiles.js';
 import { resourceDescriptor, validateAuthoredResources } from './resourceAdapters.js';
 
 const MAX_REPORTED_ISSUES = 200;
@@ -32,6 +33,8 @@ function colliderIndex(map, prop) {
 }
 
 function resolve(map, document, baseRevision) {
+  // GM07b1: a document v5 (terrain tiles) is not publishable until GM07b2.
+  if (isTerrainTilesDocument(document)) throw terrainTilesNotReady();
   if (!map || !Array.isArray(map.props) || !Array.isArray(map.colliders) ||
       !Number.isSafeInteger(map.seed) || typeof map.groundAt !== 'function') {
     throw new TypeError('A generated map with props, colliders, seed, and groundAt is required');

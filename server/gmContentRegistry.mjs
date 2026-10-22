@@ -3,6 +3,7 @@ import { mkdir, open, readFile, readdir, rename, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { canonicalJson, PREPARATION_SCHEMA, PREPARATION_VERSION } from '../src/editor/publicationArtifact.js';
 import { createGmContentLock } from './gmContentLock.mjs';
+import { TERRAIN_TILES_NOT_READY, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
 
 const MAX_REVISIONS = 100;
 const MAX_BLOB_BYTES = 1024 * 1024 * 1024;
@@ -165,6 +166,8 @@ export function createGmContentRegistry({ directory, root, worldId, lock = null,
   }
 
   function validateRevision(revision) {
+    // GM07b1: no revision of a document v5 (terrain tiles) is retained or loaded until GM07b2.
+    if (isTerrainTilesDocument(revision?.content?.document)) fail(TERRAIN_TILES_NOT_READY);
     const current = revision?.version === PREPARATION_VERSION;
     if (!isObject(revision) || Object.keys(revision).sort().join(',') !==
           (current ? 'content,preparedWith,revisionId,schema,version' : 'content,revisionId,schema,version') ||

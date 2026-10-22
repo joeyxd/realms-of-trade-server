@@ -2,6 +2,7 @@ import { verifyPreparedRevision, canonicalJson, PREPARATION_VERSION } from './pu
 import { installGmContent, projectGmContent } from './contentProjection.js';
 import { resourceLayout } from '../data/resources.js';
 import { TERRAIN_GRID_SIZE } from './terrainData.js';
+import { TERRAIN_TILES_NOT_READY, isTerrainTilesDocument } from './terrainTiles.js';
 
 export async function gmContentHash(value) {
   const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonicalJson(value)));
@@ -30,6 +31,8 @@ export async function loadGmWorldContent({ httpBase, map, baseMap, gameVersion, 
     if (revision !== null) throw new Error('content_invalid');
   } else {
     const content = revision?.content, document = content?.document;
+    // GM07b1: a document v5 (terrain tiles) cannot load before GM07b2 ships the tile route and loader.
+    if (isTerrainTilesDocument(document)) throw Object.assign(new Error(TERRAIN_TILES_NOT_READY), { code: TERRAIN_TILES_NOT_READY });
     // Schema 2 (GM07b0) does not name a release: the hashes recomputed below decide, and HELLO checks the protocol.
     // Schema 1 still has to come from this exact game and protocol version.
     if (revision?.revisionId !== body.revisionId || revision.version !== PREPARATION_VERSION &&

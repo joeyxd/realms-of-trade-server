@@ -1,6 +1,7 @@
 import { playerKey } from './store.mjs';
 import { resolveGmSession } from './gmSession.mjs';
 import { validateDocument } from '../src/editor/document.js';
+import { TERRAIN_TILES_NOT_READY, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_BODY = 5 * 1024 * 1024 + 2048;
@@ -160,6 +161,8 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
           let buildStarted = false;
           try {
             const head = checkedHead(await bounded(store.loadGmDraft({ world: worldId, owner: accountId }), timeoutMs));
+            // GM07b1: a document v5 (terrain tiles) is not prepared until GM07b2.
+            if (isTerrainTilesDocument(head?.document)) { send(res, 400, { ok: false, code: TERRAIN_TILES_NOT_READY }); return true; }
             if (!head?.document || head.revision !== input.expectedRevision) {
               send(res, 409, { ok: false, code: 'gm_draft_conflict', revision: head?.revision ?? 0 }); return true;
             }
@@ -193,6 +196,8 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
             !UUID.test(input.operationId) || /^0{8}-0{4}-0{4}-0{4}-0{12}$/i.test(input.operationId) ||
             !Number.isSafeInteger(input.expectedRevision) || input.expectedRevision < 0 ||
             input.expectedRevision >= MAX_REVISION) { send(res, 400, { ok: false, code: 'operation' }); return true; }
+        // GM07b1: a document v5 (terrain tiles) is not saved remotely until GM07b2 stores its tiles.
+        if (isTerrainTilesDocument(input.document)) { send(res, 400, { ok: false, code: TERRAIN_TILES_NOT_READY }); return true; }
         let document;
         try {
           document = validateDocument(input.document);

@@ -1,4 +1,5 @@
 import { validateDocument } from '../src/editor/document.js';
+import { TERRAIN_TILES_NOT_READY, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const WORLD = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,99}$/;
@@ -28,6 +29,8 @@ function checkedRevision(raw, max = 2147483646) {
 }
 
 function checkedDocument(raw) {
+  // GM07b1: no store holds a document v5 (terrain tiles) until GM07b2 adds its tile table.
+  if (isTerrainTilesDocument(raw)) throw new GmDraftStoreError(TERRAIN_TILES_NOT_READY);
   let document;
   try { document = validateDocument(raw); } catch { throw new GmDraftStoreError('document'); }
   let encoded;

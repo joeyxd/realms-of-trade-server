@@ -1,5 +1,6 @@
 import { compileGmColliders } from './publicationValidation.js';
 import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
+import { isTerrainTilesDocument, terrainTilesNotReady } from './terrainTiles.js';
 import { resourceLayout } from '../data/resources.js';
 import { compileAuthoredResources } from './resourceAdapters.js';
 
@@ -53,6 +54,8 @@ function immutableBase(map) {
 
 /** Build an immutable-by-convention content projection while preserving all base map data and functions. */
 export function projectGmContent(baseMap, document = null, baseRevision = 'terrain-s21-v1') {
+  // GM07b1: a document v5 (terrain tiles) has no loader until GM07b2.
+  if (isTerrainTilesDocument(document)) throw terrainTilesNotReady();
   assertBase(baseMap, baseRevision);
   baseMap = immutableBase(baseMap);
   if (document?.terrain) validateTerrainForMap(baseMap, document.terrain);
@@ -68,6 +71,7 @@ export function projectGmContent(baseMap, document = null, baseRevision = 'terra
 
 /** Replace the terrain sampling surface and collision list on a caller-owned active map. */
 export function installGmContent(map, baseMap, document = null, baseRevision = 'terrain-s21-v1') {
+  if (isTerrainTilesDocument(document)) throw terrainTilesNotReady();
   if (!map || typeof map !== 'object') throw new TypeError('An active map is required');
   const projected = projectGmContent(baseMap, document, baseRevision);
   map.heights = projected.heights;

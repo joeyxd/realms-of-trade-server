@@ -1,5 +1,6 @@
 import { brushParameters, brushOutline, brushWeight, strokePath } from './terrainBrush.js';
 import { createDecoration, validateDocument } from './document.js';
+import { OBJECT_MAX_Y } from './terrainData.js';
 
 export const MAX_SCATTER_POINTS = 256;
 export const MAX_SCATTER_CANDIDATES = 20_000;
@@ -129,7 +130,7 @@ export function planScatter({ map, document, assetId, points, parameters, metric
     if (!weight || cellRandom(params.seed, ix, iz, 4) >= params.strength * weight) continue;
     if (x < minX || x > maxX || z < minZ || z > maxZ) { skipped++; continue; }
     const y = map.groundAt(x, z);
-    if (!finite(y) || y < .75 || y > 100) { skipped++; continue; }
+    if (!finite(y) || y < .75 || y > OBJECT_MAX_Y) { skipped++; continue; }
     if (!isAllowed(x, z, footprint)) { skipped++; continue; }
     let spaced = true;
     for (const point of occupied) {

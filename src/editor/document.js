@@ -2,7 +2,8 @@ export const DOCUMENT_SCHEMA = 'marea.gm.map-draft';
 export const DOCUMENT_VERSION = 2;
 const TERRAIN_DOCUMENT_VERSION = 3;
 const MATERIAL_DOCUMENT_VERSION = 4;
-import { validateTerrain } from './terrainData.js';
+import { OBJECT_MAX_Y, OBJECT_MIN_Y, validateTerrain } from './terrainData.js';
+import { TERRAIN_TILES_VERSION, TILES_DOCUMENT_VERSION, validateTerrainTiles } from './terrainTiles.js';
 export const MAX_OBJECTS = 5000;
 export const MAX_OBJECT_ID_LENGTH = 96;
 export const MAX_ASSET_ID_LENGTH = 160;
@@ -11,8 +12,8 @@ const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/;
 const OBJECT_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$/;
 const BASE_OVERRIDE_ID = /^base:(rock|flower|pebble):\d+:[a-f0-9]+$/;
 const MAX_HORIZONTAL_COORDINATE = 280;
-const MIN_HEIGHT = -64;
-const MAX_HEIGHT = 100;
+const MIN_HEIGHT = OBJECT_MIN_Y;
+const MAX_HEIGHT = OBJECT_MAX_Y;
 const MAX_ROTATION = Math.PI * 200;
 const MIN_SCALE = 0.001;
 const MAX_SCALE = 1000;
@@ -80,7 +81,8 @@ function validateBaseOverride(raw) {
 export function validateDocument(raw) {
   if (!isRecord(raw) || raw.schema !== DOCUMENT_SCHEMA) fail('format');
   const legacy = raw.version === 1;
-  const terrainVersion = raw.version === TERRAIN_DOCUMENT_VERSION || raw.version === MATERIAL_DOCUMENT_VERSION;
+  const terrainVersion = raw.version === TERRAIN_DOCUMENT_VERSION || raw.version === MATERIAL_DOCUMENT_VERSION ||
+    raw.version === TILES_DOCUMENT_VERSION;
   if ((!legacy && raw.version !== DOCUMENT_VERSION && !terrainVersion) ||
       !exactKeys(raw, legacy ? ['schema', 'version', 'base', 'objects'] :
         terrainVersion ? ['schema', 'version', 'base', 'objects', 'baseOverrides', 'terrain'] :
@@ -110,7 +112,11 @@ export function validateDocument(raw) {
     objects,
     baseOverrides: validatedOverrides,
   };
-  if (terrainVersion) {
+  if (raw.version === TILES_DOCUMENT_VERSION) {
+    // Document v5 (GM07 D7): tile references only, structural and synchronous; the tile bytes live beside it.
+    if (raw.terrain?.version !== TERRAIN_TILES_VERSION) fail('terrain_version');
+    result.terrain = validateTerrainTiles(raw.terrain, raw.base.revision);
+  } else if (terrainVersion) {
     result.terrain = validateTerrain(raw.terrain);
     if (result.terrain.version !== (raw.version === MATERIAL_DOCUMENT_VERSION ? 2 : 1)) fail('terrain_version');
   }
@@ -120,7 +126,8 @@ export function validateDocument(raw) {
 export function createDocument({ seed, baseRevision, objects = [], baseOverrides = [], terrain }) {
   return validateDocument({
     schema: DOCUMENT_SCHEMA,
-    version: terrain === undefined ? DOCUMENT_VERSION : terrain.version === 2 ? MATERIAL_DOCUMENT_VERSION : TERRAIN_DOCUMENT_VERSION,
+    version: terrain === undefined ? DOCUMENT_VERSION : terrain.version === TERRAIN_TILES_VERSION ? TILES_DOCUMENT_VERSION :
+      terrain.version === 2 ? MATERIAL_DOCUMENT_VERSION : TERRAIN_DOCUMENT_VERSION,
     base: { seed, revision: baseRevision },
     objects,
     baseOverrides,

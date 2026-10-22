@@ -6,6 +6,7 @@ import { createGmPublicationAssets } from './gmPublicationAssets.mjs';
 import { resourceLayout } from '../src/data/resources.js';
 import { projectGmContent } from '../src/editor/contentProjection.js';
 import { compileAuthoredResources } from '../src/editor/resourceAdapters.js';
+import { TERRAIN_TILES_NOT_READY, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
 
 const sha256 = (value) => createHash('sha256').update(canonicalJson(value)).digest('hex');
 
@@ -22,6 +23,8 @@ export function createGmPublicationService({ root, runtimeRoot = root, map, base
     },
     // New preparations are schema 2. version 1 only rebuilds a retained schema 1 revision for its compatibility check.
     async build({ document, draftRevision, version = PREPARATION_VERSION }) {
+      // GM07b1: a document v5 (terrain tiles) is not prepared until GM07b2 retains its tiles.
+      if (isTerrainTilesDocument(document)) throw Object.assign(new Error(TERRAIN_TILES_NOT_READY), { code: TERRAIN_TILES_NOT_READY });
       if (!ready) throw new Error('preparation_unavailable');
       if (![1, PREPARATION_VERSION].includes(version)) throw new Error('preparation_version');
       const checked = validateReferences(document);
