@@ -1,9 +1,10 @@
 // Automated screenshots + console check (Playwright, headless Chromium with SwiftShader WebGL).
 // Usage: node tools/shot.mjs [outDir] [--quality=high] [--scenario=all|title|play|village-night] [--dof=0|1]
 //   [--tod=night|golden|day] (village-night scenario: the light preset, default night)
-//   [--pose=plaza|props|fence-east|fence-north|board] (village-night scenario: plaza = the campfire view, default; props = three
+//   [--pose=plaza|props|fence-east|fence-north|board|shore] (village-night scenario: plaza = the campfire view, default; props = three
 //   frames in one session, fence-east, fence-north and board, files village-<pose>-<tod>-<quality>.png, each with its own JSON
-//   line {subjects: [{kind, x, z, inFrame, visible, samples}], ok}; fence-east, fence-north or board = that one frame only)
+//   line {subjects: [{kind, x, z, inFrame, visible, samples}], ok}; fence-east, fence-north, board or shore = that one frame only;
+//   shore = the beach looking out to sea: shoreline point, deep water (depth >= 3 u) and the dock lanterns, not part of props)
 //   [--x=<u> --z=<u> --yaw=<deg> --zoom=<0..2>] (village-night scenario: camera placement, offsets from the village centre;
 //   defaults x 2 z 4 yaw 45 zoom 1 for plaza, a fixed pose per prop frame; an explicit option wins on a single pose, props ignores them)
 import http from 'node:http';
@@ -115,6 +116,9 @@ if (scenario !== 'title') {
       'fence-east': { x: -12.4, z: -3.1, yaw: 255, zoom: 1 },
       'fence-north': { x: -2.7, z: 13.3, yaw: 315, zoom: 1 },
       board: { x: 3.2, z: -0.8, yaw: 285, zoom: 0 },
+      // shore: grid search over the beach (dry ground, nearer the dock base than the village) x yaw (15 deg steps) x zoom for
+      // shoreline + deep water + both dock lanterns visible, best screen margin (T-1022-20).
+      shore: { x: 54, z: 6, yaw: 270, zoom: 2 },
     };
     const pose = opt.pose === 'props' || Object.hasOwn(POSES, opt.pose) ? opt.pose : 'plaza';
     const frames = pose === 'props' ? ['fence-east', 'fence-north', 'board'] : [pose];
@@ -146,7 +150,7 @@ if (scenario !== 'title') {
         const inside = (n) => Math.abs(n.x) <= 1 && Math.abs(n.y) <= 1 && n.z <= 1;
         // The two fence runs differ in axis: the east run (along v) has cos(rot) * -sin(rot) < 0, the north run (along u) has >= 0.
         const isEast = (p) => Math.cos(p.rot) * -Math.sin(p.rot) < 0;
-        window.__measure = (group) => {
+        window.__measure = (group, px, pz, yawDeg) => {
           const cam = w.camera, V = m.map.landmarks.village, props = m.map.props;
           cam.updateMatrixWorld();
           const fences = props.filter((p) => p.kind === 'fence'), board = props.filter((p) => p.kind === 'board');
@@ -159,6 +163,31 @@ if (scenario !== 'title') {
             rc.set(cam.position, dir.normalize()); rc.near = 0; rc.far = Math.max(0, dist - 0.4);
             return rc.intersectObjects(statics, false).length === 0;
           };
+          if (group === 'shore') {
+            // Shore subjects, walking from the player along the camera heading on the ground plane: the shoreline (first crossing
+            // of heightAt to <= 0) at y 0.05 and the first point with heightAt <= -3 on the water surface y 0 (the water quad is
+            // not a ray target, so it is checked like a prop: projected, then a ray against the static meshes). Each takes three
+            // samples 1 u apart across the heading; the dock lanterns are the lantern props above the deck (y > 1) at their lamp.
+            const yaw = yawDeg * Math.PI / 180, dx = -Math.sin(yaw), dz = -Math.cos(yaw), hf = m.map.heightAt;
+            let a = null, b = null, prev = hf(px, pz);
+            for (let s = 0.5; s <= 90 && !b; s += 0.25) {
+              const hh = hf(px + dx * s, pz + dz * s);
+              if (!a && prev > 0 && hh <= 0) a = s;
+              if (hh <= -3) b = s;
+              prev = hh;
+            }
+            const mk = (kind, x, y, z, ks, ax, az) => {
+              const samples = ks.filter((k) => sample(x + ax * k, y, z + az * k)).length;
+              return { kind, x: +x.toFixed(2), z: +z.toFixed(2), inFrame: inside(proj(x, y, z)), visible: samples >= 2, samples };
+            };
+            const subjects = [];
+            if (a) subjects.push(mk('shoreline', px + dx * a, 0.05, pz + dz * a, [0, -1, 1], -dz, dx));
+            if (b) subjects.push(mk('deepwater', px + dx * b, 0, pz + dz * b, [0, -1, 1], -dz, dx));
+            const lamps = props.filter((p) => p.kind === 'lantern' && p.r === 0 && p.y > 1).map((p) => mk('dockLantern', p.x, p.y + 0.3, p.z, [0, -0.15, 0.15], 0, 0));
+            const out = { subjects: [...subjects, ...lamps], dockLanternsInFrame: lamps.filter((l) => l.inFrame && l.visible).length };
+            out.ok = subjects.length === 2 && subjects.every((s) => s.inFrame && s.visible);
+            return out;
+          }
           // Fence segment: centre and +/- 0.6 u along its axis at 0.8 u; board: centre and +/- 0.5 u along its width at 1.0 u.
           const subjects = list.map((p) => {
             const ax = Math.cos(p.rot), az = -Math.sin(p.rot);
@@ -232,7 +261,10 @@ if (scenario !== 'title') {
         await shot(`village-${tod}-${quality}`);
         console.log(JSON.stringify({ scenario, quality, tod, pose, x, z, yaw: yawDeg, zoom, ...frame, ...stats }));
       } else {
-        const meas = await page.evaluate((g) => window.__measure(g), fp);
+        const meas = await page.evaluate(([g, ox, oz, yw]) => {
+          const V = window.__mn.map.landmarks.village;
+          return window.__measure(g, V.x + ox, V.z + oz, yw);
+        }, [fp, x, z, yawDeg]);
         await shot(`village-${fp}-${tod}-${quality}`);
         console.log(JSON.stringify({ scenario, quality, tod, pose: fp, x, z, yaw: yawDeg, zoom, ...meas, ...stats }));
       }
