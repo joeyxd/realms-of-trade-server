@@ -1,6 +1,6 @@
 // GM07b1b: the editor on tiles. Loading v2..v5 documents, strokes over the dense grid with dirty-tile validation,
 // undo by tile bytes, IndexedDB version 2 with a tile store, export/import with tiles, and the "not yet" refusal of
-// online save and prepare for a document v5. Everything here runs without a DOM.
+// online prepare for a document v5 (online save: tests/gm-terrain-tiles-remote.test.mjs). Everything here runs without a DOM.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -582,9 +582,9 @@ test('the editor refuses an import with a missing tile and keeps its current dra
   assert.deepEqual(await store.load(), { revision: 0, document: null });
 });
 
-// --- Not yet online ---
+// --- Online: prepare not yet ---
 
-test('online save and prepare of a document v5 refuse with terrain_tiles_not_ready before any request', async () => {
+test('online prepare of a document v5 refuses with terrain_tiles_not_ready and a save without its tiles refuses, before any request', async () => {
   const GM = '10000000-0000-4000-8000-000000000001';
   let requests = 0;
   const source = { value: null, async read() { return structuredClone(this.value); },
@@ -594,7 +594,8 @@ test('online save and prepare of a document v5 refuse with terrain_tiles_not_rea
   localScope: 'tab', source, fetchImpl: async () => { requests++; throw new Error('no request expected'); } });
   const { document } = await openTerrainDocument({ map, baseRevision: BASE, document: v3 });
   client.scope = { worldId: 'marea-negra', seed: map.seed, baseRevision: BASE };
-  await assert.rejects(client.save(document, 0), coded(TERRAIN_TILES_NOT_READY));
+  // GM07b2b: a v5 is saved online with every tile it references; without them nothing is sent or recorded.
+  await assert.rejects(client.save(document, 0), coded('local_tile_missing'));
   await assert.rejects(client.prepareRevision(1, document), coded(TERRAIN_TILES_NOT_READY));
   assert.equal(requests, 0);
   assert.equal(source.value, null, 'no pending attempt is recorded');

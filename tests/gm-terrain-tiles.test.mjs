@@ -491,17 +491,23 @@ async function serve(handler, run) {
   finally { await new Promise((resolve) => server.close(resolve)); }
 }
 
-test('draft HTTP save and prepare of a document v5 answer terrain_tiles_not_ready; the memory store saves it', async () => {
+test('draft HTTP saves a document v5 (GM07b2b) while its prepare still answers terrain_tiles_not_ready', async () => {
   const headers = { authorization: 'Bearer gm', 'content-type': 'application/json' };
-  const saving = draftHandler();
-  assert.equal(await saving.handler.prepare(), true);
-  await serve(saving.handler, async (url) => {
+  // GM07b2b: the save reaches the validator and the store; tiles and tiles_missing: tests/gm-terrain-tiles-http.test.mjs.
+  let validated = 0;
+  const saving = createGmDraftHandler({ store: { durable: true, ...createMemoryGmDraftMethods() },
+    resolvePlayer: async (_req, { token }) => token === 'gm' ? GM : null, accountIds: [GM], worldId: 'tiles-world', seed: 42,
+    baseRevision: BASE, validateReferences: (value) => { validated++; return value; } });
+  assert.equal(await saving.prepare(), true);
+  await serve(saving, async (url) => {
     const response = await fetch(`${url}/api/gm/draft`, { method: 'PUT', headers,
       body: JSON.stringify({ operationId: OPERATION, expectedRevision: 0, document: tilesDocument() }) });
-    assert.equal(response.status, 400);
-    assert.deepEqual(await response.json(), { ok: false, code: TERRAIN_TILES_NOT_READY });
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.equal(body.head.revision, 1);
+    assert.deepEqual(body.head.document, tilesDocument());
   });
-  assert.deepEqual(saving.calls, { validate: 0, save: 0, build: 0 });
+  assert.equal(validated, 1);
 
   const preparing = draftHandler({ revision: 1, document: tilesDocument(), savedAt: '2026-10-21T12:00:00.000Z' });
   assert.equal(await preparing.handler.prepare(), true);
@@ -513,12 +519,11 @@ test('draft HTTP save and prepare of a document v5 answer terrain_tiles_not_read
   assert.deepEqual(preparing.calls, { validate: 0, save: 0, build: 0 });
 
   const validate = createGmDraftValidator({ map, baseRevision: BASE, manifest: [], editorCatalog: [] });
-  assert.throws(() => validate(tilesDocument(map.seed)), notReady);
+  assert.deepEqual(validate(tilesDocument(map.seed)), tilesDocument(map.seed));
   const publication = createGmPublicationService({ root: ROOT, map, baseRevision: BASE, worldId: 'tiles-world',
     validateReferences: () => { throw new Error('a document v5 must not be validated'); }, gameVersion: 'test', protocolVersion: 1 });
   await assert.rejects(publication.build({ document: tilesDocument(map.seed), draftRevision: 1 }), notReady);
-  // GM07b2a: the store itself holds a document v5 now (tile references; tiles in its tile store); the draft route
-  // and the validator above keep refusing it until GM07b2b.
+  // GM07b2a: the store itself holds a document v5 (tile references; tiles in its tile store).
   const store = createMemoryGmDraftMethods();
   const stored = await store.saveGmDraft({ world: 'tiles-world', owner: GM, operationId: OPERATION, expectedRevision: 0,
     document: tilesDocument() });

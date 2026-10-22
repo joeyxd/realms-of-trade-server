@@ -17,7 +17,7 @@ import { createWalletHttpHandler } from './web3/walletHttp.mjs';
 import { walletLinkFromEnv } from './web3/walletRuntime.mjs';
 import { createGmSessionHandler, parseGmAccountIds } from './gmSession.mjs';
 import { createGmDraftHandler } from './gmDraftHttp.mjs';
-import { createGmDraftValidator } from './gmDraftValidation.mjs';
+import { createGmDraftValidator, createGmTerrainTileValidator } from './gmDraftValidation.mjs';
 import { createGmPublicationService } from './gmPublication.mjs';
 import { PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { generateWorld } from '../src/sim/worldgen.js';
@@ -79,7 +79,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
       baseMap, baseRevision, game, publication, lock: gmContentLock });
     if (resolvePlayer && gmAccountIds?.length) gmDrafts = createGmDraftHandler({ store: game.store, resolvePlayer, accountIds: gmAccountIds,
       worldId, seed: game.server.world.seed, baseRevision, validateReferences, allowMemory: gmDraftsAllowMemory,
-      publication, content: gmContent });
+      validateTile: createGmTerrainTileValidator({ map: baseMap, baseRevision }), publication, content: gmContent });
   }
   // Trusted API option only; npm start deliberately leaves durable gameplay dispatch disabled.
   if (pearlStaging !== null) game.mountPearlStaging(pearlStaging);
@@ -98,9 +98,11 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
       res.writeHead(200, { 'content-type': MIME['.json'], 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
       res.end(req.method === 'HEAD' ? undefined : JSON.stringify({ ok: true, ...content })); return;
     }
-    if (['/api/gm/draft', '/api/gm/prepare', '/api/gm/revisions', '/api/gm/activate'].includes(p)) {
+    if (['/api/gm/draft', '/api/gm/prepare', '/api/gm/revisions', '/api/gm/activate', '/api/gm/terrain-tiles',
+      '/api/gm/terrain-tiles/read'].includes(p)) {
       if (gmDrafts) void gmDrafts.handle(req, res, { prepareRevision: p === '/api/gm/prepare',
-        registerRevision: p === '/api/gm/revisions', activateRevision: p === '/api/gm/activate' });
+        registerRevision: p === '/api/gm/revisions', activateRevision: p === '/api/gm/activate',
+        uploadTiles: p === '/api/gm/terrain-tiles', readTiles: p === '/api/gm/terrain-tiles/read' });
       else { res.writeHead(503, { 'content-type': MIME['.json'], 'cache-control': 'no-store' }).end(JSON.stringify({ ok: false, code: 'gm_drafts_unavailable' })); }
       return;
     }

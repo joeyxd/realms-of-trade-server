@@ -27,14 +27,18 @@ same operation id after uploading. The rest of the function is unchanged.
 S3 Node validates every tile before it is stored: canonical `decodeTile` plus re-encode to the same bytes
 (src/editor/terrainTiles.js), sha256 of the bytes equal to the claimed hash, at most 65,536 bytes, key inside the
 domain. One bad tile refuses the whole batch (`tile_invalid`). The memory store and the Supabase store run the same check.
+The upload route (S4) also checks each tile against the map rules of the world's base revision (height range, floor,
+protected vertices, outer ring), tile by tile; the rules are per vertex, so a tile valid alone is valid in any
+document. Stored tiles are therefore trusted: a save checks the document structure and the existence of its tiles
+(SQL), never re-reads tile bytes. Prepare (S6) still compiles and validates the whole map. (Added by T-1022-25.)
 
-S4 Upload: `POST /api/gm/terrain-tiles?world=<world>`, body = repeated (u32 little-endian length + bytes), at most 64
+S4 Upload: `POST /api/gm/terrain-tiles` (the world is the server's configured world, as on the draft routes), body = repeated (u32 little-endian length + bytes), at most 64
 tiles and 4 MiB, with its own binary reader (readBody is JSON-only), the same auth and rate limiter as the draft
 routes. The client uploads only the tiles not known to be on the server (a per-world set filled by its uploads and by
 the heads it loads), then saves; on `tiles_missing` it uploads the listed tiles and retries once with the same
 operation id. A whole-map first save is 64 tiles, about 3.8 MB: one or two upload requests.
 
-S5 Draft tile read (added to D8): `POST /api/gm/terrain-tiles/read?world=<world>` with JSON `{hashes: [...]}` (at most
+S5 Draft tile read (added to D8): `POST /api/gm/terrain-tiles/read` with JSON `{hashes: [...]}` (at most
 64) answers the same length-prefixed format in request order; any missing hash answers 404 `tiles_missing` with the
 list. remotePanel.load needs it: a remote v5 head is useless without its tiles. Same auth and limiter.
 

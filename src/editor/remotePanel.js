@@ -1,10 +1,14 @@
 import { GmContentClient } from './contentClient.js';
-import { editorMessage } from './messages.js';
+import { editorErrorMessage, editorMessage } from './messages.js';
 import { TERRAIN_TILES_NOT_READY, convertDocumentToV5, isTerrainTilesDocument } from './terrainTiles.js';
 import { onLocaleChange, setLocale } from '../core/locale.js';
 
 const text = (value) => String(value).replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+// GM07b2: terrain tile refusals of an online save or load. Their texts live in messages.js; the server state is
+// unchanged by them, so the panel stays ready.
+const TILE_ERRORS = new Set([TERRAIN_TILES_NOT_READY, 'tiles_missing', 'tile_invalid', 'tile_batch', 'tile_hash',
+  'tile_length', 'tile_missing', 'tile_key_mismatch', 'unknown_material', 'local_tile_missing']);
 
 /** A deliberate review step between the local workspace and the account's remote draft. */
 export class RemoteDraftPanel {
@@ -27,9 +31,7 @@ export class RemoteDraftPanel {
       if (action === 'refresh') void this.refresh();
       if (action === 'export') editor._exportCurrent();
       if (action === 'export-remote') editor._exportDocument(this.head?.document, { name: `${editor.worldId}-online-r${this.head.revision}`, status: editorMessage('Server copy exported.', 'Se exportó la copia online.') });
-      // GM07b1: a terrain on tiles (document v5) is refused before any request until GM07b2.
-      if (action === 'save' && isTerrainTilesDocument(editor.history.current())) { this.review = null; this.error = TERRAIN_TILES_NOT_READY; this.render(); }
-      else if (action === 'save' || action === 'load') { this.review = action; this.reviewDocument = editor.history.current(); this.render(); }
+      if (action === 'save' || action === 'load') { this.review = action; this.reviewDocument = editor.history.current(); this.render(); }
       if (action === 'cancel-review') { this.review = null; this.render(); }
       if (action === 'confirm') { if (this.review === 'save') void this.save(); else if (this.review === 'load') void this.load(); }
       if (action === 'retry') void this.save(true);
@@ -83,9 +85,8 @@ export class RemoteDraftPanel {
       gm_draft_rate: ['Too many requests. Wait a moment and try again.', 'Demasiadas solicitudes. Espera un momento y vuelve a intentar.'],
       gm_preparation_unavailable: ['Preparation is unavailable or a model could not be verified. Your drafts are preserved.', 'La preparación no está disponible o no se pudo verificar un modelo. Tus borradores se conservan.'],
       gm_preparation_busy: ['The server is preparing another revision. Try again shortly.', 'El servidor está preparando otra revisión. Vuelve a intentar en un momento.'],
-      [TERRAIN_TILES_NOT_READY]: ['This draft keeps its terrain on tiles and is saved locally. Online save, preparation and publication of it arrive with the next update; export a copy to keep it safe.',
-        'Este borrador guarda su terreno en bloques y está guardado localmente. El guardado online, la preparación y la publicación llegan con la próxima actualización; exporta una copia para conservarlo.'],
     };
+    if (TILE_ERRORS.has(code)) { const tile = editorErrorMessage({ code }); return this.t(tile.en, tile.es); }
     const message = messages[code];
     return message ? this.t(...message) : this.t('The server could not confirm this request. Your local design is preserved.', 'El servidor no pudo confirmar la solicitud. Tu diseño local se conserva.');
   }
@@ -113,7 +114,13 @@ export class RemoteDraftPanel {
     if (!retry && (!snapshot || !same(snapshot, this.editor.history.current()))) { this.review = null; this.render(); return; }
     this.review = null; this.state = 'saving'; this.error = ''; this.render();
     try {
-      const result = retry ? await this.client.retry() : await this.client.save(snapshot, this.head.revision);
+      // GM07b2: a document v5 travels with its tile bytes; the client uploads those the server lacks.
+      let tiles = null;
+      if (!retry && isTerrainTilesDocument(snapshot)) {
+        try { tiles = this.editor.history.tilesOf(snapshot); }
+        catch { throw Object.assign(new Error(), { code: 'local_tile_missing' }); }
+      }
+      const result = retry ? await this.client.retry() : await this.client.save(snapshot, this.head.revision, { tiles });
       if (generation !== this.generation || !this.editor.active) return;
       await this._matchHead(result.head);
       if (generation !== this.generation || !this.editor.active) return;
@@ -124,7 +131,7 @@ export class RemoteDraftPanel {
       if (generation !== this.generation || !this.editor.active) return;
       this.editor.lastError = error;
       this.error = error.code; this.state = this.client.pending ? 'pending' : error.code === 'gm_draft_conflict' ? 'conflict'
-        : error.code === TERRAIN_TILES_NOT_READY ? 'ready' : 'unavailable';
+        : TILE_ERRORS.has(error.code) ? 'ready' : 'unavailable';
     } finally { if (generation === this.generation) this.render(); }
   }
 
@@ -150,8 +157,12 @@ export class RemoteDraftPanel {
     if (!same(this.reviewDocument, this.editor.history.current())) { this.review = null; this.render(); return; }
     this.review = null; this.state = 'applying'; this.error = ''; this.render();
     try {
+      // GM07b2: a v5 head opens with its tiles (local tile store first, the rest read from the server and checked);
+      // any failure here leaves the current document untouched.
+      const tiles = isTerrainTilesDocument(snapshot) ? await this.client.headTiles(snapshot) : null;
+      if (generation !== this.generation || !this.editor.active) return;
       // A v3/v4 head is checked and converted to v5 (GM07b1); the online copy is not rewritten.
-      const opened = await this.editor._openTerrain(snapshot);
+      const opened = await this.editor._openTerrain(snapshot, tiles);
       if (generation !== this.generation || !this.editor.active) return;
       // Finish model loading before changing history; failure leaves the current scene intact.
       await this.editor._hydrate(opened.document);
@@ -164,7 +175,7 @@ export class RemoteDraftPanel {
     } catch (error) {
       if (generation !== this.generation || !this.editor.active) return;
       this.editor.lastError = error;
-      this.error = error.code || 'base'; this.state = 'unavailable';
+      this.error = error.code || 'base'; this.state = TILE_ERRORS.has(error.code) ? 'ready' : 'unavailable';
     } finally { if (generation === this.generation) this.render(); }
   }
 

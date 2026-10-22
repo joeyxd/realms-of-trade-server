@@ -563,7 +563,7 @@ export class GameHost {
       if (this.#requiresPearlStartup) this.#stopPearls();
       throw error;
     });
-    await Promise.allSettled([observe(this.#prepareEconomy()), observe(recovery)]);
+    await Promise.allSettled([observe(this.#prepareEconomy()), observe(recovery), this.#probeGmTerrainTiles()]);
     if (failure) throw failure.error;
     if (this.closing) throw new StoreError('cancelled');
     if (this.#groundPearls) {
@@ -665,6 +665,16 @@ export class GameHost {
     return () => { this.contentSwitching = false; this.server.last = performance.now(); this.server.acc = 0; };
   }
 
+  // GM07b2 S9: /status reports whether SQL042 (GM draft terrain tiles) answers its readiness, probed once at boot like
+  // the SQL040 family below. A missing or failing probe is false; it never blocks boot and gates only v5 drafts.
+  async #probeGmTerrainTiles() {
+    let ready = false;
+    if (typeof this.store.checkGmTerrainTiles === 'function') {
+      try { ready = (await this.store.checkGmTerrainTiles())?.version === 1; } catch { ready = false; }
+    }
+    this.gmTerrainTiles = ready;
+  }
+
   // Under Ground a GM roster needs the SQL040 family: the authority capability and installed readiness.
   // A missing or failing readiness probe is not ready; the caller fails closed before any roster write.
   async #groundGmResourcesReady() {
@@ -752,6 +762,7 @@ export class GameHost {
       ...(this.contentIdentity ? { content: { ...this.contentIdentity, switching: !!this.contentSwitching } } : {}),
       storage: { kind: this.store.kind, durable: this.store.durable === true, accounts: !!this.resolvePlayer,
         playerCharacters: { ready: this.playerCharacters.ready, limit: 3 },
+        gmTerrainTiles: this.gmTerrainTiles === true,
         errors: this.profiles.errors + (this.worldState?.errors || 0), unsaved: this.unsavedProfiles.size,
         profileWrites: this.profiles.tasks.size, worldWriting: !!this.worldState?.running,
         economic: this.economicAuthority?.status() ?? null,

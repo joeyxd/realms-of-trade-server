@@ -25,6 +25,8 @@ const draftCodes = {
   unknown_material: 'tileInvalid', import_tile_missing: 'importTileMissing', import_tile_extra: 'importTileExtra',
   import_tile_invalid: 'importTileInvalid', document_tile_missing: 'draftInvalid', document_tile_invalid: 'draftInvalid',
   terrain_tiles_not_ready: 'tilesNotReady',
+  // GM07b2: online drafts on tiles (upload, save, load of a remote head).
+  tiles_missing: 'tilesMissing', tile_invalid: 'tileRefused', tile_batch: 'tileBatch', local_tile_missing: 'tileMissingLocal',
 };
 
 const documentCodes = {
@@ -61,8 +63,16 @@ const known = {
     es: 'El archivo contiene un bloque de terreno que su borrador no usa. No se importó nada.' },
   importTileInvalid: { en: 'A terrain tile in the file is damaged. Nothing was imported.',
     es: 'Un bloque de terreno del archivo está dañado. No se importó nada.' },
-  tilesNotReady: { en: 'This terrain is saved locally. Online save and publication of terrain arrive with the next update; export a copy to keep it.',
-    es: 'Este terreno está guardado localmente. El guardado online y la publicación de terreno llegan con la próxima actualización; exporta una copia para conservarlo.' },
+  tilesNotReady: { en: 'This server does not accept terrain tiles for this step yet. Your design stays saved in this browser; export a copy to keep it.',
+    es: 'Este servidor todavía no acepta bloques de terreno para este paso. Tu diseño sigue guardado en este navegador; exporta una copia para conservarlo.' },
+  tilesMissing: { en: 'The server is missing terrain tiles of this design, so the request did not complete. Nothing changed here; try again.',
+    es: 'Al servidor le faltan bloques de terreno de este diseño, así que la solicitud no se completó. Aquí no cambió nada; vuelve a intentar.' },
+  tileRefused: { en: 'The server refused a terrain tile of this design: it is damaged or breaks the map rules (height, protected ground or map edge). Nothing was saved online; your local design is preserved.',
+    es: 'El servidor rechazó un bloque de terreno de este diseño: está dañado o incumple las reglas del mapa (altura, suelo protegido o borde del mapa). No se guardó nada online; tu diseño local se conserva.' },
+  tileBatch: { en: 'The server refused a batch of terrain tiles (more than 64 tiles or 4 MB). Nothing was saved online; your local design is preserved.',
+    es: 'El servidor rechazó un lote de bloques de terreno (más de 64 bloques o 4 MB). No se guardó nada online; tu diseño local se conserva.' },
+  tileMissingLocal: { en: 'A terrain tile of this design is not in this browser, so it could not be sent. Your local design is preserved; reopen the draft or export it.',
+    es: 'Un bloque de terreno de este diseño no está en este navegador, así que no se pudo enviar. Tu diseño local se conserva; vuelve a abrir el borrador o expórtalo.' },
 };
 
 export function editorMessage(en, es) { return { en, es }; }

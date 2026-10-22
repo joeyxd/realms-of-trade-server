@@ -8,7 +8,8 @@ const WORLD = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,99}$/;
 const SHA256 = /^[0-9a-f]{64}$/;
 const BASE64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
 const MAX_BYTES = 5 * 1024 * 1024;
-// GM07b2 S3/S4: one tile put or get moves at most 64 tiles and 4 MiB of tile bytes; the SQL put RPC takes 16 per call.
+// GM07b2 S3/S4: one tile put or get moves at most 64 tiles and 4 MiB of tile bytes; the SQL put and get RPCs take 16
+// per call (Node splits larger batches).
 export const MAX_TILE_BATCH = 64;
 export const MAX_TILE_BATCH_BYTES = 4 * 1024 * 1024;
 const RPC_TILE_BATCH = 16;
@@ -256,19 +257,23 @@ export function createSupabaseGmDraftMethods(client) {
       const world = checkedWorld(raw?.world), hashes = checkedTileHashes(raw?.hashes);
       if (hashes.length === 0) return new Map();
       await requireTerrainTiles();
-      const data = await rpc('mn_get_gm_terrain_tiles', { p_world: world, p_hashes: hashes });
-      if (!Array.isArray(data) || data.length > hashes.length) throw new GmDraftStoreError('response');
-      const wanted = new Set(hashes), found = new Map();
-      for (const entry of data) {
-        if (!entry || typeof entry !== 'object' || Array.isArray(entry) || Object.keys(entry).length !== 2 ||
-            !wanted.has(entry.sha256) || found.has(entry.sha256) || typeof entry.b64 !== 'string' ||
-            entry.b64.length > Math.ceil(TILE_MAX_BYTES / 3) * 4 || !BASE64.test(entry.b64)) {
-          throw new GmDraftStoreError('response');
+      // At most 16 hashes per RPC call: 16 tiles of 64 KiB are about 1.4 MB of base64 per answer.
+      const found = new Map();
+      for (let n = 0; n < hashes.length; n += RPC_TILE_BATCH) {
+        const chunk = hashes.slice(n, n + RPC_TILE_BATCH), wanted = new Set(chunk);
+        const data = await rpc('mn_get_gm_terrain_tiles', { p_world: world, p_hashes: chunk });
+        if (!Array.isArray(data) || data.length > chunk.length) throw new GmDraftStoreError('response');
+        for (const entry of data) {
+          if (!entry || typeof entry !== 'object' || Array.isArray(entry) || Object.keys(entry).length !== 2 ||
+              !wanted.has(entry.sha256) || found.has(entry.sha256) || typeof entry.b64 !== 'string' ||
+              entry.b64.length > Math.ceil(TILE_MAX_BYTES / 3) * 4 || !BASE64.test(entry.b64)) {
+            throw new GmDraftStoreError('response');
+          }
+          // Node re-hashes every tile it is given back; the bytes must be the ones the hash names.
+          const bytes = new Uint8Array(Buffer.from(entry.b64, 'base64'));
+          if (bytes.length > TILE_MAX_BYTES || sha256Hex(bytes) !== entry.sha256) throw new GmDraftStoreError('response');
+          found.set(entry.sha256, bytes);
         }
-        // Node re-hashes every tile it is given back; the bytes must be the ones the hash names.
-        const bytes = new Uint8Array(Buffer.from(entry.b64, 'base64'));
-        if (bytes.length > TILE_MAX_BYTES || sha256Hex(bytes) !== entry.sha256) throw new GmDraftStoreError('response');
-        found.set(entry.sha256, bytes);
       }
       const result = new Map();
       for (const sha256 of hashes) if (found.has(sha256)) result.set(sha256, found.get(sha256));

@@ -111,6 +111,34 @@ export function createIndexedDbDraftSource({ indexedDB = globalThis.indexedDB, d
         transaction.onerror = () => reject(transaction.error || new DraftStoreError('indexeddb_read'));
       });
     },
+    /** Tile bytes by sha256 from the tile store: a Map of the present ones (GM07b2: a remote head opens with them). */
+    async readTiles(hashes) {
+      const db = await database();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction('tiles', 'readonly'), store = transaction.objectStore('tiles'), tiles = new Map();
+        for (const sha256 of new Set(hashes)) {
+          const read = store.get(sha256);
+          read.onsuccess = () => { if (read.result instanceof Uint8Array) tiles.set(sha256, read.result); };
+        }
+        transaction.oncomplete = () => resolve(tiles);
+        transaction.onabort = () => reject(transaction.error || new DraftStoreError('indexeddb_read'));
+        transaction.onerror = () => reject(transaction.error || new DraftStoreError('indexeddb_read'));
+      });
+    },
+    /**
+     * Store tile bytes (a Map sha256 -> bytes) beside the records, e.g. tiles read from the server. Records are not
+     * touched; the next write with tiles drops them again unless a record references them by then.
+     */
+    async putTiles(tiles) {
+      const db = await database();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction('tiles', 'readwrite'), store = transaction.objectStore('tiles');
+        for (const [sha256, bytes] of tiles) store.put(bytes, sha256);
+        transaction.oncomplete = () => resolve(true);
+        transaction.onabort = () => reject(transaction.error || new DraftStoreError('indexeddb_write'));
+        transaction.onerror = () => reject(transaction.error || new DraftStoreError('indexeddb_write'));
+      });
+    },
     /**
      * Revision CAS of one record. With { tiles } (a Map sha256 -> bytes) the same transaction also stores the tiles the
      * record references and the store lacks, then drops every tile no record references.
