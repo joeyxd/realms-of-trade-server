@@ -24,7 +24,7 @@ export function checkedGroundTransactionIntent(input, worldId, expectedId = null
   try {
     const raw = snapshotDropData(input);
     if (!exact(raw, 'operationId,request,result,state')) fail('response');
-    const concrete = groundTransactionOperation({ operationId: raw.operationId, request: raw.request });
+    const concrete = groundTransactionOperation({ operationId: raw.operationId, request: raw.request }, 'stored');
     if (concrete.request.world !== worldId || expectedId !== null && concrete.operationId !== expectedId ||
         !['pending', 'committed', 'conflict', 'rejected'].includes(raw.state)) fail('response');
     if (raw.state === 'pending') {

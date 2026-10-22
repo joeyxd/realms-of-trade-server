@@ -24,6 +24,15 @@ validación (`content.validation` sigue en la identidad: acoplamiento conocido, 
 código aplica a un modelo (palmeras, arbustos) cuentan como código. Tests: gm-content-identity (a-f); gm-publication-service
 lee versiones y manifiesto en `preparedWith`. Ticket T-1021-25. Pendiente: `tools/qa-gm-preparation-checks.mjs` (QA de
 navegador) aún espera `content.baselineAssets` completo.
+**SK04d, 2026-10-21 — los recibos de skills dentro de transacciones de suelo se validan por forma guardada (T-1021-40):**
+Cierra el pendiente de `server/groundTransaction.mjs:22` de las entradas SK04a y SK04b. `groundTransactionOperation(input,
+source = 'input')`; la familia `economic` pasa `source` a `economicOperation(raw, source)` y valida sus resultados con
+`checkedEconomicResult(..., 'stored')`. `checkedGroundTransactionReceipt` y `checkedGroundTransactionIntent` (journal) leen
+con `'stored'`: un recibo o una intención de un catálogo anterior ya no se rechaza al recalcular. Las operaciones nuevas
+siguen en `'input'` (host, sesión, prepare del journal y `commitGroundTransaction` en store.mjs:694). Con `'stored'` solo
+cambia el trato de los comandos de skills. Test nuevo `tests/skill-ground-transaction.test.mjs` (3). Sin SQL, sin versión
+ni protocolo. Límite conocido: una intención pendiente de skills guardada antes de cambiar el catálogo sigue fallando al
+re-commitearse en la recuperación (store.mjs:694 revalida con `'input'`; la sesión queda cercada como antes).
 
 **IC05a, 2026-10-21 — el cuerpo del compañero recoge madera y piedra (alpha.89, protocolo 64):**
 [Entrega](delivery/ic05a-companion-gather.md). Sin SQL; versión 0.6.0-alpha.89, `PROTOCOL_VERSION` 64 (el valor de

@@ -19,8 +19,9 @@ const same = (a, b) => canonicalText(a) === canonicalText(b);
 const fail = code => { throw new StoreError(code); };
 const families = Object.freeze({
   economic: {
-    request: (id, request) => economicOperation({ operationId: id, request }).request,
-    result: (raw, request) => checkedEconomicResult(raw, request),
+    request: (id, request, source) => economicOperation({ operationId: id, request }, source).request,
+    // The request was fully checked when built or read back, so never recompute it against the live catalog.
+    result: (raw, request) => checkedEconomicResult(raw, request, false, 'stored'),
   },
   ground: { request: (id, raw) => groundOperation({ ...raw, operationId: id }).request,
     result: checkedGroundResult },
@@ -45,7 +46,7 @@ function uuid(raw) {
   return result;
 }
 
-export function groundTransactionOperation(input) {
+export function groundTransactionOperation(input, source = 'input') {
   try {
     const raw = snapshot(input, 'operation');
     if (!exact(raw, 'operationId,request')) fail('operation');
@@ -65,7 +66,7 @@ export function groundTransactionOperation(input) {
       if (!exact(request.operation, '')) fail('operation');
     } else {
       if (!Object.hasOwn(families, request.family)) fail('operation');
-      const normalized = families[request.family].request(operationId, request.operation);
+      const normalized = families[request.family].request(operationId, request.operation, source);
       if (!same(normalized, request.operation) || normalized.world !== request.world) fail('operation');
       if (request.family === 'economic' && (normalized.expectedWorldVersion !== request.expectedWorldVersion ||
           !same(normalized.worldData, worldData))) fail('operation');
@@ -102,7 +103,7 @@ export function checkedGroundTransactionReceipt(input, operationId) {
   try {
     const raw = snapshot(input, 'response');
     if (!exact(raw, 'request,result')) fail('response');
-    const { request } = groundTransactionOperation({ operationId, request: raw.request });
+    const { request } = groundTransactionOperation({ operationId, request: raw.request }, 'stored');
     const result = checkedGroundTransactionResult(raw.result, request, operationId);
     if (!result.ok || result.replay) fail('response');
     return { request, result };

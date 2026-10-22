@@ -280,10 +280,10 @@ function checkedRequest(input, source = 'input') {
   return request;
 }
 
-export function economicOperation(raw) {
+export function economicOperation(raw, source = 'input') {
   exact(raw, ['operationId', 'request']);
   const operationId = uuid(raw.operationId);
-  return { operationId, request: checkedRequest(raw.request) };
+  return { operationId, request: checkedRequest(raw.request, source) };
 }
 
 function resultShape(raw, request, replay) {
@@ -299,8 +299,8 @@ function resultShape(raw, request, replay) {
   return jsonCopy(raw);
 }
 
-export function checkedEconomicResult(raw, requestRaw, replay = false) {
-  const request = checkedRequest(requestRaw);
+export function checkedEconomicResult(raw, requestRaw, replay = false, source = 'input') {
+  const request = checkedRequest(requestRaw, source);
   return resultShape(raw, request, replay);
 }
 
