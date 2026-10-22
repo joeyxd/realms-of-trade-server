@@ -20,6 +20,7 @@ import { rackNear, skillOf, skillNum, rainR } from './sim/systems/skills.js';
 import { canStand } from './sim/systems/movement.js';
 import { castKind, isArt, ARTS, skillId } from './data/tattoos.js';
 import { AimCast } from './client/aimcast.js';
+import { autoAimPoint } from './client/autoAim.js';
 import { WEAPONS, WEAPON_KINDS, SKILLS, weaponIndex, weaponOf } from './data/weapons.js';
 import { createTransport, probeServer, servedByGameServer, httpUrlFor } from './net/transport.js';
 import { GameClient } from './client/gameClient.js';
@@ -1266,30 +1267,15 @@ async function boot() {
     focus.copy(c);
   }
 
-  // Touch / keyboard-only aim: the nearest enemy within 9 u, else the way you are moving or facing.
+  // Touch / keyboard-only aim (client/autoAim.js): a projectile on a collision course, else the nearest enemy (or a
+  // pirate while both stand in the lawless zone) within the lock range (9 u; the pistol bullet's reach with the
+  // pistols), else the way you are moving or facing.
+  const autoCtx = { ps, H: null, pt: 0, reach: 0, entities: null, youId: 0, lawlessAt: (x, z) => !!map.lawlessAt?.(x, z) };
   function autoAim(mv) {
-    // First the most imminent projectile on a collision course (keyboard / touch parry faces it).
-    const H = client.hazards, pt = (client.ptCur || 0) + 1, reach = tuning.player.hurtRadius + tuning.projectiles.graze + 0.5;
-    let threat = -1, tBest = 0.7;
-    for (let s = 0; s < H.cap; s++) {
-      if (!H.live(s, pt)) continue;
-      const v = H.velocityAt(s, pt), rx = ps.x - H.px(s, pt), rz = ps.z - H.pz(s, pt), v2 = v.x * v.x + v.z * v.z;
-      if (v2 < 1e-6) continue;
-      const tca = (rx * v.x + rz * v.z) / v2;
-      if (tca < 0 || tca > tBest) continue;
-      if (Math.hypot(rx - v.x * tca, rz - v.z * tca) > reach + H.r[s]) continue;
-      threat = s; tBest = tca;
-    }
-    if (threat >= 0) { aim.set(H.px(threat, pt), ps.y, H.pz(threat, pt)); return; }
-    let best = null, bd = 9;
-    for (const rec of client.entities.values()) {
-      if (!rec.enemy || !rec.ready || rec.dying || rec.enemy === 'cannon') continue;
-      const d = Math.hypot(rec.r.x - ps.x, rec.r.z - ps.z);
-      if (d < bd) { bd = d; best = rec; }
-    }
-    if (best) aim.set(best.r.x, ps.y, best.r.z);
-    else if (Math.hypot(mv.x, mv.z) > 0.2) aim.set(ps.x + mv.x * 3, ps.y, ps.z + mv.z * 3);
-    else aim.set(ps.x + Math.sin(ps.f) * 3, ps.y, ps.z + Math.cos(ps.f) * 3);
+    autoCtx.H = client.hazards; autoCtx.pt = (client.ptCur || 0) + 1;
+    autoCtx.reach = tuning.player.hurtRadius + tuning.projectiles.graze + 0.5;
+    autoCtx.entities = client.entities; autoCtx.youId = client.youServer;
+    autoAimPoint(autoCtx, mv, aim);
   }
   // ---- Aiming areas and charges (M4.7 P4, client/aimcast.js) -------------------------------------------------
   // The slot keys go through the aim controller: an area (Tromba, Abordaje, the pistols' Lluvia) shows its marker

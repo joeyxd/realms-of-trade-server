@@ -3,11 +3,13 @@ import { t, text as ltext, rich, attr, setText, setDataText, translateData, data
 // A floating joystick on the left half; on the right ATK and the kit-dependent guard/secondary fire, DASH,
 // the contextual action button and the weapon's Q / E / R. Q, E and R can be dragged to aim: a tap uses the
 // auto-aim, dragging shows an aim line (the body turns to it) and releasing casts there; dragging back onto
-// the button cancels. Pointer events arrive in screen coordinates: the joystick and the aim line are placed
-// with stage.toLocal and every drag delta goes through stage.vec (the stage may be rotated).
+// the button cancels. ATK and the guard / second gun are held buttons that can be dragged too: the aim line shows
+// and the fire keeps going that way until the finger lifts (no shot on release). Pointer events arrive in screen
+// coordinates: the joystick and the aim line are placed with stage.toLocal and every drag delta goes through stage.vec (the stage may be rotated).
 // Size: --tb = the setting (0.85 / 1 / 1.18) x auto (follows the stage height), set on the root.
 import { BTN } from '../sim/systems/movement.js';
 import { stage } from './stage.js';
+import { holdAim } from './touchGesture.js';
 
 // Icons: 24x24 line art. Every path is drawn twice (ink under-stroke, white stroke) so it reads on any
 // background. Styled in hud.css (`#touch .tbtn svg`).
@@ -122,34 +124,45 @@ export class TouchControls {
     root.querySelector('.t-dash').addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressDash(); });
     root.querySelector('.t-act').addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressInteract(); });
     root.querySelector('.t-pot').addEventListener('pointerdown', (e) => { e.preventDefault(); input.press(BTN.POTION); });
-    // Held buttons: a press now, the held bit while the finger stays down.
-    const hold = (sel, bit) => {
-      const b = root.querySelector(sel);
-      let id = null;
-      b.addEventListener('pointerdown', (e) => { e.preventDefault(); id = e.pointerId; b.setPointerCapture(id); input.press(bit); input.touchHeld |= bit; });
-      const up = (e) => { if (e.pointerId !== id) return; id = null; input.touchHeld &= ~bit; };
+    // The aim line from a button's centre along a drag (stage px), shared by the skills and the two fire buttons.
+    const line = root.querySelector('.aimline');
+    const showLine = (b, dx, dy, cancel) => {
+      const r = b.getBoundingClientRect(), l = Math.hypot(dx, dy);
+      const c = stage.toLocal(r.left + r.width / 2, r.top + r.height / 2); // the rect is in screen px
+      line.style.display = 'block';
+      line.style.left = c.x + 'px'; line.style.top = c.y + 'px';
+      line.style.width = l + 'px';
+      line.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
+      line.classList.toggle('cancel', cancel);
+    };
+    // ATK and the guard / second gun: held while the finger is down, and draggable like a stick (touchGesture.js).
+    // A tap is the plain hold (auto-aim); dragging past 22 px aims that way with continuous fire, releasing stops.
+    const fire = (sel, bit) => {
+      const b = root.querySelector(sel), g = holdAim(input, bit);
+      let sx = 0, sy = 0;
+      b.addEventListener('pointerdown', (e) => {
+        e.preventDefault(); sx = e.clientX; sy = e.clientY; b.setPointerCapture(e.pointerId);
+        g.down(e.pointerId);
+      });
+      b.addEventListener('pointermove', (e) => {
+        const v = stage.vec(e.clientX - sx, e.clientY - sy), drawn = g.move(e.pointerId, v.x, v.y);
+        if (drawn) { input.aimDevice = 'touch'; showLine(b, drawn.dx, drawn.dy, false); }
+      });
+      // Only an aimed gesture drew the shared line: a tap leaves another finger's line alone (read before up resets it).
+      const up = (e) => { const aimed = g.aimed; if (g.up(e.pointerId) && aimed) line.style.display = 'none'; };
       b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up);
     };
-    hold('.t-atk', BTN.ATTACK);
-    hold('.t-parry', BTN.GUARD);
+    fire('.t-atk', BTN.ATTACK);
+    fire('.t-parry', BTN.GUARD);
     // Draggable skills. dir / self: the press goes out on release, aimed by the drag (or auto-aimed on a tap). An area
     // (ground) and a charge go through the aim controller (client/aimcast.js) as a held slot: the area marker follows
     // the drag (its length = the distance) and shows while the finger is down, a charge starts on touch; releasing
     // casts / throws, dragging back to the button cancels an area.
-    const line = root.querySelector('.aimline');
     this.kinds = { q: 'dir', e: 'dir', r: 'self', g: 'dir' };
     const drag = (sel, bit, slot) => {
       const b = root.querySelector(sel);
       let id = null, sx = 0, sy = 0, far = false, held = false;
-      const show = (dx, dy, cancel) => {
-        const r = b.getBoundingClientRect(), l = Math.hypot(dx, dy);
-        const c = stage.toLocal(r.left + r.width / 2, r.top + r.height / 2); // the rect is in screen px
-        line.style.display = 'block';
-        line.style.left = c.x + 'px'; line.style.top = c.y + 'px';
-        line.style.width = l + 'px';
-        line.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
-        line.classList.toggle('cancel', cancel);
-      };
+      const show = (dx, dy, cancel) => showLine(b, dx, dy, cancel);
       b.addEventListener('pointerdown', (e) => {
         e.preventDefault(); id = e.pointerId; sx = e.clientX; sy = e.clientY; far = false; b.setPointerCapture(id); input.aimDevice = 'touch';
         const k = this.kinds[slot];

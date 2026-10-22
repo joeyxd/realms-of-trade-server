@@ -15,6 +15,23 @@ no hay desenfoque (decisión de gusto pendiente de Joi). QA: `tools/shot.mjs --p
 un punto a 3 u de profundidad y los dos faroles del muelle. Tests de agua 12/12, tests que cargan el pipeline 31/31;
 capturas fuera de git (visual-revamp/.scratch/t1022-21-*, t1022-33-dof). Pendiente: Joi lo revisa en el servidor y en
 una GPU real.
+**PT02, 2026-10-21 — disparo apuntado con el pulgar y bloqueo de piratas (sin versión: la pone el push):**
+Sin SQL, sin protocolo, sin cambios en sim, servidor ni datos. Los botones ATK y el segundo disparo/guardia del HUD táctil
+(`.t-atk`, `.t-parry`) se pueden arrastrar como un stick (src/ui/touchGesture.js `holdAim`, cableado en src/ui/touch.js).
+Toque: igual que antes (pulsación, bit sostenido, el auto-apuntado decide). Arrastre de más de 22 px: el bit sigue
+sostenido y `input.touchAim` lleva la dirección mientras el dedo está abajo; main.js apunta con `BTN.AIM` y no corre
+`autoAim`. Una vez pasados los 22 px el gesto sigue apuntado hasta soltar (dentro de los 22 px conserva la última
+dirección). Soltar quita el bit y el apuntado, sin disparo extra (Q/E/R siguen disparando al soltar, sin cambios). El
+disparo continuo es la regla de la sim que ya existía: con pistolas el bit ATTACK/GUARD sostenido repite el disparo a su
+enfriamiento (combat.js `trigger`/`triggerSecondary`). La línea de apuntado es la de Q/E/R (`.aimline`, ahora una función
+`showLine` compartida). Si dos dedos pelean por `touchAim`, manda el que lo puso el último y soltar solo lo limpia si es
+suyo. La elección de objetivo salió de main.js a src/client/autoAim.js (sin DOM): proyectil en curso de colisión primero;
+luego el más cercano entre monstruos y otros piratas (humanos, nunca el propio, vivos y listos) dentro del alcance; piratas
+solo si el jugador local y el pirata están en `lawlessAt` (Cala Calavera; La Caldera sigue sin PvP). Alcance: 9 u salvo con
+el kit pistolas, que es `SKILLS.pistol.speed × life` = 18 u. Tests nuevos tests/aim-touch.test.mjs (19, fuera del gate).
+Ticket T-1021-59. Pendiente: prueba a mano de Joi en el teléfono (el primer disparo del toque sale con auto-apuntado,
+como hoy, antes de saber si es arrastre).
+
 **PT08, 2026-10-21 — se vuelve a correr justo después de los espadazos (sin versión: la pone el push):**
 Sin SQL ni protocolo, sin campos nuevos en ecs. No existía un modo caminar: lo que el tester vio como «caminar» era el
 frenado de combate, que duraba todo el golpe incluida la recuperación (golpes 1 y 2 al 30 %, el tercero al 15 % durante
