@@ -15,6 +15,22 @@ no hay desenfoque (decisión de gusto pendiente de Joi). QA: `tools/shot.mjs --p
 un punto a 3 u de profundidad y los dos faroles del muelle. Tests de agua 12/12, tests que cargan el pipeline 31/31;
 capturas fuera de git (visual-revamp/.scratch/t1022-21-*, t1022-33-dof). Pendiente: Joi lo revisa en el servidor y en
 una GPU real.
+**PT06 parte 1 (simulación y red), 2026-10-22 — salto de Mario 64 exacto detrás de `MN_JUMP` (sin versión: la pone el push; protocolo 67):**
+Sin SQL. Interruptor del servidor `MN_JUMP` = off | lab | game (sin valor o desconocido = off con un aviso; nunca para el arranque). off es el juego de
+antes. lab: Mario exacto, sin costo de carga, carrera a 10.8 u/s (tope de Mario 32 mu/f). game: la misma física, cada salto gasta una carga de dash y sin
+cargas no hay salto; carrera 6.5. El modo vive en `world.jumpMode`, viaja en WELCOME.jump a la predicción del cliente y sale en /status
+(`storage.jump.mode`); en solo, `?jump=lab|game`. `src/sim/systems/jump.js` (nuevo) es la máquina de estados de SM64 a 30 Hz (un frame de Mario = 2 ticks,
+fase por cuerpo `jmpPh`): simple, doble, triple, caída libre y aterrizajes con la cadena de Mario (prevAction + doubleJumpTimer con sus rarezas), gravedad
+40.5 u/s², corte de altura variable al soltar, terminal −25.3 u/s, control en el aire sin giro. Ficha con file:line: context/pt06-sm64-jump-spec.md (fuera de git).
+Caídas: 25 % de maxHp por encima de 12.94 u (más squish de 30 frames); por encima de 33.75 u, 50 % en lab y muerte en game; agua profunda sin daño.
+Acantilados (lab y game): una bajada de más de 1.125 u o con pendiente mayor que 1.0 te hace caer; el contacto con una ladera empinada desliza y conserva
+la altura máxima, así que una montaña mata. Historial de altura `world.yhist` para el cilindro de los disparos con lag. BTN.JUMP = 1024, máscaras 0x7ff
+(protocol.js y también deathInputBoundary.js y pearlInputBoundary.js, que si no lanzaban con el bit de salto en cola), ENT.JMP = 20 (etapa del salto
+para las poses), MOVER_FIELDS con 11 columnas nuevas al final.
+Falta: tecla, mando, botón táctil y poses (Space salta y Dash pasa a Shift, decisión de Joi); altura de obstáculos y golpes cuerpo a cuerpo con altura.
+Abierto: en el aire la velocidad sube +0.15 mu/f por frame por encima de 32 (Mario exacto); en game con dashMax 1 no hay doble ni triple.
+Pruebas: tests/jump-sm64.test.mjs y tests/jump-world.test.mjs (25, fuera del gate); gate 203/203; death y pearl boundary 87/87. T-1022-29.
+
 **PT03, 2026-10-22 — HUD táctil por el tamaño real de la pantalla (sin versión: la pone el push):**
 Sin SQL, sin protocolo, sin cambios en sim, servidor ni datos. Queja de la prueba R1: botones pequeños, agrupados hacia el centro.
 Ahora `src/ui/touchLayout.js` (puro, sin DOM) calcula la escala y la posición de cada botón desde ambos lados del stage, el ajuste

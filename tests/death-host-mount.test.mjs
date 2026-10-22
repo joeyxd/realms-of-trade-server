@@ -13,7 +13,7 @@ import { makeDeath, planRequest, seedDeathStore, VICTIM, KILLER, WORLD as scope 
 
 const turn = () => new Promise((r) => setImmediate(r));
 const deferred = () => { let resolve; const promise = new Promise((r) => { resolve = r; }); return { promise, resolve }; };
-const command = (seq) => sanitizeCmd({ seq, pt: seq, mx: 1, mz: 1, ax: 10, az: 10, btn: 0x3ff, prs: 0x3ff, w: 1 });
+const command = (seq) => sanitizeCmd({ seq, pt: seq, mx: 1, mz: 1, ax: 10, az: 10, btn: 0x7ff, prs: 0x7ff, w: 1 });
 class Socket extends EventEmitter {
   readyState = 1; messages = [];
   send(raw) { this.messages.push(JSON.parse(raw)); }
@@ -60,7 +60,7 @@ for (const [name, backend] of [['memory',undefined],['SDK/SQL010 local',sql]]) t
   } }) });
   try {
     const s = f.h.server;
-    f.c.queue.push(command(1), command(2)); f.c.last = command(0); f.c.carry = 0x3ff;
+    f.c.queue.push(command(1), command(2)); f.c.last = command(0); f.c.carry = 0x7ff;
     for (const key of ['atkBuf','rBuf','qBuf','eBuf','gBuf']) f.w.ecs[key][f.e] = 0.1;
     const before = snapshot(f), input = structuredClone({ queue: f.c.queue, last: f.c.last, carry: f.c.carry });
     const handle = f.request(); await entered.promise;
@@ -126,7 +126,7 @@ test('close waits for whole-death receipt, never applies or hides incomplete shu
 test('input apply fault rolls back death and inputs before deferred socket teardown, preserving receipt', async () => {
   const f = await fixture();
   try {
-    const s = f.h.server, first = command(1); f.c.queue.push(first); f.c.carry = 0x3ff;
+    const s = f.h.server, first = command(1); f.c.queue.push(first); f.c.carry = 0x7ff;
     const before = snapshot(f); f.request(); await f.h.deathStaging.settle();
     const prepare = s.prepareDeathInputs.bind(s);
     s.prepareDeathInputs = (...args) => { const effect = prepare(...args); return { ...effect, apply() {
@@ -136,8 +136,8 @@ test('input apply fault rolls back death and inputs before deferred socket teard
     f.sockets[0].onClosing = () => { closedState = { dead: f.w.ecs.dead[f.e], pearl: structuredClone(f.p.pearls), first: f.c.queue[0], carry: f.c.carry }; };
     f.h.start(); assert.equal(s.step(), false); assert.equal(f.h.closing, true);
     assert.equal(f.sockets[0].readyState, 1); assert.deepEqual(snapshot(f), before);
-    assert.equal(f.c.queue[0], first); assert.equal(f.c.carry, 0x3ff);
-    await turn(); assert.deepEqual(closedState, { dead: 0, pearl: before.profiles.find(([e]) => e === f.e)[1].pearls, first, carry: 0x3ff });
+    assert.equal(f.c.queue[0], first); assert.equal(f.c.carry, 0x7ff);
+    await turn(); assert.deepEqual(closedState, { dead: 0, pearl: before.profiles.find(([e]) => e === f.e)[1].pearls, first, carry: 0x7ff });
     assert.equal(f.h.timer._destroyed, true); await assert.rejects(f.h.close(), { code: 'flush' });
     assert.equal((await f.db.store.loadProfile(VICTIM)).data.stats.deaths, 1); assert.equal(events(f,'death').length, 0);
   } finally { await f.close(); }

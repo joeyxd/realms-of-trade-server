@@ -8,7 +8,8 @@ import { ECS, C, KIND, TEAM, ACT, PLAYER_FIELDS } from './ecs.js';
 import { generateWorld } from './worldgen.js';
 import { stepMover, moveWithCollision } from './systems/movement.js';
 import { makeBotBrain, botCommand } from './systems/bots.js';
-import { stepPlayerCombat, applyLevel, gainXp, stormRadius, hurtByPlayer } from './systems/combat.js';
+import { stepPlayerCombat, applyLevel, gainXp, stormRadius, hurtByPlayer, hurtPlayer } from './systems/combat.js';
+import { jumpOn } from './systems/jump.js';
 import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf, newHistory } from './systems/enemies.js';
 import { Hazards, Shots, emitPattern, patternCount, PTYPE, KILL, NEVER, SHOT } from './projectiles.js';
 import { firstRelativeSphereContact, firstSegmentCircleContact2D, firstSegmentCylinderContact, pointOnSegment } from './projectileClash.js';
@@ -66,7 +67,11 @@ export class World {
     this.shockSeq = new Map(); // e → seq of its last perfect-guard shock
     this.phist = new Map(); // server: pirate → position history and hit bookkeeping (friendly fire, M4.5)
     this.tmp = { x: 0, z: 0, y: 0 };
-    this.tmpLag = { x: 0, z: 0 };
+    this.tmpLag = { x: 0, z: 0, y: 0 };
+    // PT06 jump (systems/jump.js): 'off' (today's game) | 'lab' | 'game'. The server sets it; prediction copies it from WELCOME.
+    this.jumpMode = 'off';
+    this.falls = []; // landings that hurt, (entity, fraction of maxHp, seq) triplets, applied by applyFalls (server only)
+    this.yhist = new Map(); // server, jump on: player → its y of the last 32 ticks (lag compensation of height)
   }
 
   emit(ev) {
@@ -166,6 +171,7 @@ export class World {
     this.chills.delete(e);
     this.ecs.destroy(e);
     this.phist.delete(e);
+    this.yhist.delete(e);
     this.events.push({ type: 'despawn', id: e });
   }
 
@@ -198,6 +204,7 @@ export class World {
       this.ecs.lastSeq[e] = cmd.seq >>> 0; return;
     }
     stepMover(this, e, cmd, DT);
+    if (this.falls.length) this.applyFalls();
     if (this.ecs.mask[e] & C.HEALTH) stepPlayerCombat(this, e, cmd, DT);
     this.flushFeel(e);
     this.ecs.lastSeq[e] = cmd.seq >>> 0;
@@ -321,11 +328,27 @@ export class World {
     return sid;
   }
 
-  // Server: where enemy e was `lag` ticks ago (the history melee rewinds with).
+  // Server: where enemy e was `lag` ticks ago (the history melee rewinds with). With the jump on, out.y is the feet
+  // height then (a jumper is hit where its shooter saw it), else the current one.
   lagPos(e, lag, out) {
-    if (lag > 0) return historyAt(this, e, this.tick - lag, out);
-    out.x = this.ecs.x[e]; out.z = this.ecs.z[e];
+    if (lag > 0) historyAt(this, e, this.tick - lag, out);
+    else { out.x = this.ecs.x[e]; out.z = this.ecs.z[e]; }
+    if (jumpOn(this)) {
+      const h = lag > 0 && lag < 31 ? this.yhist.get(e) : null;
+      out.y = h ? h[((this.tick - lag) % 32 + 32) % 32] : this.ecs.y[e];
+    }
     return out;
+  }
+
+  // A landing that hurts (jump.js queued it): true damage through hurtPlayer, no knockback, god mode respected.
+  applyFalls() {
+    const q = this.falls, ecs = this.ecs;
+    this.falls = [];
+    for (let i = 0; i < q.length; i += 3) {
+      const e = q[i];
+      if (!ecs.alive[e] || ecs.dead[e] > 0) continue;
+      hurtPlayer(this, e, ecs.maxHp[e] * q[i + 1], { x: ecs.x[e], z: ecs.z[e], kind: 'fall', knock: 0, noInv: true, pierce: true, seq: q[i + 2] });
+    }
   }
 
   // Server: nearest enemy (team 2) in a cone ahead of a shot (as seen `lag` ticks ago).
@@ -394,8 +417,9 @@ export class World {
         if (e === S.lastHit[s] || !this.canHit(owner, e)) continue;
         this.lagPos(e, lag, p);
         const height = ecs.mask[e] & C.ENEMY ? (defOf(ecs, e)?.height || 1.8) : 1.8;
+        const fy = jumpOn(this) ? p.y : ecs.y[e]; // PT06: the feet where the shooter saw them
         const t = firstSegmentCylinderContact(from, limited, p.x, p.z, ecs.hurtR[e] + shotRadius,
-          ecs.y[e] - shotRadius, ecs.y[e] + height + shotRadius);
+          fy - shotRadius, fy + height + shotRadius);
         if (t !== null && t * lifeT < stopT) { stopT = t * lifeT; hit = e; }
       }
 
@@ -816,9 +840,10 @@ export class World {
     for (let e = 1; e < ecs.cap; e++) {
       if (!ecs.alive[e]) continue;
       const m = ecs.mask[e];
-      if (m & C.BOT) stepMover(this, e, botCommand(this, e, DT), DT);
+      if (m & C.BOT) { stepMover(this, e, botCommand(this, e, DT), DT); if (this.falls.length) this.applyFalls(); }
       else if (m & C.ENEMY) stepEnemy(this, e, DT);
     }
+    if (this.falls.length) this.applyFalls(); // a fall from a crew walking a deck (deckWalk)
     if (this.isServer) {
       stepBurns(this);
       this.stepShots(DT);
@@ -830,7 +855,14 @@ export class World {
       for (let e = 1; e < ecs.cap; e++) {
         if (!ecs.alive[e]) continue;
         if (ecs.mask[e] & C.ENEMY) recordHistory(this, e);
-        else if ((ecs.mask[e] & C.PLAYER) && !(ecs.mask[e] & C.BOT)) recordHistory(this, e, this.hitState(e));
+        else if ((ecs.mask[e] & C.PLAYER) && !(ecs.mask[e] & C.BOT)) {
+          recordHistory(this, e, this.hitState(e));
+          if (jumpOn(this)) { // PT06: the feet height too, for the hits that rewind (lagPos)
+            let h = this.yhist.get(e);
+            if (!h) { h = new Float64Array(32).fill(ecs.y[e]); this.yhist.set(e, h); }
+            h[this.tick % 32] = ecs.y[e];
+          }
+        }
       }
       for (const sp of this.spawners) {
         if (sp.entity) continue;

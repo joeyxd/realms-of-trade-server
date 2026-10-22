@@ -161,6 +161,23 @@ export const tuning = {
     flashMax: 0.8,
   },
 
+  // ---- PT06 jump: the Super Mario 64 jump, ported exactly (systems/jump.js; switch MN_JUMP off | lab | game) -------
+  // Mario numbers stay in Mario units: lengths in mu (1 mu = 1.8 body / 160 hitbox = 0.01125 u), speeds in mu per SM64
+  // frame (30 Hz = 2 sim ticks), so 1 mu/f = 0.3375 u/s. Heights below are already in u. Lines: n64decomp/sm64 9921382.
+  jump: {
+    mu: 0.01125, fps: 30,
+    vy: [42, 52, 69], vyFwd: [0.25, 0.25, 0], fwdKeep: 0.8, // JUMP, DOUBLE, TRIPLE entry: mario.c:824, 786, 797
+    gravity: 4, terminal: -75, cutVy: 20, cutDiv: 4, // mario_step.c:576-577, :528, :560 (the vel/4 cut while A is up)
+    drag: 0.35, accel: 1.5, side: 10, cap: 32, capOver: 1, minFwd: -16, minAdd: 2, // airborne.c:224, 230, 231, 235-240
+    landFrames: 4, doubleTimer: 5, landKeep: 0.98, landDecel: 4, landDecelMin: 16, tripleFwd: 20, // moving.c:26-56, :1726, :150
+    squish: 30, // frames; airborne.c:97 (halves the jump vy, turns a double into a single)
+    fallGate: -55, fallTier1: 12.9375, fallTier2: 33.75, // airborne.c:84, 79, 85 (vy gate in mu/f; heights in u)
+    cliffDrop: 1.125, // u; a ground step lower than this leaves the ground (mario_step.c:287: 100 mu)
+    cliffSlope: 1, // our heightfield: descent (and landing) slope above this is a fall / a slide (same 45 deg as maxSlope)
+    lab: { runSpeed: 10.8, cost: 0, fall: [0.25, 0.5] }, // Mario walk cap 32 mu/f; fall damage as fractions of maxHp
+    game: { cost: 1, fall: [0.25, 1] }, // one dash charge per jump; a big fall kills
+  },
+
   // ---- Visual-only tuning ---------------------------------------------------------------------
   visual: {
     outlineColor: 0x120a24, // ink

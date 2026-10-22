@@ -10,7 +10,7 @@ const same = (a, b) => a && b && Object.keys(a).length === fields.length &&
 const checked = (cmd) => {
   if (!cmd || Object.keys(cmd).length !== fields.length || fields.some((key) => !Number.isFinite(cmd[key])) ||
       !Number.isInteger(cmd.btn) || !Number.isInteger(cmd.prs) ||
-      cmd.btn < 0 || cmd.btn > 0x3ff || cmd.prs < 0 || cmd.prs > 0x3ff) throw new TypeError('pearl input command');
+      cmd.btn < 0 || cmd.btn > 0x7ff || cmd.prs < 0 || cmd.prs > 0x7ff) throw new TypeError('pearl input command');
   return { ...cmd };
 };
 const filtered = (cmd) => ({ ...cmd, btn: cmd.btn & ~PEARL_ACTION_BITS, prs: cmd.prs & ~PEARL_ACTION_BITS });
@@ -30,7 +30,7 @@ export function preparePearlInputs(server, id, entity, assertBoundary) {
   };
   identity();
   const queue = c.queue;
-  if (!Array.isArray(queue) || queue.length > 30 || !Number.isInteger(c.carry) || c.carry < 0 || c.carry > 0x3ff) {
+  if (!Array.isArray(queue) || queue.length > 30 || !Number.isInteger(c.carry) || c.carry < 0 || c.carry > 0x7ff) {
     throw new TypeError('pearl input queue');
   }
   const before = queue.map((cmd) => ({ ref: cmd, data: checked(cmd) }));

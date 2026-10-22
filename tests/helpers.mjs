@@ -12,8 +12,10 @@ export const A = map.landmarks.arena; // flat, open floor
 
 // A server world with one player standing in the arena facing +x, no map enemies.
 // step(o) runs one command (defaults: no move, aim 5 u to +x, pt = server tick) and one world step.
-export function arena(o = {}) {
-  const w = new World(GAME.seed, { map, server: true });
+// o.jump: 'off' (default) | 'lab' | 'game', the PT06 jump mode; o.map: another heightfield (a synthetic cliff).
+export function arena({ jump = 'off', map: m = map, ...o } = {}) {
+  const w = new World(GAME.seed, { map: m, server: true });
+  w.jumpMode = jump;
   const e = w.spawnPlayer({ x: A.x, z: A.z + 4, facing: Math.PI / 2, ...o });
   w.events.length = 0;
   let seq = 0;
@@ -37,9 +39,9 @@ export function incoming(w, e, type = 0, dist = 6, speed = 10, dmg = 8, offZ = 0
 
 // A GameClient wired to a LocalServer in-process (messages cloned like the worker would).
 // place(x, z): where the player is put once joined (default: 8 u west of an archer).
-export function clientAndServer(place) {
+export function clientAndServer(place, { jump = 'off' } = {}) {
   const toClient = [];
-  const server = new LocalServer({ seed: GAME.seed, bots: 0, send: (_id, m) => toClient.push(JSON.parse(JSON.stringify(m))) });
+  const server = new LocalServer({ seed: GAME.seed, bots: 0, jump, send: (_id, m) => toClient.push(JSON.parse(JSON.stringify(m))) });
   const snaps = [], msgs = [];
   const transport = {
     onSnapshot: (cb) => snaps.push(cb), onMessage: (cb) => msgs.push(cb), start() {},

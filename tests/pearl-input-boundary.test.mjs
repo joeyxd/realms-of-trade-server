@@ -14,7 +14,7 @@ import { fixture as replacementFixture, WORLD } from './helpers/pearl-replace-st
 import { database as swallowSql } from './helpers/pearl-same-holder-sql.mjs';
 import { database as batchSql } from './helpers/pearl-batch-journal-sql.mjs';
 
-const kept = BTN.DASH | BTN.GUARD | BTN.INTERACT | BTN.AIM | BTN.POTION;
+const kept = BTN.DASH | BTN.GUARD | BTN.INTERACT | BTN.AIM | BTN.POTION | BTN.JUMP;
 const command = (seq, extra = {}) => sanitizeCmd({ seq, pt: seq, mx: 1, mz: 0.25, ax: 8, az: 9,
   btn: PEARL_ACTION_BITS | kept, prs: PEARL_ACTION_BITS | kept, ...extra });
 const transport = (c) => structuredClone({ queue: c.queue, carry: c.carry, last: c.last,

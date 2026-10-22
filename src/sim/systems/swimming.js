@@ -13,8 +13,9 @@ export function swimmingAt(world, x, z, y) {
 
 export function refreshSwimming(world, e) {
   const s = world.ecs;
-  const airborne = s.castK[e] > 0 && s.act[e] === ACT.LEAP;
-  const wet = canSwim(s, e) && !s.dead[e] && !airborne && swimmingAt(world, s.x[e], s.z[e], s.y[e]);
+  // The Abordaje leap and a jump / fall (jump.js) stay in the air until they reach the water.
+  const air = (s.castK[e] > 0 && s.act[e] === ACT.LEAP) || (s.jmpAct[e] >= 1 && s.jmpAct[e] <= 4);
+  const wet = canSwim(s, e) && !s.dead[e] && !air && swimmingAt(world, s.x[e], s.z[e], s.y[e]);
   s.swim[e] = wet ? 1 : 0;
   if (wet) {
     s.y[e] = tuning.world.waterLevel - tuning.swim.bodyDepth;

@@ -1,6 +1,7 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 66; // GM07b0: content identity
+import { jumpStage } from '../sim/systems/jump.js';
+export const PROTOCOL_VERSION = 67; // PT06 jump: BTN.JUMP (btn/prs 11 bits), ENT.JMP, WELCOME.jump
 
 export const MSG = {
   // client -> server
@@ -60,8 +61,8 @@ export const MSG = {
   TRADE_ACCEPT: 'trade_accept',
 };
 
-// Snapshot entity tuple layout.
-export const ENT = { ID: 0, KIND: 1, X: 2, Y: 3, Z: 4, F: 5, VX: 6, VZ: 7, ST: 8, MAG: 9, WADE: 10, DASHES: 11, HP: 12, MAXHP: 13, ACT: 14, ACTT: 15, LVL: 16, WPN: 17, ELEM: 18, LANTERN: 19 };
+// Snapshot entity tuple layout. JMP: the jump stage (JUMP_STAGE in systems/jump.js: 0 ground … 6 steep slide).
+export const ENT = { ID: 0, KIND: 1, X: 2, Y: 3, Z: 4, F: 5, VX: 6, VZ: 7, ST: 8, MAG: 9, WADE: 10, DASHES: 11, HP: 12, MAXHP: 13, ACT: 14, ACTT: 15, LVL: 16, WPN: 17, ELEM: 18, LANTERN: 19, JMP: 20 };
 
 // Remote entities are only interpolated, so their floats travel rounded (≈ 45 % fewer characters before the
 // socket compresses them): positions and facing to 1/1000, velocities and blends to 1/100. Your own
@@ -73,6 +74,7 @@ export function encodeEntity(ecs, e) {
     e, ecs.kind[e], q3(ecs.x[e]), q3(ecs.y[e]), q3(ecs.z[e]), q3(ecs.facing[e]), q2(ecs.vx[e]), q2(ecs.vz[e]), ecs.state[e], q2(ecs.moveMag[e]), q2(ecs.wade[e]), ecs.dashCount[e],
     Math.ceil(ecs.hp[e]), ecs.maxHp[e], ecs.act[e], q3(ecs.actT[e]), ecs.level[e], ecs.weapon[e], ecs.elem[e],
     ecs.lantern[e] === 1 && ecs.hp[e] > 0 && !ecs.dead[e] ? 1 : 0,
+    jumpStage(ecs, e),
   ];
 }
 
@@ -96,8 +98,8 @@ export function sanitizeCmd(c) {
     mz: quantAxis(n(c.mz)),
     ax: n(c.ax),
     az: n(c.az),
-    btn: n(c.btn) & 0x3ff, // held bits: + BTN.Q / BTN.E held (a charge, M4.7)
-    prs: n(c.prs) & 0x3ff, // + BTN.G (M4.8)
+    btn: n(c.btn) & 0x7ff, // held bits: + BTN.Q / BTN.E held (a charge, M4.7), BTN.JUMP held (PT06)
+    prs: n(c.prs) & 0x7ff, // + BTN.G (M4.8), BTN.JUMP (PT06)
     pt: n(c.pt) >>> 0,
     w: n(c.w) & 0x0f,
   };

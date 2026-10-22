@@ -19,6 +19,7 @@ import { NavalPilotPrediction } from './navalPilotPrediction.js';
 import { NavalDeckPrediction } from './navalDeckPrediction.js';
 import { interpolatePilotPose, pilotPoint } from '../sim/naval/pilotGeometry.js';
 import { swimLoadOf } from '../sim/systems/swimming.js';
+import { jumpModeOf } from '../sim/systems/jump.js';
 
 const BUF_MAX = 40;
 const KILL_EVENTS = { parry: KILL.REFLECT, destroy: KILL.DESTROY, phit: KILL.HIT, guard: KILL.BLOCK };
@@ -35,6 +36,7 @@ export class GameClient {
     this.freshwaterStatus = null;
     this.attributes = { enabled: false };
     this.skills = { enabled: false };
+    this.jumpAsk = ''; // main.js sets it from ?jump= (solo)
     this.youLocal = 0;
     this.seq = 0;
     this.pending = [];
@@ -94,6 +96,7 @@ export class GameClient {
   // save: the blob the server sent last time (M4), '' for a fresh start.
   join(name, skin, weapon = 0, save = '', account = null) {
     this.t.send({ t: MSG.HELLO, v: PROTOCOL_VERSION, name, skin, weapon, save,
+      ...(this.jumpAsk ? { jump: this.jumpAsk } : {}), // solo only: ?jump=lab|game (a game server ignores it)
       ...(this.map?.gmContentIdentity ? { content: { ...this.map.gmContentIdentity } } : {}),
       ...(account ? { token: account.token, importSave: account.importSave === true,
         ...(account.characterId ? { characterId: account.characterId } : {}) } : {}) });
@@ -128,6 +131,7 @@ export class GameClient {
         }
         this.attributes = { enabled: m.attributes?.enabled === true };
         this.skills = { enabled: m.skills?.enabled === true };
+        this.pred.jumpMode = jumpModeOf(m.jump); // PT06: prediction runs the server's jump rules
         this.personalLantern = false;
     this.fire = null;
         this.freshwaterStatus = null;
@@ -452,6 +456,7 @@ export class GameClient {
         time: st, x: e[ENT.X], y: e[ENT.Y], z: e[ENT.Z], f: e[ENT.F], vx: e[ENT.VX], vz: e[ENT.VZ],
         st: e[ENT.ST], mag: e[ENT.MAG], wade: e[ENT.WADE], dashes: e[ENT.DASHES],
         hp: e[ENT.HP], maxHp: e[ENT.MAXHP], act: e[ENT.ACT], actT: e[ENT.ACTT], lvl: e[ENT.LVL], wpn: e[ENT.WPN] | 0, elem: e[ENT.ELEM] | 0,
+        jmp: e[ENT.JMP] | 0, // PT06: jump stage (JUMP_STAGE), for the pose of a remote jumper
       };
       const b = rec.buf;
       if (b.length && b[b.length - 1].time >= st) continue;

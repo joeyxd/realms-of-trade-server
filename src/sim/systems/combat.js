@@ -18,11 +18,11 @@
 //   Graze: a projectile passing within 0.35 u of your hurtbox without touching = ROCE.
 import { tuning, DT } from '../../data/tuning.js';
 import { PEARL } from '../../data/pearls.js';
-import { BTN, moveWithCollision } from './movement.js';
+import { BTN, moveWithCollision, standingHeight } from './movement.js';
 import { stepSwimming } from './swimming.js';
 import { PTYPE, KILL, NEVER, SHOT, beamSeg, segDist, lavaR } from '../projectiles.js';
 import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf, firePistol, firePistolSecondary, callRain, stepRain, stepTromba, stepWheel, takeEmpower } from './skills.js';
-import { ACT } from '../ecs.js';
+import { ACT, airborne, resetJump } from '../ecs.js';
 import { hash01 } from '../../core/rng.js';
 import { SKILLS } from '../../data/weapons.js';
 import { CONSUMABLES } from '../../data/items.js';
@@ -127,6 +127,8 @@ export function killPlayer(world, e, seq, by = 0) {
   ecs.atkStage[e] = 0; ecs.guardT[e] = -1; ecs.chain[e] = 0;
   ecs.pend0[e] = ecs.pend1[e] = 0;
   ecs.dashT[e] = -1; ecs.state[e] = 0;
+  if (airborne(ecs, e)) ecs.y[e] = standingHeight(world, ecs.x[e], ecs.z[e], ecs.y[e]); // PT06: the body drops where it stands
+  if (ecs.jmpAct?.[e] || ecs.jmpSq?.[e]) resetJump(ecs, e);
   const loss = Math.max(0, Math.min(1, tuning.combat.deathXpLoss));
   ecs.xp[e] = Math.max(0, ecs.xp[e] * (1 - loss));
   const ev = { type: 'death', id: e, seq, x: ecs.x[e], z: ecs.z[e] };
@@ -552,6 +554,9 @@ function riposteWave(world, e, pt, seq) {
 export function stepPlayerCombat(world, e, cmd, dt) {
   const ecs = world.ecs, T = tuning, P = T.parry, M = T.melee, Cb = T.combat, G = T.guard;
   const seq = cmd.seq >>> 0;
+  // PT06: in a jump or fall nothing is pressed (no attack, guard, skill, potion or aim) and nothing is buffered.
+  const air = airborne(ecs, e);
+  if (air) cmd = { ...cmd, btn: 0, prs: 0 };
   if (ecs.swim[e]) {
     cmd = { ...cmd, btn: cmd.btn & (BTN.AIM | BTN.INTERACT | BTN.POTION), prs: cmd.prs & (BTN.INTERACT | BTN.POTION) };
     ecs.atkStage[e] = ecs.atkBuf[e] = ecs.qBuf[e] = ecs.eBuf[e] = ecs.gBuf[e] = ecs.rBuf[e] = 0;
@@ -622,7 +627,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   }
   bufferSkills(world, e, cmd, seq);
 
-  const dashing = ecs.dashT[e] >= 0;
+  const dashing = ecs.dashT[e] >= 0 || air; // a jump cancels a swing and the guard just as a dash does
   if (dashing) {
     if (ecs.atkStage[e] > 0) { ecs.lastStage[e] = 0; ecs.atkStage[e] = 0; }
     ecs.guardT[e] = -1;

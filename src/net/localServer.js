@@ -34,6 +34,7 @@ import { stepRaftWork } from '../sim/systems/raftProduction.js';
 import { ownerRaftCapacity } from '../sim/systems/raftCapacity.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
+import { jumpModeOf } from '../sim/systems/jump.js';
 import { preparePearlInputs } from './pearlInputBoundary.js';
 import { prepareDeathInputs } from './deathInputBoundary.js';
 import { ChatService } from './chatService.js';
@@ -64,7 +65,7 @@ export class LocalServer {
   #ownsTickPublication = false;
   #afterWorld = false; #holdingPublication = false;
 
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, residentStep = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false, survival = false, meals = false, harvestLoot = false }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, residentStep = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false, survival = false, meals = false, harvestLoot = false, jump = 'off' }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -108,6 +109,7 @@ export class LocalServer {
     this.world.freshwaterEnabled = freshwater;
     this.world.survivalEnabled = survival === true;
     this.world.mealsEnabled = meals === true;
+    this.world.jumpMode = jumpModeOf(jump); // PT06: MN_JUMP off | lab | game (solo: ?jump= in the HELLO)
     this.world.hideHandFire = e => hideHandFire(this.world, e);
     if (typeof navigation !== 'boolean') throw new TypeError('navigation option');
     if (navigation) {
@@ -206,6 +208,7 @@ export class LocalServer {
         if (c.entity) return;
         if (msg.v !== PROTOCOL_VERSION) { this.send(clientId, { t: MSG.ERROR, code: 'version', v: PROTOCOL_VERSION }); return; }
         if (this.humans >= this.maxPlayers) { this.send(clientId, { t: MSG.FULL, max: this.maxPlayers }); return; }
+        if (this.pausable && !this.humans) this.world.jumpMode = jumpModeOf(msg.jump ?? this.world.jumpMode); // solo ?jump=lab|game
         const name = this.uniqueName(cleanName(msg.name));
         const skin = Math.max(0, Math.min(4, msg.skin | 0));
         // The weapon you last used (the client remembers it); after that you change it at a rack.
@@ -238,7 +241,7 @@ export class LocalServer {
         // Admission must resend the catalogue even when the world has not changed.
         c.resourceSignature = null;
         if (this.world.fireEnabled) hideHandFire(this.world, c.entity);
-        this.send(clientId, { t: MSG.WELCOME, v: PROTOCOL_VERSION, you: c.entity, tick: this.world.tick, seed: this.world.seed });
+        this.send(clientId, { t: MSG.WELCOME, v: PROTOCOL_VERSION, you: c.entity, tick: this.world.tick, seed: this.world.seed, jump: this.world.jumpMode });
         this.flushEvents(); // Private events and already circulating pearls now know who "you" is.
         this.sendProfile(clientId, c);
         this.chat.join(clientId);

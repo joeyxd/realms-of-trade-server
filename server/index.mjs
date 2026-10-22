@@ -23,6 +23,14 @@ import { PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { generateWorld } from '../src/sim/worldgen.js';
 import { createGmContentService } from './gmContent.mjs';
 import { inferenceCatalogFromEnv } from './inferenceConfig.mjs';
+import { jumpModeOf } from '../src/sim/systems/jump.js';
+
+// MN_JUMP = off | lab | game (PT06). Unset or unknown = off; an unknown value warns once and never stops the boot.
+export function jumpFromEnv(v) {
+  const mode = jumpModeOf(v);
+  if (v !== undefined && v !== '' && v !== mode && v !== 'off') console.warn(`[srv] MN_JUMP=${JSON.stringify(String(v).slice(0, 16))} is not off, lab or game: jump stays off`);
+  return mode;
+}
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const AUTH_SDK = path.join(path.dirname(fileURLToPath(import.meta.resolve('@supabase/supabase-js'))), 'umd', 'supabase.js');
@@ -39,7 +47,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth,
   worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null, chat = chatFromEnv(process.env), walletLink = null, agentControl = null, agentPilot = null,
   economicOperations = false, communityRequirements = null, gmAccountIds = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, skillOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, torchResinCoconutOperations = false, agentTrade = false,
-  gmDraftsAllowMemory = false, companionConfigAllowMemory = false, companionControlAllowMemory = false,
+  gmDraftsAllowMemory = false, companionConfigAllowMemory = false, companionControlAllowMemory = false, jump = 'off',
   inferenceCatalog = inferenceCatalogFromEnv(process.env), inferenceConfigAllowMemory = false,
   companionCreation = false, companionCreationAllowMemory = false,
   companionPairing = false, companionPairingAllowMemory = false,
@@ -57,7 +65,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
       Object.keys(pearlStartup).some((key) => !['journal', 'accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)))) throw new StoreError('configuration');
   if (worldId === undefined) worldId = 'marea-negra';
   const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs, chat,
-    pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, workshopOperations, attributeOperations, skillOperations, fireOperations, freshwaterOperations, canteenOperations, specialMealOperations, torchResinCoconutOperations, agentTrade, groundTransactions, companionConfigAllowMemory, companionControlAllowMemory, inferenceCatalog, inferenceConfigAllowMemory, companionCreation, companionCreationAllowMemory, companionPairing, companionPairingAllowMemory, companionPresence, companionPresenceAllowMemory });
+    pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, jump, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, workshopOperations, attributeOperations, skillOperations, fireOperations, freshwaterOperations, canteenOperations, specialMealOperations, torchResinCoconutOperations, agentTrade, groundTransactions, companionConfigAllowMemory, companionControlAllowMemory, inferenceCatalog, inferenceConfigAllowMemory, companionCreation, companionCreationAllowMemory, companionPairing, companionPairingAllowMemory, companionPresence, companionPresenceAllowMemory });
   let gmDrafts = null, gmContent = null, publication = null;
   if (resolvePlayer && gmAccountIds?.length && worldId !== null || gmContentDirectory !== null) {
     const baseRevision = 'terrain-s21-v1';
@@ -205,6 +213,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       workshopOperations: env.MN_STARTER_WORKSHOP === '1',
       attributeOperations: env.MN_ATTRIBUTE_OPERATIONS === '1',
       skillOperations: env.MN_SKILL_OPERATIONS === '1',
+      jump: jumpFromEnv(env.MN_JUMP),
       fireOperations: env.MN_FIRE_OPERATIONS === '1',
       freshwaterOperations: env.MN_FRESHWATER_OPERATIONS === '1',
       canteenOperations: env.MN_CANTEEN_OPERATIONS === '1',

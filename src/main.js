@@ -558,6 +558,7 @@ async function boot() {
 
   // ---- Net / entities --------------------------------------------------------------------------
   var client = new GameClient(transport, map, bus); // var: the pause helpers above run before this line
+  client.jumpAsk = params.get('jump') || ''; // PT06 solo: ?jump=lab|game (a game server sets its own with MN_JUMP)
   const swimStatus = new SwimStatus($('#ui'), { locale: getLocale });
   const navigation = new LiveNavigationView({
     world, client: () => client, input, isTouch, stage, parent: $('#ui'),

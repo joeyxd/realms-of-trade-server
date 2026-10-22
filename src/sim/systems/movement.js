@@ -1,14 +1,16 @@
 // Player/bot locomotion: acceleration, dash (with buffered input, charges, i-frames), static collision.
 // Pure and deterministic: runs identically in the worker (authoritative) and the client (prediction).
 import { tuning } from '../../data/tuning.js';
-import { STATE } from '../ecs.js';
+import { STATE, airborne } from '../ecs.js';
 import { dampAngle } from '../../core/math.js';
 import { canSwim, refreshSwimming } from './swimming.js';
 import { LOAD } from '../../data/carry.js';
+import { jumpOn, jumpTick, groundCliff } from './jump.js';
 
 // AIM (held bit): the command's aim point is explicit (mouse moved, right stick tilted), so the body faces it
 // even while walking another way; without it you face where you walk (touch, keyboard only).
-export const BTN = { DASH: 1, ATTACK: 2, PARRY: 4, GUARD: 4, Q: 8, E: 16, R: 32, INTERACT: 64, AIM: 128, POTION: 256, G: 512 };
+// JUMP (PT06): prs = the press edge, btn = held (the jump is higher while held); ignored with MN_JUMP off.
+export const BTN = { DASH: 1, ATTACK: 2, PARRY: 4, GUARD: 4, Q: 8, E: 16, R: 32, INTERACT: 64, AIM: 128, POTION: 256, G: 512, JUMP: 1024 };
 
 const dashCurve = (t) => 1 - Math.pow(1 - t, tuning.dash.curvePow);
 
@@ -73,7 +75,11 @@ function moveOnce(world, e, dx, dz) {
   let nx = x + dx, nz = z + dz;
   const y = ecs.y[e];
   const waterAllowed = canSwim(ecs, e) && !ecs.dead[e];
-  if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed)) {
+  // A jump or fall (jump.js): free flight inside the map and the colliders; y belongs to the jump.
+  const air = jumpOn(world) && airborne(ecs, e);
+  const lim = map.half - 2;
+  if (air) { nx = Math.max(-lim, Math.min(lim, nx)); nz = Math.max(-lim, Math.min(lim, nz)); }
+  else if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed)) {
     if (walkStep(world, x, z, nx, z, y, r, waterAllowed)) nz = z;
     else if (walkStep(world, x, z, x, nz, y, r, waterAllowed)) nx = x;
     else { nx = x; nz = z; }
@@ -93,18 +99,34 @@ function moveOnce(world, e, dx, dz) {
       }
     }
   }
-  if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed)) { nx = x; nz = z; }
+  if (air) { nx = Math.max(-lim, Math.min(lim, nx)); nz = Math.max(-lim, Math.min(lim, nz)); }
+  else if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed)) { nx = x; nz = z; }
   ecs.x[e] = nx;
   ecs.z[e] = nz;
-  ecs.y[e] = standingHeight(world, nx, nz, y);
+  if (air) return Math.hypot(nx - x, nz - z);
+  const ny = standingHeight(world, nx, nz, y);
+  // lab / game: a step that drops too far or too steeply leaves the ground (y stays: the fall starts here)
+  if (!(ny < y && jumpOn(world) && groundCliff(world, e, x, z, nx, nz, y, ny))) ecs.y[e] = ny;
   if (waterAllowed) refreshSwimming(world, e);
   return Math.hypot(nx - x, nz - z);
+}
+
+// Knockback (hits, blocked heavy orbs): its own velocity, decaying fast.
+function knockStep(world, e, dt) {
+  const ecs = world.ecs;
+  if (ecs.kbx[e] !== 0 || ecs.kbz[e] !== 0) {
+    moveWithCollision(world, e, ecs.kbx[e] * dt, ecs.kbz[e] * dt);
+    const k = Math.exp(-10 * dt);
+    ecs.kbx[e] *= k; ecs.kbz[e] *= k;
+    if (Math.abs(ecs.kbx[e]) + Math.abs(ecs.kbz[e]) < 0.05) { ecs.kbx[e] = 0; ecs.kbz[e] = 0; }
+  }
 }
 
 // One fixed step of locomotion for entity e driven by command cmd {mx, mz, ax, az, btn, prs}.
 export function stepMover(world, e, cmd, dt) {
   const ecs = world.ecs, map = world.map;
   const P = tuning.player, D = tuning.dash, W = tuning.world;
+  const jm = jumpOn(world); // PT06: MN_JUMP lab / game
   const swimming = refreshSwimming(world, e);
 
   let mx = cmd.mx || 0, mz = cmd.mz || 0;
@@ -117,7 +139,7 @@ export function stepMover(world, e, cmd, dt) {
 
   // A heavy pack (load tier 1+, PLAN-PROGRESSION §15.3) forbids the dash.
   const heavy = ecs.load[e] > 0;
-  if (!swimming && !heavy && cmd.prs & BTN.DASH) ecs.dashBuffer[e] = P.inputBuffer;
+  if (!swimming && !heavy && cmd.prs & BTN.DASH && !(jm && airborne(ecs, e))) ecs.dashBuffer[e] = P.inputBuffer;
 
   // Charges recharge sequentially.
   if (ecs.dashCharges[e] < ecs.dashMax[e]) {
@@ -129,6 +151,9 @@ export function stepMover(world, e, cmd, dt) {
     }
   }
   if (ecs.iframes[e] > 0) ecs.iframes[e] = Math.max(0, ecs.iframes[e] - dt);
+
+  // A jump or fall owns the whole tick while the body is in the air (dash, steering and the swim snap are off).
+  if (jm && jumpTick(world, e, cmd, dt, mx, mz, len, locked, heavy, swimming)) { knockStep(world, e, dt); return; }
 
   // Start a buffered dash (not during a skill's windup / active frames: the buffer waits).
   if (ecs.dashT[e] < 0 && ecs.dashBuffer[e] > 0 && ecs.dashCharges[e] >= 1 && !locked && !heavy && !(ecs.castLock[e] > 0)) {
@@ -188,7 +213,8 @@ export function stepMover(world, e, cmd, dt) {
       mul *= 1 - (1 - P.backMul) * k;
     }
     const speed = swimming ? (ecs.swimStamina[e] <= 0 ? tuning.swim.exhaustedSpeed :
-      tuning.swim.speed * (1 - tuning.swim.loadSlow * ecs.swimLoad[e])) : ecs.speed[e];
+      tuning.swim.speed * (1 - tuning.swim.loadSlow * ecs.swimLoad[e])) :
+      ecs.speed[e] * (world.jumpMode === 'lab' ? tuning.jump.lab.runSpeed / P.runSpeed : 1); // lab: Mario's walk cap
     const tx = mx * speed * mul, tz = mz * speed * mul;
     const rate = (len > 0.05 ? P.accel : P.decel) * dt;
     let ddx = tx - ecs.vx[e], ddz = tz - ecs.vz[e];
@@ -208,13 +234,7 @@ export function stepMover(world, e, cmd, dt) {
       else if (len > 0.05) ecs.facing[e] = dampAngle(ecs.facing[e], Math.atan2(mx, mz), P.turnLambda, dt);
     }
   }
-  // Knockback (hits, blocked heavy orbs): its own velocity, decaying fast.
-  if (ecs.kbx[e] !== 0 || ecs.kbz[e] !== 0) {
-    moveWithCollision(world, e, ecs.kbx[e] * dt, ecs.kbz[e] * dt);
-    const k = Math.exp(-10 * dt);
-    ecs.kbx[e] *= k; ecs.kbz[e] *= k;
-    if (Math.abs(ecs.kbx[e]) + Math.abs(ecs.kbz[e]) < 0.05) { ecs.kbx[e] = 0; ecs.kbz[e] = 0; }
-  }
+  knockStep(world, e, dt);
   if (refreshSwimming(world, e)) {
     const limit = ecs.swimStamina[e] <= 0 ? tuning.swim.exhaustedSpeed : tuning.swim.speed * (1 - tuning.swim.loadSlow * ecs.swimLoad[e]);
     const speed = Math.hypot(ecs.vx[e], ecs.vz[e]);

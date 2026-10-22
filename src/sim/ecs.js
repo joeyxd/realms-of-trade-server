@@ -33,6 +33,11 @@ const TATTOO_STATE = [
   'trT0', 'trX', 'trZ', 'trId', 'trF', 'trEnd', 'trT1', 'trX1', 'trZ1', 'trN', 'lpX0', 'lpZ0', 'lpX1', 'lpZ1', 'empT', 'empK',
   'chg', 'whT0', 'whX0', 'whZ0', 'whDx', 'whDz', 'whV', 'whR', 'whRr', 'whMul', 'whF', 'whPh', 'whX', 'whZ', 'whS', 'whTb', 'whId', 'whN', 'whSlot',
 ];
+// PT06 jump (systems/jump.js), all predicted: action code (0 ground, 1 jump, 2 double, 3 triple, 4 freefall, 5-8 landing,
+// 9-12 landing stop), 30 Hz phase (0 first tick of an SM64 frame), vy and forward / sideways air speed (u/s), apex y,
+// double-jump timer and landing frame (SM64 frames), input latch (1 frame armed, 2 jump pressed, 4 jump held), squish
+// timer (frames), steep contact (0 none, 1 touched in this fall, 2 touching now).
+export const JUMP_STATE = ['jmpAct', 'jmpPh', 'jmpVy', 'jmpFwd', 'jmpSide', 'jmpPeak', 'jmpTimer', 'jmpLT', 'jmpA', 'jmpSq', 'jmpSteep'];
 const PEARL_STATE = ['skG', 'fmG', 'rkG', 'cdG', 'gBuf', 'waterT', 'icX', 'icZ', 'icT0', 'icEnd', 'icSeq', 'inkX', 'inkZ', 'inkT0', 'inkEnd', 'inkSeq'];
 
 export class ECS {
@@ -50,6 +55,7 @@ export class ECS {
     this.vx = f(); this.vz = f(); this.speed = f(); this.radius = f(); this.moveMag = f(); this.wade = f();
     this.state = new Uint8Array(cap);
     this.swim = f(); this.swimStamina = f(); this.swimDrown = f(); this.swimLoad = f();
+    for (const k of JUMP_STATE) this[k] = f();
     this.load = f(); // pack load tier on foot (0 comfortable, 1 heavy, 2 above the ceiling), set by the authority
     // SRV01 profile-backed meters and derived stat penalty; bots/non-profile players leave needs disabled.
     this.needs = f(); this.sat = f(); this.hyd = f(); this.needPen = f();
@@ -133,6 +139,7 @@ export class ECS {
     this.state[id] = 0;
     this.swim[id] = this.swimDrown[id] = this.swimLoad[id] = 0; this.swimStamina[id] = tuning.swim.stamina;
     this.load[id] = 0;
+    resetJump(this, id);
     this.needs[id] = this.sat[id] = this.hyd[id] = this.needPen[id] = 0;
     this.dashT[id] = -1;
     this.dashDirX[id] = this.dashDirZ[id] = this.dashCovered[id] = 0;
@@ -190,7 +197,11 @@ export const MOVER_FIELDS = [
   'x', 'y', 'z', 'facing', 'vx', 'vz', 'moveMag', 'wade', 'dashT', 'dashDirX', 'dashDirZ', 'dashCovered',
   'dashCharges', 'dashMax', 'dashRecharge', 'dashBuffer', 'iframes', 'moveMul', 'faceLock', 'kbx', 'kbz',
   'swim', 'swimStamina', 'swimDrown', 'swimLoad', 'load', 'mealKind', 'mealTicks',
+  ...JUMP_STATE,
 ];
+export const resetJump = (ecs, id) => { for (const k of JUMP_STATE) ecs[k][id] = 0; };
+// Airborne in a jump / freefall (jmpAct 1-4): the body integrates its own y.
+export const airborne = (ecs, e) => ecs.jmpAct[e] >= 1 && ecs.jmpAct[e] <= 4;
 // Everything the local player predicts (movement + combat). The server sends these at the acked command.
 export const PLAYER_FIELDS = [
   ...MOVER_FIELDS,
