@@ -3,7 +3,7 @@ import { mkdir, open, readFile, readdir, rename, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { canonicalJson, PREPARATION_SCHEMA, PREPARATION_VERSION } from '../src/editor/publicationArtifact.js';
 import { createGmContentLock } from './gmContentLock.mjs';
-import { TERRAIN_TILES_NOT_READY, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
+import { TILE_MAX_BYTES, decodeTile, encodeTile, isTerrainTilesDocument, validateTileReferences } from '../src/editor/terrainTiles.js';
 
 const MAX_REVISIONS = 100;
 const MAX_BLOB_BYTES = 1024 * 1024 * 1024;
@@ -27,6 +27,33 @@ function safePath(value) {
   return ALLOWED_TOP.has(value) || value.startsWith('assets/') || value.startsWith('src/') ||
     /^server\/gmPublication[^/]*\.mjs$/.test(value) ||
     ['server/gmDraftValidation.mjs', 'server/gmContentObstacles.mjs'].includes(value);
+}
+
+// GM07b2c S7: the terrain of a document v5 revision (gmPublication.mjs builds it): this fixed key set, the
+// document's own tile references, and the sha256 of the compiled heights and weights.
+const TILE_TERRAIN_FORMAT = 'marea.gm.terrain-tiles';
+const TILE_TERRAIN_KEYS = 'format,heightsSha256,materialsSha256,tileSize,tiles,version';
+
+function tileTerrainReferences(content) {
+  const document = content.document, terrain = content.terrain;
+  try {
+    const references = validateTileReferences(document.terrain?.tiles, document.base?.revision);
+    if (isObject(terrain) && Object.keys(terrain).sort().join(',') === TILE_TERRAIN_KEYS && terrain.format === TILE_TERRAIN_FORMAT &&
+        terrain.version === 1 && terrain.tileSize === document.terrain.tileSize && HASH.test(terrain.heightsSha256) &&
+        HASH.test(terrain.materialsSha256) && canonicalJson(terrain.tiles) === canonicalJson(references)) return references;
+  } catch { /* refused below */ }
+  return fail('artifact');
+}
+
+// S8: a retained terrain tile is canonical MNT1 for its reference: it decodes in the domain of the document's base
+// revision, its own key is the reference's key, and encoding the decoded tile gives the same bytes.
+function canonicalTile(body, file) {
+  try {
+    const bytes = new Uint8Array(body.buffer, body.byteOffset, body.byteLength);
+    const tile = decodeTile(bytes, file.baseRevision);
+    if (tile.tx !== file.tx || tile.tz !== file.tz) return false;
+    return Buffer.compare(Buffer.from(encodeTile(tile, file.baseRevision)), Buffer.from(bytes)) === 0;
+  } catch { return false; }
 }
 
 function contained(base, target) {
@@ -155,7 +182,18 @@ export function createGmContentRegistry({ directory, root, worldId, lock = null,
       if (!isObject(item)) fail('artifact');
       add(item.path, item.sha256, item.bytes);
     }
-    return [...files.values()].sort((a, b) => a.path.localeCompare(b.path));
+    const listed = [...files.values()].sort((a, b) => a.path.localeCompare(b.path));
+    // GM07b2c S8: the terrain tiles of a document v5 join the same blobs/<sha256> store and the same budget, with
+    // kind 'terrain-tile' and no release path: their bytes come from the caller at retain, never from the release.
+    if (isTerrainTilesDocument(content.document)) {
+      const baseRevision = content.document.base.revision, tiles = new Map();
+      for (const [tx, tz, digest, size] of tileTerrainReferences(content)) {
+        if (!Number.isSafeInteger(size) || size < 1 || size > TILE_MAX_BYTES) fail('artifact');
+        if (!tiles.has(digest)) tiles.set(digest, { kind: 'terrain-tile', baseRevision, tx, tz, sha256: digest, bytes: size });
+      }
+      listed.push(...tiles.values());
+    }
+    return listed;
   }
 
   function validPreparedWith(value) {
@@ -166,8 +204,6 @@ export function createGmContentRegistry({ directory, root, worldId, lock = null,
   }
 
   function validateRevision(revision) {
-    // GM07b1: no revision of a document v5 (terrain tiles) is retained or loaded until GM07b2.
-    if (isTerrainTilesDocument(revision?.content?.document)) fail(TERRAIN_TILES_NOT_READY);
     const current = revision?.version === PREPARATION_VERSION;
     if (!isObject(revision) || Object.keys(revision).sort().join(',') !==
           (current ? 'content,preparedWith,revisionId,schema,version' : 'content,revisionId,schema,version') ||
@@ -184,19 +220,34 @@ export function createGmContentRegistry({ directory, root, worldId, lock = null,
     try {
       const body = await readFile(path.join(blobDir, file.sha256));
       if (body.length !== file.bytes || hash(body) !== file.sha256) fail('dependency');
+      if (file.kind === 'terrain-tile' && !canonicalTile(body, file)) fail('dependency');
       return body;
     } catch (error) { if (error instanceof GmContentRegistryError) throw error; fail('dependency'); }
   }
 
-  async function loadRevision(id) {
+  // `tiles` (a Map) receives the verified bytes of every terrain tile of the revision, sha256 -> Uint8Array.
+  async function loadRevision(id, tiles = null) {
     if (!HASH.test(id)) fail('revision');
     let revision;
     try { revision = JSON.parse(await readFile(path.join(revisionDir, `${id}.json`), 'utf8')); }
     catch (error) { if (error?.code === 'ENOENT') fail('revision_missing'); fail('revision'); }
     const files = validateRevision(revision);
     if (revision.revisionId !== id) fail('artifact');
-    for (const file of files) await verifyBlob(file);
+    for (const file of files) {
+      const body = await verifyBlob(file);
+      if (tiles && file.kind === 'terrain-tile') tiles.set(file.sha256, new Uint8Array(body));
+    }
     return structuredClone(revision);
+  }
+
+  // S8: the bytes of a missing terrain tile come from the Map the caller passes (the tiles prepare read from the
+  // draft store), checked by length, sha256 and canonical decode before they are written.
+  function tileBytes(file, tiles) {
+    const bytes = tiles instanceof Map ? tiles.get(file.sha256) : undefined;
+    if (!(bytes instanceof Uint8Array) || bytes.length !== file.bytes) fail('dependency');
+    const body = Buffer.from(bytes);
+    if (hash(body) !== file.sha256 || !canonicalTile(body, file)) fail('dependency');
+    return body;
   }
 
   async function prepare() {
@@ -244,7 +295,15 @@ export function createGmContentRegistry({ directory, root, worldId, lock = null,
     return loadRevision(id);
   }
 
-  async function retainUnderLock(revision) {
+  /** GM07b2c: a revision and its terrain tiles (Map sha256 -> bytes, empty unless a document v5), all verified. */
+  async function loadWithTiles(id) {
+    if (!ready) fail('not_ready');
+    const tiles = new Map();
+    const revision = await loadRevision(id, tiles);
+    return { revision, tiles };
+  }
+
+  async function retainUnderLock(revision, tiles = null) {
     if (!ready) fail('not_ready');
     const files = validateRevision(revision);
     const id = revision.revisionId, target = path.join(revisionDir, `${id}.json`);
@@ -280,11 +339,14 @@ export function createGmContentRegistry({ directory, root, worldId, lock = null,
       }
     }
     const missing = [...missingByHash.values()];
+    // Every missing terrain tile is checked against its source before any blob is written: a revision whose tiles
+    // are missing or corrupt leaves nothing behind.
+    const tileBodies = new Map(missing.filter((file) => file.kind === 'terrain-tile').map((file) => [file.sha256, tileBytes(file, tiles)]));
     const addedBytes = missing.reduce((sum, file) => sum + file.bytes, 0);
     const revisionBytes = bytes(revision).length;
     if (used + addedBytes + revisionBytes > MAX_BLOB_BYTES) fail('gm_content_limit');
     for (const file of missing) {
-      const body = await sourceBytes(file.path, file.sha256, file.bytes);
+      const body = file.kind === 'terrain-tile' ? tileBodies.get(file.sha256) : await sourceBytes(file.path, file.sha256, file.bytes);
       const temp = path.join(blobDir, `.tmp-${randomUUID()}`);
       let handle;
       try {
@@ -304,9 +366,10 @@ export function createGmContentRegistry({ directory, root, worldId, lock = null,
     return { revisionId: id, objects: revision.content.document.objects.length, baseChanges: revision.content.document.baseOverrides.length };
   }
 
-  async function retain(revision) {
+  // `tiles` (GM07b2c): Map sha256 -> bytes, the source of the terrain tiles of a document v5 not yet in blobs/.
+  async function retain(revision, { tiles = null } = {}) {
     if (!ready) fail('not_ready');
-    return runLock(() => retainUnderLock(revision));
+    return runLock(() => retainUnderLock(revision, tiles));
   }
 
   async function state() {
@@ -340,6 +403,6 @@ export function createGmContentRegistry({ directory, root, worldId, lock = null,
     return structuredClone(result);
   }
 
-  return { prepare, withLock: (callback) => runLock(callback), list, load, retain, state,
+  return { prepare, withLock: (callback) => runLock(callback), list, load, loadWithTiles, retain, state,
     switch: switchRevision };
 }

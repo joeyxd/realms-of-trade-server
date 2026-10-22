@@ -300,8 +300,7 @@ export class RemoteDraftClient {
     this._checkIdentity();
     const epoch = this.epoch;
     const checked = validateDocument(document);
-    // GM07b2: a document v5 (terrain tiles) is saved online but not prepared until GM07b2c; refused before any request.
-    if (isTerrainTilesDocument(checked)) throw new RemoteDraftError(TERRAIN_TILES_NOT_READY);
+    // GM07b2c: a document v5 is prepared like v2-v4: the server reads its tiles from the draft store (S6).
     if (!this.scope || checked.base.seed !== this.scope.seed || checked.base.revision !== this.scope.baseRevision ||
         !Number.isSafeInteger(expectedRevision) || expectedRevision < 1 || expectedRevision > 2147483647) throw new RemoteDraftError('base');
     this.pending = clone((await this._pendingRecord()).operation);

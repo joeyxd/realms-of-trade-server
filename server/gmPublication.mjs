@@ -1,14 +1,56 @@
 import { createHash } from 'node:crypto';
-import { validateGmPublication } from '../src/editor/publicationValidation.js';
+import { compileTileTerrainForMap, validateGmPublication } from '../src/editor/publicationValidation.js';
 import { gmEditableBaseProps } from '../src/editor/baseIdentity.js';
 import { canonicalJson, PREPARATION_SCHEMA, PREPARATION_VERSION, PUBLICATION_COMPILER_VERSION } from '../src/editor/publicationArtifact.js';
 import { createGmPublicationAssets } from './gmPublicationAssets.mjs';
 import { resourceLayout } from '../src/data/resources.js';
 import { projectGmContent } from '../src/editor/contentProjection.js';
 import { compileAuthoredResources } from '../src/editor/resourceAdapters.js';
-import { TERRAIN_TILES_NOT_READY, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
+import { TERRAIN_SAMPLE_COUNT } from '../src/editor/terrainData.js';
+import { isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
 
 const sha256 = (value) => createHash('sha256').update(canonicalJson(value)).digest('hex');
+const bytesSha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
+export const TERRAIN_TILES_CONTENT_FORMAT = 'marea.gm.terrain-tiles';
+
+/** A terrain problem of a document v5 found while preparing (its tiles break a map rule, or a tile is missing). */
+export class GmTerrainInvalidError extends Error {
+  constructor(reason) {
+    super(`GM terrain invalid: ${reason}`); this.name = 'GmTerrainInvalidError'; this.code = 'gm_terrain_invalid';
+    this.reason = typeof reason === 'string' ? reason : 'terrain';
+  }
+}
+
+// GM07b2c S7: sha256 hex of the compiled heights as bytes, each value a float32 written little-endian
+// (endian-explicit, so the hash does not depend on the platform's byte order).
+function heightsSha256(heights) {
+  if (!heights || heights.length !== TERRAIN_SAMPLE_COUNT) throw new GmTerrainInvalidError('heights');
+  const bytes = Buffer.allocUnsafe(heights.length * 4);
+  for (let k = 0; k < heights.length; k++) bytes.writeFloatLE(heights[k], k * 4);
+  return bytesSha256(bytes);
+}
+
+// GM07b2c S7: sha256 hex of the compiled weight bytes exactly as compileTerrainTiles returns them, the grid at
+// map.terrain.weights: a Uint8Array of 561 x 561 x 4, vertex k = j * 561 + i (x = i - 280, z = j - 280), four u8
+// weights per vertex in material id order 1..4 (grass, dirt, sand, rock). Bytes, so no byte order applies.
+function materialsSha256(weights) {
+  if (!(weights instanceof Uint8Array) || weights.length !== TERRAIN_SAMPLE_COUNT * 4) throw new GmTerrainInvalidError('weights');
+  return bytesSha256(weights);
+}
+
+// S6: every referenced tile is present in `tiles` and hashes to its reference; then the terrain compiles and passes
+// the whole-map rules. Any failure is a GmTerrainInvalidError naming the terrain code.
+function checkTileTerrain(map, document, baseRevision, tiles) {
+  if (!(tiles instanceof Map)) throw new GmTerrainInvalidError('tile_blobs');
+  for (const [, , hash, size] of document.terrain.tiles) {
+    const bytes = tiles.get(hash);
+    if (!(bytes instanceof Uint8Array)) throw new GmTerrainInvalidError('tile_missing');
+    if (bytes.length !== size) throw new GmTerrainInvalidError('tile_length');
+    if (bytesSha256(bytes) !== hash) throw new GmTerrainInvalidError('tile_hash');
+  }
+  try { compileTileTerrainForMap(map, document, baseRevision, tiles); }
+  catch (error) { throw new GmTerrainInvalidError(error?.code); }
+}
 
 /** Read-only preparation from a confirmed draft. No gameplay or content pointer is written. */
 export function createGmPublicationService({ root, runtimeRoot = root, map, baseRevision, worldId, validateReferences, gameVersion, protocolVersion }) {
@@ -22,16 +64,23 @@ export function createGmPublicationService({ root, runtimeRoot = root, map, base
       ready = true;
     },
     // New preparations are schema 2. version 1 only rebuilds a retained schema 1 revision for its compatibility check.
-    async build({ document, draftRevision, version = PREPARATION_VERSION }) {
-      // GM07b1: a document v5 (terrain tiles) is not prepared until GM07b2 retains its tiles.
-      if (isTerrainTilesDocument(document)) throw Object.assign(new Error(TERRAIN_TILES_NOT_READY), { code: TERRAIN_TILES_NOT_READY });
+    // A document v5 (terrain tiles, GM07b2c) needs `tiles`: a Map sha256 -> MNT1 bytes with every tile it references
+    // (from the draft store at prepare, from the registry on activation and in the updater check).
+    async build({ document, draftRevision, version = PREPARATION_VERSION, tiles = null }) {
       if (!ready) throw new Error('preparation_unavailable');
       if (![1, PREPARATION_VERSION].includes(version)) throw new Error('preparation_version');
       const checked = validateReferences(document);
-      const { colliders, ...report } = validateGmPublication({ map, document: checked, baseRevision });
+      const tiled = isTerrainTilesDocument(checked);
+      if (tiled && version !== PREPARATION_VERSION) throw new Error('preparation_version');
+      // Draft saves skip the terrain of a v5 (S3): its whole-map rules run here, before any other check.
+      if (tiled) checkTileTerrain(map, checked, baseRevision, tiles);
+      const { colliders, ...report } = validateGmPublication({ map, document: checked, baseRevision, ...(tiled ? { tiles } : {}) });
       if (!report.valid) return { report, revision: null };
-      const projected = checked.terrain ? projectGmContent(map, checked, baseRevision) : null;
-      const authoredResources = compileAuthoredResources(projected || map, checked);
+      const projected = checked.terrain ? projectGmContent(map, checked, baseRevision, tiled ? { tiles } : undefined) : null;
+      // A v5 takes the resources its projection compiled on the compiled terrain, which is what the server installs and
+      // the client hashes. v3/v4 keep their call on the projected map unchanged; that map already holds the authored
+      // resources, so an authored resource protects its own site there.
+      const authoredResources = tiled ? projected.gmResources : compileAuthoredResources(projected || map, checked);
       const coastal = new Set(gmEditableBaseProps(map, baseRevision).filter((entry) => entry.coastal).map((entry) => entry.id));
       const usesCoast = checked.baseOverrides.some((item) => coastal.has(item.id)) || checked.objects.some((item) => coastal.has(item.assetId));
       const assets = await dependencies.resolve(checked, usesCoast ? ['model:coast-rock-v1'] : []);
@@ -50,7 +99,11 @@ export function createGmPublicationService({ root, runtimeRoot = root, map, base
         baselineAssets: current ? baselineAssets.filter((asset) => used.has(asset.id)) : baselineAssets,
         collision: { count: colliders.length, sha256: sha256(colliders) }, validation: report };
       if (authoredResources.length) content.resources = { count: authoredResources.length, sha256: sha256(authoredResources) };
-      if (projected) content.terrain = { gridSize: 561, sha256: sha256(Array.from(projected.heights)),
+      // S7: a v5 names its tiles and hashes its compiled bytes, with this fixed key set; v3/v4 keep their rule.
+      if (projected && tiled) content.terrain = { format: TERRAIN_TILES_CONTENT_FORMAT, version: 1, tileSize: checked.terrain.tileSize,
+        tiles: structuredClone(checked.terrain.tiles), heightsSha256: heightsSha256(projected.heights),
+        materialsSha256: materialsSha256(projected.terrain?.weights) };
+      else if (projected) content.terrain = { gridSize: 561, sha256: sha256(Array.from(projected.heights)),
         ...(checked.terrain.version === 2 ? { materialsSha256: sha256(checked.terrain.materials) } : {}) };
       const revision = { schema: PREPARATION_SCHEMA, version, revisionId: sha256(content), content };
       if (current) revision.preparedWith = { gameVersion, protocolVersion, runtime: dependencies.runtime, baselineAssets };

@@ -9,6 +9,7 @@ import { generateWorld } from '../src/sim/worldgen.js';
 import { GAME } from '../src/data/meta.js';
 import { PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { sameRevisionIdentity } from '../src/editor/publicationArtifact.js';
+import { isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
 
 // The options after root exist so tests can stand for another release; the CLI passes none of them.
 export async function checkGmContentRelease({ directory, root, gameVersion = GAME.version, protocolVersion = PROTOCOL_VERSION,
@@ -18,7 +19,9 @@ export async function checkGmContentRelease({ directory, root, gameVersion = GAM
   await registry.prepare();
   const current = await registry.state();
   if (current.revisionId === null) return true;
-  const revision = await registry.load(current.revisionId), baseRevision = 'terrain-s21-v1';
+  // GM07b2c S11: a document v5 rebuilds from the terrain tiles retained in this registry directory (blobs/<sha256>,
+  // each verified by hash and canonical decode); no draft store and no network.
+  const { revision, tiles } = await registry.loadWithTiles(current.revisionId), baseRevision = 'terrain-s21-v1';
   const map = generateWorld(GAME.seed);
   const validateReferences = createGmDraftValidator({ map, baseRevision,
     manifest: JSON.parse(await fs.readFile(path.join(root, 'assets/manifest.json'), 'utf8')),
@@ -28,7 +31,7 @@ export async function checkGmContentRelease({ directory, root, gameVersion = GAM
   await publication.prepare();
   // Schema 2: same id and same derived hashes, whatever release prepared it. Schema 1: same id, so same runtime.
   const built = await publication.build({ document: revision.content.document, draftRevision: revision.content.sourceRevision,
-    version: revision.version });
+    version: revision.version, ...(isTerrainTilesDocument(revision.content.document) ? { tiles } : {}) });
   if (built.revision?.revisionId !== revision.revisionId || !sameRevisionIdentity(revision, built.revision)) throw new Error('content_incompatible');
   return true;
 }

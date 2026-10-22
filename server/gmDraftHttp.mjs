@@ -126,6 +126,18 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
     try { return (await bounded(store.checkGmTerrainTiles(), timeoutMs))?.version === 1; } catch { return false; }
   };
   const tileStore = () => typeof store.putTerrainTiles === 'function' && typeof store.getTerrainTiles === 'function';
+  // S6: the tiles of a document v5 from the store, at most MAX_TILE_BATCH hashes per call, into one Map sha256 -> bytes
+  // (absent hashes stay absent; the caller answers tiles_missing).
+  const readDocumentTiles = async (document) => {
+    const hashes = [...new Set(document.terrain.tiles.map((reference) => reference[2]))], tiles = new Map();
+    for (let start = 0; start < hashes.length; start += MAX_TILE_BATCH) {
+      const batch = hashes.slice(start, start + MAX_TILE_BATCH);
+      const found = await bounded(store.getTerrainTiles({ world: worldId, hashes: batch }), timeoutMs);
+      if (!(found instanceof Map)) throw new Error('response');
+      for (const hash of batch) if (found.get(hash) instanceof Uint8Array) tiles.set(hash, found.get(hash));
+    }
+    return tiles;
+  };
   const failed = (error) => {
     const code = typeof error?.code === 'string' ? error.code : null;
     return { status: code === 'size' ? 413 : code === 'timeout' ? 408 : 400, body: { ok: false,
@@ -273,22 +285,39 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
           let buildStarted = false;
           try {
             const head = checkedHead(await bounded(store.loadGmDraft({ world: worldId, owner: accountId }), timeoutMs));
-            // GM07b1: a document v5 (terrain tiles) is not prepared until GM07b2.
-            if (isTerrainTilesDocument(head?.document)) { send(res, 400, { ok: false, code: TERRAIN_TILES_NOT_READY }); return true; }
             if (!head?.document || head.revision !== input.expectedRevision) {
               send(res, 409, { ok: false, code: 'gm_draft_conflict', revision: head?.revision ?? 0 }); return true;
             }
             let document;
             try { document = validateReferences(head.document); }
             catch { send(res, 400, { ok: false, code: 'document' }); return true; }
+            // GM07b2c S6: a document v5 is built from its tiles, read from the store once (at most 64 per call) into
+            // one Map that the build compiles and the registry retains; nothing reads them again in this request.
+            let tiles = null;
+            if (isTerrainTilesDocument(document)) {
+              if (!tileStore()) { send(res, 503, unavailable()); return true; }
+              if (!await tilesReady()) { send(res, 503, notReady()); return true; }
+              tiles = await readDocumentTiles(document);
+              const missing = document.terrain.tiles.map((reference) => reference[2]).filter((hash) => !tiles.has(hash));
+              if (missing.length > 0) {
+                send(res, 409, { ok: false, code: 'tiles_missing', why: 'tiles_missing', missing }); return true;
+              }
+            }
             if (controller.signal.aborted || req.aborted) return true;
             // Keep exclusion until the build actually finishes, including after HTTP timeout.
             buildStarted = true;
-            const building = Promise.resolve().then(() => publication.build({ document, draftRevision: head.revision }));
+            const building = Promise.resolve().then(() => publication.build({ document, draftRevision: head.revision,
+              ...(tiles ? { tiles } : {}) }));
             building.finally(() => { preparing = false; }).catch(() => {});
             let preparation;
             try { preparation = await bounded(building, timeoutMs); }
-            catch { send(res, 503, { ok: false, code: 'gm_preparation_unavailable' }); return true; }
+            catch (error) {
+              // The whole-map terrain rules of a v5 run here (draft saves check each tile alone): a refusal names the rule.
+              if (error?.code === 'gm_terrain_invalid') {
+                send(res, 400, { ok: false, code: 'document', reason: typeof error.reason === 'string' ? error.reason : 'terrain' });
+              } else send(res, 503, { ok: false, code: 'gm_preparation_unavailable' });
+              return true;
+            }
             if (controller.signal.aborted || req.aborted) return true;
             const current = checkedHead(await bounded(store.loadGmDraft({ world: worldId, owner: accountId }), timeoutMs));
             if (current?.revision !== head.revision) {
@@ -298,7 +327,8 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
               if (preparation.revision?.revisionId !== input.revisionId) {
                 send(res, 409, { ok: false, code: 'gm_content_changed' }); return true;
               }
-              send(res, 200, { ok: true, ...await content.register(preparation.revision) }); return true;
+              const registered = tiles ? await content.register(preparation.revision, { tiles }) : await content.register(preparation.revision);
+              send(res, 200, { ok: true, ...registered }); return true;
             }
             send(res, 200, { ok: true, durable: store.durable === true, scope, headRevision: head.revision, preparation });
           } finally { if (!buildStarted) preparing = false; }

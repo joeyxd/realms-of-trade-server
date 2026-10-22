@@ -2,8 +2,8 @@ import { validateDocument } from './document.js';
 import { gmEditableBaseProps } from './baseIdentity.js';
 import { resourceLayout } from '../data/resources.js';
 import { freshwaterSource } from '../data/freshwater.js';
-import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
-import { isTerrainTilesDocument, terrainTilesNotReady } from './terrainTiles.js';
+import { compileTerrainMap, validateTerrainForMap, validateTerrainGridForMap } from './terrainData.js';
+import { compileTerrainTiles, isTerrainTilesDocument } from './terrainTiles.js';
 import { resourceDescriptor, validateAuthoredResources } from './resourceAdapters.js';
 
 const MAX_REPORTED_ISSUES = 200;
@@ -32,9 +32,21 @@ function colliderIndex(map, prop) {
   return matches.length === 1 ? matches[0] : null;
 }
 
-function resolve(map, document, baseRevision) {
-  // GM07b1: a document v5 (terrain tiles) is not publishable until GM07b2.
-  if (isTerrainTilesDocument(document)) throw terrainTilesNotReady();
+/**
+ * GM07b2c: the terrain of a document v5 over a base map. `tiles` is a Map sha256 -> MNT1 bytes holding every tile the
+ * document references (tilesToGrid refuses a missing blob, a wrong length or a blob whose own key differs from its
+ * reference). Compiles with compileTerrainTiles, then checks the GM05 and D4 map rules on the whole compiled grid
+ * (validateTerrainGridForMap without dirty tiles, the check validateTerrainTilesForMap runs). Throws the terrain code.
+ */
+export function compileTileTerrainForMap(map, document, baseRevision, tiles) {
+  const compiled = compileTerrainTiles(map, { tiles: document.terrain.tiles, blobs: tiles }, baseRevision);
+  validateTerrainGridForMap(map, compiled.terrain);
+  return compiled;
+}
+
+// `tiles` is used by a document v5 only; without it (null) the terrain of a v5 is not compiled, which only the
+// collision compile may ask for (colliders never depend on terrain).
+function resolve(map, document, baseRevision, tiles = null) {
   if (!map || !Array.isArray(map.props) || !Array.isArray(map.colliders) ||
       !Number.isSafeInteger(map.seed) || typeof map.groundAt !== 'function') {
     throw new TypeError('A generated map with props, colliders, seed, and groundAt is required');
@@ -44,7 +56,8 @@ function resolve(map, document, baseRevision) {
     const error = new TypeError('GM publication base does not match the generated map');
     error.code = 'base_mismatch'; throw error;
   }
-  const terrainMap = doc.terrain ? (validateTerrainForMap(map, doc.terrain), compileTerrainMap(map, doc.terrain)) : map;
+  const terrainMap = isTerrainTilesDocument(doc) ? (tiles === null ? map : compileTileTerrainForMap(map, doc, baseRevision, tiles))
+    : doc.terrain ? (validateTerrainForMap(map, doc.terrain), compileTerrainMap(map, doc.terrain)) : map;
   const editable = gmEditableBaseProps(map, baseRevision);
   const byId = new Map(editable.map((entry) => [entry.id, entry]));
   for (const item of doc.baseOverrides) if (!byId.has(item.id)) {
@@ -105,9 +118,15 @@ function anchorList(map) {
   return anchors;
 }
 
-/** Return bounded, deterministic warnings/errors for the conservative v1 publication policy. */
-export function validateGmPublication({ map, document, baseRevision } = {}) {
-  const { doc, byId, terrainMap } = resolve(map, document, baseRevision);
+/**
+ * Return bounded, deterministic warnings/errors for the conservative v1 publication policy. A document v5 needs
+ * `tiles` (Map sha256 -> MNT1 bytes): its terrain is compiled and checked before any object or resource rule.
+ */
+export function validateGmPublication({ map, document, baseRevision, tiles = null } = {}) {
+  if (isTerrainTilesDocument(document) && !(tiles instanceof Map)) {
+    throw Object.assign(new TypeError('A document v5 needs its terrain tiles'), { code: 'tile_blobs' });
+  }
+  const { doc, byId, terrainMap } = resolve(map, document, baseRevision, tiles);
   const issues = [], counts = { errors: 0, warnings: 0 };
   const issue = (severity, code, objectId, anchorId) => {
     counts[severity === 'error' ? 'errors' : 'warnings']++;

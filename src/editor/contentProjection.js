@@ -1,6 +1,6 @@
-import { compileGmColliders } from './publicationValidation.js';
+import { compileGmColliders, compileTileTerrainForMap } from './publicationValidation.js';
 import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
-import { isTerrainTilesDocument, terrainTilesNotReady } from './terrainTiles.js';
+import { isTerrainTilesDocument } from './terrainTiles.js';
 import { resourceLayout } from '../data/resources.js';
 import { compileAuthoredResources } from './resourceAdapters.js';
 
@@ -52,16 +52,25 @@ function immutableBase(map) {
   return source;
 }
 
-/** Build an immutable-by-convention content projection while preserving all base map data and functions. */
-export function projectGmContent(baseMap, document = null, baseRevision = 'terrain-s21-v1') {
-  // GM07b1: a document v5 (terrain tiles) has no loader until GM07b2.
-  if (isTerrainTilesDocument(document)) throw terrainTilesNotReady();
+/**
+ * Build an immutable-by-convention content projection while preserving all base map data and functions.
+ * A document v5 (terrain tiles, GM07b2c) needs `tiles`, a Map sha256 -> MNT1 bytes with every tile it references;
+ * its terrain compiles with compileTerrainTiles and passes the whole-map rules (compileTileTerrainForMap).
+ */
+export function projectGmContent(baseMap, document = null, baseRevision = 'terrain-s21-v1', { tiles = null } = {}) {
   assertBase(baseMap, baseRevision);
   baseMap = immutableBase(baseMap);
-  if (document?.terrain) validateTerrainForMap(baseMap, document.terrain);
-  let terrainMap = document?.terrain ? compileTerrainMap(baseMap, document.terrain) : baseMap;
-  if (document?.terrain?.samples?.length || document?.terrain?.materials?.length) {
-    terrainMap = { ...terrainMap, terrainResources: resourceLayout(baseMap) };
+  let terrainMap;
+  if (isTerrainTilesDocument(document)) {
+    terrainMap = compileTileTerrainForMap(baseMap, document, baseRevision, tiles);
+    // A v5 has a tile exactly where a v3/v4 has a sample or a paint weight, so this matches the rule below.
+    if (document.terrain.tiles.length) terrainMap = { ...terrainMap, terrainResources: resourceLayout(baseMap) };
+  } else {
+    if (document?.terrain) validateTerrainForMap(baseMap, document.terrain);
+    terrainMap = document?.terrain ? compileTerrainMap(baseMap, document.terrain) : baseMap;
+    if (document?.terrain?.samples?.length || document?.terrain?.materials?.length) {
+      terrainMap = { ...terrainMap, terrainResources: resourceLayout(baseMap) };
+    }
   }
   const colliders = document === null ? baseMap.colliders.map((c) => structuredClone(c))
     : compileGmColliders(baseMap, document, baseRevision);
@@ -69,11 +78,13 @@ export function projectGmContent(baseMap, document = null, baseRevision = 'terra
   return { ...terrainMap, gmResources, colliders, queryColliders: colliderQuery(colliders), terrainMap };
 }
 
-/** Replace the terrain sampling surface and collision list on a caller-owned active map. */
-export function installGmContent(map, baseMap, document = null, baseRevision = 'terrain-s21-v1') {
-  if (isTerrainTilesDocument(document)) throw terrainTilesNotReady();
+/**
+ * Replace the terrain sampling surface and collision list on a caller-owned active map. A document v5 needs
+ * `{ tiles }` as projectGmContent; the map is untouched when the projection fails.
+ */
+export function installGmContent(map, baseMap, document = null, baseRevision = 'terrain-s21-v1', { tiles = null } = {}) {
   if (!map || typeof map !== 'object') throw new TypeError('An active map is required');
-  const projected = projectGmContent(baseMap, document, baseRevision);
+  const projected = projectGmContent(baseMap, document, baseRevision, { tiles });
   map.heights = projected.heights;
   map.heightAt = projected.heightAt;
   map.groundAt = projected.groundAt;

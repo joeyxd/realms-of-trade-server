@@ -25,7 +25,7 @@ import { createGmDraftValidator } from '../server/gmDraftValidation.mjs';
 import { createGmPublicationService } from '../server/gmPublication.mjs';
 import { createMemoryGmDraftMethods } from '../server/gmDraftStore.mjs';
 import { createGmContentRegistry } from '../server/gmContentRegistry.mjs';
-import { PREPARATION_SCHEMA, PREPARATION_VERSION } from '../src/editor/publicationArtifact.js';
+import { canonicalJson, PREPARATION_SCHEMA, PREPARATION_VERSION } from '../src/editor/publicationArtifact.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BASE = 'terrain-s21-v1';
@@ -471,11 +471,17 @@ const OPERATION = '20000000-0000-4000-8000-000000000001';
 const tilesDocument = (seed = 42) => createDocument({ seed, baseRevision: BASE, terrain: { version: 3, tileSize: 70, tiles: [] } });
 
 function draftHandler(head) {
-  const calls = { validate: 0, save: 0, build: 0 };
-  const store = { durable: true, async checkGmDrafts() { return { version: 1 }; },
+  const calls = { validate: 0, save: 0, build: 0, tiles: null };
+  const store = { durable: true, async checkGmDrafts() { return { version: 1 }; }, async checkGmTerrainTiles() { return { version: 1 }; },
     async loadGmDraft() { return head ?? { revision: 0, document: null, savedAt: null }; },
-    async saveGmDraft() { calls.save++; throw new Error('a document v5 must not reach the store'); } };
-  const publication = { async prepare() {}, async build() { calls.build++; throw new Error('a document v5 must not be built'); } };
+    async saveGmDraft() { calls.save++; throw new Error('a document v5 must not reach the store'); },
+    async putTerrainTiles() { throw new Error('prepare stores no tile'); }, async getTerrainTiles() { return new Map(); } };
+  // GM07b2c: the build receives the tiles prepare read (none for a document without tiles); a report without revision.
+  const publication = { async prepare() {}, async build({ tiles }) {
+    calls.build++; calls.tiles = tiles;
+    return { report: { valid: false, issues: [{ severity: 'error', code: 'stub' }],
+      summary: { edits: 0, errors: 1, warnings: 0, totalIssues: 1, omittedIssues: 0 } }, revision: null };
+  } };
   const handler = createGmDraftHandler({ store, resolvePlayer: async (_req, { token }) => token === 'gm' ? GM : null,
     accountIds: [GM], worldId: 'tiles-world', seed: 42, baseRevision: BASE, publication,
     validateReferences: (value) => { calls.validate++; return value; } });
@@ -491,7 +497,7 @@ async function serve(handler, run) {
   finally { await new Promise((resolve) => server.close(resolve)); }
 }
 
-test('draft HTTP saves a document v5 (GM07b2b) while its prepare still answers terrain_tiles_not_ready', async () => {
+test('draft HTTP saves a document v5 (GM07b2b) and prepares it with its tiles (GM07b2c)', async () => {
   const headers = { authorization: 'Bearer gm', 'content-type': 'application/json' };
   // GM07b2b: the save reaches the validator and the store; tiles and tiles_missing: tests/gm-terrain-tiles-http.test.mjs.
   let validated = 0;
@@ -513,16 +519,20 @@ test('draft HTTP saves a document v5 (GM07b2b) while its prepare still answers t
   assert.equal(await preparing.handler.prepare(), true);
   await serve(preparing.handler, async (url) => {
     const response = await fetch(`${url}/api/gm/prepare`, { method: 'POST', headers, body: JSON.stringify({ expectedRevision: 1 }) });
-    assert.equal(response.status, 400);
-    assert.deepEqual(await response.json(), { ok: false, code: TERRAIN_TILES_NOT_READY });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).preparation.revision, null);
   });
-  assert.deepEqual(preparing.calls, { validate: 0, save: 0, build: 0 });
+  assert.deepEqual(preparing.calls, { validate: 1, save: 0, build: 1, tiles: new Map() });
 
   const validate = createGmDraftValidator({ map, baseRevision: BASE, manifest: [], editorCatalog: [] });
   assert.deepEqual(validate(tilesDocument(map.seed)), tilesDocument(map.seed));
   const publication = createGmPublicationService({ root: ROOT, map, baseRevision: BASE, worldId: 'tiles-world',
-    validateReferences: () => { throw new Error('a document v5 must not be validated'); }, gameVersion: 'test', protocolVersion: 1 });
-  await assert.rejects(publication.build({ document: tilesDocument(map.seed), draftRevision: 1 }), notReady);
+    validateReferences: (value) => value, gameVersion: 'test', protocolVersion: 1 });
+  await publication.prepare();
+  // GM07b2c: a v5 is built from its tile bytes (tests/gm-terrain-tiles-publication.test.mjs); without them it refuses.
+  await assert.rejects(publication.build({ document: tilesDocument(map.seed), draftRevision: 1 }),
+    { code: 'gm_terrain_invalid', reason: 'tile_blobs' });
+  assert.equal((await publication.build({ document: tilesDocument(map.seed), draftRevision: 1, tiles: new Map() })).report.valid, true);
   // GM07b2a: the store itself holds a document v5 (tile references; tiles in its tile store).
   const store = createMemoryGmDraftMethods();
   const stored = await store.saveGmDraft({ world: 'tiles-world', owner: GM, operationId: OPERATION, expectedRevision: 0,
@@ -531,12 +541,18 @@ test('draft HTTP saves a document v5 (GM07b2b) while its prepare still answers t
   assert.deepEqual(stored.head.document, tilesDocument());
 });
 
-test('player install, publication validation, world content load and the registry refuse a document v5', async () => {
+test('world content load refuses a document v5; projection, install and validation need its tiles; the registry its terrain', async () => {
   const document = tilesDocument(map.seed), active = { untouched: true };
-  assert.throws(() => projectGmContent(map, document, BASE), notReady);
-  assert.throws(() => installGmContent(active, map, document, BASE), notReady);
+  // GM07b2c: a document v5 projects, installs and validates from its tile bytes; without them it refuses, untouched.
+  assert.throws(() => projectGmContent(map, document, BASE), coded('tile_blobs'));
+  assert.throws(() => installGmContent(active, map, document, BASE), coded('tile_blobs'));
   assert.deepEqual(active, { untouched: true });
-  assert.throws(() => validateGmPublication({ map, document, baseRevision: BASE }), notReady);
+  assert.throws(() => validateGmPublication({ map, document, baseRevision: BASE }), coded('tile_blobs'));
+  const projected = projectGmContent(map, document, BASE, { tiles: new Map() });
+  assert.equal(projected.heights, map.heights);
+  assert.equal(projected.gmTerrain, false);
+  assert.equal(validateGmPublication({ map, document, baseRevision: BASE, tiles: new Map() }).valid, true);
+  // The player load (GM07b2d) still refuses it.
   const revisionId = 'a'.repeat(64);
   const body = { ok: true, generation: 1, revisionId, revision: { revisionId, version: PREPARATION_VERSION, content: { document } } };
   await assert.rejects(loadGmWorldContent({ httpBase: 'http://localhost/', map: {}, baseMap: map, gameVersion: 'test', protocolVersion: 1,
@@ -546,8 +562,10 @@ test('player install, publication validation, world content load and the registr
     const registry = createGmContentRegistry({ directory, root: ROOT, worldId: 'tiles-world',
       lock: { async run(callback) { return callback({ assertHeld() {} }); } } });
     await registry.prepare();
-    await assert.rejects(registry.retain({ schema: PREPARATION_SCHEMA, version: 1, revisionId,
-      content: { worldId: 'tiles-world', document, assets: [], baselineAssets: [], runtime: { files: [] } } }), notReady);
+    // GM07b2c: a v5 revision without the S7 terrain contract is no artifact, even with its own content hash.
+    const content = { worldId: 'tiles-world', document, assets: [], baselineAssets: [], runtime: { files: [] } };
+    await assert.rejects(registry.retain({ schema: PREPARATION_SCHEMA, version: 1,
+      revisionId: createHash('sha256').update(canonicalJson(content)).digest('hex'), content }), coded('artifact'));
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
 

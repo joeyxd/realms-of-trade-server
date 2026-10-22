@@ -1,6 +1,6 @@
 // GM07b2b: draft terrain tiles over HTTP. POST /api/gm/terrain-tiles (frames of u32 LE length + MNT1 bytes, every
 // tile checked against the map rules of the base revision), POST /api/gm/terrain-tiles/read, v5 save with
-// tiles_missing and the same operation id after the upload, v5 load, prepare still refused, the readiness gate
+// tiles_missing and the same operation id after the upload, v5 load, v5 prepare with its stored tiles (GM07b2c), the readiness gate
 // terrain_tiles_not_ready (v5 only) and the /status flag gmTerrainTiles.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -84,7 +84,7 @@ const tilesDocument = (tiles) => createDocument({ seed: map.seed, baseRevision: 
 const referenceOf = (bytes) => { const { tx, tz } = decodeTile(bytes, BASE); return { tx, tz, bytes }; };
 
 function fixture({ ready = true } = {}) {
-  const memory = createMemoryGmDraftMethods(), calls = { put: 0, get: 0, save: 0 };
+  const memory = createMemoryGmDraftMethods(), calls = { put: 0, get: 0, save: 0 }, builds = [];
   const store = { durable: true, ...memory,
     async checkGmTerrainTiles() { if (!store.tilesReady) throw new Error('SQL042 absent'); return { version: 1 }; },
     async putTerrainTiles(input) { calls.put++; return memory.putTerrainTiles(input); },
@@ -95,8 +95,13 @@ function fixture({ ready = true } = {}) {
     accountIds: [GM], worldId: WORLD, seed: map.seed, baseRevision: BASE,
     validateReferences: createGmDraftValidator({ map, baseRevision: BASE, manifest: [], editorCatalog: [] }),
     validateTile: createGmTerrainTileValidator({ map, baseRevision: BASE }),
-    publication: { async prepare() {}, async build() { throw new Error('a document v5 must not be built'); } } });
-  return { handler, store, memory, calls };
+    // GM07b2c: the build gets the tiles prepare read from the store; this stub answers a report without revision.
+    publication: { async prepare() {}, async build(input) {
+      builds.push(input);
+      return { report: { valid: false, issues: [{ severity: 'error', code: 'stub' }],
+        summary: { edits: 0, errors: 1, warnings: 0, totalIssues: 1, omittedIssues: 0 } }, revision: null };
+    } } });
+  return { handler, store, memory, calls, builds };
 }
 
 async function serve(handler, run) {
@@ -235,8 +240,8 @@ test('read answers frames in request order and 404 tiles_missing with the list; 
   assert.equal(await stored(rate.memory, [tileB]), 0);
 });
 
-test('v5 save answers 409 tiles_missing, then the same operation id saves after the upload; load returns it; prepare stays refused', async () => {
-  const { handler, calls } = fixture();
+test('v5 save answers 409 tiles_missing, then the same operation id saves after the upload; load returns it; prepare reads its tiles', async () => {
+  const { handler, calls, builds } = fixture();
   assert.equal(await handler.prepare(), true);
   const document = tilesDocument([referenceOf(tileC)]);
   await serve(handler, async (url) => {
@@ -259,9 +264,14 @@ test('v5 save answers 409 tiles_missing, then the same operation id saves after 
     assert.equal(head.revision, 1);
     assert.deepEqual(head.document, document);
 
+    const reads = calls.get;
     const prepare = await fetch(`${url}/api/gm/prepare`, { method: 'POST', headers: json(), body: JSON.stringify({ expectedRevision: 1 }) });
-    assert.equal(prepare.status, 400);
-    assert.deepEqual(await prepare.json(), { ok: false, code: TERRAIN_TILES_NOT_READY });
+    assert.equal(prepare.status, 200);
+    assert.equal((await prepare.json()).preparation.revision, null);
+    assert.equal(calls.get, reads + 1, 'one store read for the tiles');
+    assert.equal(builds.length, 1);
+    assert.deepEqual([...builds[0].tiles.keys()], [sha(tileC)]);
+    assert.equal(Buffer.compare(Buffer.from(builds[0].tiles.get(sha(tileC))), Buffer.from(tileC)), 0);
 
     // The structure is still checked: a tile reference outside the map is no document.
     const bad = structuredClone(document); bad.terrain.tiles[0][0] = 9;

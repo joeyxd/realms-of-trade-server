@@ -10,7 +10,7 @@ import { generateWorld } from '../src/sim/worldgen.js';
 import { GAME } from '../src/data/meta.js';
 import { createDecoration, createDocument, createDocumentHistory, validateDocument } from '../src/editor/document.js';
 import { compileTerrainMap, terrainEditableMask, TERRAIN_GRID_SIZE } from '../src/editor/terrainData.js';
-import { convertDocumentToV5, gridToTiles, TERRAIN_TILES_NOT_READY } from '../src/editor/terrainTiles.js';
+import { convertDocumentToV5, gridToTiles } from '../src/editor/terrainTiles.js';
 import { sculptTerrainDocument, sculptTerrainGrid } from '../src/editor/terrainSculpt.js';
 import { paintTerrainDocument } from '../src/editor/terrainPaint.js';
 import { TerrainSession, openTerrainDocument, tileReferences } from '../src/editor/terrainSession.js';
@@ -582,9 +582,9 @@ test('the editor refuses an import with a missing tile and keeps its current dra
   assert.deepEqual(await store.load(), { revision: 0, document: null });
 });
 
-// --- Online: prepare not yet ---
+// --- Online: prepare (GM07b2c) ---
 
-test('online prepare of a document v5 refuses with terrain_tiles_not_ready and a save without its tiles refuses, before any request', async () => {
+test('online prepare of a document v5 is sent (GM07b2c) while a save without its tiles refuses before any request', async () => {
   const GM = '10000000-0000-4000-8000-000000000001';
   let requests = 0;
   const source = { value: null, async read() { return structuredClone(this.value); },
@@ -596,9 +596,11 @@ test('online prepare of a document v5 refuses with terrain_tiles_not_ready and a
   client.scope = { worldId: 'marea-negra', seed: map.seed, baseRevision: BASE };
   // GM07b2b: a v5 is saved online with every tile it references; without them nothing is sent or recorded.
   await assert.rejects(client.save(document, 0), coded('local_tile_missing'));
-  await assert.rejects(client.prepareRevision(1, document), coded(TERRAIN_TILES_NOT_READY));
   assert.equal(requests, 0);
   assert.equal(source.value, null, 'no pending attempt is recorded');
+  // The server reads the tiles of a v5 head from its draft store: the client sends the prepare (here it fails).
+  await assert.rejects(client.prepareRevision(1, document), coded('unavailable'));
+  assert.equal(requests, 1);
 });
 
 // --- Object range ---
