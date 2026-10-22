@@ -1,5 +1,6 @@
 import { onLocaleChange } from '../core/locale.js';
 import { mapAtlas } from '../ui/mapCanvas.js';
+import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
 
 const labels = {
   title: ['Terrain brushes', 'Pinceles de terreno'],
@@ -97,7 +98,7 @@ export class TerrainPanel {
     const mapLabel = doc.createElement('h4'); mapLabel.textContent = this.t('map');
     this.element.replaceChildren(title, selectLabel, this._control('radius', this._input('radius', 2, 24, 0.5)),
       this._control('strength', this._input('strength', 0.05, 1, 0.05)), this._control('falloff', this._input('falloff', 0, 1, 0.05)),
-      this._control('level', this._input('level', 0.75, 100, 0.1)),
+      this._control('level', this._input('level', TERRAIN_MIN_HEIGHT, TERRAIN_GRID_MAX_HEIGHT, 0.1)),
       this._control('material', this._select('material', ['grass', 'dirt', 'sand', 'rock'])),
       this._control('shape', this._select('shape', ['circle', 'square', 'ellipse'])),
       this._control('aspect', this._input('aspect', 0.25, 1, 0.05)), this._control('rotation', this._input('rotation', 0, 360, 5)),

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createEditorTransformControls } from './transformControls.js';
-import { addDecoration, createDecoration, createDocument, createDocumentHistory, updateDecoration, validateDocument, setBaseOverride, removeBaseOverride } from './document.js';
-import { DraftStore, DRAFT_EXPORT_FORMAT, DRAFT_EXPORT_VERSION, MAX_DRAFT_EXPORT_BYTES } from './draftStore.js';
+import { addDecoration, createDecoration, createDocument, createDocumentHistory, updateDecoration, setBaseOverride, removeBaseOverride } from './document.js';
+import { DraftStore, MAX_DRAFT_EXPORT_BYTES, readDraftExport, serializeDraftExport } from './draftStore.js';
 import { EditorCatalog } from './catalog.js';
 import { EditorFreeCamera } from './freeCamera.js';
 import { createEditorModels } from './modelFactory.js';
@@ -15,7 +15,9 @@ import { MAX_SELECTION, selectionPivot, transformSelection, updateSelection, rem
 import { LAYER } from '../render/pipeline.js';
 import { TemplatePanel } from './templatePanel.js';
 import { validateTemplate, instantiateTemplate } from './templates.js';
-import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
+import { compileTerrainMap, OBJECT_MAX_Y, OBJECT_MIN_Y, validateTerrainForMap } from './terrainData.js';
+import { isTerrainTilesDocument } from './terrainTiles.js';
+import { TerrainSession, openTerrainDocument, tileReferences } from './terrainSession.js';
 import { createTerrainPreview } from './terrainPreview.js';
 import { TerrainPanel } from './terrainPanel.js';
 import { TerrainInteraction } from './terrainInteraction.js';
@@ -31,6 +33,13 @@ const clone = (v) => structuredClone(v);
 const uid = () => 'gm-' + (globalThis.crypto?.randomUUID?.() || (Date.now().toString(36) + '-' + Math.random().toString(36).slice(2)));
 const typing = (target) => !!target?.closest?.('input:not([type="checkbox"]):not([type="radio"]),textarea,select,[contenteditable="true"]');
 const html = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+// Collisions read objects and base overrides only: a document v5 is passed without its terrain, since
+// compileGmColliders refuses v5 with the publication paths until GM07b2.
+const collisionDocument = (doc) => {
+  if (!isTerrainTilesDocument(doc)) return doc;
+  const { terrain, ...rest } = doc;
+  return { ...rest, version: 2 };
+};
 
 /** Private decoration overlay. Generated map data and server gameplay remain untouched. */
 export class WorldEditor {
@@ -53,7 +62,9 @@ export class WorldEditor {
     this.baseRevision = baseRevision; this.lang = getLocale(); this.active = false; this.session = 0;
     this.document = null; this.history = null; this.revision = 0; this.dirty = false;
     this.saveTimer = 0; this.saveTask = null; this.saveAgain = false; this.resumeDocument = null;
-    this.recoveryRevision = null;
+    this.resumeTiles = null; this.rejectedTiles = null; this.recoveryRevision = null;
+    // GM07b1: the terrain of the open document as a dense grid plus tile references; one commit at a time.
+    this.terrain = null; this.terrainTask = null;
     this.lastSavedJson = ''; this.records = new Map(); this.selectedId = null; this.selectedIds = new Set();
     this.groupPivot = new THREE.Group(); this.groupPivot.name = 'gm-selection-pivot';
     this.selectionBounds = new THREE.Box3Helper(new THREE.Box3(), 0x6eead0);
@@ -256,30 +267,39 @@ export class WorldEditor {
     this.active = true; this.ui.hidden = false; this.catalog.generation = session;
     try {
       this.store ||= new DraftStore({ worldId: this.worldId });
-      let recovery = this.resumeDocument;
+      let recovery = this.resumeDocument, recoveryTiles = this.resumeTiles;
       const normal = await this.store.load();
       if (!recovery) {
         const storedRecovery = await this.store.loadRecovery();
         if (storedRecovery) {
           this.recoveryRevision = storedRecovery.revision;
           if (JSON.stringify(storedRecovery.document) === JSON.stringify(normal.document)) await this._clearRecovery();
-          else { recovery = storedRecovery.document; this.revision = storedRecovery.expectedRevision; }
+          else { recovery = storedRecovery.document; recoveryTiles = storedRecovery.tiles || null; this.revision = storedRecovery.expectedRevision; }
         }
+      } else if (isTerrainTilesDocument(recovery) && !recoveryTiles) {
+        // A recovery handed to a new editor without its tiles takes them from the stored recovery record.
+        const stored = await this.store.loadRecovery().catch(() => null);
+        if (stored && JSON.stringify(stored.document) === JSON.stringify(recovery)) recoveryTiles = stored.tiles || null;
       }
-      const loaded = recovery ? { revision: this.revision, document: recovery } : normal;
+      const loaded = recovery ? { revision: this.revision, document: recovery, tiles: recoveryTiles } : normal;
       if (session !== this.session) return false;
       if (loaded.document && (loaded.document.base.seed !== (this.map.seed >>> 0) || loaded.document.base.revision !== this.baseRevision)) {
-        this.rejectedDocument = loaded.document;
+        this.rejectedDocument = loaded.document; this.rejectedTiles = loaded.tiles || null;
         throw new Error(this._t('Saved draft is for a different base map. Export it before starting another draft.',
           'El borrador pertenece a otra base. Expórtalo antes de iniciar otro.'));
       }
       this.revision = loaded.revision;
       const draft = loaded.document || createDocument({ seed: this.map.seed >>> 0, baseRevision: this.baseRevision });
-      try { this._validateBaseReferences(draft); }
-      catch (error) { this.rejectedDocument = draft; throw error; }
-      this.history = createDocumentHistory(draft); this.document = clone(draft);
-      this.lastSavedJson = JSON.stringify(normal.document || createDocument({ seed: this.map.seed >>> 0, baseRevision: this.baseRevision }));
-      this.dirty = !!recovery && JSON.stringify(recovery) !== this.lastSavedJson;
+      let opened;
+      try { opened = await this._openTerrain(draft, loaded.tiles); }
+      catch (error) { this.rejectedDocument = draft; this.rejectedTiles = loaded.tiles || null; throw error; }
+      if (session !== this.session) return false;
+      this._installDocument(opened);
+      if (loaded !== normal && isTerrainTilesDocument(normal.document)) this.history.retain(normal.document, normal.tiles);
+      // A v3/v4 record opens converted to v5 and stays as stored until the GM saves (GM07b1): it is not dirty.
+      this.lastSavedJson = loaded === normal ? JSON.stringify(opened.document)
+        : JSON.stringify(normal.document || createDocument({ seed: this.map.seed >>> 0, baseRevision: this.baseRevision }));
+      this.dirty = !!recovery && JSON.stringify(opened.document) !== this.lastSavedJson;
       this._addControls(); this.cameraController.enable();
       this._setStatus(editorMessage('Local draft. Nothing is published or written to gameplay.',
         'Borrador local. Nada se publica ni se escribe en gameplay.'), 'info');
@@ -322,6 +342,7 @@ export class WorldEditor {
     this._clearGhost();
     this._stopWalking();
     if (this.importTask) await this.importTask;
+    if (this.terrainTask) await this.terrainTask;
     if (!this.active) return true;
     if (this.dirty) {
       const saved = await this.saveNow();
@@ -333,12 +354,13 @@ export class WorldEditor {
       }
       if (!saved) {
         this.resumeDocument = this.history.current();
+        this.resumeTiles = isTerrainTilesDocument(this.resumeDocument) ? this.history.tilesOf(this.resumeDocument) : null;
         try {
-          const record = await this.store.saveRecovery(this.resumeDocument, { expectedRevision: this.revision });
+          const record = await this.store.saveRecovery(this.resumeDocument, { expectedRevision: this.revision, tiles: this.resumeTiles });
           this.recoveryRevision = record.revision;
         } catch { /* Keep the in-memory copy if local storage is unavailable. */ }
       }
-      else this.resumeDocument = null;
+      else { this.resumeDocument = null; this.resumeTiles = null; }
     }
     this.templatePanel?.stop();
     this.active = false; this.session++; this.catalog.generation = this.session;
@@ -367,11 +389,59 @@ export class WorldEditor {
     }
   }
 
-  _renderDocument(document) {
-    this._validateBaseReferences(document);
+  /** Open a document for editing (GM07b1): v3/v4 convert to v5, a v5 needs its tiles. Returns its terrain session. */
+  async _openTerrain(document, tiles = null) {
+    const opened = await openTerrainDocument({ map: this.map, baseRevision: this.baseRevision, document, tiles });
+    const session = new TerrainSession({ map: this.map, baseRevision: this.baseRevision, grid: opened.grid,
+      references: tileReferences(opened.document), lookup: (sha256) => this.history?.tile(sha256) });
+    this._validateBaseReferences(opened.document, session.surface());
+    return { ...opened, session };
+  }
+
+  _installDocument({ document, tiles, session }) {
+    this.history = createDocumentHistory(document, { tiles });
+    this.history.retain(document);
+    this.terrain = session; this.terrainKey = null; this.document = clone(document);
+  }
+
+  // The compiled map of a document: v2/v5 through the terrain session (synced to it, tiles from history or `tiles`);
+  // a v3/v4 that was never opened compiles its sparse terrain.
+  _terrainSurface(document, tiles = null) {
+    if (document.terrain && !isTerrainTilesDocument(document)) return compileTerrainMap(this.map, document.terrain);
+    return this.terrain ? this.terrain.surfaceFor(document, tiles) : this.map;
+  }
+
+  /** Commit one terrain stroke through the session (async: tile hashing). Resolves true when history took it. */
+  async _commitTerrainStroke(edit) {
+    if (this.terrainTask || !this.terrain || !this.active) return false;
+    const session = this.session;
+    const task = (async () => {
+      try {
+        const result = await this.terrain.commit(edit);
+        if (!this.active || session !== this.session) return false;
+        this._commit(result.document, { tiles: result.tiles, map: result.map });
+        return true;
+      } catch (error) {
+        this.lastError = error;
+        if (this.active && session === this.session) {
+          try { this._renderDocument(this.history.current()); } catch { /* The last rendered state stays. */ }
+        }
+        return false;
+      }
+    })();
+    this.terrainTask = task; this._updateButtons();
+    try { return await task; }
+    finally { if (this.terrainTask === task) this.terrainTask = null; if (this.active) this._updateButtons(); }
+  }
+
+  _renderDocument(document, { map = null, preview = false } = {}) {
+    this._validateBaseReferences(document, map);
     const terrainKey = JSON.stringify(document.terrain || null);
-    if (this.terrainKey !== terrainKey) {
-      this.draftMap = document.terrain ? compileTerrainMap(this.map, document.terrain) : this.map;
+    if (map) {
+      // A stroke supplies its compiled map; after a preview the next render resyncs from the document.
+      this.draftMap = map; this.terrainPreview.apply(map); this.terrainKey = preview ? null : terrainKey;
+    } else if (this.terrainKey !== terrainKey) {
+      this.draftMap = this._terrainSurface(document);
       this.terrainPreview.apply(this.draftMap); this.terrainKey = terrainKey;
     }
     this.transform.detach();
@@ -398,10 +468,11 @@ export class WorldEditor {
 
   _entryForAsset(id) { return resourceAdapter(id) || this.baseLayer.get(id) || this.catalog.items.find((entry) => entry.id === id) || this.assets.entry?.(id); }
 
-  _validateBaseReferences(document) {
-    if (document.terrain) validateTerrainForMap(this.map, document.terrain);
+  _validateBaseReferences(document, surface = null) {
+    // A v5 terrain was validated when it opened and by every stroke (dirty tiles); a v3/v4 is checked here.
+    if (document.terrain && !isTerrainTilesDocument(document)) validateTerrainForMap(this.map, document.terrain);
     if (document.objects.some(item => resourceAdapter(item.assetId)))
-      compileAuthoredResources(document.terrain ? compileTerrainMap(this.map, document.terrain) : this.map, document);
+      compileAuthoredResources(surface || this._terrainSurface(document), document);
     for (const id of [...document.baseOverrides.map((item) => item.id),
       ...document.objects.filter((item) => item.assetId.startsWith('base:')).map((item) => item.assetId)]) {
       if (!this.baseLayer.get(id)?.editable) throw new Error(this._t('Base decoration changed or is unavailable. Export this draft before rebasing.',
@@ -572,7 +643,7 @@ export class WorldEditor {
   }
 
   _pointerDown(event) {
-    if (!this.active || this.walkPreview?.active || this.importTask || event.button !== 0 || event.target !== this.canvas || this.dragging) return;
+    if (!this.active || this.walkPreview?.active || this.importTask || this.terrainTask || event.button !== 0 || event.target !== this.canvas || this.dragging) return;
     const rect = this.canvas.getBoundingClientRect();
     this.pointerNdc.set(((event.clientX - rect.left) / rect.width) * 2 - 1, -(((event.clientY - rect.top) / rect.height) * 2 - 1));
     this.pointerInside = true;
@@ -624,7 +695,7 @@ export class WorldEditor {
     const entry = this.pendingEntry; if (!entry || !this.ghost?.visible) return;
     point = this._placementPoint(point);
     const decoration = createDecoration({ id: uid(), assetId: entry.id, position: {
-      x: clamp(point.x, -280, 280), y: clamp(this.draftMap.groundAt(point.x, point.z), -64, 100), z: clamp(point.z, -280, 280),
+      x: clamp(point.x, -280, 280), y: clamp(this.draftMap.groundAt(point.x, point.z), OBJECT_MIN_Y, OBJECT_MAX_Y), z: clamp(point.z, -280, 280),
     }, collider: 'none' });
     try {
       this._commit(addDecoration(this.history.current(), decoration)); this.select(decoration.id);
@@ -730,7 +801,7 @@ export class WorldEditor {
       this._updateSelectionBounds(); this.invalidate(); this._renderInspector(); return;
     }
     const root = this.records.get(this.selectedId)?.root; if (!root) return;
-    root.position.x = clamp(root.position.x, -280, 280); root.position.y = clamp(root.position.y, -64, 100); root.position.z = clamp(root.position.z, -280, 280);
+    root.position.x = clamp(root.position.x, -280, 280); root.position.y = clamp(root.position.y, OBJECT_MIN_Y, OBJECT_MAX_Y); root.position.z = clamp(root.position.z, -280, 280);
     const limit = Math.PI * 200;
     root.rotation.x = clamp(root.rotation.x, -limit, limit); root.rotation.y = clamp(root.rotation.y, -limit, limit); root.rotation.z = clamp(root.rotation.z, -limit, limit);
     root.scale.setScalar(clamp((root.scale.x + root.scale.y + root.scale.z) / 3, 0.001, 1000));
@@ -808,7 +879,7 @@ export class WorldEditor {
   }
 
   _inspectorChange(event) {
-    if (this.importTask || this.walkPreview?.active || this.dragging) return;
+    if (this.importTask || this.terrainTask || this.walkPreview?.active || this.dragging) return;
     const toggleId = event.target?.dataset?.selectionId;
     if (toggleId) { this._clearGhost(); this.select(toggleId, { toggle: true }); return; }
     const setting = event.target?.dataset?.setting;
@@ -832,17 +903,25 @@ export class WorldEditor {
     this._setSelectedTransform(t); this._renderInspector();
   }
 
-  _commit(document) {
-    if (document.objects.some(item => resourceAdapter(item.assetId))) {
-      const surface = document.terrain ? compileTerrainMap(this.map, document.terrain) : this.map;
-      document = { ...document, objects: document.objects.map(item => resourceAdapter(item.assetId) ? { ...item,
-        transform: { ...item.transform, position: { ...item.transform.position,
-          y: surface.groundAt(item.transform.position.x, item.transform.position.z) } } } : item) };
-      compileAuthoredResources(surface, document);
+  /** Commit a document to history; a terrain stroke also passes its new tiles and its compiled map. */
+  _commit(document, { tiles = null, map = null } = {}) {
+    try {
+      if (document.objects.some(item => resourceAdapter(item.assetId))) {
+        const surface = map || this._terrainSurface(document, tiles);
+        document = { ...document, objects: document.objects.map(item => resourceAdapter(item.assetId) ? { ...item,
+          transform: { ...item.transform, position: { ...item.transform.position,
+            y: surface.groundAt(item.transform.position.x, item.transform.position.z) } } } : item) };
+        compileAuthoredResources(surface, document);
+      }
+      this.history.commit(document, { tiles });
+    } catch (error) {
+      // The terrain session may already hold `document`: bring it back to the current entry.
+      try { this.terrain?.sync(this.history.current()); } catch { this.terrainKey = null; }
+      throw error;
     }
-    this.history.commit(document); this.document = this.history.current();
+    this.document = this.history.current();
     this.dirty = JSON.stringify(this.document) !== this.lastSavedJson;
-    this._renderDocument(this.document); this.onChanged({ document: clone(this.document), dirty: this.dirty });
+    this._renderDocument(this.document, map ? { map } : {}); this.onChanged({ document: clone(this.document), dirty: this.dirty });
     this._updateButtons(); this._scheduleSave();
     if (this.terrainRoot?.hidden === false) this.terrainPanel.render();
     this.resourcePanel?.render();
@@ -861,10 +940,13 @@ export class WorldEditor {
       do {
         this.saveAgain = false; const snapshot = this.history.current();
         try {
-          const saved = await this.store.save(snapshot, { expectedRevision: this.revision });
+          // The tiles are taken with the snapshot: history may release them while the save is in flight.
+          const tiles = isTerrainTilesDocument(snapshot) ? this.history.tilesOf(snapshot) : undefined;
+          const saved = await this.store.save(snapshot, { expectedRevision: this.revision, tiles });
           this.revision = saved.revision; this.lastSavedJson = JSON.stringify(saved.document);
+          this.history.retain?.(saved.document, saved.tiles);
           this.dirty = JSON.stringify(this.history.current()) !== this.lastSavedJson;
-          if (!this.dirty) { this.resumeDocument = null; await this._clearRecovery(); }
+          if (!this.dirty) { this.resumeDocument = null; this.resumeTiles = null; await this._clearRecovery(); }
           // A completed autosave must not hide a newer rejected edit or loading error.
           if (this.status.kind !== 'error') this._setStatus(editorMessage('Draft saved locally. Not published.', 'Borrador guardado localmente. Sin publicar.'), 'ok');
         } catch (error) {
@@ -1004,11 +1086,11 @@ export class WorldEditor {
   }
 
   _startWalking() {
-    if (!this.active || !this.walkPreview || this.importTask) return;
+    if (!this.active || !this.walkPreview || this.importTask || this.terrainTask) return;
     this.scatterInteraction.cancel(); this.scatterInteraction.cursor.visible = false;
     this.terrainInteraction.cancel(); this.terrainInteraction.cursor.visible = false;
     this._cancelTransform(); this._clearGhost();
-    const doc = this.history.current(), colliders = compileGmColliders(this.map, doc, this.baseRevision);
+    const doc = this.history.current(), colliders = compileGmColliders(this.map, collisionDocument(doc), this.baseRevision);
     let point = this.records.get(this.selectedId)?.root.position || this._terrainHits()[0]?.point || this.map.landmarks.village;
     const selected = this._selectedItem();
     if (selected && !selected.hidden && selected.collider !== 'none') {
@@ -1080,7 +1162,7 @@ export class WorldEditor {
     if (sceneId && !this.walkPreview?.active && !this.importTask) { this._clearGhost(); this.select(sceneId, { toggle: event.shiftKey }); if (!event.shiftKey) this._focusSelection(); return; }
     const action = event.target.closest('[data-action]')?.dataset.action;
     if (this.walkPreview?.active && !['walk', 'close'].includes(action)) return;
-    if (this.importTask && !['close', 'export'].includes(action)) return;
+    if ((this.importTask || this.terrainTask) && !['close', 'export'].includes(action)) return;
     switch (action) {
       case 'place': if (this.pendingEntry || this.pendingTemplate || this.templateLoading) this._clearGhost(); else this._setStatus(editorMessage('Choose a model or template from the library.', 'Elige un modelo o plantilla de la biblioteca.'), 'info'); break;
       case 'undo': this._restoreHistory('undo'); break;
@@ -1128,9 +1210,10 @@ export class WorldEditor {
   }
 
   _restoreHistory(kind) {
-    if (!this.history || this.dragging) return;
+    if (!this.history || this.dragging || this.terrainTask) return;
     this.terrainInteraction?.cancel();
     this.scatterInteraction?.cancel();
+    // Undo and redo restore the grid from tiles: the session decodes only the tiles whose reference differs.
     const doc = this.history[kind](); this.document = doc; this.dirty = JSON.stringify(doc) !== this.lastSavedJson;
     this._renderDocument(doc); this.onChanged({ document: clone(doc), dirty: this.dirty }); this._scheduleSave();
     if (this.terrainRoot?.hidden === false) this.terrainPanel.render();
@@ -1194,7 +1277,7 @@ export class WorldEditor {
     }
     if (typing(event.target) && !(this.dragging && event.code === 'Escape')) return;
     if (this.dragging && event.code !== 'Escape') return;
-    if (this.importTask && event.code !== 'Escape') return;
+    if ((this.importTask || this.terrainTask) && event.code !== 'Escape') return;
     if (event.code === 'Escape') {
       event.preventDefault(); event.stopImmediatePropagation();
       if (this.dragging && this.dragStart && this.selectedId) {
@@ -1258,16 +1341,25 @@ export class WorldEditor {
   _placementPoint(point) {
     const snap = (value) => clamp(this.snapEnabled ? Math.round(value / this.snapStep) * this.snapStep : value, -280, 280);
     const x = snap(point.x), z = snap(point.z);
-    return new THREE.Vector3(x, clamp((this.draftMap || this.map).groundAt(x, z), -64, 100), z);
+    return new THREE.Vector3(x, clamp((this.draftMap || this.map).groundAt(x, z), OBJECT_MIN_Y, OBJECT_MAX_Y), z);
   }
 
-  exportRecovery() { this._exportDocument(this.rejectedDocument); }
+  exportRecovery() { this._exportDocument(this.rejectedDocument, { tiles: this.rejectedTiles }); }
 
-  _exportCurrent() { this._exportDocument(this.history?.current()); }
+  _exportCurrent() {
+    const doc = this.history?.current();
+    let tiles = null;
+    try { if (doc && isTerrainTilesDocument(doc)) tiles = this.history.tilesOf(doc); }
+    catch (error) { this._setError(error, 'unknown'); return; }
+    this._exportDocument(doc, { tiles });
+  }
 
-  _exportDocument(doc, { name = this.worldId + '-draft', status = null } = {}) {
+  // A document v5 exports with every tile it references (envelope version 2, GM07 D8).
+  _exportDocument(doc, { name = this.worldId + '-draft', status = null, tiles = null } = {}) {
     if (!doc) return;
-    const text = JSON.stringify({ format: DRAFT_EXPORT_FORMAT, version: DRAFT_EXPORT_VERSION, document: doc }, null, 2);
+    let text;
+    try { text = serializeDraftExport(doc, tiles, 2); }
+    catch (error) { this._setError(error, 'unknown'); return; }
     const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
     const link = document.createElement('a'); link.href = url; link.download = name + '.json'; link.click();
     setTimeout(() => URL.revokeObjectURL(url), 30000);
@@ -1275,7 +1367,7 @@ export class WorldEditor {
   }
 
   async _importFile(file) {
-    if (!file || !this.store || !this.active || this.importTask || this.walkPreview?.active) return;
+    if (!file || !this.store || !this.active || this.importTask || this.terrainTask || this.walkPreview?.active) return;
     const session = this.session;
     this.importTask = this._importFileForSession(file, session);
     try { await this.importTask; }
@@ -1288,23 +1380,23 @@ export class WorldEditor {
       const serialized = await file.text();
       if (!this.active || session !== this.session) return;
       if (new TextEncoder().encode(serialized).byteLength > MAX_DRAFT_EXPORT_BYTES) throw Object.assign(new Error('import_size'), { code: 'import_size' });
-      const envelope = JSON.parse(serialized);
-      if (!envelope || envelope.format !== DRAFT_EXPORT_FORMAT || envelope.version !== DRAFT_EXPORT_VERSION) {
-        throw Object.assign(new Error('import_format'), { code: 'import_format' });
-      }
-      const checked = validateDocument(envelope.document);
-      this._validateBaseReferences(checked);
+      // Export versions 1 and 2; every tile of a v5 is checked. A refusal keeps the current draft and stores nothing.
+      const { document: checked, tiles } = await readDraftExport(serialized);
+      if (!this.active || session !== this.session) return;
       if (checked.base.seed !== (this.map.seed >>> 0) || checked.base.revision !== this.baseRevision) {
         throw Object.assign(new Error('base_mismatch'), { code: 'base_mismatch' });
       }
+      const opened = await this._openTerrain(checked, tiles);
       if (!this.active || session !== this.session) return;
-      const saved = await this.store.import(serialized, { expectedRevision: this.revision });
+      const saved = await this.store.save(checked, { expectedRevision: this.revision, tiles });
       if (!this.active || session !== this.session) return;
-      this.revision = saved.revision; this.lastSavedJson = JSON.stringify(saved.document); this.resumeDocument = null;
+      this.revision = saved.revision; this.resumeDocument = null; this.resumeTiles = null;
       await this._clearRecovery();
-      this.history = createDocumentHistory(saved.document); this.document = saved.document; this.dirty = false;
-      await this._hydrate(saved.document); this._renderDocument(saved.document);
-      this.onChanged({ document: clone(saved.document), dirty: false });
+      // A v3/v4 import is stored as imported and edited as v5 (not dirty until the next edit).
+      this._installDocument(opened); this.history.retain(saved.document, saved.tiles);
+      this.lastSavedJson = JSON.stringify(opened.document); this.dirty = false;
+      await this._hydrate(opened.document); this._renderDocument(this.history.current());
+      this.onChanged({ document: clone(opened.document), dirty: false });
       this._setStatus(editorMessage('Draft imported and saved locally.', 'Borrador importado y guardado localmente.'), 'ok');
     } catch (error) {
       this._setError(error, 'import');

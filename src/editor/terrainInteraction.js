@@ -1,11 +1,18 @@
 import * as THREE from 'three';
-import { sculptTerrainDocument } from './terrainSculpt.js';
-import { paintTerrainDocument } from './terrainPaint.js';
 import { brushOutline } from './terrainBrush.js';
 import { editorMessage } from './messages.js';
 import { LAYER } from '../render/pipeline.js';
 
-/** A gesture owns a private preview; only its final valid document reaches history. */
+const STROKE_LIMIT = 256;
+const blocked = () => editorMessage(
+  'Stroke blocked: keep it on dry ground, away from protected places, or reduce its size/height. Nothing was saved.',
+  'Trazo bloqueado: mantén suelo seco y distancia de zonas protegidas, o reduce tamaño/altura. No se guardó ningún cambio.');
+
+/**
+ * A gesture owns a private preview; only its final valid document reaches history. Strokes run on the editor's
+ * terrain session (terrainSession.js): the preview patches and restores the grid, the commit re-encodes the touched
+ * tiles, and no stroke starts while a commit is still hashing.
+ */
 export class TerrainInteraction {
   constructor(editor, panel) {
     this.editor = editor; this.panel = panel; this.tool = null; this.stroke = null;
@@ -44,7 +51,7 @@ export class TerrainInteraction {
       else {
         const last = this.stroke.points.at(-1);
         if (Math.hypot(last.x - this.point.x, last.z - this.point.z) >= .5) {
-          if (this.stroke.points.length >= 256) { this.stroke.error = new Error('stroke_limit'); }
+          if (this.stroke.points.length >= STROKE_LIMIT) { this.stroke.error = new Error('stroke_limit'); }
           else this.stroke.points.push(this.point);
         }
       }
@@ -70,6 +77,8 @@ export class TerrainInteraction {
   down(event) {
     if (!this.tool) return false;
     event.preventDefault(); event.stopImmediatePropagation();
+    // Commits are serialized: never start a stroke on a half-committed terrain.
+    if (this.editor.terrainTask) return true;
     this.move(); if (!this.point || !this.cursor.visible) return true;
     if (this.tool === 'ramp' && this.stroke) {
       this.stroke.points[1] = { ...this.point }; this.finish(); return true;
@@ -82,38 +91,46 @@ export class TerrainInteraction {
     return true;
   }
 
+  _edit(stroke) { return { document: stroke.base, ...stroke.parameters, points: stroke.points }; }
+
   preview() {
     const stroke = this.stroke;
     if (!stroke || (this.tool === 'ramp' && stroke.points.length < 2)) return;
     stroke.pending = false;
     try {
-      if (stroke.points.length >= 256) throw new Error('stroke_limit');
-      const edit = ['paint', 'erase'].includes(stroke.parameters.tool) ? paintTerrainDocument : sculptTerrainDocument;
-      const result = edit({ map: this.editor.map, document: stroke.base,
-        baseRevision: this.editor.baseRevision, ...stroke.parameters, points: stroke.points });
-      this.editor._renderDocument(result);
-      stroke.result = result; stroke.error = null;
+      if (stroke.points.length >= STROKE_LIMIT) throw new Error('stroke_limit');
+      const result = this.editor.terrain.preview(this._edit(stroke));
+      this.editor._renderDocument(result.document, { map: result.map, preview: true });
+      stroke.result = result.document; stroke.error = null;
     } catch (error) {
       stroke.result = null; stroke.error = error; this.editor.lastError = error;
       this.editor._renderDocument(stroke.base);
-      this.editor._setStatus(editorMessage(
-        'Stroke blocked: keep it on dry ground, away from protected places, or reduce its size/height. Nothing was saved.',
-        'Trazo bloqueado: mantén suelo seco y distancia de zonas protegidas, o reduce tamaño/altura. No se guardó ningún cambio.'), 'error');
+      this.editor._setStatus(blocked(), 'error');
     }
     this.drawCursor();
   }
 
   finish() {
     if (!this.stroke) return;
-    this.preview(); const stroke = this.stroke; this.stroke = null;
-    if (stroke.result && !stroke.error) {
-      this.lastPoint = { ...stroke.points.at(-1) };
-      this.editor._commit(stroke.result);
-      this.editor._setStatus(editorMessage('Terrain stroke kept in the private draft. Undo reverses the whole stroke.',
-        'Trazo de terreno conservado en el borrador privado. Deshacer revierte el trazo completo.'), 'ok');
-    } else this.editor._renderDocument(stroke.base);
+    const stroke = this.stroke; this.stroke = null;
     if (this.editor.active && !this.editor.walkPreview?.active) this.editor.cameraController.enable();
+    if (stroke.points.length >= STROKE_LIMIT || (stroke.parameters.tool === 'ramp' && stroke.points.length < 2)) {
+      this.editor.lastError = new Error('stroke_limit');
+      this.editor._renderDocument(stroke.base); this.editor._setStatus(blocked(), 'error'); this.drawCursor();
+      return;
+    }
+    const task = this.editor._commitTerrainStroke(this._edit(stroke)).then((committed) => {
+      if (!this.editor.active) return committed;
+      if (committed) {
+        this.lastPoint = { ...stroke.points.at(-1) };
+        this.editor._setStatus(editorMessage('Terrain stroke kept in the private draft. Undo reverses the whole stroke.',
+          'Trazo de terreno conservado en el borrador privado. Deshacer revierte el trazo completo.'), 'ok');
+      } else this.editor._setStatus(blocked(), 'error');
+      this.drawCursor();
+      return committed;
+    });
     this.drawCursor();
+    return task;
   }
 
   cancel() {

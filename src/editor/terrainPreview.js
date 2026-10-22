@@ -1,5 +1,17 @@
 import { createTerrain, createHeightTexture, updateTerrainGeometry, updateHeightTexture } from '../render/terrain.js';
 
+// A map compiled from a grid (GM07) holds the grid itself as `terrain`, mutated in place by the editor: its compiled
+// heights tell a paint-only change. Terrain v1/v2 maps compare their height samples as before.
+const gridHeights = (map) => map.terrain?.deltasMm instanceof Int32Array ? map.heights : null;
+function sameHeights(a, b) {
+  const left = gridHeights(a), right = gridHeights(b);
+  if (!left && !right) return JSON.stringify(a.terrain.samples) === JSON.stringify(b.terrain.samples);
+  if (!left || !right || left.length !== right.length) return false;
+  if (left === right) return true;
+  for (let k = 0; k < left.length; k++) if (left[k] !== right[k]) return false;
+  return true;
+}
+
 /** Render a private GM terrain projection while retaining the live scene objects and materials. */
 export function createTerrainPreview({ scene, map, invalidate = () => {} } = {}) {
   if (!scene || !map) throw new TypeError('createTerrainPreview requires scene and map');
@@ -39,8 +51,7 @@ export function createTerrainPreview({ scene, map, invalidate = () => {} } = {})
       restore();
       return;
     }
-    const paintOnly = !!projectedMap.terrain && !!currentMap.terrain &&
-      JSON.stringify(projectedMap.terrain.samples) === JSON.stringify(currentMap.terrain.samples);
+    const paintOnly = !!projectedMap.terrain && !!currentMap.terrain && sameHeights(projectedMap, currentMap);
     if (!activeGeometry) {
       const temporary = createTerrain(projectedMap, { segments: 560 });
       activeGeometry = temporary.geometry;

@@ -1,5 +1,6 @@
 import { GmContentClient } from './contentClient.js';
 import { editorMessage } from './messages.js';
+import { TERRAIN_TILES_NOT_READY, convertDocumentToV5, isTerrainTilesDocument } from './terrainTiles.js';
 import { onLocaleChange, setLocale } from '../core/locale.js';
 
 const text = (value) => String(value).replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
@@ -8,7 +9,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 /** A deliberate review step between the local workspace and the account's remote draft. */
 export class RemoteDraftPanel {
   constructor(editor, client) {
-    this.editor = editor; this.client = client; this.head = null; this.state = 'idle'; this.review = null; this.generation = 0;
+    this.editor = editor; this.client = client; this.head = null; this.headEquivalent = null; this.state = 'idle'; this.review = null; this.generation = 0;
     this.contentClient = client ? new GmContentClient({ auth: client.auth, accountId: client.accountId,
       httpBase: new URL('../../', client.url), localScope: client.key, source: client.source, fetchImpl: client.fetchImpl }) : null;
     this.content = null; this.contentReview = null; this.contentError = ''; this.contentBusy = false;
@@ -26,7 +27,9 @@ export class RemoteDraftPanel {
       if (action === 'refresh') void this.refresh();
       if (action === 'export') editor._exportCurrent();
       if (action === 'export-remote') editor._exportDocument(this.head?.document, { name: `${editor.worldId}-online-r${this.head.revision}`, status: editorMessage('Server copy exported.', 'Se exportó la copia online.') });
-      if (action === 'save' || action === 'load') { this.review = action; this.reviewDocument = editor.history.current(); this.render(); }
+      // GM07b1: a terrain on tiles (document v5) is refused before any request until GM07b2.
+      if (action === 'save' && isTerrainTilesDocument(editor.history.current())) { this.review = null; this.error = TERRAIN_TILES_NOT_READY; this.render(); }
+      else if (action === 'save' || action === 'load') { this.review = action; this.reviewDocument = editor.history.current(); this.render(); }
       if (action === 'cancel-review') { this.review = null; this.render(); }
       if (action === 'confirm') { if (this.review === 'save') void this.save(); else if (this.review === 'load') void this.load(); }
       if (action === 'retry') void this.save(true);
@@ -51,7 +54,7 @@ export class RemoteDraftPanel {
   get busy() { return this.contentBusy || ['loading', 'saving', 'applying', 'preparing'].includes(this.state); }
   get open() { return this.dialog.open; }
   async start() {
-    this.generation++; this.head = null; this.state = 'idle'; this.review = null; this.error = ''; this.prepared = null;
+    this.generation++; this.head = null; this.headEquivalent = null; this.state = 'idle'; this.review = null; this.error = ''; this.prepared = null;
     this.client?.resume(); this.contentClient?.resume(); this.content = null; this.contentReview = null; this.contentApplied = null; this.contentError = ''; this.render();
     if (this.client) { await this.refresh(); await this.refreshContent(); }
   }
@@ -80,6 +83,8 @@ export class RemoteDraftPanel {
       gm_draft_rate: ['Too many requests. Wait a moment and try again.', 'Demasiadas solicitudes. Espera un momento y vuelve a intentar.'],
       gm_preparation_unavailable: ['Preparation is unavailable or a model could not be verified. Your drafts are preserved.', 'La preparación no está disponible o no se pudo verificar un modelo. Tus borradores se conservan.'],
       gm_preparation_busy: ['The server is preparing another revision. Try again shortly.', 'El servidor está preparando otra revisión. Vuelve a intentar en un momento.'],
+      [TERRAIN_TILES_NOT_READY]: ['This draft keeps its terrain on tiles and is saved locally. Online save, preparation and publication of it arrive with the next update; export a copy to keep it safe.',
+        'Este borrador guarda su terreno en bloques y está guardado localmente. El guardado online, la preparación y la publicación llegan con la próxima actualización; exporta una copia para conservarlo.'],
     };
     const message = messages[code];
     return message ? this.t(...message) : this.t('The server could not confirm this request. Your local design is preserved.', 'El servidor no pudo confirmar la solicitud. Tu diseño local se conserva.');
@@ -89,6 +94,8 @@ export class RemoteDraftPanel {
     const generation = this.generation; this.state = 'loading'; this.review = null; this.error = ''; this.render();
     try {
       const result = await this.client.inspect();
+      if (generation !== this.generation || !this.editor.active) return;
+      await this._matchHead(result.head);
       if (generation !== this.generation || !this.editor.active) return;
       this.head = result.head; this.durable = result.durable; this.remoteScope = result.scope;
       if (!this.compatible) this.error = 'base';
@@ -108,14 +115,33 @@ export class RemoteDraftPanel {
     try {
       const result = retry ? await this.client.retry() : await this.client.save(snapshot, this.head.revision);
       if (generation !== this.generation || !this.editor.active) return;
+      await this._matchHead(result.head);
+      if (generation !== this.generation || !this.editor.active) return;
       this.head = result.head; this.durable = result.durable; this.state = 'ready';
       // A replay receipt can precede a newer save. Observe the actual head before offering replacement.
       if (result.replay) await this.refresh();
     } catch (error) {
       if (generation !== this.generation || !this.editor.active) return;
       this.editor.lastError = error;
-      this.error = error.code; this.state = this.client.pending ? 'pending' : error.code === 'gm_draft_conflict' ? 'conflict' : 'unavailable';
+      this.error = error.code; this.state = this.client.pending ? 'pending' : error.code === 'gm_draft_conflict' ? 'conflict'
+        : error.code === TERRAIN_TILES_NOT_READY ? 'ready' : 'unavailable';
     } finally { if (generation === this.generation) this.render(); }
+  }
+
+  // GM07b1: the editor holds a v3/v4 head converted to v5. Keep its v5 form to recognise the same design, so an
+  // unchanged v3/v4 head can still be prepared.
+  async _matchHead(head) {
+    this.headEquivalent = null;
+    const document = head?.document;
+    if (!document || (document.version !== 3 && document.version !== 4)) return;
+    try { this.headEquivalent = JSON.stringify((await convertDocumentToV5(document)).document); }
+    catch { /* A head without a tile domain only matches itself. */ }
+  }
+
+  get matchesHead() {
+    const current = this.editor.history?.current();
+    return !!this.head?.document && (same(current, this.head.document) ||
+      (this.headEquivalent !== null && this.headEquivalent === JSON.stringify(current)));
   }
 
   async load() {
@@ -124,13 +150,16 @@ export class RemoteDraftPanel {
     if (!same(this.reviewDocument, this.editor.history.current())) { this.review = null; this.render(); return; }
     this.review = null; this.state = 'applying'; this.error = ''; this.render();
     try {
-      this.editor._validateBaseReferences(snapshot);
-      // Finish model loading before changing history; failure leaves the current scene intact.
-      await this.editor._hydrate(snapshot);
+      // A v3/v4 head is checked and converted to v5 (GM07b1); the online copy is not rewritten.
+      const opened = await this.editor._openTerrain(snapshot);
       if (generation !== this.generation || !this.editor.active) return;
-      if (snapshot.objects.some((item) => !item.assetId.startsWith('base:') && !this.editor.assets.data(item.assetId))) throw Object.assign(new Error(), { code: 'document' });
+      // Finish model loading before changing history; failure leaves the current scene intact.
+      await this.editor._hydrate(opened.document);
+      if (generation !== this.generation || !this.editor.active) return;
+      if (opened.document.objects.some((item) => !item.assetId.startsWith('base:') && !this.editor.assets.data(item.assetId))) throw Object.assign(new Error(), { code: 'document' });
+      if (this.editor.terrainTask) throw Object.assign(new Error(), { code: 'busy' });
       this.editor._clearGhost(); this.editor.transform.detach(); this.editor.selectedId = null;
-      this.editor._commit(snapshot); this.state = 'ready';
+      this.editor._commit(opened.document, { tiles: opened.tiles }); this.state = 'ready';
       await this.editor.saveNow();
     } catch (error) {
       if (generation !== this.generation || !this.editor.active) return;
@@ -158,7 +187,7 @@ export class RemoteDraftPanel {
 
   get canPrepare() {
     return !!this.client && !!this.head?.document && this.head.revision > 0 && this.compatible &&
-      this.state === 'ready' && !this.client.pending && same(this.head.document, this.editor.history.current());
+      this.state === 'ready' && !this.client.pending && this.matchesHead;
   }
 
   downloadRevision() {
@@ -281,7 +310,7 @@ export class RemoteDraftPanel {
 
   render() {
     const current = this.editor.history?.current();
-    const matches = !!this.head?.document && same(current, this.head.document);
+    const matches = this.matchesHead;
     if (this.prepared && (!matches || this.prepared.headRevision !== this.head?.revision)) this.prepared = null;
     const labels = {
       idle: this.t('Local workspace', 'Espacio local'), loading: this.t('Checking server…', 'Consultando servidor…'),

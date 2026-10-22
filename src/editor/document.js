@@ -187,23 +187,87 @@ export function removeDecoration(document, id) {
   return validateDocument({ ...current, objects });
 }
 
-export function createDocumentHistory(initialDocument, { limit = 100 } = {}) {
+// GM07 D8: unique tile bytes the undo history may reference; the oldest entries are dropped first.
+export const HISTORY_TILE_BYTES = 64 * 1024 * 1024;
+
+const tileReferences = (document) => document?.version === TILES_DOCUMENT_VERSION ? document.terrain.tiles : [];
+
+/**
+ * Undo history of whole-document snapshots. A document v5 keeps tile references only; their bytes live in one shared
+ * content-addressed map (sha256 -> Uint8Array, never mutated) filled by commit({ tiles }). At most `limit` commits and
+ * `tileBytes` unique tile bytes referenced by entries stay; tiles no entry and no retained (saved) document reference
+ * are released.
+ */
+export function createDocumentHistory(initialDocument, { limit = 100, tiles = null, tileBytes = HISTORY_TILE_BYTES } = {}) {
   if (!Number.isSafeInteger(limit) || limit < 1 || limit > 1000) fail('history_limit');
+  if (!Number.isSafeInteger(tileBytes) || tileBytes < 0) fail('history_limit');
+  const store = new Map();
+  let retained = [];
+  // Every referenced tile must already be held or arrive in `incoming` with the referenced length; nothing changes
+  // unless all of them do.
+  const admit = (document, incoming) => {
+    const added = [];
+    for (const [, , sha256, bytes] of tileReferences(document)) {
+      if (store.has(sha256)) continue;
+      const blob = incoming instanceof Map ? incoming.get(sha256) : undefined;
+      if (!(blob instanceof Uint8Array) || blob.length !== bytes) fail('tile_missing');
+      added.push([sha256, blob]);
+    }
+    for (const [sha256, blob] of added) store.set(sha256, blob);
+  };
+  const usedBytes = () => {
+    const seen = new Map();
+    for (const entry of entries) for (const [, , sha256, bytes] of tileReferences(entry)) seen.set(sha256, bytes);
+    let total = 0;
+    for (const bytes of seen.values()) total += bytes;
+    return total;
+  };
+  const release = () => {
+    const keep = new Set(retained);
+    for (const entry of entries) for (const reference of tileReferences(entry)) keep.add(reference[2]);
+    for (const sha256 of [...store.keys()]) if (!keep.has(sha256)) store.delete(sha256);
+  };
   let entries = [validateDocument(initialDocument)];
+  admit(entries[0], tiles);
   let index = 0;
   return Object.freeze({
     current() { return clone(entries[index]); },
     canUndo() { return index > 0; },
     canRedo() { return index < entries.length - 1; },
-    commit(nextDocument) {
+    commit(nextDocument, { tiles: incoming = null } = {}) {
       const next = validateDocument(nextDocument);
       if (JSON.stringify(next) === JSON.stringify(entries[index])) return this.current();
+      admit(next, incoming);
       entries = entries.slice(0, index + 1);
       entries.push(next);
       if (entries.length > limit + 1) entries.shift();
+      while (entries.length > 1 && usedBytes() > tileBytes) entries.shift();
       index = entries.length - 1;
+      release();
       return this.current();
     },
+    /** Tile bytes by sha256 while an entry or the retained document references them (shared, read-only). */
+    tile(sha256) { return store.get(sha256); },
+    /** The tiles a document references, as a new Map (shared bytes); fails tile_missing when one is not held. */
+    tilesOf(document = entries[index]) {
+      const result = new Map();
+      for (const [, , sha256] of tileReferences(document)) {
+        const blob = store.get(sha256);
+        if (!blob) fail('tile_missing');
+        result.set(sha256, blob);
+      }
+      return result;
+    },
+    /** Keep the tiles of the saved record while history moves on; `tiles` supplies any not held yet. */
+    retain(document, tiles = null) {
+      const checked = document ? validateDocument(document) : null;
+      if (checked) admit(checked, tiles);
+      retained = tileReferences(checked).map((reference) => reference[2]);
+      release();
+    },
+    /** Unique tile bytes referenced by the entries (the budget measure). */
+    tileBytes() { return usedBytes(); },
+    entryCount() { return entries.length; },
     undo() {
       if (index > 0) index--;
       return this.current();

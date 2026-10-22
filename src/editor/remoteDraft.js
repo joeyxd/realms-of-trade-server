@@ -1,6 +1,7 @@
 import { validateDocument } from './document.js';
 import { createIndexedDbDraftSource, MAX_DRAFT_EXPORT_BYTES } from './draftStore.js';
 import { verifyPreparedRevision } from './publicationArtifact.js';
+import { TERRAIN_TILES_NOT_READY, isTerrainTilesDocument } from './terrainTiles.js';
 
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const clone = (v) => structuredClone(v);
@@ -126,6 +127,8 @@ export class RemoteDraftClient {
     this._checkIdentity();
     const epoch = this.epoch;
     const checked = validateDocument(document);
+    // GM07b1: a document v5 (terrain tiles) stays local until GM07b2; refused before any request.
+    if (isTerrainTilesDocument(checked)) throw new RemoteDraftError(TERRAIN_TILES_NOT_READY);
     if (!this.scope || checked.base.seed !== this.scope.seed || checked.base.revision !== this.scope.baseRevision ||
         !Number.isSafeInteger(expectedRevision) || expectedRevision < 1 || expectedRevision > 2147483647) throw new RemoteDraftError('base');
     this.pending = clone((await this._pendingRecord()).operation);
@@ -138,6 +141,8 @@ export class RemoteDraftClient {
     this._checkIdentity();
     const epoch = this.epoch;
     const checked = validateDocument(document);
+    // GM07b1: a document v5 is neither sent nor recorded as a pending attempt until GM07b2.
+    if (isTerrainTilesDocument(checked)) throw new RemoteDraftError(TERRAIN_TILES_NOT_READY);
     if (!this.scope || checked.base.seed !== this.scope.seed || checked.base.revision !== this.scope.baseRevision ||
         !Number.isSafeInteger(expectedRevision) || expectedRevision < 0 || expectedRevision >= 2147483647) throw new RemoteDraftError('base');
     if (new TextEncoder().encode(JSON.stringify(checked)).byteLength > MAX_DRAFT_EXPORT_BYTES) throw new RemoteDraftError('document_limit');
