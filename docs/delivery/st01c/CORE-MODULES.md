@@ -180,3 +180,45 @@ sha256 de los archivos de este encargo:
   se regeneró ninguno.
 - `qa-depth.mjs` y `verify-depth.mjs` conservan su propio valor esperado (`gap / 100` saturado): es el oráculo de la
   comparación, no el shader.
+
+### Opciones opt-in para NS_BasicHit (T-1021-46)
+
+2026-10-22. Parte 2 de 2: las opciones que pide la atadura de render de BasicHit
+([entrega](basichit/RENDER.md)). Sustituye las líneas de arriba que dejaban FaceCameraPosition, el material radial y la
+política SubUV más allá de la rejilla para el próximo encargo. Cada opción es opt-in: sin su `#define` el shader
+preprocesado es el del piloto, y `spriteLayer` no añade las claves `subUV` ni `opacity` cuando valen el valor por defecto,
+así que una capa del piloto conserva exactamente su forma. `SPRITE_FACINGS` sigue siendo `['camera-plane']`.
+
+| Opción | Módulo | Export | Por defecto | Fuente |
+|---|---|---|---|---|
+| Orientación | `core/sprite-shader.js` | `SPRITE_FACING_MODES` = `['camera-plane', 'camera-position']`; `#define SPRITE_FACING_CAMERA_POSITION`; gemelo JS `cameraPositionBasis(cameraPosition, center)` -> `{ direction, right, up }` en ejes de escena | `'camera-plane'` (FaceCamera) | `NiagaraSpriteVertexFactory.ush` (UE 5.8) 561-562, 582-583, 617-620; FaceCamera 556-557, 602-606 |
+| Política SubUV | `core/subuv-atlas.js` | `SUBUV_POLICIES` = `['clamp', 'wrap']`; `subUVAtlasUv(subImage, [columns, rows], [u, v], policy = 'clamp')`; `#ifdef SUBUV_WRAP` en `SUBUV_ATLAS_UV_GLSL` | `'clamp'` | ush 1059-1068; `NiagaraRendererSprites.cpp`:552 |
+| Opacidad radial | `core/sprite-shader.js` | `SPRITE_OPACITIES` = `['texel-red', 'radial-gradient-exponential']`; `#define SPRITE_RADIAL_GRADIENT`; `RADIAL_GRADIENT_EXPONENTIAL` (centro 0,5/0,5, radio 0,5, densidad 2,333, sin invertir), `RADIAL_GRADIENT_EXPONENTIAL_GLSL`, gemelo JS `radialGradientExponential([u, v])` | `'texel-red'` | `basichit/RENDER-SOURCES.md` (c) |
+| Capa | `core/sprite-shader.js` | `spriteLayer({ grid, texture, depthFade, facing = 'camera-plane', subUV = 'clamp', opacity = 'texel-red' })` | | |
+
+- FaceCameraPosition: en UE, `CameraDirection = SafeNormalize(CameraOrigin - Particle)`, `Right =
+  SafeNormalize(cross(CameraDirection, (0,0,1)))`, `Up = cross(CameraDirection, Right)`, Z arriba. `toScene` = `[y, z, -x]`
+  es una reflexión (determinante -1), así que cada producto vectorial de UE se invierte en ejes de escena: `Right =
+  safeNormalize(cross(+Y, direction))`, `Up = cross(Right, direction)`. La x de la esquina va por Right y la y por -Up, como
+  en FaceCamera. Un test compara el gemelo JS con la fórmula de UE pasada por `toScene` (3 cámaras x 3 partículas) y, en el
+  eje de las cámaras de la referencia, con la base de FaceCamera.
+- SubUV `wrap`: `A = floor(idx) + 0,5`, columna `floor(fmod(A, X))`, fila `floor(A / X)` sin límite; con la textura en
+  `RepeatWrapping` (TA_WRAP de UE) la celda `idx` se lee como `idx mod (X*Y)`. Dentro de la rejilla da lo mismo que `clamp`
+  (test). La GLSL y el gemelo JS cambian juntos.
+- Opacidad: todas las capas saturan, como `GetMaterialOpacity = saturate(GetMaterialOpacityRaw)` (`MaterialTemplate.ush`
+  3914-3920) en el pase base translúcido sin Substrate (`BasePassPixelShader.usf` 1012 y 1021; `r.Substrate` = 0,
+  `RenderUtils.cpp` 2068-2072). La radial: `saturate(alfa * RGE(TexCoord[0]))` sin textura; TexCoord[0] tiene la V hacia
+  abajo (el shader pasa `(u, 1 - v)`; el gradiente es simétrico).
+
+Prueba: `render-core.test.mjs` añade 5 tests (todas las aserciones anteriores intactas), entre ellos el que fija el sha256
+de los shaders preprocesados de los cuatro conjuntos de defines del piloto contra `590687c`; con `basichit-render.test.mjs`
+(5) la suite pasa de 53 a 63, sin fallos. Los cinco verify no cambian. Píxeles del piloto con el código final:
+`.scratch/render-core/t1021-46-r2-after` contra `base-a` da `identical 2261/2261` (browser-lab 16, native-birth 12,
+native-update 8, depth-lab 50, color-lab 23, atlas 2152; fuera los 8 `atlas/*/mobile-layout.png`, como arriba). Comando y
+detalle en la [entrega de BasicHit](basichit/RENDER.md).
+
+| Archivo | sha256 |
+|---|---|
+| `tools/niagara-native-lab/core/sprite-shader.js` | `fe07b229a45f58ecf9ea156fbb1327fad4bb9c83344d28fd83048437f799e8ca` |
+| `tools/niagara-native-lab/core/subuv-atlas.js` | `cbac2d57264776882c760bc304960132e6cea037149f804862d8c2cc0ae75805` |
+| `tools/niagara-native-lab/render-core.test.mjs` | `fcc19829d19c1b8bdbea72f2245d705cba545b18ebd533f71e5a76cabf730812` |

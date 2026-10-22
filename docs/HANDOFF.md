@@ -64,6 +64,24 @@ autoridad respondía `combat`): `step()` ahora lo avanza un tick por tick. Runne
 cuerpo), una frase EN y una ES explican `world` y cómo recolectar. Tests: 9 nuevos en companion-presence-gather y
 8 más en los de presencia, runner y CLI. Ticket T-1021-16. Pendiente: textos de la tarjeta que dicen "no habilita
 recolección" y "solo seguir, esperar o volver"; el cliente web no tiene botón de recolectar.
+**ST01c, 2026-10-22 - BasicHit dibujado de forma nativa contra la imagen final de Unreal (pasa el gate del autor):**
+[Entrega](delivery/st01c/basichit/RENDER.md), [checkpoint](delivery/st01c/basichit/render-checkpoint.json). Solo laboratorio, sin
+versión nueva. `core/` gana opciones opt-in (sin su `#define` el shader del piloto no cambia): `facing: 'camera-position'`
+(FaceCameraPosition de UE pasada por `toScene`), `subUV: 'wrap'` (la fórmula del vertex factory, celda idx mod 32 con la textura en
+Repeat) y `opacity: 'radial-gradient-exponential'` (la línea GLSL de RENDER-SOURCES.md); toda opacidad saturada como UE. Nuevos
+`basichit-render.js` (una capa instanciada por emisor, orden Flame, Flash, SimpleBurst, cada frame validado con
+`BASICHIT_FRAME_SPEC`), `basichit.html`/`basichit-lab.js`, `qa-basichit.mjs` (34 lienzos en una carpeta nueva) y
+`compare-basichit.py` (`--transfer-only` primero). Retrabajo: referencia `basichit-reference05` (`controlled-sdr/v1`) comprobada
+contra `reference-profiled-checkpoint.json` y transferencia desde el HDR crudo RGBA16F, antes de cualquier número nativo (la
+primera ejecución, `r01` sobre reference03, se había detenido en la transferencia con MAE 24,8). Transferencia del paso 12: MAE
+0,024/0,026/0,025 y P95 0; la GPU frente al Filmic exacto de JS 0,135/0,141/0,137. Nativas 15/15: IoU mínima 0,9828 y MAE
+máxima 1,784/255 (`t0018_oblique`); el orden inverso es diagnóstico (diferencias pequeñas de signo mixto). Ejecuciones
+`t1021-46-r2-a`/`-b`: 34/34 píxeles idénticos y `comparison.json` igual byte a byte; ningún cambio tras la primera comparación.
+Piloto: 2261/2261 PNG idénticos a `base-a` (fuera los 8 `atlas/*/mobile-layout.png`) y los cinco verify iguales. Suite 63/63.
+Ojo: `qa-native.mjs` y `qa-update.mjs` agotan su espera al pedir 241 estados contra `python -m http.server` (cola de escucha
+5); con `ThreadingHTTPServer` y cola 128 pasan. RENDER-SOURCES.md y render-sources.json siguen nombrando reference03 y el
+`.hdr` en su definición (para el autor). Pendiente de aceptación del autor. Ticket T-1021-46.
+
 **ST01c, 2026-10-22 - referencia de BasicHit recapturada con el perfil de color controlado (pasa la transferencia):**
 [Entrega](delivery/st01c/basichit/REFERENCE-PROFILED.md), [checkpoint](delivery/st01c/basichit/reference-profiled-checkpoint.json). Solo
 laboratorio, sin versión nueva. Nuevo `tools/unreal-niagara-probe/capture_profile.py` (el perfil `controlled-sdr/v1` de `capture_color.py` como

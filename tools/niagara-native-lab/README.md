@@ -156,6 +156,35 @@ node tools/niagara-native-lab/verify-basichit.mjs
 node --test tools/niagara-native-lab/basichit-simulation.test.mjs
 ```
 
+# Render nativo de NS_BasicHit, 2026-10-22
+
+`basichit.html` dibuja los tres emisores desde `BasicHitSimulation` con la cadena de color del piloto: capas instanciadas
+de `basichit-render.js` (una por emisor, orden de dibujo Flame, Flash, SimpleBurst) -> destino HDR de media precisión ->
+LUT Filmic de `film-color.js` -> lienzo de 1024 px, con las cámaras de `basichit-reference05` (perfil `controlled-sdr/v1`).
+Cada archivo de la referencia se comprueba contra `docs/delivery/st01c/basichit/reference-profiled-checkpoint.json`. La
+casilla "Aislar color" pasa el HDR crudo RGBA16F de Unreal del paso 12 por la misma LUT (precondición de transferencia).
+`qa-basichit.mjs` guarda 34 lienzos en una carpeta nueva de `.scratch/basichit-render/` (se niega si ya existe) y
+`compare-basichit.py` aplica el gate de `render-sources.json`. Ver [entrega](../../docs/delivery/st01c/basichit/RENDER.md).
+Las opciones nuevas de `core/` (`facing: 'camera-position'`, `subUV: 'wrap'`, `opacity: 'radial-gradient-exponential'` en
+`spriteLayer`) son opt-in: el piloto sigue con sus valores por defecto y sus píxeles
+([CORE-MODULES.md](../../docs/delivery/st01c/CORE-MODULES.md), sección Render).
+
+Desde cualquier shell de Git Bash, con el servidor de arriba en 127.0.0.1:5197 (servido desde la raíz del worktree):
+
+```bash
+W="C:/DEV/real of trade/st01c-native"
+PW="C:/DEV/real of trade/visual-revamp/node_modules/playwright/index.mjs"
+node "$W/tools/niagara-native-lab/qa-basichit.mjs" "$PW" <ejecución-nueva>
+python -B "$W/tools/niagara-native-lab/compare-basichit.py" "$W/.scratch/basichit-render/<ejecución-nueva>" --transfer-only
+python -B "$W/tools/niagara-native-lab/compare-basichit.py" "$W/.scratch/basichit-render/<ejecución-nueva>"
+python -B "$W/tools/niagara-native-lab/check-pixels.py" "$W/.scratch/basichit-render/<ejecución-a>" "$W/.scratch/basichit-render/<ejecución-b>"
+node --test "$W/tools/niagara-native-lab/basichit-render.test.mjs" "$W/tools/niagara-native-lab/render-core.test.mjs"
+```
+
+`--transfer-only` escribe `transfer-check.json` (identidad de la transferencia de la GPU frente a la transformación
+exacta de `film-color.js`, calculada con `node`, y las tres filas de transferencia) sin mirar ningún lienzo nativo; el modo
+completo escribe `comparison.json` y solo calcula las filas nativas si las tres de transferencia pasan.
+
 # Profundidad del piloto
 
 `depth.html?run=depth02` compara las partículas nativas a 2 s con el mismo piloto

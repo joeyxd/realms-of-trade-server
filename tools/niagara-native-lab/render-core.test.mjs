@@ -10,6 +10,10 @@ import { DEPTH_FADE_DISTANCE, depthFactor, DEPTH_FADE_GLSL } from './core/depth-
 import { SUBUV_ATLAS_UV_GLSL, subUVAtlasUv, validateGrid } from './core/subuv-atlas.js';
 import { spriteLayer, SPRITE_FACINGS, SPRITE_FACING_GLSL, SPRITE_CORNER_GLSL, SPRITE_VERTEX_SHADER, SPRITE_FRAGMENT_SHADER } from './core/sprite-shader.js';
 import { frameSpec, validateFrame as validateSpecFrame, BASICHIT_FRAME_SPEC } from './core/frame-spec.js';
+import { createHash } from 'node:crypto';
+import { SUBUV_POLICIES } from './core/subuv-atlas.js';
+import { SPRITE_FACING_MODES, SPRITE_OPACITIES, cameraPositionBasis, RADIAL_GRADIENT_EXPONENTIAL, RADIAL_GRADIENT_EXPONENTIAL_GLSL,
+  radialGradientExponential } from './core/sprite-shader.js';
 
 const { PilotParticles, validateFrame } = particlesModule;
 const pilotSource = JSON.parse(await fs.readFile(new URL('./pilot-source.json', import.meta.url)));
@@ -240,4 +244,129 @@ test('BASICHIT spec rejects malformed frames and keeps subImage optional only wh
       check(f => { f.emitters[emitter].particles[0].subImage = value; }, 'Invalid sprite attributes', `emitter ${emitter} subImage ${value}`);
   check(f => { f.emitters[2].particles[0].rotation = NaN; }, 'Invalid sprite attributes', 'NaN rotation');
   check(f => { f.emitters[1].particles[0].color.pop(); }, 'Invalid particle color', 'short color');
+});
+
+// ---------- Opt-in render options for NS_BasicHit (T-1021-46). The pilot's defaults stay as above.
+
+// Line-level #ifdef/#else/#endif for the test: the GLSL a define set leaves.
+function preprocess(text, defines) {
+  const out = [], stack = [];
+  for (const line of text.split('\n')) {
+    const t = line.trim();
+    if (t.startsWith('#ifdef ')) { stack.push(defines.includes(t.slice(7).trim())); continue; }
+    if (t === '#else') { stack.push(!stack.pop()); continue; }
+    if (t === '#endif') { stack.pop(); continue; }
+    if (stack.every(Boolean)) out.push(line);
+  }
+  assert.equal(stack.length, 0, 'balanced #ifdef');
+  return out.join('\n');
+}
+
+test('pilot define sets preprocess to the exact shaders of 590687c', () => {
+  // sha256 of the preprocessed SPRITE_VERTEX_SHADER / SPRITE_FRAGMENT_SHADER of core/ at 590687c, same preprocess.
+  const sha = s => createHash('sha256').update(s).digest('hex');
+  const vertex = '3ceece1998e6b2b1384b36d3aac77abba264c1b5f2f87d015487ad2ae5a62d44';
+  for (const [defines, fragment] of [
+    [['SPRITE_TEXTURE', 'DEPTH_FADE'], 'f9b80d4b905d1ab97add514d6369c15fdd6e416bb4f40c7dad366a89170c294e'],
+    [['SPRITE_TEXTURE'], 'c115f8e34c07829c7c172648ccbd1415b1b43706ed65381119e9c3fc776fa68b'],
+    [['DEPTH_FADE'], 'ee5efb5f7e36042a5fbf61b3029a9eb439ec86ebd729f58515dac934d2570b56'],
+    [[], 'e6ad49ccf006fbb6ac3087e4043b2e053985d93e1da6d76bd3bffda50d846efe']]) {
+    assert.equal(sha(preprocess(SPRITE_VERTEX_SHADER, defines)), vertex, JSON.stringify(defines));
+    assert.equal(sha(preprocess(SPRITE_FRAGMENT_SHADER, defines)), fragment, JSON.stringify(defines));
+  }
+  const pilot = preprocess(SPRITE_VERTEX_SHADER, ['SPRITE_TEXTURE', 'DEPTH_FADE']) + preprocess(SPRITE_FRAGMENT_SHADER, ['SPRITE_TEXTURE', 'DEPTH_FADE']);
+  for (const word of ['cameraPosition', 'trunc', 'radialGradientExponential']) assert.ok(!pilot.includes(word), word);
+});
+
+test('SubUV wrap policy: UE floor + 0.5, fmod column, unbounded row; equals clamp inside the grid', () => {
+  const close = (actual, expected, label) => actual.forEach((v, i) => assert.ok(Math.abs(v - expected[i]) < 1e-12, `${label}: ${actual} vs ${expected}`));
+  assert.deepEqual(SUBUV_POLICIES, ['clamp', 'wrap']);
+  for (const grid of [[8, 4], [10, 6], [1, 1]]) for (let frame = 0; frame < grid[0] * grid[1]; frame++)
+    for (const fraction of [0, .25, .999]) for (const uv of [[0, 0], [1, 1], [.3, .7]])
+      close(subUVAtlasUv(frame + fraction, grid, uv, 'wrap'), subUVAtlasUv(frame + fraction, grid, uv), `${grid} ${frame + fraction}`);
+  // The gate frames of the Flame: subImage 3.33, 10, 20, 30 (steps 2, 6, 12, 18).
+  close(subUVAtlasUv(3.3333334922790527, [8, 4], [0, 1], 'wrap'), [3 / 8, 1]);
+  close(subUVAtlasUv(30.000003814697266, [8, 4], [1, 0], 'wrap'), [7 / 8, 0]);
+  // Past the grid the row keeps counting: 35 = column 3, row 4 (one atlas height below), read as cell 3 by TA_WRAP.
+  close(subUVAtlasUv(35, [8, 4], [0, 1], 'wrap'), [3 / 8, 0]);
+  close(subUVAtlasUv(35, [8, 4], [1, 0], 'wrap'), [4 / 8, -1 / 4]);
+  for (let frame = 32; frame < 64; frame++) {
+    const wrapped = subUVAtlasUv(frame, [8, 4], [.25, .75], 'wrap'), cell = subUVAtlasUv(frame - 32, [8, 4], [.25, .75]);
+    close([wrapped[0], wrapped[1] + 1], cell, `idx ${frame} mod 32`);
+  }
+  // The clamp default is unchanged; unknown policies fail.
+  close(subUVAtlasUv(40, [8, 4], [1, 0], 'clamp'), [1, 0]);
+  for (const policy of ['mirror', '', null, 'WRAP']) assert.throws(() => subUVAtlasUv(1, [8, 4], [0, 0], policy), { message: 'Invalid SubUV policy' });
+  assert.match(SUBUV_ATLAS_UV_GLSL, /#ifdef SUBUV_WRAP\n {2}float a = subImage - fract\(subImage\) \+ 0\.5;\n {2}float column = floor\(a - grid\.x \* trunc\(a \/ grid\.x\)\);\n {2}float row = floor\(a \* \(1\.0 \/ grid\.x\)\);/);
+});
+
+test('sprite layers take the opt-in facing, SubUV policy and radial opacity as defines', () => {
+  assert.deepEqual(SPRITE_FACING_MODES, ['camera-plane', 'camera-position']);
+  assert.deepEqual(SPRITE_OPACITIES, ['texel-red', 'radial-gradient-exponential']);
+  assert.deepEqual(spriteLayer({ grid: [8, 4], texture: true, depthFade: null, facing: 'camera-position', subUV: 'wrap' }),
+    { grid: [8, 4], texture: true, depthFade: null, facing: 'camera-position', subUV: 'wrap',
+      defines: { SPRITE_TEXTURE: '', SPRITE_FACING_CAMERA_POSITION: '', SUBUV_WRAP: '' } });
+  assert.deepEqual(spriteLayer({ grid: [1, 1], texture: false, depthFade: null, opacity: 'radial-gradient-exponential' }),
+    { grid: [1, 1], texture: false, depthFade: null, facing: 'camera-plane', opacity: 'radial-gradient-exponential',
+      defines: { SPRITE_RADIAL_GRADIENT: '' } });
+  // Explicit defaults give the pilot shape: no subUV or opacity key.
+  assert.deepEqual(spriteLayer({ grid: [8, 4], texture: true, depthFade: 1, facing: 'camera-plane', subUV: 'clamp', opacity: 'texel-red' }),
+    spriteLayer({ grid: [8, 4], texture: true, depthFade: 1 }));
+  for (const [options, message] of [
+    [{ facing: 'camera-velocity' }, 'Unsupported sprite facing'], [{ subUV: 'mirror' }, 'Invalid SubUV policy'],
+    [{ subUV: null }, 'Invalid SubUV policy'], [{ opacity: 'texel-alpha' }, 'Unsupported sprite opacity'],
+    [{ opacity: 'radial-gradient-exponential' }, 'The radial gradient layer is untextured']])
+    assert.throws(() => spriteLayer({ grid: [1, 1], texture: true, depthFade: null, ...options }), { message }, JSON.stringify(options));
+  const radial = preprocess(SPRITE_FRAGMENT_SHADER, ['SPRITE_RADIAL_GRADIENT']);
+  assert.ok(radial.includes(RADIAL_GRADIENT_EXPONENTIAL_GLSL));
+  assert.match(radial, /clamp\(tint\.a \* radialGradientExponential\(vec2\(atlasUv\.x, 1\.0 - atlasUv\.y\)\), 0\.0, 1\.0\) \* fade/);
+  assert.ok(!radial.includes('texel.r * tint.a') && !radial.includes('uniform sampler2D atlas'));
+  const position = preprocess(SPRITE_VERTEX_SHADER, ['SPRITE_FACING_CAMERA_POSITION']);
+  assert.match(position, /vec3 direction = spriteSafeNormalize\(cameraPosition - center\);/);
+  assert.match(position, /vec3 right = spriteSafeNormalize\(cross\(vec3\(0\.0, 1\.0, 0\.0\), direction\)\);/);
+  assert.match(position, /vec3 up = cross\(right, direction\);/);
+  assert.match(position, /viewMatrix \* vec4\(center \+ corner\.x \* right - corner\.y \* up, 1\.0\)/);
+});
+
+test('camera-position basis is UE FaceCameraPosition carried through toScene', () => {
+  const { toScene } = particlesModule;
+  const direction = v => toScene(v.map(x => x * 100)); // toScene without the cm-to-m scale
+  const close = (a, b, label) => a.forEach((v, i) => assert.ok(Math.abs(v - b[i]) < 1e-12, `${label}: ${a} vs ${b}`));
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const normalize = v => { const l = Math.max(Math.hypot(...v), .000001); return v.map(x => x / l); };
+  const cameras = { front: [820, 0, -10], oblique: [551.5704195109398, 531.5704195109398, 263.61611466053495], side: [20.00000000000005, 800, -10] };
+  for (const [view, camera] of Object.entries(cameras)) for (const particle of [[0, 0, 0], [32.7, -16.7, -41], [-28.6, 32, 44.9]]) {
+    // NiagaraSpriteVertexFactory.ush 561-562, 582-583, in UE axes.
+    const d = normalize(camera.map((v, i) => v - particle[i])), right = normalize(cross(d, [0, 0, 1])), up = cross(d, right);
+    const basis = cameraPositionBasis(toScene(camera), toScene(particle));
+    close(basis.direction, direction(d), `${view} direction`);
+    close(basis.right, direction(right), `${view} right`);
+    close(basis.up, direction(up), `${view} up`);
+  }
+  // On the camera axis of the reference cameras (roll 0) the basis is FaceCamera's: Right = view right, Up = -view up.
+  const round = v => v.map(x => Math.round(x * 1e9) / 1e9 + 0);
+  for (const [view, position] of Object.entries(cameras)) {
+    const camera = new THREE.OrthographicCamera(-4.25, 4.25, 4.25, -4.25, .01, 100);
+    camera.position.set(...toScene(position)); camera.lookAt(new THREE.Vector3(...toScene([20, 0, -10]))); camera.updateMatrixWorld();
+    const e = camera.matrixWorld.elements, basis = cameraPositionBasis(toScene(position), toScene([20, 0, -10]));
+    close(round(basis.right), round([e[0], e[1], e[2]]), `${view} view right`);
+    close(round(basis.up), round([-e[4], -e[5], -e[6]]), `${view} -view up`);
+  }
+});
+
+test('RadialGradientExponential twin matches the RENDER-SOURCES samples and GLSL line', async () => {
+  const sources = JSON.parse(await fs.readFile(new URL('../../docs/delivery/st01c/basichit/render-sources.json', import.meta.url)));
+  const instance = sources.radialGradientExponential.instance;
+  assert.deepEqual({ ...RADIAL_GRADIENT_EXPONENTIAL, center: [...RADIAL_GRADIENT_EXPONENTIAL.center] },
+    { center: instance.unwired.CenterPosition, radius: .5, density: instance.unwired.Density, invertDensity: instance.unwired['Invert Density'] });
+  assert.match(instance.wired.Radius, /DefaultValue 0\.5/);
+  for (const { distanceFromCenterUv, value } of instance.samplesAlongRadius)
+    for (const [du, dv] of [[1, 0], [0, -1], [Math.SQRT1_2, Math.SQRT1_2]])
+      assert.ok(Math.abs(radialGradientExponential([.5 + du * distanceFromCenterUv, .5 + dv * distanceFromCenterUv]) - value) < 5e-7, `${distanceFromCenterUv}`);
+  for (const uv of [[0, 0], [1, .5], [.5, 1], [.9, .9]]) assert.equal(radialGradientExponential(uv), 0);
+  const squash = s => s.replace(/\s+/g, ' ').trim();
+  const statements = instance.glsl.split(';').map(squash).filter(Boolean), glsl = squash(RADIAL_GRADIENT_EXPONENTIAL_GLSL);
+  assert.equal(statements.length, 4);
+  for (const line of statements.slice(0, 2)) assert.ok(glsl.includes(line + ';'), line);
+  assert.ok(glsl.includes('return ' + statements[2].replace(/^float grad = /, '') + ';'), statements[2]);
 });
