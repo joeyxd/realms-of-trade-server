@@ -1,5 +1,19 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**PT01, 2026-10-21 — el suelo del pueblo ya no tiene escalones invisibles (alpha.92):**
+Sin SQL ni protocolo. Las terrazas del pueblo (2,4 / 6,4 / 10,4) subían 4 unidades en 3 con un smoothstep cúbico: fuera
+de la rampa cada subida llegaba a pendiente 2,5 contra maxSlope 1,0 y el jugador se quedaba parado en suelo que parecía
+llano. `townHeight` (src/sim/terrainRevamp.js) trata cada plano (bandas de terraza, pads de chozas y puesto, línea de la
+rampa, dos pies de palmera) como meseta unida por taludes de pendiente 0,68; el survey del pueblo da 0,776 como máximo y
+ninguna celda sobre 0,80 (antes 2,523 y 948). Las chozas conservan nivel y huella plana; el puesto de la vendedora se
+inclina 0,58 en su huella contra el talud de la choza de arriba en vez de dejar un escalón junto a ella. 12 filas de
+palmeras y plantas (worldgen.js VILLAGE_PALMS.AT y VILLAGE_VEGETATION) se mueven 2,4 como máximo para que los tests de la
+aldea sigan intactos; dos palmeras llevan pie llano propio (`TOWN_PALM_FLATS`). La máscara de tierra conserva su extensión;
+TERRAIN_REVISION 'island-terraces-v2'. Herramienta `tools/town-slope-survey.mjs`; tests nuevos en map-revamp (pendiente de
+todo el pueblo, un caminante desde el spawn llega a toda celda del pueblo, huella del puesto, palmeras sobre sus pies;
+los dos primeros fallan con el terreno viejo). map-revamp y los tests de aldea no están en el gate. Ticket T-1021-20;
+capturas antes/después fuera de git (T-1021-21). Pendiente: prueba a mano de Joi en el teléfono.
+
 **GM07b0, 2026-10-21 — identidad del contenido sin el runtime: un mundo GM publicado sobrevive a un deploy (alpha.91, protocolo 66, renumerado sobre SK04b):**
 Decisión D10 de [GM07](briefs/gm07-terrain-tiles.md). Sin SQL ni cambios en el actualizador; versión 0.6.0-alpha.91,
 `PROTOCOL_VERSION` 66 (formato de revisión nuevo). Las preparaciones nuevas escriben el esquema 2 (`version: 2` de
@@ -50,7 +64,6 @@ autoridad respondía `combat`): `step()` ahora lo avanza un tick por tick. Runne
 cuerpo), una frase EN y una ES explican `world` y cómo recolectar. Tests: 9 nuevos en companion-presence-gather y
 8 más en los de presencia, runner y CLI. Ticket T-1021-16. Pendiente: textos de la tarjeta que dicen "no habilita
 recolección" y "solo seguir, esperar o volver"; el cliente web no tiene botón de recolectar.
-
 **IC04, 2026-10-21 — la mente del compañero ve el mundo alrededor de su cuerpo (alpha.86):**
 [Entrega](delivery/ic04-observation-v2.md). Sin SQL ni protocolo; versión 0.6.0-alpha.86. `server/agentPerception.mjs` exporta
 `AGENT_WORLD_POLICY` ({v:1, radius 24, maxNodes 16}) y cada SNAPSHOT proyectado al agente gana una clave `world` para su
