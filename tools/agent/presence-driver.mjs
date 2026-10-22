@@ -1,4 +1,4 @@
-import { PRESENCE_ORDERS, PRESENCE_NODE } from './contract.mjs';
+import { PRESENCE_ORDERS, PRESENCE_NODE, PRESENCE_RECIPES } from './contract.mjs';
 
 // IC03b: paced, latest-wins sender of the presence orders that one owner-message turn produced.
 // It never decides or polls: one load on connect, then load + order (+ one CAS retry) per turn.
@@ -18,19 +18,20 @@ export class PresenceDriver {
   get closed() { return this.#closed; }
   get presence() { return view(this.#presence); }
   load() { return this.#run(null); }
-  // IC05a: gather carries its node id; the other orders carry none.
-  order(op, node) {
-    const valid = PRESENCE_ORDERS.includes(op) && (op === 'gather' ? typeof node === 'string' && PRESENCE_NODE.test(node) : node === undefined);
-    return valid ? this.#run(op, node) : Promise.resolve(this.#report('invalid', fail('invalid_request')));
+  // IC05a: gather carries its node id; IC05b: craft carries its recipe id; the other orders carry none.
+  order(op, arg) {
+    const valid = PRESENCE_ORDERS.includes(op) && (op === 'gather' ? typeof arg === 'string' && PRESENCE_NODE.test(arg) :
+      op === 'craft' ? PRESENCE_RECIPES.includes(arg) : arg === undefined);
+    return valid ? this.#run(op, arg) : Promise.resolve(this.#report('invalid', fail('invalid_request')));
   }
   close() {
     if (this.#closed) return;
     this.#closed = true;
     for (const token of this.#tokens) token.wake?.();
   }
-  async #run(op, node) {
+  async #run(op, arg) {
     if (this.#closed) return this.#report(op, fail('closed'));
-    const token = { op, node, superseded: false, wake: null };
+    const token = { op, arg, superseded: false, wake: null };
     if (op !== null) {
       // Latest wins: the earlier order stops after its current send, or at once if it is not sending.
       if (this.#current) { this.#current.superseded = true; this.#current.wake?.(); }
@@ -87,7 +88,8 @@ export class PresenceDriver {
     if (this.#sends.length + needed > PRESENCE_PACING.maxSends) return fail('paced');
     this.#sends.push(now); this.#lastSendAt = now;
     let receipt;
-    try { receipt = await this.#request(op, op === 'load' ? {} : { expectedRevision, ...(op === 'gather' ? { node: token.node } : {}) }); }
+    try { receipt = await this.#request(op, op === 'load' ? {} : { expectedRevision,
+      ...(op === 'gather' ? { node: token.arg } : op === 'craft' ? { recipe: token.arg } : {}) }); }
     catch { receipt = null; }
     if (!receipt || typeof receipt !== 'object' || typeof receipt.ok !== 'boolean') receipt = fail('request_failed');
     if (receipt.presence) this.#presence = view(receipt.presence);

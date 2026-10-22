@@ -163,7 +163,7 @@ try {
     const section = page.locator('.mn-companion-presence');
     assert.equal(await section.locator('h3').textContent(), 'Presencia en Salty Shore');
     assert.match(await section.textContent(), /Primero vuelve al punto de llegada de Salty Shore/);
-    assert.match(await section.textContent(), /sin combate\. Con una mente conectada, recolecta madera y piedra/);
+    assert.match(await section.textContent(), /sin combate\. Con una mente conectada, recolecta madera y piedra, fabrica un hacha o un pico de piedra, tala palmeras y pica rocas/);
     assert.match(await section.textContent(), /IA y el emparejamiento se controlan por separado/);
     assert.notEqual(await page.locator('.mn-companions-panel').evaluate(panel =>
       panel.querySelector('.mn-companion-presence').compareDocumentPosition(panel.querySelector('.mn-companions-list')) & Node.DOCUMENT_POSITION_FOLLOWING), 0,
@@ -264,7 +264,7 @@ try {
   await check('English_mobile_390x844_copy_and_presence_layout_fit', async () => {
     const panel = page.locator('.mn-companion-presence');
     assert.match(await panel.textContent(), /AI and pairing are controlled separately/);
-    assert.match(await panel.textContent(), /Safe-zone pilot: no combat\. With a connected mind, it gathers wood and stone/);
+    assert.match(await panel.textContent(), /Safe-zone pilot: no combat\. With a connected mind, it gathers wood and stone, crafts a stone axe or pickaxe, chops palms and breaks rocks/);
     assert.match(await panel.textContent(), /will not be summoned again/);
     evidence.layouts.mobileEn = await presenceLayout(page, 390, 844);
   });

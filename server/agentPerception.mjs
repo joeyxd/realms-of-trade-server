@@ -20,6 +20,8 @@ export const AGENT_PILOT_POLICY = Object.freeze({
 // IC04: the world block of an agent snapshot. Public catalogue facts around the body, radius gated
 // like entities but without occlusion (every human client already receives the node catalogue).
 export const AGENT_WORLD_POLICY = Object.freeze({ v: 1, radius: 24, maxNodes: 16 });
+// IC05b: the optional kit of that block: the body's own tool flags and the goods its craft and gather verbs use.
+export const AGENT_KIT = Object.freeze({ tools: Object.freeze(['axe', 'pickaxe']), goods: Object.freeze(['tronco', 'piedra']) });
 
 const PASS_THROUGH = new Set([
   MSG.WELCOME, MSG.CHAT_STATE, MSG.CHAT_MESSAGE, MSG.CHAT_RESULT,
@@ -197,8 +199,20 @@ export class AgentPerception {
       water = point(this.#spring.source);
     }
     const hours = typeof world.gameHoursAt === 'function' ? world.gameHoursAt() : NaN;
+    const kit = this.#kit(world, selfEntity);
     return { v: AGENT_WORLD_POLICY.v, tick, hours: Number.isFinite(hours) ? round1(hourOfDay(round1(hours))) : null,
-      nodes: views, truncated: near.length > AGENT_WORLD_POLICY.maxNodes, water, bench: point(world.resources?.bench) };
+      nodes: views, truncated: near.length > AGENT_WORLD_POLICY.maxNodes, water, bench: point(world.resources?.bench),
+      ...(kit ? { kit } : {}) };
+  }
+
+  // IC05b: the body's own belt tools and the pack goods its verbs use, read only. Absent without a profile.
+  #kit(world, selfEntity) {
+    const profile = typeof world.profiles?.get === 'function' ? world.profiles.get(selfEntity) : null;
+    const goods = profile?.eco?.pack?.goods;
+    if (!goods || typeof goods !== 'object') return null;
+    const count = (good) => Number.isSafeInteger(goods[good]) && goods[good] > 0 ? goods[good] : 0;
+    return { tools: Object.fromEntries(AGENT_KIT.tools.map((tool) => [tool, profile.tools?.[tool] === 1 ? 1 : 0])),
+      pack: Object.fromEntries(AGENT_KIT.goods.map((good) => [good, count(good)])) };
   }
 
   #newLife(id) {

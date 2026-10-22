@@ -12,7 +12,7 @@ import { AgentChat } from './chat.mjs';
 import { AgentInventory } from './inventory.mjs';
 import { AgentMarket } from './market.mjs';
 import { AgentTrade } from './trade.mjs';
-import { labLimits, validGrant, validWorld, integer, PRESENCE_ORDERS, PRESENCE_NODE, WORLD_MAX_NODES } from './contract.mjs';
+import { labLimits, validGrant, validWorld, validKit, integer, PRESENCE_ORDERS, PRESENCE_NODE, PRESENCE_RECIPES, WORLD_MAX_NODES } from './contract.mjs';
 
 const fields = Object.fromEntries(PLAYER_FIELDS.map((name, i) => [name, i]));
 const neutral = () => ({ mx: 0, mz: 0, ax: 0, az: 0, btn: 0, prs: 0, w: 0 });
@@ -46,7 +46,7 @@ function worldSpot(raw, self) {
   const local = Math.hypot(position.x - self.x, position.y - self.y, position.z - self.z);
   return { ok: true, value: local <= WORLD_RADIUS + WORLD_SLACK ? { position, distance: raw.distance } : null };
 }
-function normalizeWorld(raw, self) {
+export function normalizeWorld(raw, self) {
   if (!plainObject(raw) || raw.v !== 1 || !integer(raw.tick) || !num(raw.hours) || !Array.isArray(raw.nodes) ||
       raw.nodes.length > 4 * WORLD_MAX_NODES || typeof raw.truncated !== 'boolean') return null;
   const nodes = [];
@@ -62,8 +62,10 @@ function normalizeWorld(raw, self) {
   nodes.sort((a, b) => a.distance - b.distance || (a.node.ref.nodeId < b.node.ref.nodeId ? -1 : a.node.ref.nodeId > b.node.ref.nodeId ? 1 : 0));
   const water = worldSpot(raw.water, self), bench = worldSpot(raw.bench, self);
   if (!water.ok || !bench.ok) return null;
+  // IC05b: the body's own kit rides along when the server sends it; a malformed kit drops only the kit.
+  const kit = Object.hasOwn(raw, 'kit') && validKit(raw.kit) ? { tools: { ...raw.kit.tools }, pack: { ...raw.kit.pack } } : null;
   const world = { hours: raw.hours, nodes: nodes.slice(0, WORLD_MAX_NODES).map((entry) => entry.node),
-    truncated: raw.truncated || nodes.length > WORLD_MAX_NODES, water: water.value, bench: bench.value };
+    truncated: raw.truncated || nodes.length > WORLD_MAX_NODES, water: water.value, bench: bench.value, ...(kit ? { kit } : {}) };
   return validWorld(world) ? world : null;
 }
 const networkTransport = (address, { origin } = {}) => {
@@ -456,17 +458,19 @@ export class AgentNetworkClient {
   // validates and executes it; this only shapes the exact wire keys and settles the promise.
   presence(op, options = {}) {
     const fail = (why) => Promise.resolve({ ok: false, why });
-    const load = op === 'load', gather = op === 'gather';
+    const load = op === 'load', gather = op === 'gather', craft = op === 'craft';
     if ((!load && !PRESENCE_ORDERS.includes(op)) || !(load ? exactKeys(options, []) :
-        exactKeys(options, gather ? ['expectedRevision', 'node'] : ['expectedRevision']) && integer(options.expectedRevision) &&
-        (!gather || (typeof options.node === 'string' && PRESENCE_NODE.test(options.node))))) return fail('invalid_request');
+        exactKeys(options, gather ? ['expectedRevision', 'node'] : craft ? ['expectedRevision', 'recipe'] : ['expectedRevision']) && integer(options.expectedRevision) &&
+        (!gather || (typeof options.node === 'string' && PRESENCE_NODE.test(options.node))) &&
+        (!craft || PRESENCE_RECIPES.includes(options.recipe)))) return fail('invalid_request');
     if (['stopping', 'stopped'].includes(this.#state)) return fail('closed');
     if (!this.#client || this.#t.closed || this.#t.ws.readyState !== 1) return fail('not_connected');
     if (!this.#authority || !this.grant.capabilities.includes('presence')) return fail('forbidden');
     if (this.#presencePending.size >= MAX_PRESENCE_PENDING) return fail('busy');
     const requestId = `presence:${randomUUID()}`;
     const message = load ? { t: MSG.AGENT_COMPANION_PRESENCE, requestId, op } :
-      { t: MSG.AGENT_COMPANION_PRESENCE, requestId, op, expectedRevision: options.expectedRevision, ...(gather ? { node: options.node } : {}) };
+      { t: MSG.AGENT_COMPANION_PRESENCE, requestId, op, expectedRevision: options.expectedRevision,
+        ...(gather ? { node: options.node } : {}), ...(craft ? { recipe: options.recipe } : {}) };
     return new Promise((resolve) => {
       const pending = { requestId, op, expectedRevision: load ? null : options.expectedRevision, resolve, timer: null };
       pending.timer = setTimeout(() => this.#settlePresence(pending, { ok: false, why: 'timeout' }), this.#presenceTimeoutMs);

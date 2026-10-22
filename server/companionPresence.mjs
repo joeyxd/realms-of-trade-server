@@ -4,22 +4,32 @@ import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { DT, TICK_RATE } from '../src/data/tuning.js';
 import { TRADE } from '../src/sim/systems/trade.js';
 import { attachProfile, detachProfile } from '../src/sim/systems/inventory.js';
+import { CRAFT_RECIPES, RESOURCE_KINDS, sanitizeTools } from '../src/data/resources.js';
 import { presenceAnchor, presencePointAllowed, presenceSafety, advancePresence, presenceWorkPoint, pointOnRouteReason } from './companionPresencePolicy.mjs';
 
 const REQUEST = /^[A-Za-z0-9:_-]{1,100}$/;
 const NODE = /^[A-Za-z0-9:_-]{1,64}$/;
-const OPS = ['load', 'join', 'follow', 'wait', 'return', 'retire', 'gather'];
+const RECIPE = /^[a-z_]{1,32}$/;
+const OPS = ['load', 'join', 'follow', 'wait', 'return', 'retire', 'gather', 'craft'];
 // L03g-b: an attached mind may read its body and give the safe orders; join and retire stay with the owner.
-const MIND_OPS = ['load', 'follow', 'wait', 'return', 'gather'];
+const MIND_OPS = ['load', 'follow', 'wait', 'return', 'gather', 'craft'];
 // IC05a: one tool-free, single-action gather per order; a busy lane is retried 3 times, 1 s apart.
 const GATHER_KINDS = ['wood', 'stone'];
+// IC05b/c: a tool node (palm: axe; rock, iron_ore: pickaxe) needs that tool on the body's own belt and one
+// order strikes until the node's final hit, every hit its own economic op.
+const TOOL_KINDS = ['palm', 'rock', 'iron_ore'];
+// IC05b: the body crafts only the hand tool recipes, from its own pack, where it stands.
+const CRAFT_TOOLS = ['hacha_piedra', 'pico_piedra'];
 const GATHER_RETRIES = 3, GATHER_TIMEOUT = 10 * TICK_RATE;
 // Only safety reasons clear by themselves; outcomes (blocked, gathered, full, ...) stay until the next order.
 const TRANSIENT = ['dead', 'outside_zone', 'danger'];
 const outcomeWhy = why => {
-  const r = why === 'node' ? 'no_node' : String(why).replace(/[A-Z]/g, c => `_${c.toLowerCase()}`);
+  const r = why === 'node' ? 'no_node' : why === 'tool' ? 'no_tool' : String(why).replace(/[A-Z]/g, c => `_${c.toLowerCase()}`);
   return /^[a-z0-9_]{1,64}$/.test(r) ? r : 'refused';
 };
+// The stationary and calm preconditions of resourceCmd; the authority still checks every rule.
+const unsettled = (ecs, entity) => ecs.regenT[entity] < TRADE.calm || Math.hypot(ecs.vx[entity], ecs.vz[entity]) > 1e-6 ||
+  ecs.dashT[entity] >= 0 || ecs.dashBuffer[entity] > 0 || ecs.castK[entity] > 0 || ecs.castLock[entity] > 0 || ecs.atkStage[entity] > 0;
 // Every route sample is tested against the zone alone: an earlier blocked sample must not hide a later exit.
 const leavesZone = (world, a, b) => {
   const n = Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.z - a.z) / 0.15));
@@ -174,10 +184,12 @@ export class CompanionPresenceService {
         enabled: this.ready, presence: session || mind ? this.projection(this.entries.get(owner)) : null });
     };
     if (!session && !mind) return reply('forbidden');
-    const keys = message.op === 'load' ? ['t', 'requestId', 'op'] : ['t', 'requestId', 'op', 'expectedRevision', ...(message.op === 'gather' ? ['node'] : [])];
+    const keys = message.op === 'load' ? ['t', 'requestId', 'op'] : ['t', 'requestId', 'op', 'expectedRevision',
+      ...(message.op === 'gather' ? ['node'] : message.op === 'craft' ? ['recipe'] : [])];
     if (!requestId || !OPS.includes(message.op) || !exact(message, keys) ||
         (message.op !== 'load' && (!Number.isSafeInteger(message.expectedRevision) || message.expectedRevision < 0)) ||
-        (message.op === 'gather' && (typeof message.node !== 'string' || !NODE.test(message.node)))) return reply('invalid_request');
+        (message.op === 'gather' && (typeof message.node !== 'string' || !NODE.test(message.node))) ||
+        (message.op === 'craft' && (typeof message.recipe !== 'string' || !RECIPE.test(message.recipe)))) return reply('invalid_request');
     if (!this.ready) return reply('unavailable');
     if (mind && (!MIND_OPS.includes(message.op) || !this.mindCurrent(sock))) return reply('forbidden');
     if (this.busy.has(owner) || this.busy.size >= 8 || !this.rate(owner)) return reply('busy');
@@ -210,21 +222,39 @@ export class CompanionPresenceService {
       const ownerSock = mind ? e.ownerSock : sock, world = h.server.world;
       const ownerEntity = ownerSock && (!mind || this.principal(ownerSock) === e.ownerSession) ? h.server.clients.get(ownerSock.id)?.entity : undefined;
       if (message.op === 'wait') {
-        e.order = 'wait'; e.stagnant = 0; e.revision++;
+        e.order = 'wait'; e.craft = null; e.stagnant = 0; e.revision++;
         e.reason = presenceSafety(world, e.body.entity); return null;
       }
       const why = presenceSafety(world, e.body.entity) || presenceSafety(world, ownerEntity);
       if (why) return why;
+      if (message.op === 'craft') {
+        // IC05b: a hand tool recipe paid from the body's own pack where it stands; the authority checks every rule.
+        const recipe = CRAFT_TOOLS.includes(message.recipe) ? CRAFT_RECIPES[message.recipe] : null;
+        if (!recipe) return 'unsupported_recipe';
+        const profile = world.profiles.get(e.body.entity), goods = profile?.eco?.pack?.goods ?? {};
+        if (sanitizeTools(profile?.tools)[recipe.tool] >= recipe.tier) return 'already_owned';
+        if (Object.entries(recipe.inputs).some(([good, count]) => !((goods[good] ?? 0) >= count))) return 'materials';
+        // The body stands still while it crafts: the order is wait, the craft runs beside it.
+        e.craft = { recipe: recipe.id, tries: 0, at: 0, opId: null, sent: 0, ack: null };
+        e.order = 'wait'; e.reason = 'crafting'; e.stagnant = 0; e.revision++;
+        return null;
+      }
       if (message.op === 'gather') {
         // IC05a: a ready wood or stone node with a standing point and a straight route inside the zone.
         const node = world.resources?.nodes.get(message.node), from = { x: world.ecs.x[e.body.entity], z: world.ecs.z[e.body.entity] };
         if (!node) return 'no_node';
-        if (!GATHER_KINDS.includes(node.kind)) return 'unsupported_node';
+        const tool = TOOL_KINDS.includes(node.kind) ? RESOURCE_KINDS[node.kind].tool : null;
+        if (!GATHER_KINDS.includes(node.kind) && !tool) return 'unsupported_node';
+        // IC05b/c: without the node's tool the order is refused before the body takes a step.
+        if (tool && world.profiles.get(e.body.entity)?.tools?.[tool] !== 1) return 'no_tool';
         const point = presenceWorkPoint(world, node, from);
         if (!point || leavesZone(world, from, point)) return 'outside_zone';
         if (node.readyTick > world.tick) return 'depleted';
-        e.gather = { node: node.id, point, tries: 0, at: 0, opId: null, sent: 0 };
+        if (tool && this.timedPalm(node) && this.palmBonus(node)) return 'shared_palm';
+        e.gather = { node: node.id, point, tries: 0, at: 0, opId: null, sent: 0,
+          ...(tool ? { tool, total: RESOURCE_KINDS[node.kind].hits, challenge: null, progress: null, ack: null } : {}) };
       }
+      e.craft = null;
       e.order = message.op; e.reason = null; e.stagnant = 0; e.revision++;
       return null;
     });
@@ -323,7 +353,8 @@ export class CompanionPresenceService {
       // Detach synchronously before releasing the gate. A failed release leaves recovery required.
       this.trackDetach(e);
       this.revokePairing(e, 'retired');
-      h.server.disconnect(body.id); h.profiles.close(body.id); e.body = null; e.order = 'wait'; e.revision++;
+      h.server.disconnect(body.id); h.profiles.close(body.id); h.loggingAim?.forget(body.id);
+      e.body = null; e.order = 'wait'; e.craft = null; e.revision++;
       await h.profiles.flush();
       this.detaching.delete(body.id);
       const result = await h.store.saveCompanionPresence({ ...this.scope(e), expectedRevision: e.head.revision,
@@ -343,13 +374,15 @@ export class CompanionPresenceService {
       ecs.regenT[entity] += DT;
       let reason = presenceSafety(w, entity);
       const owner = e.ownerSock && this.principal(e.ownerSock) === e.ownerSession && h.server.clients.get(e.ownerSock.id)?.entity;
-      if (!owner && e.order !== 'return') { e.order = 'return'; e.revision++; }
-      if (!reason && (e.order === 'follow' || e.order === 'gather')) reason = presenceSafety(w, owner);
+      if (!owner && e.order !== 'return') { e.order = 'return'; e.craft = null; e.revision++; }
+      if (!reason && (e.order === 'follow' || e.order === 'gather' || e.craft)) reason = presenceSafety(w, owner);
       if (reason) {
         if (e.reason !== reason) { e.reason = reason; e.revision++; }
         ecs.moveMag[entity] = 0; continue;
       }
-      if (TRANSIENT.includes(e.reason)) { e.reason = null; e.revision++; }
+      // A cleared safety reason gives back the running task's own reason (crafting, hit progress), else none.
+      if (TRANSIENT.includes(e.reason)) { e.reason = e.craft ? 'crafting' : e.order === 'gather' ? e.gather?.progress ?? null : null; e.revision++; }
+      if (e.craft) { this.craftStep(e, w, entity); continue; }
       if (e.order === 'wait') { ecs.moveMag[entity] = 0; continue; }
       if (e.order === 'gather') { this.gatherStep(e, w, entity); continue; }
       const target = e.order === 'return' ? presenceAnchor(w) : { x: ecs.x[owner], z: ecs.z[owner] };
@@ -368,6 +401,7 @@ export class CompanionPresenceService {
     }
   }
   // IC05a: walk to the node's work point, settle, then submit one gather through the lane a player uses.
+  // IC05b/c: a tool node repeats the strike, one economic op per hit, until the node's final hit.
   gatherStep(e, w, entity) {
     const ecs = w.ecs, g = e.gather, node = w.resources?.nodes.get(g.node);
     ecs.moveMag[entity] = 0;
@@ -380,31 +414,102 @@ export class CompanionPresenceService {
       return;
     }
     e.stagnant = 0;
-    // The stationary and calm preconditions of resourceCmd; the authority still checks every rule.
-    if (w.tick < g.at || ecs.regenT[entity] < TRADE.calm || Math.hypot(ecs.vx[entity], ecs.vz[entity]) > 1e-6 || ecs.dashT[entity] >= 0 ||
-        ecs.dashBuffer[entity] > 0 || ecs.castK[entity] > 0 || ecs.castLock[entity] > 0 || ecs.atkStage[entity] > 0) return;
+    if (w.tick < g.at || unsettled(ecs, entity)) return;
+    if (g.tool) {
+      // Every strike keeps the simulation's cadence: the next one waits out the body's resource cooldown.
+      if ((w.resources.cooldowns.get(entity) || 0) > w.tick) return;
+      if (this.timedPalm(node) && this.palmBonus(node)) { this.outcome(e, g, 'shared_palm'); return; }
+      if (this.timedPalm(node) && !this.swingReady(e, g, node)) return;
+    }
     const opId = `presence-${randomUUID()}`;
     g.opId = opId; g.sent = w.tick;
     // Submitted between ticks, where a player's command arrives, never from inside this tick.
     queueMicrotask(() => this.submit(e, g, opId));
   }
+  // The authority's own test for a timed palm receipt: starter workshop on and v3 resources (economicAuthority).
+  timedPalm(node) {
+    const h = this.host;
+    return node.kind === 'palm' && h.workshopOperations === true && h.worldState?.resources?.v === 3;
+  }
+  // IC05b: a body never finishes a palm on someone else's perfect hits of this cycle (the final hit pays the
+  // cycle's quality to its finisher), so a body's palm yield stays the all-zero one.
+  palmBonus(node) {
+    const w = this.host.server.world, ledger = this.host.worldState?.resources?.logging?.[node.id];
+    const fresh = !(node.hits > 0) || (node.readyTick > 0 && node.readyTick <= w.tick);
+    return !fresh && Number.isSafeInteger(ledger?.quality) && ledger.quality > 0;
+  }
+  // IC05b: the server issues the body's own challenge (LoggingAim.resident, every precondition of a player's
+  // aim) and the body swings only after the perfect window, inside the accepted one: an honest quality-0 hit.
+  swingReady(e, g, node) {
+    const h = this.host, tick = h.worldState.resourceTick(), c = g.challenge?.challenge;
+    if (!c || g.challenge.rev !== node.rev || tick > c.endTick) {
+      const issued = h.loggingAim.resident(e.body.id, node.id, node.rev);
+      if (issued.why) this.outcome(e, g, issued.why);
+      else g.challenge = issued.public;
+      return false;
+    }
+    return tick > c.targetTick + c.width;
+  }
   submit(e, g, opId) {
     const h = this.host, w = h.server.world, node = w.resources?.nodes.get(g.node);
     if (e.order !== 'gather' || e.gather !== g || g.opId !== opId || !e.body || !node) return;
     if (presenceSafety(w, e.body.entity)) { g.opId = null; return; }
-    if (!h.residentCommand(e.body.id, { t: MSG.CMD, type: 'resource', op: 'gather', opId, node: node.id, expectedRev: node.rev })) this.outcome(e, g, 'busy');
+    let challenge = null;
+    if (g.tool && this.timedPalm(node)) {
+      // The proof stamps this very tick: strictly past the perfect window and not past its end, or no swing now.
+      const c = g.challenge?.challenge, tick = h.worldState.resourceTick();
+      if (!c || g.challenge.rev !== node.rev || tick <= c.targetTick + c.width || tick > c.endTick) { g.opId = null; return; }
+      challenge = g.challenge.challengeId;
+    }
+    const loot = node.kind === 'palm' && w.harvestLootEnabled === true;
+    if (!h.residentCommand(e.body.id, { t: MSG.CMD, type: 'resource', op: 'gather', opId, node: node.id, expectedRev: node.rev,
+      ...(challenge ? { challenge } : {}), ...(loot ? { lootRules: 1 } : {}) })) this.outcome(e, g, 'busy');
   }
-  // host.sendTo hands every message for a socketless body here: the authoritative result of its own gather.
+  // IC05b: the craft runs where the body stands, once it is settled and its resource cooldown has passed.
+  craftStep(e, w, entity) {
+    const ecs = w.ecs, c = e.craft;
+    ecs.moveMag[entity] = 0; e.stagnant = 0;
+    if (c.opId) { if (w.tick - c.sent > GATHER_TIMEOUT) this.outcome(e, c, 'unavailable'); return; }
+    if (w.tick < c.at || unsettled(ecs, entity) || (w.resources?.cooldowns.get(entity) || 0) > w.tick) return;
+    const opId = `presence-${randomUUID()}`;
+    c.opId = opId; c.sent = w.tick;
+    queueMicrotask(() => this.submitCraft(e, c, opId));
+  }
+  submitCraft(e, c, opId) {
+    const h = this.host, w = h.server.world, profile = e.body ? w.profiles.get(e.body.entity) : null;
+    if (e.craft !== c || c.opId !== opId || !profile?.eco) return;
+    if (presenceSafety(w, e.body.entity)) { c.opId = null; return; }
+    if (!h.residentCommand(e.body.id, { t: MSG.CMD, type: 'resource', op: 'craft', opId, recipe: c.recipe,
+      expectedRev: profile.eco.tradeRev, n: 1 })) this.outcome(e, c, 'busy');
+  }
+  // host.sendTo hands every message for a socketless body here: the authoritative result of its own gather or craft.
   observe(id, message) {
     const ev = message?.t === MSG.EVENT ? message.ev : null;
     if (ev?.type !== 'resource' && ev?.type !== 'commandDenied') return;
-    const e = [...this.entries.values()].find(row => row.body?.id === id), g = e?.gather;
-    if (!g?.opId || e.order !== 'gather' || ev.to !== e.body.entity || (ev.type === 'resource' && ev.opId !== g.opId)) return;
-    this.outcome(e, g, ev.type === 'commandDenied' ? 'busy' : ev.ok === true ? null : ev.why);
+    const e = [...this.entries.values()].find(row => row.body?.id === id);
+    const task = e?.craft?.opId ? e.craft : e?.order === 'gather' && e.gather?.opId ? e.gather : null;
+    if (!task || ev.to !== e.body.entity || (ev.type === 'resource' && ev.opId !== task.opId)) return;
+    task.ack = ev.type === 'resource' ? ev : null;
+    this.outcome(e, task, ev.type === 'commandDenied' ? 'busy' : ev.ok === true ? null : ev.why);
   }
   outcome(e, g, why) {
     g.opId = null;
+    const ack = g.ack ?? null; g.ack = null;
     if (why === 'busy' && ++g.tries <= GATHER_RETRIES) { g.at = this.host.server.world.tick + TICK_RATE; return; }
+    if (g === e.craft) {
+      e.craft = null; e.reason = why === null ? 'crafted' : outcomeWhy(why); e.stagnant = 0; e.revision++; return;
+    }
+    if (why === null && g.tool) {
+      const left = Number.isSafeInteger(ack?.remaining) ? ack.remaining : 0;
+      if (left > 0) {
+        // One strike landed: the next gets a new opId (and challenge) once the cooldown has passed.
+        g.tries = 0; g.at = 0; g.challenge = null; g.progress = `hit_${g.total - left}_of_${g.total}`;
+        e.reason = g.progress; e.stagnant = 0; e.revision++; return;
+      }
+      // The final hit fells a palm; a rock or an ore vein reports broken, as the receipt does.
+      e.order = 'wait'; e.reason = ack?.felled === true ? 'felled' : ack?.broken === true ? 'broken' : 'gathered';
+      e.stagnant = 0; e.revision++; return;
+    }
     e.order = 'wait'; e.reason = why === null ? 'gathered' : outcomeWhy(why); e.stagnant = 0; e.revision++;
   }
   autoRetire(e) {
@@ -418,7 +523,7 @@ export class CompanionPresenceService {
       // A closing mind leaves its body exactly as it is, with its current order.
       if (e.mind?.sock === sock) this.release(e);
       if (e.ownerSock === sock && e.body) {
-        e.ownerSock = null; e.ownerSession = null; e.order = 'return'; e.reason = null; e.revision++;
+        e.ownerSock = null; e.ownerSession = null; e.order = 'return'; e.craft = null; e.reason = null; e.revision++;
       }
     }
   }
@@ -431,7 +536,7 @@ export class CompanionPresenceService {
       const id = e.body.id;
       this.trackDetach(e);
       this.revokePairing(e, 'server_close');
-      this.host.server.disconnect(id); this.host.profiles.close(id); e.body = null;
+      this.host.server.disconnect(id); this.host.profiles.close(id); this.host.loggingAim?.forget(id); e.body = null; e.craft = null;
       if (safe) {
         try {
           await this.host.profiles.flush();

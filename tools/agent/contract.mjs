@@ -9,8 +9,11 @@ export const LAB_CAPABILITIES = Object.freeze(['move', 'aim', 'attack_pve']);
 export const NETWORK_CAPABILITIES = Object.freeze([...LAB_CAPABILITIES, 'chat', 'body_pve', 'inventory_read', 'market_read', 'trade_buy', 'trade_sell', 'presence']);
 // IC03b: an attached mind may only ask the server to run these presence orders on its body.
 // IC05a: gather names one wood or stone node id (the server validates the node, zone and yield).
-export const PRESENCE_ORDERS = Object.freeze(['follow', 'wait', 'return', 'gather']);
+// IC05b/c: gather also names a palm, rock or iron_ore node (the server checks the tool); craft names one
+// hand tool recipe paid from the body's own pack. The server never reports craft as an order value.
+export const PRESENCE_ORDERS = Object.freeze(['follow', 'wait', 'return', 'gather', 'craft']);
 export const PRESENCE_NODE = /^[A-Za-z0-9:_-]{1,64}$/;
+export const PRESENCE_RECIPES = Object.freeze(['hacha_piedra', 'pico_piedra']);
 export const MOVEMENT_TYPES = Object.freeze(['go_to', 'follow', 'keep_distance']);
 
 const object = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -78,8 +81,13 @@ function validWorldNode(v) {
     typeof v.kind === 'string' && /^[a-z][a-z0-9_]{0,23}$/.test(v.kind) && position(v.position) &&
     typeof v.ready === 'boolean' && finite(v.wait) && v.wait >= 0 && (!hits || (integer(v.remaining) && v.remaining <= 1000));
 }
+// IC05b: the optional kit is the body's own belt (axe, pickaxe as 0 or 1) and its tronco and piedra counts.
+const flag = (v) => v === 0 || v === 1;
+export const validKit = (v) => exact(v, ['tools', 'pack']) && exact(v.tools, ['axe', 'pickaxe']) && flag(v.tools.axe) && flag(v.tools.pickaxe) &&
+  exact(v.pack, ['tronco', 'piedra']) && integer(v.pack.tronco) && integer(v.pack.piedra);
 export function validWorld(v) {
-  return exact(v, ['hours', 'nodes', 'truncated', 'water', 'bench']) && finite(v.hours) && v.hours >= 0 && v.hours <= 24 &&
+  return (exact(v, ['hours', 'nodes', 'truncated', 'water', 'bench']) || (exact(v, ['hours', 'nodes', 'truncated', 'water', 'bench', 'kit']) && validKit(v.kit))) &&
+    finite(v.hours) && v.hours >= 0 && v.hours <= 24 &&
     Array.isArray(v.nodes) && v.nodes.length <= WORLD_MAX_NODES && v.nodes.every(validWorldNode) &&
     new Set(v.nodes.map((n) => n.ref.nodeId)).size === v.nodes.length && typeof v.truncated === 'boolean' &&
     (v.water === null || spot(v.water)) && (v.bench === null || spot(v.bench));

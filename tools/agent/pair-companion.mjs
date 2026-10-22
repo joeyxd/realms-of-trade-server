@@ -54,18 +54,32 @@ export function statusMessage(status) {
   return null;
 }
 
-const ORDER_NAMES = { follow: 'seguirte', wait: 'esperar', return: 'volver', gather: 'recolectar' };
+const ORDER_NAMES = { follow: 'seguirte', wait: 'esperar', return: 'volver', gather: 'recolectar', craft: 'fabricar la herramienta' };
 const BODY_STATUS = { present: 'presente en el mundo', resting: 'descansando', recovery: 'recuperándose', unavailable: 'no disponible' };
 const ORDER_WHY = { conflict: 'el cuerpo cambió mientras tanto y no se aplicó; inténtalo de nuevo', paced: 'diste demasiadas órdenes seguidas; espera un momento', superseded: 'una orden más reciente la reemplazó',
   unavailable: 'el cuerpo no está disponible', closed: 'la sesión ya se cerró', timeout: 'se agotó el tiempo de espera', busy: 'otra orden seguía en curso',
-  no_node: 'no encuentra ese recurso', unsupported_node: 'por ahora solo recoge madera o piedra sueltas', depleted: 'ese recurso está agotado; vuelve a salir en un rato' };
+  no_node: 'no encuentra ese recurso', unsupported_node: 'ese recurso no se puede recoger', depleted: 'ese recurso está agotado; vuelve a salir en un rato',
+  no_tool: 'le falta la herramienta: un hacha para la palmera, un pico para la roca', unsupported_recipe: 'solo fabrica el hacha o el pico de piedra',
+  already_owned: 'ya tiene esa herramienta', materials: 'le faltan materiales en su mochila (3 tronco y 2 piedra)',
+  shared_palm: 'otro pirata ya dio golpes perfectos a esa palmera; que la termine quien la empezó' };
+// IC05a/b/c: outcome reasons the body keeps after an order, shown on the next body state.
+const OUTCOMES = { gathered: 'Ya recogió el recurso que le pediste.', crafting: 'Está fabricando la herramienta.',
+  crafted: 'Ya fabricó la herramienta que le pediste.', felled: 'Ya taló la palmera.', broken: 'Ya picó la roca hasta romperla.',
+  materials: 'No pudo fabricar: le faltan materiales.', already_owned: 'Ya tenía esa herramienta.',
+  no_tool: 'Le falta la herramienta para ese recurso.', shared_palm: 'Dejó la palmera: otro pirata ya le dio golpes perfectos.' };
+const outcomeLine = reason => {
+  if (typeof reason !== 'string') return '';
+  const hit = /^hit_([1-9])_of_([1-9])$/.exec(reason);
+  if (hit) return ` Lleva ${hit[1]} de ${hit[2]} golpes.`;
+  return Object.hasOwn(OUTCOMES, reason) ? ` ${OUTCOMES[reason]}` : '';
+};
 const own = (o, k) => { const d = Object.getOwnPropertyDescriptor(o, k); return d && Object.hasOwn(d, 'value') ? d : null; };
 const plain = o => !!o && typeof o === 'object' && !Array.isArray(o) && Object.getPrototypeOf(o) === Object.prototype;
 
 export function connectedMessage(result, modelId) {
   const model = modelId ?? 'qwen3.8-flash-next-coder-iq1_m';
   if (Array.isArray(result?.capabilities) && result.capabilities.includes('presence'))
-    return `Conectado: ${result.name}. Tu compañero tiene cuerpo en el mundo y obedece "sígueme", "espera", "vuelve" y "recoge madera o piedra" en el chat (el servidor valida cada orden); modelo ${model}. Escribe r y Enter para actualizar contexto; Ctrl+C para detener.`;
+    return `Conectado: ${result.name}. Tu compañero tiene cuerpo en el mundo y obedece "sígueme", "espera", "vuelve", "recoge madera o piedra", "fabrica un hacha o un pico" y "tala esa palmera" o "pica esa roca" en el chat (el servidor valida cada orden); modelo ${model}. Escribe r y Enter para actualizar contexto; Ctrl+C para detener.`;
   return `Conectado: ${result.name}. Solo chat; modelo ${model}. Escribe r y Enter para actualizar contexto; Ctrl+C para detener.`;
 }
 
@@ -76,8 +90,8 @@ export function presenceMessage(event) {
   const data = dataD.value, op = own(data, 'op')?.value, ok = own(data, 'ok')?.value, why = own(data, 'why')?.value;
   const presence = own(data, 'presence')?.value, st = plain(presence) ? own(presence, 'status')?.value : undefined;
   const status = typeof st === 'string' && Object.hasOwn(BODY_STATUS, st) ? BODY_STATUS[st] : null;
-  const gathered = plain(presence) && own(presence, 'reason')?.value === 'gathered' ? ' Ya recogió el recurso que le pediste.' : '';
-  if (op === 'load') return ok === true ? (status ? `Estado del cuerpo: ${status}.${gathered}` : null) : ok === false ? 'No se pudo leer el estado del cuerpo de tu compañero.' : null;
+  const outcome = plain(presence) ? outcomeLine(own(presence, 'reason')?.value) : '';
+  if (op === 'load') return ok === true ? (status ? `Estado del cuerpo: ${status}.${outcome}` : null) : ok === false ? 'No se pudo leer el estado del cuerpo de tu compañero.' : null;
   if (typeof op !== 'string' || !Object.hasOwn(ORDER_NAMES, op)) return null;
   if (ok === true) return `Tu compañero acepta ${ORDER_NAMES[op]}${status ? `; cuerpo ${status}` : ''}.`;
   if (ok === false) return `Tu compañero no pudo ${ORDER_NAMES[op]}: ${typeof why === 'string' && Object.hasOwn(ORDER_WHY, why) ? ORDER_WHY[why] : 'no se pudo completar la orden'}.`;

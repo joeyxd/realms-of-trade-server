@@ -227,7 +227,7 @@ test('(b) the attached mind may order gather and it ends the same way', { timeou
   assert.equal(r.submitted.length, 1);
 });
 
-test('(c) refusals: no_node, unsupported_node, outside_zone, invalid_request and conflict change nothing', { timeout: 60000 }, async t => {
+test('(c) refusals: no_node, no_tool, outside_zone, invalid_request and conflict change nothing', { timeout: 60000 }, async t => {
   const r = await room(t), { owner, entry } = await summoned(r);
   const w = r.app.game.server.world, anchor = presenceAnchor(w), nodes = [...w.resources.nodes.values()];
   const loaded = await presence(owner, 'load'), revision = loaded.presence.revision;
@@ -238,9 +238,10 @@ test('(c) refusals: no_node, unsupported_node, outside_zone, invalid_request and
   };
   await refuse('no_node', 'gather', revision, { node: 'no-such-node' });
   await refuse('no_node', 'gather', revision, { node: 'coast:1' });
+  // IC05b/c: a palm is a tool node now; without an axe the body refuses it before walking (was unsupported_node).
   const palm = nodes.find(n => n.kind === 'palm');
   assert.ok(palm);
-  await refuse('unsupported_node', 'gather', revision, { node: palm.id });
+  await refuse('no_tool', 'gather', revision, { node: palm.id });
   // A node with no standing point inside the zone, and one whose straight route leaves the footprint.
   const far = nodes.find(n => ['wood', 'stone'].includes(n.kind) && Math.hypot(n.x - anchor.x, n.z - anchor.z) > PRESENCE_RADIUS + 2);
   assert.ok(far && !presenceWorkPoint(w, far, anchor));

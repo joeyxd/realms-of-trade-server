@@ -1,7 +1,7 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
 import { jumpStage } from '../sim/systems/jump.js';
-export const PROTOCOL_VERSION = 68; // GM07b: terrain tiles (document v5, content.terrain v5, tile route)
+export const PROTOCOL_VERSION = 69; // IC05b/c: companion craft and tool nodes (68: GM07b terrain tiles)
 
 export const MSG = {
   // client -> server

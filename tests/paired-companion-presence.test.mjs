@@ -335,7 +335,7 @@ test('(b) an owner chat answered with reply text and body follow orders the body
   assert.equal(model.requests.length, 1, 'one model request for one owner message');
   const system = model.requests[0].messages[0].content;
   assert.ok(system.includes(CONVERSATION_BODY_INSTRUCTION), 'body mode adds its instruction sentence');
-  assert.ok(system.includes('"enum":["follow","wait","return","gather"]'), 'body mode selects the body schema');
+  assert.ok(system.includes('"enum":["follow","wait","return","gather","craft"]'), 'body mode selects the body schema');
   const context = JSON.parse(model.requests[0].messages[1].content).context;
   assert.deepEqual(context.required.tools.capabilities, ['chat', 'presence']);
   assert.deepEqual(Object.keys(context.required.tools.presence).sort(), ['order', 'reason', 'revision', 'status']);
@@ -425,17 +425,19 @@ test('(f) pairing revoked while an order is pending: the order resolves closed a
   assert.equal(r.log.some(message => message.op === 'follow'), false, 'the held order never reached the server');
 });
 
-// IC05a: a gather body order names a wood or stone node of the observed world; the server stays the authority.
+// IC05a: a gather body order names a node of the observed world; the server stays the authority.
+// IC05b/c: palm, rock and iron_ore nodes are kept too (the server checks the tool).
 const worldWith = (...nodes) => ({ hours: 12, truncated: false, water: null, bench: null,
   nodes: nodes.map(([nodeId, kind]) => ({ ref: { nodeId }, kind, position: { x: 1, y: 0, z: 1 }, ready: true, wait: 0 })) });
-test('IC05a parse: gather keeps a wood or stone node of confirmed.world and drops any other node, keeping the reply', () => {
+test('IC05a parse: gather keeps a node of confirmed.world and drops any other node, keeping the reply', () => {
   const reply = (args) => JSON.stringify({ v: 1, decision: { type: 'reply', args } });
-  const world = worldWith(['coast-4', 'wood'], ['stone-1030', 'stone'], ['palm-121', 'palm']);
+  const world = worldWith(['coast-4', 'wood'], ['stone-1030', 'stone'], ['palm-121', 'palm'], ['spring-1', 'water']);
   const body = { body: true, world };
   assert.deepEqual(parseDecision(reply({ text: 'Voy.', body: 'gather', node: 'coast-4' }), 8192, 'conversation', body),
     { type: 'reply', args: { text: 'Voy.', body: 'gather', node: 'coast-4' } });
   assert.deepEqual(parseDecision(reply({ text: 'Voy.', body: 'gather', node: 'stone-1030' }), 8192, 'conversation', body).args.node, 'stone-1030');
-  for (const node of ['palm-121', 'coast-99', 'bad id'])
+  assert.equal(parseDecision(reply({ text: 'Voy.', body: 'gather', node: 'palm-121' }), 8192, 'conversation', body).args.node, 'palm-121', 'IC05b: a palm is kept');
+  for (const node of ['spring-1', 'coast-99', 'bad id'])
     assert.deepEqual(parseDecision(reply({ text: 'Voy.', body: 'gather', node }), 8192, 'conversation', body),
       { type: 'reply', args: { text: 'Voy.' } }, `${node}: the body proposal is dropped, the reply survives`);
   assert.deepEqual(parseDecision(reply({ text: 'Voy.', body: 'gather', node: 'coast-4' }), 8192, 'conversation', { body: true }),
@@ -447,7 +449,7 @@ test('IC05a parse: gather keeps a wood or stone node of confirmed.world and drop
   assert.equal(parseDecision(reply({ text: 'Voy.', node: 'coast-4' }), 8192, 'conversation', body), null);
   assert.equal(parseDecision(reply({ text: 'Voy.', body: 'gather', node: 'coast-4' }), 8192, 'conversation', { world }), null, 'chat-only mode is unchanged');
   const args = CONVERSATION_BODY_RESPONSE_SCHEMA.properties.decision.oneOf[1].properties.args;
-  assert.deepEqual(args.properties.body.enum, ['follow', 'wait', 'return', 'gather']);
+  assert.deepEqual(args.properties.body.enum, ['follow', 'wait', 'return', 'gather', 'craft']);
   assert.deepEqual(args.required, ['text']);
   assert.equal(args.properties.node.type, 'string');
   assert.match(CONVERSATION_BODY_INSTRUCTION, /confirmed\.world/); assert.match(CONVERSATION_BODY_INSTRUCTION, /args\.node/);

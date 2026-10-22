@@ -349,7 +349,8 @@ export class AgentMind {
       }
       // The body order is returned, never executed here: it rides only on an accepted reply.
       const body = flight.body && action.ok === true && decision.args.body ? { body: decision.args.body,
-        ...(decision.args.body === 'gather' ? { node: decision.args.node } : {}) } : {};
+        ...(decision.args.body === 'gather' ? { node: decision.args.node } : {}),
+        ...(decision.args.body === 'craft' ? { recipe: decision.args.recipe } : {}) } : {};
       this.#finish(flight, { ok: action.ok === true, ...(action.ok ? {} : { why: action.why ?? 'chat_rejected' }), action, ...body });
       return;
     }

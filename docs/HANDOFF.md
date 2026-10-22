@@ -1,5 +1,23 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**IC05b+IC05c, 2026-10-21 — el cuerpo del compañero fabrica hacha o pico de piedra y trabaja palmeras, rocas y mineral de hierro (alpha.97, protocolo 69):**
+[Entrega](delivery/ic05b-companion-craft-chop.md). Sin SQL; versión 0.6.0-alpha.97, `PROTOCOL_VERSION` 69 (la op `craft` es
+nueva y los clientes viejos la rechazan). Nueva op de presencia `craft {recipe}` (`hacha_piedra` o `pico_piedra`), para el
+dueño y la mente acoplada, mismo carril económico, reintento de `busy` y `opId` que `gather`; los materiales salen solo de
+la mochila del cuerpo (3 tronco y 2 piedra); rechazos `unsupported_recipe`, `already_owned`, `materials`; el cuerpo queda en
+`wait` con razón `crafting` y termina `crafted`. `gather` acepta palm, rock e iron_ore si el cuerpo tiene la herramienta
+(`no_tool` antes de caminar; `shared_palm` si otro pirata dejó golpes perfectos en esa palmera); una orden golpea hasta el
+último golpe del nodo, cada golpe su propia op económica, una orden nueva corta la cadena, la roca se rompe en el último
+golpe (`broken`; el pico no se gasta, ley actual), la palmera termina `felled`. Palmera de un cuerpo: `LoggingAim.resident` emite un desafío
+propio del servidor con todas las precondiciones del jugador, el cuerpo golpea después de la ventana perfecta y dentro de
+la aceptada, y un proof residente con calidad mayor que 0 no se sella: calidad 0 siempre, 3 troncos (igual que un jugador
+con tres golpes en 0). La zona sigue en 30; agua y zona mayor quedan para IC05d. La observación `world` gana `kit`
+(`tools` axe y pickaxe, `pack` tronco y piedra); textos de tarjeta ES y EN y líneas del CLI actualizados. Tests: 11 en
+companion-presence-craft y 10 en companion-presence-chop (21/21). La suite ancha de compañero, agente, tala y recursos
+(1095) tiene 11 fallos que fallan igual en la base 011aef1 (agent-inventory-projection 5; uno en agent-market-cli,
+agent-memory-recovery, agent-movement-network, agent-pve-network, agent-trade-runner y resource-loop-server).
+Tickets T-1021-58 y T-1021-61. Pendiente: el cliente web no tiene botón de fabricar ni de talar; IC05d (agua).
+
 **GM07b1 + GM07b2, 2026-10-22 — terreno por teselas: el GM esculpe y pinta toda la isla, y los jugadores cargan el mundo por teselas (alpha.96, protocolo 68, SQL042):**
 Cortes b1 y b2 de [GM07](briefs/gm07-terrain-tiles.md) y [GM07b2](briefs/gm07b2-server.md), juntos en un solo push.
 `PROTOCOL_VERSION` 68 (documento v5 y `content.terrain` v5). **SQL042** (`server/migrations/042_gm_terrain_tiles.sql`)
