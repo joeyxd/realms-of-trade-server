@@ -1,5 +1,21 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**VR agua + desenfoque, 2026-10-22 — el mar de la orilla y la cámara de diorama sin máscara de tilt-shift (alpha.93):**
+Sin SQL ni protocolo; versión 0.6.0-alpha.93. Agua (T-1022-21; src/render/water.js, waterDetail.js, toon.js, scene.js): de
+día el bajío pasa de aqua a turquesa y azul profundo, con línea de contacto, banda de encaje de espuma y red de cáusticas
+sobre el fondo poco profundo (ganancia SSR x4,2; `causticStrength` compartido sigue en 0,12 para el camino de terreno
+bajo). De noche el mar sigue azul marino (color y night-lighting.test.mjs intactos), la espuma se ilumina como la arena
+bajo la luna (`uSkyFill` nuevo = hemiSky x hemiI desde applyPreset), los faroles dejan ondas cálidas y la luna un brillo
+escaso con ganancia propia (el brillo nocturno compartido sigue en 0,08: la noche de La Caldera no cambia). Desenfoque
+(T-1022-38; solo src/render/pipeline.js): el CoC sale de profundidad / foco - 1 con bandas separadas (cerca 0,24 + caída
+0,08, lejos 0,15 + caída 0,4, alcance 16 px de media resolución); la máscara de tilt-shift queda en 0 con el código
+intacto, ajustable en vivo con `window.__mn.world.pipeline.dofCfg`. El suelo visible queda nítido en los tres zooms; las
+copas y techos frente a la cámara se desenfocan del todo en zoom 0 y 1 y el fondo superior queda suave; en zoom 2 casi
+no hay desenfoque (decisión de gusto pendiente de Joi). QA: `tools/shot.mjs --pose=shore` (T-1022-20) encuadra la playa,
+un punto a 3 u de profundidad y los dos faroles del muelle. Tests de agua 12/12, tests que cargan el pipeline 31/31;
+capturas fuera de git (visual-revamp/.scratch/t1022-21-*, t1022-33-dof). Pendiente: Joi lo revisa en el servidor y en
+una GPU real.
+
 **PT01, 2026-10-21 — el suelo del pueblo ya no tiene escalones invisibles (alpha.92):**
 Sin SQL ni protocolo. Las terrazas del pueblo (2,4 / 6,4 / 10,4) subían 4 unidades en 3 con un smoothstep cúbico: fuera
 de la rampa cada subida llegaba a pendiente 2,5 contra maxSlope 1,0 y el jugador se quedaba parado en suelo que parecía
