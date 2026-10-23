@@ -53,7 +53,7 @@ function checkedBinding(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).length !== 2 ||
       !Object.hasOwn(value, 'endpointId') || !Object.hasOwn(value, 'modelId') ||
       typeof value.endpointId !== 'string' || !/^[a-f0-9]{16}$/.test(value.endpointId) ||
-      typeof value.modelId !== 'string' || !value.modelId.trim() || value.modelId.length > 128 ||
+      typeof value.modelId !== 'string' || !value.modelId.trim() || value.modelId.length > 200 ||
       /[\u0000-\u001f\u007f-\u009f]/.test(value.modelId)) throw new TypeError('invalid_inference_binding');
   return { endpointId: value.endpointId, modelId: value.modelId };
 }

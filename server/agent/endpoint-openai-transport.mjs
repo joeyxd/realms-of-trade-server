@@ -67,7 +67,7 @@ function checkedOptions(options) {
   const maxResponseBytes = record.maxResponseBytes ?? 262_144;
   const thinkingMode = record.thinkingMode ?? 'server_default';
   if (typeof apiKey !== 'string' || apiKey.length > 512 || /[\u0000-\u001f\u007f-\u009f]/.test(apiKey) ||
-      typeof record.modelId !== 'string' || !record.modelId.trim() || record.modelId.length > 128 ||
+      typeof record.modelId !== 'string' || !record.modelId.trim() || record.modelId.length > 200 ||
       !['server_default', 'disabled'].includes(thinkingMode) ||
       !Number.isInteger(record.maxCalls) || record.maxCalls < 1 || record.maxCalls > 8 ||
       !Number.isInteger(record.maxOutputTokens) || record.maxOutputTokens < 1 || record.maxOutputTokens > 512 ||

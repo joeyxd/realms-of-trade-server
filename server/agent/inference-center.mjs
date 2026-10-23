@@ -10,7 +10,7 @@ import { pinnedRequestOptions } from './egress-guard.mjs';
 const fail = why => ({ ok: false, why });
 const exact = (v, keys) => v && typeof v === 'object' && !Array.isArray(v) &&
   Object.keys(v).length === keys.length && keys.every(k => Object.hasOwn(v, k));
-const model = value => typeof value === 'string' && value.trim().length > 0 && value.length <= 128 && !/[\u0000-\u001f\u007f-\u009f]/.test(value);
+const model = value => typeof value === 'string' && value.trim().length > 0 && value.length <= 200 && !/[\u0000-\u001f\u007f-\u009f]/.test(value);
 const empty = () => ({ v: 1, endpoints: [], active: null, catalog: {}, usage: {} });
 const emptyUsage = () => ({ requests: 0, failures: 0, promptTokens: 0, completionTokens: 0, latencyMsTotal: 0, lastAt: null, lastError: null });
 

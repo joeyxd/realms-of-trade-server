@@ -238,7 +238,7 @@ test('resolve writes nothing, performs no provider requests and sees changes fro
 
 test('resolve validates endpoint and model ids with the registry rules', async t => {
   const { center } = await fixture(t); const { id } = await center.save(endpoint());
-  for (const [endpointId, modelId] of [['bad', 'm'], [id, ''], [id, 'm'.repeat(129)], [id, 'm' + String.fromCharCode(10)]]) {
+  for (const [endpointId, modelId] of [['bad', 'm'], [id, ''], [id, 'm'.repeat(201)], [id, 'm' + String.fromCharCode(10)]]) {
     assert.deepEqual(await center.resolve(endpointId, modelId), { ok: false, why: 'invalid_request' });
   }
 });

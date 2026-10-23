@@ -1,5 +1,13 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**IC08 seguimientos, 2026-10-22 (T-1022-50), versión 0.6.0-alpha.99, sin cambio de protocolo ni SQL:** `/status` lleva
+`storage.hostedInference` {enabled, ready, running, max}. Los ids de modelo llegan a 200 caracteres en el centro, el
+transporte, la política del registro, el controlador alojado, el runtime local y el Studio (antes 128). Los sockets de los
+controladores alojados quedan fuera del tope `maxPlayers + 4`: cada uno presenta en loopback un token aleatorio del proceso
+(cabecera `x-marea-hosted`) y tienen su propio cupo de `2 * MN_HOSTED_INFERENCE_MAX`. Borrar una conexión para el compañero
+que la usa (sin clave en memoria). Un fallo de `start()` antes de emitir el código ya no revoca el emparejamiento vivo del PC.
+Tests: servicio 4/4, sala 2/2, gate 386/386.
+
 **IC08, 2026-10-22 — el modelo del compañero se escribe en el juego y la mente corre en el servidor (alpha.98, protocolo 70):**
 [Entrega](delivery/ic08-hosted-inference.md), [contrato](briefs/ic08-hosted-inference.md). Sin SQL; versión 0.6.0-alpha.98,
 `PROTOCOL_VERSION` 70 (`hosted_inference` y `hosted_inference_result`). Decisión de Joi: URL, clave y modelo se escriben en

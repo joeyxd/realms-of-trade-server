@@ -51,7 +51,7 @@ const hosted = (client, op, fields = {}) => request(client, MSG.HOSTED_INFERENCE
 const presence = (client, op, expectedRevision) => request(client, MSG.AGENT_COMPANION_PRESENCE, MSG.AGENT_COMPANION_PRESENCE_RESULT,
   { op, ...(op === 'load' ? {} : { expectedRevision }) });
 
-async function room(t, dir) {
+async function room(t, dir, maxPlayers = 8) {
   const store = createMemoryStore();
   const createCompanion = store.createCompanion.bind(store), loadCompanionCreation = store.loadCompanionCreation.bind(store);
   store.loadCompanionCreation = async scope => {
@@ -65,7 +65,7 @@ async function room(t, dir) {
       character: result.record.characterKey, expectedRevision: 0, stopped: true });
     return result;
   };
-  const app = createGameServer({ port: 0, host: '127.0.0.1', seed: 42, bots: 0, maxPlayers: 8, origins: [ORIGIN],
+  const app = createGameServer({ port: 0, host: '127.0.0.1', seed: 42, bots: 0, maxPlayers, origins: [ORIGIN],
     worldId: WORLD, saveSecret: 'hosted-room-fixture', log() {}, store,
     companionCreation: true, companionCreationAllowMemory: true, companionConfigAllowMemory: true, companionControlAllowMemory: true,
     companionPairing: true, companionPairingAllowMemory: true, companionPresence: true, companionPresenceAllowMemory: true,
@@ -81,6 +81,9 @@ async function room(t, dir) {
     assert.equal((await client.next(m => [MSG.WELCOME, MSG.ERROR, MSG.FULL].includes(m.t))).t, MSG.WELCOME);
     await client.next(m => m.t === MSG.CHAT_STATE);
     return client;
+  }, async bare() {
+    const client = new Wire(`ws://127.0.0.1:${port}/ws`); clients.push(client);
+    return client.open.then(() => true, () => false);
   } };
 }
 
@@ -169,4 +172,39 @@ test('hosted controller: body required, starting then running, a chat reply from
     assert.equal(text.includes(provider.baseUrl) && !file.endsWith('inference.json'), false, `no endpoint URL in ${file}`);
   }
   assert.equal([...owner.messages, ...other.messages].some(message => JSON.stringify(message).includes(SECRET)), false);
+});
+
+test('hosted sockets sit outside the player cap; deleting the connection stops the running companion', async t => {
+  const dir = await mkdtemp(join(tmpdir(), 'hosted-room-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const provider = await fakeProvider(t), r = await room(t, dir, 2), game = r.app.game;
+  const owner = await r.connect('owner');
+  const created = await request(owner, MSG.AGENT_COMPANION_CREATE, MSG.AGENT_COMPANION_CREATE_RESULT, { op: 'create',
+    creationId: '30000000-0000-4000-8000-000000000002', preset: structuredClone(DEFAULT_COMPANION_PRESET) });
+  const character = created.record.characterKey;
+  const loaded = await presence(owner, 'load');
+  const row = (await request(owner, MSG.AGENT_OWNER, MSG.AGENT_OWNER_RESULT, { op: 'list' })).companions.find(item => item.characterKey === character);
+  assert.equal((await request(owner, MSG.AGENT_OWNER, MSG.AGENT_OWNER_RESULT, { op: 'resume', characterKey: character,
+    epoch: row.epoch, expectedRevision: row.control.revision })).ok, true);
+  const saved = await hosted(owner, 'save', { endpoint: { id: null, label: 'Fake', baseUrl: provider.baseUrl, apiKey: SECRET, defaultModel: 'model-a' } });
+  const endpointId = saved.state.endpoints[0].id;
+  assert.equal((await presence(owner, 'join', loaded.presence.revision)).ok, true, 'body summoned');
+
+  while (game.sockets.size < 2 + 4) assert.equal(await r.bare(), true, 'a spectator socket below the cap');
+  assert.equal(await r.bare(), false, 'players + 4 sockets is full');
+  const after = owner.messages.length;
+  assert.equal((await hosted(owner, 'start', { character, endpointId, modelId: 'model-a' })).ok, true);
+  await until(() => statuses(owner, character, after).includes('running'));
+  assert.equal(game.companionPairing.admitted.size, 1, 'the hosted controller connected on a full server');
+  assert.ok(game.hostedSocketCount() >= 1 && game.hostedSocketCount() <= game.hostedInference.maxSockets());
+  assert.equal(await r.bare(), false, 'the hosted socket frees no player slot');
+  assert.deepEqual(game.status().storage.hostedInference, { enabled: true, ready: true, running: 1, max: 1 });
+
+  const deleted = await hosted(owner, 'delete', { id: endpointId });
+  assert.equal(deleted.ok, true, deleted.why);
+  assert.deepEqual(deleted.state.endpoints, []);
+  assert.equal(deleted.state.companions.find(item => item.character === character).status, 'stopped');
+  await until(() => game.companionPairing.admitted.size === 0);
+  assert.equal(game.hostedInference.active(), 0);
+  assert.deepEqual(game.status().storage.hostedInference, { enabled: true, ready: true, running: 0, max: 1 });
 });

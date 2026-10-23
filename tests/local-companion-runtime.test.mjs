@@ -300,7 +300,7 @@ test('bound create, start and chat keep the key out of every companion file and 
 test('local runtime binding validates exact fields, endpoint ids and registry model rules on create and open', async t => {
   const { companion, directory, inference } = await boundCompanion(t);
   for (const binding of [null, { ...inference, extra: true }, { ...inference, endpointId: 'A'.repeat(16) },
-    { ...inference, modelId: 'bad' + String.fromCharCode(10) }, { ...inference, modelId: 'x'.repeat(129) }, { ...inference, modelId: ' ' }]) {
+    { ...inference, modelId: 'bad' + String.fromCharCode(10) }, { ...inference, modelId: 'x'.repeat(201) }, { ...inference, modelId: ' ' }]) {
     const child = join(directory, 'invalid-child');
     await assert.rejects(LocalCompanion.create({ directory: child, draft: companion.draft,
       limits: { maxCalls: 6, maxTokens: 100000 }, inference: binding }), /invalid_inference_binding/);

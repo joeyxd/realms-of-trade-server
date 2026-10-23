@@ -512,7 +512,10 @@ export class GameHost {
         if (this.contentSwitching) return cb(false, 503, 'content');
         if (!this.healthy() || this.groundAuthority && !this.groundAuthority.canMutate() || this.economicAuthority?.busy || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) return cb(false, 503, 'storage');
         if (this.origins.length && !this.origins.includes(info.origin)) return cb(false, 403, 'origin');
-        if (this.sockets.size >= this.maxPlayers + 4) return cb(false, 503, 'busy'); // players + a few spectators
+        // Players + a few spectators; hosted companion controllers (IC08) have their own small allowance.
+        const hosted = this.hostedInference.admits(info.req), hostedSockets = this.hostedSocketCount();
+        if (hosted ? hostedSockets >= this.hostedInference.maxSockets()
+          : this.sockets.size - hostedSockets >= this.maxPlayers + 4) return cb(false, 503, 'busy');
         cb(true);
       },
     });
@@ -807,10 +810,13 @@ export class GameHost {
         companionPresence: { enabled: this.companionPresence.enabled, ready: this.companionPresence.ready,
           bodies: [...this.companionPresence.entries.values()].filter(e => e.body).length, pending: this.companionPresence.busy.size,
           ...(this.companionPresence.enabled ? { minds: this.companionPresence.mindCount() } : {}) },
+        hostedInference: this.hostedInference.status(),
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
   }
+
+  hostedSocketCount() { let n = 0; for (const sock of this.sockets.values()) if (sock.hosted) n++; return n; }
 
   onConnection(ws, req) {
     if (this.contentSwitching) { try { ws.close(1013, 'content'); } catch { /* gone */ } return; }
@@ -820,7 +826,7 @@ export class GameHost {
     const sock = {
       // P2's token belongs in HELLO. Retain only non-credential request context for the verifier.
       ws, req: { headers: { origin: req.headers.origin }, socket: { remoteAddress: req.socket.remoteAddress } },
-      id, alive: true, strikes: 0, strikeT: now, joining: false,
+      id, alive: true, strikes: 0, strikeT: now, joining: false, hosted: this.hostedInference.admits(req),
       bucket: { msgs: LIMITS.msgsBurst, bytes: LIMITS.bytesBurst, t: now },
       out: new LagLink((data) => { if (ws.readyState === 1) ws.send(data); }, this.lag.ms, this.lag.jitter),
       in: new LagLink((msg) => this.receive(sock, msg), this.lag.ms, this.lag.jitter),

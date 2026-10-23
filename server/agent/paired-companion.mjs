@@ -57,15 +57,16 @@ const validOrigin = value => {
 };
 
 /** Claim a one-use pairing code on an outgoing WSS socket; never returns the code in errors.
- * With an explicit `origin` (hosted mode only) the socket is ws://127.0.0.1:<port>/ws instead. */
-export async function claimPairCode({ url, code, timeoutMs = 10000, WebSocketClass = WebSocket, now = Date.now, origin = null } = {}) {
+ * With an explicit `origin` (hosted mode only) the socket is ws://127.0.0.1:<port>/ws instead, plus `headers`. */
+export async function claimPairCode({ url, code, timeoutMs = 10000, WebSocketClass = WebSocket, now = Date.now, origin = null,
+  headers = null } = {}) {
   let endpoint;
   try { endpoint = new URL(url); } catch { throw new Error('pair_unavailable'); }
   const hosted = origin !== null;
   if ((hosted ? !validOrigin(origin) || !HOSTED_URL.test(url) : endpoint.protocol !== 'wss:') ||
       endpoint.username || endpoint.password || endpoint.search || endpoint.hash ||
       !/^[a-f0-9]{64}$/.test(code ?? '') || !Number.isSafeInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > 30000) throw new Error('pair_unavailable');
-  const socket = new WebSocketClass(endpoint.href, { origin: hosted ? origin : `https://${endpoint.host}` });
+  const socket = new WebSocketClass(endpoint.href, { origin: hosted ? origin : `https://${endpoint.host}`, ...(hosted && headers ? { headers } : {}) });
   const requestId = randomUUID();
   return await new Promise((resolve, reject) => {
     let settled = false;
@@ -122,16 +123,17 @@ export class PairedCompanion {
     // IC08 hosted mode: an explicit option, a loopback ws URL, an explicit origin and the owner's registered endpoint.
     if (hosted !== null) {
       // The egress fence is mandatory: a hosted mind must never reach a user URL unfenced.
-      if (!exact(hosted, ['origin', 'endpointId', 'endpoint', 'egress']) ||
+      if (!exact(hosted, ['origin', 'endpointId', 'endpoint', 'egress', 'socketToken']) ||
           !validOrigin(hosted.origin) || typeof url !== 'string' || !HOSTED_URL.test(url) ||
           typeof hosted.endpointId !== 'string' || !/^[a-f0-9]{16}$/.test(hosted.endpointId) ||
           !hosted.endpoint || typeof hosted.endpoint.baseUrl !== 'string' ||
-          typeof modelId !== 'string' || !modelId.trim() || modelId.length > 128 || /[\u0000-\u001f\u007f-\u009f]/.test(modelId) ||
-          typeof hosted.egress?.vet !== 'function') throw new TypeError('invalid_paired_companion_options');
-      const { origin, endpointId, endpoint, egress } = hosted;
-      claim ??= ({ url: address, code }) => claimPairCode({ url: address, code, origin });
+          typeof modelId !== 'string' || !modelId.trim() || modelId.length > 200 || /[\u0000-\u001f\u007f-\u009f]/.test(modelId) ||
+          typeof hosted.egress?.vet !== 'function' || typeof hosted.socketToken !== 'string' ||
+          !/^[a-f0-9]{64}$/.test(hosted.socketToken)) throw new TypeError('invalid_paired_companion_options');
+      const { origin, endpointId, endpoint, egress } = hosted, headers = { 'x-marea-hosted': hosted.socketToken };
+      claim ??= ({ url: address, code }) => claimPairCode({ url: address, code, origin, headers });
       runnerFactory ??= options => new AgentNetworkRunner({ ...options, transportFactory: address => new WsTransport(address,
-        { WebSocketImpl: class HostedSocket extends WebSocket { constructor(target) { super(target, { origin }); } } }) });
+        { WebSocketImpl: class HostedSocket extends WebSocket { constructor(target) { super(target, { origin, headers }); } } }) });
       adapterFactory ??= options => createEndpointOpenAIMind({ ...options, endpoint: { baseUrl: endpoint.baseUrl, apiKey: endpoint.apiKey ?? '' },
         egress });
       this.#hosted = true;

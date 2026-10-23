@@ -198,7 +198,7 @@ test('loopback budget written with the pre-binding schema loads unchanged', asyn
 
 test('registry budget rejects invalid endpoint and model ids and extra policy fields', async t => {
   const { config } = await registryBudget(t);
-  for (const change of [{ endpointId: 'A'.repeat(16) }, { modelId: ' ' }, { modelId: 'x'.repeat(129) },
+  for (const change of [{ endpointId: 'A'.repeat(16) }, { modelId: ' ' }, { modelId: 'x'.repeat(201) },
     { modelId: 'bad' + String.fromCharCode(10) }, { apiKey: 'forbidden' }, { thinkingMode: 'enabled' }]) {
     await assert.rejects(LocalResourceBudget.open({ ...config, ...change }), TypeError);
   }

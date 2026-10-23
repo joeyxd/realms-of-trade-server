@@ -31,7 +31,7 @@ const loopbackPolicyValid = (value) => exact(value, ['baseUrl', 'modelId', 'thin
   })();
 const registryPolicyValid = (value) => exact(value, ['endpointId', 'modelId', 'thinkingMode']) &&
   typeof value.endpointId === 'string' && /^[a-f0-9]{16}$/.test(value.endpointId) &&
-  typeof value.modelId === 'string' && value.modelId.trim().length > 0 && value.modelId.length <= 128 &&
+  typeof value.modelId === 'string' && value.modelId.trim().length > 0 && value.modelId.length <= 200 &&
   !/[\u0000-\u001f\u007f-\u009f]/.test(value.modelId) && ['server_default', 'disabled'].includes(value.thinkingMode);
 const policyValid = (value) => loopbackPolicyValid(value) || registryPolicyValid(value);
 const samePolicy = (a, b) => policyValid(a) && policyValid(b) &&

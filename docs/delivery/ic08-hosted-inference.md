@@ -47,7 +47,14 @@ stored keys unreadable, owners re-enter them), `MN_HOSTED_INFERENCE_ACCOUNTS` (r
 
 ## Known limits
 
-- o-series and gpt-5 reject `max_tokens` and `temperature: 0` (`http_status`). Model ids over 128 characters are refused.
-- Each hosted controller uses one socket against `MAX_PLAYERS + 4`. Deleting a connection does not stop a running
-  companion; it keeps its key in memory until it stops. Nothing is restored after a restart. Memory lives on the volume,
-  not in Supabase. `/status` has no hosted readiness flag yet.
+- o-series and gpt-5 reject `max_tokens` and `temperature: 0` (`http_status`). Model ids over 200 characters are refused.
+- Nothing is restored after a restart. Memory lives on the volume, not in Supabase.
+
+## Follow-ups (T-1022-50)
+
+- `/status` carries `storage.hostedInference`: `{ enabled, ready, running, max }` (`running` and `max` only when ready).
+- Model ids up to 200 characters everywhere (center, transport, registry policy, hosted controller, local runtime, Studio).
+- Hosted controller sockets sit outside `maxPlayers + 4`: they present a per-process random token in `x-marea-hosted`
+  on loopback and have their own allowance of `2 * MN_HOSTED_INFERENCE_MAX` (a claim and a runner socket per slot).
+- Deleting a connection stops the companion that runs on it; its key leaves memory with the controller.
+- A `start()` failure before the pairing code exists no longer revokes the owner's live PC pairing.

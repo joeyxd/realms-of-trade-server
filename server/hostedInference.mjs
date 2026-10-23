@@ -1,7 +1,7 @@
 // IC08 hosted inference (docs/briefs/ic08-hosted-inference.md): the owner registers an OpenAI-compatible
 // endpoint in the game, the key is sealed on the data volume, and a hosted PairedCompanion runs the
 // companion's mind on this server. Logs carry codes only: never a key, a URL, a prompt or a reply.
-import { createHash, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
+import { createHash, createCipheriv, createDecipheriv, randomBytes, timingSafeEqual } from 'node:crypto';
 import path from 'node:path';
 import { MSG } from '../src/net/protocol.js';
 import { HOSTED_LIMITS, HOSTED_OPS, HOSTED_RATES, HOSTED_RATE_CLASS, HOSTED_WHY, validHostedRequest,
@@ -16,6 +16,7 @@ const sessionOwner = session => session.ownerKey ?? session.key;
 const ACTIVE = new Set(['starting', 'running']);
 const KNOWN_WHY = new Set(HOSTED_WHY);
 const SEALED = /^v1\.([A-Za-z0-9_-]{16})\.([A-Za-z0-9_-]{22,})$/;
+const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 
 /** AES-256-GCM with a random 12-byte IV; `aad` binds the ciphertext to its owner and endpoint. */
 export function sealSecret(key, aad, plaintext) {
@@ -71,6 +72,8 @@ export class HostedInferenceService {
       accounts: parsed.accounts ?? new Set(), dir: parsed.dir ?? null });
     if (egress !== null && typeof egress?.vet !== 'function') throw new TypeError('invalid hosted inference egress');
     this.egress = egress ?? createEgressGuard();
+    // Hosted controllers present this per-process token on loopback; their sockets sit outside the player cap.
+    this.socketToken = this.reason === null ? randomBytes(32).toString('hex') : null;
     this.centers = new Map(); this.entries = new Map(); this.rates = new Map();
     if (parsed.reason === 'misconfigured') host.log?.(`[hosted] misconfigured: ${parsed.field}`);
   }
@@ -80,6 +83,19 @@ export class HostedInferenceService {
   gate(owner) { return this.reason ?? (this.accounts.has(owner) ? null : 'not_allowed'); }
   limits() { return { maxEndpoints: HOSTED_LIMITS.maxEndpoints, maxRunning: this.maxRunning }; }
   active() { return [...this.entries.values()].filter(entry => ACTIVE.has(entry.status)).length; }
+  // A claim and a runner socket per running slot.
+  maxSockets() { return this.enabled ? 2 * this.maxRunning : 0; }
+  status() {
+    return { enabled: this.reason !== 'disabled', ready: this.enabled, ...(this.enabled ? { running: this.active(), max: this.maxRunning } : {}) };
+  }
+
+  /** True only for an upgrade request a hosted controller of this process made on loopback. */
+  admits(req) {
+    const value = req?.headers?.['x-marea-hosted'];
+    if (!this.socketToken || typeof value !== 'string' || value.length !== this.socketToken.length ||
+        !LOOPBACK.has(req.socket?.remoteAddress)) return false;
+    return timingSafeEqual(Buffer.from(value), Buffer.from(this.socketToken));
+  }
 
   quota(owner, op) {
     const now = Date.now(), key = `${owner}:${HOSTED_RATE_CLASS[op]}`;
@@ -169,7 +185,12 @@ export class HostedInferenceService {
       return { why: mapWhy((await center.save({ id, label, baseUrl, defaultModel,
         ...(Object.hasOwn(message.endpoint, 'apiKey') ? { apiKey: message.endpoint.apiKey } : {}) })).why) };
     }
-    if (message.op === 'delete') return { why: mapWhy((await center.delete(message.id)).why) };
+    if (message.op === 'delete') {
+      const why = mapWhy((await center.delete(message.id)).why), entry = this.entries.get(owner);
+      // A running companion never outlives its connection or keeps its key in memory.
+      if (why === null && entry?.endpointId === message.id) this.stop(owner, entry.character);
+      return { why };
+    }
     if (message.op === 'probe') { const result = await center.probe(message.id); return { why: result.ok ? null : mapWhy(result.why) }; }
     const result = await center.test(message.id, message.modelId, message.prompt);
     if (!result.ok) return { why: mapWhy(result.why) };
@@ -190,6 +211,7 @@ export class HostedInferenceService {
     const entry = { owner, character, name: null, status: 'starting', endpointId, modelId, error: null, controller: null };
     this.entries.set(owner, entry);
     const pairing = this.host.companionPairing;
+    let issued = null;
     const abort = (why, revoke = false) => {
       if (revoke) pairing?.revokeOwner(owner, 'revoked');
       if (this.entries.get(owner) === entry) { if (previous) this.entries.set(owner, previous); else this.entries.delete(owner); }
@@ -199,19 +221,20 @@ export class HostedInferenceService {
       const resolved = await (await this.center(owner)).resolve(endpointId, modelId);
       if (!resolved.ok) return abort(mapWhy(resolved.why));
       if (!pairing || this.entries.get(owner) !== entry || entry.status !== 'starting' || this.host.closing) return abort('unavailable');
-      const issued = await pairing.issueHosted(sock, character);
+      issued = await pairing.issueHosted(sock, character);
       if (issued?.why !== null || typeof issued.code !== 'string') return abort(mapWhy(issued?.why) ?? 'unavailable');
       if (this.entries.get(owner) !== entry || entry.status !== 'starting' || this.host.closing) return abort('unavailable', true);
       entry.name = this.nameOf(owner, character);
       entry.controller = new PairedCompanion({ directory: path.join(this.dir, 'owners', sha256(owner), 'companions', sha256(character)),
         url: `ws://127.0.0.1:${port}/ws`, modelId, maxCalls: 8, maxTokens: 262144,
         hosted: { origin: this.origin(port), endpointId, endpoint: { baseUrl: resolved.endpoint.baseUrl, apiKey: resolved.endpoint.apiKey },
-          egress: this.egress } });
+          egress: this.egress, socketToken: this.socketToken } });
       void this.push(owner);
       void this.launch(entry, issued.code);
       return { why: null };
     } catch {
-      return abort('unavailable', true);
+      // Revoke only a code this start issued: before that, the owner's live PC pairing is not ours to end.
+      return abort('unavailable', typeof issued?.code === 'string');
     }
   }
 

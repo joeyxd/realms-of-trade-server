@@ -330,7 +330,7 @@ test('inference routes probe, select, test usage, persist and delete with correc
   assert.equal((await post(access, '/api/inference/select', { id, modelId: 'unknown' })).status, 400);
   assert.equal((await post(access, '/api/inference/select', { id, modelId: 'model-b' })).status, 200);
   const state = await access.studio.view(); assert.deepEqual(state.models, [draft.modelId]); assert.deepEqual(state.inference.active, { endpointId: id, modelId: 'model-b' });
-  for (const body of [{ id, modelId: '', prompt: 'Hi' }, { id, modelId: 'model-b', prompt: '' }, { id, modelId: 'model-b', prompt: 'x'.repeat(2001) }, { id, modelId: 'm'.repeat(129), prompt: 'Hi' }, { id: 4, modelId: 'm', prompt: 'Hi' }]) assert.equal((await post(access, '/api/inference/test', body)).status, 400);
+  for (const body of [{ id, modelId: '', prompt: 'Hi' }, { id, modelId: 'model-b', prompt: '' }, { id, modelId: 'model-b', prompt: 'x'.repeat(2001) }, { id, modelId: 'm'.repeat(201), prompt: 'Hi' }, { id: 4, modelId: 'm', prompt: 'Hi' }]) assert.equal((await post(access, '/api/inference/test', body)).status, 400);
   const response = await post(access, '/api/inference/test', { id, modelId: 'model-b', prompt: 'Hola' });
   const result = await response.json(); assert.equal(response.status, 200); assert.equal(result.text.length, 2000); assert.deepEqual(result.usage, { inputTokens: 7, outputTokens: 3 }); assert.equal(result.status, 200);
   broken = true;
@@ -422,7 +422,7 @@ test('api/create rejects malformed bindings, unknown models and corrupt stores w
   const { id } = await (await post(access, '/api/inference/endpoint', { endpoint: {
     id: null, label: 'Bound', baseUrl: 'https://example.invalid/v1', defaultModel: 'm' } })).json();
   for (const inference of [null, { endpointId: id, modelId: 'm', extra: true }, { endpointId: id, modelId: 2 },
-    { endpointId: 'bad', modelId: 'm' }, { endpointId: id, modelId: 'm'.repeat(129) }]) {
+    { endpointId: 'bad', modelId: 'm' }, { endpointId: id, modelId: 'm'.repeat(201) }]) {
     const response = await post(access, '/api/create', { draft, limits, inference });
     assert.equal(response.status, 400); assert.deepEqual(await response.json(), { ok: false, why: 'invalid_request' });
   }

@@ -196,10 +196,10 @@ test('model step markup exposes the source controls and the companion model line
 
 test('center model ids follow the inference center rule, not the local model pattern', () => {
   const cf = '@cf/meta/llama-3-8b-instruct';
-  const endpoint = { ...centerEndpoint, models: [cf, 'bad\u0007id', 'x'.repeat(129)], defaultModel: 'acme+v2#1' };
+  const endpoint = { ...centerEndpoint, models: [cf, 'bad\u0007id', 'x'.repeat(201)], defaultModel: 'acme+v2#1' };
   assert.deepEqual(centerModelChoices(endpoint), [cf, 'acme+v2#1']);
   assert.deepEqual(centerModelChoices({ ...centerEndpoint, models: [], defaultModel: cf }), [cf]);
-  assert.deepEqual(centerModelChoices({ ...centerEndpoint, models: ['x'.repeat(128)], defaultModel: null }), ['x'.repeat(128)]);
+  assert.deepEqual(centerModelChoices({ ...centerEndpoint, models: ['x'.repeat(200)], defaultModel: null }), ['x'.repeat(200)]);
   assert.equal(validateWizardDraft(draft, limits, { source: 'center', endpointId: 'ep-1', modelId: cf }), true);
-  assert.equal(validateWizardDraft(draft, limits, { source: 'center', endpointId: 'ep-1', modelId: 'x'.repeat(129) }), false);
+  assert.equal(validateWizardDraft(draft, limits, { source: 'center', endpointId: 'ep-1', modelId: 'x'.repeat(201) }), false);
 });

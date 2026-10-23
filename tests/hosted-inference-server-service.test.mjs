@@ -11,6 +11,7 @@ import WebSocket from 'ws';
 import { createGameServer } from '../server/index.mjs';
 import { createMemoryStore } from '../server/store.mjs';
 import { HostedInferenceService, hostedInferenceFromEnv } from '../server/hostedInference.mjs';
+import { PairedCompanion } from '../server/agent/paired-companion.mjs';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 
 const OWNER = '22222222-2222-4222-8222-222222222222';
@@ -204,4 +205,53 @@ test('registry: save, edit keeping and clearing the key, probe, test, delete, 9t
   const outcomes = [];
   for (let n = 0; n < 7; n++) outcomes.push((await hosted(other, n % 2 ? 'test' : 'probe', n % 2 ? { id, modelId: 'model-a', prompt: 'Ping' } : { id })).why);
   assert.deepEqual(outcomes, [null, null, null, null, null, null, 'busy']);
+});
+
+test('follow-ups: the /status flag, the hosted socket token, 200-character model ids, start revokes only a code it issued', async t => {
+  const dir = await tempDir(t), provider = await fakeProvider(t);
+  const base = { MN_HOSTED_INFERENCE: '1', MN_HOSTED_INFERENCE_KEY: KEY, MN_HOSTED_INFERENCE_ACCOUNTS: OWNER, MN_HOSTED_INFERENCE_DIR: dir };
+  const off = new HostedInferenceService({ log() {} }, hostedInferenceFromEnv({}));
+  assert.deepEqual(off.status(), { enabled: false, ready: false });
+  assert.deepEqual(new HostedInferenceService({ log() {} }, hostedInferenceFromEnv({ ...base, MN_HOSTED_INFERENCE_DIR: 'relative' })).status(),
+    { enabled: true, ready: false });
+  const r = await boot(t, { ...hostedInferenceFromEnv(base), egress: permissive }), service = r.app.game.hostedInference;
+  assert.deepEqual(r.app.game.status().storage.hostedInference, { enabled: true, ready: true, running: 0, max: 2 });
+
+  const token = service.socketToken, wrong = token.replace(/.$/, c => c === '0' ? '1' : '0');
+  const upgrade = (value, remoteAddress = '127.0.0.1') => ({ headers: { 'x-marea-hosted': value }, socket: { remoteAddress } });
+  assert.match(token, /^[a-f0-9]{64}$/);
+  assert.equal(service.admits(upgrade(token)), true);
+  assert.equal(service.admits(upgrade(token, '::ffff:127.0.0.1')), true);
+  assert.equal(service.admits(upgrade(token, '203.0.113.9')), false, 'never off loopback');
+  assert.equal(service.admits(upgrade(wrong)), false);
+  assert.equal(service.admits(upgrade(undefined)), false);
+  assert.equal(off.admits(upgrade(token)), false, 'a disabled service admits nothing');
+
+  const owner = await r.connect('owner'), long = `m-${'x'.repeat(198)}`;
+  const saved = await hosted(owner, 'save', { endpoint: { id: null, label: 'Largo', baseUrl: provider.baseUrl, apiKey: SECRET, defaultModel: long } });
+  assert.equal(saved.ok, true, saved.why);
+  const id = saved.state.endpoints[0].id;
+  assert.equal(saved.state.endpoints[0].defaultModel, long);
+  const tested = await hosted(owner, 'test', { id, modelId: long, prompt: 'Ping' });
+  assert.equal(tested.ok, true, tested.why);
+  assert.equal(provider.seen.at(-1).body.model, long);
+  assert.equal((await (await service.center(OWNER)).resolve(id, long)).ok, true);
+  const companion = modelId => new PairedCompanion({ directory: join(dir, 'pc'), url: 'ws://127.0.0.1:9/ws', modelId,
+    hosted: { origin: 'https://game.example', endpointId: id, endpoint: { baseUrl: provider.baseUrl, apiKey: SECRET }, egress: permissive, socketToken: token } });
+  assert.doesNotThrow(() => companion(long));
+  assert.throws(() => companion(`${long}x`), /invalid_paired_companion_options/);
+
+  const revoked = [];
+  const lone = new HostedInferenceService({ log() {}, origins: [], sockets: new Map(), closing: false,
+    wss: { options: { server: { address: () => ({ port: 9 }) } } },
+    companionPairing: { revokeOwner: who => revoked.push(who), issueHosted: async () => ({ why: null, code: 'c'.repeat(64) }) } },
+  { ...hostedInferenceFromEnv(base), egress: permissive });
+  lone.center = async () => { throw new Error('store'); };
+  assert.deepEqual(await lone.start({}, OWNER, { character: 'c', endpointId: id, modelId: 'model-a' }), { why: 'unavailable' });
+  assert.deepEqual(revoked, [], 'no code was issued: the owner keeps a live PC pairing');
+  assert.equal(lone.entries.size, 0);
+  lone.center = async () => ({ resolve: async () => ({ ok: true, endpoint: { baseUrl: provider.baseUrl, apiKey: SECRET } }) });
+  assert.deepEqual(await lone.start({}, OWNER, { character: 'c', endpointId: id, modelId: `${long}x` }), { why: 'unavailable' });
+  assert.deepEqual(revoked, [OWNER], 'a code this start issued is revoked');
+  assert.equal(lone.entries.size, 0);
 });

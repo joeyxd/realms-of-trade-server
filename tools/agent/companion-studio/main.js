@@ -78,7 +78,7 @@ export function normalizeChatInput(value) {
 }
 
 // Same rule as the inference center model id (tools/agent/inference-center.mjs).
-const isCenterModelId = id => typeof id === 'string' && id.trim().length > 0 && id.length <= 128 && !/[\u0000-\u001f\u007f-\u009f]/.test(id);
+const isCenterModelId = id => typeof id === 'string' && id.trim().length > 0 && id.length <= 200 && !/[\u0000-\u001f\u007f-\u009f]/.test(id);
 const ENDPOINT_ID_PATTERN = /^[A-Za-z0-9._:-]{1,128}$/;
 
 // Models offered for one inference-center endpoint: cached models first, then the default model once.
