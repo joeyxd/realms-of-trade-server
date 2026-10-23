@@ -1,5 +1,13 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Push R1 del playtest (PT08, PT02, PT03, PT06 partes 1 y 2), 2026-10-22 — el salto llega al servidor público (alpha.94, protocolo 67):**
+Versión 0.6.0-alpha.94; protocolo 67 (BTN.JUMP, ENT.JMP y WELCOME.jump de PT06 parte 1); sin SQL. Integrado desde claude/playtest sobre 5402a0c
+con cherry-pick en un worktree aparte (push-pt06), porque el worktree playtest guarda trabajo R1b sin commitear de otra sesión: la rama
+claude/playtest sigue sin rebasar y sus 5 commits quedan iguales en parche a los de origin. En el VPS, `MN_JUMP=lab` en /etc/marea-negra/alpha.env
+(copia alpha.env.bak-jump-20261022): salto de Mario exacto, sin gastar carga de dash, carrera a 10,8 u/s, daño por caída (50 % sobre 33,75 u).
+`/status` lo dice en storage.jump.mode. Para apagarlo: quitar la línea de alpha.env y recrear el contenedor (cada deploy vuelve a leer alpha.env);
+`MN_JUMP=game` lo deja a la velocidad de siempre y cada salto gasta una carga de dash.
+
 **VR agua + desenfoque, 2026-10-22 — el mar de la orilla y la cámara de diorama sin máscara de tilt-shift (alpha.93):**
 Sin SQL ni protocolo; versión 0.6.0-alpha.93. Agua (T-1022-21; src/render/water.js, waterDetail.js, toon.js, scene.js): de
 día el bajío pasa de aqua a turquesa y azul profundo, con línea de contacto, banda de encaje de espuma y red de cáusticas
@@ -15,6 +23,7 @@ no hay desenfoque (decisión de gusto pendiente de Joi). QA: `tools/shot.mjs --p
 un punto a 3 u de profundidad y los dos faroles del muelle. Tests de agua 12/12, tests que cargan el pipeline 31/31;
 capturas fuera de git (visual-revamp/.scratch/t1022-21-*, t1022-33-dof). Pendiente: Joi lo revisa en el servidor y en
 una GPU real.
+
 **PT06 parte 2 (cliente), 2026-10-22 — tecla, mando, botón táctil, poses y sombra del salto (sin versión: la pone el push; sin protocolo):**
 Sin SQL, sin cambios en sim ni servidor salvo `airStage` (un helper exportado en `src/sim/systems/jump.js`). Todo depende de WELCOME.jump: con el salto
 en off (producción hoy) nada cambia: Espacio sigue siendo dash, el botón táctil no existe. Con lab o game, `src/core/input.js` (`setJump`, llamado desde
