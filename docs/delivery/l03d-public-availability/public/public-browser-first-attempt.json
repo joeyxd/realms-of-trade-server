@@ -1,0 +1,21 @@
+{
+  "schema": "l03d-companions-public-browser/v1",
+  "at": "2026-10-11T16:15:41.614Z",
+  "origin": "https://marea.62.171.136.148.sslip.io",
+  "production": true,
+  "simulatedAuth": false,
+  "checks": [
+    "public_tls_health_and_game_version"
+  ],
+  "screenshots": [],
+  "errors": [
+    "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /configurar/i. Input:\n\n'El centro prepara conexión, modelo y límites. Guardar no inicia inferencia.'\n\n    at file:///C:/DEV/real%20of%20trade/area17-market/tools/qa-companions-public.mjs:61:10"
+  ],
+  "version": "0.6.0-alpha.51",
+  "guestBoot": {
+    "online": true,
+    "transport": "ws",
+    "serverMarked": true,
+    "companionStatus": "signed_out"
+  }
+}

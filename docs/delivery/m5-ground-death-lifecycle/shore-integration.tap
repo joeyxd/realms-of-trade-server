@@ -1,0 +1,458 @@
+TAP version 13
+# Subtest: canteen paid craft, provision refill, drink replay and reconnect keep one conserved quantity
+ok 1 - canteen paid craft, provision refill, drink replay and reconnect keep one conserved quantity
+  ---
+  duration_ms: 462.7221
+  type: 'test'
+  ...
+# Subtest: held commit freezes needs and inventory; effects appear together only in admitted drain
+ok 2 - held commit freezes needs and inventory; effects appear together only in admitted drain
+  ---
+  duration_ms: 325.6912
+  type: 'test'
+  ...
+# Subtest: disabled RNV07b preserves freshwater v1 and never starts needs
+ok 3 - disabled RNV07b preserves freshwater v1 and never starts needs
+  ---
+  duration_ms: 247.4197
+  type: 'test'
+  ...
+# Subtest: canteen readiness fails closed before accepting accounts
+ok 4 - canteen readiness fails closed before accepting accounts
+  ---
+  duration_ms: 236.9235
+  type: 'test'
+  ...
+# Subtest: canteen spring channel interrupts on movement, then commits after its full duration
+ok 5 - canteen spring channel interrupts on movement, then commits after its full duration
+  ---
+  duration_ms: 317.6459
+  type: 'test'
+  ...
+# Subtest: active voyage refuses consumption; confirmed food heals once and replay preserves later state
+ok 6 - active voyage refuses consumption; confirmed food heals once and replay preserves later state
+  ---
+  duration_ms: 281.94
+  type: 'test'
+  ...
+# Subtest: deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+ok 7 - deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+  ---
+  duration_ms: 396.0846
+  type: 'test'
+  ...
+# Subtest: commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+ok 8 - commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+  ---
+  duration_ms: 369.1032
+  type: 'test'
+  ...
+# Subtest: same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+ok 9 - same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+  ---
+  duration_ms: 268.6774
+  type: 'test'
+  ...
+# Subtest: same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+ok 10 - same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+  ---
+  duration_ms: 552.5501
+  type: 'test'
+  ...
+# Subtest: paused and malformed economic commands are denied without a receipt or authority fence
+ok 11 - paused and malformed economic commands are denied without a receipt or authority fence
+  ---
+  duration_ms: 235.1142
+  type: 'test'
+  ...
+# Subtest: ambiguous failed commit fences the host rather than reopening mutations
+ok 12 - ambiguous failed commit fences the host rather than reopening mutations
+  ---
+  duration_ms: 231.3047
+  type: 'test'
+  ...
+# Subtest: paid bucket, interrupted gathering, exact fill retry and reconnect preserve water
+ok 13 - paid bucket, interrupted gathering, exact fill retry and reconnect preserve water
+  ---
+  duration_ms: 447.8428
+  type: 'test'
+  ...
+# Subtest: local dry shore craft and drink retain the parked trial hold identity
+ok 14 - local dry shore craft and drink retain the parked trial hold identity
+  ---
+  duration_ms: 313.8022
+  type: 'test'
+  ...
+# Subtest: fill rechecks the real account mutation gate after its asynchronous receipt lookup
+ok 15 - fill rechecks the real account mutation gate after its asynchronous receipt lookup
+  ---
+  duration_ms: 263.3156
+  type: 'test'
+  ...
+# Subtest: authenticated gathering cancels on damage, combat, cast, and dash without a receipt or water
+ok 16 - authenticated gathering cancels on damage, combat, cast, and dash without a receipt or water
+  ---
+  duration_ms: 268.5433
+  type: 'test'
+  ...
+# Subtest: guest/disabled/missing SQL readiness deny freshwater without modifying inventory
+ok 17 - guest/disabled/missing SQL readiness deny freshwater without modifying inventory
+  ---
+  duration_ms: 724.4162
+  type: 'test'
+  ...
+# Subtest: ACK waits for receipt; lost storage response reconciles without paying twice
+ok 18 - ACK waits for receipt; lost storage response reconciles without paying twice
+  ---
+  duration_ms: 233.7287
+  type: 'test'
+  ...
+# Subtest: paid raft barrel binds stable part identity, conserves transfers and refuses filled removal
+ok 19 - paid raft barrel binds stable part identity, conserves transfers and refuses filled removal
+  ---
+  duration_ms: 372.4054
+  type: 'test'
+  ...
+# Subtest: automatic ordinary pickup commits and applies once at the cadence selector
+ok 20 - automatic ordinary pickup commits and applies once at the cadence selector
+  ---
+  duration_ms: 4172.1814
+  type: 'test'
+  ...
+# Subtest: automatic expiry transitions every ordinary row after its durable deadline without profile changes
+ok 21 - automatic expiry transitions every ordinary row after its durable deadline without profile changes
+  ---
+  duration_ms: 4504.398
+  type: 'test'
+  ...
+# Subtest: a terminal death waits for an older in-flight save and settles its newer completed-tick baseline
+ok 22 - a terminal death waits for an older in-flight save and settles its newer completed-tick baseline
+  ---
+  duration_ms: 4514.5959
+  type: 'test'
+  ...
+# Subtest: pickup plan captures live ECS progress, canonical item attributes, and applies a checked result once
+ok 23 - pickup plan captures live ECS progress, canonical item attributes, and applies a checked result once
+  ---
+  duration_ms: 26.5383
+  type: 'test'
+  ...
+# Subtest: expire has no profile and requires both local and durable deadlines to pass
+ok 24 - expire has no profile and requires both local and durable deadlines to pass
+  ---
+  duration_ms: 5.8295
+  type: 'test'
+  ...
+# Subtest: stale source, tampered durable row, and early deadline are rejected
+ok 25 - stale source, tampered durable row, and early deadline are rejected
+  ---
+  duration_ms: 20.6618
+  type: 'test'
+  ...
+# Subtest: held pearl ledger must exactly match the captured profile ownership
+ok 26 - held pearl ledger must exactly match the captured profile ownership
+  ---
+  duration_ms: 11.4123
+  type: 'test'
+  ...
+# Subtest: malformed, replayed, or wrong operation receipts never apply
+ok 27 - malformed, replayed, or wrong operation receipts never apply
+  ---
+  duration_ms: 12.642
+  type: 'test'
+  ...
+# Subtest: post-apply publication failure rolls back source order, profile, session, and events
+ok 28 - post-apply publication failure rolls back source order, profile, session, and events
+  ---
+  duration_ms: 11.5011
+  type: 'test'
+  ...
+# Subtest: legacy host keeps death persistence and common family composition unmounted by default
+ok 29 - legacy host keeps death persistence and common family composition unmounted by default
+  ---
+  duration_ms: 326.5309
+  type: 'test'
+  ...
+# Subtest: GM content switching excludes a ready host with common death authorities mounted
+ok 30 - GM content switching excludes a ready host with common death authorities mounted
+  ---
+  duration_ms: 3448.3957
+  type: 'test'
+  ...
+# Subtest: Cala fatal commits the whole captured death, but applies and publishes only on the next host boundary
+ok 31 - Cala fatal commits the whole captured death, but applies and publishes only on the next host boundary
+  ---
+  duration_ms: 4216.8602
+  type: 'test'
+  ...
+# Subtest: exterior zero-pearl fatal keeps the safe-zone death result without generating loot
+ok 32 - exterior zero-pearl fatal keeps the safe-zone death result without generating loot
+  ---
+  duration_ms: 3276.5082
+  type: 'test'
+  ...
+# Subtest: death current rows hydrate after restart; an ordinary drop can be picked and another expired under the same owner
+ok 33 - death current rows hydrate after restart; an ordinary drop can be picked and another expired under the same owner
+  ---
+  duration_ms: 4923.395
+  type: 'test'
+  ...
+# Subtest: fatal input inside a real server step neutralizes the remainder of its queued commands
+ok 34 - fatal input inside a real server step neutralizes the remainder of its queued commands
+  ---
+  duration_ms: 3491.1904
+  type: 'test'
+  ...
+# Subtest: fatal deaths from one terminal tick serialize profile and PK versions
+ok 35 - fatal deaths from one terminal tick serialize profile and PK versions
+  ---
+  duration_ms: 3896.8864
+  type: 'test'
+  ...
+# Subtest: a killer who dies later in the same terminal tick transfers the killer role serially
+ok 36 - a killer who dies later in the same terminal tick transfers the killer role serially
+  ---
+  duration_ms: 3635.5729
+  type: 'test'
+  ...
+# Subtest: disconnect after SQL commit but before beforeTick fences death without local apply
+ok 37 - disconnect after SQL commit but before beforeTick fences death without local apply
+  ---
+  duration_ms: 3247.0149
+  type: 'test'
+  ...
+# Subtest: close after SQL commit but before apply preserves the local pre-death snapshot
+ok 38 - close after SQL commit but before apply preserves the local pre-death snapshot
+  ---
+  duration_ms: 3248.0335
+  type: 'test'
+  ...
+# Subtest: apply failure after SQL commit restores the local death projection and fences the host
+ok 39 - apply failure after SQL commit restores the local death projection and fences the host
+  ---
+  duration_ms: 3425.536
+  type: 'test'
+  ...
+# Subtest: composed death recovers current rows after actual SIGKILL after-journal-prepare
+ok 40 - composed death recovers current rows after actual SIGKILL after-journal-prepare
+  ---
+  duration_ms: 6299.5741
+  type: 'test'
+  ...
+# Child was SIGKILLed during death after durable journal prepare or SQL commit and before local effect; restart reopened existing PGlite without migrations, recovered the common journal, then hydrated current pearl and ordinary drop rows.
+# Subtest: composed death recovers current rows after actual SIGKILL after-sql-commit
+ok 41 - composed death recovers current rows after actual SIGKILL after-sql-commit
+  ---
+  duration_ms: 6245.2013
+  type: 'test'
+  ...
+# Child was SIGKILLed during death after durable journal prepare or SQL commit and before local effect; restart reopened existing PGlite without migrations, recovered the common journal, then hydrated current pearl and ordinary drop rows.
+# Subtest: composed drop recovers current rows after actual SIGKILL after-journal-prepare
+ok 42 - composed drop recovers current rows after actual SIGKILL after-journal-prepare
+  ---
+  duration_ms: 6618.0817
+  type: 'test'
+  ...
+# Child was SIGKILLed during drop after durable journal prepare or SQL commit and before local effect; restart reopened existing PGlite without migrations, recovered the common journal, then hydrated current pearl and ordinary drop rows.
+# Subtest: composed drop recovers current rows after actual SIGKILL after-sql-commit
+ok 43 - composed drop recovers current rows after actual SIGKILL after-sql-commit
+  ---
+  duration_ms: 6416.1728
+  type: 'test'
+  ...
+# Child was SIGKILLed during drop after durable journal prepare or SQL commit and before local effect; restart reopened existing PGlite without migrations, recovered the common journal, then hydrated current pearl and ordinary drop rows.
+# Subtest: ground family waits for the sole tick boundary, commits SQL023 atomically, and checkpoint follows its version
+ok 44 - ground family waits for the sole tick boundary, commits SQL023 atomically, and checkpoint follows its version
+  ---
+  duration_ms: 4449.6637
+  type: 'test'
+  ...
+# Subtest: whole-death and managed-drop families share the same adopted-world transaction boundary
+ok 45 - whole-death and managed-drop families share the same adopted-world transaction boundary
+  ---
+  duration_ms: 3685.6389
+  type: 'test'
+  ...
+# Subtest: batch family moves an owned pearl through the adopted transaction writer
+ok 46 - batch family moves an owned pearl through the adopted transaction writer
+  ---
+  duration_ms: 3545.7651
+  type: 'test'
+  ...
+# Subtest: a false result callback fences the family reservation and never resolves as applied
+ok 47 - a false result callback fences the family reservation and never resolves as applied
+  ---
+  duration_ms: 3008.8472
+  type: 'test'
+  ...
+# Subtest: a throw callback fences the family reservation and never resolves as applied
+ok 48 - a throw callback fences the family reservation and never resolves as applied
+  ---
+  duration_ms: 2936.1803
+  type: 'test'
+  ...
+# Subtest: a async result callback fences the family reservation and never resolves as applied
+ok 49 - a async result callback fences the family reservation and never resolves as applied
+  ---
+  duration_ms: 2924.0799
+  type: 'test'
+  ...
+# Subtest: stop while SQL is completing rejects the family result without applying gameplay
+ok 50 - stop while SQL is completing rejects the family result without applying gameplay
+  ---
+  duration_ms: 3083.7949
+  type: 'test'
+  ...
+# Subtest: replacing the boundary owner fences an active family before its callback can run
+ok 51 - replacing the boundary owner fences an active family before its callback can run
+  ---
+  duration_ms: 3158.1164
+  type: 'test'
+  ...
+# Subtest: prepared death reserves before its first await and rejects any unreserved source before journal IO
+ok 52 - prepared death reserves before its first await and rejects any unreserved source before journal IO
+  ---
+  duration_ms: 2589.9161
+  type: 'test'
+  ...
+# Subtest: SQL023/029 compose attributes, workshop, raft and resource receipts and retain them after database reopen
+ok 53 - SQL023/029 compose attributes, workshop, raft and resource receipts and retain them after database reopen
+  ---
+  duration_ms: 10361.3077
+  type: 'test'
+  ...
+# Subtest: ordinary game admits the fixed helm and an observer sees the same moving raft and pilot
+ok 54 - ordinary game admits the fixed helm and an observer sees the same moving raft and pilot
+  ---
+  duration_ms: 536.1013
+  type: 'test'
+  ...
+# Subtest: voyage owns its blueprint and cargo even through trusted economy helpers
+ok 55 - voyage owns its blueprint and cargo even through trusted economy helpers
+  ---
+  duration_ms: 303.3479
+  type: 'test'
+  ...
+# Subtest: storage holds reject new naval input and transitions without advancing ACK, pose or profile
+ok 56 - storage holds reject new naval input and transitions without advancing ACK, pose or profile
+  ---
+  duration_ms: 262.2788
+  type: 'test'
+  ...
+# Subtest: pause cancels a queued helm command and reconnect restores one conserved ship at its berth
+ok 57 - pause cancels a queued helm command and reconnect restores one conserved ship at its berth
+  ---
+  duration_ms: 255.4535
+  type: 'test'
+  ...
+# Subtest: admitted voyage parks the same body ashore, resumes with a fresh epoch and conserves its cargo
+ok 58 - admitted voyage parks the same body ashore, resumes with a fresh epoch and conserves its cargo
+  ---
+  duration_ms: 962.3119
+  type: 'test'
+  ...
+# Subtest: real parked coast allows durable pack resupply and resumes the same voyage with refreshed cargo mass
+ok 59 - real parked coast allows durable pack resupply and resumes the same voyage with refreshed cargo mass
+  ---
+  duration_ms: 819.9197
+  type: 'test'
+  ...
+# Subtest: sailing, shore cargo edits, and recovery after reconnect do not grant shore pack services
+ok 60 - sailing, shore cargo edits, and recovery after reconnect do not grant shore pack services
+  ---
+  duration_ms: 401.1683
+  type: 'test'
+  ...
+# Subtest: a held shore purchase has no early effect and reboarding waits for the M5 receipt
+ok 61 - a held shore purchase has no early effect and reboarding waits for the M5 receipt
+  ---
+  duration_ms: 314.5895
+  type: 'test'
+  ...
+# Subtest: own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+ok 62 - own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+  ---
+  duration_ms: 14.2465
+  type: 'test'
+  ...
+# Subtest: water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+ok 63 - water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+  ---
+  duration_ms: 2.5554
+  type: 'test'
+  ...
+# Subtest: boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+ok 64 - boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+  ---
+  duration_ms: 2.4607
+  type: 'test'
+  ...
+# Subtest: water exit cannot reach an exposed edge more than 1.5 units from the owner
+ok 65 - water exit cannot reach an exposed edge more than 1.5 units from the owner
+  ---
+  duration_ms: 3.2307
+  type: 'test'
+  ...
+# Subtest: failed walker creation restores the swimmer and preserves drowning grace
+ok 66 - failed walker creation restores the swimmer and preserves drowning grace
+  ---
+  duration_ms: 3.0724
+  type: 'test'
+  ...
+# Subtest: restored voyage rebinds its ship revision and blueprint before the owner can swim
+ok 67 - restored voyage rebinds its ship revision and blueprint before the owner can swim
+  ---
+  duration_ms: 12.8855
+  type: 'test'
+  ...
+# Subtest: LocalServer receives swim and reboard commands and snapshots the parked and walking states
+ok 68 - LocalServer receives swim and reboard commands and snapshots the parked and walking states
+  ---
+  duration_ms: 349.4242
+  type: 'test'
+  ...
+# Subtest: geometry rejects high-floor drops and edges blocked by railings
+ok 69 - geometry rejects high-floor drops and edges blocked by railings
+  ---
+  duration_ms: 2.3201
+  type: 'test'
+  ...
+# Subtest: boarding geometry only returns exposed base-deck points in deep water
+ok 70 - boarding geometry only returns exposed base-deck points in deep water
+  ---
+  duration_ms: 2.0169
+  type: 'test'
+  ...
+# Subtest: shore service is available only during an ordinary active shore phase
+ok 71 - shore service is available only during an ordinary active shore phase
+  ---
+  duration_ms: 0.6992
+  type: 'test'
+  ...
+# Subtest: shore notices are localized and direct cargo actions stay locked
+ok 72 - shore notices are localized and direct cargo actions stay locked
+  ---
+  duration_ms: 0.3622
+  type: 'test'
+  ...
+# Subtest: shore market entry requires the server service flag and an existing walkable town
+ok 73 - shore market entry requires the server service flag and an existing walkable town
+  ---
+  duration_ms: 0.6673
+  type: 'test'
+  ...
+# Subtest: shore stop blocks every barrel operation while pack water and survival actions remain available
+ok 74 - shore stop blocks every barrel operation while pack water and survival actions remain available
+  ---
+  duration_ms: 2.2562
+  type: 'test'
+  ...
+1..74
+# tests 74
+# suites 0
+# pass 74
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 67350.1971

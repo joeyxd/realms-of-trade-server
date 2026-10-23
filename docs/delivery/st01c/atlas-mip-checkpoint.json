@@ -1,0 +1,461 @@
+{
+  "schema": "st01c-atlas-mip-checkpoint/v1",
+  "date": "2026-10-20",
+  "sourceSystemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "status": "mip-vs-codec-decomposition-measured-no-variant-accepted-author-decision-pending",
+  "implementation": "private lab only; no new game effect, SQL or protocol; the three new variants are diagnostic and never chosen by the automatic selection",
+  "toktxVersion": "toktx v4.4.2",
+  "atlasManifestSha256": "9731837e8d1c865679ea2eaa098a042d5a27a88b76033618acdc7e9071a8d942",
+  "previousAtlasManifestSha256": "befcf4f9279d2a82df5a9624b528ad924d07d0fad908932a41b261b14a8b3fb2",
+  "runs": [
+    "budget07",
+    "budget08"
+  ],
+  "thresholdsBeforeReview": {
+    "mae255": 2,
+    "p95Channel255": 6,
+    "maskIoU32": 0.98,
+    "ueMae255": 10,
+    "ueIoU32": 0.94
+  },
+  "decomposition2x2": {
+    "rows": [
+      "mips: toktx default filter (lanczos4)",
+      "mips: toktx --filter box"
+    ],
+    "columns": [
+      "RGBA8, no codec",
+      "UASTC (quality 4, zstd 3)"
+    ],
+    "failuresOf268": {
+      "lanczos4": {
+        "rgba8": 31,
+        "uastc": 37
+      },
+      "box": {
+        "rgba8": 43,
+        "uastc": 47
+      }
+    },
+    "minMaskIoU32": {
+      "lanczos4": {
+        "rgba8": 0.8529411764705882,
+        "uastc": 0.8529411764705882
+      },
+      "box": {
+        "rgba8": 0.8529411764705882,
+        "uastc": 0.8529411764705882
+      }
+    },
+    "driverMipsReference": {
+      "variant": "full",
+      "failuresOf268": 0,
+      "minMaskIoU32": 1.0
+    }
+  },
+  "variants": {
+    "full": {
+      "failures": 0,
+      "cases": 268,
+      "accepted": true,
+      "minMaskIoU32": 1.0,
+      "minMaskIoU32Case": {
+        "kind": "pilot",
+        "layer": "both",
+        "view": "front",
+        "bias": 0,
+        "tick": 0,
+        "frame": 0,
+        "file": "case-000.png"
+      },
+      "maxMae255": 0.0,
+      "maxMae255Case": {
+        "kind": "pilot",
+        "layer": "both",
+        "view": "front",
+        "bias": 0,
+        "tick": 0,
+        "frame": 0,
+        "file": "case-000.png"
+      },
+      "maxP95Channel255": 0.0,
+      "maxP95Channel255Case": {
+        "kind": "pilot",
+        "layer": "both",
+        "view": "front",
+        "bias": 0,
+        "tick": 0,
+        "frame": 0,
+        "file": "case-000.png"
+      },
+      "ue": {
+        "failures": 0,
+        "cases": 6,
+        "passed": 6,
+        "maxMae255": 7.837088204038257,
+        "minMaskIoU32": 0.9801756885090218
+      },
+      "gpu": {
+        "threeFormat": "RGBAFormat",
+        "webglInternalFormatDerived": "SRGB8_ALPHA8",
+        "colorSpace": "srgb",
+        "levels": [
+          12,
+          12
+        ],
+        "mipSource": "driver",
+        "driverGeneratesMips": true,
+        "bitsPerPixel": 32,
+        "gpuBytes": 32156324,
+        "uploadedBytes": [
+          null,
+          null
+        ],
+        "loader": "TextureLoader",
+        "supercompression": "none",
+        "gpuMiB": 30.6667
+      },
+      "fileBytes": {
+        "flame": 277976,
+        "smoke": 274538,
+        "pair": 552514
+      },
+      "mipSource": "driver (generateMipmap from the RGBA8 base)"
+    },
+    "ktx2-rgba8": {
+      "failures": 31,
+      "cases": 268,
+      "accepted": false,
+      "minMaskIoU32": 0.8529411764705882,
+      "minMaskIoU32Case": {
+        "kind": "cell",
+        "layer": "smoke",
+        "view": "front",
+        "bias": 0,
+        "tick": 120,
+        "frame": 12,
+        "file": "case-172.png"
+      },
+      "maxMae255": 0.35141313383208644,
+      "maxMae255Case": {
+        "kind": "pilot",
+        "layer": "both",
+        "view": "front",
+        "bias": 0,
+        "tick": 30,
+        "frame": 0,
+        "file": "case-012.png"
+      },
+      "maxP95Channel255": 2.0,
+      "maxP95Channel255Case": {
+        "kind": "pilot",
+        "layer": "both",
+        "view": "front",
+        "bias": 0,
+        "tick": 30,
+        "frame": 0,
+        "file": "case-012.png"
+      },
+      "ue": {
+        "failures": 0,
+        "cases": 6,
+        "passed": 6,
+        "maxMae255": 7.835989516928743,
+        "minMaskIoU32": 0.9794634377967711
+      },
+      "gpu": {
+        "threeFormat": "RGBAFormat",
+        "webglInternalFormatDerived": "SRGB8_ALPHA8",
+        "colorSpace": "srgb",
+        "levels": [
+          12,
+          12
+        ],
+        "mipSource": "file",
+        "driverGeneratesMips": false,
+        "bitsPerPixel": 32,
+        "gpuBytes": 32156324,
+        "uploadedBytes": [
+          11184812,
+          20971512
+        ],
+        "loader": "KTX2Loader",
+        "supercompression": "zstd",
+        "gpuMiB": 30.6667
+      },
+      "fileBytes": {
+        "flame": 1045650,
+        "smoke": 1057587,
+        "pair": 2103237
+      },
+      "mipSource": "file (toktx default filter lanczos4)",
+      "toktxLines": {
+        "flame": "toktx --t2 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-rgba8-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png",
+        "smoke": "toktx --t2 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-rgba8-smoke.ktx2 .scratch/unreal/reference11/textures/T_Smoke_1.png"
+      },
+      "codec": "rgba8"
+    },
+    "ktx2-rgba8-box": {
+      "failures": 43,
+      "cases": 268,
+      "accepted": false,
+      "minMaskIoU32": 0.8529411764705882,
+      "minMaskIoU32Case": {
+        "kind": "cell",
+        "layer": "smoke",
+        "view": "front",
+        "bias": 0,
+        "tick": 120,
+        "frame": 12,
+        "file": "case-172.png"
+      },
+      "maxMae255": 0.20003221779227578,
+      "maxMae255Case": {
+        "kind": "layer",
+        "layer": "smoke",
+        "view": "oblique",
+        "bias": 1,
+        "tick": 120,
+        "frame": 0,
+        "file": "case-069.png"
+      },
+      "maxP95Channel255": 1.0,
+      "maxP95Channel255Case": {
+        "kind": "pilot",
+        "layer": "both",
+        "view": "front",
+        "bias": 0,
+        "tick": 15,
+        "frame": 0,
+        "file": "case-006.png"
+      },
+      "ue": {
+        "failures": 0,
+        "cases": 6,
+        "passed": 6,
+        "maxMae255": 7.795843953554234,
+        "minMaskIoU32": 0.9818483805908175
+      },
+      "gpu": {
+        "threeFormat": "RGBAFormat",
+        "webglInternalFormatDerived": "SRGB8_ALPHA8",
+        "colorSpace": "srgb",
+        "levels": [
+          12,
+          12
+        ],
+        "mipSource": "file",
+        "driverGeneratesMips": false,
+        "bitsPerPixel": 32,
+        "gpuBytes": 32156324,
+        "uploadedBytes": [
+          11184812,
+          20971512
+        ],
+        "loader": "KTX2Loader",
+        "supercompression": "zstd",
+        "gpuMiB": 30.6667
+      },
+      "fileBytes": {
+        "flame": 1033167,
+        "smoke": 1027361,
+        "pair": 2060528
+      },
+      "mipSource": "file (toktx --filter box)",
+      "toktxLines": {
+        "flame": "toktx --t2 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb --filter box ktx2-rgba8-box-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png",
+        "smoke": "toktx --t2 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb --filter box ktx2-rgba8-box-smoke.ktx2 .scratch/unreal/reference11/textures/T_Smoke_1.png"
+      },
+      "codec": "rgba8"
+    },
+    "ktx2-uastc": {
+      "failures": 37,
+      "cases": 268,
+      "accepted": false,
+      "minMaskIoU32": 0.8529411764705882,
+      "minMaskIoU32Case": {
+        "kind": "cell",
+        "layer": "smoke",
+        "view": "front",
+        "bias": 0,
+        "tick": 120,
+        "frame": 12,
+        "file": "case-172.png"
+      },
+      "maxMae255": 0.6647943701982052,
+      "maxMae255Case": {
+        "kind": "cell",
+        "layer": "flame",
+        "view": "front",
+        "bias": 1,
+        "tick": 120,
+        "frame": 17,
+        "file": "case-119.png"
+      },
+      "maxP95Channel255": 3.0,
+      "maxP95Channel255Case": {
+        "kind": "pilot",
+        "layer": "both",
+        "view": "front",
+        "bias": 0,
+        "tick": 30,
+        "frame": 0,
+        "file": "case-012.png"
+      },
+      "ue": {
+        "failures": 0,
+        "cases": 6,
+        "passed": 6,
+        "maxMae255": 7.854058263424304,
+        "minMaskIoU32": 0.9818376068376068
+      },
+      "gpu": {
+        "threeFormat": "RGBA_BPTC_Format",
+        "webglInternalFormatDerived": "COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT",
+        "colorSpace": "srgb",
+        "levels": [
+          12,
+          12
+        ],
+        "mipSource": "file",
+        "driverGeneratesMips": false,
+        "bitsPerPixel": 8,
+        "gpuBytes": 8039200,
+        "uploadedBytes": [
+          2796240,
+          5242960
+        ],
+        "loader": "KTX2Loader",
+        "supercompression": "zstd",
+        "gpuMiB": 7.6668
+      },
+      "fileBytes": {
+        "flame": 688923,
+        "smoke": 705900,
+        "pair": 1394823
+      },
+      "mipSource": "file (toktx default filter lanczos4)",
+      "toktxLines": {
+        "flame": "toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-uastc-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png",
+        "smoke": "toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-uastc-smoke.ktx2 .scratch/unreal/reference11/textures/T_Smoke_1.png"
+      },
+      "codec": "uastc"
+    },
+    "ktx2-uastc-box": {
+      "failures": 47,
+      "cases": 268,
+      "accepted": false,
+      "minMaskIoU32": 0.8529411764705882,
+      "minMaskIoU32Case": {
+        "kind": "cell",
+        "layer": "smoke",
+        "view": "front",
+        "bias": 0,
+        "tick": 120,
+        "frame": 12,
+        "file": "case-172.png"
+      },
+      "maxMae255": 0.6539656243528681,
+      "maxMae255Case": {
+        "kind": "pilot",
+        "layer": "both",
+        "view": "front",
+        "bias": 0,
+        "tick": 30,
+        "frame": 0,
+        "file": "case-012.png"
+      },
+      "maxP95Channel255": 3.0,
+      "maxP95Channel255Case": {
+        "kind": "pilot",
+        "layer": "both",
+        "view": "front",
+        "bias": 0,
+        "tick": 30,
+        "frame": 0,
+        "file": "case-012.png"
+      },
+      "ue": {
+        "failures": 0,
+        "cases": 6,
+        "passed": 6,
+        "maxMae255": 7.806552041321729,
+        "minMaskIoU32": 0.9831262262916939
+      },
+      "gpu": {
+        "threeFormat": "RGBA_BPTC_Format",
+        "webglInternalFormatDerived": "COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT",
+        "colorSpace": "srgb",
+        "levels": [
+          12,
+          12
+        ],
+        "mipSource": "file",
+        "driverGeneratesMips": false,
+        "bitsPerPixel": 8,
+        "gpuBytes": 8039200,
+        "uploadedBytes": [
+          2796240,
+          5242960
+        ],
+        "loader": "KTX2Loader",
+        "supercompression": "zstd",
+        "gpuMiB": 7.6668
+      },
+      "fileBytes": {
+        "flame": 684208,
+        "smoke": 697150,
+        "pair": 1381358
+      },
+      "mipSource": "file (toktx --filter box)",
+      "toktxLines": {
+        "flame": "toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb --filter box ktx2-uastc-box-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png",
+        "smoke": "toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb --filter box ktx2-uastc-box-smoke.ktx2 .scratch/unreal/reference11/textures/T_Smoke_1.png"
+      },
+      "codec": "uastc"
+    }
+  },
+  "zcmpKeptForRgba8": true,
+  "browser": {
+    "launch": {
+      "headless": true,
+      "channel": "chrome"
+    },
+    "version": "155.0.8059.85",
+    "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "extensions": {
+      "bptc": true,
+      "s3tc": true,
+      "astc": false,
+      "etc": false
+    }
+  },
+  "repeat": {
+    "budget07_vs_budget08": {
+      "runs": [
+        "budget07",
+        "budget08"
+      ],
+      "variants": [
+        "source",
+        "full",
+        "half",
+        "quarter",
+        "ktx2-uastc",
+        "ktx2-uastc-box",
+        "ktx2-rgba8",
+        "ktx2-rgba8-box"
+      ],
+      "comparedImages": 2144,
+      "allDecodedPixelsEqual": true
+    }
+  },
+  "mobileMemoryAccepted": false,
+  "limitations": [
+    "Desktop Chrome/ANGLE D3D11 uploads BC7 for UASTC; ASTC and ETC2 were not exposed here.",
+    "webglInternalFormatDerived is named from Three r160 getInternalFormat rules, not queried from the driver (the page cannot read it).",
+    "Reference for every metric is the source PNG render (full is pixel-identical to it); the source PNG and WebP paths use image decoding and driver-generated mips, the KTX2 paths upload the file bytes and the file mip chain.",
+    "The 2x2 isolates mip filter and codec among the toktx variants only; it does not isolate the image-decoding path from the raw-upload path.",
+    "The RGBA8 estimate counts atlases only; LUT 256 KiB and about 5 MiB of render targets are separate."
+  ]
+}

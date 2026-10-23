@@ -1,0 +1,82 @@
+﻿{
+    "generatedAt":  "2026-10-10T05:42:53.232Z",
+    "roundTripMs":  500,
+    "setup":  "Ephemeral memory worlds, server relocation/tool fixtures; real F/touch collection and canonical inventory. No production data.",
+    "views":  [
+                  {
+                      "name":  "desktop",
+                      "width":  1280,
+                      "height":  720,
+                      "touch":  false,
+                      "errors":  [
+
+                                 ],
+                      "checks":  [
+                                     {
+                                         "kind":  "stone",
+                                         "immediateMs":  1.400000000372529,
+                                         "canonicalAfter":  1
+                                     },
+                                     {
+                                         "kind":  "wood",
+                                         "immediateMs":  1.400000000372529,
+                                         "canonicalAfter":  1
+                                     }
+                                 ],
+                      "screenshots":  [
+                                          "desktop.png"
+                                      ],
+                      "status":  "passed"
+                  },
+                  {
+                      "name":  "touch-landscape",
+                      "width":  844,
+                      "height":  390,
+                      "touch":  true,
+                      "errors":  [
+
+                                 ],
+                      "checks":  [
+                                     {
+                                         "kind":  "stone",
+                                         "immediateMs":  1.5,
+                                         "canonicalAfter":  1
+                                     },
+                                     {
+                                         "kind":  "wood",
+                                         "immediateMs":  1.300000000745058,
+                                         "canonicalAfter":  1
+                                     }
+                                 ],
+                      "screenshots":  [
+                                          "touch-landscape.png"
+                                      ],
+                      "status":  "passed"
+                  },
+                  {
+                      "name":  "touch-portrait",
+                      "width":  390,
+                      "height":  844,
+                      "touch":  true,
+                      "errors":  [
+
+                                 ],
+                      "checks":  [
+                                     {
+                                         "kind":  "stone",
+                                         "immediateMs":  1.5,
+                                         "canonicalAfter":  1
+                                     },
+                                     {
+                                         "kind":  "wood",
+                                         "immediateMs":  1.599999999627471,
+                                         "canonicalAfter":  1
+                                     }
+                                 ],
+                      "screenshots":  [
+                                          "touch-portrait.png"
+                                      ],
+                      "status":  "passed"
+                  }
+              ]
+}

@@ -1,12 +1,13 @@
 node_modules/
-npm-debug.log
-.DS_Store
-.env
-.env.local
-.env.production
-*.log
-logs/
 dist/
-build/
-.vscode/
-.idea/
+shots/
+.scratch/
+URL-PARA-AMIGOS.txt
+.env
+.env.*
+.DS_Store
+*.log
+.claude/worktrees/
+__pycache__/
+# Generated asset index (npm run assets:index / ARTE-Y-MODELOS.cmd)
+ARTE-Y-MODELOS.html

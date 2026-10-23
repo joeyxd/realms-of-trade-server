@@ -1,0 +1,422 @@
+{
+  "schema": "gm05a-local-browser/v1",
+  "version": "0.6.0-alpha.45",
+  "production": false,
+  "simulatedAuth": true,
+  "localFixture": true,
+  "screenshots": [
+    "terrain-en-closeup-1440x900.png",
+    "terrain-en-closeup-844x390.png",
+    "terrain-es-closeup-1440x900.png",
+    "terrain-es-closeup-844x390.png",
+    "terrain-es-ramp-overview-1440x900.png"
+  ],
+  "checks": [
+    "real_seed_has_five_policy_valid_strokes_on_existing_dry_ground",
+    "mouse_pointer_executes_raise_lower_flatten_smooth_and_two_click_ramp_as_real_history_edits",
+    "pending_autosave_completes_after_atomic_protected_rejection_without_erasing_error_status",
+    "escape_discards_the_preview_and_preserves_history",
+    "window_blur_discards_the_preview_without_history_commit",
+    "undo_redo_restores_exact_v3_sample_and_decoration_override_state",
+    "walk_preview_runs_over_the_ramp_and_uses_the_projected_ground_sampler",
+    "real_catalog_model_placement_uses_raised_draft_ground",
+    "spanish_english_narrow_closeup_and_ramp_overview_captures_saved",
+    "local_save_reopen_export_and_import_preserve_v3_while_fresh_v2_remains_legacy_shaped"
+  ],
+  "errors": [],
+  "seed": 99282957,
+  "site": [
+    {
+      "tool": "raise",
+      "x": -136,
+      "z": -144
+    },
+    {
+      "tool": "lower",
+      "x": -104,
+      "z": -144
+    },
+    {
+      "tool": "flatten",
+      "x": -176,
+      "z": -128
+    },
+    {
+      "tool": "smooth",
+      "x": -120,
+      "z": -120
+    },
+    {
+      "tool": "ramp",
+      "x": -192,
+      "z": -104
+    }
+  ],
+  "brushes": [
+    {
+      "tool": "raise",
+      "point": {
+        "x": -136,
+        "z": -144
+      },
+      "samples": 47
+    },
+    {
+      "tool": "lower",
+      "point": {
+        "x": -104,
+        "z": -144
+      },
+      "samples": 94
+    },
+    {
+      "tool": "flatten",
+      "point": {
+        "x": -176,
+        "z": -128
+      },
+      "samples": 141
+    },
+    {
+      "tool": "smooth",
+      "point": {
+        "x": -120,
+        "z": -120
+      },
+      "samples": 145
+    },
+    {
+      "tool": "ramp",
+      "point": {
+        "x": -192,
+        "z": -104
+      },
+      "samples": 256
+    }
+  ],
+  "runtime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.45",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 0,
+    "uptime": 1,
+    "stepMs": 0,
+    "bots": 0,
+    "names": [],
+    "errors": 0,
+    "storage": {
+      "kind": "memory",
+      "durable": false,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": null,
+      "groundTransactions": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": false,
+        "ready": false,
+        "logging": false
+      },
+      "fire": {
+        "enabled": false,
+        "ready": false
+      },
+      "freshwater": {
+        "enabled": false,
+        "ready": false
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "workshop": {
+        "enabled": false,
+        "ready": false
+      },
+      "attributes": {
+        "enabled": false,
+        "ready": false
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "browserRuntime": {
+    "version": "0.6.0-alpha.45",
+    "protocolVersion": 51
+  },
+  "rampTerrace": {
+    "point": {
+      "x": -188,
+      "z": -104
+    },
+    "height": 4.585267066955566,
+    "baseHeight": 3.5852670669555664,
+    "samples": 192
+  },
+  "rampBeforeEndClick": {
+    "start": {
+      "x": 814.9305379539785,
+      "y": 466.5253735576005
+    },
+    "end": {
+      "x": 636.1636271139397,
+      "y": 418.9010420488937
+    },
+    "startElement": "game",
+    "endElement": "game",
+    "gameRect": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "top": 0,
+      "right": 1440,
+      "bottom": 900,
+      "left": 0
+    },
+    "point": {
+      "x": -196.10263865053264,
+      "z": -104.08980920003084
+    },
+    "points": [
+      {
+        "x": -188.0341505314886,
+        "z": -104.0398424480461
+      },
+      {
+        "x": -196.10263865053264,
+        "z": -104.08980920003084
+      }
+    ],
+    "pointerInside": true,
+    "cursorVisible": true,
+    "canvasRect": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "top": 0,
+      "right": 1440,
+      "bottom": 900,
+      "left": 0
+    }
+  },
+  "protectedPreflightCode": "protected_area",
+  "pendingSaveBeforeRejectedStroke": {
+    "point": {
+      "x": -136,
+      "z": -144
+    },
+    "dirty": true,
+    "timerPending": true,
+    "autosaveTimer": "QA-controlled 5000ms delay after a real edit; callback invokes the real saveNow()"
+  },
+  "delayedSaveAndProtectedRejection": {
+    "statusDuring": "Trazo bloqueado: mantén suelo seco y distancia de zonas protegidas, o reduce tamaño/altura. No se guardó ningún cambio.",
+    "statusAfterSave": "Trazo bloqueado: mantén suelo seco y distancia de zonas protegidas, o reduce tamaño/altura. No se guardó ningún cambio.",
+    "savedDocumentPreserved": true
+  },
+  "walkStartPositioning": "QA sets terrainInteraction.lastPoint to rampLow; gameplay movement remains real keyboard input",
+  "walkTrace": [
+    {
+      "x": -196,
+      "z": -104,
+      "y": 3.142394781112671,
+      "terrain": 3.142394781112671,
+      "base": 3.1563947200775146,
+      "high": 4.585267066955566,
+      "low": 3.5852670669555664
+    },
+    {
+      "x": -194.6250000000001,
+      "z": -104,
+      "y": 3.3913225829601084,
+      "terrain": 3.3913225829601084,
+      "base": 3.406947523355468
+    },
+    {
+      "x": -192.78333333333367,
+      "z": -104,
+      "y": 3.7247088352838538,
+      "terrain": 3.7247088352838538,
+      "base": 3.5675254384676567
+    },
+    {
+      "x": -191.05000000000055,
+      "z": -104,
+      "y": 4.03888965845098,
+      "terrain": 4.03888965845098,
+      "base": 3.587489616870875
+    },
+    {
+      "x": -189.42500000000075,
+      "z": -104,
+      "y": 4.333133733272417,
+      "terrain": 4.333133733272417,
+      "base": 3.5914839327335364
+    },
+    {
+      "x": -187.69166666666763,
+      "z": -104,
+      "y": 4.585016830762228,
+      "terrain": 4.585016830762228,
+      "base": 3.5825501223405287
+    },
+    {
+      "x": -186.06666666666783,
+      "z": -104,
+      "y": 4.585147094726562,
+      "terrain": 4.585147094726562,
+      "base": 3.5668805917104205
+    },
+    {
+      "x": -184.2250000000014,
+      "z": -104,
+      "y": 3.741270339489968,
+      "terrain": 3.741270339489968,
+      "base": 3.5756703794002167
+    },
+    {
+      "x": -182.6000000000016,
+      "z": -104,
+      "y": 3.985394144057571,
+      "terrain": 3.985394144057571,
+      "base": 3.985394144057571
+    },
+    {
+      "x": -180.86666666666846,
+      "z": -104,
+      "y": 4.82878764470318,
+      "terrain": 4.82878764470318,
+      "base": 4.82878764470318
+    },
+    {
+      "x": -179.24166666666866,
+      "z": -104,
+      "y": 5.7120043476412095,
+      "terrain": 5.7120043476412095,
+      "base": 5.7120043476412095
+    },
+    {
+      "x": -177.50833333333554,
+      "z": -104,
+      "y": 6.402040545145079,
+      "terrain": 6.402040545145079,
+      "base": 6.402040545145079
+    },
+    {
+      "x": -175.77500000000242,
+      "z": -104,
+      "y": 6.597119998931875,
+      "terrain": 6.597119998931875,
+      "base": 6.597119998931875
+    },
+    {
+      "x": -174.0416666666693,
+      "z": -104,
+      "y": 6.608366986115751,
+      "terrain": 6.608366986115751,
+      "base": 6.608366986115751
+    },
+    {
+      "x": -172.30833333333618,
+      "z": -104,
+      "y": 6.623454447587309,
+      "terrain": 6.623454447587309,
+      "base": 6.623454447587309
+    },
+    {
+      "x": -170.57500000000306,
+      "z": -104,
+      "y": 6.630274450778958,
+      "terrain": 6.630274450778958,
+      "base": 6.630274450778958
+    },
+    {
+      "x": -168.95000000000326,
+      "z": -104,
+      "y": 6.630982899665842,
+      "terrain": 6.630982899665842,
+      "base": 6.630982899665842
+    },
+    {
+      "x": -167.21666666667014,
+      "z": -104,
+      "y": 6.622976581255618,
+      "terrain": 6.622976581255618,
+      "base": 6.622976581255618
+    },
+    {
+      "x": -165.48333333333701,
+      "z": -104,
+      "y": 6.606664339701373,
+      "terrain": 6.606664339701373,
+      "base": 6.606664339701373
+    },
+    {
+      "x": -163.7500000000039,
+      "z": -104,
+      "y": 6.589858531951936,
+      "terrain": 6.589858531951936,
+      "base": 6.589858531951936
+    },
+    {
+      "x": -162.01666666667077,
+      "z": -104,
+      "y": 6.577188102404304,
+      "terrain": 6.577188102404304,
+      "base": 6.577188102404304
+    }
+  ],
+  "walkAcceptance": {
+    "startDistanceToRampLow": 0,
+    "rampCrossingSamples": 5,
+    "nearestHighEndpointDistance": 0.3083333333323708
+  },
+  "terracePlacement": {
+    "id": "gm-d1b7c24e-ba50-4726-87ce-ae8ff056a4f2",
+    "position": {
+      "x": -188,
+      "y": 4.585267066955566,
+      "z": -104
+    },
+    "projected": 4.585267066955566,
+    "base": 3.5852670669555664
+  },
+  "narrowRadiusInteraction": {
+    "en": [
+      4,
+      4.5
+    ],
+    "es": [
+      4.5,
+      5
+    ]
+  }
+}

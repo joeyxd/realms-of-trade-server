@@ -1,0 +1,25 @@
+﻿project,content_top_pack,files,bytes,review_role,role_basis
+ActionRPG,ActionRPGStarterSystem,1084,524062251,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+ActionRPG,Slate,2,12250,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+Survival,BigNiagaraBundle,67,129188757,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+Survival,Dreamrise_SMSK,334,455387294,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+Survival,NiagaraExamples,669,1278142521,demo,folder name or existing report identifies template/demo content
+Survival,Splash,2,1398510,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+Survival,SwordTrailVFX,98,172586250,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+Survival,__ExternalActors__,1,849,external,Unreal external actor/object payload path
+Survival,sA_Megapack_v1,608,524607344,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+MyProject,ActionRPGStarterSystem,1077,521555574,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+MyProject,ArrowTrail,51,73195503,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+MyProject,BigNiagaraBundle,722,514820971,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+MyProject,Characters,128,131381051,demo,folder name or existing report identifies template/demo content
+MyProject,Cursor,4,482436,demo,folder name or existing report identifies template/demo content
+MyProject,Dreamrise_SMSK,334,450452687,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+MyProject,LevelPrototyping,29,2859075,demo,folder name or existing report identifies template/demo content
+MyProject,NiagaraExamples,669,1278142521,demo,folder name or existing report identifies template/demo content
+MyProject,SlashTrailElemental,415,278254612,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+MyProject,SwordTrailVFX,98,172586250,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+MyProject,TopDown,24,2230715,demo,folder name or existing report identifies template/demo content
+MyProject,_SplineVFX,113,77634831,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"
+MyProject,__ExternalActors__,17,130508,external,Unreal external actor/object payload path
+MyProject,__ExternalObjects__,4,7274,external,Unreal external actor/object payload path
+MyProject,sA_Megapack_v1,563,340643191,candidate,"review candidate based on pack presence; not quality, license, or provenance claim"

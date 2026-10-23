@@ -1,0 +1,1175 @@
+{
+  "schema": "l02b-agent-pve-verification/v1",
+  "status": "local_software_verified",
+  "generatedAt": "2026-10-08T14:46:17.970Z",
+  "checkout": {
+    "head": "15ccf1c7d4769794123ceaa70a4774cdd86b2ede",
+    "branch": "claude/loving-lovelace-ptbif7",
+    "sharedDirty": true,
+    "missionCommit": null,
+    "hashBasis": "Final working files and complete root-run TAP logs; shared checkout is not an immutable test snapshot."
+  },
+  "protocol": {
+    "version": 27,
+    "changedByMission": false
+  },
+  "agentTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs tests/agent-movement.test.mjs tests/agent-movement-network.test.mjs tests/agent-movement-runner.test.mjs tests/agent-pve.test.mjs tests/agent-pve-network.test.mjs tests/agent-pve-runner.test.mjs",
+    "startedAt": "2026-10-08T14:41:14.307Z",
+    "finishedAt": "2026-10-08T14:41:47.506Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 143,
+    "pass": 142,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 1,
+    "durationMs": 33159.2029,
+    "stderr": "",
+    "log": "agent-tests.tap",
+    "testedFiles": {
+      "tests/agent-interface.test.mjs": "8ad61a915ed6687997a00dd87548131b1f7283d903dce3b43176fef2127d6593",
+      "tests/agent-context.test.mjs": "405a38044854bf48b50f9674a49c24701a9c1f96edeb1c88490934fc1d379d99",
+      "tests/agent-lab.test.mjs": "55c65b4c42b9e23a3d03b98997ae6184cc8cdff061831d7c1f8d65f6fef415c1",
+      "tests/agent-owner-files.test.mjs": "395378bb364c930eb2f80734ba24838fa560a2e56153ceba1ce8c83460f77057",
+      "tests/agent-network.test.mjs": "cb400e681fa2fddc3f2e260123d2ac5eaadb3db95db09308a2b13e4b554d35d4",
+      "tests/agent-runner.test.mjs": "7c600c6b475e14ee3c61ede75196d9cab6744c31958673d09467db812237b860",
+      "tests/agent-chat.test.mjs": "29117cbc51f9d8e730c3ef1412a4dedbaca2fc9ae57a83fb0c952d0d36e76b31",
+      "tests/agent-runner-context.test.mjs": "39516e842c0ba7e34b38db579bd1e6075ff79fc567a2017a629d83bc0af85c68",
+      "tests/agent-lifecycle.test.mjs": "b3521b2514f5076eb85fe2f3ba4a00da98a76de8c2e5a61496081529c1751db6",
+      "tests/agent-lifecycle-runner.test.mjs": "01af218b484c42239f2ed9ba459b3c0d3853456d05cab9cebe50da73c2797101",
+      "tests/agent-movement.test.mjs": "ab2557d6b59503b6b66b31c387a6eab4365bbf490ec25627ed43a74b41a3facd",
+      "tests/agent-movement-network.test.mjs": "ff383551155c7ee2db4ce2e1ebf5f8176ad7e77e5bb9385e518671f7c4b11a7e",
+      "tests/agent-movement-runner.test.mjs": "24d8ff32080131d85c7465229c27d7390f2cc6450bb163ec8d2d640664e7d15a",
+      "tests/agent-pve.test.mjs": "6da01ab9a35a39420738b36c0e1aafdee2f722633e4f0e409388bd1b2054b546",
+      "tests/agent-pve-network.test.mjs": "f8de02372ffe6eaf3e0dbe3dfc2f91a3e572718ad86dd9c8a54648d153029842",
+      "tests/agent-pve-runner.test.mjs": "e18b6661147c8803a755152da577411ca4d42e2ed01ca9240f70710e3b2b9fe5"
+    },
+    "changedTestsDuringSuite": []
+  },
+  "regressionTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs tests/combat.test.mjs tests/weapons.test.mjs tests/lawless.test.mjs tests/items.test.mjs",
+    "startedAt": "2026-10-08T14:33:07.658Z",
+    "finishedAt": "2026-10-08T14:33:21.461Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 63,
+    "pass": 63,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 13754.0145,
+    "stderr": "",
+    "log": "chat-combat-network-regression.tap"
+  },
+  "dependencyStability": {
+    "status": "verified",
+    "startedAt": "2026-10-08T14:33:07.624Z",
+    "head": "15ccf1c7d4769794123ceaa70a4774cdd86b2ede",
+    "before": {
+      "src/client/gameClient.js": "b2b51b948f9e9270abccb990d3f79d0c6bfae08c817aa0236cee6ffa6cb8ffd2",
+      "src/net/protocol.js": "b6259aca8a755b364358007eb360c1634b1653be946a5b56cad8f52f9ade3456",
+      "src/net/wsTransport.js": "ab71cf2a0dd0e8387f91ce8b23da6c2cd6e2190bf09c5ecfa26ec61b32742f3b",
+      "src/net/lagLink.js": "311d7e4f8a7a8c72e1a73945d5e5458da5738a9eaa6adffd852b4c0e435e17bb",
+      "src/net/localServer.js": "c4d52abdc5ec8f9b48e1fbb904cd4ea502500cc7e53f98cd428dce8cd339b4fc",
+      "src/net/chatService.js": "bb1a5572752e9d616412114ceb6bc5ffbd7e006c1ea31ba06a9e84fa92010f18",
+      "src/sim/ecs.js": "8c91a0cb70da533421644c06ac9a684639d7a9aa311ef32f334c6db1e2ceba11",
+      "src/sim/worldgen.js": "294483d590e1711ce29735c67d6de0c66c571eed94d73974c68678dcf0375a0a",
+      "src/sim/world.js": "a745e088e66934d7ab2cd0c5de65012ab1046263068c79adc4c4b1637d15252d",
+      "src/sim/systems/movement.js": "360d0b6bf66cbbf0d858a0a9a29797bcf57f1488d79d69331d4276ea6c6b61af",
+      "src/sim/systems/combat.js": "ef99ebb30c66c2cd2a506eb85283e108ede8cc9bfd23b018371123ed875103ac",
+      "src/sim/systems/inventory.js": "156d72d442204105c53b235af5672505c7c256992fdf7cf9f3513787716a353d",
+      "src/data/tuning.js": "ce57531d9aff95eaeaa3c5f56fb971d7ade6cb84b93963b1c6f9ee698ac1a689",
+      "src/data/items.js": "abf0ffc274f64198881ed29789dc0218717b2a94e1998dd7dea1c86c9ff4beec",
+      "src/data/enemies.js": "b3e32f2f03d0f9af64e13c56195b6654eb2dc7154950a13a342cbeef26800a48",
+      "server/host.mjs": "8bac6990d566c9598c6f8803605beaeaa35896b99b9fab8f2ff662bf8221b70d",
+      "server/index.mjs": "2217c6918588c9449768ef4a45e49b28c5571c5bf119e723a262f969f553cd44",
+      "tools/agent/chat.mjs": "adef21c4ba3c5477e22b23e64fd74f923b7fdcb7cf1d8f76a1a5062268dc0cc0",
+      "tools/agent/context.mjs": "394cb32ba9a05ffccb555537e925084bfd8bb66b844d9780690046c1f0fa5b78",
+      "tools/agent/contract.mjs": "b4d77f441756a04d7847ab9933d7ed32850491c6742621f84774cc14d373a05c",
+      "tools/agent/fixtures.mjs": "32bdd6533afc799c21143d8a9b2f858fcac7e37cb77c72002a91791aaf25aa29",
+      "tools/agent/lab.mjs": "7ba6aac34920cd5aee8e8543d7e142d6ecf7f28a412c0ac2a0e73c8f5358d56c",
+      "tools/agent/movement-task.mjs": "79e0dd4389eff096b7ffb9077b9dbf834eeeb28ae3496a985b30004ce02a1be5",
+      "tools/agent/network-client.mjs": "d2b6b5299897f00b7c6cd2b3390cf7769ea4e8a11705feaed0eb0dee2c813aea",
+      "tools/agent/network-runner.mjs": "a75c8bd59062d561e561fff232629cd3da11508b4849d2beb240ceeb9f891a2e",
+      "tools/agent/owner-files.mjs": "44ef8dc4d19b537ed9f6aa442c55cac60d26ce2eabc0b89b3c88bf57060fed49",
+      "tools/agent/pve-body.mjs": "55d28c366826b1db2e2a686c3f03d0a29176a4f67069a0022efa994c0e2717a3",
+      "tools/agent/run.mjs": "debd105f24d3da256248b8c6484205e1660e4c7c9f3abf3bc472f847bea84d34",
+      "tools/agent/runner-context.mjs": "a76d235090a0d7b08723f9a34dfc35b90bce2593f5c6781206da6c243997552f",
+      "tools/agent/session.mjs": "88ceb79e32fdfd011e8212adacfeb4f9dbdf09d37525bf0f893dd12ec4f7ac3c"
+    },
+    "finishedAt": "2026-10-08T14:41:47.506Z",
+    "after": {
+      "src/client/gameClient.js": "b2b51b948f9e9270abccb990d3f79d0c6bfae08c817aa0236cee6ffa6cb8ffd2",
+      "src/net/protocol.js": "b6259aca8a755b364358007eb360c1634b1653be946a5b56cad8f52f9ade3456",
+      "src/net/wsTransport.js": "ab71cf2a0dd0e8387f91ce8b23da6c2cd6e2190bf09c5ecfa26ec61b32742f3b",
+      "src/net/lagLink.js": "311d7e4f8a7a8c72e1a73945d5e5458da5738a9eaa6adffd852b4c0e435e17bb",
+      "src/net/localServer.js": "c4d52abdc5ec8f9b48e1fbb904cd4ea502500cc7e53f98cd428dce8cd339b4fc",
+      "src/net/chatService.js": "bb1a5572752e9d616412114ceb6bc5ffbd7e006c1ea31ba06a9e84fa92010f18",
+      "src/sim/ecs.js": "8c91a0cb70da533421644c06ac9a684639d7a9aa311ef32f334c6db1e2ceba11",
+      "src/sim/worldgen.js": "294483d590e1711ce29735c67d6de0c66c571eed94d73974c68678dcf0375a0a",
+      "src/sim/world.js": "a745e088e66934d7ab2cd0c5de65012ab1046263068c79adc4c4b1637d15252d",
+      "src/sim/systems/movement.js": "360d0b6bf66cbbf0d858a0a9a29797bcf57f1488d79d69331d4276ea6c6b61af",
+      "src/sim/systems/combat.js": "ef99ebb30c66c2cd2a506eb85283e108ede8cc9bfd23b018371123ed875103ac",
+      "src/sim/systems/inventory.js": "156d72d442204105c53b235af5672505c7c256992fdf7cf9f3513787716a353d",
+      "src/data/tuning.js": "ce57531d9aff95eaeaa3c5f56fb971d7ade6cb84b93963b1c6f9ee698ac1a689",
+      "src/data/items.js": "abf0ffc274f64198881ed29789dc0218717b2a94e1998dd7dea1c86c9ff4beec",
+      "src/data/enemies.js": "b3e32f2f03d0f9af64e13c56195b6654eb2dc7154950a13a342cbeef26800a48",
+      "server/host.mjs": "8bac6990d566c9598c6f8803605beaeaa35896b99b9fab8f2ff662bf8221b70d",
+      "server/index.mjs": "2217c6918588c9449768ef4a45e49b28c5571c5bf119e723a262f969f553cd44",
+      "tools/agent/chat.mjs": "adef21c4ba3c5477e22b23e64fd74f923b7fdcb7cf1d8f76a1a5062268dc0cc0",
+      "tools/agent/context.mjs": "394cb32ba9a05ffccb555537e925084bfd8bb66b844d9780690046c1f0fa5b78",
+      "tools/agent/contract.mjs": "b4d77f441756a04d7847ab9933d7ed32850491c6742621f84774cc14d373a05c",
+      "tools/agent/fixtures.mjs": "32bdd6533afc799c21143d8a9b2f858fcac7e37cb77c72002a91791aaf25aa29",
+      "tools/agent/lab.mjs": "7ba6aac34920cd5aee8e8543d7e142d6ecf7f28a412c0ac2a0e73c8f5358d56c",
+      "tools/agent/movement-task.mjs": "79e0dd4389eff096b7ffb9077b9dbf834eeeb28ae3496a985b30004ce02a1be5",
+      "tools/agent/network-client.mjs": "d2b6b5299897f00b7c6cd2b3390cf7769ea4e8a11705feaed0eb0dee2c813aea",
+      "tools/agent/network-runner.mjs": "a75c8bd59062d561e561fff232629cd3da11508b4849d2beb240ceeb9f891a2e",
+      "tools/agent/owner-files.mjs": "44ef8dc4d19b537ed9f6aa442c55cac60d26ce2eabc0b89b3c88bf57060fed49",
+      "tools/agent/pve-body.mjs": "55d28c366826b1db2e2a686c3f03d0a29176a4f67069a0022efa994c0e2717a3",
+      "tools/agent/run.mjs": "debd105f24d3da256248b8c6484205e1660e4c7c9f3abf3bc472f847bea84d34",
+      "tools/agent/runner-context.mjs": "a76d235090a0d7b08723f9a34dfc35b90bce2593f5c6781206da6c243997552f",
+      "tools/agent/session.mjs": "88ceb79e32fdfd011e8212adacfeb4f9dbdf09d37525bf0f893dd12ec4f7ac3c"
+    },
+    "changedDuringTests": []
+  },
+  "checks": {
+    "scopedGitDiffCheck": "passed",
+    "utf8": "passed",
+    "trailingWhitespace": [],
+    "links": "passed",
+    "directionRows": 22,
+    "da3": "Propuesto; por acordar",
+    "testedFilesUnchangedAfterSuite": true,
+    "runtimeFilesUnchangedAfterSuites": true,
+    "rootReviewedControllerIntegrationAndNewTests": true,
+    "directionAgreementAndDemonstrationUnchanged": true,
+    "da3RowUnchanged": true
+  },
+  "reuse": {
+    "sourceReadOnly": true,
+    "portableBlueprintLogic": false,
+    "decision": "Reuse existing game input/combat and L02a watchdog pattern; Unreal Blueprint/DataAsset candidates not imported."
+  },
+  "limits": {
+    "authority": "guest connection; owner capabilities and visibility filter local only",
+    "serverRevocation": "pending L02c",
+    "llmCalls": 0,
+    "gameSpendingEnabled": false,
+    "visualAcceptance": "no UI/render changes by this slice; no new visual acceptance",
+    "physicalDeviceAcceptance": false,
+    "fullGameSuite": false,
+    "sqlRun": false,
+    "deployed": false,
+    "published": false
+  },
+  "files": [
+    {
+      "path": "tools/agent/pve-body.mjs",
+      "bytes": 13986,
+      "sha256": "55d28c366826b1db2e2a686c3f03d0a29176a4f67069a0022efa994c0e2717a3"
+    },
+    {
+      "path": "tools/agent/contract.mjs",
+      "bytes": 10590,
+      "sha256": "b4d77f441756a04d7847ab9933d7ed32850491c6742621f84774cc14d373a05c"
+    },
+    {
+      "path": "tools/agent/session.mjs",
+      "bytes": 12538,
+      "sha256": "88ceb79e32fdfd011e8212adacfeb4f9dbdf09d37525bf0f893dd12ec4f7ac3c"
+    },
+    {
+      "path": "tools/agent/network-client.mjs",
+      "bytes": 22961,
+      "sha256": "d2b6b5299897f00b7c6cd2b3390cf7769ea4e8a11705feaed0eb0dee2c813aea"
+    },
+    {
+      "path": "tools/agent/run.mjs",
+      "bytes": 9332,
+      "sha256": "debd105f24d3da256248b8c6484205e1660e4c7c9f3abf3bc472f847bea84d34"
+    },
+    {
+      "path": "tests/agent-pve.test.mjs",
+      "bytes": 21335,
+      "sha256": "6da01ab9a35a39420738b36c0e1aafdee2f722633e4f0e409388bd1b2054b546"
+    },
+    {
+      "path": "tests/agent-pve-network.test.mjs",
+      "bytes": 23731,
+      "sha256": "f8de02372ffe6eaf3e0dbe3dfc2f91a3e572718ad86dd9c8a54648d153029842"
+    },
+    {
+      "path": "tests/agent-pve-runner.test.mjs",
+      "bytes": 10451,
+      "sha256": "e18b6661147c8803a755152da577411ca4d42e2ed01ca9240f70710e3b2b9fe5"
+    },
+    {
+      "path": "docs/briefs/l02b-agent-pve.md",
+      "bytes": 3134,
+      "sha256": "f168f87fbe9bc14d8cca6da14a680eee8763bc2a30fd6944e712351d6e1b52fe"
+    },
+    {
+      "path": "docs/agents/pve-runner.md",
+      "bytes": 4873,
+      "sha256": "f290e1169c187d56c0e787aed6bd6ac16e77f94f6b3024e7216a21a736a7e14b"
+    },
+    {
+      "path": "docs/agents/interface-v1.md",
+      "bytes": 17068,
+      "sha256": "c7f6e1ee8b809b7e7db368d5cbad2d9b90ab044619de0b26299a1a6d8210098d"
+    },
+    {
+      "path": "docs/agents/network-runner.md",
+      "bytes": 7235,
+      "sha256": "e3f6dcb67325adc01f88a229f49180a5d3e6d11c9641696823a44add158ff728"
+    },
+    {
+      "path": "docs/delivery/l02b-agent-pve.md",
+      "bytes": 6046,
+      "sha256": "5045b0b613202ff117da6247f377c20fbc07e360c6a6677d07e929e41e492ce4"
+    },
+    {
+      "path": "PLAN-EXTRA-LLM.md",
+      "bytes": 54583,
+      "sha256": "f4cbe73336c889b3ecef680bff7d3216bc3a9bc06e53761eaf2c067cbceb3b0c"
+    },
+    {
+      "path": "PLAN-DELIVERY.md",
+      "bytes": 66460,
+      "sha256": "dc23181cc3f687982139634a1bd376f7ecb04c07a44ed4884af7b2d194d47f80"
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "bytes": 104613,
+      "sha256": "d2caadb2757df18f480811bb8116e2f4233c02a1d7ef70c22115ee5911899161"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 74548,
+      "sha256": "04f2125925535283771bdcc97e6fa8007c6ffc8fc76df9e9b72c20406bae39be"
+    },
+    {
+      "path": "tests/agent-interface.test.mjs",
+      "bytes": 24246,
+      "sha256": "8ad61a915ed6687997a00dd87548131b1f7283d903dce3b43176fef2127d6593"
+    },
+    {
+      "path": "tests/agent-context.test.mjs",
+      "bytes": 11391,
+      "sha256": "405a38044854bf48b50f9674a49c24701a9c1f96edeb1c88490934fc1d379d99"
+    },
+    {
+      "path": "tests/agent-lab.test.mjs",
+      "bytes": 1594,
+      "sha256": "55c65b4c42b9e23a3d03b98997ae6184cc8cdff061831d7c1f8d65f6fef415c1"
+    },
+    {
+      "path": "tests/agent-owner-files.test.mjs",
+      "bytes": 7562,
+      "sha256": "395378bb364c930eb2f80734ba24838fa560a2e56153ceba1ce8c83460f77057"
+    },
+    {
+      "path": "tests/agent-network.test.mjs",
+      "bytes": 24610,
+      "sha256": "cb400e681fa2fddc3f2e260123d2ac5eaadb3db95db09308a2b13e4b554d35d4"
+    },
+    {
+      "path": "tests/agent-runner.test.mjs",
+      "bytes": 7331,
+      "sha256": "7c600c6b475e14ee3c61ede75196d9cab6744c31958673d09467db812237b860"
+    },
+    {
+      "path": "tests/agent-chat.test.mjs",
+      "bytes": 18367,
+      "sha256": "29117cbc51f9d8e730c3ef1412a4dedbaca2fc9ae57a83fb0c952d0d36e76b31"
+    },
+    {
+      "path": "tests/agent-runner-context.test.mjs",
+      "bytes": 5878,
+      "sha256": "39516e842c0ba7e34b38db579bd1e6075ff79fc567a2017a629d83bc0af85c68"
+    },
+    {
+      "path": "tests/agent-lifecycle.test.mjs",
+      "bytes": 19861,
+      "sha256": "b3521b2514f5076eb85fe2f3ba4a00da98a76de8c2e5a61496081529c1751db6"
+    },
+    {
+      "path": "tests/agent-lifecycle-runner.test.mjs",
+      "bytes": 8077,
+      "sha256": "01af218b484c42239f2ed9ba459b3c0d3853456d05cab9cebe50da73c2797101"
+    },
+    {
+      "path": "tests/agent-movement.test.mjs",
+      "bytes": 13839,
+      "sha256": "ab2557d6b59503b6b66b31c387a6eab4365bbf490ec25627ed43a74b41a3facd"
+    },
+    {
+      "path": "tests/agent-movement-network.test.mjs",
+      "bytes": 17346,
+      "sha256": "ff383551155c7ee2db4ce2e1ebf5f8176ad7e77e5bb9385e518671f7c4b11a7e"
+    },
+    {
+      "path": "tests/agent-movement-runner.test.mjs",
+      "bytes": 9658,
+      "sha256": "24d8ff32080131d85c7465229c27d7390f2cc6450bb163ec8d2d640664e7d15a"
+    },
+    {
+      "path": "src/client/gameClient.js",
+      "bytes": 40539,
+      "sha256": "b2b51b948f9e9270abccb990d3f79d0c6bfae08c817aa0236cee6ffa6cb8ffd2"
+    },
+    {
+      "path": "src/net/protocol.js",
+      "bytes": 4492,
+      "sha256": "b6259aca8a755b364358007eb360c1634b1653be946a5b56cad8f52f9ade3456"
+    },
+    {
+      "path": "src/net/wsTransport.js",
+      "bytes": 3247,
+      "sha256": "ab71cf2a0dd0e8387f91ce8b23da6c2cd6e2190bf09c5ecfa26ec61b32742f3b"
+    },
+    {
+      "path": "src/net/lagLink.js",
+      "bytes": 1445,
+      "sha256": "311d7e4f8a7a8c72e1a73945d5e5458da5738a9eaa6adffd852b4c0e435e17bb"
+    },
+    {
+      "path": "src/net/localServer.js",
+      "bytes": 42933,
+      "sha256": "c4d52abdc5ec8f9b48e1fbb904cd4ea502500cc7e53f98cd428dce8cd339b4fc"
+    },
+    {
+      "path": "src/net/chatService.js",
+      "bytes": 4574,
+      "sha256": "bb1a5572752e9d616412114ceb6bc5ffbd7e006c1ea31ba06a9e84fa92010f18"
+    },
+    {
+      "path": "src/sim/ecs.js",
+      "bytes": 12422,
+      "sha256": "8c91a0cb70da533421644c06ac9a684639d7a9aa311ef32f334c6db1e2ceba11"
+    },
+    {
+      "path": "src/sim/worldgen.js",
+      "bytes": 32168,
+      "sha256": "294483d590e1711ce29735c67d6de0c66c571eed94d73974c68678dcf0375a0a"
+    },
+    {
+      "path": "src/sim/world.js",
+      "bytes": 39566,
+      "sha256": "a745e088e66934d7ab2cd0c5de65012ab1046263068c79adc4c4b1637d15252d"
+    },
+    {
+      "path": "src/sim/systems/movement.js",
+      "bytes": 9524,
+      "sha256": "360d0b6bf66cbbf0d858a0a9a29797bcf57f1488d79d69331d4276ea6c6b61af"
+    },
+    {
+      "path": "src/sim/systems/combat.js",
+      "bytes": 38022,
+      "sha256": "ef99ebb30c66c2cd2a506eb85283e108ede8cc9bfd23b018371123ed875103ac"
+    },
+    {
+      "path": "src/sim/systems/inventory.js",
+      "bytes": 33984,
+      "sha256": "156d72d442204105c53b235af5672505c7c256992fdf7cf9f3513787716a353d"
+    },
+    {
+      "path": "src/data/tuning.js",
+      "bytes": 7750,
+      "sha256": "ce57531d9aff95eaeaa3c5f56fb971d7ade6cb84b93963b1c6f9ee698ac1a689"
+    },
+    {
+      "path": "src/data/items.js",
+      "bytes": 7336,
+      "sha256": "abf0ffc274f64198881ed29789dc0218717b2a94e1998dd7dea1c86c9ff4beec"
+    },
+    {
+      "path": "src/data/enemies.js",
+      "bytes": 11991,
+      "sha256": "b3e32f2f03d0f9af64e13c56195b6654eb2dc7154950a13a342cbeef26800a48"
+    },
+    {
+      "path": "server/host.mjs",
+      "bytes": 40822,
+      "sha256": "8bac6990d566c9598c6f8803605beaeaa35896b99b9fab8f2ff662bf8221b70d"
+    },
+    {
+      "path": "server/index.mjs",
+      "bytes": 9972,
+      "sha256": "2217c6918588c9449768ef4a45e49b28c5571c5bf119e723a262f969f553cd44"
+    },
+    {
+      "path": "tools/agent/chat.mjs",
+      "bytes": 11282,
+      "sha256": "adef21c4ba3c5477e22b23e64fd74f923b7fdcb7cf1d8f76a1a5062268dc0cc0"
+    },
+    {
+      "path": "tools/agent/context.mjs",
+      "bytes": 14172,
+      "sha256": "394cb32ba9a05ffccb555537e925084bfd8bb66b844d9780690046c1f0fa5b78"
+    },
+    {
+      "path": "tools/agent/fixtures.mjs",
+      "bytes": 2941,
+      "sha256": "32bdd6533afc799c21143d8a9b2f858fcac7e37cb77c72002a91791aaf25aa29"
+    },
+    {
+      "path": "tools/agent/lab.mjs",
+      "bytes": 5481,
+      "sha256": "7ba6aac34920cd5aee8e8543d7e142d6ecf7f28a412c0ac2a0e73c8f5358d56c"
+    },
+    {
+      "path": "tools/agent/movement-task.mjs",
+      "bytes": 7883,
+      "sha256": "79e0dd4389eff096b7ffb9077b9dbf834eeeb28ae3496a985b30004ce02a1be5"
+    },
+    {
+      "path": "tools/agent/network-runner.mjs",
+      "bytes": 6811,
+      "sha256": "a75c8bd59062d561e561fff232629cd3da11508b4849d2beb240ceeb9f891a2e"
+    },
+    {
+      "path": "tools/agent/owner-files.mjs",
+      "bytes": 10219,
+      "sha256": "44ef8dc4d19b537ed9f6aa442c55cac60d26ce2eabc0b89b3c88bf57060fed49"
+    },
+    {
+      "path": "tools/agent/runner-context.mjs",
+      "bytes": 1633,
+      "sha256": "a76d235090a0d7b08723f9a34dfc35b90bce2593f5c6781206da6c243997552f"
+    },
+    {
+      "path": "docs/delivery/l02b-agent-pve/agent-tests.tap",
+      "bytes": 33782,
+      "sha256": "234bc9ef1c39b5476d13ca24a7d41469eea8b5a4698001122e93c3d921aefbf8"
+    },
+    {
+      "path": "docs/delivery/l02b-agent-pve/agent-tests.json",
+      "bytes": 2623,
+      "sha256": "e209076e8c0797cd9327ae3a76517208960c22a1cb21030eb90da8eaec2ea83d"
+    },
+    {
+      "path": "docs/delivery/l02b-agent-pve/chat-combat-network-regression.tap",
+      "bytes": 14783,
+      "sha256": "e09993a5d2dde8e6ce06a333c8924e178008da78b79041235005ad7039f01315"
+    },
+    {
+      "path": "docs/delivery/l02b-agent-pve/chat-combat-network-regression.json",
+      "bytes": 538,
+      "sha256": "5c700c7a622e6c95b58b718d054260391bd36ff0b9fdba6d70485da3454938b0"
+    },
+    {
+      "path": "docs/delivery/l02b-agent-pve/dependency-stability.json",
+      "bytes": 6117,
+      "sha256": "2e90c95e6543ec36c9ee69b6d89c7a75344309bdee2c896e3f259af238a8a998"
+    }
+  ],
+  "checkedLinks": [
+    {
+      "source": "docs/briefs/l02b-agent-pve.md",
+      "target": "../research/unreal-assets/CANDIDATES.csv"
+    },
+    {
+      "source": "docs/agents/pve-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/pve-runner.md",
+      "target": "../briefs/l02b-agent-pve.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../briefs/l00-agent-interface.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../PLAN-EXTRA-LLM.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../tools/agent/fixtures/personality.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../tools/agent/fixtures/objectives.json"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../tools/agent/fixtures/memory.jsonl"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "pve-runner.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "chat-runner.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "movement-runner.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "pve-runner.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "network-runner.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "movement-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "pve-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "chat-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "chat-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "../delivery/l01a-agent-network.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "../delivery/l01b-agent-chat.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/delivery/l02b-agent-pve.md",
+      "target": "../agents/pve-runner.md"
+    },
+    {
+      "source": "docs/delivery/l02b-agent-pve.md",
+      "target": "../briefs/l02b-agent-pve.md"
+    },
+    {
+      "source": "docs/delivery/l02b-agent-pve.md",
+      "target": "l02b-agent-pve/agent-tests.tap"
+    },
+    {
+      "source": "docs/delivery/l02b-agent-pve.md",
+      "target": "l02b-agent-pve/agent-tests.json"
+    },
+    {
+      "source": "docs/delivery/l02b-agent-pve.md",
+      "target": "l02b-agent-pve/chat-combat-network-regression.tap"
+    },
+    {
+      "source": "docs/delivery/l02b-agent-pve.md",
+      "target": "l02b-agent-pve/chat-combat-network-regression.json"
+    },
+    {
+      "source": "docs/delivery/l02b-agent-pve.md",
+      "target": "../../tests/agent-pve.test.mjs"
+    },
+    {
+      "source": "docs/delivery/l02b-agent-pve.md",
+      "target": "../../tests/agent-pve-network.test.mjs"
+    },
+    {
+      "source": "docs/delivery/l02b-agent-pve.md",
+      "target": "../../tests/agent-pve-runner.test.mjs"
+    },
+    {
+      "source": "docs/delivery/l02b-agent-pve.md",
+      "target": "l02b-agent-pve/dependency-stability.json"
+    },
+    {
+      "source": "docs/delivery/l02b-agent-pve.md",
+      "target": "l02b-agent-pve-verification.json"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "../PLAN-WEB3.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/w01-asset-registry.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/w00-equipment-rules.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/w00-equipment-content.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/w02a-wallet-link.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/w02b-wallet-browser.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/w02c-wallet-runtime.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/w02d-wallet-preflight.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d08c12-naval-route.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d08c12-naval-route.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d08c11-raft-recovery.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d08c11-raft-recovery.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d08c10-raft-repair.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d08c10-raft-repair.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d08c9-raft-load-limits.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d08c9-raft-load-limits.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d08c8-raft-capacity.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d08c8-raft-capacity.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "../PLAN-CHARACTER-CREATOR.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/characters-base-v0.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/characters-base-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/characters-base-v2.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/characters-base-v3.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/character-alpha-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d08c6-live-coastal-loop.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d08c7-resource-loop.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d08c7-resource-loop.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d08c6-live-coastal-loop.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "NAVAL-ROADMAP.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/demo-update-20261006.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/pc-host-playtest.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/c01-chat.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/c01-chat.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/c01-chat-style.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/c01-chat-bubbles.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "../PLAN-EXTRA-LLM.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/l01b-agent-chat.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/l02a-agent-movement.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/l02b-agent-pve.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "agents/interface-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/l00-agent-interface.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/l01a-agent-network.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/l01b-agent-chat.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/l01c-agent-lifecycle.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/l02a-agent-movement.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/l02b-agent-pve.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "../tools/art-catalog/README.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "../PLAN-VISUAL-PORT.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "art/README.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/art-catalog.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/sand-family-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/sand-footprints-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/coast-rocks-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/ground-family-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/beach-details-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-v00-port-baseline.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/palm-family-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s06-palm-bases.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/palm-bases-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s07-shrubs.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/shrubs-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s08-grass-patches.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/grass-patches-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s09-beach-debris.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/beach-debris-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s10-seaweed.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/seaweed-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s11-water-clarity.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/water-clarity-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s12-rock-faces.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/rock-faces-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s13-dock-wood.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/dock-wood-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s14-town-wood.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/town-wood-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s15-town-covers.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/town-covers-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s16-dock-ropes.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/dock-ropes-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s17-port-cargo.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/port-cargo-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/visual-s18-town-fixtures.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/town-fixtures-v1.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "NAVIGATION-ACTIVITIES-DISCUSSION.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d08a-handling-lab.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d08a-handling-lab.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d06b-production.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d06b-production.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "research/unreal-assets/D06B-REUSE.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d08-navigation-feel.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d06a-cargo-market.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d06a-evidence.json"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "research/unreal-assets/D06-REUSE.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d06b-production.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d05-raft-editor.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d05-evidence.json"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d08-navigation-feel.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d04p2-raft-walk.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d04p2-evidence.json"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d05-raft-editor.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d08-navigation-feel.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-journal.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09e-pearl-journal.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09e-journal-live.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-game-staging.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-game-staging.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09f-pearl-staging.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09f-mutation-gate.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-common-gate.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-same-holder.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09f-same-holder.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-swallow-staging.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09f-swallow-staging.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-common-effect.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09f-common-effect.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-batch.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09f-pearl-batch.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09f-same-holder-live.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-same-holder-live.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09f-sql006-readonly.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m48-pearl-affinity.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-ground-queue.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09d-pearl-ground-queue.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-ground.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09c-pearl-ground.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/m5-pearl-session-queue.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09b-pearl-sessions.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d09a-pearl-operations.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "../server/migrations/003_pearl_operations.sql"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d07d-world.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d07c-comic-account.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d07b-accounts.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d07a-store.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d03-pearlkit.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/a02-crate.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d04-raft-readiness.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/raft-comic-material.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/raft-comic-evidence.json"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d04p1-raft.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "briefs/d04p1-moored-raft.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d01-tormenta.md"
+    },
+    {
+      "source": "docs/HANDOFF.md",
+      "target": "delivery/d02-tinta.md"
+    }
+  ],
+  "next": "L02c"
+}

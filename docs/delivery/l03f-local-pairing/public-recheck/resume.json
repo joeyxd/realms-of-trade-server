@@ -1,0 +1,62 @@
+{
+  "schema": "mn.companion-pairing.public-resume.v1",
+  "at": "2026-10-12T05:30:59.751Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "world": "marea-negra",
+  "sourceAcceptanceAt": "2026-10-12T05:27:28.023Z",
+  "sourceAcceptancePass": false,
+  "pairedNameBaselineCount": 0,
+  "production": true,
+  "publicWss": true,
+  "localModelStub": true,
+  "realModelCalls": false,
+  "resumedExistingAccount": true,
+  "createdAccount": false,
+  "createdCompanion": false,
+  "checks": [
+    {
+      "name": "exact_marked_account_magiclink_reauthenticated_without_creating_an_account",
+      "pass": true
+    },
+    {
+      "name": "existing_owner_rejoined_public_WSS_with_current_content",
+      "pass": true
+    },
+    {
+      "name": "exact_SQL034_record_loaded_and_existing_SQL027_chat_grant_verified",
+      "pass": true
+    },
+    {
+      "name": "resumed_real_local_controller_claimed_new_one_use_code_over_public_WSS",
+      "pass": true
+    },
+    {
+      "name": "resumed_chat_received_local_stub_reply_and_scoped_memory_persisted_without_credentials",
+      "pass": true
+    },
+    {
+      "name": "resumed_owner_stop_revoked_runner_and_SQL027_is_stopped",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "acceptancePass": true,
+  "cleanupPending": true,
+  "cleanupComplete": false,
+  "pass": false,
+  "canaryRetained": {
+    "account": true,
+    "ownerProfile": true,
+    "characterProfile": true,
+    "creationRecord": true,
+    "ownerSocketClosed": true,
+    "runnerStopped": true,
+    "canarySocketsClosed": true,
+    "profilesStable": true
+  },
+  "cleanup": {
+    "required": true,
+    "completed": false,
+    "manifest": ".scratch/qa-companion-pairing/cleanup-pending.json"
+  }
+}

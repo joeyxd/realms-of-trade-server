@@ -1,0 +1,101 @@
+{
+  "schema": "mn.l03d.inference-config.public.v1",
+  "at": "2026-10-11T03:34:06.246Z",
+  "target": "public TLS",
+  "pass": true,
+  "checks": [
+    {
+      "check": "public_health_200",
+      "pass": true
+    },
+    {
+      "check": "durable_M5_resources_healthy",
+      "pass": true,
+      "version": "0.6.0-alpha.42",
+      "logging": true
+    },
+    {
+      "check": "published_protocol",
+      "pass": true,
+      "protocol": 48
+    },
+    {
+      "check": "published_companions_panel",
+      "pass": true
+    },
+    {
+      "check": "published_companion_config_client",
+      "pass": true
+    },
+    {
+      "check": "published_companion_config_editor",
+      "pass": true
+    },
+    {
+      "check": "published_inference_config_client",
+      "pass": true
+    },
+    {
+      "check": "published_inference_config_editor",
+      "pass": true
+    },
+    {
+      "check": "operator_tools_not_public",
+      "pass": true
+    },
+    {
+      "check": "ordinary_guest_real_public_entry",
+      "pass": true
+    },
+    {
+      "check": "public_guest_companions_forbidden_without_head",
+      "pass": true
+    },
+    {
+      "check": "public_guest_companion_stop_forbidden_without_head",
+      "pass": true
+    },
+    {
+      "check": "public_guest_companion_resume_forbidden_without_head",
+      "pass": true
+    },
+    {
+      "check": "public_guest_companion_config_load_forbidden_without_head",
+      "pass": true
+    },
+    {
+      "check": "public_guest_inference_config_load_forbidden_without_private_metadata",
+      "pass": true
+    },
+    {
+      "check": "public_guest_inference_config_save_forbidden_without_private_metadata",
+      "pass": true
+    },
+    {
+      "check": "public_guest_market_forbidden",
+      "pass": true
+    },
+    {
+      "check": "public_guest_trade_forbidden_without_receipt",
+      "pass": true
+    },
+    {
+      "check": "public_guest_budget_forbidden",
+      "pass": true
+    },
+    {
+      "check": "unconfigured_public_agent_admission_denied",
+      "pass": true
+    },
+    {
+      "check": "old_protocol_requires_reload",
+      "pass": true
+    }
+  ],
+  "scope": "Public entry plus guest denial for private SQL028 inference configuration; existing SQL027 companion control and SQL025 companion metadata remain covered. Existing commerce and gameplay authority checks are retained.",
+  "limits": [
+    "Guest wire denials are verified; authenticated public owner acceptance remains pending.",
+    "This smoke does not inspect private SQL028 rows or prove owner CAS/restart behavior; that is covered by local SQL/PGlite evidence.",
+    "No provider call, credential, catalog provisioning, inference generation, binding provisioning, agent budget, or public agent activation."
+  ]
+}

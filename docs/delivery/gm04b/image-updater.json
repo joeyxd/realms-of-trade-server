@@ -1,0 +1,19 @@
+{
+  "schema": "gm04b-image-updater/v1",
+  "at": "2026-10-11T03:19:50.927Z",
+  "revision": "6c42e849a05a140296751daf88110c536eb4b07e",
+  "platform": "linux",
+  "version": "0.6.0-alpha.41",
+  "protocolVersion": 47,
+  "command": "node --test --test-concurrency=1 <14 files in deploy/vps-update.py TESTS>",
+  "tests": {
+    "tests": 109,
+    "pass": 109,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "scope": "candidate image; separate from browser acceptance",
+  "tap": "image-updater.tap",
+  "switchNote": "candidate tests passed; active revision recorded separately in deployment.json"
+}

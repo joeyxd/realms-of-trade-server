@@ -1,0 +1,92 @@
+{
+  "recordedAt": "2026-10-10T20:48:05.397252+00:00",
+  "expectedRevision": "6748f9a9fd1046a391dcb8fdc58855affe5a944d",
+  "revision": "6748f9a9fd1046a391dcb8fdc58855affe5a944d",
+  "matches": true,
+  "container": "e39ba236e42a",
+  "imageId": "sha256:8c04a7adf587789b64e0087ebf25dc971ed04ace562ec058aff4617ce04723a5",
+  "healthy": "healthy",
+  "startedAt": "2026-10-10T20:46:42.742613337Z",
+  "timer": "active",
+  "updater": "inactive",
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.27",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 4613,
+    "uptime": 79,
+    "stepMs": 1.095,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1509,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 1,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 112.7,
+      "kbIn": 0.1,
+      "dropped": 0
+    }
+  },
+  "offlineImageValidation": {
+    "revision": "6748f9a9fd1046a391dcb8fdc58855affe5a944d",
+    "image_id": "sha256:8c04a7adf587789b64e0087ebf25dc971ed04ace562ec058aff4617ce04723a5",
+    "tests_passed": true
+  },
+  "dormantAPI": {
+    "session": true,
+    "contract": true,
+    "journal": true,
+    "recovery": true,
+    "node": "v22.23.3"
+  },
+  "includesPublishedCut": true,
+  "unchangedM5Paths": [
+    "server/store.mjs",
+    "server/economicOperation.mjs",
+    "server/groundTransaction.mjs",
+    "server/groundTransactionSession.mjs",
+    "server/migrations/018_ground_transactions.sql",
+    "server/groundTransactionJournal.mjs",
+    "server/migrations/019_ground_transaction_journal.sql"
+  ],
+  "scope": "Code/image verification only. Ground transaction journal and recovery API import, but GameHost coordinators remain unmounted; no SQL018/019 activation."
+}

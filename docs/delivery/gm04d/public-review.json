@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-12T05:52:41.412Z",
+  "browser": "public/browser.json",
+  "version": "0.6.0-alpha.63",
+  "checks": 9,
+  "authenticated": true,
+  "inspected": [
+    "placed-palm-es.png",
+    "placed-stone-es.png",
+    "resources-en-desktop.png",
+    "resources-es-mobile.png",
+    "resources-en-mobile.png"
+  ],
+  "pageErrors": 0,
+  "consoleErrors": 0,
+  "remoteWrites": 0,
+  "networkCancellations": [
+    {
+      "path": "/api/gm/revisions",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "scope": "Private local draft only; no shared publication/gathering canary; revision-list availability is outside these nine checks"
+}

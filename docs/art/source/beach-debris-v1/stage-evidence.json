@@ -1,0 +1,80 @@
+{
+    "case":  "S09 isolated Dreamrise SM_Logs geometry export",
+    "engine":  "UE 5.8",
+    "engineExecutable":  "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe",
+    "engineFileVersion":  "++UE5+Release-5.8-CL-55116800",
+    "project":  "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final\\S09LogsExport.uproject",
+    "copiedPackages":  [
+                           {
+                               "source":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Meshes\\SM_Logs.uasset",
+                               "staged":  "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final\\Content\\Dreamrise_SMSK\\Assets\\Meshes\\SM_Logs.uasset",
+                               "bytes":  23471,
+                               "sha256":  "9E5F82F0AC461D38472387A799EC2956520BA7C1F3F91D4F779238203AF234AF"
+                           },
+                           {
+                               "source":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Materials\\MI_Base_Normal.uasset",
+                               "staged":  "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final\\Content\\Dreamrise_SMSK\\Assets\\Materials\\MI_Base_Normal.uasset",
+                               "bytes":  8027,
+                               "sha256":  "509E551E33A400E102C0038C9FED633179E36C767DF5186D30CC799E5057F189"
+                           },
+                           {
+                               "source":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Materials\\M_Base.uasset",
+                               "staged":  "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final\\Content\\Dreamrise_SMSK\\Assets\\Materials\\M_Base.uasset",
+                               "bytes":  16009,
+                               "sha256":  "5D2B064404166A9F1052CE7FB2055CAAAF0745271430F55101952862A685121F"
+                           },
+                           {
+                               "source":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Textures\\T_ColorPalette.uasset",
+                               "staged":  "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final\\Content\\Dreamrise_SMSK\\Assets\\Textures\\T_ColorPalette.uasset",
+                               "bytes":  25415,
+                               "sha256":  "EA551E2DA7ED2E026A4BDE67A83E6197EF46052462A91BF2A7F4F02F204A1B8D"
+                           }
+                       ],
+    "sourceAfter":  [
+                        {
+                            "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Meshes\\SM_Logs.uasset",
+                            "bytes":  23471,
+                            "sha256":  "9E5F82F0AC461D38472387A799EC2956520BA7C1F3F91D4F779238203AF234AF"
+                        },
+                        {
+                            "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Materials\\MI_Base_Normal.uasset",
+                            "bytes":  8027,
+                            "sha256":  "509E551E33A400E102C0038C9FED633179E36C767DF5186D30CC799E5057F189"
+                        },
+                        {
+                            "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Materials\\M_Base.uasset",
+                            "bytes":  16009,
+                            "sha256":  "5D2B064404166A9F1052CE7FB2055CAAAF0745271430F55101952862A685121F"
+                        },
+                        {
+                            "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Textures\\T_ColorPalette.uasset",
+                            "bytes":  25415,
+                            "sha256":  "EA551E2DA7ED2E026A4BDE67A83E6197EF46052462A91BF2A7F4F02F204A1B8D"
+                        }
+                    ],
+    "dependencyClosure":  "SM_Logs -\u003e MI_Base_Normal -\u003e M_Base + T_ColorPalette; NavigationSystem is an Engine package",
+    "exportRequested":  true,
+    "exportOptions":  {
+                          "scale":  0.01,
+                          "lod":  0,
+                          "render":  "NullRHI",
+                          "shaderCompile":  "disabled",
+                          "bake":  "disabled"
+                      },
+    "exportExitCode":  0,
+    "outputDirectory":  "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final\\out",
+    "outputs":  [
+                    {
+                        "path":  "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final\\out\\SM_Logs.glb",
+                        "bytes":  13304,
+                        "sha256":  "26942A59A2BE96C5520EFE94A4F6B9609022C15F600695B7849FEC634E320CEA"
+                    },
+                    {
+                        "path":  "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final\\out\\SM_Logs.report.json",
+                        "bytes":  4387,
+                        "sha256":  "E5E2F88D7F362D4E10EF1C9D9D102515E4099E8FC7340DB0C78FE64E95FAEB50"
+                    }
+                ],
+    "stdoutLog":  "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final\\Saved\\Logs\\stdout.log",
+    "stderrLog":  "C:\\DEV\\real of trade\\asset-staging\\s09-logs-export\\project-final\\Saved\\Logs\\stderr.log"
+}

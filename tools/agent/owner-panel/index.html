@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Bitácora del personaje · Marea Negra</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <a class="brand" href="#top" aria-label="Bitácora, inicio"><span class="brand-mark" aria-hidden="true">✳</span><span>MAREA NEGRA <small>BITÁCORA DEL PERSONAJE</small></span></a>
+      <div class="top-meta"><span id="connection" class="pill muted" role="status">Esperando acceso</span><button id="refresh" class="quiet-button" type="button">Actualizar <span aria-hidden="true">↻</span></button></div>
+    </header>
+
+    <section class="intro" id="top">
+      <div><p class="eyebrow">PUESTO DEL DUEÑO</p><h1>Tu personaje,<br><em>bajo tu cuidado.</em></h1><p class="lede">Consulta su estado, sus archivos y el presupuesto que limita sus llamadas.</p></div>
+      <div class="scope-card"><span class="card-label">PERSONAJE EN ESTA SESIÓN</span><strong id="character">Esperando lectura</strong><span id="scope-detail" class="subtle">El alcance aparecerá cuando el servidor responda.</span><span class="freshness">Última consulta <time id="checked-at">—</time></span></div>
+    </section>
+
+    <section class="notice" id="notice" role="status" aria-live="polite" hidden></section>
+
+    <section class="section-heading"><div><p class="eyebrow">01 / ESTADO</p><h2>La guardia</h2></div><span id="runner-badge" class="pill muted">Estado desconocido</span></section>
+    <section class="status-grid" aria-label="Estado actual del personaje">
+      <article class="panel status-main"><div class="panel-top"><span class="card-label">MODO ACTUAL</span><span id="authority" class="subtle">—</span></div><h3 id="runner-state">Sin lectura</h3><p id="runner-summary" class="subtle">El estado se mostrará cuando la conexión esté disponible.</p><div class="status-actions"><button id="start" class="button primary" type="button" disabled>Iniciar personaje</button><button id="stop" class="button secondary" type="button" disabled>Detener personaje</button><button id="think" class="button secondary" type="button" disabled>Pedir una reflexión</button></div></article>
+      <article class="panel compact"><span class="card-label">SOLICITUDES</span><strong id="requests" class="metric">—</strong><span class="subtle">En esta sesión</span><div class="divider"></div><span class="card-label">OBSERVACIÓN DEL MUNDO</span><strong id="observation" class="metric small-metric">Sin dato</strong><span id="observation-detail" class="subtle">—</span></article>
+      <article class="panel tasks-panel"><div class="panel-top"><span class="card-label">TAREAS RECIENTES</span><span id="task-count" class="subtle">—</span></div><div id="tasks" class="empty-state">Sin tareas disponibles.</div></article>
+    </section>
+
+    <section class="section-heading"><div><p class="eyebrow">02 / PRESUPUESTO</p><h2>Un límite claro</h2></div><span id="budget-state" class="pill muted">Sin lectura</span></section>
+    <section class="budget-layout">
+      <article class="panel budget-panel"><div class="panel-top"><div><span class="card-label">USO DEL PERIODO</span><p id="period" class="subtle">Periodo desconocido</p></div><span class="unit-chip">UNIDADES SIMULADAS</span></div>
+        <div class="usage-grid"><div class="usage"><span>Confirmado</span><strong id="confirmed">—</strong><small>tokens · unidades simuladas</small></div><div class="usage held"><span>En reserva</span><strong id="held">—</strong><small>pendiente, sin gasto confirmado</small></div><div class="usage unknown"><span>Sin resolver</span><strong id="unresolved">—</strong><small>máximo retenido, uso desconocido</small></div></div>
+        <div class="available-row"><span>Capacidad sin comprometer</span><strong id="available">—</strong></div><p id="budget-note" class="subtle budget-note">Uso, reservas y desconocidos se informan por separado.</p>
+      </article>
+      <article class="panel policy-panel"><div class="panel-top"><div><span class="card-label">CONTROL DEL DUEÑO</span><h3>Política de llamadas</h3></div><div class="revision-actions"><span id="policy-revision" class="revision">Revisión —</span><button id="reload-policy" class="quiet-button" type="button">Recargar política</button></div></div>
+        <form id="policy-form">
+          <label class="toggle-row" for="enabled"><span><strong>Permitir nuevas llamadas</strong><small>Al pausar, el uso registrado se conserva.</small></span><input id="enabled" name="enabled" type="checkbox"></label>
+          <div class="limit-grid"><label>Llamadas máximas<input id="maxCalls" name="maxCalls" type="number" min="1" step="1" required></label><label>Tokens simulados<input id="maxTokens" name="maxTokens" type="number" min="1" step="1" required></label><label>Unidades simuladas<input id="maxCostUnits" name="maxCostUnits" type="number" min="1" step="1" required></label><label>Entradas máximas<input id="maxEntries" name="maxEntries" type="number" min="1" max="256" step="1" required></label></div>
+          <div class="form-foot"><span id="draft-state" class="subtle">La política cargada está al día.</span><button id="save-policy" class="button primary" type="submit">Guardar límites</button></div>
+        </form>
+      </article>
+    </section>
+
+    <section class="section-heading"><div><p class="eyebrow">03 / ARCHIVOS</p><h2>Lo que lo guía</h2></div><span class="subtle">Contenido exacto del personaje</span></section>
+    <section class="panel files-panel"><div class="file-toolbar"><div id="file-tabs" class="tabs" role="tablist" aria-label="Archivos del personaje"><button class="tab active" type="button" role="tab" aria-selected="true" data-file="personality">Personalidad</button><button class="tab" type="button" role="tab" aria-selected="false" data-file="objectives">Objetivos</button><button class="tab" type="button" role="tab" aria-selected="false" data-file="memory">Memoria</button></div><div class="file-actions"><span id="file-meta" class="subtle">Sin archivo cargado</span><button id="file-refresh" class="quiet-button" type="button">Recargar</button><button id="download" class="quiet-button" type="button" disabled>Exportar ↓</button></div></div><pre id="file-content" class="file-content" role="tabpanel" aria-live="polite">El contenido estará disponible al conectar.</pre><p id="file-error" class="file-error" role="status" hidden></p></section>
+
+    <section class="section-heading"><div><p class="eyebrow">04 / ACTIVIDAD</p><h2>En la bitácora</h2></div><span class="subtle">Eventos recientes</span></section>
+    <section class="panel activity-panel"><div id="activity" class="empty-state">Sin actividad disponible.</div></section>
+    <footer><span>MAREA NEGRA <span class="dot">·</span> Control local del personaje</span><span>La simulación no representa un cobro.</span></footer>
+  </main>
+</body>
+</html>

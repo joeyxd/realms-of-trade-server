@@ -1,0 +1,155 @@
+{
+  "source_root": "C:\\Unreal\\MyProject",
+  "method": "bounded read-only filesystem inventory; no Unreal editor/parser/export used; external actor/object payload included as path/extension/size metadata only",
+  "excluded_directory_names": [
+    ".agents",
+    ".claude",
+    ".codex",
+    ".cursor",
+    ".gemini",
+    ".git",
+    ".vscode",
+    "Binaries",
+    "DerivedDataCache",
+    "Intermediate",
+    "Saved"
+  ],
+  "scope_roots": [
+    "C:\\Unreal\\MyProject\\Content",
+    "C:\\Unreal\\MyProject\\Plugins",
+    "C:\\Unreal\\MyProject\\Source"
+  ],
+  "total_files": 4541,
+  "total_bytes": 3848866718,
+  "extension_counts": {
+    ".cpp": 51,
+    ".cs": 1,
+    ".h": 54,
+    ".md": 133,
+    ".png": 1,
+    ".py": 1,
+    ".sample": 1,
+    ".txt": 50,
+    ".uasset": 4194,
+    ".umap": 54,
+    ".uplugin": 1
+  },
+  "top_pack_counts": {
+    "ActionRPGStarterSystem": {
+      "files": 1077,
+      "bytes": 521555574
+    },
+    "ArrowTrail": {
+      "files": 51,
+      "bytes": 73195503
+    },
+    "BigNiagaraBundle": {
+      "files": 722,
+      "bytes": 514820971
+    },
+    "Characters": {
+      "files": 128,
+      "bytes": 131381051
+    },
+    "Content/__ExternalActors__": {
+      "files": 17,
+      "bytes": 130508
+    },
+    "Content/__ExternalObjects__": {
+      "files": 4,
+      "bytes": 7274
+    },
+    "Cursor": {
+      "files": 4,
+      "bytes": 482436
+    },
+    "Dreamrise_SMSK": {
+      "files": 334,
+      "bytes": 450452687
+    },
+    "LevelPrototyping": {
+      "files": 29,
+      "bytes": 2859075
+    },
+    "Marketplace/VibeUE": {
+      "files": 293,
+      "bytes": 4489519
+    },
+    "NiagaraExamples": {
+      "files": 669,
+      "bytes": 1278142521
+    },
+    "SlashTrailElemental": {
+      "files": 415,
+      "bytes": 278254612
+    },
+    "SwordTrailVFX": {
+      "files": 98,
+      "bytes": 172586250
+    },
+    "TopDown": {
+      "files": 24,
+      "bytes": 2230715
+    },
+    "_SplineVFX": {
+      "files": 113,
+      "bytes": 77634831
+    },
+    "sA_Megapack_v1": {
+      "files": 563,
+      "bytes": 340643191
+    }
+  },
+  "group_counts": {
+    "UE template/demo": {
+      "files": 185,
+      "bytes": 136953277
+    },
+    "added/custom content": {
+      "files": 4042,
+      "bytes": 3707286140
+    },
+    "external-level payload (metadata only)": {
+      "files": 21,
+      "bytes": 137782
+    },
+    "plugin source/content": {
+      "files": 293,
+      "bytes": 4489519
+    }
+  },
+  "external_level_payload": {
+    "files": 21,
+    "bytes": 137782,
+    "review": "deferred; paths and sizes only"
+  },
+  "asset_categories": {
+    "unreal_packages_uasset_umap": 4248,
+    "3d_exchange_sources": 0,
+    "image_files": 1,
+    "audio_files": 0,
+    "animation_or_rig_export_files": 0,
+    "note": "Zero means no corresponding loose exchange-format file was inventoried; binary Unreal package internals were not decoded."
+  },
+  "filename_prefix_counts_inferred": {
+    "NS_": 755,
+    "NE_": 71,
+    "BP_": 524,
+    "BPI_": 13,
+    "SM_": 252,
+    "SK_": 81,
+    "SKM_": 15,
+    "A_": 35,
+    "Anim": 41,
+    "ABP_": 8,
+    "T_": 630,
+    "M_": 362,
+    "MI_": 312,
+    "DA_": 22,
+    "SC_": 19,
+    "SW_": 29,
+    "WAV_": 42,
+    "SVT_": 6
+  },
+  "filename_prefix_note": "Heuristic counts by package basename only; they suggest likely asset families but do not establish Unreal export class. Prefixes overlap (for example, animation may be A_ or Anim)."
+}

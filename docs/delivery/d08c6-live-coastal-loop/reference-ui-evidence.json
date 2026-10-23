@@ -1,0 +1,843 @@
+{
+  "generatedAt": "2026-10-07T21:46:44.900Z",
+  "harness": "ephemeral GameHost + memory store; local Three.js/GSAP routes; Chrome SwiftShader",
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "reference-landscape-844x390",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\reference-landscape-844x390-reference.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\reference-landscape-844x390-picker.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\reference-landscape-844x390-touch-accepted.png"
+      ],
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "player": {
+        "shipId": "2954c70e-7e79-412b-a520-3eba754c83c1:r1",
+        "helm": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        }
+      },
+      "visual": {
+        "layout": "reference",
+        "touchEnabled": true,
+        "slotCount": 3,
+        "pickerExists": true,
+        "sticks": [
+          {
+            "name": "move",
+            "x": 24,
+            "y": 224,
+            "width": 144,
+            "height": 144,
+            "right": 168,
+            "bottom": 368
+          },
+          {
+            "name": "look",
+            "x": 590,
+            "y": 303,
+            "width": 64,
+            "height": 64,
+            "right": 654,
+            "bottom": 367
+          }
+        ],
+        "slots": [
+          {
+            "slot": "0",
+            "disabled": false,
+            "x": 594,
+            "y": 231,
+            "width": 58,
+            "height": 58,
+            "right": 652,
+            "bottom": 289
+          },
+          {
+            "slot": "1",
+            "disabled": false,
+            "x": 649,
+            "y": 172,
+            "width": 58,
+            "height": 58,
+            "right": 707,
+            "bottom": 230
+          },
+          {
+            "slot": "2",
+            "disabled": false,
+            "x": 766,
+            "y": 156,
+            "width": 58,
+            "height": 58,
+            "right": 824,
+            "bottom": 214
+          }
+        ],
+        "hud": {
+          "fireGauge": true,
+          "svg": true,
+          "speed": "0.0",
+          "touchGauge": true,
+          "wheelDecal": true,
+          "wheelDecalPaths": 16,
+          "helmMesh": true,
+          "helmWheel": true
+        },
+        "chrome": {
+          "clockHidden": true,
+          "settings": {
+            "x": 676,
+            "y": 12,
+            "width": 44,
+            "height": 44,
+            "right": 720,
+            "bottom": 56
+          }
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "documentOverflow": false,
+          "rotated": false
+        },
+        "controlRect": {
+          "x": 590,
+          "y": 154,
+          "right": 826,
+          "bottom": 376,
+          "width": 236,
+          "height": 222
+        },
+        "headerRect": {
+          "x": 283,
+          "y": 10,
+          "right": 561,
+          "bottom": 67.5,
+          "width": 278,
+          "height": 57.5
+        }
+      },
+      "touchInitial": {
+        "catalog": [
+          "capture",
+          "bag",
+          "mode",
+          "center",
+          "map",
+          "dock"
+        ],
+        "binding": "capture",
+        "camera": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "pickerOpened": true,
+      "actionsAfterLongPressRelease": [],
+      "longPressTrace": [
+        {
+          "type": "closePicker",
+          "stack": "Error\n    at touch.closePicker (eval at evaluate (:311:30), <anonymous>:11:102)\n    at TouchHelm.chooseBinding (http://127.0.0.1:62104/src/ui/touchHelm.js:232:10)\n    at eval (eval at evaluate (:311:30), <anonymous>:32:45)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+          "pickerVisible": false,
+          "catalogSignature": "[[\"capture\",\"Ráfaga\",\"wind\",\"skill\",false,true,false],[\"bag\",\"Mochila\",\"cargo\",\"item\",false,true,false],[\"mode\",\"Cubierta\",\"crew\",\"action\",false,true,false],[\"center\",\"Centrar\",\"center\",\"action\",false,true,false],[\"map\",\"Mapa\",\"map\",\"action\",false,true,false],[\"dock\",\"Amarrar\",\"helm\",\"action\",false,true,false]]"
+        },
+        {
+          "type": "pointerdown",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 623,
+          "y": 260,
+          "target": {},
+          "pickerVisible": false
+        },
+        {
+          "type": "openPicker",
+          "index": 0,
+          "catalogSignature": "[[\"capture\",\"Ráfaga\",\"wind\",\"skill\",false,true,false],[\"bag\",\"Mochila\",\"cargo\",\"item\",false,true,false],[\"mode\",\"Cubierta\",\"crew\",\"action\",false,true,false],[\"center\",\"Centrar\",\"center\",\"action\",false,true,false],[\"map\",\"Mapa\",\"map\",\"action\",false,true,false],[\"dock\",\"Amarrar\",\"helm\",\"action\",false,true,false]]"
+        },
+        {
+          "type": "pointerup",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 623,
+          "y": 260,
+          "target": "naval-touch-slot naval-touch-action",
+          "pickerVisible": true
+        },
+        {
+          "type": "lostpointercapture",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 623,
+          "y": 260,
+          "target": "naval-touch-slot naval-touch-action",
+          "pickerVisible": true
+        },
+        {
+          "type": "click",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 1,
+          "x": 623,
+          "y": 260,
+          "target": "naval-touch-picker-cancel",
+          "pickerVisible": true
+        },
+        {
+          "type": "ignoreClick",
+          "pointerId": 2,
+          "x": 623,
+          "y": 260,
+          "localPoint": {
+            "x": 623,
+            "y": 260
+          },
+          "recent": {
+            "pointerId": 2,
+            "x": 623,
+            "y": 260,
+            "expiresAt": 1791409622495
+          },
+          "distance": 0,
+          "now": 1791409620996,
+          "ignored": true,
+          "remaining": null
+        }
+      ],
+      "bindingAfterPick": {
+        "binding": "center",
+        "actions": []
+      },
+      "bindingAfterRedraw": {
+        "binding": "center",
+        "text": "Centrar"
+      },
+      "simultaneous": {
+        "input": {
+          "naval": {
+            "throttle": 0.8454544760964133,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0.8454544760964133
+          }
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": 0.9097531579442095,
+          "orbitYaw": 0.095,
+          "orbitPitch": 0,
+          "look": {
+            "x": 1,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            123.62892587033863,
+            3.5199999999999996,
+            93.71621669670789
+          ],
+          "target": [
+            130.5238216758648,
+            0.37,
+            105.61355874570931
+          ]
+        },
+        "pose": {
+          "x": 125.19741714889803,
+          "y": 0.72,
+          "z": 101.48707751119453,
+          "yaw": 0.9097531579442095
+        },
+        "tick": 1047
+      },
+      "cancelNeutral": {
+        "controls": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 0,
+          "picker": false,
+          "pickerSlot": null,
+          "bindings": [
+            "center",
+            "capture",
+            "bag"
+          ],
+          "preferredBindings": [
+            "center",
+            null,
+            null
+          ],
+          "layout": "reference"
+        },
+        "input": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        },
+        "cameraLook": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "centerActivation": {
+        "look": {
+          "x": 0,
+          "y": 0
+        },
+        "actions": [
+          "center"
+        ]
+      },
+      "pausedNeutral": {
+        "paused": true,
+        "enabled": false,
+        "axes": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        }
+      },
+      "hiddenNeutral": {
+        "paused": true,
+        "enabled": false,
+        "throttle": 0
+      },
+      "endDiagnostics": {
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 0,
+          "picker": false,
+          "pickerSlot": null,
+          "bindings": [
+            "center",
+            "capture",
+            "bag"
+          ],
+          "preferredBindings": [
+            "center",
+            null,
+            null
+          ],
+          "layout": "reference"
+        },
+        "errors": [],
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "htmlScrollWidth": 844,
+        "bodyScrollWidth": 844
+      }
+    },
+    {
+      "name": "reference-portrait-390x844",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\reference-portrait-390x844-reference.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\reference-portrait-390x844-picker.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\reference-portrait-390x844-touch-accepted.png"
+      ],
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "player": {
+        "shipId": "edaf82bb-936c-4d84-b5ca-0b2854f708e7:r1",
+        "helm": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        }
+      },
+      "visual": {
+        "layout": "reference",
+        "touchEnabled": true,
+        "slotCount": 3,
+        "pickerExists": true,
+        "sticks": [
+          {
+            "name": "move",
+            "x": 22,
+            "y": 24,
+            "width": 144,
+            "height": 144,
+            "right": 166,
+            "bottom": 168
+          },
+          {
+            "name": "look",
+            "x": 23,
+            "y": 590,
+            "width": 64,
+            "height": 64,
+            "right": 87,
+            "bottom": 654
+          }
+        ],
+        "slots": [
+          {
+            "slot": "0",
+            "disabled": false,
+            "x": 101,
+            "y": 594,
+            "width": 58,
+            "height": 58,
+            "right": 159,
+            "bottom": 652
+          },
+          {
+            "slot": "1",
+            "disabled": false,
+            "x": 160,
+            "y": 649,
+            "width": 58,
+            "height": 58,
+            "right": 218,
+            "bottom": 707
+          },
+          {
+            "slot": "2",
+            "disabled": false,
+            "x": 176,
+            "y": 766,
+            "width": 58,
+            "height": 58,
+            "right": 234,
+            "bottom": 824
+          }
+        ],
+        "hud": {
+          "fireGauge": true,
+          "svg": true,
+          "speed": "0.0",
+          "touchGauge": true,
+          "wheelDecal": true,
+          "wheelDecalPaths": 16,
+          "helmMesh": true,
+          "helmWheel": true
+        },
+        "chrome": {
+          "clockHidden": true,
+          "settings": {
+            "x": 334,
+            "y": 676,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 720
+          }
+        },
+        "stage": {
+          "width": 390,
+          "height": 844,
+          "documentOverflow": false,
+          "rotated": true
+        },
+        "controlRect": {
+          "x": 14,
+          "y": 590,
+          "right": 236,
+          "bottom": 826,
+          "width": 222,
+          "height": 236
+        },
+        "headerRect": {
+          "x": 322.5,
+          "y": 283,
+          "right": 380,
+          "bottom": 561,
+          "width": 57.5,
+          "height": 278
+        }
+      },
+      "touchInitial": {
+        "catalog": [
+          "capture",
+          "bag",
+          "mode",
+          "center",
+          "map",
+          "dock"
+        ],
+        "binding": "capture",
+        "camera": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "pickerOpened": true,
+      "actionsAfterLongPressRelease": [],
+      "longPressTrace": [
+        {
+          "type": "closePicker",
+          "stack": "Error\n    at touch.closePicker (eval at evaluate (:311:30), <anonymous>:11:102)\n    at TouchHelm.chooseBinding (http://127.0.0.1:56131/src/ui/touchHelm.js:232:10)\n    at eval (eval at evaluate (:311:30), <anonymous>:32:45)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+          "pickerVisible": false,
+          "catalogSignature": "[[\"capture\",\"Ráfaga\",\"wind\",\"skill\",false,true,false],[\"bag\",\"Mochila\",\"cargo\",\"item\",false,true,false],[\"mode\",\"Cubierta\",\"crew\",\"action\",false,true,false],[\"center\",\"Centrar\",\"center\",\"action\",false,true,false],[\"map\",\"Mapa\",\"map\",\"action\",false,true,false],[\"dock\",\"Amarrar\",\"helm\",\"action\",false,true,false]]"
+        },
+        {
+          "type": "pointerdown",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 130,
+          "y": 623,
+          "target": {},
+          "pickerVisible": false
+        },
+        {
+          "type": "openPicker",
+          "index": 0,
+          "catalogSignature": "[[\"capture\",\"Ráfaga\",\"wind\",\"skill\",false,true,false],[\"bag\",\"Mochila\",\"cargo\",\"item\",false,true,false],[\"mode\",\"Cubierta\",\"crew\",\"action\",false,true,false],[\"center\",\"Centrar\",\"center\",\"action\",false,true,false],[\"map\",\"Mapa\",\"map\",\"action\",false,true,false],[\"dock\",\"Amarrar\",\"helm\",\"action\",false,true,false]]"
+        },
+        {
+          "type": "pointerup",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 130,
+          "y": 623,
+          "target": "naval-touch-slot naval-touch-action",
+          "pickerVisible": true
+        },
+        {
+          "type": "lostpointercapture",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 130,
+          "y": 623,
+          "target": "naval-touch-slot naval-touch-action",
+          "pickerVisible": true
+        },
+        {
+          "type": "click",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 1,
+          "x": 130,
+          "y": 623,
+          "target": "naval-touch-picker-cancel",
+          "pickerVisible": true
+        },
+        {
+          "type": "ignoreClick",
+          "pointerId": 2,
+          "x": 130,
+          "y": 623,
+          "localPoint": {
+            "x": 623,
+            "y": 260
+          },
+          "recent": {
+            "pointerId": 2,
+            "x": 623,
+            "y": 260,
+            "expiresAt": 1791409641565
+          },
+          "distance": 0,
+          "now": 1791409640066,
+          "ignored": true,
+          "remaining": null
+        }
+      ],
+      "bindingAfterPick": {
+        "binding": "center",
+        "actions": []
+      },
+      "bindingAfterRedraw": {
+        "binding": "center",
+        "text": "Centrar"
+      },
+      "simultaneous": {
+        "input": {
+          "naval": {
+            "throttle": 0.8454544760964133,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0.8454544760964133
+          }
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": 0.9097531579442095,
+          "orbitYaw": 0.095,
+          "orbitPitch": 0,
+          "look": {
+            "x": 1,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            123.6150309486631,
+            3.5199999999999996,
+            93.70540953540473
+          ],
+          "target": [
+            130.50992675418928,
+            0.37,
+            105.60275158440615
+          ]
+        },
+        "pose": {
+          "x": 125.17817086197097,
+          "y": 0.72,
+          "z": 101.47210817691793,
+          "yaw": 0.9097531579442095
+        },
+        "tick": 864
+      },
+      "cancelNeutral": {
+        "controls": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 0,
+          "picker": false,
+          "pickerSlot": null,
+          "bindings": [
+            "center",
+            "capture",
+            "bag"
+          ],
+          "preferredBindings": [
+            "center",
+            null,
+            null
+          ],
+          "layout": "reference"
+        },
+        "input": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        },
+        "cameraLook": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "centerActivation": {
+        "look": {
+          "x": 0,
+          "y": 0
+        },
+        "actions": [
+          "center"
+        ]
+      },
+      "pausedNeutral": {
+        "paused": true,
+        "enabled": false,
+        "axes": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        }
+      },
+      "hiddenNeutral": {
+        "paused": true,
+        "enabled": false,
+        "throttle": 0
+      },
+      "endDiagnostics": {
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 0,
+          "picker": false,
+          "pickerSlot": null,
+          "bindings": [
+            "center",
+            "capture",
+            "bag"
+          ],
+          "preferredBindings": [
+            "center",
+            null,
+            null
+          ],
+          "layout": "reference"
+        },
+        "errors": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "htmlScrollWidth": 390,
+        "bodyScrollWidth": 390
+      }
+    },
+    {
+      "name": "reference-desktop-1280x800",
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\reference-desktop-1280x800-reference.png"
+      ],
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "player": {
+        "shipId": "c3b7becb-567e-4b2d-ba6d-11fd74b65a8c:r1",
+        "helm": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        }
+      },
+      "visual": {
+        "layout": null,
+        "touchEnabled": false,
+        "slotCount": 0,
+        "pickerExists": false,
+        "sticks": [],
+        "slots": [],
+        "hud": {
+          "fireGauge": true,
+          "svg": true,
+          "speed": "0.0",
+          "touchGauge": false,
+          "wheelDecal": false,
+          "wheelDecalPaths": 0,
+          "helmMesh": true,
+          "helmWheel": true
+        },
+        "chrome": {
+          "clockHidden": false,
+          "settings": {
+            "x": 1231.34375,
+            "y": 12,
+            "width": 34.65625,
+            "height": 34.65625,
+            "right": 1266,
+            "bottom": 46.65625
+          }
+        },
+        "stage": {
+          "width": 1280,
+          "height": 800,
+          "documentOverflow": false,
+          "rotated": false
+        },
+        "controlRect": null,
+        "headerRect": {
+          "x": 257.8125,
+          "y": 12,
+          "right": 1022.1875,
+          "bottom": 98,
+          "width": 764.375,
+          "height": 86
+        }
+      }
+    }
+  ],
+  "failures": [],
+  "status": "passed",
+  "finishedAt": "2026-10-07T21:47:43.474Z"
+}

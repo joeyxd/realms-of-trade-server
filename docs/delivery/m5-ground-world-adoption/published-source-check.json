@@ -1,0 +1,21 @@
+{
+  "acceptedBase": "686163698af018cbc906f406a1bc0ad8290f2b8b",
+  "publishedRevision": "c21f946c7728c95082979f81efa8962e979756d7",
+  "counts": {
+    "tests": 235,
+    "pass": 235,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "runtimeHashesMatchAcceptedSuite": true,
+  "publishedRuntimeDiffEmpty": true,
+  "testWhitespaceOnlyDelta": {
+    "path": "tests/ground-world-adoption-sql.test.mjs",
+    "acceptedSha256": "0dbf34b76cc11beb982c25c960f8afa7b6180444318a851cdfa9f3a340cd05d2",
+    "finalSha256": "d6539532eb33d4235a8bda14f559f4634fa2bf05a64c6e496e9ef8e388885d40"
+  },
+  "diffCheckPassed": true,
+  "scope": "Only CRLF normalization in evidence and a final blank line removed in a test after the 235-case frozen suite. No runtime or test assertion changes."
+}

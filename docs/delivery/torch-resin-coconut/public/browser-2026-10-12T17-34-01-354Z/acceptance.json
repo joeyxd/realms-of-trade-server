@@ -1,0 +1,600 @@
+{
+  "schema": "mn.torch-resin-coconut.public-browser.v1",
+  "startedAt": "2026-10-12T17:34:01.616Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "gameVersion": "0.6.0-alpha.65",
+  "protocolVersion": 60,
+  "identity": "separate random disposable Supabase user per viewport; credentials redacted",
+  "scope": "normal Auth login and public WSS, exact hand-torch cost, localized responsive UI, coconut hydration, icon variants, durable profile reentry; no palm harvesting action",
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop-es",
+        "width": 1280,
+        "height": 720,
+        "touch": false,
+        "locale": "es"
+      },
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 567.625,
+          "actionTop": 580.859375,
+          "detailBottom": 660.71875,
+          "detailRight": 822.5625,
+          "mainRight": 841.84375,
+          "scrollHeight": 486,
+          "clientHeight": 486,
+          "viewportWidth": 1280,
+          "documentWidth": 1280,
+          "button": {
+            "x": 411.078125,
+            "y": 587.421875,
+            "right": 781.9375,
+            "bottom": 638.28125,
+            "width": 370.859375,
+            "height": 50.859375,
+            "disabled": false
+          }
+        },
+        "torch": {
+          "cost": {
+            "tronco": 2,
+            "resina": 1
+          },
+          "goodsAfter": {
+            "coco": 1,
+            "piedra": 2,
+            "tronco": 1
+          },
+          "fireRules": 2,
+          "durableReceipt": true,
+          "panelBounds": {
+            "x": 445,
+            "y": 140.1171875,
+            "right": 835,
+            "bottom": 579.8828125,
+            "width": 390,
+            "height": 439.765625,
+            "buttonWidth": 270,
+            "buttonHeight": 55.875,
+            "viewportWidth": 1280,
+            "viewportHeight": 720,
+            "documentWidth": 1280
+          }
+        },
+        "coconut": {
+          "hydBefore": 19.700694444444206,
+          "hydAfter": 44.60513888888912,
+          "hydGain": 24.904444444444916,
+          "durableReceipt": true
+        },
+        "icons": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1.webp",
+            "status": 200
+          }
+        ],
+        "rejoin": {
+          "goods": {
+            "piedra": 2,
+            "tronco": 1
+          },
+          "torchSeconds": 1195,
+          "torchLit": false,
+          "hyd": 44.57,
+          "profileVersion": 9
+        }
+      },
+      "screenshots": [
+        "desktop-es-axe-layout.png",
+        "desktop-es-torch-panel.png",
+        "desktop-es-torch-lit.png",
+        "desktop-es-coconut-inventory.png",
+        "desktop-es-coconut-consumed.png",
+        "desktop-es-rejoined.png"
+      ],
+      "status": "failed",
+      "error": "failed browser requests\n+ actual - expected\n\n+ [\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   }\n+ ]\n- []\n",
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 2,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      }
+    },
+    {
+      "viewport": {
+        "name": "desktop-en",
+        "width": 1280,
+        "height": 720,
+        "touch": false,
+        "locale": "en"
+      },
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 567.625,
+          "actionTop": 580.859375,
+          "detailBottom": 660.71875,
+          "detailRight": 822.5625,
+          "mainRight": 841.84375,
+          "scrollHeight": 486,
+          "clientHeight": 486,
+          "viewportWidth": 1280,
+          "documentWidth": 1280,
+          "button": {
+            "x": 411.078125,
+            "y": 587.421875,
+            "right": 781.9375,
+            "bottom": 638.28125,
+            "width": 370.859375,
+            "height": 50.859375,
+            "disabled": false
+          }
+        },
+        "torch": {
+          "cost": {
+            "tronco": 2,
+            "resina": 1
+          },
+          "goodsAfter": {
+            "coco": 1,
+            "piedra": 2,
+            "tronco": 1
+          },
+          "fireRules": 2,
+          "durableReceipt": true,
+          "panelBounds": {
+            "x": 445,
+            "y": 144.0546875,
+            "right": 835,
+            "bottom": 575.9453125,
+            "width": 390,
+            "height": 431.890625,
+            "buttonWidth": 270,
+            "buttonHeight": 48,
+            "viewportWidth": 1280,
+            "viewportHeight": 720,
+            "documentWidth": 1280
+          }
+        },
+        "coconut": {
+          "hydBefore": 19.831249999999866,
+          "hydAfter": 44.76625000000019,
+          "hydGain": 24.935000000000326,
+          "durableReceipt": true
+        },
+        "icons": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1.webp",
+            "status": 200
+          }
+        ],
+        "rejoin": {
+          "goods": {
+            "piedra": 2,
+            "tronco": 1
+          },
+          "torchSeconds": 1195,
+          "torchLit": false,
+          "hyd": 44.75,
+          "profileVersion": 7
+        }
+      },
+      "screenshots": [
+        "desktop-en-axe-layout.png",
+        "desktop-en-torch-panel.png",
+        "desktop-en-torch-lit.png",
+        "desktop-en-coconut-inventory.png",
+        "desktop-en-coconut-consumed.png",
+        "desktop-en-rejoined.png"
+      ],
+      "status": "passed",
+      "network": {
+        "pageErrors": [],
+        "consoleErrors": [],
+        "httpErrors": [],
+        "expectedGmDenials": [
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          }
+        ],
+        "failedRequests": [],
+        "websockets": [
+          "wss:",
+          "wss:"
+        ],
+        "iconResponses": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1.webp",
+            "status": 200
+          }
+        ]
+      },
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 2,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      }
+    },
+    {
+      "viewport": {
+        "name": "phone-landscape-en",
+        "width": 844,
+        "height": 390,
+        "touch": true,
+        "locale": "en"
+      },
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 316.375,
+          "actionTop": 316.6875,
+          "detailBottom": 372,
+          "detailRight": 822,
+          "mainRight": 838,
+          "scrollHeight": 278,
+          "clientHeight": 278,
+          "viewportWidth": 844,
+          "documentWidth": 844,
+          "button": {
+            "x": 348.828125,
+            "y": 320.6875,
+            "right": 668.828125,
+            "bottom": 360.6875,
+            "width": 320,
+            "height": 40,
+            "disabled": false
+          }
+        },
+        "torch": {
+          "cost": {
+            "tronco": 2,
+            "resina": 1
+          },
+          "goodsAfter": {
+            "coco": 1,
+            "piedra": 2,
+            "tronco": 1
+          },
+          "fireRules": 2,
+          "durableReceipt": true,
+          "panelBounds": {
+            "x": 187,
+            "y": 46.75,
+            "right": 657,
+            "bottom": 343.25,
+            "width": 470,
+            "height": 296.5,
+            "buttonWidth": 358,
+            "buttonHeight": 48,
+            "viewportWidth": 844,
+            "viewportHeight": 390,
+            "documentWidth": 844
+          }
+        },
+        "coconut": {
+          "hydBefore": 19.853472222222106,
+          "hydAfter": 44.789722222222395,
+          "hydGain": 24.93625000000029,
+          "durableReceipt": true
+        },
+        "icons": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1-mobile.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1-mobile.webp",
+            "status": 200
+          }
+        ],
+        "rejoin": {
+          "goods": {
+            "piedra": 2,
+            "tronco": 1
+          },
+          "torchSeconds": 1195,
+          "torchLit": false,
+          "hyd": 44.77,
+          "profileVersion": 7
+        }
+      },
+      "screenshots": [
+        "phone-landscape-en-axe-layout.png",
+        "phone-landscape-en-torch-panel.png",
+        "phone-landscape-en-torch-lit.png",
+        "phone-landscape-en-coconut-inventory.png",
+        "phone-landscape-en-coconut-consumed.png",
+        "phone-landscape-en-rejoined.png"
+      ],
+      "status": "passed",
+      "network": {
+        "pageErrors": [],
+        "consoleErrors": [],
+        "httpErrors": [],
+        "expectedGmDenials": [
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          }
+        ],
+        "failedRequests": [],
+        "websockets": [
+          "wss:",
+          "wss:"
+        ],
+        "iconResponses": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1-mobile.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1-mobile.webp",
+            "status": 200
+          }
+        ]
+      },
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 2,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      }
+    },
+    {
+      "viewport": {
+        "name": "phone-portrait-es",
+        "width": 390,
+        "height": 844,
+        "touch": true,
+        "locale": "es"
+      },
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 811,
+          "actionTop": 196.65625,
+          "detailBottom": 822,
+          "detailRight": 298,
+          "mainRight": 386,
+          "scrollHeight": 278,
+          "clientHeight": 278,
+          "viewportWidth": 390,
+          "documentWidth": 390,
+          "button": {
+            "x": 29.3125,
+            "y": 348.828125,
+            "right": 69.3125,
+            "bottom": 668.828125,
+            "width": 40,
+            "height": 320,
+            "disabled": false
+          }
+        },
+        "torch": {
+          "cost": {
+            "tronco": 2,
+            "resina": 1
+          },
+          "goodsAfter": {
+            "coco": 1,
+            "piedra": 2,
+            "tronco": 1
+          },
+          "fireRules": 2,
+          "durableReceipt": true,
+          "panelBounds": {
+            "x": 46.75,
+            "y": 187,
+            "right": 343.25,
+            "bottom": 657,
+            "width": 296.5,
+            "height": 470,
+            "buttonWidth": 48,
+            "buttonHeight": 358,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "documentWidth": 390
+          }
+        },
+        "coconut": {
+          "hydBefore": 19.839583333333206,
+          "hydAfter": 44.77625000000019,
+          "hydGain": 24.936666666666984,
+          "durableReceipt": true
+        },
+        "icons": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1-mobile.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1-mobile.webp",
+            "status": 200
+          }
+        ],
+        "rejoin": {
+          "goods": {
+            "piedra": 2,
+            "tronco": 1
+          },
+          "torchSeconds": 1200,
+          "torchLit": false,
+          "hyd": 44.76,
+          "profileVersion": 7
+        }
+      },
+      "screenshots": [
+        "phone-portrait-es-axe-layout.png",
+        "phone-portrait-es-torch-panel.png",
+        "phone-portrait-es-torch-lit.png",
+        "phone-portrait-es-coconut-inventory.png",
+        "phone-portrait-es-coconut-consumed.png",
+        "phone-portrait-es-rejoined.png"
+      ],
+      "status": "passed",
+      "network": {
+        "pageErrors": [],
+        "consoleErrors": [],
+        "httpErrors": [],
+        "expectedGmDenials": [
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          },
+          {
+            "status": 403,
+            "origin": "https://marea.62.171.136.148.sslip.io",
+            "path": "/api/gm/session"
+          }
+        ],
+        "failedRequests": [],
+        "websockets": [
+          "wss:",
+          "wss:"
+        ],
+        "iconResponses": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1-mobile.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1-mobile.webp",
+            "status": 200
+          }
+        ]
+      },
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 2,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      }
+    }
+  ],
+  "pass": false,
+  "preflight": {
+    "pass": true,
+    "gameVersion": "0.6.0-alpha.65",
+    "protocolVersion": 60,
+    "players": 0,
+    "sockets": 0,
+    "worldId": "marea-negra",
+    "foragingReady": true,
+    "fireRules": 2,
+    "economicPending": 0
+  },
+  "failure": "failed browser requests\n+ actual - expected\n\n+ [\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   },\n+   {\n+     error: 'net::ERR_ABORTED',\n+     url: 'https://marea.62.171.136.148.sslip.io/api/gm/session'\n+   }\n+ ]\n- []\n",
+  "completedAt": "2026-10-12T17:37:54.281Z"
+}

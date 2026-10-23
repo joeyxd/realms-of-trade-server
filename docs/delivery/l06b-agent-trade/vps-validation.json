@@ -1,0 +1,9 @@
+{
+  "revision": "cafff18208235b7149682e5ce6de34c3fc0704b5",
+  "image_id": "sha256:abff4bd7de15141b930802e83dfb2310727ed6cf8519b19a7ca83818bfe81eaf",
+  "tests_passed": true,
+  "tests": 107,
+  "pass": 107,
+  "fail": 0,
+  "skipped": 0
+}

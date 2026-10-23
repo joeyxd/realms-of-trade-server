@@ -1,0 +1,255 @@
+# Subtest: stay-open runner preserves uncertainty and requires explicit fresh-session reentry
+ok 57 - stay-open runner preserves uncertainty and requires explicit fresh-session reentry
+  ---
+  duration_ms: 1230.0604
+  type: 'test'
+  ...
+# Subtest: death archives sent uncertainty, cancels unsent work, and explicit reentry starts with fresh state and retired IDs
+ok 58 - death archives sent uncertainty, cancels unsent work, and explicit reentry starts with fresh state and retired IDs
+  ---
+  duration_ms: 397.2362
+  type: 'test'
+  ...
+# Subtest: zero HP snapshot halts once; death callback cannot allow a post-death decision
+ok 59 - zero HP snapshot halts once; death callback cannot allow a post-death decision
+  ---
+  duration_ms: 339.7745
+  type: 'test'
+  ...
+# Subtest: reentry enforces owner, session cap, expiry, and fresh handshake before ready
+ok 60 - reentry enforces owner, session cap, expiry, and fresh handshake before ready
+  ---
+  duration_ms: 488.1033
+  type: 'test'
+  ...
+# Subtest: failed fresh admission remains stopped and retains prior uncertainty without retry
+ok 61 - failed fresh admission remains stopped and retains prior uncertainty without retry
+  ---
+  duration_ms: 162.3261
+  type: 'test'
+  ...
+# Subtest: unexpected socket close preserves sent uncertainty, clears queues, and reentry ignores stale scope
+ok 62 - unexpected socket close preserves sent uncertainty, clears queues, and reentry ignores stale scope
+  ---
+  duration_ms: 312.9944
+  type: 'test'
+  ...
+# Subtest: self DESPAWN is a terminal disconnect and cannot leave a reusable session
+ok 63 - self DESPAWN is a terminal disconnect and cannot leave a reusable session
+  ---
+  duration_ms: 265.8997
+  type: 'test'
+  ...
+# Subtest: owner stop cancels a close-wait transition and a stop during admission cannot resume it
+ok 64 - owner stop cancels a close-wait transition and a stop during admission cannot resume it
+  ---
+  duration_ms: 796.3265
+  type: 'test'
+  ...
+# Subtest: real WebSocket reentry frees a normal slot and idle fresh body does not replay old movement
+ok 65 - real WebSocket reentry frees a normal slot and idle fresh body does not replay old movement
+  ---
+  duration_ms: 1572.1476
+  type: 'test'
+  ...
+# Subtest: guest handshake waits for a valid own snapshot and reports the real protocol identity
+ok 66 - guest handshake waits for a valid own snapshot and reports the real protocol identity
+  ---
+  duration_ms: 157.7138
+  type: 'test'
+  ...
+# Subtest: fixture and server sources stay partitioned and a lab cannot opt into server receipts
+ok 67 - fixture and server sources stay partitioned and a lab cannot opt into server receipts
+  ---
+  duration_ms: 0.9516
+  type: 'test'
+  ...
+# Subtest: normal input uses sequence and projectile tick; prediction and ACK cannot confirm movement
+ok 68 - normal input uses sequence and projectile tick; prediction and ACK cannot confirm movement
+  ---
+  duration_ms: 127.4418
+  type: 'test'
+  ...
+# Subtest: zero displacement and full ACK remain unknown until timeout without inventing a cause
+ok 69 - zero displacement and full ACK remain unknown until timeout without inventing a cause
+  ---
+  duration_ms: 121.883
+  type: 'test'
+  ...
+# Subtest: a failed flush preserves submitted uncertainty and stops without replaying an attack
+ok 70 - a failed flush preserves submitted uncertainty and stops without replaying an attack
+  ---
+  duration_ms: 123.7607
+  type: 'test'
+  ...
+# Subtest: invalid, unsupported, forbidden and wrong session orders emit no privileged command
+ok 71 - invalid, unsupported, forbidden and wrong session orders emit no privileged command
+  ---
+  duration_ms: 107.2981
+  type: 'test'
+  ...
+# Subtest: wrong protocol and missing or malformed own snapshots cannot become ready
+ok 72 - wrong protocol and missing or malformed own snapshots cannot become ready
+  ---
+  duration_ms: 353.287
+  type: 'test'
+  ...
+# Subtest: old and malformed snapshots do not replace confirmed state or freshness
+ok 73 - old and malformed snapshots do not replace confirmed state or freshness
+  ---
+  duration_ms: 120.6391
+  type: 'test'
+  ...
+# Subtest: raw swing confirms only correlated attack execution, ignoring unrelated events
+ok 74 - raw swing confirms only correlated attack execution, ignoring unrelated events
+  ---
+  duration_ms: 121.6436
+  type: 'test'
+  ...
+# Subtest: despawn and numeric entity reuse retire an old target without another attack
+ok 75 - despawn and numeric entity reuse retire an old target without another attack
+  ---
+  duration_ms: 111.9985
+  type: 'test'
+  ...
+# Subtest: raw despawn and reused spawn cancel attack before any replacement snapshot arrives
+ok 76 - raw despawn and reused spawn cancel attack before any replacement snapshot arrives
+  ---
+  duration_ms: 212.2454
+  type: 'test'
+  ...
+# Subtest: nearby human safety rejects PvE attack locally without claiming server policy
+ok 77 - nearby human safety rejects PvE attack locally without claiming server policy
+  ---
+  duration_ms: 101.8158
+  type: 'test'
+  ...
+# Subtest: a nearby human omitted by the visible entity cap still prevents PvE attack
+ok 78 - a nearby human omitted by the visible entity cap still prevents PvE attack
+  ---
+  duration_ms: 104.7225
+  type: 'test'
+  ...
+# Subtest: duplicate attacks do not pulse twice and cloning getters cannot alter live orders
+ok 79 - duplicate attacks do not pulse twice and cloning getters cannot alter live orders
+  ---
+  duration_ms: 113.2353
+  type: 'test'
+  ...
+# Subtest: owner stop and unexpected close neutralize the runner and preserve sent uncertainty
+ok 80 - owner stop and unexpected close neutralize the runner and preserve sent uncertainty
+  ---
+  duration_ms: 216.9708
+  type: 'test'
+  ...
+# Subtest: stop closes and retains uncertainty even if the final neutral flush throws
+ok 81 - stop closes and retains uncertainty even if the final neutral flush throws
+  ---
+  duration_ms: 112.2556
+  type: 'test'
+  ...
+# Subtest: real guests occupy normal slots and another normal client observes confirmed movement
+ok 82 - real guests occupy normal slots and another normal client observes confirmed movement
+  ---
+  duration_ms: 1076.7574
+  type: 'test'
+  ...
+# Subtest: real guest walks with bounded inputs to the normal practice dummy and receives a server swing
+ok 83 - real guest walks with bounded inputs to the normal practice dummy and receives a server swing
+  ---
+  duration_ms: 2088.2275
+  type: 'test'
+  ...
+# Subtest: loads actual owner-visible files with detached records, absolute paths and raw-byte hashes
+ok 84 - loads actual owner-visible files with detached records, absolute paths and raw-byte hashes
+  ---
+  duration_ms: 17.5893
+  type: 'test'
+  ...
+# Subtest: reads only the latest bounded candidate suffix after validating every record in the file
+ok 85 - reads only the latest bounded candidate suffix after validating every record in the file
+  ---
+  duration_ms: 13.9962
+  type: 'test'
+  ...
+# Subtest: rejects objective scope mismatch, malformed goals and invalid memory lines
+ok 86 - rejects objective scope mismatch, malformed goals and invalid memory lines
+  ---
+  duration_ms: 20.4011
+  type: 'test'
+  ...
+# Subtest: rejects oversize and invalid UTF-8 files before exposing content
+ok 87 - rejects oversize and invalid UTF-8 files before exposing content
+  ---
+  duration_ms: 7.8822
+  type: 'test'
+  ...
+# Subtest: rejects file symlinks that escape the explicit owner directory
+ok 88 - rejects file symlinks that escape the explicit owner directory # SKIP symlink creation unavailable: EPERM
+  ---
+  duration_ms: 6.012
+  type: 'test'
+  ...
+# Subtest: rejects likely credentials and unsafe directories without returning file contents
+ok 89 - rejects likely credentials and unsafe directories without returning file contents
+  ---
+  duration_ms: 7.0537
+  type: 'test'
+  ...
+# Subtest: loads actual repo fixtures with the requested matching scope
+ok 90 - loads actual repo fixtures with the requested matching scope
+  ---
+  duration_ms: 3.2824
+  type: 'test'
+  ...
+# Subtest: large allowed chat history is reduced to a recent ordered window without mutating inspection state
+ok 91 - large allowed chat history is reduced to a recent ordered window without mutating inspection state
+  ---
+  duration_ms: 6.0498
+  type: 'test'
+  ...
+# Subtest: protected required context still fails when it cannot fit after optional chat and peers are removed
+ok 92 - protected required context still fails when it cannot fit after optional chat and peers are removed
+  ---
+  duration_ms: 1.3559
+  type: 'test'
+  ...
+# Subtest: roster pruning preserves self and unresolved whisper targets while reporting omissions
+ok 93 - roster pruning preserves self and unresolved whisper targets while reporting omissions
+  ---
+  duration_ms: 3.3042
+  type: 'test'
+  ...
+# Subtest: inspect exposes actual files and hashes without opening a game connection
+ok 94 - inspect exposes actual files and hashes without opening a game connection
+  ---
+  duration_ms: 145.6081
+  type: 'test'
+  ...
+# Subtest: runner accepts bounded text commands, keeps files and context separate, and exits on owner stop
+ok 95 - runner accepts bounded text commands, keeps files and context separate, and exits on owner stop
+  ---
+  duration_ms: 574.9133
+  type: 'test'
+  ...
+# Subtest: oversized partial stdin is rejected before parsing and closes the guest connection
+ok 96 - oversized partial stdin is rejected before parsing and closes the guest connection
+  ---
+  duration_ms: 494.9192
+  type: 'test'
+  ...
+# Subtest: CLI chat uses explicit capability and a scoped envelope with visible routing and bounded context
+ok 97 - CLI chat uses explicit capability and a scoped envelope with visible routing and bounded context
+  ---
+  duration_ms: 520.1064
+  type: 'test'
+  ...
+1..97
+# tests 97
+# suites 0
+# pass 96
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 24727.5473

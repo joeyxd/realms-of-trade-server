@@ -1,0 +1,158 @@
+{
+  "asset_id": "buccaneer-v1",
+  "derived": {
+    "assets/models/buccaneer-v1-desktop.glb": {
+      "animation_accessors": 571,
+      "animation_buffer_bytes": 379424,
+      "animation_channels": 585,
+      "animation_samplers": 585,
+      "animations": [
+        "idle",
+        "swim",
+        "hit_to_body_01"
+      ],
+      "basecolor_dimensions": [
+        1024,
+        1024
+      ],
+      "bytes": 2117640,
+      "has_metallic_roughness_map": false,
+      "has_normal_map": false,
+      "images": 1,
+      "materials": 1,
+      "meshes": 1,
+      "sha256": "096aff75f8e1e0b2b1c522b65fc622c42d5b25fa29d24f6d0b6921feea25271c",
+      "skin_joints": [
+        65
+      ],
+      "skins": 1,
+      "textures": 1,
+      "triangles": 9164
+    },
+    "assets/models/buccaneer-v1-mobile.glb": {
+      "animation_accessors": 571,
+      "animation_buffer_bytes": 379424,
+      "animation_channels": 585,
+      "animation_samplers": 585,
+      "animations": [
+        "idle",
+        "swim",
+        "hit_to_body_01"
+      ],
+      "basecolor_dimensions": [
+        512,
+        512
+      ],
+      "bytes": 1546564,
+      "has_metallic_roughness_map": false,
+      "has_normal_map": false,
+      "images": 1,
+      "materials": 1,
+      "meshes": 1,
+      "sha256": "b6b4b6716bbc4e90fa1b34e621b1d1fada7c2100667211e5ad40d36f812fa0b1",
+      "skin_joints": [
+        65
+      ],
+      "skins": 1,
+      "textures": 1,
+      "triangles": 9164
+    },
+    "assets/ui/portraits/buccaneer-v1-desktop.webp": {
+      "bytes": 290760,
+      "dimensions": [
+        512,
+        512
+      ],
+      "format": "WEBP",
+      "lossless": true,
+      "mode": "RGBA",
+      "sha256": "a21693be8b780b472a21e70615d29a7bc92f8205388ef093a52829b848d3a4f7"
+    },
+    "assets/ui/portraits/buccaneer-v1-mobile.webp": {
+      "bytes": 82546,
+      "dimensions": [
+        256,
+        256
+      ],
+      "format": "WEBP",
+      "lossless": true,
+      "mode": "RGBA",
+      "sha256": "aa2aea28968df268bae26963e06ca5fea421cf3ddf477fd2888d49587ce5de99"
+    }
+  },
+  "invariants": {
+    "runtime_animation_names": [
+      "idle",
+      "swim",
+      "hit_to_body_01"
+    ],
+    "runtime_animations": 3,
+    "runtime_metallic_roughness_map": false,
+    "runtime_normal_map": false,
+    "skin_joints": 65,
+    "skins": 1,
+    "source_animations_preserved_in_original": true,
+    "triangles": 9164
+  },
+  "originals": {
+    "docs/art/source/buccaneer-v1/male anime+character+3d+model.glb": {
+      "animation_names": [
+        "swim",
+        "run",
+        "hit_to_body_01",
+        "idle"
+      ],
+      "basecolor_dimensions": [
+        2048,
+        2048
+      ],
+      "bytes": 4726368,
+      "sha256": "c4f4bfff67c1cdfe6116f95d6756d7fb5e2bad4af94a4c076c3c700da3adaa69",
+      "skin_joints": [
+        65
+      ],
+      "skins": 1,
+      "source_filename": "male anime+character+3d+model.glb",
+      "triangles": 9164
+    },
+    "docs/art/source/buccaneer-v1/pirate_avatar_alpha.png": {
+      "bytes": 3321172,
+      "dimensions": [
+        1600,
+        1600
+      ],
+      "mode": "RGBA",
+      "sha256": "b8c2f2f73aaf4c328aefd7e1f43de1f07876112dabad77e6adefb594eb845814",
+      "source_filename": "pirate_avatar_alpha.png"
+    }
+  },
+  "schema_version": 1,
+  "tool": {
+    "jpeg_codec": "8.0",
+    "path": "tools/buccaneer-character/prepare.py",
+    "pillow": "12.2.0",
+    "python": "3.14.3",
+    "version": 1
+  },
+  "transformations": {
+    "basecolor": {
+      "desktop_px": 1024,
+      "format": "JPEG",
+      "mobile_px": 512,
+      "quality": 94,
+      "resize": "Pillow LANCZOS",
+      "subsampling": 0
+    },
+    "glb": "preserve nodes, mesh, positions, indices, normals, UVs, skin weights, joints and inverse bind matrices; retain source idle, swim and hit_to_body_01 animations with original accessors and key bytes; remove run, normal map and metallic-roughness map; embed resized basecolor only",
+    "portrait": {
+      "crop": false,
+      "desktop_px": 512,
+      "format": "WebP",
+      "lossless": true,
+      "magenta_removed": false,
+      "mobile_px": 256,
+      "mode": "RGBA",
+      "resize": "Pillow LANCZOS"
+    }
+  }
+}

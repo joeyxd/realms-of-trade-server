@@ -1,0 +1,240 @@
+{
+  "milestone": "W02b-wallet-browser",
+  "date": "2026-10-07",
+  "status": "implemented-opt-in-and-verified-locally",
+  "node": "v24.14.0",
+  "viem": "2.57.3",
+  "tests": [
+    {
+      "command": "node --test tests/web3-wallet-provider.test.mjs tests/web3-wallet-browser.test.mjs tests/web3-wallet-config.test.mjs",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0
+    },
+    {
+      "command": "node --test tests/web3-wallet-link.test.mjs tests/web3-wallet-http.test.mjs tests/web3-wallet-sql.test.mjs tests/web3-wallet-integration.test.mjs tests/web3-asset-registry.test.mjs tests/web3-asset-registry-sql.test.mjs tests/web3-asset-registry-process.test.mjs tests/web3-asset-registry-boundary.test.mjs tests/web3-equipment-content.test.mjs tests/items.test.mjs tests/accounts-server.test.mjs tests/account-auth.test.mjs",
+      "passed": 90,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0
+    }
+  ],
+  "browser": {
+    "command": "MN_PLAYWRIGHT=<external Playwright index.mjs> MN_BROWSER=<installed Chrome executable> node tools/qa-wallet-link.mjs",
+    "scope": "local focused AccountPanel + WalletPanel; fake Auth; real in-memory wallet service; no game join",
+    "passed": 3,
+    "viewports": [
+      {
+        "width": 1280,
+        "height": 900
+      },
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 844,
+        "height": 390
+      }
+    ],
+    "pageErrors": [],
+    "lostCommittedReply": true,
+    "counters": {
+      "signins": 3,
+      "challenges": 6,
+      "verifications": 3,
+      "linkReads": 10
+    },
+    "auth": "Supabase SDK against simulated local Auth",
+    "wallet": "injected EIP-1193 fixture, real EOA signatures from public deterministic keys",
+    "store": "in-memory W02a service; SQL separately regression-tested",
+    "keyboard": "focus preserved, preview focusable, Tab to explicit sign, Escape to Cuenta",
+    "localNetworkPermission": "disposable browser context only",
+    "screenshotsInspected": true
+  },
+  "verification": {
+    "matchedAccountAndBearer": true,
+    "exactMessagePolicy": true,
+    "noPromptUntilExplicitAction": true,
+    "providerChangesDiscardLateSignature": true,
+    "pendingSameWalletResumable": true,
+    "differentWalletWaitsForExpiry": true,
+    "providerTimeoutRetainsPromptLock": true,
+    "liveSupabase": false,
+    "realExtension": false,
+    "physicalMobile": false,
+    "rpc": false,
+    "testnetSelected": false,
+    "erc1271": false,
+    "onchainTokens": false,
+    "payments": false,
+    "liveMigrationApplied": false,
+    "defaultStartupEnabled": false,
+    "published": false,
+    "fullGameBrowserWalkthrough": false
+  },
+  "previousSources": [
+    {
+      "path": "docs/delivery/w01-asset-registry-evidence.json",
+      "sourceHashesUnchanged": true,
+      "count": 10
+    },
+    {
+      "path": "docs/delivery/w00-equipment-content-evidence.json",
+      "sourceHashesUnchanged": true,
+      "count": 7
+    }
+  ],
+  "files": [
+    {
+      "path": "src/client/walletProvider.js",
+      "bytes": 5245,
+      "sha256": "c27b8715eebf4bcc3c066af6af96a125311a212d0a7e153bed00ec1d7a4f0c47"
+    },
+    {
+      "path": "src/client/walletLink.js",
+      "bytes": 13127,
+      "sha256": "7c2b8a243041c6939e14892d0a8b4ba142c727971f96d01869c50f5486ef456d"
+    },
+    {
+      "path": "src/ui/wallet.js",
+      "bytes": 6946,
+      "sha256": "25a47155f85460022229c2e13651ca7fa072e1e87c85a6f666f15daec8100e82"
+    },
+    {
+      "path": "styles/wallet.css",
+      "bytes": 2346,
+      "sha256": "92763a0e6d4c855392ee47bc1bcedbc5286f4af7c9fa0892777316a7d2efbd4d"
+    },
+    {
+      "path": "tests/web3-wallet-provider.test.mjs",
+      "bytes": 5465,
+      "sha256": "3880f54190bf9898f2dba8bb79824050d4767aaf2a57b5c42a139386c1a24114"
+    },
+    {
+      "path": "tests/web3-wallet-browser.test.mjs",
+      "bytes": 20331,
+      "sha256": "f5bccbef7814c3ff8d5c0d703ad10edd2d75c9135c34a7be52fad69fb35c23d5"
+    },
+    {
+      "path": "tests/web3-wallet-config.test.mjs",
+      "bytes": 2932,
+      "sha256": "288a7ab231159b4def2aceef6b33fd0101c3cd31133f1320b821bae30edcb8d9"
+    },
+    {
+      "path": "tools/qa-wallet-link.mjs",
+      "bytes": 20876,
+      "sha256": "338138aaea236c09f23e26860a30509328b528e07e9af8a261081eef108a230e"
+    },
+    {
+      "path": "docs/briefs/w02b-wallet-browser.md",
+      "bytes": 4115,
+      "sha256": "05e0d2878d943bfaf3fdbef0559d7859b1c310beff3fa33c954964d2492da4cc"
+    },
+    {
+      "path": "docs/delivery/w02b-wallet-browser.md",
+      "bytes": 5266,
+      "sha256": "4c6e71eb605ec31730fbfd8e89052f06d3fe5de98646ac1ae61a1ed38c223032"
+    },
+    {
+      "path": "server/web3/walletHttp.mjs",
+      "bytes": 5424,
+      "sha256": "48b636da3ead56936cd46084d28a3e67e482e5dcb74b0d2e81e1e030d039875e",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    },
+    {
+      "path": "server/index.mjs",
+      "bytes": 9376,
+      "sha256": "350b7e5449bfc20ff92b1a8609c14aeee26dcbd7efcd71578ea3de8b3328f41b",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    },
+    {
+      "path": "src/client/accountAuth.js",
+      "bytes": 11089,
+      "sha256": "de0a17e2101e7a4721c9f403b6d8c2e6647aed4dad1e08e0f1d31d1929a3795f",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    },
+    {
+      "path": "src/ui/account.js",
+      "bytes": 20819,
+      "sha256": "10b263d3a691bd105d655e882d00c6570d428d7a6bb30abda3e1f1a490aa7c93",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    },
+    {
+      "path": "src/main.js",
+      "bytes": 80578,
+      "sha256": "cbf21a802000285c5376b3d2ebad093181ad82dee471dc09e547dd524693641e",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    },
+    {
+      "path": "index.html",
+      "bytes": 3910,
+      "sha256": "e5bee9d983916e2b0226338499bf531f404b149d08792b2135cdb7b28e8d60da",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    },
+    {
+      "path": "PLAN-WEB3.md",
+      "bytes": 17432,
+      "sha256": "ed53d40248480fc29a838de38b6ef9f7b9ac5c3fa4858b7574daf49db5073e53",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    },
+    {
+      "path": "PLAN-DELIVERY.md",
+      "bytes": 59294,
+      "sha256": "1779a4a841da8f14c75eb3304ff4c7c94177504e095121b888f31644ebca1abb",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 71997,
+      "sha256": "b2e5327394999c2deb3361a79354ff43b53e5414439fc876dc1422a59c21a9c9",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "bytes": 96295,
+      "sha256": "ff73f3f9b7233051b7722fd0e89265a4ae20cc083aa55eb49912a34b0226fc90",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    }
+  ],
+  "browserFiles": [
+    {
+      "path": "docs/delivery/w02b-wallet-browser/desktop-review.png",
+      "bytes": 522734,
+      "sha256": "72b353aeb06acb66b59da495f640c5bf371d562bb2d64e11d317bce75d5f729c"
+    },
+    {
+      "path": "docs/delivery/w02b-wallet-browser/desktop-linked.png",
+      "bytes": 469588,
+      "sha256": "414e200f3dd1974b3b6f2de86e7f75dfc1a5a4f8ec4f664c6eff60bdeeb10402"
+    },
+    {
+      "path": "docs/delivery/w02b-wallet-browser/mobile-portrait-review.png",
+      "bytes": 68006,
+      "sha256": "b8c585351aa15712cb6d6d0aa9708eddbcf6a7744ce054c99203016e6269a8c8"
+    },
+    {
+      "path": "docs/delivery/w02b-wallet-browser/mobile-portrait-linked.png",
+      "bytes": 65834,
+      "sha256": "cdb2a6f413358a18fd5a182ade11eae8326a3b47698f78a389773a51ec1139d3"
+    },
+    {
+      "path": "docs/delivery/w02b-wallet-browser/mobile-landscape-review.png",
+      "bytes": 124766,
+      "sha256": "b9fc7745f5dedb1c252676ae91665a17cdc90c06186fbd16cc682c9569ff285c"
+    },
+    {
+      "path": "docs/delivery/w02b-wallet-browser/mobile-landscape-linked.png",
+      "bytes": 135011,
+      "sha256": "3e46fa1bb519364dccc7c606c8ec8bb98686cc35cf2137e626c6a35332b3b387"
+    },
+    {
+      "path": "docs/delivery/w02b-wallet-browser/results.json",
+      "bytes": 6752,
+      "sha256": "407629265a18e30b59a235b3720bde4b46cfbfec48b8178c34f6e564e9a423fb"
+    }
+  ]
+}

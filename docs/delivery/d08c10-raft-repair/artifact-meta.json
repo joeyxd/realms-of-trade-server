@@ -1,0 +1,8 @@
+﻿{
+    "version":  "0.6.0-alpha.10",
+    "protocol":  25,
+    "bytes":  160574,
+    "sha256":  "5D82937E74DB2392E37F7C102ACAD78D338159D59206D6B5027417EEA92815D9",
+    "scope":  "Current shared checkout; includes concurrent work, local only",
+    "generatedAt":  "2026-10-08T04:08:41.1338734Z"
+}

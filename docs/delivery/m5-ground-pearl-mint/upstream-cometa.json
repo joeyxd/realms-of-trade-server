@@ -1,0 +1,37 @@
+{
+  "baseCommit": "fb4276f1273dec943a4fcc62c617b0c7e2bfe78c",
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "--test-name-pattern=Cometa cannot",
+    "tests/pearls.test.mjs"
+  ],
+  "exitCode": 1,
+  "counts": {
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "files": {
+    "tests/pearls.test.mjs": {
+      "upstreamSHA256": "431636f7ac7828c9d0f56ac9baf305abd50aab13e0bf03cf243f94eeeaa5eabb",
+      "sliceSHA256": "431636f7ac7828c9d0f56ac9baf305abd50aab13e0bf03cf243f94eeeaa5eabb",
+      "sameAfterLFNormalization": true
+    },
+    "src/sim/systems/movement.js": {
+      "upstreamSHA256": "9959d5b6dfd036367ebb527a5ef95a995ea0e54a51663539aa726152121e9533",
+      "sliceSHA256": "9959d5b6dfd036367ebb527a5ef95a995ea0e54a51663539aa726152121e9533",
+      "sameAfterLFNormalization": true
+    },
+    "src/sim/systems/skills.js": {
+      "upstreamSHA256": "e5bc6f8d4bbf66df69eb73a4116b98451a6b8cd5b70b8b0c95991453805956b4",
+      "sliceSHA256": "e5bc6f8d4bbf66df69eb73a4116b98451a6b8cd5b70b8b0c95991453805956b4",
+      "sameAfterLFNormalization": true
+    }
+  },
+  "scope": "Isolated unchanged upstream Cometa deep-water movement failure. No test or gameplay contract changed to hide it; unrelated to fresh public pearl mint."
+}

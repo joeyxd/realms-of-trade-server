@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2026-10-08T13:23:32.156Z",
+  "purpose": "Verify the optional route through the live GameHost snapshot and UI: start at berth, cross three ordered buoys, read a real telegraphed corsair salvo and its hit-or-dodge result, return, and dock through the normal command.",
+  "harness": "Fresh isolated ephemeral GameHost per viewport, real browser WebSocket and game UI, in-memory store, local Three.js/GSAP/font routes, Chrome WebGL renderer; no .env, SQL, external hosts, device or FPS claim.",
+  "fixture": "After helm mount and routeStart through the UI, QA wraps only world.navalRoute.plan for the owner and rebuilds each real candidate trial body at server-issued route points. This trusted relocation makes buoy and cannon acceptance deterministic; route snapshots, timing, shots, damage, ship HP, route commands, and dock completion remain server-owned. It does not claim unaided sailing/contact skill or physical-device performance.",
+  "expected": {
+    "buoys": 3,
+    "routeStatus": "complete",
+    "completionCommand": "normal navalPilot dock command",
+    "maximumDamagePerRun": 24,
+    "lootOrXp": false
+  },
+  "protocolVersion": 27,
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "naval-route-desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "failed",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "screenshots": [
+        "naval-route-desktop-1280x720-2026-10-08T13-23-32-156Z-failure-browser-join.png"
+      ],
+      "stage": "browser-join",
+      "error": "locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#btn-play')\u001b[22m\n\u001b[2m    - locator resolved to <button id=\"btn-play\" class=\"btn interactive\">JUGAR</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    26 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not stable\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at openApp (C:\\DEV\\real of trade\\realms-of-trade-server\\tools\\qa-naval-route.mjs:84:35)\n    at async run (C:\\DEV\\real of trade\\realms-of-trade-server\\tools\\qa-naval-route.mjs:106:46)\n    at async file:///C:/DEV/real%20of%20trade/realms-of-trade-server/tools/qa-naval-route.mjs:225:33",
+      "browserState": {
+        "url": "http://127.0.0.1:52791/?debug&q=low",
+        "title": "Marea Negra",
+        "bodyText": "M\nA\nR\nE\nA\nN\nE\nG\nR\nA\nISLA DE LA CALDERA\nEN LÍNEA · 0/1 piratas a bordo\nJugar solo\n✦\nCuenta\nInvitado · esta sesión\nJUGAR\nNombre\nAspecto\nCorsario\nAjustes\nControles\nWASD para moverte · ESPACIO para hacer dash · rueda para zoom\nRebanada vertical 1\nv0.6.0-alpha.12",
+        "gameMode": "title",
+        "online": true,
+        "playDisabled": false,
+        "boarding": "JUGAR",
+        "client": {
+          "joined": false,
+          "awaitingFirst": false,
+          "youLocal": 0,
+          "closed": false,
+          "transportKind": "ws",
+          "sent": 10,
+          "recv": 623
+        },
+        "transport": {
+          "kind": "ws",
+          "closed": false,
+          "sent": 10,
+          "recv": 623
+        },
+        "appErrors": []
+      },
+      "final": {
+        "route": null,
+        "naval": null,
+        "voyage": null,
+        "clients": 1,
+        "hostLogs": [
+          "[net] #1 connected (127.0.0.1) · sockets 1"
+        ]
+      }
+    }
+  ],
+  "failures": [
+    {
+      "viewport": "naval-route-desktop-1280x720",
+      "stage": "browser-join",
+      "error": "locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#btn-play')\u001b[22m\n\u001b[2m    - locator resolved to <button id=\"btn-play\" class=\"btn interactive\">JUGAR</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    26 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not stable\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+    }
+  ]
+}

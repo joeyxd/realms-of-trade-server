@@ -1,0 +1,59 @@
+{
+  "state": "deferred",
+  "candidate": "fc3c38a60a283a82faadae4956fb442662c412c7",
+  "snapshot": {
+    "at": "2026-10-10T16:59:10.733905+00:00",
+    "container": "marea-negra-alpha-marea-negra-alpha-1",
+    "revision": "b84c2daa3107139cb4022b176357db7d59e4caca",
+    "version": "0.6.0-alpha.18",
+    "image": "marea-negra:alpha-b84c2daa3107",
+    "imageId": "sha256:407909ec222232bc7a1ce7f40aa096dfc303aeef86315a085994a67cff86247b",
+    "containerId": "01b789e2dd4f1366ed5158f8ec73d1f9687f8ad79f8820f209a8590bee23008b",
+    "running": true,
+    "health": "healthy",
+    "startedAt": "2026-10-10T16:33:20.355619898Z",
+    "oomKilled": false,
+    "currentRelease": "/opt/marea-negra/releases/b84c2daa3107139cb4022b176357db7d59e4caca",
+    "updateState": {}
+  },
+  "status": {
+    "version": "0.6.0-alpha.18",
+    "players": 0,
+    "sockets": 1,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1253,
+        "errors": 0
+      }
+    }
+  },
+  "limits": [
+    "Candidate not active. No protocol35 public entry verified.",
+    "No forced disconnect, SQL, public agents or inference provider activation."
+  ]
+}

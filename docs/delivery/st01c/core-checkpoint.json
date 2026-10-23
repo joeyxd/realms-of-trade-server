@@ -1,0 +1,23 @@
+{
+  "schema": "st01c-core-checkpoint/v1",
+  "baselineCommit": "6cd29b4",
+  "steps": 480,
+  "configurations": {
+    "native.default": {},
+    "native.seed12345": { "seed": 12345 },
+    "native.seed65534": { "seed": 65534, "smokeLife": 0.3 },
+    "native.mixed": { "smokeSpeed": 1.5, "smokeLife": 3.25, "stopAt": 2.5 },
+    "native.stop0": { "stopAt": 0 },
+    "update.default": {},
+    "update.mixed": { "smokeSpeed": 0.5, "smokeLife": 1.25, "stopAt": 1.5 }
+  },
+  "digests": {
+    "native.default": "663023d3133ccb2107ca207350333f6a8b18b08ef595fee76fe77418f174ecbc",
+    "native.seed12345": "352fd0ba41cb1426fb4a164aa813891d7fad14b32edd165faec6db4beb47ca3a",
+    "native.seed65534": "560cd3f34e7f3d73f71de64970527a4c2df770b7dddc109d840baa2cb0145c87",
+    "native.mixed": "553581b1fa1dcfccabcc46d49a41fc6a53e69a8c1086fad4d480f08fa27eb9bd",
+    "native.stop0": "ba791bcb1d3baa27f05151f59cd357afd493f9d86b3a1eae6b755c22df29c969",
+    "update.default": "d4800ce70b3d1e4d8180f24e4bfed830d45cd65812fbbd60a43a3738fc5137ca",
+    "update.mixed": "e24afde0b3c3cd2052d197abd19262ab73ac6f33f75bfe1b98be0cc4f8ada0cd"
+  }
+}

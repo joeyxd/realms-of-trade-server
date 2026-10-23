@@ -1,0 +1,181 @@
+{
+  "_about": "Hand-curated part of the board (the operator writes it). tools/board/build.mjs merges it with ROADMAP.md, each worktree's context/NOW.md and the live /status into docs/board/board-data.js. Keys: id = worktree folder name (and the artifact database id); roadmap_row = the exact start of the Area column in the ROADMAP.md areas table; image = path relative to docs/board/; purpose = what this area is for, in plain words, for someone who forgot.",
+  "areas": [
+    {
+      "id": "area15-resource-live",
+      "code": "AREA15",
+      "name": "Ground and pearls",
+      "milestone": "M5",
+      "roadmap_row": "AREA15",
+      "image": "img/area15-ground-pearls.webp",
+      "purpose": "What the player picks up from the ground, crafts, drops and loses on death, and the pearls that circulate as money. The persistent world: the server owns resources and crafting.",
+      "first_message": "area15, continue",
+      "order": 1
+    },
+    {
+      "id": "area17-market",
+      "code": "AREA17",
+      "name": "Agents and companions",
+      "milestone": "",
+      "roadmap_row": "AREA17",
+      "image": "img/area17-agents-companions.webp",
+      "purpose": "Non-player characters with a mind of their own: the agent market, the durable companions that pair with you, and the safe presence of their mind in the world.",
+      "first_message": "area17, continue",
+      "order": 2
+    },
+    {
+      "id": "area07-pilot",
+      "code": "AREA07",
+      "name": "Naval refuge and A0 region",
+      "milestone": "M6",
+      "roadmap_row": "AREA07",
+      "image": "img/area07-naval-refuge.webp",
+      "purpose": "The raft as home: sailing, pilotage, anchoring in a refuge, and the first region of the world (A0) with Puerto Sol as its physical anchor.",
+      "first_message": "area07, continue",
+      "order": 3
+    },
+    {
+      "id": "prg01c-artisan",
+      "code": "AREA03",
+      "name": "Progression and inventory",
+      "milestone": "",
+      "roadmap_row": "AREA03",
+      "image": "img/area03-progression-inventory.webp",
+      "purpose": "How the character grows and what it carries: logging, load, backpacks, food and grog, artisan recipes and the teaching of trades.",
+      "first_message": "area03, continue",
+      "order": 4
+    },
+    {
+      "id": "gm-editor-first",
+      "code": "AREA01",
+      "name": "GM editor",
+      "milestone": "",
+      "roadmap_row": "AREA01",
+      "image": "img/area01-gm-editor.webp",
+      "purpose": "The game master's table: sculpt and paint terrain, place and publish resources, templates and scatter, and the coming Skill Studio for authoring skills.",
+      "first_message": "area01, continue",
+      "order": 5
+    },
+    {
+      "id": "character-slots",
+      "code": "CH01",
+      "name": "Character slots",
+      "milestone": "",
+      "roadmap_row": "CH01",
+      "image": "img/ch01-character-slots.webp",
+      "purpose": "Three characters per account: the account owner split from the profile, and a presence lock so one account cannot enter twice.",
+      "first_message": "ch01, continue",
+      "order": 6
+    },
+    {
+      "id": "buccaneer-character",
+      "code": "BUCANERO",
+      "name": "Bucanero",
+      "milestone": "M3.5",
+      "roadmap_row": "Bucanero",
+      "image": "img/bucanero.webp",
+      "purpose": "The game's own playable fighter: the model, the hit reaction and the recoil. Balance and real-machine FPS are still to be accepted.",
+      "first_message": "bucanero, continue",
+      "order": 7
+    },
+    {
+      "id": "st01b-niagara",
+      "code": "ST01B",
+      "name": "Niagara library",
+      "milestone": "",
+      "roadmap_row": "ST01b",
+      "image": "img/st01b-niagara-library.webp",
+      "purpose": "A catalogue of the Niagara particle effects (fire, smoke, sparks) censused from the Unreal sources: components and views to choose what to port into the game.",
+      "first_message": "st01b, continue",
+      "order": 8
+    },
+    {
+      "id": "st01c-native",
+      "code": "ST01C",
+      "name": "Niagara native",
+      "milestone": "",
+      "roadmap_row": "ST01c",
+      "image": "img/st01c-niagara-native.webp",
+      "purpose": "The lab that extracts one Niagara effect into native sprite sheets for the web engine, with measured fidelity (material, DepthFade, Filmic) and a lossless WebP atlas.",
+      "first_message": "st01c, continue",
+      "order": 9
+    },
+    {
+      "id": "item-models-release",
+      "code": "ITEMS",
+      "name": "Items art",
+      "milestone": "",
+      "roadmap_row": "Items art",
+      "image": "img/items-art.webp",
+      "purpose": "The 3D models of the world's objects (torch, logs, crates) as author GLBs with WebP derivatives, ready to be picked up in the game.",
+      "first_message": "items, continue",
+      "order": 10
+    },
+    {
+      "id": "asset-index",
+      "code": "ASSETS",
+      "name": "Asset protocol",
+      "milestone": "",
+      "roadmap_row": "Asset protocol",
+      "image": "img/asset-protocol.webp",
+      "purpose": "The rules for naming, placing and registering every art asset, the generated ARTE-Y-MODELOS index, and the ratchet that stops the mess from growing back.",
+      "first_message": "assets, continue",
+      "order": 11
+    },
+    {
+      "id": "area12-i18n",
+      "code": "AREA12",
+      "name": "I18N",
+      "milestone": "",
+      "roadmap_row": "AREA12",
+      "image": "img/area12-i18n.webp",
+      "purpose": "The game's texts in Spanish and English: the language selector and the promotion of pending keys to both languages.",
+      "first_message": "area12, continue",
+      "order": 12
+    },
+    {
+      "id": "web3-w0x",
+      "code": "WEB3",
+      "name": "Web3 W0x",
+      "milestone": "",
+      "roadmap_row": "Web3",
+      "image": "img/web3.webp",
+      "purpose": "An on-chain asset registry (Polygon Amoy) and the equipment rules tied to it. Nothing is live; it is a direction for the modular workshop.",
+      "first_message": "web3, continue",
+      "order": 13
+    },
+    {
+      "id": "region-a0-a8",
+      "code": "REGION",
+      "name": "A0 to A8 region",
+      "milestone": "",
+      "roadmap_row": "A0 to A8",
+      "image": "img/region-a0-a8.webp",
+      "purpose": "The plan for the initial world: regions A0 to A8, of which only the A0 survey exists. No code yet; it waits for the GM editor (GM06a).",
+      "first_message": "region, continue",
+      "order": 14
+    },
+    {
+      "id": "inv02-baseline",
+      "code": "INV02",
+      "name": "inv02 baseline",
+      "milestone": "",
+      "roadmap_row": "inv02-baseline",
+      "image": "img/inv02-baseline.webp",
+      "purpose": "An old snapshot of the code kept as the baseline for comparing test failures. Nobody works here; it is only compared against.",
+      "first_message": "inv02, continue",
+      "order": 15
+    },
+    {
+      "id": "realms-of-trade-server",
+      "code": "DESK",
+      "name": "Main desk",
+      "milestone": "",
+      "roadmap_row": "realms-of-trade-server",
+      "image": "img/server-desk.webp",
+      "purpose": "The main checkout on loving-lovelace: a shared desk hundreds of commits behind. Never commit from it; the work lives in the worktrees.",
+      "first_message": "desk, continue",
+      "order": 16
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "engine": "5.8.0",
+  "project": "actionrpg",
+  "scan_roots": [
+    "/Game"
+  ],
+  "scan_method": "AssetRegistry scan_paths_synchronous then get_assets_by_path; no asset loading",
+  "scan_ok": true,
+  "asset_count": 1077,
+  "niagara_system_count": 7,
+  "niagara_systems": [
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_HealingAOE",
+      "package": "/Game/ActionRPGStarterSystem/Skills/Blueprint/VFX/NS_HealingAOE",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x000002257F40A4BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_LocationEffect",
+      "package": "/Game/ActionRPGStarterSystem/VFX/NS_LocationEffect",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x000002257F40BF3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Electric",
+      "package": "/Game/ActionRPGStarterSystem/VFX/Weapons/NS_Electric",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x000002257F40B8BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_Electric2",
+      "package": "/Game/ActionRPGStarterSystem/VFX/Weapons/NS_Electric2",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x000002257F403E3C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_LaserBeam",
+      "package": "/Game/ActionRPGStarterSystem/VFX/Weapons/NS_LaserBeam",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x000002257F40B93C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_ShieldEffect",
+      "package": "/Game/ActionRPGStarterSystem/VFX/Weapons/NS_ShieldEffect",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x000002257F40B5BC) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    },
+    {
+      "class": "NiagaraSystem",
+      "name": "NS_WeaponTrail",
+      "package": "/Game/ActionRPGStarterSystem/VFX/Weapons/WeaponTrail/NS_WeaponTrail",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x000002257F40B43C) {package_name: \"/Script/Niagara\", asset_name: \"NiagaraSystem\"}>"
+    }
+  ],
+  "texture_candidate_count": 4,
+  "texture_candidates": [
+    {
+      "class": "Texture2D",
+      "name": "T_Fire_D",
+      "package": "/Game/ActionRPGStarterSystem/Assets/FireFX/Textures/T_Fire_D",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x000002257F407B3C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_FireIcon",
+      "package": "/Game/ActionRPGStarterSystem/Skills/Images/T_FireIcon",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x000002257F403EBC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_FireIconPlus",
+      "package": "/Game/ActionRPGStarterSystem/Skills/Images/T_FireIconPlus",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x000002257F40AEBC) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    },
+    {
+      "class": "Texture2D",
+      "name": "T_FireResistance",
+      "package": "/Game/ActionRPGStarterSystem/Skills/Images/T_FireResistance",
+      "assetClassPath": "<Struct 'TopLevelAssetPath' (0x000002257F40B13C) {package_name: \"/Script/Engine\", asset_name: \"Texture2D\"}>"
+    }
+  ],
+  "class_counts_of_interest": {
+    "Texture2D": 176,
+    "NiagaraSystem": 7
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "milestone": "W00a-equipment-content",
+  "date": "2026-10-07",
+  "status": "implemented-and-verified-locally",
+  "node": "v24.14.0",
+  "equipmentModes": [
+    "appearance",
+    "functional"
+  ],
+  "tests": [
+    {
+      "command": "node --test tests/web3-equipment-content.test.mjs tests/web3-asset-registry.test.mjs tests/web3-asset-registry-sql.test.mjs tests/web3-asset-registry-process.test.mjs tests/web3-asset-registry-boundary.test.mjs tests/items.test.mjs",
+      "passed": 41,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "groups": {
+        "equipmentContent": 11,
+        "assetRegistry": 25,
+        "existingItems": 5
+      }
+    }
+  ],
+  "verification": {
+    "rolledDefinitionCases": 300,
+    "allCatalogBases": true,
+    "allRarities": true,
+    "targetLevels": [
+      1,
+      7,
+      15
+    ],
+    "respectBaseDropMinimum": true,
+    "contentTransfers": "both modes through W01 memory reference",
+    "registrySql": "Supabase SDK against local PGlite",
+    "fullCheckoutSuite": false,
+    "remoteSupabase": false,
+    "postgresMultiConnectionContention": false,
+    "visualAcceptance": false
+  },
+  "scope": {
+    "publicMintEndpoint": false,
+    "originProvenance": false,
+    "contentByteStorage": false,
+    "catalogApproval": false,
+    "wallets": false,
+    "onchainTokens": false,
+    "payments": false,
+    "gameplayMounted": false,
+    "newSqlMigration": false,
+    "liveMigrationApplied": false,
+    "deployed": false,
+    "newLossLicenseRulesAgreed": false
+  },
+  "files": [
+    {
+      "path": "server/web3/equipmentContent.mjs",
+      "bytes": 3107,
+      "sha256": "324c9de3f52a8579e1962e5e73e49260d97e22e8b25313dde031b7fbc5fd5fdd"
+    },
+    {
+      "path": "tests/web3-equipment-content.test.mjs",
+      "bytes": 10037,
+      "sha256": "8652dd3e22ac0a09b64f01aa18bda710943a6ecc60ad47008792393f10681113"
+    },
+    {
+      "path": "docs/briefs/w00-equipment-rules.md",
+      "bytes": 5367,
+      "sha256": "4cec347428b21baa7d5ef527981fb326c4bf0113db0419baf1f8373376db522e"
+    },
+    {
+      "path": "src/data/items.js",
+      "bytes": 7336,
+      "sha256": "abf0ffc274f64198881ed29789dc0218717b2a94e1998dd7dea1c86c9ff4beec"
+    },
+    {
+      "path": "src/sim/items.js",
+      "bytes": 5680,
+      "sha256": "3152271e4c16f9955572c20873eae70910815074c6132a009787ddf491b7f1a9"
+    },
+    {
+      "path": "server/web3/assetContract.mjs",
+      "bytes": 8197,
+      "sha256": "07844055f6d167b94cbe526952d869b950bbc42129eb65adf97930621a46db98"
+    },
+    {
+      "path": "server/web3/assetRegistry.mjs",
+      "bytes": 6057,
+      "sha256": "759ee0a55588aeef32aba58a603abbcdd270d4c3c3e7c2833cbd48e79a09aa83"
+    }
+  ]
+}

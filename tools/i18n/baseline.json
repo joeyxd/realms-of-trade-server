@@ -1,0 +1,4 @@
+{
+  "note": "Known hardcoded single-language strings and es/en table mismatches. It may only shrink: fix an offender, then run `node tools/i18n/scan-hardcoded.mjs --write-baseline`. Never add entries by hand. Kinds: es (Spanish literal), en (English literal), parity (es/en copy table key mismatch). Exempt a line on purpose with an inline `// i18n-ok: <reason>` comment.",
+  "entries": []
+}

@@ -1,0 +1,289 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "model:gm-rock-2k",
+      "groupId": "model:gm-rock",
+      "kind": "model",
+      "src": "editor/gm-rock-2k-a12adb2c88e0.glb",
+      "fit": "size",
+      "size": 4,
+      "label": {
+        "es": "Formación rocosa tropical",
+        "en": "Tropical rock formation"
+      },
+      "category": "nature",
+      "status": "candidate",
+      "variant": {
+        "key": "2k",
+        "label": "WebP 2K",
+        "optimization": "texture"
+      },
+      "stats": {
+        "bytes": 3271288,
+        "triangles": 19469,
+        "textures": 3,
+        "textureBytes": 2516944,
+        "sourceBytes": 8836372,
+        "sourceTriangles": 19469,
+        "sourceSha256": "6e38f2f611fdb3afa0356b0a991f77c1ee777b99b81f0dc7f0af12b3c93baf4c",
+        "sha256": "a12adb2c88e014df68aa4a5fbc8b525c1d0563378403b272ec93cc6421999f79",
+        "bounds": {
+          "min": [
+            -0.5000001,
+            0,
+            -0.4764072
+          ],
+          "max": [
+            0.5000001,
+            0.4551134,
+            0.4764072
+          ],
+          "size": [
+            1.0000001,
+            0.4551134,
+            0.9528143
+          ],
+          "fitSize": 4
+        }
+      }
+    },
+    {
+      "id": "model:gm-rock-1k",
+      "groupId": "model:gm-rock",
+      "kind": "model",
+      "src": "editor/gm-rock-1k-f40e26c2711a.glb",
+      "fit": "size",
+      "size": 4,
+      "label": {
+        "es": "Formación rocosa tropical",
+        "en": "Tropical rock formation"
+      },
+      "category": "nature",
+      "status": "candidate",
+      "variant": {
+        "key": "1k",
+        "label": "WebP 1K",
+        "optimization": "texture"
+      },
+      "stats": {
+        "bytes": 1546948,
+        "triangles": 19469,
+        "textures": 3,
+        "textureBytes": 792602,
+        "sourceBytes": 8836372,
+        "sourceTriangles": 19469,
+        "sourceSha256": "6e38f2f611fdb3afa0356b0a991f77c1ee777b99b81f0dc7f0af12b3c93baf4c",
+        "sha256": "f40e26c2711a0935cefbb9ba7ae441ef43fad6ca83f1b868811845bb53ea09fc",
+        "bounds": {
+          "min": [
+            -0.5000001,
+            0,
+            -0.4764072
+          ],
+          "max": [
+            0.5000001,
+            0.4551134,
+            0.4764072
+          ],
+          "size": [
+            1.0000001,
+            0.4551134,
+            0.9528143
+          ],
+          "fitSize": 4
+        }
+      }
+    },
+    {
+      "id": "model:gm-coral-200k",
+      "groupId": "model:gm-coral",
+      "kind": "model",
+      "src": "editor/gm-coral-200k-2k-668675002a5e.glb",
+      "fit": "size",
+      "size": 4,
+      "label": {
+        "es": "Arrecife de coral colorido",
+        "en": "Colorful coral reef"
+      },
+      "category": "nature",
+      "status": "candidate",
+      "variant": {
+        "key": "200k",
+        "label": "200K tris / WebP 2K",
+        "optimization": "geometry"
+      },
+      "stats": {
+        "bytes": 8596920,
+        "triangles": 199999,
+        "textures": 3,
+        "textureBytes": 1809388,
+        "sourceBytes": 61741336,
+        "sourceTriangles": 2000696,
+        "sourceSha256": "a947c70b340dcd3ebea55c34b511f74af2b547a5bddb4175b32310fc4a4128f6",
+        "sha256": "668675002a5e485eccbca57ba076dfb1f7c3db89bcecdea8bdf9ed66b37a5eec",
+        "bounds": {
+          "min": [
+            -0.4577942,
+            0.0002747,
+            -0.3105927
+          ],
+          "max": [
+            0.4578247,
+            0.9999695,
+            0.310379
+          ],
+          "size": [
+            0.9156189,
+            0.9996948,
+            0.6209717
+          ],
+          "fitSize": 4
+        }
+      }
+    },
+    {
+      "id": "model:gm-coral-50k",
+      "groupId": "model:gm-coral",
+      "kind": "model",
+      "src": "editor/gm-coral-50k-2k-695c22cd2568.glb",
+      "fit": "size",
+      "size": 4,
+      "label": {
+        "es": "Arrecife de coral colorido",
+        "en": "Colorful coral reef"
+      },
+      "category": "nature",
+      "status": "candidate",
+      "variant": {
+        "key": "50k",
+        "label": "50K tris / WebP 2K",
+        "optimization": "geometry"
+      },
+      "stats": {
+        "bytes": 3482648,
+        "triangles": 49999,
+        "textures": 3,
+        "textureBytes": 1809388,
+        "sourceBytes": 61741336,
+        "sourceTriangles": 2000696,
+        "sourceSha256": "a947c70b340dcd3ebea55c34b511f74af2b547a5bddb4175b32310fc4a4128f6",
+        "sha256": "695c22cd2568501f618bcf1bb6228f1f885d14ba21931de93ffcb4847f938831",
+        "bounds": {
+          "min": [
+            -0.4572754,
+            0.0002747,
+            -0.3097076
+          ],
+          "max": [
+            0.4578247,
+            0.9995728,
+            0.310379
+          ],
+          "size": [
+            0.9151001,
+            0.9992981,
+            0.6200867
+          ],
+          "fitSize": 4
+        }
+      }
+    },
+    {
+      "id": "model:aw-pilot-01",
+      "kind": "model",
+      "src": "workshop/aw-pilot-01/desktop.glb",
+      "mobileSrc": "workshop/aw-pilot-01/mobile.glb",
+      "fit": "size",
+      "size": 0.9,
+      "label": {
+        "es": "Caldero nuevo",
+        "en": "New cauldron"
+      },
+      "category": "utensilio",
+      "status": "ready",
+      "workshop": {
+        "id": "aw-pilot-01",
+        "sourceRevision": "cd847a9249b35f6321262b37cd4da4e73a77b3112cecb7561942217555060689",
+        "publishedAt": "2026-10-20"
+      },
+      "stats": {
+        "bytes": 23440,
+        "triangles": 398,
+        "sha256": "9722a4205551243af0b0fed27b28436e08c09a65595e3b8839d4e3f16c938808"
+      }
+    },
+    {
+      "id": "model:aw-pilot-05",
+      "kind": "model",
+      "src": "workshop/aw-pilot-05/desktop.glb",
+      "mobileSrc": "workshop/aw-pilot-05/mobile.glb",
+      "fit": "height",
+      "height": 7,
+      "label": {
+        "es": "Palma Kobo",
+        "en": "Kobo palm"
+      },
+      "category": "vegetacion",
+      "status": "ready",
+      "workshop": {
+        "id": "aw-pilot-05",
+        "sourceRevision": "47fae71524ea6a181b1b3c10724069329f0b44b82925d743b2c68c23e26c0627",
+        "publishedAt": "2026-10-20"
+      },
+      "stats": {
+        "bytes": 571416,
+        "triangles": 6656,
+        "sha256": "bd179cc41024b96868c2332e35359b24719b339400fc0e5c23ece3bce0557977"
+      }
+    },
+    {
+      "id": "model:aw-pilot-06",
+      "kind": "model",
+      "src": "workshop/aw-pilot-06/desktop.glb",
+      "mobileSrc": "workshop/aw-pilot-06/mobile.glb",
+      "fit": "height",
+      "height": 2.2,
+      "label": {
+        "es": "Puerta",
+        "en": "Door"
+      },
+      "category": "construccion",
+      "status": "ready",
+      "workshop": {
+        "id": "aw-pilot-06",
+        "sourceRevision": "a2ff76e9bb6cd50f45f2649cac902f0363777922864fed7de2b331271c0922dd",
+        "publishedAt": "2026-10-20"
+      },
+      "stats": {
+        "bytes": 4267972,
+        "triangles": 876,
+        "sha256": "3659b8096a880634040ba404f57422aebfa51711312e85f8888fff0d76577b76"
+      }
+    },
+    {
+      "id": "model:aw-pilot-07",
+      "kind": "model",
+      "src": "workshop/aw-pilot-07/desktop.glb",
+      "mobileSrc": "workshop/aw-pilot-07/mobile.glb",
+      "fit": "size",
+      "size": 6,
+      "label": {
+        "es": "Barco de referencia",
+        "en": "Reference boat"
+      },
+      "category": "embarcacion",
+      "status": "ready",
+      "workshop": {
+        "id": "aw-pilot-07",
+        "sourceRevision": "bb085dcd518e6335d7f69d9c63531e355ee74d128f65a4bc0808fb3fc2b94782",
+        "publishedAt": "2026-10-20"
+      },
+      "stats": {
+        "bytes": 3308964,
+        "triangles": 7786,
+        "sha256": "e83fab8683084326359c7257269c8849a883a0850a6627acbc06e61ec5cb0493"
+      }
+    }
+  ]
+}

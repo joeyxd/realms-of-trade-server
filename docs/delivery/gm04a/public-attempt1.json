@@ -1,0 +1,21 @@
+{
+  "schema": "gm04a-browser/v1",
+  "version": "0.6.0-alpha.40",
+  "at": "2026-10-11T02:22:46.599Z",
+  "simulatedAuth": false,
+  "production": true,
+  "checks": [],
+  "screenshots": [],
+  "errors": [
+    "acceptance_failure:Error"
+  ],
+  "assetRequests": [],
+  "runtimeBefore": {
+    "version": "0.6.0-alpha.40",
+    "protocolVersion": null,
+    "content": {
+      "generation": 4,
+      "revisionId": null
+    }
+  }
+}

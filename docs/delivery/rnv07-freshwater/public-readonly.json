@@ -1,0 +1,68 @@
+{
+  "utc": "2026-10-11T04:49:22.715Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "version": "0.6.0-alpha.44",
+  "expectedSourceRevision": "80e46df8ca4664f93aa59df8350c27cc17589b53",
+  "publicSourceHashes": [
+    {
+      "path": "src/main.js",
+      "status": 200,
+      "sha256": "b2d4709f14e7b228fede4751462caabd3e4eb40d62ea2b1edd4d22ed5a6b3bdb"
+    },
+    {
+      "path": "src/ui/freshwaterPanel.js",
+      "status": 200,
+      "sha256": "43156b5f572c1fc170f21100ff072ae5d4fdd9baf7100fe96de91fd404baeacd"
+    },
+    {
+      "path": "styles/freshwater.css",
+      "status": 200,
+      "sha256": "f50c0c05a5974668ebf8ced6daace13fe4cee98a4f29daf69360dd943565ae69"
+    },
+    {
+      "path": "src/net/protocol.js",
+      "status": 200,
+      "sha256": "b92ef67fd2545a460712881c92ccad39c5335c5cc6c208779aeaf2bb6559f2ff"
+    },
+    {
+      "path": "src/render/freshwater.js",
+      "status": 200,
+      "sha256": "814713ec0e6b0ea13918e16bdd73f768a40584c384773bda247ec0327e3efee0"
+    },
+    {
+      "path": "src/data/freshwater.js",
+      "status": 200,
+      "sha256": "89bb64b17082449ecddb550fc12f84ef6d89f20b007ea83f71a5c6102e7139c4"
+    },
+    {
+      "path": "src/data/meta.js",
+      "status": 200,
+      "sha256": "4ca57963a4d738ed16bc25ec01b335e85c06bdd8e3df13abce6dc771751ea3d3"
+    }
+  ],
+  "health": 200,
+  "players": 0,
+  "sockets": 0,
+  "freshwater": {
+    "enabled": true,
+    "ready": true
+  },
+  "attributes": {
+    "enabled": true,
+    "ready": true
+  },
+  "durable": true,
+  "accounts": true,
+  "errors": 0,
+  "storageErrors": 0,
+  "tickBlocked": false,
+  "world": {
+    "id": "marea-negra",
+    "ready": true,
+    "failed": false,
+    "version": 2198,
+    "errors": 0
+  },
+  "pass": true,
+  "scope": "read-only public source/runtime checks; no account, profile or world mutations"
+}

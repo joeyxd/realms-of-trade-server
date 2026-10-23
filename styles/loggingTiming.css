@@ -1,0 +1,61 @@
+.logging-timing {
+  position: fixed;
+  z-index: 80;
+  left: 50%;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  width: min(28rem, calc(100vw - 2rem));
+  padding: .85rem 1rem .9rem;
+  transform: translateX(-50%);
+  border: 1px solid rgba(241, 190, 105, .7);
+  border-radius: .9rem;
+  background: rgba(28, 24, 20, .96);
+  box-shadow: 0 .5rem 2rem rgba(0, 0, 0, .42);
+  color: #fff3d6;
+  font: 700 .9rem/1.35 Nunito, sans-serif;
+  pointer-events: auto;
+}
+.logging-timing[hidden] { display: none; }
+.logging-timing__head,
+.logging-timing__foot { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.logging-timing__head { margin-bottom: .65rem; }
+.logging-timing__head b { font-size: 1rem; }
+.logging-timing__head span,
+.logging-timing__foot small { color: #dbc9a6; }
+.logging-timing__track {
+  position: relative;
+  height: .8rem;
+  margin: .25rem .15rem .7rem;
+  overflow: visible;
+  border-radius: 1rem;
+  background: #5a5044;
+}
+.logging-timing__track [data-perfect] {
+  position: absolute; top: 0; bottom: 0;
+  border-radius: inherit;
+  background: rgba(102, 193, 129, .72);
+}
+.logging-timing__track [data-target] {
+  position: absolute; top: -.2rem; bottom: -.2rem;
+  width: 2px; background: #fff1c9;
+  transform: translateX(-1px);
+}
+.logging-timing__track [data-marker] {
+  position: absolute; top: 50%; left: 0;
+  width: .95rem; height: .95rem;
+  border: 2px solid #fff4da; border-radius: 50%;
+  background: #d98536; box-shadow: 0 0 .6rem rgba(255, 193, 96, .65);
+  transform: translate(-50%, -50%);
+}
+.logging-timing[data-window="perfect"] .logging-timing__track [data-marker] { background: #65ca7f; }
+.logging-timing__foot { margin-top: .15rem; }
+.logging-timing__foot button {
+  min-width: 6rem; min-height: 2.6rem;
+  border: 1px solid #f3c477; border-radius: .65rem;
+  background: #75451f; color: #fff5dd;
+  font: 900 .95rem Nunito, sans-serif;
+}
+.logging-timing__foot button:focus-visible { outline: 3px solid #fff1a9; outline-offset: 2px; }
+@media (max-width: 480px) {
+  .logging-timing { bottom: max(.7rem, env(safe-area-inset-bottom)); padding: .72rem .8rem; }
+  .logging-timing__foot small { max-width: 65%; font-size: .74rem; }
+}

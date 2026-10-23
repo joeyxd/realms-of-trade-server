@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratorio Niagara · color final</title><link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101820;color:#ecf0ee;font:16px system-ui}main{max-width:1300px;margin:auto;padding:24px}h1{font-size:26px;margin:4px 0}p{color:#b8c6cc;line-height:1.5}.bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:18px 0}button,select,input{font:inherit}button,select{color:#ecf0ee;background:#263943;border:1px solid #516a74;border-radius:6px;padding:8px 12px}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #f8c073}.stage{display:grid;grid-template-columns:1fr 1fr;gap:16px}.view{background:#050505;border:1px solid #384b53;border-radius:8px;overflow:hidden}.view>label{display:block;padding:12px;background:#1a2931}canvas,img{display:block;width:100%;aspect-ratio:1;object-fit:contain;touch-action:none}#status{color:#f8c073}@media(max-width:700px){main{padding:12px}.stage{grid-template-columns:1fr}h1{font-size:22px}}
+</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body><main><small>ST01c · Prueba privada</small><h1>El color final de la llama</h1>
+<p>Compara el piloto nativo con la imagen final de Unreal. Cambia la exposición y alterna la curva anterior para ver qué aporta la presentación del color.</p>
+<div class="bar"><label>Vista <select id="case"><option value="pilot">Llama y humo</option><option value="chart">Carta de colores HDR</option></select></label>
+<label>Cámara <select id="camera"><option value="front">Frontal</option><option value="oblique" selected>Oblicua</option><option value="side">Lateral</option></select></label>
+<label>Exposición <select id="bias"><option value="0" selected>Original · 0 EV</option><option value="1">Más luz · +1 EV</option></select></label></div>
+<div class="bar"><label>Presentación derecha <select id="tone"><option value="film">Filmic UE5.8 · perfil controlado</option><option value="aces">ACES Three.js · comparación anterior</option><option value="linear">Lineal → sRGB</option></select></label><button id="reset">Restaurar</button></div>
+<div class="bar"><label><input id="use-ue-hdr" type="checkbox">Aislar color: convertir el RGB de Unreal</label></div>
+<div class="stage"><div class="view"><label id="reference-label">Unreal · imagen final a 2 s</label><img id="reference" alt="Imagen final original de Unreal"></div><div class="view"><label id="preview-label">Generador nativo · Filmic</label><canvas id="preview"></canvas></div></div>
+<p id="status">Cargando el color…</p><p>Perfil SDR sRGB, exposición manual y bloom desactivado. La carta separa el color del efecto; no añade efectos ni habilidades al juego. Memoria móvil y presentación con bloom siguen pendientes. <a href="./budget.html" style="color:#f8c073">Comparar atlas y coste</a> · <a href="./depth.html?run=depth02" style="color:#f8c073">Contacto con superficies</a> · <a href="./index.html?run=reference11&amp;mode=native" style="color:#f8c073">Generador y ajustes</a>.</p>
+</main><script type="module" src="./color-lab.js"></script></body></html>

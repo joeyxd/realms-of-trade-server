@@ -1,0 +1,96 @@
+{
+  "purpose": "Upstream baseline rerun for transient pearl test resource failures",
+  "head": "e625a5c79cb8529b4f735ec4c1a40ee18a9a841b",
+  "origin": "e625a5c79cb8529b4f735ec4c1a40ee18a9a841b",
+  "trackedWorktree": "clean",
+  "node": "v24.14.0",
+  "commands": [
+    "node --test tests/pearl-input-boundary.test.mjs",
+    "node --test tests/pearl-leave-clock.test.mjs",
+    "node --test tests/pearl-leave-clock-sql.test.mjs"
+  ],
+  "results": [
+    {
+      "name": "upstream-resource-recheck.pearl-input-boundary.tap",
+      "sha256": "dcf6dd10c07644e6577ba091bd6ee2dd78b68e297197f89ac85cfb10682a3aa8",
+      "bytes": 2534,
+      "tests": 33,
+      "pass": 33,
+      "fail": 0
+    },
+    {
+      "name": "upstream-resource-recheck.pearl-leave-clock-sql.tap",
+      "sha256": "ac969b7a5b88c3112d3c59ae94d93ca286fc76689aa86e3d00653d5cd54d8b35",
+      "bytes": 224,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0
+    },
+    {
+      "name": "upstream-resource-recheck.pearl-leave-clock.tap",
+      "sha256": "eefd0c73ecbe25e29d87d540ebd17334ed5a0a043932f26176ad168ba5f4fb90",
+      "bytes": 1411,
+      "tests": 15,
+      "pass": 15,
+      "fail": 0
+    }
+  ],
+  "sourceIdentity": [
+    {
+      "path": "tests/pearl-input-boundary.test.mjs",
+      "sha256": "c00b10e4d40e1d0eac3dd47a5e4b96ff2be23ba8c7285bc40fd48ae02da18456",
+      "matchesArea15": true
+    },
+    {
+      "path": "tests/pearl-leave-clock.test.mjs",
+      "sha256": "16b57a3d461ca98048c138bb672f73e5b8166fea424623f96d7c6e39c397d7df",
+      "matchesArea15": true
+    },
+    {
+      "path": "tests/pearl-leave-clock-sql.test.mjs",
+      "sha256": "a6da50b75c0db0319f511d72f862c5c510364d734b24bed3504d42c3e6755569",
+      "matchesArea15": true
+    },
+    {
+      "path": "tests/helpers/pearl-swallow-staging.mjs",
+      "sha256": "fb85747ce92f836a2e8aeb41aee6b10f3c6432cd5f99733abccc607091f289e9",
+      "matchesArea15": true
+    },
+    {
+      "path": "tests/helpers/pearl-replace-staging.mjs",
+      "sha256": "f247bf31dfe002ca220bfa8374f451d6b7e6545f6be9dc06b12d5845e034eddd",
+      "matchesArea15": true
+    },
+    {
+      "path": "tests/helpers/pearl-same-holder-sql.mjs",
+      "sha256": "e00d573763728e69cf4a57af2bf54097c80e4a96788a903c3b59df94a6eb99cf",
+      "matchesArea15": true
+    },
+    {
+      "path": "tests/helpers/pearl-batch-journal-sql.mjs",
+      "sha256": "f3a6e686b6554a036b0185fa54c73cb5423271d9ed424aa1d0d4510ebadda56a",
+      "matchesArea15": true
+    },
+    {
+      "path": "tests/helpers/ground-clock-sql.mjs",
+      "sha256": "823e8c8dbcacff4c2e74a42f9f39523ece00eef1c5a13c6ef2ca193d89ff5f2a",
+      "matchesArea15": true
+    },
+    {
+      "path": "src/sim/ecs.js",
+      "sha256": "a69974c41afb682e6bf014ed75ca346452c92df0ca2809999f5a528f6ddd7527",
+      "matchesArea15": true
+    },
+    {
+      "path": "src/sim/world.js",
+      "sha256": "e809d7d6d844b57ce534afc0b210cfcc9e2d4a3803512bdb997019c3adb6fef7",
+      "matchesArea15": true
+    }
+  ],
+  "environment": {
+    "freePhysicalMB": 45852,
+    "freeVirtualMB": 53433
+  },
+  "interpretation": "All three upstream serial reruns passed. Prior allocation/cloning errors were not reproduced in this run; this does not establish their cause.",
+  "artifactFormatting": "UTF-8 LF, no BOM; trailing spaces on diagnostic blank lines removed. Test results unchanged."
+}

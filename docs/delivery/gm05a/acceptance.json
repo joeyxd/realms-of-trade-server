@@ -1,0 +1,67 @@
+{
+  "schema": "gm05a-acceptance/v1",
+  "at": "2026-10-11T05:18:32.796Z",
+  "version": "0.6.0-alpha.45",
+  "protocolVersion": 51,
+  "accepted": true,
+  "sqlReady": true,
+  "windows": {
+    "tests": 309,
+    "files": 56,
+    "sourcesStable": true
+  },
+  "linux": {
+    "focalTests": 20,
+    "updaterTests": 127,
+    "runtimeHashes": 28
+  },
+  "public": {
+    "editorChecks": 11,
+    "authenticatedHttpChain": true,
+    "exactTerrainHashBeforeHello": true,
+    "welcomeIdentity": true,
+    "originalDraftRestored": true,
+    "activeBaseGeneration": 6,
+    "canaryRuntimeRevision": "839393ae15cd154311d9571a6a0d01635becd7f8"
+  },
+  "visualReview": {
+    "images": [
+      {
+        "file": "public/daylight-reference/terrain-en-closeup-1440x900.png",
+        "sha256": "f94264aac9847f37dfc8dd585b840922d79f91c9f7369fde25de48dbfee1212a",
+        "inspectedByRoot": true
+      },
+      {
+        "file": "public/daylight-reference/terrain-es-closeup-1440x900.png",
+        "sha256": "de5a269f651cb2fa96de956dac235bb404bdcafdea143f9818edb90df0d9c160",
+        "inspectedByRoot": true
+      },
+      {
+        "file": "public/daylight-reference/terrain-es-closeup-844x390.png",
+        "sha256": "34ac4e75580885f0bd86782b29fe478fb166a204179ab1233de9f7d0e7e798df",
+        "inspectedByRoot": true
+      },
+      {
+        "file": "public/daylight-reference/terrain-en-closeup-844x390.png",
+        "sha256": "9438062265a7c38aa4e6ddc5fbc33bc6569d443b803e4aef2df8d8f9029ba059",
+        "inspectedByRoot": true
+      },
+      {
+        "file": "public/daylight-reference/terrain-es-ramp-overview-1440x900.png",
+        "sha256": "b0f32a0ed19be5a3a78b89319949154ca671b45eb791ca51f997ddb8c7fed626",
+        "inspectedByRoot": true
+      }
+    ],
+    "source": "private import of accepted v3 export in real public GM session",
+    "findings": "Relief and model support visible; ES/EN controls legible; narrow panels scroll. Original nighttime captures retained separately.",
+    "lightingScope": "renderer-only daylight reference; no authoritative clock or content writes"
+  },
+  "limits": [
+    "Existing dry ground only; functional zones protected",
+    "Painting belongs to GM05b; new land/coast to GM06",
+    "No physical-phone FPS acceptance",
+    "No new ingame time-of-day editor control",
+    "Remote panel button flow not covered by the authenticated HTTP canary"
+  ],
+  "overlappingCounts": true
+}

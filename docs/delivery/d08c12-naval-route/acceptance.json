@@ -1,0 +1,58 @@
+{
+  "version": "0.6.0-alpha.12",
+  "protocol": 27,
+  "newTests": {
+    "tests": 15,
+    "pass": 15,
+    "fail": 0,
+    "cancelled": 0
+  },
+  "selectedFirstPass": {
+    "tests": 386,
+    "pass": 385,
+    "fail": 1,
+    "cancelled": 0
+  },
+  "selectedPriorPassing": 371,
+  "hostIsolated": {
+    "tests": 9,
+    "pass": 9,
+    "fail": 0,
+    "cancelled": 0
+  },
+  "uniqueVerifiedCasesAcrossDocumentedRuns": 395,
+  "selectedFixtureCorrection": "NavalPilot independently caps mounts at four. The route cap case now declares a synthetic fifth helm context and passes in route-final.log.",
+  "browser": [
+    {
+      "file": "evidence-2026-10-08T13-24-23-160Z.json",
+      "viewport": "naval-route-desktop-1280x720",
+      "status": "passed",
+      "damage": 6
+    },
+    {
+      "file": "evidence-2026-10-08T13-24-53-635Z.json",
+      "viewport": "naval-route-portrait-390x844",
+      "status": "passed",
+      "damage": 6
+    },
+    {
+      "file": "evidence-2026-10-08T13-25-54-162Z.json",
+      "viewport": "naval-route-touch-844x390",
+      "status": "passed",
+      "damage": 6
+    }
+  ],
+  "screenshotsInspectedByRoot": true,
+  "artifact": {
+    "pageBytes": 162344,
+    "sha256": "978D50FC6ADA9854BB96517DC416F9DA0B62F7470DEAC2CA55C8E3B0EEB2DF94",
+    "companionFiles": 283,
+    "includesRoute": true,
+    "version": "0.6.0-alpha.12",
+    "protocol": 27,
+    "published": false,
+    "scope": "Current shared working tree, multi-file artifact. No isolated release or deployment."
+  },
+  "published": false,
+  "physicalDevicePerformanceOrHumanBalanceAccepted": false
+}

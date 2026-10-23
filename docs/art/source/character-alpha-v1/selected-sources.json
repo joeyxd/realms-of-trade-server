@@ -1,0 +1,1212 @@
+{
+  "schema": "character-alpha-selected-sources/v1",
+  "status": "pass",
+  "usedImageCount": 27,
+  "transparentImageCount": 26,
+  "usedBytesTotal": 32320538,
+  "images": [
+    {
+      "file": "female-base-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1515200,
+      "sha256": "1c6665b9570be3b572cf14237bc61eac3786083ef1cd3355b3600a8750b1afe8",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1180311,
+      "whiteVisiblePixelCount": 319,
+      "solidAlphaAbove240PixelCount": 359316,
+      "nonzeroAlphaBBox": [
+        0,
+        20,
+        994,
+        1536
+      ],
+      "alphaAbove128BBox": [
+        225,
+        42,
+        906,
+        1479
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 0,
+        "top": 20,
+        "right": 30,
+        "bottom": 0
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 225,
+        "top": 42,
+        "right": 118,
+        "bottom": 57
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "female-boots-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1053511,
+      "sha256": "07f0630135b23ef5cc1c0b492f7b0f12761060ac063ae29860e0ac5d94e6bf65",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1385277,
+      "whiteVisiblePixelCount": 414,
+      "solidAlphaAbove240PixelCount": 172952,
+      "nonzeroAlphaBBox": [
+        36,
+        103,
+        1006,
+        1536
+      ],
+      "alphaAbove128BBox": [
+        41,
+        998,
+        999,
+        1433
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 36,
+        "top": 103,
+        "right": 18,
+        "bottom": 0
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 41,
+        "top": 998,
+        "right": 25,
+        "bottom": 103
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "female-breeches-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1896615,
+      "sha256": "16d672f9e3c4f1890b7f478bd8efae24d5f02553c75dfa17038bbd188bf75944",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 942625,
+      "whiteVisiblePixelCount": 25,
+      "solidAlphaAbove240PixelCount": 611180,
+      "nonzeroAlphaBBox": [
+        0,
+        51,
+        994,
+        1536
+      ],
+      "alphaAbove128BBox": [
+        119,
+        224,
+        991,
+        1278
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 0,
+        "top": 51,
+        "right": 30,
+        "bottom": 0
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 119,
+        "top": 224,
+        "right": 33,
+        "bottom": 258
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "female-brows-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 603024,
+      "sha256": "033a704d51733fb88ec6dcb57762cbb82a2cb68b7ff9b5ae8462b398797466a5",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1553718,
+      "whiteVisiblePixelCount": 0,
+      "solidAlphaAbove240PixelCount": 11402,
+      "nonzeroAlphaBBox": [
+        33,
+        116,
+        954,
+        1494
+      ],
+      "alphaAbove128BBox": [
+        264,
+        439,
+        845,
+        598
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 33,
+        "top": 116,
+        "right": 70,
+        "bottom": 42
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 264,
+        "top": 439,
+        "right": 179,
+        "bottom": 938
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "female-eyes-amber-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 784365,
+      "sha256": "6f834c739801d63eb926e161cc6cab2945d33e06cb76533e1ac99a2ca99afa29",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1505446,
+      "whiteVisiblePixelCount": 1132,
+      "solidAlphaAbove240PixelCount": 54376,
+      "nonzeroAlphaBBox": [
+        55,
+        21,
+        962,
+        1512
+      ],
+      "alphaAbove128BBox": [
+        175,
+        452,
+        929,
+        724
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 55,
+        "top": 21,
+        "right": 62,
+        "bottom": 24
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 175,
+        "top": 452,
+        "right": 95,
+        "bottom": 812
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "female-hair-pony-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1557308,
+      "sha256": "8868686376b1c3f3b00529fe0ebe9b84f2c86e7f48021c666c9c22ce825672e8",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1163296,
+      "whiteVisiblePixelCount": 130,
+      "solidAlphaAbove240PixelCount": 358716,
+      "nonzeroAlphaBBox": [
+        33,
+        17,
+        1024,
+        1502
+      ],
+      "alphaAbove128BBox": [
+        78,
+        22,
+        1021,
+        864
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 33,
+        "top": 17,
+        "right": 0,
+        "bottom": 34
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 78,
+        "top": 22,
+        "right": 3,
+        "bottom": 672
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "female-mouth-smile-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 642242,
+      "sha256": "27dee3c25bb036bfc4ac6534aebf7c045daa6bf82bb4d162dbe4d72c3266fe7e",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1558529,
+      "whiteVisiblePixelCount": 43,
+      "solidAlphaAbove240PixelCount": 11659,
+      "nonzeroAlphaBBox": [
+        33,
+        95,
+        978,
+        1384
+      ],
+      "alphaAbove128BBox": [
+        489,
+        377,
+        703,
+        500
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 33,
+        "top": 95,
+        "right": 46,
+        "bottom": 152
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 489,
+        "top": 377,
+        "right": 321,
+        "bottom": 1036
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "female-scout-master-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1941574,
+      "sha256": "0ea6cb33ce60d3a28f1e27289fb5bf5e446b3e90800babf76b4ec68aa78f07e4",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1057980,
+      "whiteVisiblePixelCount": 999,
+      "solidAlphaAbove240PixelCount": 468179,
+      "nonzeroAlphaBBox": [
+        41,
+        0,
+        1010,
+        1536
+      ],
+      "alphaAbove128BBox": [
+        174,
+        9,
+        907,
+        1477
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 41,
+        "top": 0,
+        "right": 14,
+        "bottom": 0
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 174,
+        "top": 9,
+        "right": 117,
+        "bottom": 59
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "female-shirt-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1400994,
+      "sha256": "ffefe91f1d3520c57c58d9994d2dc37911654e9c3c39be6110ba3ec2ea1da50b",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1183351,
+      "whiteVisiblePixelCount": 2556,
+      "solidAlphaAbove240PixelCount": 364953,
+      "nonzeroAlphaBBox": [
+        36,
+        75,
+        1011,
+        1502
+      ],
+      "alphaAbove128BBox": [
+        41,
+        326,
+        1008,
+        1065
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 36,
+        "top": 75,
+        "right": 13,
+        "bottom": 34
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 41,
+        "top": 326,
+        "right": 16,
+        "bottom": 471
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "harbor-background-v1.png",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "RGB",
+      "bytes": 3021109,
+      "sha256": "99ee28d0b1767a1f9e26c06b6f9901052d77f1892341b4f3f515444e4a3c157c",
+      "alphaMinMax": {
+        "min": 255,
+        "max": 255
+      },
+      "transparentPixelCount": 0,
+      "whiteVisiblePixelCount": 5633,
+      "solidAlphaAbove240PixelCount": 1572864,
+      "nonzeroAlphaBBox": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "alphaAbove128BBox": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0
+      },
+      "hasTransparentMargin": false,
+      "expectedOpaque": true,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-base-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1540799,
+      "sha256": "957f35ac9973a1a0720cb0e12c72cbbc43b10bcc8891064973240f27c75c951a",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1149137,
+      "whiteVisiblePixelCount": 3,
+      "solidAlphaAbove240PixelCount": 396894,
+      "nonzeroAlphaBBox": [
+        0,
+        33,
+        978,
+        1480
+      ],
+      "alphaAbove128BBox": [
+        174,
+        39,
+        880,
+        1467
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 0,
+        "top": 33,
+        "right": 46,
+        "bottom": 56
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 174,
+        "top": 39,
+        "right": 144,
+        "bottom": 69
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-beard-short-v2.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 699665,
+      "sha256": "92ab50768084face2a7d79531ae9ab4f67ae8e95f143e6f46018b7186bd7aee7",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1524073,
+      "whiteVisiblePixelCount": 0,
+      "solidAlphaAbove240PixelCount": 21624,
+      "nonzeroAlphaBBox": [
+        57,
+        39,
+        940,
+        1439
+      ],
+      "alphaAbove128BBox": [
+        339,
+        173,
+        751,
+        525
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 57,
+        "top": 39,
+        "right": 84,
+        "bottom": 97
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 339,
+        "top": 173,
+        "right": 273,
+        "bottom": 1011
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-boots-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 969505,
+      "sha256": "df5fef680e5edc7dc8274c5b5b119436de3dcf669e7ec334cf4b3d0f81c554ab",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1405085,
+      "whiteVisiblePixelCount": 25,
+      "solidAlphaAbove240PixelCount": 156965,
+      "nonzeroAlphaBBox": [
+        21,
+        103,
+        1000,
+        1496
+      ],
+      "alphaAbove128BBox": [
+        25,
+        1031,
+        996,
+        1433
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 21,
+        "top": 103,
+        "right": 24,
+        "bottom": 40
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 25,
+        "top": 1031,
+        "right": 28,
+        "bottom": 103
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-breeches-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1871791,
+      "sha256": "d17562e16d2f9fdc3dbecd6d350ddc75059993f33080e982d7d99cdb1d6004d9",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 930473,
+      "whiteVisiblePixelCount": 19,
+      "solidAlphaAbove240PixelCount": 623266,
+      "nonzeroAlphaBBox": [
+        17,
+        0,
+        1008,
+        1480
+      ],
+      "alphaAbove128BBox": [
+        101,
+        191,
+        988,
+        1203
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 17,
+        "top": 0,
+        "right": 16,
+        "bottom": 56
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 101,
+        "top": 191,
+        "right": 36,
+        "bottom": 333
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-brows-scout-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 574052,
+      "sha256": "d38138d66c39fc568ffdeb6b53a99138328eccb0eb20830e1626f3b3641c5013",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1541250,
+      "whiteVisiblePixelCount": 0,
+      "solidAlphaAbove240PixelCount": 23124,
+      "nonzeroAlphaBBox": [
+        79,
+        263,
+        930,
+        1424
+      ],
+      "alphaAbove128BBox": [
+        202,
+        310,
+        852,
+        494
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 79,
+        "top": 263,
+        "right": 94,
+        "bottom": 112
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 202,
+        "top": 310,
+        "right": 172,
+        "bottom": 1042
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-eyes-amber-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 511135,
+      "sha256": "663c3bcdf90cd9f85cf0fc29fe51eb782cbd81cbcb426ed8139061a83b5f931c",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1559544,
+      "whiteVisiblePixelCount": 269,
+      "solidAlphaAbove240PixelCount": 9878,
+      "nonzeroAlphaBBox": [
+        183,
+        37,
+        962,
+        1434
+      ],
+      "alphaAbove128BBox": [
+        443,
+        280,
+        719,
+        393
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 183,
+        "top": 37,
+        "right": 62,
+        "bottom": 102
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 443,
+        "top": 280,
+        "right": 305,
+        "bottom": 1143
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-eyes-blue-v2.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 588310,
+      "sha256": "f169acdfe47bea3e081792e9473b5dfa53d0816174c9c02e1861bddfec30dce6",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 253
+      },
+      "transparentPixelCount": 1559591,
+      "whiteVisiblePixelCount": 211,
+      "solidAlphaAbove240PixelCount": 9718,
+      "nonzeroAlphaBBox": [
+        0,
+        0,
+        978,
+        1460
+      ],
+      "alphaAbove128BBox": [
+        443,
+        280,
+        720,
+        393
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 0,
+        "top": 0,
+        "right": 46,
+        "bottom": 76
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 443,
+        "top": 280,
+        "right": 304,
+        "bottom": 1143
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-hair-scout-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 628719,
+      "sha256": "d55192bc8f69af6e77b60f47d3181755193ca034edd721d8768efb8ae82b1d14",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1513192,
+      "whiteVisiblePixelCount": 0,
+      "solidAlphaAbove240PixelCount": 48425,
+      "nonzeroAlphaBBox": [
+        316,
+        23,
+        713,
+        710
+      ],
+      "alphaAbove128BBox": [
+        319,
+        26,
+        708,
+        345
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 316,
+        "top": 23,
+        "right": 311,
+        "bottom": 826
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 319,
+        "top": 26,
+        "right": 316,
+        "bottom": 1191
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-hair-swept-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1055326,
+      "sha256": "8cfca9f8deb2695cdce800d4045a5a939268e683ebbda5bdff324f9a5f09dc2c",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1341104,
+      "whiteVisiblePixelCount": 0,
+      "solidAlphaAbove240PixelCount": 205884,
+      "nonzeroAlphaBBox": [
+        57,
+        49,
+        972,
+        1424
+      ],
+      "alphaAbove128BBox": [
+        150,
+        57,
+        954,
+        759
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 57,
+        "top": 49,
+        "right": 52,
+        "bottom": 112
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 150,
+        "top": 57,
+        "right": 70,
+        "bottom": 777
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-mouth-smile-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 525183,
+      "sha256": "a32eefebc170bf77557009e34915e904003f44c14c606cb618c05606bab315b8",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1561866,
+      "whiteVisiblePixelCount": 464,
+      "solidAlphaAbove240PixelCount": 8342,
+      "nonzeroAlphaBBox": [
+        375,
+        336,
+        890,
+        1384
+      ],
+      "alphaAbove128BBox": [
+        448,
+        340,
+        634,
+        458
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 375,
+        "top": 336,
+        "right": 134,
+        "bottom": 152
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 448,
+        "top": 340,
+        "right": 390,
+        "bottom": 1078
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-scout-master-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1885419,
+      "sha256": "ccba6952f37893d1e5c738564bd3b299d38dac3fceff0c758a9649f9c887704c",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1057741,
+      "whiteVisiblePixelCount": 710,
+      "solidAlphaAbove240PixelCount": 473818,
+      "nonzeroAlphaBBox": [
+        0,
+        19,
+        1020,
+        1536
+      ],
+      "alphaAbove128BBox": [
+        142,
+        22,
+        871,
+        1470
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 0,
+        "top": 19,
+        "right": 4,
+        "bottom": 0
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 142,
+        "top": 22,
+        "right": 153,
+        "bottom": 66
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-shirt-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1197799,
+      "sha256": "e0983468cc25a5c9e8ea8846fca7c2b6de5dfb376c2d0b6fa0b9291e9906694b",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1251992,
+      "whiteVisiblePixelCount": 3084,
+      "solidAlphaAbove240PixelCount": 304978,
+      "nonzeroAlphaBBox": [
+        53,
+        47,
+        1000,
+        1512
+      ],
+      "alphaAbove128BBox": [
+        83,
+        178,
+        986,
+        734
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 53,
+        "top": 47,
+        "right": 24,
+        "bottom": 24
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 83,
+        "top": 178,
+        "right": 38,
+        "bottom": 802
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "scout-gloves-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 970941,
+      "sha256": "861b437a540c3ee14c73edaaffef4639fe0167149f697448aaa1025ed89c82de",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1416561,
+      "whiteVisiblePixelCount": 41,
+      "solidAlphaAbove240PixelCount": 131913,
+      "nonzeroAlphaBBox": [
+        27,
+        21,
+        996,
+        1472
+      ],
+      "alphaAbove128BBox": [
+        30,
+        429,
+        990,
+        1082
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 27,
+        "top": 21,
+        "right": 28,
+        "bottom": 64
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 30,
+        "top": 429,
+        "right": 34,
+        "bottom": 454
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "scout-goggles-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 676112,
+      "sha256": "5b72d5a2fc6a39906ea6a827af23ab1f543ce8fab9bf1753ce1f632786b9dd47",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1523947,
+      "whiteVisiblePixelCount": 873,
+      "solidAlphaAbove240PixelCount": 43045,
+      "nonzeroAlphaBBox": [
+        97,
+        97,
+        864,
+        1360
+      ],
+      "alphaAbove128BBox": [
+        309,
+        102,
+        784,
+        307
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 97,
+        "top": 97,
+        "right": 160,
+        "bottom": 176
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 309,
+        "top": 102,
+        "right": 240,
+        "bottom": 1229
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "scout-harness-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1453917,
+      "sha256": "e2d5942bf897f41cfb43f9e37899aaa05db4fa6c842d06fb2245bf147ef50b9d",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1273072,
+      "whiteVisiblePixelCount": 285,
+      "solidAlphaAbove240PixelCount": 272363,
+      "nonzeroAlphaBBox": [
+        87,
+        126,
+        972,
+        1488
+      ],
+      "alphaAbove128BBox": [
+        171,
+        159,
+        880,
+        1108
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 87,
+        "top": 126,
+        "right": 52,
+        "bottom": 48
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 171,
+        "top": 159,
+        "right": 144,
+        "bottom": 428
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "scout-pouch-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1546808,
+      "sha256": "b174ed35dff71fe65a5a2097366a1eea25f54cd088f2461c6b15a401cd944d1c",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1086973,
+      "whiteVisiblePixelCount": 460,
+      "solidAlphaAbove240PixelCount": 475203,
+      "nonzeroAlphaBBox": [
+        25,
+        51,
+        994,
+        1512
+      ],
+      "alphaAbove128BBox": [
+        223,
+        299,
+        906,
+        1227
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 25,
+        "top": 51,
+        "right": 30,
+        "bottom": 24
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 223,
+        "top": 299,
+        "right": 118,
+        "bottom": 309
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "scout-rope-v1.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "RGBA",
+      "bytes": 1209115,
+      "sha256": "825bdd26dbb19df33a1d4b20831b9d0cfeccf907c54b86b8ddab5b49452e205b",
+      "alphaMinMax": {
+        "min": 0,
+        "max": 254
+      },
+      "transparentPixelCount": 1402991,
+      "whiteVisiblePixelCount": 472,
+      "solidAlphaAbove240PixelCount": 152436,
+      "nonzeroAlphaBBox": [
+        0,
+        23,
+        1000,
+        1510
+      ],
+      "alphaAbove128BBox": [
+        478,
+        166,
+        878,
+        1135
+      ],
+      "nonzeroAlphaMarginsPx": {
+        "left": 0,
+        "top": 23,
+        "right": 24,
+        "bottom": 26
+      },
+      "alphaAbove128MarginsPx": {
+        "left": 478,
+        "top": 166,
+        "right": 146,
+        "bottom": 401
+      },
+      "hasTransparentMargin": true,
+      "expectedOpaque": false,
+      "transparencyCheck": "pass"
+    }
+  ],
+  "excludedImages": [
+    {
+      "file": "male-beard-short-v1.png",
+      "sha256": "e957d43513d34dcfc0bea2c87541d61f76dac61baecbf6ef5b130bda7c54efc3",
+      "reason": "Rejected dangling jaw outline; replaced by v2, kept as generation evidence",
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-eyes-blue-v1.png",
+      "sha256": "5fc0d4d71ebfb7a0ca2da98f17c4916499a7bb5cd984d09ebf25f2ba42ce2d4c",
+      "reason": "Rejected alpha; replaced by v2, kept as generation evidence",
+      "transparencyCheck": "fail"
+    }
+  ],
+  "visualAcceptance": "Author review pending; technical alpha validity does not mean an exact match to the reference"
+}

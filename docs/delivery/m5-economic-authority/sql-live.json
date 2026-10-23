@@ -1,0 +1,20 @@
+{
+  "schema": "mn.m5-economic-sql-live.v1",
+  "observedAt": "2026-10-10T04:52Z",
+  "migration": "server/migrations/014_economic_operations.sql",
+  "sha256": "4bef7578dbbb239a66a866772d472ae3d25ac1038ddb728a34db4e694d33ef4b",
+  "appliedThrough": "authenticated Supabase SQL editor",
+  "editorResult": "Success. No rows returned",
+  "checks": {
+    "configuredProjectMatched": true,
+    "serviceCommitExecute": true,
+    "authenticatedCommitExecute": false,
+    "anonymousReceiptRead": false,
+    "serviceReceiptRead": true,
+    "serviceDirectReceiptInsert": false,
+    "receiptRlsEnabled": true,
+    "serviceReceiptRpcReady": true,
+    "raftSupplyValidatorPresent": true
+  },
+  "note": "Schema and permissions only. Public gameplay acceptance is recorded separately. No credentials or account identifiers included."
+}

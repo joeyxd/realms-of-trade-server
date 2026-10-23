@@ -1,0 +1,381 @@
+{
+  "schema": "character-lab-qa/v1",
+  "scope": "Isolated base GLBs and preview UI; production art, game integration and physical-device FPS remain pending.",
+  "viewports": [
+    {
+      "id": "desktop",
+      "width": 1440,
+      "height": 900,
+      "bodies": [
+        {
+          "body": "male",
+          "channels": [
+            {
+              "name": "body_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "head_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "eyes_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "base_top",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "base_shorts",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            }
+          ],
+          "bones": [
+            "body",
+            "hips",
+            "thighL",
+            "shinL",
+            "thighR",
+            "shinR",
+            "spine",
+            "chest",
+            "head",
+            "armL",
+            "foreL",
+            "armR",
+            "foreR",
+            "clothF",
+            "clothB"
+          ],
+          "height": 1.8649999323859812,
+          "movedVertices": 71,
+          "glError": 0,
+          "programsLinked": true,
+          "horizontalOverflow": false,
+          "errors": [],
+          "palette": {
+            "skinChanged": true,
+            "clothUnchanged": true
+          },
+          "conceptDialogLoaded": true
+        },
+        {
+          "body": "female",
+          "channels": [
+            {
+              "name": "body_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "head_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "eyes_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "base_top",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "base_shorts",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            }
+          ],
+          "bones": [
+            "body",
+            "hips",
+            "thighL",
+            "shinL",
+            "thighR",
+            "shinR",
+            "spine",
+            "chest",
+            "head",
+            "armL",
+            "foreL",
+            "armR",
+            "foreR",
+            "clothF",
+            "clothB"
+          ],
+          "height": 1.8350000611320139,
+          "movedVertices": 63,
+          "glError": 0,
+          "programsLinked": true,
+          "horizontalOverflow": false,
+          "errors": [],
+          "palette": {
+            "skinChanged": true,
+            "clothUnchanged": true
+          },
+          "conceptDialogLoaded": true
+        }
+      ],
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": []
+    },
+    {
+      "id": "mobile",
+      "width": 390,
+      "height": 844,
+      "isMobile": true,
+      "hasTouch": true,
+      "bodies": [
+        {
+          "body": "male",
+          "channels": [
+            {
+              "name": "body_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "head_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "eyes_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "base_top",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "base_shorts",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            }
+          ],
+          "bones": [
+            "body",
+            "hips",
+            "thighL",
+            "shinL",
+            "thighR",
+            "shinR",
+            "spine",
+            "chest",
+            "head",
+            "armL",
+            "foreL",
+            "armR",
+            "foreR",
+            "clothF",
+            "clothB"
+          ],
+          "height": 1.8649999323859812,
+          "movedVertices": 71,
+          "glError": 0,
+          "programsLinked": true,
+          "horizontalOverflow": false,
+          "errors": [],
+          "palette": {
+            "skinChanged": true,
+            "clothUnchanged": true
+          },
+          "conceptDialogLoaded": true
+        },
+        {
+          "body": "female",
+          "channels": [
+            {
+              "name": "body_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "head_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "eyes_base",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "base_top",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            },
+            {
+              "name": "base_shorts",
+              "channels": [
+                "position",
+                "normal",
+                "color",
+                "skinIndex",
+                "skinWeight"
+              ],
+              "joints": 15
+            }
+          ],
+          "bones": [
+            "body",
+            "hips",
+            "thighL",
+            "shinL",
+            "thighR",
+            "shinR",
+            "spine",
+            "chest",
+            "head",
+            "armL",
+            "foreL",
+            "armR",
+            "foreR",
+            "clothF",
+            "clothB"
+          ],
+          "height": 1.8350000611320139,
+          "movedVertices": 63,
+          "glError": 0,
+          "programsLinked": true,
+          "horizontalOverflow": false,
+          "errors": [],
+          "palette": {
+            "skinChanged": true,
+            "clothUnchanged": true
+          },
+          "conceptDialogLoaded": true
+        }
+      ],
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": []
+    }
+  ],
+  "failures": []
+}

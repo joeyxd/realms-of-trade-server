@@ -1,0 +1,62 @@
+{
+  "source": "..\\asset-staging\\s02-rock-export\\retry-lowercase\\out\\SM_Rock.glb",
+  "sourceBytes": 12184,
+  "sourceSha256": "9164182c23b532559b0008bd3b83974203b572081ed4de58eb274bc24b24648c",
+  "sourceSummary": {
+    "generator": "Unreal Engine 5.8.0",
+    "meshes": 1,
+    "materials": [
+      "(unnamed)"
+    ],
+    "tris": 64,
+    "verts": 192,
+    "min": [
+      -1.36180162,
+      -0.250661761,
+      -1.2041893
+    ],
+    "max": [
+      1.39368927,
+      1.32076061,
+      1.27431619
+    ],
+    "skins": [],
+    "images": [],
+    "animations": [],
+    "extensions": [],
+    "binBytes": 10944
+  },
+  "runtime": "assets/models/coast-rock-v1.glb",
+  "runtimeBytes": 7964,
+  "runtimeSha256": "783c9087f355ce6f8d176741a89f516b6bf30e739cfe6e7b5381922ef53aaf88",
+  "runtimeSummary": {
+    "generator": "Realms of Trade S02: Dreamrise SM_Rock geometry, vertex-painted derivative",
+    "meshes": 1,
+    "materials": [
+      "coast-stone-vertex-paint"
+    ],
+    "tris": 64,
+    "verts": 192,
+    "min": [
+      -0.500777542591095,
+      0,
+      -0.45043879747390747
+    ],
+    "max": [
+      0.500777542591095,
+      0.7799999713897705,
+      0.45043879747390747
+    ],
+    "skins": [],
+    "images": [],
+    "animations": [],
+    "extensions": [],
+    "binBytes": 6912
+  },
+  "variants": [
+    "compact",
+    "ledge",
+    "low"
+  ],
+  "material": "vertex paint + runtime toon; no exported texture or material accepted"
+}

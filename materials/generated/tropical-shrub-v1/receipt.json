@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "createdAt": "2026-10-07T16:52:17.217635+00:00",
+  "status": "source-art-draft",
+  "requestedModel": "GPT Image 2",
+  "tool": "image_gen.imagegen",
+  "actualModelIdentifier": null,
+  "modelVerification": "Tool response does not expose its backend model identifier.",
+  "normalEditTarget": "albedo.png",
+  "images": [
+    {
+      "kind": "concept",
+      "path": "materials/generated/tropical-shrub-v1/concept.png",
+      "sourceFile": "exec-f0d84776-2519-4d2d-a9f2-873f9183d0d7.png",
+      "bytes": 1720741,
+      "sha256": "36d847b8dbcb961cfbac2f3292ec4333cc7f62534bf5e0fef6801b8ed7f4ea6c",
+      "width": 1244,
+      "height": 1265,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "opaquePixelsAt128": 682188
+    },
+    {
+      "kind": "albedo",
+      "path": "materials/generated/tropical-shrub-v1/albedo.png",
+      "sourceFile": "exec-bd0b7e47-8545-4ec1-9205-bc130cebf02f.png",
+      "bytes": 947932,
+      "sha256": "c96a2edda9223de2e7cf1c263843c0b016d4ec3f48174658871a5807e0027a2c",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "opaquePixelsAt128": 425127
+    },
+    {
+      "kind": "normal",
+      "path": "materials/generated/tropical-shrub-v1/normal.png",
+      "sourceFile": "exec-2e7491f9-2248-458e-a502-372417957cfb.png",
+      "bytes": 861495,
+      "sha256": "34cacaa465469d8a892851bf3a8a49f56e20fe24752aecfda6320d18e53293e8",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "opaquePixelsAt128": 427890
+    }
+  ],
+  "prompts": {
+    "path": "materials/generated/tropical-shrub-v1/prompts.json",
+    "sha256": "fdffac4153d306f3ad52e07700db38a3be485f5e5208198fb2263a9b894e9ce9"
+  },
+  "checks": {
+    "decodedMasks": {
+      "threshold": 127,
+      "maskIoU": 0.9852701938450869,
+      "normalCoverageOfColor": 0.9958059591604391,
+      "colorWithoutNormalPixels": 1783,
+      "normalExtraPixels": 4546,
+      "alphaByteIdentical": false
+    },
+    "quadrants": [
+      {
+        "tile": "TL",
+        "maskIoU": 0.9855840274965246,
+        "normalCoverageOfColor": 0.9988019700936238
+      },
+      {
+        "tile": "TR",
+        "maskIoU": 0.9869522421541772,
+        "normalCoverageOfColor": 0.9938836510607563
+      },
+      {
+        "tile": "BL",
+        "maskIoU": 0.976883440628092,
+        "normalCoverageOfColor": 0.9967746164940343
+      },
+      {
+        "tile": "BR",
+        "maskIoU": 0.9883880836861461,
+        "normalCoverageOfColor": 0.9950764587838153
+      }
+    ]
+  },
+  "limits": [
+    "Mask alignment is approximate; these are not an identical alpha pair.",
+    "Generated normal is not a certified bake; channel orientation, mesh, filtering and GPU response remain unverified.",
+    "Source images are outside the runtime bundle; no map application or physical performance claim."
+  ]
+}

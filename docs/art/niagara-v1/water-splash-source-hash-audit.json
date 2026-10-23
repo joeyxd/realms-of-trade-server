@@ -1,0 +1,43 @@
+{
+  "schema": "st01b-source-hash-audit-v1",
+  "read_only": true,
+  "sources": [
+    {
+      "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\NS\\NS_Spline_WaterSplash.uasset",
+      "package": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+      "expected_sha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+      "current_sha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+      "match": true,
+      "bytes": 5381446,
+      "expected_bytes": 5381446
+    },
+    {
+      "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Material\\MI\\MI_Vfx_ParticleSubUV_Stamp_WaterSplash_77_mask.uasset",
+      "package": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_WaterSplash_77_mask",
+      "expected_sha256": "b494d0ec4f6d070e017cd1d1cac151e0b7e211724468a521f8c238f40c8f3e2e",
+      "current_sha256": "b494d0ec4f6d070e017cd1d1cac151e0b7e211724468a521f8c238f40c8f3e2e",
+      "match": true,
+      "bytes": 13001,
+      "expected_bytes": 13001
+    },
+    {
+      "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_WaterSplash_77.uasset",
+      "package": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_WaterSplash_77",
+      "expected_sha256": "26e09bd0f93cb620768268867f7887759315452bd5e9da4a7506da06e798a672",
+      "current_sha256": "26e09bd0f93cb620768268867f7887759315452bd5e9da4a7506da06e798a672",
+      "match": true,
+      "bytes": 1577127,
+      "expected_bytes": 1577127
+    },
+    {
+      "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\BP\\BP_SplineVFX_WaterSplash.uasset",
+      "package": "/Game/_SplineVFX/_GenericSource/BP/BP_SplineVFX_WaterSplash",
+      "expected_sha256": "778b95159f16800e4db1b729a6bc5c1dd44eb4344d1c275a64335ad6570f77f8",
+      "current_sha256": "778b95159f16800e4db1b729a6bc5c1dd44eb4344d1c275a64335ad6570f77f8",
+      "match": true,
+      "bytes": 68664,
+      "expected_bytes": 68664
+    }
+  ],
+  "all_expected_hashes_match": true
+}

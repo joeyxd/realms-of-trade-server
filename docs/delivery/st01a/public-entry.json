@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-12T16:16:22.041Z",
+  "version": "0.6.0-alpha.64",
+  "protocolVersion": 59,
+  "health": 200,
+  "storage": "supabase",
+  "baseContent": {
+    "generation": 8,
+    "revisionId": null
+  },
+  "welcome": true,
+  "snapshot": true,
+  "profile": true,
+  "scope": "Ordinary guest WebSocket entry after ST01a publication; no authenticated or durable gameplay action."
+}

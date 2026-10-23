@@ -1,0 +1,36 @@
+{
+  "schema": "mn.logging.public.v1",
+  "at": "2026-10-10T20:06:50.113Z",
+  "pass": true,
+  "checks": [
+    {
+      "check": "health",
+      "pass": true
+    },
+    {
+      "check": "compatible_runtime_logging_on",
+      "pass": true,
+      "version": "0.6.0-alpha.26"
+    },
+    {
+      "check": "protocol",
+      "pass": true,
+      "version": 38
+    },
+    {
+      "check": "logging_card_module",
+      "pass": true
+    },
+    {
+      "check": "server_files_not_public",
+      "pass": true
+    },
+    {
+      "check": "guest_public_entry_profile_snapshot",
+      "pass": true
+    }
+  ],
+  "limits": [
+    "Guest entry does not verify a durable logging award."
+  ]
+}

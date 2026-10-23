@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-11T16:30:59.709Z",
+  "recoveryOf": "authenticated-final/acceptance.json",
+  "exactCurrentCanaryCandidates": 1,
+  "markerMatched": true,
+  "identityMatched": null,
+  "profileStable": true,
+  "worldEmpty": true,
+  "profileDeleted": true,
+  "authDeleted": true
+}

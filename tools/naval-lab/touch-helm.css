@@ -1,0 +1,133 @@
+.naval-touch {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  color: #f2ead8;
+  font: 600 10px/1.1 system-ui, sans-serif;
+}
+
+.naval-touch-stick {
+  position: absolute;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  pointer-events: auto;
+  touch-action: none;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  background: radial-gradient(circle at 35% 27%, rgb(191 219 209 / 13%), rgb(8 21 26 / 56%) 72%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 23%), inset 0 0 0 1px rgb(218 226 207 / 12%);
+  backdrop-filter: blur(5px);
+}
+
+.naval-touch-stick-move { left: max(18px, env(safe-area-inset-left, 0px)); }
+.naval-touch-stick-look { right: max(18px, env(safe-area-inset-right, 0px)); }
+.naval-touch-ring {
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  border: 1px solid rgb(232 220 190 / 38%);
+  box-shadow: inset 0 0 0 1px rgb(11 25 30 / 45%);
+}
+.naval-touch-ring::before,
+.naval-touch-ring::after {
+  content: '';
+  position: absolute;
+  background: rgb(221 223 205 / 17%);
+}
+.naval-touch-ring::before { width: 1px; inset: 12px 50%; }
+.naval-touch-ring::after { height: 1px; inset: 50% 12px; }
+.naval-touch-puck {
+  position: absolute;
+  z-index: 1;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgb(237 223 188 / 52%);
+  background: radial-gradient(circle at 35% 30%, rgb(175 208 190 / 50%), rgb(34 59 59 / 89%) 72%);
+  box-shadow: 0 3px 11px rgb(0 0 0 / 32%), inset 0 0 0 1px rgb(2 12 15 / 45%);
+  will-change: transform;
+  pointer-events: none;
+}
+.naval-touch-cue {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  color: rgb(226 220 197 / 72%);
+  font-size: 7px;
+  letter-spacing: .08em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.naval-touch-caption {
+  position: absolute;
+  bottom: -16px;
+  color: rgb(241 233 213 / 83%);
+  font-size: 8px;
+  letter-spacing: .14em;
+  white-space: nowrap;
+  text-shadow: 0 1px 5px #000;
+  pointer-events: none;
+}
+
+.naval-touch-actions {
+  position: absolute;
+  right: max(18px, env(safe-area-inset-right, 0px));
+  bottom: calc(136px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  pointer-events: none;
+}
+.naval-touch-action {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 6px 8px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 3px;
+  border: 1px solid rgb(220 207 174 / 38%);
+  border-radius: 15px;
+  color: #f3e7ca;
+  background: rgb(9 24 29 / 70%);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 22%);
+  pointer-events: auto;
+  touch-action: none;
+  font: inherit;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: .04em;
+  text-transform: none;
+  text-align: center;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.naval-touch-action svg { width: 21px; height: 21px; }
+.naval-touch-action-label { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 8px; }
+.naval-touch-action:active:not(:disabled) { transform: scale(.95); background: rgb(43 70 67 / 86%); }
+.naval-touch-action:disabled { opacity: .38; cursor: default; }
+.naval-touch[data-enabled="false"] { visibility: hidden; }
+
+@media (orientation: landscape) {
+  .naval-touch-stick { width: 116px; height: 116px; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); }
+  .naval-touch-stick-move { left: max(24px, env(safe-area-inset-left, 0px)); }
+  .naval-touch-stick-look { right: max(24px, env(safe-area-inset-right, 0px)); }
+  .naval-touch-puck { width: 46px; height: 46px; }
+  .naval-touch-actions { right: max(24px, env(safe-area-inset-right, 0px)); bottom: calc(145px + env(safe-area-inset-bottom, 0px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .naval-touch-action:active:not(:disabled) { transform: none; }
+}

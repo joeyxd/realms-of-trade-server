@@ -1,0 +1,130 @@
+TAP version 13
+# Subtest: SQL017 is rerunnable, scoped and exposes only the public budget projection
+ok 1 - SQL017 is rerunnable, scoped and exposes only the public budget projection
+  ---
+  duration_ms: 1342.5946
+  type: 'test'
+  ...
+# Subtest: SQL017 atomically accounts successful buys and exact replay keeps a single economic receipt
+ok 2 - SQL017 atomically accounts successful buys and exact replay keeps a single economic receipt
+  ---
+  duration_ms: 1015.1721
+  type: 'test'
+  ...
+# Subtest: SQL017 rejects caps and revoked policy without economic writes; denied ACK is receipted at zero cost
+ok 3 - SQL017 rejects caps and revoked policy without economic writes; denied ACK is receipted at zero cost
+  ---
+  duration_ms: 1014.8423
+  type: 'test'
+  ...
+# Subtest: SQL017 rejects altered or human receipt reuse and preserves ordinary economic commands
+ok 4 - SQL017 rejects altered or human receipt reuse and preserves ordinary economic commands
+  ---
+  duration_ms: 872.9685
+  type: 'test'
+  ...
+# Subtest: SQL017 recovers a lost reply from one immutable operation and denies foreign revoke
+ok 5 - SQL017 recovers a lost reply from one immutable operation and denies foreign revoke
+  ---
+  duration_ms: 969.2932
+  type: 'test'
+  ...
+# Subtest: SQL017 budget usage and linked receipt survive a disk database reopen
+ok 6 - SQL017 budget usage and linked receipt survive a disk database reopen
+  ---
+  duration_ms: 2012.3178
+  type: 'test'
+  ...
+# Subtest: SQL017 sale consumes its own unit cap and never refills buy allowance; forged deltas roll back
+ok 7 - SQL017 sale consumes its own unit cap and never refills buy allowance; forged deltas roll back
+  ---
+  duration_ms: 1023.6938
+  type: 'test'
+  ...
+# Subtest: memory mandate is immutable and exposes a public projection without identities
+ok 8 - memory mandate is immutable and exposes a public projection without identities
+  ---
+  duration_ms: 6.9145
+  type: 'test'
+  ...
+# Subtest: memory trade applies one receipt and usage debit; exact retry is historical
+ok 9 - memory trade applies one receipt and usage debit; exact retry is historical
+  ---
+  duration_ms: 9.4691
+  type: 'test'
+  ...
+# Subtest: memory budget cap rejection makes no economic or profile/world writes; denied ACK spends zero
+ok 10 - memory budget cap rejection makes no economic or profile/world writes; denied ACK spends zero
+  ---
+  duration_ms: 4.219
+  type: 'test'
+  ...
+# Subtest: memory sell caps accumulate per good, revoke is monotonic, and old exact replay remains readable
+ok 11 - memory sell caps accumulate per good, revoke is monotonic, and old exact replay remains readable
+  ---
+  duration_ms: 5.1236
+  type: 'test'
+  ...
+# Subtest: memory rejects altered trade replay and human receipt collision
+ok 12 - memory rejects altered trade replay and human receipt collision
+  ---
+  duration_ms: 6.0901
+  type: 'test'
+  ...
+# Subtest: authenticated owner budget debits only successful own-character buy and sell receipts
+ok 13 - authenticated owner budget debits only successful own-character buy and sell receipts
+  ---
+  duration_ms: 678.8789
+  type: 'test'
+  ...
+# Subtest: trade lane is opt-in, capability-gated, exact-schema, location-bound, and generic commerce CMD stays blocked
+ok 14 - trade lane is opt-in, capability-gated, exact-schema, location-bound, and generic commerce CMD stays blocked
+  ---
+  duration_ms: 1128.0843
+  type: 'test'
+  ...
+# Subtest: agent-trade readiness checks required store operations before world open or admission
+ok 15 - agent-trade readiness checks required store operations before world open or admission
+  ---
+  duration_ms: 419.343
+  type: 'test'
+  ...
+# Subtest: response-lost receipt replays after same-store host restart and agent reentry without a second debit
+ok 16 - response-lost receipt replays after same-store host restart and agent reentry without a second debit
+  ---
+  duration_ms: 616.7423
+  type: 'test'
+  ...
+# Subtest: historical receipt with a different budget identity is rejected instead of replayed
+ok 17 - historical receipt with a different budget identity is rejected instead of replayed
+  ---
+  duration_ms: 338.3688
+  type: 'test'
+  ...
+# Subtest: zero spend and sell caps fail before EconomicAuthority writes while commerce failures keep zero-cost receipts
+ok 18 - zero spend and sell caps fail before EconomicAuthority writes while commerce failures keep zero-cost receipts
+  ---
+  duration_ms: 400.7323
+  type: 'test'
+  ...
+# Subtest: full pack and empty market are durable zero-cost denials; dead and navigation-locked agents cannot trade
+ok 19 - full pack and empty market are durable zero-cost denials; dead and navigation-locked agents cannot trade
+  ---
+  duration_ms: 413.7181
+  type: 'test'
+  ...
+# Subtest: revocation during preparation aborts before write; revocation after durable dispatch preserves the accepted commit
+ok 20 - revocation during preparation aborts before write; revocation after durable dispatch preserves the accepted commit
+  ---
+  duration_ms: 478.1291
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13963.5899

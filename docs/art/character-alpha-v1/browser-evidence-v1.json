@@ -1,0 +1,550 @@
+{
+  "schema": "character-alpha-browser-evidence-v1",
+  "generatedAt": "2026-10-08T14:46:20.881Z",
+  "target": "http://127.0.0.1:5194/tools/character-alpha-lab/index.html",
+  "technicalBrowserAcceptance": {
+    "status": "passed",
+    "viewport": {
+      "desktop": "1440x900",
+      "mobile": "390x844"
+    },
+    "assertions": [
+      {
+        "name": "manifest exposes two body choices",
+        "passed": true,
+        "bodyIds": {
+          "male": "male",
+          "female": "female"
+        },
+        "bodyLabels": {
+          "male": "Explorador",
+          "female": "Exploradora"
+        }
+      },
+      {
+        "name": "initial master view reaches ready state",
+        "passed": true
+      },
+      {
+        "name": "master and modular modes render",
+        "passed": true
+      },
+      {
+        "name": "both body choices render in master and modular modes",
+        "passed": true
+      },
+      {
+        "name": "individual piece selection and removal render",
+        "passed": true
+      },
+      {
+        "name": "shuffle uses only supplied catalog choices",
+        "passed": true,
+        "bodyId": "female"
+      },
+      {
+        "name": "face zoom and checker backdrop toggles work",
+        "passed": true
+      },
+      {
+        "name": "reset restores the selected body defaults and exports their snapshot",
+        "passed": true,
+        "bodyId": "female",
+        "defaultsChecked": [
+          "hair",
+          "eyes",
+          "brows",
+          "mouth",
+          "top",
+          "bottom",
+          "boots",
+          "gloves",
+          "harness",
+          "goggles",
+          "pouch",
+          "rope"
+        ]
+      },
+      {
+        "name": "PNG and JSON downloads reflect the completed transparent composition",
+        "passed": true,
+        "png": {
+          "width": 1024,
+          "height": 1536,
+          "bitDepth": 8,
+          "colorType": 6
+        },
+        "hasTransparency": true,
+        "descriptorBody": "male"
+      },
+      {
+        "name": "hair, iris and beard variants change rendered pixels and exported selection",
+        "passed": true
+      },
+      {
+        "name": "rapid body changes prevent stale or partial export",
+        "passed": true,
+        "finalBodyId": "male",
+        "pendingExportDisabled": true
+      },
+      {
+        "name": "mobile layout has reachable controls and loads only <=512px-wide mobile PNGs",
+        "passed": true,
+        "viewportWidth": 390,
+        "documentWidth": 390,
+        "horizontalOverflow": false,
+        "controls": [
+          {
+            "id": "body-select",
+            "left": 26,
+            "right": 364,
+            "insideViewport": true
+          },
+          {
+            "id": "master",
+            "left": 30,
+            "right": 194,
+            "insideViewport": true
+          },
+          {
+            "id": "modular",
+            "left": 197,
+            "right": 360,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Coleta magenta",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Ámbar",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Aventurera",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Sonrisa",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Camisa marfil",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Pantalón remendado",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Cuero y latón",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Guantes de cubierta",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Explorador",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Gafas de latón",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Bolsa de herramientas",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "—Ninguno",
+            "left": 26,
+            "right": 134,
+            "insideViewport": true
+          },
+          {
+            "id": "Cuerda marinera",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "full",
+            "left": 26,
+            "right": 192,
+            "insideViewport": true
+          },
+          {
+            "id": "face",
+            "left": 199,
+            "right": 364,
+            "insideViewport": true
+          },
+          {
+            "id": "Puerto tropical",
+            "left": 26,
+            "right": 364,
+            "insideViewport": true
+          },
+          {
+            "id": "scene",
+            "left": 30,
+            "right": 138,
+            "insideViewport": true
+          },
+          {
+            "id": "checker",
+            "left": 141,
+            "right": 249,
+            "insideViewport": true
+          },
+          {
+            "id": "dark",
+            "left": 252,
+            "right": 360,
+            "insideViewport": true
+          },
+          {
+            "id": "shuffle",
+            "left": 26,
+            "right": 364,
+            "insideViewport": true
+          },
+          {
+            "id": "reset",
+            "left": 26,
+            "right": 364,
+            "insideViewport": true
+          },
+          {
+            "id": "export-png",
+            "left": 26,
+            "right": 364,
+            "insideViewport": true
+          },
+          {
+            "id": "export-json",
+            "left": 26,
+            "right": 364,
+            "insideViewport": true
+          }
+        ],
+        "mobilePngCount": 26
+      },
+      {
+        "name": "mobile exports preserve alpha and report the loaded mobile quality",
+        "passed": true
+      }
+    ],
+    "screenshots": [
+      "docs/art/character-alpha-v1/browser-evidence-v1/desktop-male-master.png",
+      "docs/art/character-alpha-v1/browser-evidence-v1/desktop-male-modular.png",
+      "docs/art/character-alpha-v1/browser-evidence-v1/desktop-female-modular.png",
+      "docs/art/character-alpha-v1/browser-evidence-v1/desktop-female-master.png",
+      "docs/art/character-alpha-v1/browser-evidence-v1/desktop-face-checker.png",
+      "docs/art/character-alpha-v1/browser-evidence-v1/desktop-male-variants-face.png",
+      "docs/art/character-alpha-v1/browser-evidence-v1/mobile-female-modular-full.png",
+      "docs/art/character-alpha-v1/browser-evidence-v1/mobile-female-modular-face-checker.png"
+    ],
+    "downloads": [
+      {
+        "name": "desktop-shuffle-descriptor.json",
+        "path": "docs/art/character-alpha-v1/browser-evidence-v1/downloads/desktop-shuffle-descriptor.json",
+        "suggestedFilename": "explorador-female.json"
+      },
+      {
+        "name": "desktop-reset-descriptor.json",
+        "path": "docs/art/character-alpha-v1/browser-evidence-v1/downloads/desktop-reset-descriptor.json",
+        "suggestedFilename": "explorador-female.json"
+      },
+      {
+        "name": "desktop-male-composite.png",
+        "path": "docs/art/character-alpha-v1/browser-evidence-v1/downloads/desktop-male-composite.png",
+        "suggestedFilename": "explorador-male.png"
+      },
+      {
+        "name": "desktop-male-descriptor.json",
+        "path": "docs/art/character-alpha-v1/browser-evidence-v1/downloads/desktop-male-descriptor.json",
+        "suggestedFilename": "explorador-male.json"
+      },
+      {
+        "name": "desktop-male-variant-descriptor.json",
+        "path": "docs/art/character-alpha-v1/browser-evidence-v1/downloads/desktop-male-variant-descriptor.json",
+        "suggestedFilename": "explorador-male.json"
+      },
+      {
+        "name": "desktop-male-without-beard.json",
+        "path": "docs/art/character-alpha-v1/browser-evidence-v1/downloads/desktop-male-without-beard.json",
+        "suggestedFilename": "explorador-male.json"
+      },
+      {
+        "name": "rapid-switch-descriptor.json",
+        "path": "docs/art/character-alpha-v1/browser-evidence-v1/downloads/rapid-switch-descriptor.json"
+      },
+      {
+        "name": "mobile-female-descriptor.json",
+        "path": "docs/art/character-alpha-v1/browser-evidence-v1/downloads/mobile-female-descriptor.json",
+        "suggestedFilename": "explorador-female.json"
+      },
+      {
+        "name": "mobile-female-composite.png",
+        "path": "docs/art/character-alpha-v1/browser-evidence-v1/downloads/mobile-female-composite.png",
+        "suggestedFilename": "explorador-female.png"
+      }
+    ],
+    "networkErrors": [],
+    "pageErrors": [],
+    "consoleErrors": [],
+    "mobilePngRequests": [
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/harbor-background-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 341
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-hair-scout-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-eyes-amber-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-hair-swept-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-eyes-blue-v2.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-beard-short-v2.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-brows-scout-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-mouth-smile-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-shirt-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-breeches-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-boots-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/scout-gloves-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/scout-goggles-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/scout-rope-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-scout-master-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/scout-harness-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/scout-pouch-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-hair-pony-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-eyes-amber-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-brows-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-mouth-smile-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-shirt-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-breeches-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-boots-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-scout-master-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      },
+      {
+        "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-base-v1.png",
+        "status": 200,
+        "width": 512,
+        "height": 768
+      }
+    ],
+    "completedAt": "2026-10-08T14:46:28.637Z"
+  },
+  "subjectiveVisualAcceptance": {
+    "status": "not-assessed",
+    "note": "Captures are evidence for human visual review; this script does not accept the illustration style or art quality."
+  }
+}

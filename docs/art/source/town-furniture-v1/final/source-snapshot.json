@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "family": "town-furniture-v1",
+  "sources": [
+    {
+      "phase": "before",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/town-furniture-v1/before/props.js",
+      "bytes": 36906,
+      "sha256": "5d8de83eb282d17f3b80309e476abc916a9bda407eb73a30b106d3598b071a3f"
+    },
+    {
+      "phase": "before",
+      "source": "src/render/resourceNodes.js",
+      "snapshot": "docs/art/source/town-furniture-v1/before/resourceNodes.js",
+      "bytes": 4324,
+      "sha256": "ab86906cd28be9b133264556b0e3b393ec16bfde2b4addbcec3f27b30d6e5498"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/town-furniture-v1/final/after/props.js",
+      "bytes": 37370,
+      "sha256": "1eda117a4df586914c58161d2127884c643e170c30f679f377e390d1ef3bf242"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/resourceNodes.js",
+      "snapshot": "docs/art/source/town-furniture-v1/final/after/resourceNodes.js",
+      "bytes": 5014,
+      "sha256": "33bece03c83fe7bf1166e09326ec12bc7170cff82a6fbd171d7b9c71343ec20d"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/townFurniture.js",
+      "snapshot": "docs/art/source/town-furniture-v1/final/after/townFurniture.js",
+      "bytes": 3218,
+      "sha256": "f215438d76dcdae08c08c6195f8037915718affc7710c6e1d342838e6aea4137"
+    },
+    {
+      "phase": "after",
+      "source": "tests/town-furniture.test.mjs",
+      "snapshot": "docs/art/source/town-furniture-v1/final/after/town-furniture.test.mjs",
+      "bytes": 10390,
+      "sha256": "844e51376d4d6ea16d039c2c0faee54192b6e3efb778dca80840f790778b510e"
+    },
+    {
+      "phase": "after",
+      "source": "tools/qa-town-furniture.playwright.js",
+      "snapshot": "docs/art/source/town-furniture-v1/final/after/qa-town-furniture.playwright.js",
+      "bytes": 8101,
+      "sha256": "9af4f77d3b10c9123425a23636f91b428c15f4c7d0534cba3549c788e69ba885"
+    },
+    {
+      "phase": "after",
+      "source": "tools/prepare-town-furniture-sources.mjs",
+      "snapshot": "docs/art/source/town-furniture-v1/final/after/prepare-town-furniture-sources.mjs",
+      "bytes": 4195,
+      "sha256": "38b9b45c4ac59adc08dbf276536615a7ee27e28afe2479e0e9496ed57d904147"
+    },
+    {
+      "phase": "after",
+      "source": "tools/register-town-furniture-catalog.mjs",
+      "snapshot": "docs/art/source/town-furniture-v1/final/after/register-town-furniture-catalog.mjs",
+      "bytes": 18447,
+      "sha256": "89255a3917d10a90f90ad0137dea5d697363b472a18a47c08d0e8a889ba0f52f"
+    }
+  ],
+  "reusedAssets": [
+    {
+      "id": "tex:town-wood-albedo-v1",
+      "path": "assets/textures/town-wood-v1/atlas-albedo-desktop.webp",
+      "bytes": 578874,
+      "sha256": "60d8b81a9ebdb59d6eeb8d824747dbf98cf121d7b3a5a99ef72b5e07d0683692"
+    },
+    {
+      "id": "tex:town-wood-normal-v1",
+      "path": "assets/textures/town-wood-v1/atlas-normal-desktop.webp",
+      "bytes": 2834816,
+      "sha256": "030905006e5140c12abb373a248be8a5d0136bbc062c330a5cc150a1e6856076"
+    },
+    {
+      "id": "tex:town-wood-albedo-v1",
+      "path": "assets/textures/town-wood-v1/atlas-albedo-mobile.webp",
+      "bytes": 171306,
+      "sha256": "3183e1746238df62e39f271628ba6e4d5353a04d499b91e0ddcdecd928ed8daf"
+    },
+    {
+      "id": "tex:town-wood-normal-v1",
+      "path": "assets/textures/town-wood-v1/atlas-normal-mobile.webp",
+      "bytes": 774780,
+      "sha256": "bb4b101d18c44a164a14d578a6fad321bda35ecce042915466552b52a08c4c42"
+    }
+  ]
+}

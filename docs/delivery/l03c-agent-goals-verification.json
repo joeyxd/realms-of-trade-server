@@ -1,0 +1,167 @@
+{
+  "schema": "l03c-agent-goals-verification/v1",
+  "status": "local_software_verified_with_simulated_models",
+  "generatedAt": "2026-10-08T23:49:10.301Z",
+  "checkout": {
+    "head": "241edb9517d6d619c8012cef0a2dc883881ebde5",
+    "branch": "claude/loving-lovelace-ptbif7",
+    "sharedDirty": true,
+    "missionCommit": null
+  },
+  "protocol": {
+    "version": 31,
+    "changedByMission": false,
+    "agentOrderVersion": 1
+  },
+  "agentTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs tests/agent-movement.test.mjs tests/agent-movement-network.test.mjs tests/agent-movement-runner.test.mjs tests/agent-pve.test.mjs tests/agent-pve-network.test.mjs tests/agent-pve-runner.test.mjs tests/agent-authority.test.mjs tests/agent-authority-network.test.mjs tests/agent-authority-runner.test.mjs tests/agent-inference-budget.test.mjs tests/agent-mind.test.mjs tests/agent-mind-context.test.mjs tests/agent-mind-network.test.mjs tests/agent-conversation-policy.test.mjs tests/agent-conversation-mind.test.mjs tests/agent-conversation-network.test.mjs tests/agent-objective-store.test.mjs tests/agent-goals-mind.test.mjs tests/agent-goals-network.test.mjs tests/agent-goals-pve.test.mjs",
+    "hashScope": "core gameplay/auth/storage/agent modules plus relative test import graph and package lock",
+    "headBefore": "241edb9517d6d619c8012cef0a2dc883881ebde5",
+    "headAfter": "241edb9517d6d619c8012cef0a2dc883881ebde5",
+    "startedAt": "2026-10-08T23:45:51.407Z",
+    "finishedAt": "2026-10-08T23:47:01.442Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 317,
+    "pass": 315,
+    "fail": 0,
+    "skipped": 2,
+    "cancelled": 0,
+    "durationMs": 69964.7999,
+    "stderr": "",
+    "log": "agents-tests.tap",
+    "changedDuringSuite": [],
+    "dependencyCount": 259
+  },
+  "regressionTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/server.test.mjs tests/accounts-server.test.mjs tests/account-auth.test.mjs tests/account-import.test.mjs tests/naval-pilot-authority.test.mjs tests/naval-crew-authority.test.mjs tests/pearl-input-boundary.test.mjs tests/pearl-host-mount.test.mjs tests/death-host-mount.test.mjs tests/combat-death-host.test.mjs tests/death-drop-host.test.mjs tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs tests/combat.test.mjs tests/weapons.test.mjs tests/lawless.test.mjs tests/items.test.mjs",
+    "hashScope": "core gameplay/auth/storage/agent modules plus relative test import graph and package lock",
+    "headBefore": "241edb9517d6d619c8012cef0a2dc883881ebde5",
+    "headAfter": "241edb9517d6d619c8012cef0a2dc883881ebde5",
+    "startedAt": "2026-10-08T23:47:01.534Z",
+    "finishedAt": "2026-10-08T23:48:08.185Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 206,
+    "pass": 206,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "durationMs": 66585.5755,
+    "stderr": "",
+    "log": "regression-tests.tap",
+    "changedDuringSuite": [],
+    "dependencyCount": 249
+  },
+  "newMissionTestFiles": [
+    "agent-objective-store",
+    "agent-goals-mind",
+    "agent-goals-network",
+    "agent-goals-pve"
+  ],
+  "dependencyStability": {
+    "finalDrift": [],
+    "status": "verified"
+  },
+  "planIntegrity": {
+    "agreedDirectionRows": 22,
+    "agreementAndDemonstrationUnchanged": true,
+    "da3Unchanged": true,
+    "da3State": "Propuesto; por acordar",
+    "baseline": "docs/delivery/l03c-agent-goals/baseline.json"
+  },
+  "localProof": {
+    "realWebSocket": true,
+    "realChildCli": true,
+    "realObjectiveFileRevision": true,
+    "authenticatedOwnerStop": "injected localhost resolver and server-owned capability binding",
+    "pveRehearsal": "controlled localhost host combat, scripted decisions, ordinary WS inputs and separate body without model",
+    "controlledFixtureStimuli": "declared host positions/health/map/enemies, never production authority tools",
+    "models": "scripted simulated decisions and injected contract fixtures",
+    "realProviderCalls": 0,
+    "realTokenizerVerified": false,
+    "realBillingVerified": false,
+    "tacticalQualityAccepted": false,
+    "humanExperienceAccepted": false,
+    "humanPveEncounterCompleted": false,
+    "accountTokenExcludedFromProviderContext": true,
+    "onlyObjectivesWritten": true,
+    "personalityAndMemoryUnchanged": true,
+    "externalMigrationApplied": false,
+    "existingEmbeddedSqlRegressionRan": true,
+    "externalServiceTouched": false,
+    "published": false,
+    "deployed": false
+  },
+  "guarantees": [
+    "Explicit goal revision turn shares one inference flight and usage ledger with body/chat",
+    "Fixed scope/path/next revision; generated text cannot change grants, spending or priority",
+    "Protected actual goals and bounded delivered feedback with IDs/hash and inspectable selected provider context",
+    "Unresolved action outcomes remain mandatory even outside selected action window",
+    "Only active/paused/blocked goals may be newly asserted; completed goals preserved unchanged only",
+    "No semantic encounter success inferred from ACK, partial swing or target disappearance",
+    "Original/current authority, task, freshness, scope/epoch and owner-file fences before guarded local write",
+    "Exclusive cooperative lock, detached inputs, bounded reads, exact temporary bytes and atomic rename",
+    "Conflicts reject without automatic retry; ambiguous commit outcome blocks further goal revisions",
+    "Late known file receipts remain visible after interruption; cancellation cannot undo completed writes",
+    "Native inference usage reconciles on stale, cancelled and malformed output"
+  ],
+  "limits": [
+    "No real provider/tokenizer/rates/billing, tactical quality or human PvE encounter acceptance",
+    "Trusted adapter must measure exact transmitted payload and enforce output/I/O caps without hidden paid calls",
+    "Trusted goal writer and commit snapshot callbacks must follow guard/receipt contract",
+    "Local cooperative lock is not OS-wide CAS; an uncooperative external editor may race comparison and rename",
+    "No filesystem crash durability, stale lock recovery, multi-host writes or durable inference ledger",
+    "Synchronous final bounded file checks may briefly occupy runner event loop; no physical latency guarantee",
+    "Goal provenance lives in bounded process records, not durable memory/audit journal",
+    "No auto goal scheduler, memory mutation, new capability, owner panel or D-A3 operation choice",
+    "Two Windows symlink tests skipped because EPERM"
+  ],
+  "unrealReuse": {
+    "sourceReadOnly": true,
+    "candidates": [
+      {
+        "path": "C:/Unreal/ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/AI/Behavior/AIBehaviorTree.uasset",
+        "bytes": 111879
+      },
+      {
+        "path": "C:/Unreal/ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/AI/Behavior/AIBlackboard.uasset",
+        "bytes": 10661
+      }
+    ],
+    "decision": "Conceptual behavior/data references; no portable Node/C01 component, graph inspection, export or source edits"
+  },
+  "sourceFiles": {
+    "tools/agent/goals.mjs": "96475920e5fffaf4b4ca8e4b5deb2390c223689c44c8e3267fec8abbad14ec37",
+    "tools/agent/objective-store.mjs": "3d3de637d218c12d61729e32d1f7117b287064155f3020196c10acdf2a485668",
+    "tools/agent/mind.mjs": "3607603ad85dbc6cc5edfc095e538fef5f1ef79f097eb71c95bb05a2bde56b07",
+    "tools/agent/mind-contract.mjs": "1817572f00fd2295b0952a6fa515b73fe3d339565969f6357e0c442de27b68aa",
+    "tools/agent/mind-context.mjs": "596d3b580613cf07ee58565b950089a628670e04b26673ad0a4e92e113f4fa50",
+    "tools/agent/mind-snapshot.mjs": "670b78662e270a2c58f984f6c49dee25125eb8869fce631806bb55b13537d661",
+    "tools/agent/simulated-mind.mjs": "9c1e611b92ace22ffbcec0fe09855f5a28dba8a99a4764584ec109e9171c76d7",
+    "tools/agent/run.mjs": "cde611b5870eed77338a56e78352f2349dbbf2fc2c59e86c2ed49f0c54c2ee7f",
+    "tools/qa-agent-goals.mjs": "84003547c16022f59f96ddee8b119b822eb11dfea69d80bf226d0844ba409f82",
+    "tools/qa-agent-goals-evidence.mjs": "6282277932df6ae3c8fa52bfb0b01ea3d7551e29b9ec0b167afcdd96e57e9b38",
+    "tests/agent-objective-store.test.mjs": "6f717d726dbfff00c046e923d6d3e4d6d4dc83ee5f6e3dd844f2b65c1cf3ee28",
+    "tests/agent-goals-mind.test.mjs": "ca0b57eb18f9572ec2cedf6888f18eafc9e4d7991bbf44eb2c7257756b666695",
+    "tests/agent-goals-network.test.mjs": "24da88f5a266ea69cea657fabf3a8545dc0289404a4313e430cf65cfd7b030cd",
+    "tests/agent-goals-pve.test.mjs": "7befc4e8b5b0158acd91abb89c2cb324a59fbcbad54c2ae4220f4b0d3f6e560d",
+    "docs/agents/goals-runner.md": "3373fb00a8f201d9abfb9c7cb66f9d1d97e7defc199459dbaa8189a5b34c2cc9",
+    "docs/agents/mind-runner.md": "a28ac722578ef9ab277530b6d69b214705cfddd3519c3d051db09df8c77a4915",
+    "docs/agents/conversation-runner.md": "499a90b54fd748a21ea8abfdd64879b22f4162c83fb4a55c76b1f6bb54edd0d4",
+    "docs/briefs/l03c-agent-goals.md": "7466294403b15cc002f1e63d3e4e16ea53d4fb7e6c7db41d09940738ec0081af",
+    "docs/delivery/l03c-agent-goals.md": "7693b5c7f8e3bb0ceac76a76ae77bc4170f5408468df1ddab427e8de147aa45c",
+    "PLAN-EXTRA-LLM.md": "7b4333733c481247142e71ab6907f4fbb52f890612a4896074b36294d88bd7b0",
+    "PLAN-DELIVERY.md": "a3ef1adad6932258a3787ede32662fd71afc1eb03e4cfc8109ac1bff9c7aa71c",
+    "DESIGN.md": "6baad8b23f442f4a1d32c93690750a2d193610aa4e9fa77e82c83c1085c0d24c",
+    "docs/HANDOFF.md": "7ed1ad36f2f8c31557dea78c3374667d7c8a9d6749736af281836f428151b779"
+  },
+  "evidenceFiles": {
+    "docs/delivery/l03c-agent-goals/baseline.json": "b6c63deef0712d207ccbaca6777bca73f60ef3962c4aab8d7a65bb4fdfa228a3",
+    "docs/delivery/l03c-agent-goals/agents-tests.tap": "330938e47a2ea82ec8d3990351209817e99838d74697529973c6bd0b32abf644",
+    "docs/delivery/l03c-agent-goals/agents-tests.json": "56e84265b00f5d973b711e44d9ed84da11abf55a2eeeee41b6a56246b4f2bef5",
+    "docs/delivery/l03c-agent-goals/regression-tests.tap": "5c347f8ba821127481bc777733e62a85ef114bba052f5230569f75fb12090171",
+    "docs/delivery/l03c-agent-goals/regression-tests.json": "b042f2efc4d026c77e365ae7a9120fda5b3835a8d3486bb4c2aaed56c4d7358a"
+  },
+  "nextSlice": "L04a: scoped persistent memory, relevant recovery and traceable compaction; real provider/human acceptance remains separate"
+}

@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-10-10T21:38:31.127637+00:00",
+  "revision": "bd51e14f20566d0ebf787238ca311bd7b7c73d13",
+  "domain": {
+    "clockPresent": false,
+    "clockTick": null,
+    "worldVersion": 1562,
+    "resourcesVersion": 2,
+    "resourcesTick": 605768,
+    "coherent": false
+  },
+  "scope": "Read-only service-role loadGroundClock/loadWorld from the existing live authority; no initialization, SQL mutation, or flag change."
+}

@@ -1,0 +1,162 @@
+{
+  "at": "2026-10-11T17:46:14.088Z",
+  "container": "df1ddbf5ec5366dd2d767200e21ee51d1b7e691a4825917503029cadab473d6a",
+  "image": "sha256:6ea3f02dc4a2b151975d41a9d7860d79e2c792f1b1ecdec483ffcf25d111c026",
+  "revision": "056d275bc858d1d29a758f218d301a0f9f75f786",
+  "health": "healthy",
+  "running": true,
+  "runtime": {
+    "version": "0.6.0-alpha.57",
+    "protocol": 56,
+    "hashes": {
+      "src/editor/editor.js": "fc37f5a9b9d27d4a50e7bb1d75f60cbf42ffc87137bb8579da97e734d9efd40f",
+      "src/editor/editor.css": "714ca194b673a79964d04bb73aee2a72b846b28d2348e26dc0b8a1f98b728cf7",
+      "src/editor/modelCost.js": "0ba2f0f94ad2937200677be67e95a6e98fc9ec8cebf2cbc7cf63ea8675061a86",
+      "src/editor/scatterBrush.js": "80d71ebb753033ef1242aff0c22518d660d973543a504c0a0696369770e168df",
+      "src/editor/scatterPanel.js": "fc0547b3f1b0fccf1f53761d8a6fe4f1ecf003daf8acecf619e3b233ed0983e6",
+      "src/editor/scatterInteraction.js": "b42759479ca56fba12d521ca95cb488899a84ce2b1c2341507abee3cc4fd02b9",
+      "src/editor/terrainData.js": "1d0bde543ab7abb5046108450041b6f3655eb3e548647ed9e2db193c4e1aa332",
+      "src/editor/remotePanel.js": "839a73d4a4ba98eb404672f4be7c5c79d4f89cac7ec908bfb83f8887b91f4c17",
+      "src/editor/document.js": "cb47efb3b9d987e25ca352cc9cc22799db8dbc14ce522cfbded9a880d7e74a0f",
+      "src/editor/terrainBrush.js": "7f76a21b477a421666e215e045170a7b92e47b6edfde0b6e28545e7ef42ae733",
+      "src/editor/publicationArtifact.js": "a1c111bb8dca2263ec3323ad216d82c820ef451036f8698d9f76dd6c94dfe094",
+      "server/gmDraftValidation.mjs": "7a36fb9e09890d235580da0893f26ab6174fb1f53ec10da3c9bbe99c86d070df",
+      "server/gmPublication.mjs": "ff35b78e8f8b770375e0139f633cfb3dbf5ec3f01888e30186738356e742dfc5",
+      "server/gmPublicationAssets.mjs": "87933c36f8a964dc8d769df63086a214c0a46a29c9678bd581cf8f9783fcdfd7",
+      "server/host.mjs": "45bcfb894e5a2b8c8b87b8862c75ad009101f436c92d93fc71812917ad485739",
+      "server/index.mjs": "b2be7a5cb3f87d946a46804defefd1e8fc050ac80630d2d542a0d77ea538386f",
+      "server/companionCreation.mjs": "c226bbd96d77c39ad20b14affaa43af17fbfad41dd0bc64802619d940756d37d",
+      "src/net/protocol.js": "47d7f15dda4977fa4476e2fd3b96d0c67ec383916b80088a50c6f91c43af00e9",
+      "src/data/meta.js": "44c828d9026abe2d40a72cedd18b669099913bc1ea3e8bc6f06d9762bc600280",
+      "src/main.js": "9a809e66afc2e46ac3a624c2e6eccf5b4ebc189616b3f92222f344bcef2812aa",
+      "assets/manifest.json": "3f8b1f7e9c56f1c05cbf24426580cd9ad8903a8082e092cf5f001af926ccfe50"
+    }
+  },
+  "sourceFileCount": 21,
+  "matchedFiles": 21,
+  "files": {
+    "src/editor/editor.js": {
+      "git": "fc37f5a9b9d27d4a50e7bb1d75f60cbf42ffc87137bb8579da97e734d9efd40f",
+      "container": "fc37f5a9b9d27d4a50e7bb1d75f60cbf42ffc87137bb8579da97e734d9efd40f",
+      "matches": true
+    },
+    "src/editor/editor.css": {
+      "git": "714ca194b673a79964d04bb73aee2a72b846b28d2348e26dc0b8a1f98b728cf7",
+      "container": "714ca194b673a79964d04bb73aee2a72b846b28d2348e26dc0b8a1f98b728cf7",
+      "matches": true
+    },
+    "src/editor/modelCost.js": {
+      "git": "0ba2f0f94ad2937200677be67e95a6e98fc9ec8cebf2cbc7cf63ea8675061a86",
+      "container": "0ba2f0f94ad2937200677be67e95a6e98fc9ec8cebf2cbc7cf63ea8675061a86",
+      "matches": true
+    },
+    "src/editor/scatterBrush.js": {
+      "git": "80d71ebb753033ef1242aff0c22518d660d973543a504c0a0696369770e168df",
+      "container": "80d71ebb753033ef1242aff0c22518d660d973543a504c0a0696369770e168df",
+      "matches": true
+    },
+    "src/editor/scatterPanel.js": {
+      "git": "fc0547b3f1b0fccf1f53761d8a6fe4f1ecf003daf8acecf619e3b233ed0983e6",
+      "container": "fc0547b3f1b0fccf1f53761d8a6fe4f1ecf003daf8acecf619e3b233ed0983e6",
+      "matches": true
+    },
+    "src/editor/scatterInteraction.js": {
+      "git": "b42759479ca56fba12d521ca95cb488899a84ce2b1c2341507abee3cc4fd02b9",
+      "container": "b42759479ca56fba12d521ca95cb488899a84ce2b1c2341507abee3cc4fd02b9",
+      "matches": true
+    },
+    "src/editor/terrainData.js": {
+      "git": "1d0bde543ab7abb5046108450041b6f3655eb3e548647ed9e2db193c4e1aa332",
+      "container": "1d0bde543ab7abb5046108450041b6f3655eb3e548647ed9e2db193c4e1aa332",
+      "matches": true
+    },
+    "src/editor/remotePanel.js": {
+      "git": "839a73d4a4ba98eb404672f4be7c5c79d4f89cac7ec908bfb83f8887b91f4c17",
+      "container": "839a73d4a4ba98eb404672f4be7c5c79d4f89cac7ec908bfb83f8887b91f4c17",
+      "matches": true
+    },
+    "src/editor/document.js": {
+      "git": "cb47efb3b9d987e25ca352cc9cc22799db8dbc14ce522cfbded9a880d7e74a0f",
+      "container": "cb47efb3b9d987e25ca352cc9cc22799db8dbc14ce522cfbded9a880d7e74a0f",
+      "matches": true
+    },
+    "src/editor/terrainBrush.js": {
+      "git": "7f76a21b477a421666e215e045170a7b92e47b6edfde0b6e28545e7ef42ae733",
+      "container": "7f76a21b477a421666e215e045170a7b92e47b6edfde0b6e28545e7ef42ae733",
+      "matches": true
+    },
+    "src/editor/publicationArtifact.js": {
+      "git": "a1c111bb8dca2263ec3323ad216d82c820ef451036f8698d9f76dd6c94dfe094",
+      "container": "a1c111bb8dca2263ec3323ad216d82c820ef451036f8698d9f76dd6c94dfe094",
+      "matches": true
+    },
+    "server/gmDraftValidation.mjs": {
+      "git": "7a36fb9e09890d235580da0893f26ab6174fb1f53ec10da3c9bbe99c86d070df",
+      "container": "7a36fb9e09890d235580da0893f26ab6174fb1f53ec10da3c9bbe99c86d070df",
+      "matches": true
+    },
+    "server/gmPublication.mjs": {
+      "git": "ff35b78e8f8b770375e0139f633cfb3dbf5ec3f01888e30186738356e742dfc5",
+      "container": "ff35b78e8f8b770375e0139f633cfb3dbf5ec3f01888e30186738356e742dfc5",
+      "matches": true
+    },
+    "server/gmPublicationAssets.mjs": {
+      "git": "87933c36f8a964dc8d769df63086a214c0a46a29c9678bd581cf8f9783fcdfd7",
+      "container": "87933c36f8a964dc8d769df63086a214c0a46a29c9678bd581cf8f9783fcdfd7",
+      "matches": true
+    },
+    "server/host.mjs": {
+      "git": "45bcfb894e5a2b8c8b87b8862c75ad009101f436c92d93fc71812917ad485739",
+      "container": "45bcfb894e5a2b8c8b87b8862c75ad009101f436c92d93fc71812917ad485739",
+      "matches": true
+    },
+    "server/index.mjs": {
+      "git": "b2be7a5cb3f87d946a46804defefd1e8fc050ac80630d2d542a0d77ea538386f",
+      "container": "b2be7a5cb3f87d946a46804defefd1e8fc050ac80630d2d542a0d77ea538386f",
+      "matches": true
+    },
+    "server/companionCreation.mjs": {
+      "git": "c226bbd96d77c39ad20b14affaa43af17fbfad41dd0bc64802619d940756d37d",
+      "container": "c226bbd96d77c39ad20b14affaa43af17fbfad41dd0bc64802619d940756d37d",
+      "matches": true
+    },
+    "src/net/protocol.js": {
+      "git": "47d7f15dda4977fa4476e2fd3b96d0c67ec383916b80088a50c6f91c43af00e9",
+      "container": "47d7f15dda4977fa4476e2fd3b96d0c67ec383916b80088a50c6f91c43af00e9",
+      "matches": true
+    },
+    "src/data/meta.js": {
+      "git": "44c828d9026abe2d40a72cedd18b669099913bc1ea3e8bc6f06d9762bc600280",
+      "container": "44c828d9026abe2d40a72cedd18b669099913bc1ea3e8bc6f06d9762bc600280",
+      "matches": true
+    },
+    "src/main.js": {
+      "git": "9a809e66afc2e46ac3a624c2e6eccf5b4ebc189616b3f92222f344bcef2812aa",
+      "container": "9a809e66afc2e46ac3a624c2e6eccf5b4ebc189616b3f92222f344bcef2812aa",
+      "matches": true
+    },
+    "assets/manifest.json": {
+      "git": "3f8b1f7e9c56f1c05cbf24426580cd9ad8903a8082e092cf5f001af926ccfe50",
+      "container": "3f8b1f7e9c56f1c05cbf24426580cd9ad8903a8082e092cf5f001af926ccfe50",
+      "matches": true
+    }
+  },
+  "publicFileCount": 15,
+  "publicHashes": {
+    "src/editor/editor.js": "fc37f5a9b9d27d4a50e7bb1d75f60cbf42ffc87137bb8579da97e734d9efd40f",
+    "src/editor/editor.css": "714ca194b673a79964d04bb73aee2a72b846b28d2348e26dc0b8a1f98b728cf7",
+    "src/editor/modelCost.js": "0ba2f0f94ad2937200677be67e95a6e98fc9ec8cebf2cbc7cf63ea8675061a86",
+    "src/editor/scatterBrush.js": "80d71ebb753033ef1242aff0c22518d660d973543a504c0a0696369770e168df",
+    "src/editor/scatterPanel.js": "fc0547b3f1b0fccf1f53761d8a6fe4f1ecf003daf8acecf619e3b233ed0983e6",
+    "src/editor/scatterInteraction.js": "b42759479ca56fba12d521ca95cb488899a84ce2b1c2341507abee3cc4fd02b9",
+    "src/editor/terrainData.js": "1d0bde543ab7abb5046108450041b6f3655eb3e548647ed9e2db193c4e1aa332",
+    "src/editor/remotePanel.js": "839a73d4a4ba98eb404672f4be7c5c79d4f89cac7ec908bfb83f8887b91f4c17",
+    "src/editor/document.js": "cb47efb3b9d987e25ca352cc9cc22799db8dbc14ce522cfbded9a880d7e74a0f",
+    "src/editor/terrainBrush.js": "7f76a21b477a421666e215e045170a7b92e47b6edfde0b6e28545e7ef42ae733",
+    "src/editor/publicationArtifact.js": "a1c111bb8dca2263ec3323ad216d82c820ef451036f8698d9f76dd6c94dfe094",
+    "src/net/protocol.js": "47d7f15dda4977fa4476e2fd3b96d0c67ec383916b80088a50c6f91c43af00e9",
+    "src/data/meta.js": "44c828d9026abe2d40a72cedd18b669099913bc1ea3e8bc6f06d9762bc600280",
+    "src/main.js": "9a809e66afc2e46ac3a624c2e6eccf5b4ebc189616b3f92222f344bcef2812aa",
+    "assets/manifest.json": "3f8b1f7e9c56f1c05cbf24426580cd9ad8903a8082e092cf5f001af926ccfe50"
+  }
+}

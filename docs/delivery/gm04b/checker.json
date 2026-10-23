@@ -1,0 +1,63 @@
+{
+  "schema": "marea.gm04b.regression/v2",
+  "at": "2026-10-11T03:09:37.499Z",
+  "baseHead": "a7f9e6dc57ed16a75ba7ba30b7292f09fbbc3cd3",
+  "workingTree": true,
+  "gameVersion": "0.6.0-alpha.41",
+  "protocolVersion": 47,
+  "runtime": {
+    "node": "v24.14.0",
+    "platform": "win32"
+  },
+  "mode": "checker",
+  "command": "node --test --test-concurrency=2 --test-reporter=tap tests/gm-content-check.test.mjs",
+  "files": [
+    "tests/gm-content-check.test.mjs"
+  ],
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "summary": {
+    "tests": 2,
+    "pass": 2,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "stableSources": true,
+  "sourceHashesBefore": {
+    "src/editor/editor.js": "00fdbc5a4c942c1315b883dae48db7a176524a86aff4d32f621d400c995f084c",
+    "src/editor/editor.css": "b4d74a007a2f75fce652b7d96c02f0beadb03662e0ad844261920a7a5028496b",
+    "src/editor/templates.js": "3fa3cc832cece03022df4b1495fa330d7ff0a6e6e36e18f1d0504dbe8b94c23a",
+    "src/editor/templateStore.js": "258dd758138aafc2f7b51b60b2fcd1813a00a947eb82da9384d96ffdaba09cdb",
+    "src/editor/templatePanel.js": "7350d06fd9c6593ac1ed9fa6a8981c450279de121ff93cd33c9b2fcbb24bec99",
+    "src/editor/document.js": "499a1638e3db7d8273a4883e9d90cb258a0a05b9e34395534ffb1a47b928ae89",
+    "src/editor/selection.js": "23e296adaf1916a7281ab9fcb56c6b9c7b4bd0d66f41a6680ffbbb0bdced6a0c",
+    "src/editor/draftStore.js": "046c9fabc02cf89742fe241c6f0a0a93b35488da759ad50bcaa28a19bba7a1da",
+    "src/editor/catalog.js": "bed1345b55ffb944aa017a77e3844bc75881c330c67860ae760959675131736c",
+    "src/editor/baseDecoration.js": "0ef0dc896ebd192c15b0f40fac938ad9751225aa14a3d838c91af478576a9766",
+    "src/editor/publicationValidation.js": "72c1460ffe7e36e1e7d5f9875de66e64e2f86625d2dcd60626fd0d159e15b9f6",
+    "assets/editor/catalog.json": "a800d3bd86f3455b3267c3209e485c8fd821fae44af7bcc2bf99a5d69b9f5071",
+    "assets/manifest.json": "ec693e421a61b9a49e11f634761e1208aa6a8ccaa0980bad49ad3c6c64a7bef0",
+    "tests/gm-content-check.test.mjs": "b903f0dfe358706b71377414cec496d8214fb66556d0686460220ae295ff92db"
+  },
+  "sourceHashesAfter": {
+    "src/editor/editor.js": "00fdbc5a4c942c1315b883dae48db7a176524a86aff4d32f621d400c995f084c",
+    "src/editor/editor.css": "b4d74a007a2f75fce652b7d96c02f0beadb03662e0ad844261920a7a5028496b",
+    "src/editor/templates.js": "3fa3cc832cece03022df4b1495fa330d7ff0a6e6e36e18f1d0504dbe8b94c23a",
+    "src/editor/templateStore.js": "258dd758138aafc2f7b51b60b2fcd1813a00a947eb82da9384d96ffdaba09cdb",
+    "src/editor/templatePanel.js": "7350d06fd9c6593ac1ed9fa6a8981c450279de121ff93cd33c9b2fcbb24bec99",
+    "src/editor/document.js": "499a1638e3db7d8273a4883e9d90cb258a0a05b9e34395534ffb1a47b928ae89",
+    "src/editor/selection.js": "23e296adaf1916a7281ab9fcb56c6b9c7b4bd0d66f41a6680ffbbb0bdced6a0c",
+    "src/editor/draftStore.js": "046c9fabc02cf89742fe241c6f0a0a93b35488da759ad50bcaa28a19bba7a1da",
+    "src/editor/catalog.js": "bed1345b55ffb944aa017a77e3844bc75881c330c67860ae760959675131736c",
+    "src/editor/baseDecoration.js": "0ef0dc896ebd192c15b0f40fac938ad9751225aa14a3d838c91af478576a9766",
+    "src/editor/publicationValidation.js": "72c1460ffe7e36e1e7d5f9875de66e64e2f86625d2dcd60626fd0d159e15b9f6",
+    "assets/editor/catalog.json": "a800d3bd86f3455b3267c3209e485c8fd821fae44af7bcc2bf99a5d69b9f5071",
+    "assets/manifest.json": "ec693e421a61b9a49e11f634761e1208aa6a8ccaa0980bad49ad3c6c64a7bef0",
+    "tests/gm-content-check.test.mjs": "b903f0dfe358706b71377414cec496d8214fb66556d0686460220ae295ff92db"
+  },
+  "accepted": true,
+  "tap": "checker.tap",
+  "stderr": ""
+}

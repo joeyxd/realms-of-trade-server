@@ -1,0 +1,423 @@
+{
+  "schema": "marea.st01b-final-audit/v2",
+  "generatedAtUtc": "2026-10-13T04:46:00.926Z",
+  "scope": "Independent CPU/runtime guard and artifact provenance audit; no runtime source edits by this audit.",
+  "result": "No blocker found in current component bindings, catalog class preservation, atlas hashes, or focused lifecycle/authority tests.",
+  "findings": [
+    {
+      "severity": "info",
+      "finding": "The three component chains that lack sufficient grid evidence remain deferred; 157 accepted chains are exact-bound to original Niagara system digests, packages, renderers and texture packages.",
+      "evidence": {
+        "accepted": 157,
+        "candidates": 160,
+        "deferred": 3,
+        "allExact": true
+      }
+    },
+    {
+      "severity": "medium",
+      "finding": "Thirteen of fifteen source-component desktop atlases use 256px tiles; two use 512px.",
+      "evidence": {
+        "256": 13,
+        "512": 2
+      },
+      "action": "Review against desktop fidelity target; this audit made no repack."
+    }
+  ],
+  "catalog": {
+    "originalSystems": 916,
+    "originalSourceRows": 993,
+    "additionalTextureComponentRecords": 15,
+    "combinedSourceRecords": 1008,
+    "effectLibraryEntries": 932,
+    "readyViews": 17
+  },
+  "tests": {
+    "count": 58,
+    "passed": 58,
+    "failed": 0
+  },
+  "sourceHashes": {
+    "tools/extract-niagara-subuv.py": "b39edfa9c6d312a14e426f0fd190d8b08f7da579222f9de63a1550af3580a3af",
+    "tools/pack-niagara-flipbook.py": "ec9b9e1c45edce679d61fc2cb156606a041c51a64b4c3c28c062fd8c5c8823a9",
+    "src/editor/niagaraCatalog.js": "f16ac44310f2bfbdea681c82ecb178c5f6efae1c8895dc2b600f49a63f542e1a",
+    "src/editor/niagaraDerivatives.js": "b69f1397b892a373ffcd73eeb32f88c1540caece1d6ca086ffea70a4eada3e60",
+    "src/editor/effectLibrary.js": "d782e30f7dcf5bbbfde91048fd69d890f8e0ee2188d088823c2c465ed8e53de2",
+    "src/render/vfx/flipbook.js": "2fc787ebbc8286b72495ffebbecc3f2ce5153e5c4bcef49f1d15c4ebc5ce5d2b",
+    "tests/effect-library.test.mjs": "597218eec6aa90912c2f30d1a3ef2b8a763b13f17ae93c7b066cee2f3ab22eee",
+    "docs/research/unreal-assets/niagara-catalog.json": "7c1f7dd0043aef0d0f197cb1db9231e90c2233bca84bcf924921abcc0121b7b0"
+  },
+  "atlasFiles": [
+    {
+      "url": "/assets/vfx/niagara/component-12ce65c60986b47a-8x8-alpha-desktop.webp",
+      "sha256": "feda40af9f6a5bde14d8836e3b05e3655597481123d547799371b35b51a3bda2",
+      "manifestMatch": true,
+      "atlasId": "component-12ce65c60986b47a-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-12ce65c60986b47a-8x8-alpha-mobile.webp",
+      "sha256": "1e8d76f37792e681d7b839e29f0cb7b07c850fd543d9ff518f1ec53c6e6cc5f1",
+      "manifestMatch": true,
+      "atlasId": "component-12ce65c60986b47a-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-desktop.webp",
+      "sha256": "0c57edca524ea8fe223bb4a91a0cc8ed3010f1aa0b4d3f33bc362260ba774da4",
+      "manifestMatch": true,
+      "atlasId": "component-1d5c64ec6742cb1b-8x4-luma"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-mobile.webp",
+      "sha256": "5d439862e41b84f38b1ff827a10283ee68a174374c4f79cabe2b3b56e7bee24b",
+      "manifestMatch": true,
+      "atlasId": "component-1d5c64ec6742cb1b-8x4-luma"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-desktop.webp",
+      "sha256": "c6d58b8f597079fc0dc329a6c492427efe1505240ccd33f382737818cc1287a8",
+      "manifestMatch": true,
+      "atlasId": "component-26e09bd0f93cb620-7x7-luma"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp",
+      "sha256": "e5c7d186ea39e166cc1905ea4591e61e0901c552b4c3ec715874c7ee9e8dba70",
+      "manifestMatch": true,
+      "atlasId": "component-26e09bd0f93cb620-7x7-luma"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-3e0a757f3e8443eb-8x4-luma-desktop.webp",
+      "sha256": "faaa1f78644294baed1d4b844579b8caffb987797e9983813ad77a3aa60f7466",
+      "manifestMatch": true,
+      "atlasId": "component-3e0a757f3e8443eb-8x4-luma"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-3e0a757f3e8443eb-8x4-luma-mobile.webp",
+      "sha256": "be4d28a165526538f1c6350aff65e220ade7f493571d533a6fdabf657347624e",
+      "manifestMatch": true,
+      "atlasId": "component-3e0a757f3e8443eb-8x4-luma"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-desktop.webp",
+      "sha256": "1544617caa13becb35481c2c6d906d62f9292f96c70e3a06d52ddc81bef06875",
+      "manifestMatch": true,
+      "atlasId": "component-3e468435ddbe1951-3x3-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-mobile.webp",
+      "sha256": "385c9a2d9a2692fe8d60eed8457e864d5ebf962822e7c4279d2e957484d42ac3",
+      "manifestMatch": true,
+      "atlasId": "component-3e468435ddbe1951-3x3-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-4866b9058807eeef-8x4-luma-desktop.webp",
+      "sha256": "baaf9dabf9bedd61ea4ac265552acbdc82bf2e593be57b8a94cbd96d63cea075",
+      "manifestMatch": true,
+      "atlasId": "component-4866b9058807eeef-8x4-luma"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-4866b9058807eeef-8x4-luma-mobile.webp",
+      "sha256": "24d0937359ad54cc801a55831d9c639b54e652d5b6d60f717da018e064050665",
+      "manifestMatch": true,
+      "atlasId": "component-4866b9058807eeef-8x4-luma"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-7e5099cefb584032-8x8-alpha-desktop.webp",
+      "sha256": "83d5d6205a61e274aad9ee05532d7e05cf255b47d004a2be415471f3fe6c9572",
+      "manifestMatch": true,
+      "atlasId": "component-7e5099cefb584032-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-7e5099cefb584032-8x8-alpha-mobile.webp",
+      "sha256": "3c644e6c3c5fa0fe574971b38ecd6d7c58eb41478ec030133f7cb9404ddd1a1c",
+      "manifestMatch": true,
+      "atlasId": "component-7e5099cefb584032-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-desktop.webp",
+      "sha256": "8c6a783f3570c44e4134329a8fb7ba16657e7821e8f83f0f9650c7f9dc211717",
+      "manifestMatch": true,
+      "atlasId": "component-8117bd91eb290326-8x1-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-mobile.webp",
+      "sha256": "69a55f1777dcf951c7d07ef52033c96f49da2a7e30c89fb5c42e08ac3832085b",
+      "manifestMatch": true,
+      "atlasId": "component-8117bd91eb290326-8x1-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-bc703e63cd85d73c-8x8-alpha-desktop.webp",
+      "sha256": "522bfcd8a7caef6bdf32c808e968a90010bf5c04701543e65fd0a633e316e5bc",
+      "manifestMatch": true,
+      "atlasId": "component-bc703e63cd85d73c-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-bc703e63cd85d73c-8x8-alpha-mobile.webp",
+      "sha256": "aa49a5c98a49d8f12471157a822b349c8f865c7f6477fab6328bbefd53779df8",
+      "manifestMatch": true,
+      "atlasId": "component-bc703e63cd85d73c-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-desktop.webp",
+      "sha256": "3d26d941dd765edd7b9d2c46b512c3373819a6cdc514e598805aa49375f9feb1",
+      "manifestMatch": true,
+      "atlasId": "component-d7a5e783ffa8ee81-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-mobile.webp",
+      "sha256": "41e386d6624f10fc68ab9b050c2e470f17637e675b6fcdb27e948cf80da0f8b4",
+      "manifestMatch": true,
+      "atlasId": "component-d7a5e783ffa8ee81-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-dd710adffbd411cd-8x8-alpha-desktop.webp",
+      "sha256": "96aed315f6575044a520bf55e01f377f08ad7a9762b4aeeb38b18adb636ce58b",
+      "manifestMatch": true,
+      "atlasId": "component-dd710adffbd411cd-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-dd710adffbd411cd-8x8-alpha-mobile.webp",
+      "sha256": "bd1933d621ccbee8c311261d064cb5560ef931158039d04198112fbcbda65577",
+      "manifestMatch": true,
+      "atlasId": "component-dd710adffbd411cd-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-desktop.webp",
+      "sha256": "aff85a92afc4ad7673ac4f5be763811855c17894b11977b1a6ed9adadbf888d3",
+      "manifestMatch": true,
+      "atlasId": "component-eb5fe0f905f673b8-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-mobile.webp",
+      "sha256": "2dd4ccf9c2166a53d8bfcad4d5669b046be9be08dd07afc7513a70ee14067aa7",
+      "manifestMatch": true,
+      "atlasId": "component-eb5fe0f905f673b8-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-desktop.webp",
+      "sha256": "9967b5f53045e8fc986ce446c15b56e50311c6ea018dda2f71b27812bfa72602",
+      "manifestMatch": true,
+      "atlasId": "component-ecddb7ecffb46fb0-10x6-luma"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-mobile.webp",
+      "sha256": "0788b907bc7170d5ee52b2e39e091591c4ba05d849de30d9dcad71167b5b5ff6",
+      "manifestMatch": true,
+      "atlasId": "component-ecddb7ecffb46fb0-10x6-luma"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-ee97ef90f7754523-8x8-alpha-desktop.webp",
+      "sha256": "95a82cf7e268e7a454bfe41d86debbb2112acf18fc542e6d36a1ec445619d824",
+      "manifestMatch": true,
+      "atlasId": "component-ee97ef90f7754523-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-ee97ef90f7754523-8x8-alpha-mobile.webp",
+      "sha256": "dbdaac7579c0c5bcf0485298d0cda25669f4167f24ceaa2eb49f00014ef943e4",
+      "manifestMatch": true,
+      "atlasId": "component-ee97ef90f7754523-8x8-alpha"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-desktop.webp",
+      "sha256": "83a99d6b7bedfa9a22761351af413db32882570f87ae4c36845f45ee0f9764d9",
+      "manifestMatch": true,
+      "atlasId": "component-f7736e0dfe565c2f-4x4-rgba"
+    },
+    {
+      "url": "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-mobile.webp",
+      "sha256": "cdf5a7478f0ace23daca20a83795f190c3e23511479278846c0be8aca100d143",
+      "manifestMatch": true,
+      "atlasId": "component-f7736e0dfe565c2f-4x4-rgba"
+    },
+    {
+      "url": "/assets/vfx/niagara/niagara-b23e30580f0f5d09-desktop.webp",
+      "sha256": "414a576c793109355a6fc621966257c07c62bfc694444e9488885c1ba277f239",
+      "manifestMatch": true,
+      "atlasId": "niagara-b23e30580f0f5d09"
+    },
+    {
+      "url": "/assets/vfx/niagara/niagara-b23e30580f0f5d09-mobile.webp",
+      "sha256": "a0aaa0d011d0b8bbabed69e83fe6f000eea8f21eee9f7c1088d5795b43e10019",
+      "manifestMatch": true,
+      "atlasId": "niagara-b23e30580f0f5d09"
+    }
+  ],
+  "components": [
+    {
+      "atlasId": "component-12ce65c60986b47a-8x8-alpha",
+      "sourceSystemSha256": "11732df8948b0dd302ffdf50f1c2cf3b2cce2662bd3c9dcff0b8124946046999",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 59
+    },
+    {
+      "atlasId": "component-1d5c64ec6742cb1b-8x4-luma",
+      "sourceSystemSha256": "97a82bae61b292371a78cadc6ffef2f7dcae3ea39ac0a9ccb6b5ed2ee57e18cf",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 2
+    },
+    {
+      "atlasId": "component-26e09bd0f93cb620-7x7-luma",
+      "sourceSystemSha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 1
+    },
+    {
+      "atlasId": "component-3e0a757f3e8443eb-8x4-luma",
+      "sourceSystemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 1
+    },
+    {
+      "atlasId": "component-3e468435ddbe1951-3x3-alpha",
+      "sourceSystemSha256": "049badaf45e15fd639051bbb1d785ba4eb7918a53222aaae9fe05359f69394a7",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 1
+    },
+    {
+      "atlasId": "component-4866b9058807eeef-8x4-luma",
+      "sourceSystemSha256": "97a82bae61b292371a78cadc6ffef2f7dcae3ea39ac0a9ccb6b5ed2ee57e18cf",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 4
+    },
+    {
+      "atlasId": "component-7e5099cefb584032-8x8-alpha",
+      "sourceSystemSha256": "453738c67c74eb2e2f1a1bc6ca00fb709a44110aba79106abf74b03a775a7d3c",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 1
+    },
+    {
+      "atlasId": "component-8117bd91eb290326-8x1-alpha",
+      "sourceSystemSha256": "7970b1ee9b5555d324f690f61c2819fae7de0f01e0a54b840ab8f56d8a315f0f",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 1
+    },
+    {
+      "atlasId": "component-bc703e63cd85d73c-8x8-alpha",
+      "sourceSystemSha256": "8e2cf06e76c52ff12539e3e11873d1e10f159adc4eee7470ea1e2581b8a4384c",
+      "role": "source-texture",
+      "desktopTile": 512,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 3
+    },
+    {
+      "atlasId": "component-d7a5e783ffa8ee81-8x8-alpha",
+      "sourceSystemSha256": "16fc0b8630da2831f843d796bd29a252b99e4cf529cec027df8725cf15c0a475",
+      "role": "source-texture",
+      "desktopTile": 512,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 2
+    },
+    {
+      "atlasId": "component-dd710adffbd411cd-8x8-alpha",
+      "sourceSystemSha256": "9781d6141b4a6cc65c3e020283d71fa056982d93d8a55d6dd6fdca7c90a4255c",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 5
+    },
+    {
+      "atlasId": "component-eb5fe0f905f673b8-8x8-alpha",
+      "sourceSystemSha256": "3591c44b3dd94faa75f7c46bcc331829222471f481c491cf2653529bb6f8314d",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 2
+    },
+    {
+      "atlasId": "component-ecddb7ecffb46fb0-10x6-luma",
+      "sourceSystemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 2
+    },
+    {
+      "atlasId": "component-ee97ef90f7754523-8x8-alpha",
+      "sourceSystemSha256": "e7ecef29218810e1d9b62205a23453d04f03dc6f8e04bee23ba6f5c78c16ab0d",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 72
+    },
+    {
+      "atlasId": "component-f7736e0dfe565c2f-4x4-rgba",
+      "sourceSystemSha256": "3ccdf359dea4068dc125768c3916fa38b542d8dd3840d316d881649cb172051f",
+      "role": "source-texture",
+      "desktopTile": 256,
+      "componentClass": "Texture2D",
+      "sourceSystemBindingCount": 1
+    }
+  ],
+  "firework": {
+    "sourceSystemSha256": "b23e30580f0f5d097c19d496c0d7685eb61da4882e224f876cd5d16346d438b0",
+    "project": "MyProject",
+    "frames": 60,
+    "durationSeconds": 2,
+    "blend": "additive",
+    "role": "system-capture",
+    "manifestStatus": "captured reference; not accepted as native runtime"
+  },
+  "compiledNamespaceNoAbsoluteUnrealPaths": true,
+  "componentBindings": {
+    "accepted": 157,
+    "candidates": 160,
+    "deferred": 3,
+    "exactMatches": true,
+    "project": "MyProject"
+  },
+  "registeredAtlasFiles": {
+    "checked": 32,
+    "expected": 32,
+    "allMatch": true,
+    "sha256": {
+      "/assets/vfx/niagara/component-12ce65c60986b47a-8x8-alpha-desktop.webp": "feda40af9f6a5bde14d8836e3b05e3655597481123d547799371b35b51a3bda2",
+      "/assets/vfx/niagara/component-12ce65c60986b47a-8x8-alpha-mobile.webp": "1e8d76f37792e681d7b839e29f0cb7b07c850fd543d9ff518f1ec53c6e6cc5f1",
+      "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-desktop.webp": "0c57edca524ea8fe223bb4a91a0cc8ed3010f1aa0b4d3f33bc362260ba774da4",
+      "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-mobile.webp": "5d439862e41b84f38b1ff827a10283ee68a174374c4f79cabe2b3b56e7bee24b",
+      "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-desktop.webp": "c6d58b8f597079fc0dc329a6c492427efe1505240ccd33f382737818cc1287a8",
+      "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp": "e5c7d186ea39e166cc1905ea4591e61e0901c552b4c3ec715874c7ee9e8dba70",
+      "/assets/vfx/niagara/component-3e0a757f3e8443eb-8x4-luma-desktop.webp": "faaa1f78644294baed1d4b844579b8caffb987797e9983813ad77a3aa60f7466",
+      "/assets/vfx/niagara/component-3e0a757f3e8443eb-8x4-luma-mobile.webp": "be4d28a165526538f1c6350aff65e220ade7f493571d533a6fdabf657347624e",
+      "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-desktop.webp": "1544617caa13becb35481c2c6d906d62f9292f96c70e3a06d52ddc81bef06875",
+      "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-mobile.webp": "385c9a2d9a2692fe8d60eed8457e864d5ebf962822e7c4279d2e957484d42ac3",
+      "/assets/vfx/niagara/component-4866b9058807eeef-8x4-luma-desktop.webp": "baaf9dabf9bedd61ea4ac265552acbdc82bf2e593be57b8a94cbd96d63cea075",
+      "/assets/vfx/niagara/component-4866b9058807eeef-8x4-luma-mobile.webp": "24d0937359ad54cc801a55831d9c639b54e652d5b6d60f717da018e064050665",
+      "/assets/vfx/niagara/component-7e5099cefb584032-8x8-alpha-desktop.webp": "83d5d6205a61e274aad9ee05532d7e05cf255b47d004a2be415471f3fe6c9572",
+      "/assets/vfx/niagara/component-7e5099cefb584032-8x8-alpha-mobile.webp": "3c644e6c3c5fa0fe574971b38ecd6d7c58eb41478ec030133f7cb9404ddd1a1c",
+      "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-desktop.webp": "8c6a783f3570c44e4134329a8fb7ba16657e7821e8f83f0f9650c7f9dc211717",
+      "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-mobile.webp": "69a55f1777dcf951c7d07ef52033c96f49da2a7e30c89fb5c42e08ac3832085b",
+      "/assets/vfx/niagara/component-bc703e63cd85d73c-8x8-alpha-desktop.webp": "522bfcd8a7caef6bdf32c808e968a90010bf5c04701543e65fd0a633e316e5bc",
+      "/assets/vfx/niagara/component-bc703e63cd85d73c-8x8-alpha-mobile.webp": "aa49a5c98a49d8f12471157a822b349c8f865c7f6477fab6328bbefd53779df8",
+      "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-desktop.webp": "3d26d941dd765edd7b9d2c46b512c3373819a6cdc514e598805aa49375f9feb1",
+      "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-mobile.webp": "41e386d6624f10fc68ab9b050c2e470f17637e675b6fcdb27e948cf80da0f8b4",
+      "/assets/vfx/niagara/component-dd710adffbd411cd-8x8-alpha-desktop.webp": "96aed315f6575044a520bf55e01f377f08ad7a9762b4aeeb38b18adb636ce58b",
+      "/assets/vfx/niagara/component-dd710adffbd411cd-8x8-alpha-mobile.webp": "bd1933d621ccbee8c311261d064cb5560ef931158039d04198112fbcbda65577",
+      "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-desktop.webp": "aff85a92afc4ad7673ac4f5be763811855c17894b11977b1a6ed9adadbf888d3",
+      "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-mobile.webp": "2dd4ccf9c2166a53d8bfcad4d5669b046be9be08dd07afc7513a70ee14067aa7",
+      "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-desktop.webp": "9967b5f53045e8fc986ce446c15b56e50311c6ea018dda2f71b27812bfa72602",
+      "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-mobile.webp": "0788b907bc7170d5ee52b2e39e091591c4ba05d849de30d9dcad71167b5b5ff6",
+      "/assets/vfx/niagara/component-ee97ef90f7754523-8x8-alpha-desktop.webp": "95a82cf7e268e7a454bfe41d86debbb2112acf18fc542e6d36a1ec445619d824",
+      "/assets/vfx/niagara/component-ee97ef90f7754523-8x8-alpha-mobile.webp": "dbdaac7579c0c5bcf0485298d0cda25669f4167f24ceaa2eb49f00014ef943e4",
+      "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-desktop.webp": "83a99d6b7bedfa9a22761351af413db32882570f87ae4c36845f45ee0f9764d9",
+      "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-mobile.webp": "cdf5a7478f0ace23daca20a83795f190c3e23511479278846c0be8aca100d143",
+      "/assets/vfx/niagara/niagara-b23e30580f0f5d09-desktop.webp": "414a576c793109355a6fc621966257c07c62bfc694444e9488885c1ba277f239",
+      "/assets/vfx/niagara/niagara-b23e30580f0f5d09-mobile.webp": "a0aaa0d011d0b8bbabed69e83fe6f000eea8f21eee9f7c1088d5795b43e10019"
+    }
+  },
+  "evidenceTextEncoding": "UTF-8 without BOM, LF; JSON formatting normalized before staging"
+}

@@ -1,0 +1,754 @@
+{
+  "schema": "marea.asset-preparation-receipt.v1",
+  "stage": "C:\\DEV\\real of trade\\asset-workshop-preparation",
+  "engine": "UE 5.8",
+  "generatedAtUtc": "2026-10-14T16:44:59.463277+00:00",
+  "dependencyPackages": 86,
+  "sources": [
+    {
+      "package": "/Game/AdvancedVillagePack/Materials/M_Inst_Pack_02",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\AdvancedVillagePack\\Materials\\M_Inst_Pack_02.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\AdvancedVillagePack\\Materials\\M_Inst_Pack_02.uasset",
+      "bytes": 136927,
+      "sha256": "1c1c6aec2c664a1256a478846d25928a97d4f36cf88d58724206ba9c8a6f9cab",
+      "sourceHashAfter": "1c1c6aec2c664a1256a478846d25928a97d4f36cf88d58724206ba9c8a6f9cab"
+    },
+    {
+      "package": "/Game/AdvancedVillagePack/Materials/M_Uber",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\AdvancedVillagePack\\Materials\\M_Uber.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\AdvancedVillagePack\\Materials\\M_Uber.uasset",
+      "bytes": 152903,
+      "sha256": "99242c2e565d747841932cdd90afc602b172aa475e2bfda38a507ec7afe4ee34",
+      "sourceHashAfter": "99242c2e565d747841932cdd90afc602b172aa475e2bfda38a507ec7afe4ee34"
+    },
+    {
+      "package": "/Game/AdvancedVillagePack/Meshes/SM_Cauldron",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\AdvancedVillagePack\\Meshes\\SM_Cauldron.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\AdvancedVillagePack\\Meshes\\SM_Cauldron.uasset",
+      "bytes": 135844,
+      "sha256": "d84885cd634142d74dc6c15c2d2f1262df72b82f5257efd24778058630405ab9",
+      "sourceHashAfter": "d84885cd634142d74dc6c15c2d2f1262df72b82f5257efd24778058630405ab9"
+    },
+    {
+      "package": "/Game/AdvancedVillagePack/Textures/T_Pack_02_D",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\AdvancedVillagePack\\Textures\\T_Pack_02_D.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\AdvancedVillagePack\\Textures\\T_Pack_02_D.uasset",
+      "bytes": 16806461,
+      "sha256": "500b4f8b55ce086b065baa6163a668e6f81bad31a825b119017b8ca1129c5d57",
+      "sourceHashAfter": "500b4f8b55ce086b065baa6163a668e6f81bad31a825b119017b8ca1129c5d57"
+    },
+    {
+      "package": "/Game/AdvancedVillagePack/Textures/T_Pack_02_N",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\AdvancedVillagePack\\Textures\\T_Pack_02_N.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\AdvancedVillagePack\\Textures\\T_Pack_02_N.uasset",
+      "bytes": 10541395,
+      "sha256": "c9d176efcc79f89c5d3c79fc1f9f75a7400e493f6d6cababc60a6450ae95d17a",
+      "sourceHashAfter": "c9d176efcc79f89c5d3c79fc1f9f75a7400e493f6d6cababc60a6450ae95d17a"
+    },
+    {
+      "package": "/Game/AdvancedVillagePack/Textures/T_Pack_02_RM",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\AdvancedVillagePack\\Textures\\T_Pack_02_RM.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\AdvancedVillagePack\\Textures\\T_Pack_02_RM.uasset",
+      "bytes": 11626372,
+      "sha256": "17d1791fdf507ec986f62a1e949b4ea94f461f106b78c06e3896e849d337d9b8",
+      "sourceHashAfter": "17d1791fdf507ec986f62a1e949b4ea94f461f106b78c06e3896e849d337d9b8"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Effect/Texture/Texture/Tilling/T_SandRough_01a_H",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Effect\\Texture\\Texture\\Tilling\\T_SandRough_01a_H.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Effect\\Texture\\Texture\\Tilling\\T_SandRough_01a_H.uasset",
+      "bytes": 2323299,
+      "sha256": "6dc60899b59492368aa5df6d47576f9ee1fc4041e22fa9548cf6ac9377af8b1e",
+      "sourceHashAfter": "6dc60899b59492368aa5df6d47576f9ee1fc4041e22fa9548cf6ac9377af8b1e"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Effect/Texture/Texture/Tilling/T_SandRough_01a_N",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Effect\\Texture\\Texture\\Tilling\\T_SandRough_01a_N.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Effect\\Texture\\Texture\\Tilling\\T_SandRough_01a_N.uasset",
+      "bytes": 9760442,
+      "sha256": "5fe64e11e97f40bd2d845d3fcfaf83da53eeee9f2356877f581e6c4c43ff049f",
+      "sourceHashAfter": "5fe64e11e97f40bd2d845d3fcfaf83da53eeee9f2356877f581e6c4c43ff049f"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Effect/Texture/Texture/Tilling/T_SnowRough_01a_D",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Effect\\Texture\\Texture\\Tilling\\T_SnowRough_01a_D.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Effect\\Texture\\Texture\\Tilling\\T_SnowRough_01a_D.uasset",
+      "bytes": 7091706,
+      "sha256": "e18fb73504d044675482631f6bc451f048fb78519bb65a48882d2cd64d045e2e",
+      "sourceHashAfter": "e18fb73504d044675482631f6bc451f048fb78519bb65a48882d2cd64d045e2e"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Effect/Texture/Texture/Tilling/T_SnowRough_01a_ORM",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Effect\\Texture\\Texture\\Tilling\\T_SnowRough_01a_ORM.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Effect\\Texture\\Texture\\Tilling\\T_SnowRough_01a_ORM.uasset",
+      "bytes": 7161370,
+      "sha256": "997df8580999d998fb406f9fa82959746e247a4fcbac9fdf16d0bbaf777aad85",
+      "sourceHashAfter": "997df8580999d998fb406f9fa82959746e247a4fcbac9fdf16d0bbaf777aad85"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Material/Prop/MI_Metalware_01a",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Material\\Prop\\MI_Metalware_01a.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Material\\Prop\\MI_Metalware_01a.uasset",
+      "bytes": 29190,
+      "sha256": "50057c77c5b8bb131c2bcb3023c2807d87d3932f07c9ea837c69db1d18bad41a",
+      "sourceHashAfter": "50057c77c5b8bb131c2bcb3023c2807d87d3932f07c9ea837c69db1d18bad41a"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Material/Tileable/MI_Trimsheet_Wood_01a",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Material\\Tileable\\MI_Trimsheet_Wood_01a.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Material\\Tileable\\MI_Trimsheet_Wood_01a.uasset",
+      "bytes": 22385,
+      "sha256": "22800395c9afc4af2e4a280c7bda63e8c89036abf0550f565a13f95292461a74",
+      "sourceHashAfter": "22800395c9afc4af2e4a280c7bda63e8c89036abf0550f565a13f95292461a74"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Prop/T_Metalware_D",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Prop\\T_Metalware_D.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Prop\\T_Metalware_D.uasset",
+      "bytes": 1399327,
+      "sha256": "5b2268f3a544bc0651fafad307066560c5295c15ce967e0b46edebcde9cab9f4",
+      "sourceHashAfter": "5b2268f3a544bc0651fafad307066560c5295c15ce967e0b46edebcde9cab9f4"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Prop/T_Metalware_M",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Prop\\T_Metalware_M.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Prop\\T_Metalware_M.uasset",
+      "bytes": 6078,
+      "sha256": "3fb581ea003133bee6ebccac7173d7acea3ba8b774b9ef4c21f2ce29376caf15",
+      "sourceHashAfter": "3fb581ea003133bee6ebccac7173d7acea3ba8b774b9ef4c21f2ce29376caf15"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Prop/T_Metalware_N",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Prop\\T_Metalware_N.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Prop\\T_Metalware_N.uasset",
+      "bytes": 4845084,
+      "sha256": "273b58af414d4beea61c03b45319e142eeab0723c37e4f689e27cc40f26fd359",
+      "sourceHashAfter": "273b58af414d4beea61c03b45319e142eeab0723c37e4f689e27cc40f26fd359"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Prop/T_Metalware_ORM",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Prop\\T_Metalware_ORM.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Prop\\T_Metalware_ORM.uasset",
+      "bytes": 4622111,
+      "sha256": "84b6d89abdc7e83c453725159ade7d228edae2a889560b3377835ee77f673eab",
+      "sourceHashAfter": "84b6d89abdc7e83c453725159ade7d228edae2a889560b3377835ee77f673eab"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Tiling/T_Brick_01b_D",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Brick_01b_D.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Brick_01b_D.uasset",
+      "bytes": 29963709,
+      "sha256": "810a3ea894b38c3de8eb73fa1c117d11860ce471179ea316b97f3c4e53534ff8",
+      "sourceHashAfter": "810a3ea894b38c3de8eb73fa1c117d11860ce471179ea316b97f3c4e53534ff8"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Tiling/T_Brick_01b_H",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Brick_01b_H.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Brick_01b_H.uasset",
+      "bytes": 2786333,
+      "sha256": "77c031a8c6f1659abdb158aded497a7aab5f4969f1193bc639dd66be5af3f7a4",
+      "sourceHashAfter": "77c031a8c6f1659abdb158aded497a7aab5f4969f1193bc639dd66be5af3f7a4"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Tiling/T_Brick_01b_N",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Brick_01b_N.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Brick_01b_N.uasset",
+      "bytes": 36679316,
+      "sha256": "f40831abb7971e999aa0e141b827bc6cb2b522168e4cfb27ae56972595f988a4",
+      "sourceHashAfter": "f40831abb7971e999aa0e141b827bc6cb2b522168e4cfb27ae56972595f988a4"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Tiling/T_Brick_01b_ORM",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Brick_01b_ORM.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Brick_01b_ORM.uasset",
+      "bytes": 23499314,
+      "sha256": "bc8b5b133a6169441fa6bf47211f9ee0a61242a676d2d2adddc2912aa4a910fb",
+      "sourceHashAfter": "bc8b5b133a6169441fa6bf47211f9ee0a61242a676d2d2adddc2912aa4a910fb"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Tiling/T_Concrete_01a_D",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Concrete_01a_D.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Concrete_01a_D.uasset",
+      "bytes": 30294997,
+      "sha256": "fd7d3233d8ec93247882e7d32e1e1ebee2ff2c8948ee7ce2c5d39da5e27c2d9d",
+      "sourceHashAfter": "fd7d3233d8ec93247882e7d32e1e1ebee2ff2c8948ee7ce2c5d39da5e27c2d9d"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Tiling/T_Concrete_01a_N",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Concrete_01a_N.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Concrete_01a_N.uasset",
+      "bytes": 50162862,
+      "sha256": "2642554a010a65d163479a603d66a0599041bc4b290499e44768cad71fdd0c0a",
+      "sourceHashAfter": "2642554a010a65d163479a603d66a0599041bc4b290499e44768cad71fdd0c0a"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Tiling/T_Concrete_01a_ORM",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Concrete_01a_ORM.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Concrete_01a_ORM.uasset",
+      "bytes": 26383565,
+      "sha256": "6f64b3f5438a4e030fc8ca9ee825a803761a4e21dbcbe8f70fb499043a7d94e6",
+      "sourceHashAfter": "6f64b3f5438a4e030fc8ca9ee825a803761a4e21dbcbe8f70fb499043a7d94e6"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Tiling/T_Trimsheet_Wood_01a_D",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Trimsheet_Wood_01a_D.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Trimsheet_Wood_01a_D.uasset",
+      "bytes": 30461068,
+      "sha256": "4bec5b44c7268a9bb66d0d46c8a4ca2ed39bc00cda6c646fea63e2e8487a8daf",
+      "sourceHashAfter": "4bec5b44c7268a9bb66d0d46c8a4ca2ed39bc00cda6c646fea63e2e8487a8daf"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Tiling/T_Trimsheet_Wood_01a_N",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Trimsheet_Wood_01a_N.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Trimsheet_Wood_01a_N.uasset",
+      "bytes": 33501737,
+      "sha256": "214f423ef5fbb853e1c2b78c61e6c70588ee3bc16ecf213aebd4ce04cf0a8b93",
+      "sourceHashAfter": "214f423ef5fbb853e1c2b78c61e6c70588ee3bc16ecf213aebd4ce04cf0a8b93"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Environment/Assets/Texture/Tiling/T_Trimsheet_Wood_01a_ORM",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Trimsheet_Wood_01a_ORM.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Environment\\Assets\\Texture\\Tiling\\T_Trimsheet_Wood_01a_ORM.uasset",
+      "bytes": 22770349,
+      "sha256": "af1f99bc9df3187a151474a02ca7f8df6168a5c5955c26f9667b15ba464838e5",
+      "sourceHashAfter": "af1f99bc9df3187a151474a02ca7f8df6168a5c5955c26f9667b15ba464838e5"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Master_Material/MasterShader_Meshingun/Material/MIM_Props",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Material\\MIM_Props.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Material\\MIM_Props.uasset",
+      "bytes": 23149,
+      "sha256": "859f4ef1df5a2e754e5d3e61280c1e4688f866aa10f8d7a1abab962aa77373a3",
+      "sourceHashAfter": "859f4ef1df5a2e754e5d3e61280c1e4688f866aa10f8d7a1abab962aa77373a3"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Master_Material/MasterShader_Meshingun/Material/MM_MasterMaterial",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Material\\MM_MasterMaterial.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Material\\MM_MasterMaterial.uasset",
+      "bytes": 345527,
+      "sha256": "6df0817f2149787de749d9d13f5da69d0e0f79f10210e6fd3e4daf367bf100bd",
+      "sourceHashAfter": "6df0817f2149787de749d9d13f5da69d0e0f79f10210e6fd3e4daf367bf100bd"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Master_Material/MasterShader_Meshingun/Texture/T_Grunge/T_Grunge_01b",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Texture\\T_Grunge\\T_Grunge_01b.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Texture\\T_Grunge\\T_Grunge_01b.uasset",
+      "bytes": 1729167,
+      "sha256": "e03c1261289bbc839f84935608f6a20611b902920b6e0c222556dfe576e34f56",
+      "sourceHashAfter": "e03c1261289bbc839f84935608f6a20611b902920b6e0c222556dfe576e34f56"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Master_Material/MasterShader_Meshingun/Texture/Utility/T_ConcreteDamaged_01a_D",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Texture\\Utility\\T_ConcreteDamaged_01a_D.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Texture\\Utility\\T_ConcreteDamaged_01a_D.uasset",
+      "bytes": 113335743,
+      "sha256": "d723695c96af73534318a4bea7ded1d93cbab0a13daf7365db2b816b583e2233",
+      "sourceHashAfter": "d723695c96af73534318a4bea7ded1d93cbab0a13daf7365db2b816b583e2233"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Master_Material/MasterShader_Meshingun/Texture/Utility/T_Height_H",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Texture\\Utility\\T_Height_H.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Texture\\Utility\\T_Height_H.uasset",
+      "bytes": 6007,
+      "sha256": "7ec606b1bb0798bd81aa1df48f5e79aed305145df0284c9acee9648c84fd4a60",
+      "sourceHashAfter": "7ec606b1bb0798bd81aa1df48f5e79aed305145df0284c9acee9648c84fd4a60"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Master_Material/MasterShader_Meshingun/Texture/Utility/T_Mask_ORM",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Texture\\Utility\\T_Mask_ORM.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Texture\\Utility\\T_Mask_ORM.uasset",
+      "bytes": 4642,
+      "sha256": "492b98acecbdc06401492cc2cb9d67d533a7cc10c697d2bceed376ad4b8ec5b9",
+      "sourceHashAfter": "492b98acecbdc06401492cc2cb9d67d533a7cc10c697d2bceed376ad4b8ec5b9"
+    },
+    {
+      "package": "/Game/Bazaar_Meshingun/Master_Material/MasterShader_Meshingun/Texture/Utility/T_Splatter_Mask",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Texture\\Utility\\T_Splatter_Mask.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Bazaar_Meshingun\\Master_Material\\MasterShader_Meshingun\\Texture\\Utility\\T_Splatter_Mask.uasset",
+      "bytes": 2339010,
+      "sha256": "c2283caefd466c8e694dc03e6e81a49c010419826cb20ca5aa5d3f5c981ab1a6",
+      "sourceHashAfter": "c2283caefd466c8e694dc03e6e81a49c010419826cb20ca5aa5d3f5c981ab1a6"
+    },
+    {
+      "package": "/Game/Greek_island/Assets/Boat/SM_Boat_01",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Assets\\Boat\\SM_Boat_01.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Assets\\Boat\\SM_Boat_01.uasset",
+      "bytes": 449020,
+      "sha256": "cb8dd7f7c50aa6836687aadeaa1722801495ba1edb8cc992bb9bc57a066300dc",
+      "sourceHashAfter": "cb8dd7f7c50aa6836687aadeaa1722801495ba1edb8cc992bb9bc57a066300dc"
+    },
+    {
+      "package": "/Game/Greek_island/Assets/Houses/SM_door_01",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Assets\\Houses\\SM_door_01.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Assets\\Houses\\SM_door_01.uasset",
+      "bytes": 164389,
+      "sha256": "5ec39fae5602b8b9b8f2c20386ce260a806ae01d21a21776a0272635df6ee478",
+      "sourceHashAfter": "5ec39fae5602b8b9b8f2c20386ce260a806ae01d21a21776a0272635df6ee478"
+    },
+    {
+      "package": "/Game/Greek_island/Materials/MI_wood",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Materials\\MI_wood.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Materials\\MI_wood.uasset",
+      "bytes": 16647,
+      "sha256": "209bfa2713360adafc908a2af21b736648aca06e61626fecb2e6b1410e979903",
+      "sourceHashAfter": "209bfa2713360adafc908a2af21b736648aca06e61626fecb2e6b1410e979903"
+    },
+    {
+      "package": "/Game/Greek_island/Materials/MI_wood_02",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Materials\\MI_wood_02.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Materials\\MI_wood_02.uasset",
+      "bytes": 105713,
+      "sha256": "de44e1cc48c0b57913973067cabd01336798c2c9b319105eb033ece242ddf570",
+      "sourceHashAfter": "de44e1cc48c0b57913973067cabd01336798c2c9b319105eb033ece242ddf570"
+    },
+    {
+      "package": "/Game/Greek_island/Materials/Master/M_Master_kit_detail",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Materials\\Master\\M_Master_kit_detail.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Materials\\Master\\M_Master_kit_detail.uasset",
+      "bytes": 40965,
+      "sha256": "d8fd793c634e6f57e3113e71ecb8cabb9a44e65ffddefdcdaed03c5e6c9816c7",
+      "sourceHashAfter": "d8fd793c634e6f57e3113e71ecb8cabb9a44e65ffddefdcdaed03c5e6c9816c7"
+    },
+    {
+      "package": "/Game/Greek_island/Textures/T_Mask/T_Black",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Textures\\T_Mask\\T_Black.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Textures\\T_Mask\\T_Black.uasset",
+      "bytes": 2888,
+      "sha256": "83d7d877f4a31fe5d330eda7449551877cad9a85d4210daa3edf85167a70aa43",
+      "sourceHashAfter": "83d7d877f4a31fe5d330eda7449551877cad9a85d4210daa3edf85167a70aa43"
+    },
+    {
+      "package": "/Game/Greek_island/Textures/T_Mask/T_grunge_mask",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Textures\\T_Mask\\T_grunge_mask.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Textures\\T_Mask\\T_grunge_mask.uasset",
+      "bytes": 10850790,
+      "sha256": "d4ab7fee6d26b269a24668ee771e7762eb347026e736842c120b96970259a347",
+      "sourceHashAfter": "d4ab7fee6d26b269a24668ee771e7762eb347026e736842c120b96970259a347"
+    },
+    {
+      "package": "/Game/Greek_island/Textures/T_Mask/T_white",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Textures\\T_Mask\\T_white.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Textures\\T_Mask\\T_white.uasset",
+      "bytes": 5362,
+      "sha256": "c6ee1745dd0b3834c6dbf775902206042297a04b5cf77f06f3df158d3879793b",
+      "sourceHashAfter": "c6ee1745dd0b3834c6dbf775902206042297a04b5cf77f06f3df158d3879793b"
+    },
+    {
+      "package": "/Game/Greek_island/Textures/T_large_bricks/T_bricks_2_AORM",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Textures\\T_large_bricks\\T_bricks_2_AORM.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Textures\\T_large_bricks\\T_bricks_2_AORM.uasset",
+      "bytes": 9594950,
+      "sha256": "671441ab903ecd07b3493ccaf811e9bbe59f5ea525d882013673ac2d0af760dc",
+      "sourceHashAfter": "671441ab903ecd07b3493ccaf811e9bbe59f5ea525d882013673ac2d0af760dc"
+    },
+    {
+      "package": "/Game/Greek_island/Textures/T_normals/T_default_normal",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Textures\\T_normals\\T_default_normal.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Textures\\T_normals\\T_default_normal.uasset",
+      "bytes": 7306,
+      "sha256": "59ac2c884828fa351bc99e426dd770373449e398f8b82a9b672cb3e7f1d0e7fc",
+      "sourceHashAfter": "59ac2c884828fa351bc99e426dd770373449e398f8b82a9b672cb3e7f1d0e7fc"
+    },
+    {
+      "package": "/Game/Greek_island/Textures/T_normals/T_detail_N",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Textures\\T_normals\\T_detail_N.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Textures\\T_normals\\T_detail_N.uasset",
+      "bytes": 23350655,
+      "sha256": "f7331d764f82858e654e28d0f561736457df8fc95f6b84a645c83f25b1204521",
+      "sourceHashAfter": "f7331d764f82858e654e28d0f561736457df8fc95f6b84a645c83f25b1204521"
+    },
+    {
+      "package": "/Game/Greek_island/Textures/T_wood/T_wood_02_D",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Textures\\T_wood\\T_wood_02_D.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Textures\\T_wood\\T_wood_02_D.uasset",
+      "bytes": 4965002,
+      "sha256": "a5260cfd548e16a107594e3a716918cc6443a596077e21ee6d464f90da3dbd40",
+      "sourceHashAfter": "a5260cfd548e16a107594e3a716918cc6443a596077e21ee6d464f90da3dbd40"
+    },
+    {
+      "package": "/Game/Greek_island/Textures/T_wood/T_wood_AORM",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Textures\\T_wood\\T_wood_AORM.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Textures\\T_wood\\T_wood_AORM.uasset",
+      "bytes": 4947568,
+      "sha256": "90e09e0675dffce388d48502cd5dcc4cab20956e5aab3b3b8f51100c7f3b93fc",
+      "sourceHashAfter": "90e09e0675dffce388d48502cd5dcc4cab20956e5aab3b3b8f51100c7f3b93fc"
+    },
+    {
+      "package": "/Game/Greek_island/Textures/T_wood/T_wood_D",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Textures\\T_wood\\T_wood_D.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Textures\\T_wood\\T_wood_D.uasset",
+      "bytes": 3770037,
+      "sha256": "0c3cb427a7e43232b08bf8ee44dc24986fb49de469d5d02267e1a416512fb093",
+      "sourceHashAfter": "0c3cb427a7e43232b08bf8ee44dc24986fb49de469d5d02267e1a416512fb093"
+    },
+    {
+      "package": "/Game/Greek_island/Textures/T_wood/T_wood_N",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Greek_island\\Textures\\T_wood\\T_wood_N.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Greek_island\\Textures\\T_wood\\T_wood_N.uasset",
+      "bytes": 6466650,
+      "sha256": "c04127006c58bbe7c550f7491cf1fe6cefe3391cf6314be43f45f562c3d3be97",
+      "sourceHashAfter": "c04127006c58bbe7c550f7491cf1fe6cefe3391cf6314be43f45f562c3d3be97"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Materials/M-Instances/MI-Leaves/MI-PalmLeaves-01",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Materials\\M-Instances\\MI-Leaves\\MI-PalmLeaves-01.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Materials\\M-Instances\\MI-Leaves\\MI-PalmLeaves-01.uasset",
+      "bytes": 86798,
+      "sha256": "1c052b2d94ac22a67b385b0a55cacc9f2cee373c0dd4c0bb93d811ff2ec97359",
+      "sourceHashAfter": "1c052b2d94ac22a67b385b0a55cacc9f2cee373c0dd4c0bb93d811ff2ec97359"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Materials/M-Instances/MI-Trunk/MI-Palm-01",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Materials\\M-Instances\\MI-Trunk\\MI-Palm-01.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Materials\\M-Instances\\MI-Trunk\\MI-Palm-01.uasset",
+      "bytes": 128783,
+      "sha256": "81daece6e60831de2e48956f5db66670e25ccaf38b2ddc0156b78ca36283d0ae",
+      "sourceHashAfter": "81daece6e60831de2e48956f5db66670e25ccaf38b2ddc0156b78ca36283d0ae"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Materials/M-Master/M-Leaves",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Materials\\M-Master\\M-Leaves.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Materials\\M-Master\\M-Leaves.uasset",
+      "bytes": 136575,
+      "sha256": "cce3dab28a70d640635d1b4a40da26df585ae53bde627376c749e22250e1bb74",
+      "sourceHashAfter": "cce3dab28a70d640635d1b4a40da26df585ae53bde627376c749e22250e1bb74"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Materials/M-Master/M-Trunk",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Materials\\M-Master\\M-Trunk.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Materials\\M-Master\\M-Trunk.uasset",
+      "bytes": 143394,
+      "sha256": "0b66afc681c088d311ab84d81a03d24d55123d35f81ed0da9c1b7de20af2b965",
+      "sourceHashAfter": "0b66afc681c088d311ab84d81a03d24d55123d35f81ed0da9c1b7de20af2b965"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Meshes/SM-Palm/SM-Palm-01",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Meshes\\SM-Palm\\SM-Palm-01.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Meshes\\SM-Palm\\SM-Palm-01.uasset",
+      "bytes": 360524,
+      "sha256": "8612b947dc8452cdcc3e4236ef2efed109ec910b6eaa3b45a5a94b9a2c611148",
+      "sourceHashAfter": "8612b947dc8452cdcc3e4236ef2efed109ec910b6eaa3b45a5a94b9a2c611148"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Textures/A-Blank",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Textures\\A-Blank.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Textures\\A-Blank.uasset",
+      "bytes": 4951,
+      "sha256": "6ecb286b999646f7ade34afd999b094402598ebd2d87c4bad81c05a902353b40",
+      "sourceHashAfter": "6ecb286b999646f7ade34afd999b094402598ebd2d87c4bad81c05a902353b40"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Textures/N-Blank",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Textures\\N-Blank.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Textures\\N-Blank.uasset",
+      "bytes": 5273,
+      "sha256": "06007b8994b7e5d51f8ae544801f341c90ac81ba00d02a17b737228e17388064",
+      "sourceHashAfter": "06007b8994b7e5d51f8ae544801f341c90ac81ba00d02a17b737228e17388064"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Textures/T-Albedo/A-Palm-01",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Textures\\T-Albedo\\A-Palm-01.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Textures\\T-Albedo\\A-Palm-01.uasset",
+      "bytes": 5277323,
+      "sha256": "d72117c9bab9cd05acc0882d923e1fe2f233770b2aa569f97204cbe6836b8caa",
+      "sourceHashAfter": "d72117c9bab9cd05acc0882d923e1fe2f233770b2aa569f97204cbe6836b8caa"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Textures/T-Alpha/AL-Birch-02",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Textures\\T-Alpha\\AL-Birch-02.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Textures\\T-Alpha\\AL-Birch-02.uasset",
+      "bytes": 55482,
+      "sha256": "0ec9b29617cd4f07dfc26b4a2345a42e11d5bfe41b42652d4e61f89c6ce01302",
+      "sourceHashAfter": "0ec9b29617cd4f07dfc26b4a2345a42e11d5bfe41b42652d4e61f89c6ce01302"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Textures/T-Alpha/AL-Noise-02",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Textures\\T-Alpha\\AL-Noise-02.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Textures\\T-Alpha\\AL-Noise-02.uasset",
+      "bytes": 2155749,
+      "sha256": "45ac470de7404ae9d4176057ddc9d1ff9807ed0df1ce53876475f28de72e28ee",
+      "sourceHashAfter": "45ac470de7404ae9d4176057ddc9d1ff9807ed0df1ce53876475f28de72e28ee"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Textures/T-Alpha/AL-Palm-01",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Textures\\T-Alpha\\AL-Palm-01.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Textures\\T-Alpha\\AL-Palm-01.uasset",
+      "bytes": 65504,
+      "sha256": "d32afcab7800dc6d298a8f47c35c46e5fdcfaacbc3f869ee8e433e3197fe64be",
+      "sourceHashAfter": "d32afcab7800dc6d298a8f47c35c46e5fdcfaacbc3f869ee8e433e3197fe64be"
+    },
+    {
+      "package": "/Game/Kobo_Nature/Textures/T-Normal/N-Palm-01",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Kobo_Nature\\Textures\\T-Normal\\N-Palm-01.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\Kobo_Nature\\Textures\\T-Normal\\N-Palm-01.uasset",
+      "bytes": 5233469,
+      "sha256": "735f6ffe03c9767ec808c4afa59b1e4350296503badef0deaa3046471614d29f",
+      "sourceHashAfter": "735f6ffe03c9767ec808c4afa59b1e4350296503badef0deaa3046471614d29f"
+    },
+    {
+      "package": "/Game/PN_Banana/Materials/MA_Banana",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\PN_Banana\\Materials\\MA_Banana.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\PN_Banana\\Materials\\MA_Banana.uasset",
+      "bytes": 218375,
+      "sha256": "0240b083d89292ef23aa87cde8146f651a907d25adc03599c1ca0fe9a27456fa",
+      "sourceHashAfter": "0240b083d89292ef23aa87cde8146f651a907d25adc03599c1ca0fe9a27456fa"
+    },
+    {
+      "package": "/Game/PN_Banana/Materials/Material_Instances/small/MI_Banana_01_01",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\PN_Banana\\Materials\\Material_Instances\\small\\MI_Banana_01_01.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\PN_Banana\\Materials\\Material_Instances\\small\\MI_Banana_01_01.uasset",
+      "bytes": 165629,
+      "sha256": "632134c7ef1abb68376a4ef5b02d0cd5d20605517bf3759497b1031a38cda587",
+      "sourceHashAfter": "632134c7ef1abb68376a4ef5b02d0cd5d20605517bf3759497b1031a38cda587"
+    },
+    {
+      "package": "/Game/PN_Banana/Meshes/plants/banana_01_01",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\PN_Banana\\Meshes\\plants\\banana_01_01.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\PN_Banana\\Meshes\\plants\\banana_01_01.uasset",
+      "bytes": 272683,
+      "sha256": "7bdadaba74b6bd77b1540d3b7f3d9935015c9b276a8b6d27a4a25f5f8d6c695a",
+      "sourceHashAfter": "7bdadaba74b6bd77b1540d3b7f3d9935015c9b276a8b6d27a4a25f5f8d6c695a"
+    },
+    {
+      "package": "/Game/PN_Banana/Textures/PivotPainter/banana_01_01_PIV",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\PN_Banana\\Textures\\PivotPainter\\banana_01_01_PIV.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\PN_Banana\\Textures\\PivotPainter\\banana_01_01_PIV.uasset",
+      "bytes": 3270,
+      "sha256": "1b38118c4f692ea12c8671b8dba723d234fc97cb0c247c517de5276384b496b2",
+      "sourceHashAfter": "1b38118c4f692ea12c8671b8dba723d234fc97cb0c247c517de5276384b496b2"
+    },
+    {
+      "package": "/Game/PN_Banana/Textures/PivotPainter/banana_01_01_VEC",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\PN_Banana\\Textures\\PivotPainter\\banana_01_01_VEC.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\PN_Banana\\Textures\\PivotPainter\\banana_01_01_VEC.uasset",
+      "bytes": 3336,
+      "sha256": "72bb00e07ee316ec99e515bcae0606c7127b39a658a1542d68428143f93e7296",
+      "sourceHashAfter": "72bb00e07ee316ec99e515bcae0606c7127b39a658a1542d68428143f93e7296"
+    },
+    {
+      "package": "/Game/RPGEnvironmentVFX/Essentials/Mesh/Materials/M_DemoCauldron",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\RPGEnvironmentVFX\\Essentials\\Mesh\\Materials\\M_DemoCauldron.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\RPGEnvironmentVFX\\Essentials\\Mesh\\Materials\\M_DemoCauldron.uasset",
+      "bytes": 92066,
+      "sha256": "b66001023691e1fce1ae684f057b0f1b1a92be73d525297bd7ba7542eb2a0bc1",
+      "sourceHashAfter": "b66001023691e1fce1ae684f057b0f1b1a92be73d525297bd7ba7542eb2a0bc1"
+    },
+    {
+      "package": "/Game/RPGEnvironmentVFX/Essentials/Mesh/Materials/M_DemoCauldronLiquid",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\RPGEnvironmentVFX\\Essentials\\Mesh\\Materials\\M_DemoCauldronLiquid.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\RPGEnvironmentVFX\\Essentials\\Mesh\\Materials\\M_DemoCauldronLiquid.uasset",
+      "bytes": 95163,
+      "sha256": "5a100510214a260356d49d89c61eb68d705d4d9560c50f1bd59b2fee63099dc1",
+      "sourceHashAfter": "5a100510214a260356d49d89c61eb68d705d4d9560c50f1bd59b2fee63099dc1"
+    },
+    {
+      "package": "/Game/RPGEnvironmentVFX/Essentials/Mesh/Mesh/SM_DemoCauldron",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\RPGEnvironmentVFX\\Essentials\\Mesh\\Mesh\\SM_DemoCauldron.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\RPGEnvironmentVFX\\Essentials\\Mesh\\Mesh\\SM_DemoCauldron.uasset",
+      "bytes": 416019,
+      "sha256": "d0100a3d20cb704fc46e7749bd8e8dc5b9e459dc7e23b1af8845158cc443aa99",
+      "sourceHashAfter": "d0100a3d20cb704fc46e7749bd8e8dc5b9e459dc7e23b1af8845158cc443aa99"
+    },
+    {
+      "package": "/Game/RPGEnvironmentVFX/Essentials/Textures/T_Caustics",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\RPGEnvironmentVFX\\Essentials\\Textures\\T_Caustics.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\RPGEnvironmentVFX\\Essentials\\Textures\\T_Caustics.uasset",
+      "bytes": 239329,
+      "sha256": "72524310afbd02004fa6bf45ffc0ad0859b859e41050791fe4613ef0ba21bd92",
+      "sourceHashAfter": "72524310afbd02004fa6bf45ffc0ad0859b859e41050791fe4613ef0ba21bd92"
+    },
+    {
+      "package": "/Game/UltimateFarming/Materials/MI_Bark_02",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Materials\\MI_Bark_02.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Materials\\MI_Bark_02.uasset",
+      "bytes": 19399,
+      "sha256": "7ed305291006d150f5dddcb3042f4156a0b2e303eee3125f2889324dc614e852",
+      "sourceHashAfter": "7ed305291006d150f5dddcb3042f4156a0b2e303eee3125f2889324dc614e852"
+    },
+    {
+      "package": "/Game/UltimateFarming/Materials/MI_Cotton_Fruit",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Materials\\MI_Cotton_Fruit.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Materials\\MI_Cotton_Fruit.uasset",
+      "bytes": 18128,
+      "sha256": "a8939f29fbdff728d04e991d2c8336ab3b4306c0a3457a879561c26f1287f753",
+      "sourceHashAfter": "a8939f29fbdff728d04e991d2c8336ab3b4306c0a3457a879561c26f1287f753"
+    },
+    {
+      "package": "/Game/UltimateFarming/Materials/MI_Cotton_Leafs_B",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Materials\\MI_Cotton_Leafs_B.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Materials\\MI_Cotton_Leafs_B.uasset",
+      "bytes": 18433,
+      "sha256": "eaa345232bbaaa39972f84583a90d48ca8a80202889e47f16cae43e97ddc0612",
+      "sourceHashAfter": "eaa345232bbaaa39972f84583a90d48ca8a80202889e47f16cae43e97ddc0612"
+    },
+    {
+      "package": "/Game/UltimateFarming/Materials/MasterMaterials/M_Foliage",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Materials\\MasterMaterials\\M_Foliage.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Materials\\MasterMaterials\\M_Foliage.uasset",
+      "bytes": 21354,
+      "sha256": "5d22b50c8f23b0811cd69960e7d9c356625c2741671d6ffe622630dd67b83676",
+      "sourceHashAfter": "5d22b50c8f23b0811cd69960e7d9c356625c2741671d6ffe622630dd67b83676"
+    },
+    {
+      "package": "/Game/UltimateFarming/Materials/MasterMaterials/M_Fruits",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Materials\\MasterMaterials\\M_Fruits.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Materials\\MasterMaterials\\M_Fruits.uasset",
+      "bytes": 39165,
+      "sha256": "efc9d3e01c5f11743f8071e22321cee4c13f56e9ca55c21e27f6f36612257e3c",
+      "sourceHashAfter": "efc9d3e01c5f11743f8071e22321cee4c13f56e9ca55c21e27f6f36612257e3c"
+    },
+    {
+      "package": "/Game/UltimateFarming/Materials/MasterMaterials/M_Glass",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Materials\\MasterMaterials\\M_Glass.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Materials\\MasterMaterials\\M_Glass.uasset",
+      "bytes": 10729,
+      "sha256": "610f0101c6cb3226dacf3f13a5490b9adcc7609ca06d52900f8dedf95243658e",
+      "sourceHashAfter": "610f0101c6cb3226dacf3f13a5490b9adcc7609ca06d52900f8dedf95243658e"
+    },
+    {
+      "package": "/Game/UltimateFarming/Meshes/SM_Cotton_A",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Meshes\\SM_Cotton_A.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Meshes\\SM_Cotton_A.uasset",
+      "bytes": 320151,
+      "sha256": "050d823a314f8f6cca6a5fc945f852dcd1a82eab4c33d9cbfed275c2f1b09d1a",
+      "sourceHashAfter": "050d823a314f8f6cca6a5fc945f852dcd1a82eab4c33d9cbfed275c2f1b09d1a"
+    },
+    {
+      "package": "/Game/UltimateFarming/Meshes/SM_Cotton_A_Harvested",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Meshes\\SM_Cotton_A_Harvested.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Meshes\\SM_Cotton_A_Harvested.uasset",
+      "bytes": 139878,
+      "sha256": "df6aafdfbbcd239568f3ab7f90c488a438a009b961881bb42b5e0935a19e4d8b",
+      "sourceHashAfter": "df6aafdfbbcd239568f3ab7f90c488a438a009b961881bb42b5e0935a19e4d8b"
+    },
+    {
+      "package": "/Game/UltimateFarming/Textures/T_Atlas_07_Basecolor",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Textures\\T_Atlas_07_Basecolor.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Textures\\T_Atlas_07_Basecolor.uasset",
+      "bytes": 13051521,
+      "sha256": "11b7880209a1662617cfe1651d814780ebfcbc45a13b85b53893c485b96b197d",
+      "sourceHashAfter": "11b7880209a1662617cfe1651d814780ebfcbc45a13b85b53893c485b96b197d"
+    },
+    {
+      "package": "/Game/UltimateFarming/Textures/T_Atlas_07_Normal",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Textures\\T_Atlas_07_Normal.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Textures\\T_Atlas_07_Normal.uasset",
+      "bytes": 17817204,
+      "sha256": "d59c6676d4cc9218fc48692f7198b41e5253318e45c3b53087bba95bcdee32bf",
+      "sourceHashAfter": "d59c6676d4cc9218fc48692f7198b41e5253318e45c3b53087bba95bcdee32bf"
+    },
+    {
+      "package": "/Game/UltimateFarming/Textures/T_Atlas_07_ORMSS",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Textures\\T_Atlas_07_ORMSS.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Textures\\T_Atlas_07_ORMSS.uasset",
+      "bytes": 24020855,
+      "sha256": "c56d39ccae882927d1d435d2a13a70f4ba12bcd1d542308f38688156553a1ebd",
+      "sourceHashAfter": "c56d39ccae882927d1d435d2a13a70f4ba12bcd1d542308f38688156553a1ebd"
+    },
+    {
+      "package": "/Game/UltimateFarming/Textures/T_Bark_01_Color",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Textures\\T_Bark_01_Color.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Textures\\T_Bark_01_Color.uasset",
+      "bytes": 12123979,
+      "sha256": "fdddc6703359a5fb0b6b1c10e3b89fb9c5a4994d334df277654011a2e5c33490",
+      "sourceHashAfter": "fdddc6703359a5fb0b6b1c10e3b89fb9c5a4994d334df277654011a2e5c33490"
+    },
+    {
+      "package": "/Game/UltimateFarming/Textures/T_Bark_01_Normal",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Textures\\T_Bark_01_Normal.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Textures\\T_Bark_01_Normal.uasset",
+      "bytes": 12008140,
+      "sha256": "65b3706bc8e40d0ffdcfcac561e86496474130890ec5d7418cd05137b107e83b",
+      "sourceHashAfter": "65b3706bc8e40d0ffdcfcac561e86496474130890ec5d7418cd05137b107e83b"
+    },
+    {
+      "package": "/Game/UltimateFarming/Textures/T_Body_ORMSS",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Textures\\T_Body_ORMSS.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Textures\\T_Body_ORMSS.uasset",
+      "bytes": 14278206,
+      "sha256": "f89053d9ba2af5de81b485755660dd054f068876b6c987de665aa3168290a68a",
+      "sourceHashAfter": "f89053d9ba2af5de81b485755660dd054f068876b6c987de665aa3168290a68a"
+    },
+    {
+      "package": "/Game/UltimateFarming/Textures/T_FruitAtlas_06_Basecolor",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Textures\\T_FruitAtlas_06_Basecolor.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Textures\\T_FruitAtlas_06_Basecolor.uasset",
+      "bytes": 13507813,
+      "sha256": "5ec538246f94490d422cea581d01d3541caf2315405161facfefe95c13b9854e",
+      "sourceHashAfter": "5ec538246f94490d422cea581d01d3541caf2315405161facfefe95c13b9854e"
+    },
+    {
+      "package": "/Game/UltimateFarming/Textures/T_FruitAtlas_06_Normal",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Textures\\T_FruitAtlas_06_Normal.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Textures\\T_FruitAtlas_06_Normal.uasset",
+      "bytes": 16615567,
+      "sha256": "ba60acf6f5a333a571fa7dfe10db10bc51067ed4e370651824f02a43918347a9",
+      "sourceHashAfter": "ba60acf6f5a333a571fa7dfe10db10bc51067ed4e370651824f02a43918347a9"
+    },
+    {
+      "package": "/Game/UltimateFarming/Textures/T_FruitAtlas_06_ORM",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\UltimateFarming\\Textures\\T_FruitAtlas_06_ORM.uasset",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\UltimateFarming\\Textures\\T_FruitAtlas_06_ORM.uasset",
+      "bytes": 5518850,
+      "sha256": "d93e06de5195347f068d2a56b05069c99d1cbc983b8db45a995176f05f9004f7",
+      "sourceHashAfter": "d93e06de5195347f068d2a56b05069c99d1cbc983b8db45a995176f05f9004f7"
+    },
+    {
+      "package": "asset-registry-cache",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Intermediate\\CachedAssetRegistry\\CachedAssetRegistry_0.ref",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Intermediate\\CachedAssetRegistry\\CachedAssetRegistry_0.ref",
+      "bytes": 58,
+      "sha256": "204323f303e48b4a1bd41e26f7ef8882f0bed896bb842d781236960b9f72b98d",
+      "sourceHashAfter": "204323f303e48b4a1bd41e26f7ef8882f0bed896bb842d781236960b9f72b98d"
+    },
+    {
+      "package": "asset-registry-cache",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Intermediate\\CachedAssetRegistry\\CachedAssetRegistry_0_336717CA4981DC8BEDFB689E8D4D1010.bin",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Intermediate\\CachedAssetRegistry\\CachedAssetRegistry_0_336717CA4981DC8BEDFB689E8D4D1010.bin",
+      "bytes": 141265612,
+      "sha256": "adcd4264dd1692bd107c855d832a53d9c9264dde778b3b6eda597c2f2d19e1a6",
+      "sourceHashAfter": "adcd4264dd1692bd107c855d832a53d9c9264dde778b3b6eda597c2f2d19e1a6"
+    },
+    {
+      "package": "asset-registry-cache",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Intermediate\\CachedAssetRegistryDiscovery.bin",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Intermediate\\CachedAssetRegistryDiscovery.bin",
+      "bytes": 313161,
+      "sha256": "a074ec6e3fc74a4cef73c7f8849a50ef4800c2bf04d084db57ca6636109cc4f1",
+      "sourceHashAfter": "a074ec6e3fc74a4cef73c7f8849a50ef4800c2bf04d084db57ca6636109cc4f1"
+    },
+    {
+      "package": "FANTASTIC_-_Village_Pack-52529a12/fbx/fbx_and_textures_fantast_extracted/2d/textures/T_leather.png",
+      "source": "C:\\ProgramData\\Epic\\EpicGamesLauncher\\VaultCache\\FabLibrary\\FANTASTIC_-_Village_Pack-52529a12\\fbx\\fbx_and_textures_fantast_extracted\\2d\\textures\\T_leather.png",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\AW01Imports\\T_leather.png",
+      "bytes": 493306,
+      "sha256": "e1c8591bd1d11955391d57ced2f1f52474ce31da6febc14a1f36aaaec35bf809",
+      "sourceHashAfter": "e1c8591bd1d11955391d57ced2f1f52474ce31da6febc14a1f36aaaec35bf809"
+    },
+    {
+      "package": "FANTASTIC_-_Village_Pack-52529a12/fbx/fbx_and_textures_fantast_extracted/3d/buildings/SM_BLD_balcony_v01_01.fbx",
+      "source": "C:\\ProgramData\\Epic\\EpicGamesLauncher\\VaultCache\\FabLibrary\\FANTASTIC_-_Village_Pack-52529a12\\fbx\\fbx_and_textures_fantast_extracted\\3d\\buildings\\SM_BLD_balcony_v01_01.fbx",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\AW01Imports\\SM_BLD_balcony_v01_01.fbx",
+      "bytes": 50940,
+      "sha256": "0ee07ecb26506c877eb2a535864299987f44ab5bc43662a546cc6f401709fda8",
+      "sourceHashAfter": "0ee07ecb26506c877eb2a535864299987f44ab5bc43662a546cc6f401709fda8"
+    },
+    {
+      "package": "CraftResourcesIcons/Textures/Tex_leather_01.png",
+      "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\CraftResourcesIcons\\Textures\\Tex_leather_01.png",
+      "staged": "C:\\DEV\\real of trade\\asset-workshop-preparation\\Content\\AW01Imports\\Tex_leather_01.png",
+      "bytes": 61470,
+      "sha256": "6e4a07a0857f606d52819f0d55aa7ac4eb226751b462f6e74fa0f7d027bfafbe",
+      "sourceHashAfter": "6e4a07a0857f606d52819f0d55aa7ac4eb226751b462f6e74fa0f7d027bfafbe"
+    }
+  ],
+  "commandlet": {
+    "exitCode": 0,
+    "phases": [
+      "discover",
+      "export"
+    ],
+    "renderer": "D3D12 hardware; -AllowCommandletRendering"
+  },
+  "recipeSha256": "3c5d8056df1aef6d3bc8490bd0c990a1f103efa5efd3b9411639a15820e7aee0"
+}

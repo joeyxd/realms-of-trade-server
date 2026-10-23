@@ -1,0 +1,192 @@
+{
+  "purpose": "Retained fixture/debug history; only the final accepted capture set is published.",
+  "attempts": [
+    {
+      "file": "evidence-2026-10-10T19-54-17-466Z.json",
+      "generatedAt": "2026-10-10T19:54:17.466Z",
+      "profiles": [
+        {
+          "name": "lantern-desktop-low-es",
+          "status": "failed",
+          "stage": "setup",
+          "error": "page.waitForFunction: Timeout 15000ms exceeded."
+        }
+      ],
+      "failures": [
+        {
+          "viewport": "lantern-desktop-low-es",
+          "stage": "setup",
+          "error": "page.waitForFunction: Timeout 15000ms exceeded."
+        }
+      ]
+    },
+    {
+      "file": "evidence-2026-10-10T19-55-16-929Z.json",
+      "generatedAt": "2026-10-10T19:55:16.929Z",
+      "profiles": [
+        {
+          "name": "lantern-desktop-low-es",
+          "status": "failed",
+          "stage": "switch-off",
+          "error": "Error: timed out waiting for server lantern deactivation"
+        },
+        {
+          "name": "lantern-desktop-high-en",
+          "status": "failed",
+          "stage": "switch-off",
+          "error": "Error: timed out waiting for server lantern deactivation"
+        }
+      ],
+      "failures": [
+        {
+          "viewport": "lantern-desktop-low-es",
+          "stage": "switch-off",
+          "error": "timed out waiting for server lantern deactivation"
+        },
+        {
+          "viewport": "lantern-desktop-high-en",
+          "stage": "switch-off",
+          "error": "timed out waiting for server lantern deactivation"
+        }
+      ]
+    },
+    {
+      "file": "evidence-2026-10-10T19-57-29-016Z.json",
+      "generatedAt": "2026-10-10T19:57:29.016Z",
+      "profiles": [
+        {
+          "name": "lantern-desktop-low-es",
+          "status": "failed",
+          "stage": "damage-and-repair",
+          "error": "Error: timed out waiting for paid lantern repair"
+        }
+      ],
+      "failures": [
+        {
+          "viewport": "lantern-desktop-low-es",
+          "stage": "damage-and-repair",
+          "error": "timed out waiting for paid lantern repair"
+        }
+      ]
+    },
+    {
+      "file": "evidence-2026-10-10T19-58-21-198Z.json",
+      "generatedAt": "2026-10-10T19:58:21.198Z",
+      "profiles": [
+        {
+          "name": "lantern-desktop-low-es",
+          "status": "passed",
+          "stage": "complete"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "file": "evidence-2026-10-10T19-59-04-722Z.json",
+      "generatedAt": "2026-10-10T19:59:04.722Z",
+      "profiles": [
+        {
+          "name": "lantern-desktop-low-es",
+          "status": "passed",
+          "stage": "complete"
+        },
+        {
+          "name": "lantern-desktop-high-en",
+          "status": "passed",
+          "stage": "complete"
+        },
+        {
+          "name": "lantern-mobile-low-en",
+          "status": "failed",
+          "stage": "switch-on",
+          "error": "locator.tap: Timeout 30000ms exceeded."
+        }
+      ],
+      "failures": [
+        {
+          "viewport": "lantern-mobile-low-en",
+          "stage": "switch-on",
+          "error": "locator.tap: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.naval-touch-actions [data-action=\"lantern\"]')\u001b[22m\n"
+        }
+      ]
+    },
+    {
+      "file": "evidence-2026-10-10T20-01-09-966Z.json",
+      "generatedAt": "2026-10-10T20:01:09.966Z",
+      "profiles": [
+        {
+          "name": "lantern-mobile-low-en",
+          "status": "passed",
+          "stage": "complete"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "file": "evidence-2026-10-10T20-01-26-506Z.json",
+      "generatedAt": "2026-10-10T20:01:26.506Z",
+      "profiles": [
+        {
+          "name": "lantern-desktop-low-es",
+          "status": "passed",
+          "stage": "complete"
+        },
+        {
+          "name": "lantern-desktop-high-en",
+          "status": "passed",
+          "stage": "complete"
+        },
+        {
+          "name": "lantern-mobile-low-en",
+          "status": "passed",
+          "stage": "complete"
+        },
+        {
+          "name": "lantern-mobile-high-es",
+          "status": "passed",
+          "stage": "complete"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "file": "evidence-2026-10-10T20-04-59-143Z.json",
+      "generatedAt": "2026-10-10T20:04:59.143Z",
+      "profiles": [
+        {
+          "name": "lantern-desktop-low-es",
+          "status": "failed",
+          "stage": "real-deck-context-v",
+          "error": "page.waitForFunction: Timeout 15000ms exceeded."
+        }
+      ],
+      "failures": [
+        {
+          "viewport": "lantern-desktop-low-es",
+          "stage": "real-deck-context-v",
+          "error": "page.waitForFunction: Timeout 15000ms exceeded."
+        }
+      ]
+    },
+    {
+      "file": "evidence-2026-10-10T20-05-48-998Z.json",
+      "generatedAt": "2026-10-10T20:05:48.998Z",
+      "profiles": [
+        {
+          "name": "lantern-desktop-low-es",
+          "status": "passed",
+          "stage": "complete"
+        }
+      ],
+      "failures": []
+    }
+  ],
+  "corrections": [
+    "Fixture player relocation was missing before first deck wait, and after the moving/rotating raft stimulus.",
+    "Fixture repair attempted an artificial raft pose rejected correctly by fitsLayout; restored the valid dock pose before repair.",
+    "Touch path now taps the visible context prompt rather than a naval-only action-row selector.",
+    "Final destruction stimulus acts on an explicitly relit lamp and waits for actual dead-part, public lit tuple, and light-source removal.",
+    "Product fixes: open cage makes emissive core visible; camera-center moved from V to Y because C belongs to stats.",
+    "Deck-active F/E/V probe initially refused overloaded seeded QA pack; unloading only that fixture allowed real embark/walk/V success."
+  ]
+}

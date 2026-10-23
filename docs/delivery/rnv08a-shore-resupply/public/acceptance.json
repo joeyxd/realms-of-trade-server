@@ -1,0 +1,56 @@
+{
+  "schema": "mn.freshwater.public.v1",
+  "startedAt": "2026-10-11T06:49:05.499Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "mode": "authenticated-disposable-profile",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "gameVersion": "0.6.0-alpha.50",
+  "protocolVersion": 55,
+  "canteenEnabled": true,
+  "checks": [
+    {
+      "name": "public_health_alpha50_protocol55_freshwater_ready_and_source_map_position",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.50",
+      "protocolVersion": 55,
+      "featureEnabled": true,
+      "sourceId": "salty-spring",
+      "sourceHeightPositive": true,
+      "realPlayers": 0
+    },
+    {
+      "name": "anonymous_freshwater_denied_without_receipt",
+      "pass": true
+    },
+    {
+      "name": "random_disposable_account_and_bounded_paid_recipe_profile_seed",
+      "pass": true
+    },
+    {
+      "name": "owner_private_freshwater_status_and_no_public_cargo_fields",
+      "pass": true,
+      "sourceId": "salty-spring",
+      "publicRaftCount": 1,
+      "privateBucketPresent": false
+    },
+    {
+      "name": "paid_canteen_refill_drink_food_replay_collision_and_durable_reconnect",
+      "pass": true,
+      "receiptCount": 5,
+      "water": 2,
+      "needsRetained": true
+    }
+  ],
+  "pass": true,
+  "scope": "bounded disposable authenticated receipt acceptance; optional canteen craft/refill/drink/food; no fill/gather, barrel construction, enemy encounter, or player relocation",
+  "sourceMapPosition": {
+    "y": 5.335283553727776,
+    "positive": true
+  },
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 5,
+    "receiptPolicy": "economic receipts intentionally retained"
+  },
+  "completedAt": "2026-10-11T06:49:25.639Z"
+}

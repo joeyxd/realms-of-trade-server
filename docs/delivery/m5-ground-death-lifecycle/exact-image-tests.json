@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-10-11T06:50:13.318683+00:00",
+  "revision": "cd2a97b0f08e37b17620feef3fa9efcb3baf0594",
+  "imageId": "sha256:46aea25c1066b6cdf7caaeeef9c40dbdee4519037f10d9c7255ac2cedc5b3ae4",
+  "runtimeSha256": {
+    "server/groundHostAuthority.mjs": "f23fbd21fe604fae4a429e44e5252d94c9eb4d801713b69c4be0966affb81aad",
+    "server/groundCurrentHydration.mjs": "f7fa1d9952dd660f02649b12e8eb037f8eccc8223fc787d3cd33fe5d7b76b201",
+    "server/groundPearlLifecycle.mjs": "390e6f49a808154320e7bfe13a53e1c2dc83456950f5c3e1f5dece55a5b02d56",
+    "server/groundPearlPickup.mjs": "8e2e3e51f16140dfa9c068133835e1dc44c94f71f5605f41c660aa672179cda1",
+    "server/groundPearlReturn.mjs": "60197ca8bb1ff42832509d8a0a806afb23315f6837601b6561593e3812fd293d",
+    "server/pearlGroundHydration.mjs": "8aa015070ecaafbe2dce772bab2b822aa854b06fe13f708c93bb1c0debb0440b",
+    "server/host.mjs": "d3d4b948bfa706d38ab1153f7a36da8fa6dfad092c031547f4e4978e377a3f32",
+    "server/groundDeathCapture.mjs": "14306d5ff27b6fcb1486c0c21d76aa5fbcdddddd5c3fca8662b560ff244ee8df",
+    "server/groundDeathDrop.mjs": "d1d408e8246922763807031a178fc590cd381aefb11deca5e1513b6fb6fa0aa8",
+    "server/groundProfileBaseline.mjs": "d49782812ed2ce35e60ee137c192a773cc9a21f1e222e145482fd70e31961176"
+  },
+  "counts": {
+    "tests": 63,
+    "pass": 63,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "tests": [
+    "tests/ground-current-hydration.test.mjs",
+    "tests/ground-pearl-pickup.test.mjs",
+    "tests/ground-pearl-return.test.mjs",
+    "tests/ground-family-boundary.test.mjs",
+    "tests/ground-host-authority.test.mjs",
+    "tests/ground-death-drop.test.mjs",
+    "tests/death-plan.test.mjs",
+    "tests/death-apply.test.mjs"
+  ],
+  "scope": "Exact production image, no network or live credentials; Current hydration, pearl and ordinary drop adapters, death plan/apply and common-family boundary tests. Memory fixtures do not establish SQL durability."
+}

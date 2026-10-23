@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "source": "src/render/palmGeometry.js",
+      "copy": "docs/art/source/palm-family-v1/palmGeometry.source.js",
+      "bytes": 7386,
+      "sha256": "74435f249bc75f6de9579df91a43f0ef741e0f16195397bbcd8f0ae403c64fad"
+    },
+    {
+      "source": "src/render/palmMaterials.js",
+      "copy": "docs/art/source/palm-family-v1/palmMaterials.source.js",
+      "bytes": 3485,
+      "sha256": "865f309396b06c1a91349787b3ca0c52efb01698c4b23c6eef323d22fc1b2319"
+    },
+    {
+      "source": "src/render/vegetation.js",
+      "copy": "docs/art/source/palm-family-v1/vegetation.source.js",
+      "bytes": 16489,
+      "sha256": "f84ce7adb0ba669f7dafe128c3db84b38cb940796f4b84e17c99c5b9a591fd6b"
+    },
+    {
+      "source": "src/render/lighting.js",
+      "copy": "docs/art/source/palm-family-v1/lighting.source.js",
+      "bytes": 9980,
+      "sha256": "df22f5598e25d3cf0716b9ee593d8f30f77194aabd234aa288c046a0f2c14d2e"
+    },
+    {
+      "source": "tools/prepare-palm-family.mjs",
+      "copy": "docs/art/source/palm-family-v1/prepare-palm-family.source.mjs",
+      "bytes": 11218,
+      "sha256": "bba1c702e03e864ea7ec579958f32c78c43b115cb8e104bf0da1fad5d1361e0a"
+    },
+    {
+      "source": "tools/prepare-palm-textures-v2.mjs",
+      "copy": "docs/art/source/palm-family-v1/prepare-palm-textures-v2.source.mjs",
+      "bytes": 12440,
+      "sha256": "d9330e8544258248ab6a3c2f237f09a4b138c6e883c452a7a1086f05353f4e5b"
+    }
+  ]
+}

@@ -1,0 +1,670 @@
+TAP version 13
+# Subtest: opt-in real WebSocket authority separates owner and character identity and denies unmapped or duplicate agents
+ok 1 - opt-in real WebSocket authority separates owner and character identity and denies unmapped or duplicate agents
+  ---
+  duration_ms: 483.964
+  type: 'test'
+  ...
+# Subtest: owner direct control and revoke dominate agent tasks; stale epoch and task revisions cannot return after resume
+ok 2 - owner direct control and revoke dominate agent tasks; stale epoch and task revisions cannot return after resume
+  ---
+  duration_ms: 611.0052
+  type: 'test'
+  ...
+# Subtest: agent authority gate requires authenticated identity resolution and a matching configured world
+ok 3 - agent authority gate requires authenticated identity resolution and a matching configured world
+  ---
+  duration_ms: 0.5221
+  type: 'test'
+  ...
+# Subtest: agent HELLO remains denied when the opt-in server gate is absent
+ok 4 - agent HELLO remains denied when the opt-in server gate is absent
+  ---
+  duration_ms: 201.9181
+  type: 'test'
+  ...
+# Subtest: partial agent admission failure closes the managed socket and leaves no entity or active grant
+ok 5 - partial agent admission failure closes the managed socket and leaves no entity or active grant
+  ---
+  duration_ms: 203.5244
+  type: 'test'
+  ...
+# Subtest: a missing body capability blocks body tasks and protected buttons; agent sockets cannot dispatch CMD or naval messages
+ok 6 - a missing body capability blocks body tasks and protected buttons; agent sockets cannot dispatch CMD or naval messages
+  ---
+  duration_ms: 422.9835
+  type: 'test'
+  ...
+# Subtest: PvE ATTACK carried from a late command is revalidated after merge if a live player enters range before the tick
+ok 7 - PvE ATTACK carried from a late command is revalidated after merge if a live player enters range before the tick
+  ---
+  duration_ms: 281.8888
+  type: 'test'
+  ...
+# Subtest: task and grant expiration are swept with the host timer stopped
+ok 8 - task and grant expiration are swept with the host timer stopped
+  ---
+  duration_ms: 5257.7003
+  type: 'test'
+  ...
+# Subtest: death invalidates an active grant, task, and queued input before any next tick
+ok 9 - death invalidates an active grant, task, and queued input before any next tick
+  ---
+  duration_ms: 247.1187
+  type: 'test'
+  ...
+# Subtest: disconnect retires its queue and a reentered agent receives a different grant
+ok 10 - disconnect retires its queue and a reentered agent receives a different grant
+  ---
+  duration_ms: 364.8779
+  type: 'test'
+  ...
+# Subtest: death archives sent uncertainty, cancels unsent work, and explicit reentry starts with fresh state and retired IDs
+ok 11 - death archives sent uncertainty, cancels unsent work, and explicit reentry starts with fresh state and retired IDs
+  ---
+  duration_ms: 601.7936
+  type: 'test'
+  ...
+# Subtest: zero HP snapshot halts once; death callback cannot allow a post-death decision
+ok 12 - zero HP snapshot halts once; death callback cannot allow a post-death decision
+  ---
+  duration_ms: 405.1075
+  type: 'test'
+  ...
+# Subtest: reentry enforces owner, session cap, expiry, and fresh handshake before ready
+ok 13 - reentry enforces owner, session cap, expiry, and fresh handshake before ready
+  ---
+  duration_ms: 607.5858
+  type: 'test'
+  ...
+# Subtest: failed fresh admission remains stopped and retains prior uncertainty without retry
+ok 14 - failed fresh admission remains stopped and retains prior uncertainty without retry
+  ---
+  duration_ms: 212.9822
+  type: 'test'
+  ...
+# Subtest: unexpected socket close preserves sent uncertainty, clears queues, and reentry ignores stale scope
+ok 15 - unexpected socket close preserves sent uncertainty, clears queues, and reentry ignores stale scope
+  ---
+  duration_ms: 527.8223
+  type: 'test'
+  ...
+# Subtest: self DESPAWN is a terminal disconnect and cannot leave a reusable session
+ok 16 - self DESPAWN is a terminal disconnect and cannot leave a reusable session
+  ---
+  duration_ms: 409.6364
+  type: 'test'
+  ...
+# Subtest: owner stop cancels a close-wait transition and a stop during admission cannot resume it
+ok 17 - owner stop cancels a close-wait transition and a stop during admission cannot resume it
+  ---
+  duration_ms: 658.9962
+  type: 'test'
+  ...
+# Subtest: real WebSocket reentry frees a normal slot and idle fresh body does not replay old movement
+ok 18 - real WebSocket reentry frees a normal slot and idle fresh body does not replay old movement
+  ---
+  duration_ms: 1283.9163
+  type: 'test'
+  ...
+# Subtest: durable mode defaults stopped, isolates owners and requires explicit CAS permission to connect
+ok 19 - durable mode defaults stopped, isolates owners and requires explicit CAS permission to connect
+  ---
+  duration_ms: 505.273
+  type: 'test'
+  ...
+# Subtest: stop clears work immediately before storage confirms; old grants and legacy resume cannot bypass it
+ok 20 - stop clears work immediately before storage confirms; old grants and legacy resume cannot bypass it
+  ---
+  duration_ms: 520.145
+  type: 'test'
+  ...
+# Subtest: confirmed stop hydrates on a new host and permission survives reentry without restoring old grants
+ok 21 - confirmed stop hydrates on a new host and permission survives reentry without restoring old grants
+  ---
+  duration_ms: 824.3648
+  type: 'test'
+  ...
+# Subtest: readiness failure keeps agent admission closed while ordinary gameplay and private projection stay healthy
+ok 22 - readiness failure keeps agent admission closed while ordinary gameplay and private projection stay healthy
+  ---
+  duration_ms: 251.4345
+  type: 'test'
+  ...
+# Subtest: an uncertain resume holds its slot, never enables late, and read recovery needs explicit owner resume
+ok 23 - an uncertain resume holds its slot, never enables late, and read recovery needs explicit owner resume
+  ---
+  duration_ms: 429.1081
+  type: 'test'
+  ...
+# Subtest: storage CAS conflict adopts evidence conservatively; routine reads do not pause a permitted agent
+ok 24 - storage CAS conflict adopts evidence conservatively; routine reads do not pause a permitted agent
+  ---
+  duration_ms: 395.3596
+  type: 'test'
+  ...
+# Subtest: owner disconnect while a resume saves cannot enable the character or receive a late private reply
+ok 25 - owner disconnect while a resume saves cannot enable the character or receive a late private reply
+  ---
+  duration_ms: 289.3384
+  type: 'test'
+  ...
+# Subtest: creation derives owner/world, survives reconnect, stays private and grants no profile or controller
+ok 26 - creation derives owner/world, survives reconnect, stays private and grants no profile or controller
+  ---
+  duration_ms: 588.1762
+  type: 'test'
+  ...
+# Subtest: missing readiness and opt-in keep creation unavailable without breaking gameplay
+ok 27 - missing readiness and opt-in keep creation unavailable without breaking gameplay
+  ---
+  duration_ms: 571.8356
+  type: 'test'
+  ...
+# Subtest: invalid creation cannot pass a model URL, spoofed owner, extra fields or unsafe preset
+ok 28 - invalid creation cannot pass a model URL, spoofed owner, extra fields or unsafe preset
+  ---
+  duration_ms: 295.4924
+  type: 'test'
+  ...
+# Subtest: uncertain create stays bounded; late commit is recovered after the original session closes
+ok 29 - uncertain create stays bounded; late commit is recovered after the original session closes
+  ---
+  duration_ms: 358.1518
+  type: 'test'
+  ...
+# Subtest: pairing status exposes a newly created stopped companion without admitting a controller
+ok 30 - pairing status exposes a newly created stopped companion without admitting a controller
+  ---
+  duration_ms: 469.2441
+  type: 'test'
+  ...
+# Subtest: pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+ok 31 - pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+  ---
+  duration_ms: 539.5814
+  type: 'test'
+  ...
+# Subtest: new code rotates pending code and active controller; owner disconnect invalidates pending code
+ok 32 - new code rotates pending code and active controller; owner disconnect invalidates pending code
+  ---
+  duration_ms: 417.7052
+  type: 'test'
+  ...
+# Subtest: expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+ok 33 - expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+  ---
+  duration_ms: 929.0623
+  type: 'test'
+  ...
+# Subtest: durable owner stop invalidates a pending code and active paired session immediately
+ok 34 - durable owner stop invalidates a pending code and active paired session immediately
+  ---
+  duration_ms: 462.3109
+  type: 'test'
+  ...
+# Subtest: owner disconnect during paired profile I/O prevents late admission and welcome
+ok 35 - owner disconnect during paired profile I/O prevents late admission and welcome
+  ---
+  duration_ms: 341.9098
+  type: 'test'
+  ...
+# Subtest: missing durable prerequisites keep pairing unavailable without blocking creation
+ok 36 - missing durable prerequisites keep pairing unavailable without blocking creation
+  ---
+  duration_ms: 250.802
+  type: 'test'
+  ...
+# Subtest: issue reports a missing creation and content changes invalidate claims and admitted sessions
+ok 37 - issue reports a missing creation and content changes invalidate claims and admitted sessions
+  ---
+  duration_ms: 419.2658
+  type: 'test'
+  ...
+# Subtest: load and owner commands use minimal payloads and revision from current presence
+ok 38 - load and owner commands use minimal payloads and revision from current presence
+  ---
+  duration_ms: 2.0325
+  type: 'test'
+  ...
+# Subtest: refresh coalesces behind mutations and sends one authoritative read afterward
+ok 39 - refresh coalesces behind mutations and sends one authoritative read afterward
+  ---
+  duration_ms: 0.2702
+  type: 'test'
+  ...
+# Subtest: strict result validation ignores stale or malformed receipts; recovery and unavailable cannot be commanded
+ok 40 - strict result validation ignores stale or malformed receipts; recovery and unavailable cannot be commanded
+  ---
+  duration_ms: 0.1998
+  type: 'test'
+  ...
+# Subtest: account changes, disconnects and timeout discard stale replies and keep actions closed
+ok 41 - account changes, disconnects and timeout discard stale replies and keep actions closed
+  ---
+  duration_ms: 28.9647
+  type: 'test'
+  ...
+# Subtest: owner creates a stopped companion, loads, and joins as a normal safe-zone entity
+ok 42 - owner creates a stopped companion, loads, and joins as a normal safe-zone entity
+  ---
+  duration_ms: 413.2849
+  type: 'test'
+  ...
+# Subtest: wait and follow are direct server orders; no identity or coordinate fields are accepted
+ok 43 - wait and follow are direct server orders; no identity or coordinate fields are accepted
+  ---
+  duration_ms: 447.4821
+  type: 'test'
+  ...
+# Subtest: presence is private to the authenticated owner; guests and another account cannot direct it
+ok 44 - presence is private to the authenticated owner; guests and another account cannot direct it
+  ---
+  duration_ms: 346.0405
+  type: 'test'
+  ...
+# Subtest: capacity and repeated joins cannot create a second body or consume another slot
+ok 45 - capacity and repeated joins cannot create a second body or consume another slot
+  ---
+  duration_ms: 623.2164
+  type: 'test'
+  ...
+# Subtest: hurt and danger deny retirement without healing or despawning the entity
+ok 46 - hurt and danger deny retirement without healing or despawning the entity
+  ---
+  duration_ms: 354.6899
+  type: 'test'
+  ...
+# Subtest: pairing and body presence exclude each other in both directions
+ok 47 - pairing and body presence exclude each other in both directions
+  ---
+  duration_ms: 374.8122
+  type: 'test'
+  ...
+# Subtest: a claimed live pairing token fences a concurrent host-body admission without a duplicate entity
+ok 48 - a claimed live pairing token fences a concurrent host-body admission without a duplicate entity
+  ---
+  duration_ms: 364.4523
+  type: 'test'
+  ...
+# Subtest: delayed join rechecks the owner anchor after profile I/O before creating the companion entity
+ok 49 - delayed join rechecks the owner anchor after profile I/O before creating the companion entity
+  ---
+  duration_ms: 273.9249
+  type: 'test'
+  ...
+# Subtest: owner disconnect makes the body walk back before healthy auto-retirement
+ok 50 - owner disconnect makes the body walk back before healthy auto-retirement
+  ---
+  duration_ms: 329.6023
+  type: 'test'
+  ...
+# Subtest: host restart with a wounded active body requires review and never respawns or heals it
+ok 51 - host restart with a wounded active body requires review and never respawns or heals it
+  ---
+  duration_ms: 850.6954
+  type: 'test'
+  ...
+# Subtest: the safe-port body earns no passive kill or zone rewards and does not synchronize checkpoints
+ok 52 - the safe-port body earns no passive kill or zone rewards and does not synchronize checkpoints
+  ---
+  duration_ms: 365.1122
+  type: 'test'
+  ...
+# Subtest: ambiguous admission timeout never publishes a late body or permits pairing around the gate
+ok 53 - ambiguous admission timeout never publishes a late body or permits pairing around the gate
+  ---
+  duration_ms: 398.6696
+  type: 'test'
+  ...
+# Subtest: a failed final resident profile write preserves its exact evidence and fences the host
+ok 54 - a failed final resident profile write preserves its exact evidence and fences the host
+  ---
+  duration_ms: 307.1626
+  type: 'test'
+  ...
+# Subtest: canonical Salty Shore spawn is a valid anchor across world seeds
+ok 55 - canonical Salty Shore spawn is a valid anchor across world seeds
+  ---
+  duration_ms: 1006.5587
+  type: 'test'
+  ...
+# Subtest: safe footprint has a hard radius and excludes all practice targets
+ok 56 - safe footprint has a hard radius and excludes all practice targets
+  ---
+  duration_ms: 234.1839
+  type: 'test'
+  ...
+# Subtest: footprint rejects lawless, dock, raft, and deep-water points
+ok 57 - footprint rejects lawless, dock, raft, and deep-water points
+  ---
+  duration_ms: 213.8604
+  type: 'test'
+  ...
+# Subtest: join and retirement anchor gate checks both the three-unit anchor and presence zone
+ok 58 - join and retirement anchor gate checks both the three-unit anchor and presence zone
+  ---
+  duration_ms: 199.2452
+  type: 'test'
+  ...
+# Subtest: retirement safety rejects nearby hostile enemies, active projectiles, and active AOEs
+ok 59 - retirement safety rejects nearby hostile enemies, active projectiles, and active AOEs
+  ---
+  duration_ms: 841.4662
+  type: 'test'
+  ...
+# Subtest: presence safety detects active burns and fire trails, then permits stopped or removed effects
+ok 60 - presence safety detects active burns and fire trails, then permits stopped or removed effects
+  ---
+  duration_ms: 422.7625
+  type: 'test'
+  ...
+# Subtest: settled anchor and retirement checks reject pending combat, movement bursts, buffers, and knockback
+ok 61 - settled anchor and retirement checks reject pending combat, movement bursts, buffers, and knockback
+  ---
+  duration_ms: 2224.6557
+  type: 'test'
+  ...
+# Subtest: retirement rejects dead or hurt bodies without restoring their health
+ok 62 - retirement rejects dead or hurt bodies without restoring their health
+  ---
+  duration_ms: 645.8098
+  type: 'test'
+  ...
+# Subtest: moving body can follow but cannot enter or retire through a settled anchor gate
+ok 63 - moving body can follow but cannot enter or retire through a settled anchor gate
+  ---
+  duration_ms: 202.8066
+  type: 'test'
+  ...
+# Subtest: advancePresence moves only one collision-stepped walking tick and leaves combat state untouched
+ok 64 - advancePresence moves only one collision-stepped walking tick and leaves combat state untouched
+  ---
+  duration_ms: 202.21
+  type: 'test'
+  ...
+# Subtest: advancePresence refuses a target or sampled route through the practice ring
+ok 65 - advancePresence refuses a target or sampled route through the practice ring
+  ---
+  duration_ms: 212.5171
+  type: 'test'
+  ...
+# Subtest: advancePresence reports static collision as blocked and keeps the body in place
+ok 66 - advancePresence reports static collision as blocked and keeps the body in place
+  ---
+  duration_ms: 208.4943
+  type: 'test'
+  ...
+# Subtest: advancePresence stops when the body is hurt or an incoming hazard is nearby
+ok 67 - advancePresence stops when the body is hurt or an incoming hazard is nearby
+  ---
+  duration_ms: 238.2333
+  type: 'test'
+  ...
+# Subtest: SQL039 is rerunnable, private, and readiness checks RLS, exact grants, FK, and definer configuration
+ok 68 - SQL039 is rerunnable, private, and readiness checks RLS, exact grants, FK, and definer configuration
+  ---
+  duration_ms: 1322.5886
+  type: 'test'
+  ...
+# Subtest: SQL039 admits one host run, closes only that run, and rejects stale, reused, or invalid transitions
+ok 69 - SQL039 admits one host run, closes only that run, and rejects stale, reused, or invalid transitions
+  ---
+  duration_ms: 1071.6637
+  type: 'test'
+  ...
+# Subtest: SQL039 serializes concurrent admission and restart leaves an active row requiring host recovery
+ok 70 - SQL039 serializes concurrent admission and restart leaves an active row requiring host recovery
+  ---
+  duration_ms: 904.777
+  type: 'test'
+  ...
+# Subtest: memory presence gate requires a fresh run to admit and the same run to retire
+ok 71 - memory presence gate requires a fresh run to admit and the same run to retire
+  ---
+  duration_ms: 1.9842
+  type: 'test'
+  ...
+# Subtest: memory presence gate serializes concurrent admission and rejects malformed values
+ok 72 - memory presence gate serializes concurrent admission and rejects malformed values
+  ---
+  duration_ms: 0.956
+  type: 'test'
+  ...
+# Subtest: Supabase presence methods call scoped RPCs, validate strict DTOs, and hide provider errors
+ok 73 - Supabase presence methods call scoped RPCs, validate strict DTOs, and hide provider errors
+  ---
+  duration_ms: 0.8704
+  type: 'test'
+  ...
+# Subtest: initial panel explains the anchor and safe-zone limits without issuing an automatic command
+ok 74 - initial panel explains the anchor and safe-zone limits without issuing an automatic command
+  ---
+  duration_ms: 1.4992
+  type: 'test'
+  ...
+# Subtest: enabled presence actions forward only operation names and disable during mutation
+ok 75 - enabled presence actions forward only operation names and disable during mutation
+  ---
+  duration_ms: 0.9597
+  type: 'test'
+  ...
+# Subtest: disabled host keeps the received state visible and recovery prevents every action in both languages
+ok 76 - disabled host keeps the received state visible and recovery prevents every action in both languages
+  ---
+  duration_ms: 0.3264
+  type: 'test'
+  ...
+# Subtest: refresh projects a validated owner response and stop uses the displayed epoch
+ok 77 - refresh projects a validated owner response and stop uses the displayed epoch
+  ---
+  duration_ms: 1.7233
+  type: 'test'
+  ...
+# Subtest: logout/account switch clears rows and late response cannot restore them
+ok 78 - logout/account switch clears rows and late response cannot restore them
+  ---
+  duration_ms: 0.1822
+  type: 'test'
+  ...
+# Subtest: logout and relogin to the same account cannot reuse the old gameplay binding
+ok 79 - logout and relogin to the same account cannot reuse the old gameplay binding
+  ---
+  duration_ms: 0.1379
+  type: 'test'
+  ...
+# Subtest: timeout is bounded and does not retry; transport close clears projection
+ok 80 - timeout is bounded and does not retry; transport close clears projection
+  ---
+  duration_ms: 22.0134
+  type: 'test'
+  ...
+# Subtest: account session mismatch and loss of joined state reject requests and late results
+ok 81 - account session mismatch and loss of joined state reject requests and late results
+  ---
+  duration_ms: 0.2115
+  type: 'test'
+  ...
+# Subtest: server errors use fixed safe copy and malformed projections are ignored
+ok 82 - server errors use fixed safe copy and malformed projections are ignored
+  ---
+  duration_ms: 0.1691
+  type: 'test'
+  ...
+# Subtest: stale stop retains a valid safe projection then deliberately refreshes
+ok 83 - stale stop retains a valid safe projection then deliberately refreshes
+  ---
+  duration_ms: 0.2544
+  type: 'test'
+  ...
+# Subtest: stale-control refresh queued before logout cannot target a later session
+ok 84 - stale-control refresh queued before logout cannot target a later session
+  ---
+  duration_ms: 0.1872
+  type: 'test'
+  ...
+# Subtest: offline provisioned companion can still be stopped with nullable baseline epoch
+ok 85 - offline provisioned companion can still be stopped with nullable baseline epoch
+  ---
+  duration_ms: 0.1451
+  type: 'test'
+  ...
+# Subtest: durable stop and resume use the confirmed revision and resume requires a durable stopped row
+ok 86 - durable stop and resume use the confirmed revision and resume requires a durable stopped row
+  ---
+  duration_ms: 1.0791
+  type: 'test'
+  ...
+# Subtest: durable projection rejects malformed heads and blocks mutations while pending or unavailable
+ok 87 - durable projection rejects malformed heads and blocks mutations while pending or unavailable
+  ---
+  duration_ms: 29.0724
+  type: 'test'
+  ...
+# Subtest: durable stop can reconcile an unconfirmed effective local latch and timeout requires an explicit read
+ok 88 - durable stop can reconcile an unconfirmed effective local latch and timeout requires an explicit read
+  ---
+  duration_ms: 14.9049
+  type: 'test'
+  ...
+# Subtest: durable conflict and authorization errors use bounded codes, while legacy rows stay stop-only
+ok 89 - durable conflict and authorization errors use bounded codes, while legacy rows stay stop-only
+  ---
+  duration_ms: 0.2499
+  type: 'test'
+  ...
+# Subtest: logout fences a pending durable resume and requires a fresh gameplay binding
+ok 90 - logout fences a pending durable resume and requires a fresh gameplay binding
+  ---
+  duration_ms: 0.1301
+  type: 'test'
+  ...
+# Subtest: well-shaped but unconfirmed durable acknowledgements are ignored until uncertain timeout
+ok 91 - well-shaped but unconfirmed durable acknowledgements are ignored until uncertain timeout
+  ---
+  duration_ms: 30.3677
+  type: 'test'
+  ...
+# Subtest: signed-out and offline snapshots discard companion rows and language changes update labels
+ok 92 - signed-out and offline snapshots discard companion rows and language changes update labels
+  ---
+  duration_ms: 1.5043
+  type: 'test'
+  ...
+# Subtest: stop is single-flight, keeps rows visible while pending, and never renders callback errors
+ok 93 - stop is single-flight, keeps rows visible while pending, and never renders callback errors
+  ---
+  duration_ms: 0.8897
+  type: 'test'
+  ...
+# Subtest: unconfigured or inactive rows have no stop action and refresh errors use fixed copy
+ok 94 - unconfigured or inactive rows have no stop action and refresh errors use fixed copy
+  ---
+  duration_ms: 0.3302
+  type: 'test'
+  ...
+# Subtest: panel visibility callback fires only on transitions and stopped is distinct from offline
+ok 95 - panel visibility callback fires only on transitions and stopped is distinct from offline
+  ---
+  duration_ms: 0.255
+  type: 'test'
+  ...
+# Subtest: ready has a truthful label, setup note persists, and known error codes use fixed localized copy
+ok 96 - ready has a truthful label, setup note persists, and known error codes use fixed localized copy
+  ---
+  duration_ms: 0.2456
+  type: 'test'
+  ...
+# Subtest: modal keyboard flow traps Tab at both ends while native traversal and Escape remain available
+ok 97 - modal keyboard flow traps Tab at both ends while native traversal and Escape remain available
+  ---
+  duration_ms: 0.9614
+  type: 'test'
+  ...
+# Subtest: dialog portals to the stage UI and the HUD toggle opens and closes it
+ok 98 - dialog portals to the stage UI and the HUD toggle opens and closes it
+  ---
+  duration_ms: 0.1583
+  type: 'test'
+  ...
+# Subtest: refresh focus moves to close before the refresh button becomes disabled
+ok 99 - refresh focus moves to close before the refresh button becomes disabled
+  ---
+  duration_ms: 0.1473
+  type: 'test'
+  ...
+# Subtest: durable stop is distinguished from the local latch and owner resume keeps focus and explains reconnection
+ok 100 - durable stop is distinguished from the local latch and owner resume keeps focus and explains reconnection
+  ---
+  duration_ms: 1.0806
+  type: 'test'
+  ...
+# Subtest: pending, unavailable, and malformed durable control never show stop or resume actions
+ok 101 - pending, unavailable, and malformed durable control never show stop or resume actions
+  ---
+  duration_ms: 0.303
+  type: 'test'
+  ...
+# Subtest: an unconfirmed local stop offers separate confirm-stop and allow-connection actions; revision zero is only the default
+ok 102 - an unconfirmed local stop offers separate confirm-stop and allow-connection actions; revision zero is only the default
+  ---
+  duration_ms: 0.4037
+  type: 'test'
+  ...
+# Subtest: UI normalization preserves pending operation and character for durable controls
+ok 103 - UI normalization preserves pending operation and character for durable controls
+  ---
+  duration_ms: 0.1349
+  type: 'test'
+  ...
+# Subtest: the main chain: the village, Brea, the archers, the sentinels and HELLFIRE, each one starting the next
+ok 104 - the main chain: the village, Brea, the archers, the sentinels and HELLFIRE, each one starting the next
+  ---
+  duration_ms: 368.1198
+  type: 'test'
+  ...
+# Subtest: co-op: a kill counts for everyone with a right to its XP
+ok 105 - co-op: a kill counts for everyone with a right to its XP
+  ---
+  duration_ms: 249.047
+  type: 'test'
+  ...
+# Subtest: Tía Perla's coral: offered after Brea, coral drops only while wanted, handed back in person
+ok 106 - Tía Perla's coral: offered after Brea, coral drops only while wanted, handed back in person
+  ---
+  duration_ms: 219.5518
+  type: 'test'
+  ...
+# Subtest: «Caza en La Caldera» repeats: 40 enemies of the trial, back to Brea, and again
+ok 107 - «Caza en La Caldera» repeats: 40 enemies of the trial, back to Brea, and again
+  ---
+  duration_ms: 238.4653
+  type: 'test'
+  ...
+# Subtest: Tía Perla's stall: potions and mystery crates for gold, selling pays it all, only next to her
+ok 108 - Tía Perla's stall: potions and mystery crates for gold, selling pays it all, only next to her
+  ---
+  duration_ms: 301.3145
+  type: 'test'
+  ...
+# Subtest: the beach tutorial's progress is kept in the profile (only forward)
+ok 109 - the beach tutorial's progress is kept in the profile (only forward)
+  ---
+  duration_ms: 199.2497
+  type: 'test'
+  ...
+# Subtest: M4.5: the Mareas' crates (gold sinks) open with their Marea, cost what they say and roll higher and rarer
+ok 110 - M4.5: the Mareas' crates (gold sinks) open with their Marea, cost what they say and roll higher and rarer
+  ---
+  duration_ms: 207.366
+  type: 'test'
+  ...
+1..110
+# tests 110
+# suites 0
+# pass 110
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 43151.6907

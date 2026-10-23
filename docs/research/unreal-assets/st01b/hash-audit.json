@@ -1,0 +1,27 @@
+{
+  "counts": {
+    "assetRegistryClassRows": 993,
+    "uniqueByteIdentities": 916,
+    "deduplicatedAliases": 77,
+    "sourceFilesMissing": 0,
+    "copyHashMismatches": 0,
+    "byProject": {
+      "ActionRPGMultiplayerStart": 7,
+      "MyProject": 756,
+      "SimpleMultiplayerSurvival": 230
+    },
+    "byCategory": {
+      "lightning": 12,
+      "magic": 96,
+      "fire": 28,
+      "ice": 9,
+      "other": 428,
+      "water": 22,
+      "weather": 34,
+      "trail": 81,
+      "impact": 118,
+      "smoke": 88
+    }
+  },
+  "issues": []
+}

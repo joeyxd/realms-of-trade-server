@@ -1,0 +1,29 @@
+{
+  "seed": 99282957,
+  "searchGridStep": 1.5,
+  "edgeSubstepMax": 0.15,
+  "movementAcceptance": "World + canStand + moveWithCollision; each accepted edge starts at its BFS node and must finish within 0.05 units of its destination",
+  "exploredReachableCells": 29449,
+  "targets": [
+    {
+      "id": "expansion-1",
+      "targetXZ": { "x": -154.14927829866735, "z": -114.5512985522207 },
+      "groundY": 6.69408803663362,
+      "pathReach": true,
+      "pathSteps": 171,
+      "reachableCell": { "x": -153.5, "z": -113, "groundY": 6.651353359222412 },
+      "distanceToAccessPoint": 1.6816924532275264,
+      "worstPositiveRisePerSubstep": 0.141189
+    },
+    {
+      "id": "expansion-2",
+      "targetXZ": { "x": -61.518289963229634, "z": 115.25840533340725 },
+      "groundY": 6.6940524798846885,
+      "pathReach": true,
+      "pathSteps": 109,
+      "reachableCell": { "x": -60.5, "z": 113.5, "groundY": 6.640480995178223 },
+      "distanceToAccessPoint": 2.0319704145900563,
+      "worstPositiveRisePerSubstep": 0.137722
+    }
+  ]
+}

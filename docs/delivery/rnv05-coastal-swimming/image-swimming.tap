@@ -1,0 +1,214 @@
+TAP version 13
+# Subtest: ordinary game admits the fixed helm and an observer sees the same moving raft and pilot
+ok 1 - ordinary game admits the fixed helm and an observer sees the same moving raft and pilot
+  ---
+  duration_ms: 3314.084838
+  type: 'test'
+  ...
+# Subtest: voyage owns its blueprint and cargo even through trusted economy helpers
+ok 2 - voyage owns its blueprint and cargo even through trusted economy helpers
+  ---
+  duration_ms: 1747.107035
+  type: 'test'
+  ...
+# Subtest: storage holds reject new naval input and transitions without advancing ACK, pose or profile
+ok 3 - storage holds reject new naval input and transitions without advancing ACK, pose or profile
+  ---
+  duration_ms: 1796.81231
+  type: 'test'
+  ...
+# Subtest: pause cancels a queued helm command and reconnect restores one conserved ship at its berth
+ok 4 - pause cancels a queued helm command and reconnect restores one conserved ship at its berth
+  ---
+  duration_ms: 2086.68388
+  type: 'test'
+  ...
+# Subtest: admitted voyage parks the same body ashore, resumes with a fresh epoch and conserves its cargo
+ok 5 - admitted voyage parks the same body ashore, resumes with a fresh epoch and conserves its cargo
+  ---
+  duration_ms: 6144.22925
+  type: 'test'
+  ...
+# Subtest: own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+ok 6 - own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+  ---
+  duration_ms: 46.32707
+  type: 'test'
+  ...
+# Subtest: water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+ok 7 - water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+  ---
+  duration_ms: 8.783838
+  type: 'test'
+  ...
+# Subtest: boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+ok 8 - boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+  ---
+  duration_ms: 45.238137
+  type: 'test'
+  ...
+# Subtest: water exit cannot reach an exposed edge more than 1.5 units from the owner
+ok 9 - water exit cannot reach an exposed edge more than 1.5 units from the owner
+  ---
+  duration_ms: 10.457933
+  type: 'test'
+  ...
+# Subtest: failed walker creation restores the swimmer and preserves drowning grace
+ok 10 - failed walker creation restores the swimmer and preserves drowning grace
+  ---
+  duration_ms: 11.463204
+  type: 'test'
+  ...
+# Subtest: restored voyage rebinds its ship revision and blueprint before the owner can swim
+ok 11 - restored voyage rebinds its ship revision and blueprint before the owner can swim
+  ---
+  duration_ms: 103.430959
+  type: 'test'
+  ...
+# Subtest: LocalServer receives swim and reboard commands and snapshots the parked and walking states
+ok 12 - LocalServer receives swim and reboard commands and snapshots the parked and walking states
+  ---
+  duration_ms: 2151.371492
+  type: 'test'
+  ...
+# Subtest: geometry rejects high-floor drops and edges blocked by railings
+ok 13 - geometry rejects high-floor drops and edges blocked by railings
+  ---
+  duration_ms: 7.660957
+  type: 'test'
+  ...
+# Subtest: boarding geometry only returns exposed base-deck points in deep water
+ok 14 - boarding geometry only returns exposed base-deck points in deep water
+  ---
+  duration_ms: 16.471246
+  type: 'test'
+  ...
+# Subtest: joined starter raft carries the player across its dock gangplank and back
+ok 15 - joined starter raft carries the player across its dock gangplank and back
+  ---
+  duration_ms: 2165.799313
+  type: 'test'
+  ...
+# Subtest: raft support is standable while nearby unsupported deep water is not
+ok 16 - raft support is standable while nearby unsupported deep water is not
+  ---
+  duration_ms: 5.823754
+  type: 'test'
+  ...
+# Subtest: wall, window, railing and closed door block body radius and a dash cannot tunnel through
+ok 17 - wall, window, railing and closed door block body radius and a dash cannot tunnel through
+  ---
+  duration_ms: 59.897568
+  type: 'test'
+  ...
+# Subtest: a closed door edge blocks correctly after rotating the raft
+ok 18 - a closed door edge blocks correctly after rotating the raft
+  ---
+  duration_ms: 3.747957
+  type: 'test'
+  ...
+# Subtest: a missing deck cell cannot be crossed by one large movement request
+ok 19 - a missing deck cell cannot be crossed by one large movement request
+  ---
+  duration_ms: 3.98408
+  type: 'test'
+  ...
+# Subtest: upper floor selection follows reconciled Y and ignores lower-level edge blockers
+ok 20 - upper floor selection follows reconciled Y and ignores lower-level edge blockers
+  ---
+  duration_ms: 8.447648
+  type: 'test'
+  ...
+# Subtest: stairs ascend and descend in each cardinal orientation between actual deck levels
+ok 21 - stairs ascend and descend in each cardinal orientation between actual deck levels
+  ---
+  duration_ms: 93.369172
+  type: 'test'
+  ...
+# Subtest: owner logout moves a guest off the removed raft and leaves the other owner raft active
+ok 22 - owner logout moves a guest off the removed raft and leaves the other owner raft active
+  ---
+  duration_ms: 2017.135815
+  type: 'test'
+  ...
+# Subtest: owner logout rescues an active Abordaje flight aimed at that raft before its stale landing
+ok 23 - owner logout rescues an active Abordaje flight aimed at that raft before its stale landing
+  ---
+  duration_ms: 1572.593524
+  type: 'test'
+  ...
+# Subtest: owner logout ignores a stale raft landing target while another skill is active
+ok 24 - owner logout ignores a stale raft landing target while another skill is active
+  ---
+  duration_ms: 2012.042218
+  type: 'test'
+  ...
+# Subtest: authoritative and predicted movement use the raft list before pending-command replay; stale lists cannot roll back
+ok 25 - authoritative and predicted movement use the raft list before pending-command replay; stale lists cannot roll back
+  ---
+  duration_ms: 2095.961297
+  type: 'test'
+  ...
+# Subtest: Abordaje leaps across unsupported water between upper raft floors at the same height on server and prediction
+ok 26 - Abordaje leaps across unsupported water between upper raft floors at the same height on server and prediction
+  ---
+  duration_ms: 47.960767
+  type: 'test'
+  ...
+# Subtest: Y-only reconciliation restores the upper deck and predicts the next command without horizontal error
+ok 27 - Y-only reconciliation restores the upper deck and predicts the next command without horizontal error
+  ---
+  duration_ms: 46.738354
+  type: 'test'
+  ...
+# Subtest: removing raft support while standing over deep water cannot leave the player floating
+ok 28 - removing raft support while standing over deep water cannot leave the player floating
+  ---
+  duration_ms: 6.539841
+  type: 'test'
+  ...
+# Subtest: beach entry swims at surface and returns to accessible shore; enemies and leap targets stay dry
+ok 29 - beach entry swims at surface and returns to accessible shore; enemies and leap targets stay dry
+  ---
+  duration_ms: 50.242219
+  type: 'test'
+  ...
+# Subtest: authoritative pack mass slows swimming and drains reserve faster; idle does not regenerate
+ok 30 - authoritative pack mass slows swimming and drains reserve faster; idle does not regenerate
+  ---
+  duration_ms: 68.70712
+  type: 'test'
+  ...
+# Subtest: exhaustion has grace, then pierces armor/invulnerability gradually and uses the existing death once
+ok 31 - exhaustion has grace, then pierces armor/invulnerability gradually and uses the existing death once
+  ---
+  duration_ms: 107.753708
+  type: 'test'
+  ...
+# Subtest: swimming blocks new dash/attacks/skills but retains hazards and Brasa; raft support is dry
+ok 32 - swimming blocks new dash/attacks/skills but retains hazards and Brasa; raft support is dry
+  ---
+  duration_ms: 13.381204
+  type: 'test'
+  ...
+# Subtest: reconciled reserve/load/drowning replay is bit-identical and remote state carries SWIM
+ok 33 - reconciled reserve/load/drowning replay is bit-identical and remote state carries SWIM
+  ---
+  duration_ms: 51.121119
+  type: 'test'
+  ...
+# Subtest: online standby filler continues drowning when a connected client sends no input
+ok 34 - online standby filler continues drowning when a connected client sends no input
+  ---
+  duration_ms: 2143.928297
+  type: 'test'
+  ...
+1..34
+# tests 34
+# suites 0
+# pass 34
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 39213.423337

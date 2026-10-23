@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-12T05:32:18.072Z",
+  "project": "Realms of trade",
+  "queryUrl": "https://supabase.com/dashboard/project/hdhkzcqzitfqwlyrzwiw/sql/31ab2534-4bda-4396-93d2-c9ca6b300a13",
+  "file": "server/migrations/036_gm_resource_roster.sql",
+  "sha256": "95dc9c69ef7316b9166786ee79142824a917a52d025ee02c2c00ceddf6474ce0",
+  "entireEditorTextMatchedFileAfterNewlineNormalization": true,
+  "result": "Success. No rows returned",
+  "screenshot": "sql036-success.jpg",
+  "contract": "live-sql-contract.json",
+  "scope": "Replaced function definitions and grants with tested SQL036; no resource or receipt row rewrites"
+}

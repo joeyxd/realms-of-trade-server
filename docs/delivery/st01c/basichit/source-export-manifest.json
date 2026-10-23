@@ -1,0 +1,314 @@
+{
+  "schema": "st01c-source-export-manifest/v1",
+  "system": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit",
+  "systemSpec": {
+    "file": "tools/unreal-niagara-probe/systems/ns-basichit.json",
+    "sha256": "955ab039b555d68ad37a044f8c7eea78e2008adec63014161c5dc8aeab2436f3"
+  },
+  "engine": "5.8.0-55116800+++UE5+Release-5.8",
+  "completed": true,
+  "runs": {
+    "source": "basichit-source",
+    "compiled": "basichit-compiled",
+    "nativeValues": "basichit-native-values.json",
+    "materialDefaults": "basichit-material-defaults2.json",
+    "closure": "basichit-closure01.json",
+    "location": ".scratch/unreal (git-ignored); T3D and HLSL stay there and are pinned by hash"
+  },
+  "exports": [
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit",
+      "class": "NiagaraSystem",
+      "ok": true,
+      "file": "system.t3d",
+      "bytes": 16183611,
+      "sha256": "9d563be84e24a7381cd7c83ffc364402c50ddc1337fa230c3bc6fa77d9e54969"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Basic_Flash.NE_Basic_Flash",
+      "class": "NiagaraEmitter",
+      "ok": true,
+      "file": "NE_Basic_Flash.t3d",
+      "bytes": 2190166,
+      "sha256": "f18da8c9d9f4176284864a03ed2563602f9ceb2cbcc22babc73a152da4fe26cf"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Flame_Basic_001.NE_Flame_Basic_001",
+      "class": "NiagaraEmitter",
+      "ok": true,
+      "file": "NE_Flame_Basic_001.t3d",
+      "bytes": 2235352,
+      "sha256": "ad5f1b9091dd6c4e671a0dc073f5dcb994eca34e6e3dc9075ac7d4279c9c0038"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_SimpleBurst.NE_SimpleBurst",
+      "class": "NiagaraEmitter",
+      "ok": true,
+      "file": "NE_SimpleBurst.t3d",
+      "bytes": 2289305,
+      "sha256": "4bfc824984d2709a50ee79d2e996179c601dfaaaa4cda2ca03fde839673b0e11"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Fireball.MI_Fireball",
+      "class": "MaterialInstanceConstant",
+      "ok": true,
+      "file": "MI_Fireball.t3d",
+      "bytes": 2133,
+      "sha256": "22130277aa4af0adcb002e5d4c90d442350625b776ba99da14ad3a3eb010c520"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1.MI_Flame_1",
+      "class": "MaterialInstanceConstant",
+      "ok": true,
+      "file": "MI_Flame_1.t3d",
+      "bytes": 2119,
+      "sha256": "411e20704b47fb670d0f99c4b9f91b170492dd780344e3c50e809726ab88291e"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Hit_1.MI_Hit_1",
+      "class": "MaterialInstanceConstant",
+      "ok": true,
+      "file": "MI_Hit_1.t3d",
+      "bytes": 2344,
+      "sha256": "797fe3ff4898aa4aa5f8c96c09ab5f64f64ae8af37a7c51f804553206060ab86"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Radial_2.MI_Radial_2",
+      "class": "MaterialInstanceConstant",
+      "ok": true,
+      "file": "MI_Radial_2.t3d",
+      "bytes": 1792,
+      "sha256": "2edfcbe21268cf9160742c13069b153f93195d08646004938296e12f5d69b943"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke.M_Smoke",
+      "class": "Material",
+      "ok": true,
+      "file": "M_Smoke.t3d",
+      "bytes": 8032,
+      "sha256": "2cf916c9a3c37b3e8319e6405e0a3abe888cd09e15a79ccb0e58f769e01a46ae"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Ground_Crack.M_Ground_Crack",
+      "class": "Material",
+      "ok": true,
+      "file": "M_Ground_Crack.t3d",
+      "bytes": 6839,
+      "sha256": "095b32c0fddbc2ae1bc28dec01c737680f3576a282a0efbb70d874a876cbb5ec"
+    },
+    {
+      "objectPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Master_RadialBeam.M_Master_RadialBeam",
+      "class": "Material",
+      "ok": true,
+      "file": "M_Master_RadialBeam.t3d",
+      "bytes": 7349,
+      "sha256": "d4e369e0afdd48280624787fb213ef52dd208088b156a14da48e14b89ed11626"
+    }
+  ],
+  "unsupportedPythonWrappers": [
+    {
+      "class": "NiagaraScriptSource",
+      "unavailable": "Python wrapper missing"
+    },
+    {
+      "class": "NiagaraGraph",
+      "unavailable": "Python wrapper missing"
+    },
+    {
+      "class": "NiagaraDataInterfaceCurve",
+      "unavailable": "Python wrapper missing"
+    },
+    {
+      "class": "NiagaraDataInterfaceVectorCurve",
+      "unavailable": "Python wrapper missing"
+    },
+    {
+      "class": "NiagaraDataInterfaceColorCurve",
+      "unavailable": "Python wrapper missing"
+    }
+  ],
+  "compiled": {
+    "reportSha256": "bf7dbf1828993ec89ec41a46e048f39a634d57f94250ff0f8a5039aad7868ea8",
+    "scriptCount": 14,
+    "settings": {
+      "system": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit",
+      "overrideScope": "in-memory comparison fixture only; originals not saved",
+      "warmupTime": 0,
+      "warmupTicks": 0,
+      "emitters": [
+        {
+          "name": "NE_Flame_Basic_001",
+          "originalDeterminism": false,
+          "originalSeed": 0,
+          "fixtureSeed": 6371
+        },
+        {
+          "name": "NE_Basic_Flash001",
+          "originalDeterminism": false,
+          "originalSeed": 0,
+          "fixtureSeed": 6372
+        },
+        {
+          "name": "NE_SimpleBurst",
+          "originalDeterminism": false,
+          "originalSeed": 0,
+          "fixtureSeed": 6373
+        }
+      ]
+    },
+    "vmReciprocalEstimates": [
+      {
+        "rate": 3,
+        "estimate": 0.333251953125
+      },
+      {
+        "rate": 10,
+        "estimate": 0.0999755859375
+      }
+    ],
+    "scripts": [
+      {
+        "order": 0,
+        "usage": "SystemSpawnScript",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:SystemSpawnScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "00-SystemSpawnScript.hlsl",
+        "bytes": 19086,
+        "sha256": "741751cba04ddf9e1263108afbc7650efb40fbe87d0208d8985158b5c099f1a8"
+      },
+      {
+        "order": 1,
+        "usage": "SystemUpdateScript",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:SystemUpdateScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "01-SystemUpdateScript.hlsl",
+        "bytes": 68574,
+        "sha256": "396a436f3098cb2d9aebc530a01ab66749b5bca6c6bae47d9fb2e26c1e9ae985"
+      },
+      {
+        "order": 2,
+        "usage": "ParticleSpawnScriptInterpolated",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Flame_Basic_001.SpawnScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "02-ParticleSpawnScriptInterpolated.hlsl",
+        "bytes": 65539,
+        "sha256": "8e0463fcad6217f00d3d5f02f05a5e7e12c4ba52c68662ff023718d62e7597e7"
+      },
+      {
+        "order": 3,
+        "usage": "ParticleUpdateScript",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Flame_Basic_001.UpdateScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "03-ParticleUpdateScript.hlsl",
+        "bytes": 28863,
+        "sha256": "104ae5eff280edd2c6a179028c80d7990460593bab1fcc8f413a267dd99dfb79"
+      },
+      {
+        "order": 4,
+        "usage": "EmitterSpawnScript",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Flame_Basic_001.EmitterSpawnScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "04-EmitterSpawnScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "order": 5,
+        "usage": "EmitterUpdateScript",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Flame_Basic_001.EmitterUpdateScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "05-EmitterUpdateScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "order": 6,
+        "usage": "ParticleSpawnScriptInterpolated",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Basic_Flash001_3.SpawnScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "06-ParticleSpawnScriptInterpolated.hlsl",
+        "bytes": 46744,
+        "sha256": "3cc4052f6bcadfc1684b20186347e2891160338fa5522b921a0ec8633c7a0384"
+      },
+      {
+        "order": 7,
+        "usage": "ParticleUpdateScript",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Basic_Flash001_3.UpdateScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "07-ParticleUpdateScript.hlsl",
+        "bytes": 27961,
+        "sha256": "7eb7cb31db3ffe028778921387b164400e895536c84341cf0f4d2664a68f1985"
+      },
+      {
+        "order": 8,
+        "usage": "EmitterSpawnScript",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Basic_Flash001_3.EmitterSpawnScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "08-EmitterSpawnScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "order": 9,
+        "usage": "EmitterUpdateScript",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_Basic_Flash001_3.EmitterUpdateScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "09-EmitterUpdateScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "order": 10,
+        "usage": "ParticleSpawnScriptInterpolated",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_SimpleBurst.SpawnScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "10-ParticleSpawnScriptInterpolated.hlsl",
+        "bytes": 88238,
+        "sha256": "4c3dca93808d50199bf0471e26ecac5d12af4c7692a4f8ee126b4a83f43df0bb"
+      },
+      {
+        "order": 11,
+        "usage": "ParticleUpdateScript",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_SimpleBurst.UpdateScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "11-ParticleUpdateScript.hlsl",
+        "bytes": 29129,
+        "sha256": "779de30d447b01b365d12c53783fd9b6efa15c9b8bfd3f00f991f324877460fd"
+      },
+      {
+        "order": 12,
+        "usage": "EmitterSpawnScript",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_SimpleBurst.EmitterSpawnScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "12-EmitterSpawnScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "order": 13,
+        "usage": "EmitterUpdateScript",
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit:NE_SimpleBurst.EmitterUpdateScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "13-EmitterUpdateScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "nativeValues": {
+    "sha256": "397a12792cd8426fc27d4aa68caec962fca1826fddf60de19bc48b021a261193",
+    "emitterHandleCount": 3,
+    "handleNames": [
+      "NE_Flame_Basic_001",
+      "NE_Basic_Flash001",
+      "NE_SimpleBurst"
+    ]
+  },
+  "materialDefaults": {
+    "sha256": "fc49812cc0714b93e4e3bc5d56b6d66232b10c9722ac90364c219dee856564c1"
+  },
+  "closure": {
+    "sha256": "3a2de67d8e209bc1b63b16f68f0b6c53135788f9f78f35379a5269c2f4e5a2f3"
+  },
+  "scope": "Source data only; does not prove simulation semantics or visual equivalence."
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "character-alpha-visual-review/v1",
+  "date": "2026-10-08",
+  "reviewer": "Codex root",
+  "method": "Direct inspection of generated originals and browser screenshots",
+  "status": "draft-reviewed",
+  "authorApproval": "pending",
+  "reviewed": [
+    "Both generated masters and blank-face bases",
+    "Every separately generated hair, facial, clothing and equipment source",
+    "Male and female default modular compositions",
+    "Close female face on checker background",
+    "Male alternate hair, blue eyes and beard composition",
+    "Mobile emulated layout, full figure and face views"
+  ],
+  "changes": [
+    "Regenerated blue eyes because v1 had no alpha-zero pixels",
+    "Regenerated beard because v1 had a floating jaw outline",
+    "Calibrated per-body source bounds and placement in the composer",
+    "Adjusted smile size and female shirt fit",
+    "Bound beard to the base silhouette during composition",
+    "Fixed full-figure canvas containment and face zoom",
+    "Used the generated harbor behind navy and brass panels"
+  ],
+  "limits": [
+    "Illustrated anime adventure style is closer to the supplied reference; exact identity and pixel-perfect correspondence are not established",
+    "Layer fit remains an art draft; sleeve edges and gloves need further refinement",
+    "One fixed view, limited variants, one nose and skin tone per base",
+    "No rigged 3D model, animation, game persistence or equipment authority is delivered by this PNG study",
+    "Model identifier was not reported or selectable by the integrated image generation tool"
+  ]
+}

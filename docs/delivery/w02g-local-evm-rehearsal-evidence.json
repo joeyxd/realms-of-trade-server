@@ -1,0 +1,470 @@
+{
+  "version": 1,
+  "cut": "W02g",
+  "generatedAt": "2026-10-08T21:44:17.524Z",
+  "status": "locally-verified",
+  "runtime": {
+    "node": "v24.14.0",
+    "platform": "win32",
+    "compiler": "0.8.37+commit.f401782d.Emscripten.clang",
+    "evmVersion": "cancun",
+    "chainId": 31337
+  },
+  "toolchain": {
+    "ethereumjsVm": "10.1.3",
+    "ethereumjsCommon": "10.1.3",
+    "ethereumjsUtil": "10.1.3",
+    "openzeppelin": "5.6.1",
+    "solc": "0.8.37",
+    "viem": "2.57.3",
+    "scopedOverride": {
+      "solc": {
+        "tmp": "0.2.7"
+      }
+    },
+    "installedWithIgnoreScripts": true,
+    "isolatedPackage": true,
+    "rootDependenciesChangedByThisCut": false
+  },
+  "verification": {
+    "command": "node --test tools/web3-evm-lab/reader-evm.test.mjs tests/web3-erc1155-reader.test.mjs tests/web3-edition-read-cli.test.mjs tests/web3-erc721-reader.test.mjs tests/web3-token-read-cli.test.mjs tests/web3-wallet-preflight.test.mjs",
+    "tests": 49,
+    "pass": 49,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "durationMs": 4512.4849,
+    "newEvmIntegration": 7,
+    "regressionW02def": 42,
+    "syntax": true,
+    "utf8NoBom": true,
+    "whitespace": true,
+    "localMarkdownLinks": true,
+    "compiledBytecodeExecuted": true,
+    "actualEvmLogsDecoded": true,
+    "historicalStateRoots": true,
+    "readStateRestoration": true,
+    "failedFixtureMessageRollback": true,
+    "minimalEnvCliProcesses": true,
+    "strictHashSelectors": true,
+    "audit": {
+      "command": "npm.cmd audit --omit=optional --json",
+      "scope": "tools/web3-evm-lab",
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "initialTmpAdvisory": "https://github.com/advisories/GHSA-7c78-jf6q-g5cm",
+      "remediation": "Scoped solc->tmp 0.2.7 override and lock, then final tests and audit"
+    }
+  },
+  "boundaries": {
+    "evmMessageExecution": true,
+    "syntheticBlockHashes": true,
+    "syntheticCanonicality": true,
+    "loopbackOnly": true,
+    "upstreamRpcCalls": 0,
+    "signedTransactions": false,
+    "transactionReceipts": false,
+    "paidGas": false,
+    "chainConsensus": false,
+    "finalityProof": false,
+    "providerEip1898Compatibility": false,
+    "publicContractsDeployed": false,
+    "publicTokensMinted": false,
+    "fullContractConformance": false,
+    "productionContracts": false,
+    "productPoliciesClosed": false,
+    "gamePermissionsChanged": false,
+    "sqlApplied": false,
+    "liveSupabase": false,
+    "realEnvReadOrModified": false,
+    "authorHostStarted": false,
+    "newUi": false,
+    "openSeaIndexing": false,
+    "payments": false,
+    "commitOrPush": false,
+    "deployed": false
+  },
+  "contracts": [
+    {
+      "kind": "erc721",
+      "fixtureAddress": "0x8f7a45ebde059392e46a46dcc14ab24681a961ea",
+      "runtimeBytes": 3991,
+      "runtimeSha256": "0b43a3776710b07816940bab9bb3e01c31c4b2b7ab3eb20b79b9ff93a391d4d6",
+      "source": "tools/web3-evm-lab/contracts/ReaderFixtures.sol"
+    },
+    {
+      "kind": "erc1155",
+      "fixtureAddress": "0x15452ec016c4dc8c549e7fe6ff4b26324ea8b7a4",
+      "runtimeBytes": 4381,
+      "runtimeSha256": "cc0fba7678c9debacbac1256e083375f2dd7050c2cd70562a0162bd68b69ce85",
+      "source": "tools/web3-evm-lab/contracts/ReaderFixtures.sol"
+    }
+  ],
+  "compiledImports": [
+    "@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+    "@openzeppelin/contracts/token/ERC1155/ERC1155.sol",
+    "@openzeppelin/contracts/token/ERC1155/IERC1155.sol",
+    "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol",
+    "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol",
+    "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Utils.sol",
+    "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+    "@openzeppelin/contracts/token/ERC721/IERC721.sol",
+    "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+    "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+    "@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+    "@openzeppelin/contracts/utils/Arrays.sol",
+    "@openzeppelin/contracts/utils/Bytes.sol",
+    "@openzeppelin/contracts/utils/Comparators.sol",
+    "@openzeppelin/contracts/utils/Context.sol",
+    "@openzeppelin/contracts/utils/Panic.sol",
+    "@openzeppelin/contracts/utils/SlotDerivation.sol",
+    "@openzeppelin/contracts/utils/StorageSlot.sol",
+    "@openzeppelin/contracts/utils/Strings.sol",
+    "@openzeppelin/contracts/utils/introspection/ERC165.sol",
+    "@openzeppelin/contracts/utils/introspection/IERC165.sol",
+    "@openzeppelin/contracts/utils/math/Math.sol",
+    "@openzeppelin/contracts/utils/math/SafeCast.sol",
+    "@openzeppelin/contracts/utils/math/SignedMath.sol"
+  ],
+  "dependencyIntegrity": [
+    {
+      "path": "node_modules/@adraffy/ens-normalize",
+      "version": "1.11.1",
+      "integrity": "sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ=="
+    },
+    {
+      "path": "node_modules/@ethereumjs/binarytree",
+      "version": "10.1.3",
+      "integrity": "sha512-XWHuNNVZVtSfr6/2UbAhCXf848s4rNKUuVKFNG6O18lz0anuaMiIADfNQJ5DOhOfflZVIPRvGWegDMoU6xRaBA=="
+    },
+    {
+      "path": "node_modules/@ethereumjs/block",
+      "version": "10.1.3",
+      "integrity": "sha512-6c0U1T1VMv44l7WXL6RWDiP26o/Cv53Z+9C07+5WJHNrYM7S2S/DsOCVog95Hhh0E9KCRjoCu3bzSsxQynu8Og=="
+    },
+    {
+      "path": "node_modules/@ethereumjs/common",
+      "version": "10.1.3",
+      "integrity": "sha512-ECWwbc4s8Ji7U0mkfZP6gIDy1FxXe0ZyVOTt0adkztPQRzX2DbH2ul7a83DSS8qYAiG6//vVXMkP60TyYOnv8Q=="
+    },
+    {
+      "path": "node_modules/@ethereumjs/evm",
+      "version": "10.1.3",
+      "integrity": "sha512-7C6oo3f1rvtsFAQOURcmEkyUTBTePBbQUgWTfzrual8kbb0R8053rY+PolvFDETfVSK/TrPzZFhFe5sgz+Clgw=="
+    },
+    {
+      "path": "node_modules/@ethereumjs/mpt",
+      "version": "10.1.3",
+      "integrity": "sha512-pN43KoH8V0afpIltMFJf0tSSpX9Xssp9LGAyamnYc93oe0r8bRafeizPWR9aDsS+WXSg/IWQscoZ3xTybQSYoA=="
+    },
+    {
+      "path": "node_modules/@ethereumjs/rlp",
+      "version": "10.1.3",
+      "integrity": "sha512-d795YWkN6O8EJh/PgJ2zZKCdBMl8OlqkuVQESoidH666gaFtUuJ01jDtiuqfyOqTNcTdGhHi8LkQv1WEZzvZZw=="
+    },
+    {
+      "path": "node_modules/@ethereumjs/statemanager",
+      "version": "10.1.3",
+      "integrity": "sha512-d56NBae8xjh/ZY+orqvIfE30WLHOn2okacUekbM9J7VZrokjxQ2800sb6K6srffoSekcgbHxIWFJ3r+81jzrrA=="
+    },
+    {
+      "path": "node_modules/@ethereumjs/tx",
+      "version": "10.1.3",
+      "integrity": "sha512-5uk9qB2MjyF4axL6GGPvYODe3uR/h6k36boDbvjH81WYFphw/JAIrI1thkWQX4BCyF8bi6suxORhi+vDc3lPlg=="
+    },
+    {
+      "path": "node_modules/@ethereumjs/util",
+      "version": "10.1.3",
+      "integrity": "sha512-PhezOVe4DFaC+QLIsnK/tiOaXjpjS2F9AH4Ez0EfWevFw9NWNSg95l7I0dWuHF0B7v9odm2Ijqwo0EnARXtUmA=="
+    },
+    {
+      "path": "node_modules/@ethereumjs/vm",
+      "version": "10.1.3",
+      "integrity": "sha512-tnhWnQOgA6AkgWTjDg2dcF11tlTV9eOq/VJdyzo06DwN7PzKHDEacI3tge+40Izqt9KqX16Nc37Agd8dqhDYMw=="
+    },
+    {
+      "path": "node_modules/@js-sdsl/ordered-map",
+      "version": "4.4.2",
+      "integrity": "sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw=="
+    },
+    {
+      "path": "node_modules/@noble/ciphers",
+      "version": "1.3.0",
+      "integrity": "sha512-2I0gnIVPtfnMw9ee9h1dJG7tp81+8Ob3OJb3Mv37rx5L40/b0i7djjCVvGOVqc9AEIQyvyu1i6ypKdFw8R8gQw=="
+    },
+    {
+      "path": "node_modules/@noble/curves",
+      "version": "2.4.0",
+      "integrity": "sha512-P4/62zrgfH33CneE3Dn4WhJVA22YUU0eR51wKIan4NVRvwsA0YnPTwWGpNbpuacSujmSFLvyzpyuR30+fbq2Ew=="
+    },
+    {
+      "path": "node_modules/@noble/hashes",
+      "version": "2.4.0",
+      "integrity": "sha512-X5XaVWZIBCT7HHZGm5I7ZQXDwLG+bGXuSrMQAW+7Zvl87h1kmc1ZB1VSRJcpUfoUrGQp4Fkoxm5kZ+Ms+aW+eA=="
+    },
+    {
+      "path": "node_modules/@openzeppelin/contracts",
+      "version": "5.6.1",
+      "integrity": "sha512-Ly6SlsVJ3mj+b18W3R8gNufB7dTICT105fJhodGAGgyC2oqnBAhqSiNDJ8V8DLY05cCz81GLI0CU5vNYA1EC/w=="
+    },
+    {
+      "path": "node_modules/@scure/base",
+      "version": "1.2.6",
+      "integrity": "sha512-g/nm5FgUa//MCj1gV09zTJTaM6KBAHqLN907YVQqf7zC49+DcO4B1so4ZX07Ef10Twr6nuqYEH9GEggFXA4Fmg=="
+    },
+    {
+      "path": "node_modules/@scure/bip32",
+      "version": "1.7.0",
+      "integrity": "sha512-E4FFX/N3f4B80AKWp5dP6ow+flD1LQZo/w8UnLGYZO674jS6YnYeepycOOksv+vLPSpgN35wgKgy+ybfTb2SMw=="
+    },
+    {
+      "path": "node_modules/@scure/bip32/node_modules/@noble/curves",
+      "version": "1.9.7",
+      "integrity": "sha512-gbKGcRUYIjA3/zCCNaWDciTMFI0dCkvou3TL8Zmy5Nc7sJ47a0jtOeZoTaMxkuqRo9cRhjOdZJXegxYE5FN/xw=="
+    },
+    {
+      "path": "node_modules/@scure/bip32/node_modules/@noble/hashes",
+      "version": "1.8.0",
+      "integrity": "sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A=="
+    },
+    {
+      "path": "node_modules/@scure/bip39",
+      "version": "1.6.0",
+      "integrity": "sha512-+lF0BbLiJNwVlev4eKelw1WWLaiKXw7sSl8T6FvBlWkdX+94aGJ4o8XjUdlyhTCjd8c+B3KT3JfS8P0bLRNU6A=="
+    },
+    {
+      "path": "node_modules/@scure/bip39/node_modules/@noble/hashes",
+      "version": "1.8.0",
+      "integrity": "sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A=="
+    },
+    {
+      "path": "node_modules/abitype",
+      "version": "1.2.3",
+      "integrity": "sha512-Ofer5QUnuUdTFsBRwARMoWKOH1ND5ehwYhJ3OJ/BQO+StkwQjHw0XyVh4vDttzHB7QOFhPHa/o413PJ82gU/Tg=="
+    },
+    {
+      "path": "node_modules/command-exists",
+      "version": "1.2.9",
+      "integrity": "sha512-LTQ/SGc+s0Xc0Fu5WaKnR0YiygZkm9eKFvyS+fRsU7/ZWFF8ykFM6Pc9aCVf1+xasOOZpO3BAVgVrKvsqKHV7w=="
+    },
+    {
+      "path": "node_modules/commander",
+      "version": "8.3.0",
+      "integrity": "sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww=="
+    },
+    {
+      "path": "node_modules/debug",
+      "version": "4.4.3",
+      "integrity": "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA=="
+    },
+    {
+      "path": "node_modules/eventemitter3",
+      "version": "5.0.4",
+      "integrity": "sha512-mlsTRyGaPBjPedk6Bvw+aqbsXDtoAyAzm5MO7JgU+yVRyMQ5O8bD4Kcci7BS85f93veegeCPkL8R4GLClnjLFw=="
+    },
+    {
+      "path": "node_modules/follow-redirects",
+      "version": "1.16.1",
+      "integrity": "sha512-FNvFGzoMLWmE6Yj9spb/zjd7yiNCHiAW9/Tg9CXrQ8wuu32HtlJOwWO11OJafl5FfY3DxTdQ0vj42zU1kvv5jg=="
+    },
+    {
+      "path": "node_modules/isows",
+      "version": "1.0.7",
+      "integrity": "sha512-I1fSfDCZL5P0v33sVqeTDSpcstAg/N+wF5HS033mogOVIp4B+oHC7oOCsA3axAbBSGTJ8QubbNmnIRN/h8U7hg=="
+    },
+    {
+      "path": "node_modules/js-sha3",
+      "version": "0.8.0",
+      "integrity": "sha512-gF1cRrHhIzNfToc802P800N8PpXS+evLLXfsVpowqmAFR9uwbi89WvXg2QspOmXL8QL86J4T1EpFu+yUkwJY3Q=="
+    },
+    {
+      "path": "node_modules/lru-cache",
+      "version": "11.0.2",
+      "integrity": "sha512-123qHRfJBmo2jXDbo/a5YOQrJoHF/GNQTLzQ5+IdK5pWpceK17yRc6ozlWd25FxvGKQbIUs91fDFkXmDHTKcyA=="
+    },
+    {
+      "path": "node_modules/memorystream",
+      "version": "0.3.1",
+      "integrity": "sha512-S3UwM3yj5mtUSEfP41UZmt/0SCoVYUcU1rkXv+BQ5Ig8ndL4sPoJNBUJERafdPb5jjHJGuMgytgKvKIf58XNBw=="
+    },
+    {
+      "path": "node_modules/ms",
+      "version": "2.1.3",
+      "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA=="
+    },
+    {
+      "path": "node_modules/ox",
+      "version": "0.14.45",
+      "integrity": "sha512-jpsQ+p0JZh9mKCxxzxz0d5qFHZZg2/O9xW18IpEC/dNXXPVqmDJ0c//9RMz0CILkbSGPA42+cbU0fC/ghwJ03w=="
+    },
+    {
+      "path": "node_modules/ox/node_modules/@noble/curves",
+      "version": "1.9.1",
+      "integrity": "sha512-k11yZxZg+t+gWvBbIswW0yoJlu8cHOC7dhunwOzoWH/mXGBiYyR4YY6hAEK/3EUs4UpB8la1RfdRpeGsFHkWsA=="
+    },
+    {
+      "path": "node_modules/ox/node_modules/@noble/hashes",
+      "version": "1.8.0",
+      "integrity": "sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A=="
+    },
+    {
+      "path": "node_modules/ox/node_modules/eventemitter3",
+      "version": "5.0.1",
+      "integrity": "sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA=="
+    },
+    {
+      "path": "node_modules/semver",
+      "version": "5.7.2",
+      "integrity": "sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g=="
+    },
+    {
+      "path": "node_modules/solc",
+      "version": "0.8.37",
+      "integrity": "sha512-ieUYdPDRGNKMsZpCfi9tY64Q+ASoL8tyhLuvf9cFiqDs+6ijlx8Wn2CRi0N71AlCvRx0V092rlUYu3b3PuxWlA=="
+    },
+    {
+      "path": "node_modules/tmp",
+      "version": "0.2.7",
+      "integrity": "sha512-e0votIpp4Uo2AJYSzVHV6xCcawuiez3DzqDAbrTc3YxBkplN6e+dM13ZeIcZnDg/QpSuU2zfZ3rzwY8ukEnaXw=="
+    },
+    {
+      "path": "node_modules/viem",
+      "version": "2.57.3",
+      "integrity": "sha512-441q6Z42ZU7+mTJrYAjQsBpVWK76nyGQcKOCGT6hp+tBpw1XsnTIgKaqZFLTaW5xmBN1ummEFgzFWmR05FISTg=="
+    },
+    {
+      "path": "node_modules/viem/node_modules/@noble/curves",
+      "version": "1.9.1",
+      "integrity": "sha512-k11yZxZg+t+gWvBbIswW0yoJlu8cHOC7dhunwOzoWH/mXGBiYyR4YY6hAEK/3EUs4UpB8la1RfdRpeGsFHkWsA=="
+    },
+    {
+      "path": "node_modules/viem/node_modules/@noble/hashes",
+      "version": "1.8.0",
+      "integrity": "sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A=="
+    },
+    {
+      "path": "node_modules/ws",
+      "version": "8.21.0",
+      "integrity": "sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g=="
+    }
+  ],
+  "sources": [
+    {
+      "path": "tools/web3-evm-lab/package.json",
+      "bytes": 559,
+      "sha256": "b8ed1061c1106fe458a43aacdc23c8da03831df1b2178a86fc1bc5e22fbe6fc4"
+    },
+    {
+      "path": "tools/web3-evm-lab/package-lock.json",
+      "bytes": 22423,
+      "sha256": "cabb6ac555871bfdb094efe9f5f41d714c14dc74bbec717052ae32743d7ce373"
+    },
+    {
+      "path": "tools/web3-evm-lab/contracts/ReaderFixtures.sol",
+      "bytes": 792,
+      "sha256": "1457affc593c5421fa2b5deda44b0a85bbbcab3f337b0693b9a5ef7252e9f19b"
+    },
+    {
+      "path": "tools/web3-evm-lab/evmFixture.mjs",
+      "bytes": 10871,
+      "sha256": "5ccdd53e4a9cdff3d678f68341773fc5b4e89860f403b150473a43bc476085be"
+    },
+    {
+      "path": "tools/web3-evm-lab/reader-evm.test.mjs",
+      "bytes": 18798,
+      "sha256": "ba3df718d11959a236b768835a59450b562b17081ac4d95521c4ddb2ccca5aad"
+    },
+    {
+      "path": "tools/web3-evm-lab/README.md",
+      "bytes": 2551,
+      "sha256": "5603029e56bea8e1e53ea6f8d30131f62994d08ac55bb645da740f7dbe776bf2"
+    },
+    {
+      "path": "server/web3/erc721Reader.mjs",
+      "bytes": 3875,
+      "sha256": "1e81265f3a4a0253267308452c51702e8213ea2e88c616a409ed31ceb733b1c9"
+    },
+    {
+      "path": "server/web3/erc1155Reader.mjs",
+      "bytes": 4141,
+      "sha256": "538b2dd31bdad1d0471a5b2dacbb7c850d41bf6030c03d7a99c068b6e21983cd"
+    },
+    {
+      "path": "server/web3/rpcTransport.mjs",
+      "bytes": 4667,
+      "sha256": "b43c4f24da50d2e958c6c7e89c7ca70e41fb984330daa05b24bdd80c82076458"
+    },
+    {
+      "path": "tools/web3-token-read.mjs",
+      "bytes": 1556,
+      "sha256": "140aa767e133028f406dd244579624db87e3181417202b9a6ed5e616754502f3"
+    },
+    {
+      "path": "tools/web3-edition-read.mjs",
+      "bytes": 1643,
+      "sha256": "b6173deb16f8580c5b4a99e6b427978a06e1a59b5ee6218489a1820bfa99218b"
+    },
+    {
+      "path": "tests/web3-erc1155-reader.test.mjs",
+      "bytes": 15936,
+      "sha256": "f77f81a62987ff3d44df6f70e6c9aafc971b0ba9dc71ef0510adcdd7c3874d7a"
+    },
+    {
+      "path": "tests/web3-edition-read-cli.test.mjs",
+      "bytes": 8269,
+      "sha256": "902dad4295892c2f4f3f5b32a07d2f56a5460a1027cebc6a1d5fc0290e7f7beb"
+    },
+    {
+      "path": "tests/web3-erc721-reader.test.mjs",
+      "bytes": 16263,
+      "sha256": "64bc760592af7f6742685a5132d2bfcc89e4a65445948c64687eb7d8c512ee3d"
+    },
+    {
+      "path": "tests/web3-token-read-cli.test.mjs",
+      "bytes": 7346,
+      "sha256": "8e784f20917751fd4ab128876cfef02bf7df67dcc5842cacc9a2a05ab0f7223b"
+    },
+    {
+      "path": "tests/web3-wallet-preflight.test.mjs",
+      "bytes": 15733,
+      "sha256": "0c072a4fa94f872fc2d23ef9b38b4fdde8fb0c04bff928f682454fc64e00097d"
+    },
+    {
+      "path": "docs/briefs/w02g-local-evm-rehearsal.md",
+      "bytes": 3793,
+      "sha256": "076e54bec6b2358cb6b4e381c14d0c75c756906c9b998486f94766c612d805cf"
+    },
+    {
+      "path": "docs/delivery/w02g-local-evm-rehearsal.md",
+      "bytes": 5522,
+      "sha256": "16f65c975406dfa599ab0f1ab8688272a7bedbaeff1fda992c9d430930e5bd2d"
+    },
+    {
+      "path": "PLAN-WEB3.md",
+      "bytes": 23241,
+      "sha256": "79f9ba337a2698b632f12e1629dd184651362dfe6f8c9b447b81927c3c0d96b8"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 75900,
+      "sha256": "9801713a5f66cad7788bf0d98d4f302691009785734447dee0373751a10f5456"
+    },
+    {
+      "path": "PLAN-DELIVERY.md",
+      "bytes": 70951,
+      "sha256": "4020b493055ed54d806c06e23dba1de7712a9a2d9526eba89c676f17b62fe652"
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "bytes": 110221,
+      "sha256": "fcc1f125a179231b5e09283406d114178be4fc56af117e09dc2ac9cbf3355e19"
+    }
+  ]
+}

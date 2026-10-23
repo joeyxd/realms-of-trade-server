@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "source": "src/render/palmBaseGeometry.js",
+      "copy": "docs/art/source/palm-bases-v1/palmBaseGeometry.source.js",
+      "bytes": 7623,
+      "sha256": "59465dbc448372b032c8bae3f8c636ffde6ded4269765fea1c8bbfb647d79692"
+    },
+    {
+      "source": "src/render/palmBaseMaterials.js",
+      "copy": "docs/art/source/palm-bases-v1/palmBaseMaterials.source.js",
+      "bytes": 1021,
+      "sha256": "f24f42522cd7724babbd4976cdb490bf680a5bdfe8ea913fbfdd87c895c76562"
+    },
+    {
+      "source": "src/render/vegetation.js",
+      "copy": "docs/art/source/palm-bases-v1/vegetation.source.js",
+      "bytes": 18438,
+      "sha256": "aab5defa2a5001a1730c77f582a3cf63f9908c6667bc4891591b17e753a0b28a"
+    },
+    {
+      "source": "src/render/palmMaterials.js",
+      "copy": "docs/art/source/palm-bases-v1/palmMaterials.source.js",
+      "bytes": 3485,
+      "sha256": "865f309396b06c1a91349787b3ca0c52efb01698c4b23c6eef323d22fc1b2319"
+    },
+    {
+      "source": "tools/prepare-palm-bases.mjs",
+      "copy": "docs/art/source/palm-bases-v1/prepare-palm-bases.source.mjs",
+      "bytes": 14754,
+      "sha256": "a0a864984f8d61a3edf8420aebecf0386f6147f06f4faa3887ea0177635b4f5e"
+    },
+    {
+      "source": "tools/prepare-palm-base-textures.mjs",
+      "copy": "docs/art/source/palm-bases-v1/prepare-palm-base-textures.source.mjs",
+      "bytes": 10275,
+      "sha256": "7b655c45d7d0e4c1246900819866b53c0082a5327f80e8186644ffd3fe4fb8d3"
+    }
+  ]
+}

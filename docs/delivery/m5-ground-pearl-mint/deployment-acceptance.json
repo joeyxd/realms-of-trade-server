@@ -1,0 +1,39 @@
+{
+  "revision": "056d275bc858d1d29a758f218d301a0f9f75f786",
+  "imageId": "sha256:6ea3f02dc4a2b151975d41a9d7860d79e2c792f1b1ecdec483ffcf25d111c026",
+  "version": "0.6.0-alpha.57",
+  "protocol": 56,
+  "healthy": true,
+  "updaterTests": {
+    "tests": 176,
+    "pass": 176,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "exactImageTests": {
+    "tests": 78,
+    "pass": 78,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "matchingRuntimeModules": 14,
+  "publicChecks": 6,
+  "commonPilotEnabled": false,
+  "commonWorldAdopted": false,
+  "sqlExecutedBySlice": false,
+  "durableVPSGameplayExercised": false,
+  "statusRecordedAt": "2026-10-11T17:47:02.000863+00:00",
+  "domainRecordedAt": "2026-10-11T17:47:09.729588+00:00",
+  "scope": "Code installed with optional common lifecycle dormant. Public entry and exact runtime hashes verified. Local SIGKILL evidence does not establish activated VPS crash acceptance.",
+  "historicalSnapshots": [
+    "initial-*",
+    "progress-*",
+    "prepublish-*",
+    "deployment-status.json",
+    "deployment-domain.json"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "command": "node --test --test-concurrency=1 --test-reporter=tap --test-name-pattern=two players at 100 ms RTT tests/.l01c-net-abort-17c7eb2c-00e9-4f7c-b429-d0236587cd0c.mjs",
+  "source": "tests/net.test.mjs",
+  "transformation": "Temporary untracked copy changes only the first test timeout from 30000 to 1000 ms; same setup, loop, teardown and assertions. Copy removed after child exit.",
+  "startedAt": "2026-10-08T13:29:39.695Z",
+  "finishedAt": "2026-10-08T13:29:41.889Z",
+  "elapsedMs": 2194,
+  "exitCode": 1,
+  "signal": null,
+  "expectedTimeoutObserved": true,
+  "naturalProcessExit": true,
+  "stderr": "",
+  "log": "net-cleanup-abort.tap"
+}

@@ -1,0 +1,433 @@
+TAP version 13
+# Subtest: load, issue, and revoke use the authenticated pairing contract and private one-use code
+ok 1 - load, issue, and revoke use the authenticated pairing contract and private one-use code
+  ---
+  duration_ms: 2.5873
+  type: 'test'
+  ...
+# Subtest: malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+ok 2 - malformed, overlong, or wrong-operation codes are rejected without ending the pending request
+  ---
+  duration_ms: 0.3332
+  type: 'test'
+  ...
+# Subtest: failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+ok 3 - failed issue and revoke mutations clear the displayed secret before acknowledgement and keep it cleared on denial
+  ---
+  duration_ms: 0.4645
+  type: 'test'
+  ...
+# Subtest: account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+ok 4 - account changes, disconnects, revoke, expiry, and destroy clear private pairing state
+  ---
+  duration_ms: 35.6652
+  type: 'test'
+  ...
+# Subtest: stale correlation is ignored and unsafe controller URLs are not retained
+ok 5 - stale correlation is ignored and unsafe controller URLs are not retained
+  ---
+  duration_ms: 0.3252
+  type: 'test'
+  ...
+# Subtest: pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+ok 6 - pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+  ---
+  duration_ms: 723.7578
+  type: 'test'
+  ...
+# Subtest: new code rotates pending code and active controller; owner disconnect invalidates pending code
+ok 7 - new code rotates pending code and active controller; owner disconnect invalidates pending code
+  ---
+  duration_ms: 554.7449
+  type: 'test'
+  ...
+# Subtest: expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+ok 8 - expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+  ---
+  duration_ms: 1060.1033
+  type: 'test'
+  ...
+# Subtest: durable owner stop invalidates a pending code and active paired session immediately
+ok 9 - durable owner stop invalidates a pending code and active paired session immediately
+  ---
+  duration_ms: 598.6071
+  type: 'test'
+  ...
+# Subtest: owner disconnect during paired profile I/O prevents late admission and welcome
+ok 10 - owner disconnect during paired profile I/O prevents late admission and welcome
+  ---
+  duration_ms: 641.8844
+  type: 'test'
+  ...
+# Subtest: missing durable prerequisites keep pairing unavailable without blocking creation
+ok 11 - missing durable prerequisites keep pairing unavailable without blocking creation
+  ---
+  duration_ms: 419.9522
+  type: 'test'
+  ...
+# Subtest: issue reports a missing creation and content changes invalidate claims and admitted sessions
+ok 12 - issue reports a missing creation and content changes invalidate claims and admitted sessions
+  ---
+  duration_ms: 592.8046
+  type: 'test'
+  ...
+# Subtest: opens by loading pairing state and explains allow-first, one-use privacy, and the local CLI guide
+ok 13 - opens by loading pairing state and explains allow-first, one-use privacy, and the local CLI guide
+  ---
+  duration_ms: 1.5137
+  type: 'test'
+  ...
+# Subtest: only explicit user actions issue or revoke and code has copy plus visible expiry controls
+ok 14 - only explicit user actions issue or revoke and code has copy plus visible expiry controls
+  ---
+  duration_ms: 16.019
+  type: 'test'
+  ...
+# Subtest: revoke stays available for an enabled connection without a local code and reload recovers uncertain state
+ok 15 - revoke stays available for an enabled connection without a local code and reload recovers uncertain state
+  ---
+  duration_ms: 0.346
+  type: 'test'
+  ...
+# Subtest: language switching, disconnect reset, and back preserve parent-owned close flow
+ok 16 - language switching, disconnect reset, and back preserve parent-owned close flow
+  ---
+  duration_ms: 0.9543
+  type: 'test'
+  ...
+# Subtest: real durable registry activates, replays exactly, reloads active state after restart, then rolls back to base
+ok 17 - real durable registry activates, replays exactly, reloads active state after restart, then rolls back to base
+  ---
+  duration_ms: 473.7185
+  type: 'test'
+  ...
+# Subtest: activation rejects lock busy before beginning world exclusion and leaves durable state unchanged
+ok 18 - activation rejects lock busy before beginning world exclusion and leaves durable state unchanged
+  ---
+  duration_ms: 428.2066
+  type: 'test'
+  ...
+# Subtest: activation refuses an occupied durable item and a busy game before pointer commit
+ok 19 - activation refuses an occupied durable item and a busy game before pointer commit
+  ---
+  duration_ms: 629.5546
+  type: 'test'
+  ...
+# occupied preflight left the registry head and M5 state unchanged
+# Subtest: lost state rename acknowledgment reconciles durable activation and restart replays the same pointer
+ok 20 - lost state rename acknowledgment reconciles durable activation and restart replays the same pointer
+  ---
+  duration_ms: 327.4489
+  type: 'test'
+  ...
+# Subtest: strict publication fingerprint mismatch fails before installation or durable pointer change
+ok 21 - strict publication fingerprint mismatch fails before installation or durable pointer change
+  ---
+  duration_ms: 264.7817
+  type: 'test'
+  ...
+# Subtest: content identity requires the exact server generation and revision pair
+ok 22 - content identity requires the exact server generation and revision pair
+  ---
+  duration_ms: 0.2486
+  type: 'test'
+  ...
+# Subtest: authored resource admission is gated, appended by CAS, installed from map.gmResources, and gathered through normal authority
+ok 23 - authored resource admission is gated, appended by CAS, installed from map.gmResources, and gathered through normal authority
+  ---
+  duration_ms: 441.6921
+  type: 'test'
+  ...
+# Subtest: authored palms enforce tool and range checks, then award v2 logging once on the third hit
+ok 24 - authored palms enforce tool and range checks, then award v2 logging once on the third hit
+  ---
+  duration_ms: 487.2148
+  type: 'test'
+  ...
+# Subtest: authored stone pickup uses normal authority and an operation replay cannot duplicate the reward
+ok 25 - authored stone pickup uses normal authority and an operation replay cannot duplicate the reward
+  ---
+  duration_ms: 258.0741
+  type: 'test'
+  ...
+# Subtest: removed and moved authored nodes retain depleted state through rollback, reactivation, and restart
+ok 26 - removed and moved authored nodes retain depleted state through rollback, reactivation, and restart
+  ---
+  duration_ms: 637.5336
+  type: 'test'
+  ...
+# Subtest: append-only roster creates schema-correct palm ledgers for resource baselines v1, v2, and v3
+    # Subtest: v1
+    ok 1 - v1
+      ---
+      duration_ms: 235.3356
+      type: 'test'
+      ...
+    # Subtest: v2
+    ok 2 - v2
+      ---
+      duration_ms: 276.989
+      type: 'test'
+      ...
+    # Subtest: v3
+    ok 3 - v3
+      ---
+      duration_ms: 231.3827
+      type: 'test'
+      ...
+    1..3
+ok 27 - append-only roster creates schema-correct palm ledgers for resource baselines v1, v2, and v3
+  ---
+  duration_ms: 744.4927
+  type: 'test'
+  ...
+# Subtest: CAS conflict and ambiguous SQL acknowledgement fence the host without installing the target map
+    # Subtest: conflict
+    ok 1 - conflict
+      ---
+      duration_ms: 241.2715
+      type: 'test'
+      ...
+    # Subtest: ambiguous
+    ok 2 - ambiguous
+      ---
+      duration_ms: 395.5311
+      type: 'test'
+      ...
+    1..2
+ok 28 - CAS conflict and ambiguous SQL acknowledgement fence the host without installing the target map
+  ---
+  duration_ms: 637.3137
+  type: 'test'
+  ...
+# Subtest: unsupported ground-authority resource admission rejects before roster writes
+ok 29 - unsupported ground-authority resource admission rejects before roster writes
+  ---
+  duration_ms: 424.4593
+  type: 'test'
+  ...
+# Subtest: resource aliases resolve only to the pinned physical assets and stable simulation IDs
+ok 30 - resource aliases resolve only to the pinned physical assets and stable simulation IDs
+  ---
+  duration_ms: 1.1785
+  type: 'test'
+  ...
+# Subtest: authored resources compile to stable grounded nodes and install as a separate projection
+ok 31 - authored resources compile to stable grounded nodes and install as a separate projection
+  ---
+  duration_ms: 426.0576
+  type: 'test'
+  ...
+# Subtest: shared publication validation enforces resource transform, spacing and authored collider limits
+ok 32 - shared publication validation enforces resource transform, spacing and authored collider limits
+  ---
+  duration_ms: 313.3528
+  type: 'test'
+  ...
+# Subtest: draft and publication admission pin physical assets and hash the compiled functional layout
+ok 33 - draft and publication admission pin physical assets and hash the compiled functional layout
+  ---
+  duration_ms: 1218.7364
+  type: 'test'
+  ...
+# Subtest: content registry and M5 host activate resources, gather normally, rollback and restore on restart without pruning
+ok 34 - content registry and M5 host activate resources, gather normally, rollback and restore on restart without pruning
+  ---
+  duration_ms: 2516.6481
+  type: 'test'
+  ...
+# Subtest: lost pointer ACK reconciles an admitted functional layout and exact retry does not admit twice
+ok 35 - lost pointer ACK reconciles an admitted functional layout and exact retry does not admit twice
+  ---
+  duration_ms: 3287.1593
+  type: 'test'
+  ...
+# Subtest: lost SQL ACK fences gameplay before pointer switch and leaves only inactive durable rows
+ok 36 - lost SQL ACK fences gameplay before pointer switch and leaves only inactive durable rows
+  ---
+  duration_ms: 3921.2502
+  type: 'test'
+  ...
+# Subtest: resource model aliases use the native gameplay silhouettes and reserved source mapping
+ok 37 - resource model aliases use the native gameplay silhouettes and reserved source mapping
+  ---
+  duration_ms: 3.4089
+  type: 'test'
+  ...
+# Subtest: authored GM palm identity always selects the tall native render variant
+ok 38 - authored GM palm identity always selects the tall native render variant
+  ---
+  duration_ms: 0.1144
+  type: 'test'
+  ...
+# Subtest: resource renderer reserves authored palm instances and keeps authored stones at yaw zero
+ok 39 - resource renderer reserves authored palm instances and keeps authored stones at yaw zero
+  ---
+  duration_ms: 19.8154
+  type: 'test'
+  ...
+# Subtest: resource palette presents reserved resource actions and routes selection through the editor
+ok 40 - resource palette presents reserved resource actions and routes selection through the editor
+  ---
+  duration_ms: 0.5583
+  type: 'test'
+  ...
+# Subtest: published resource objects are omitted from decorative GM mesh projection
+ok 41 - published resource objects are omitted from decorative GM mesh projection
+  ---
+  duration_ms: 356.3277
+  type: 'test'
+  ...
+# Subtest: pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+ok 42 - pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+  ---
+  duration_ms: 64.8136
+  type: 'test'
+  ...
+# Subtest: remote stop settles the runner and permits the same controller to pair again
+ok 43 - remote stop settles the runner and permits the same controller to pair again
+  ---
+  duration_ms: 36.0167
+  type: 'test'
+  ...
+# Subtest: stop during asynchronous document loading cancels setup before runner connect
+ok 44 - stop during asynchronous document loading cancels setup before runner connect
+  ---
+  duration_ms: 29.2101
+  type: 'test'
+  ...
+# Subtest: pairing fails closed for reused companion files with a different model policy
+ok 45 - pairing fails closed for reused companion files with a different model policy
+  ---
+  duration_ms: 40.3335
+  type: 'test'
+  ...
+# Subtest: claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+ok 46 - claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+  ---
+  duration_ms: 4.0823
+  type: 'test'
+  ...
+# Subtest: live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+ok 47 - live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+  ---
+  duration_ms: 1436.2934
+  type: 'test'
+  ...
+# Subtest: stop during a local model request fences its late response and does not capture an exchange
+ok 48 - stop during a local model request fences its late response and does not capture an exchange
+  ---
+  duration_ms: 810.0624
+  type: 'test'
+  ...
+# Subtest: the CLI validates options before prompting and accepts a pasted multi-character hex code
+ok 49 - the CLI validates options before prompting and accepts a pasted multi-character hex code
+  ---
+  duration_ms: 0.9771
+  type: 'test'
+  ...
+# Subtest: /health, /status and only the client files are served
+ok 50 - /health, /status and only the client files are served
+  ---
+  duration_ms: 421.4963
+  type: 'test'
+  ...
+# Subtest: two players join the same island, see each other move, and leaving despawns
+ok 51 - two players join the same island, see each other move, and leaving despawns
+  ---
+  duration_ms: 1554.2302
+  type: 'test'
+  ...
+# Subtest: a full instance and a wrong protocol version are refused politely
+ok 52 - a full instance and a wrong protocol version are refused politely
+  ---
+  duration_ms: 292.5587
+  type: 'test'
+  ...
+# Subtest: junk does not hurt the server: malformed messages close only that socket
+ok 53 - junk does not hurt the server: malformed messages close only that socket
+  ---
+  duration_ms: 634.21
+  type: 'test'
+  ...
+# Subtest: names are cleaned: control characters, markup and length
+ok 54 - names are cleaned: control characters, markup and length
+  ---
+  duration_ms: 447.6921
+  type: 'test'
+  ...
+# Subtest: default signed saves restore and spoofed account fields never create stored profiles
+ok 55 - default signed saves restore and spoofed account fields never create stored profiles
+  ---
+  duration_ms: 383.2297
+  type: 'test'
+  ...
+# Subtest: trusted account profile loads before WELCOME and overrides an older signed save
+ok 56 - trusted account profile loads before WELCOME and overrides an older signed save
+  ---
+  duration_ms: 344.4551
+  type: 'test'
+  ...
+# Subtest: null identity keeps signed anonymous saves; resolver errors fail closed without secrets
+ok 57 - null identity keeps signed anonymous saves; resolver errors fail closed without secrets
+  ---
+  duration_ms: 458.9546
+  type: 'test'
+  ...
+# Subtest: identity verifier gets request context without retained credential headers
+ok 58 - identity verifier gets request context without retained credential headers
+  ---
+  duration_ms: 245.1105
+  type: 'test'
+  ...
+# Subtest: duplicate HELLO and pending admission respect capacity, then release it on close
+ok 59 - duplicate HELLO and pending admission respect capacity, then release it on close
+  ---
+  duration_ms: 226.5991
+  type: 'test'
+  ...
+# Subtest: same account has one authority and remains reserved through its final write
+ok 60 - same account has one authority and remains reserved through its final write
+  ---
+  duration_ms: 238.3808
+  type: 'test'
+  ...
+# Subtest: close cancels an unresolved load and shutdown does not wait for a stuck resolver
+ok 61 - close cancels an unresolved load and shutdown does not wait for a stuck resolver
+  ---
+  duration_ms: 612.1477
+  type: 'test'
+  ...
+# Subtest: write snapshots are isolated and serialized; shutdown awaits the final ECS/profile state
+ok 62 - write snapshots are isolated and serialized; shutdown awaits the final ECS/profile state
+  ---
+  duration_ms: 413.0409
+  type: 'test'
+  ...
+# Subtest: CAS conflict fences the session and reports failed shutdown without overwriting newer state
+ok 63 - CAS conflict fences the session and reports failed shutdown without overwriting newer state
+  ---
+  duration_ms: 441.0503
+  type: 'test'
+  ...
+# Subtest: join timeout releases capacity and unavailable stores never admit an empty replacement
+ok 64 - join timeout releases capacity and unavailable stores never admit an empty replacement
+  ---
+  duration_ms: 980.4977
+  type: 'test'
+  ...
+# Subtest: real WebSocket account path saves on shutdown and loads across two host instances
+ok 65 - real WebSocket account path saves on shutdown and loads across two host instances
+  ---
+  duration_ms: 1181.3972
+  type: 'test'
+  ...
+1..65
+# tests 70
+# suites 0
+# pass 70
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 43817.2569

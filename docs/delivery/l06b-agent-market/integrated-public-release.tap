@@ -1,0 +1,286 @@
+TAP version 13
+# Subtest: inventory client requires a live authenticated grant, fresh observation, and exact query
+ok 1 - inventory client requires a live authenticated grant, fresh observation, and exact query
+  ---
+  duration_ms: 2.4504
+  type: 'test'
+  ...
+# Subtest: inventory request is single-flight, duplicate local IDs never resend, and only fresh valid results update view
+ok 2 - inventory request is single-flight, duplicate local IDs never resend, and only fresh valid results update view
+  ---
+  duration_ms: 2.2079
+  type: 'test'
+  ...
+# Subtest: inventory timeouts become uncertain, ignore late results, and never retry
+ok 3 - inventory timeouts become uncertain, ignore late results, and never retry
+  ---
+  duration_ms: 0.4177
+  type: 'test'
+  ...
+# Subtest: an inventory denial retires the current view while preserving the historical ledger
+ok 4 - an inventory denial retires the current view while preserving the historical ledger
+  ---
+  duration_ms: 0.6981
+  type: 'test'
+  ...
+# Subtest: inventory request ledger hard-stops at the shared 64-query session limit
+ok 5 - inventory request ledger hard-stops at the shared 64-query session limit
+  ---
+  duration_ms: 4.4009
+  type: 'test'
+  ...
+# Subtest: inventory receive enforces deadline and distinguishes delayed stale snapshots from current views
+ok 6 - inventory receive enforces deadline and distinguishes delayed stale snapshots from current views
+  ---
+  duration_ms: 0.5552
+  type: 'test'
+  ...
+# Subtest: inventory view and unresolved request are invalidated on epoch or session change
+ok 7 - inventory view and unresolved request are invalidated on epoch or session change
+  ---
+  duration_ms: 0.6398
+  type: 'test'
+  ...
+# Subtest: AgentNetworkClient exposes only the private inventory lane to an authenticated server grant
+ok 8 - AgentNetworkClient exposes only the private inventory lane to an authenticated server grant
+  ---
+  duration_ms: 415.292
+  type: 'test'
+  ...
+# Subtest: managed runner reads current inventory through the real host and never carries it across stop/reentry
+ok 9 - managed runner reads current inventory through the real host and never carries it across stop/reentry
+  ---
+  duration_ms: 1465.4795
+  type: 'test'
+  ...
+# Subtest: inventory read is an exact scoped projection and never exposes raw profile/save frames to agents
+ok 10 - inventory read is an exact scoped projection and never exposes raw profile/save frames to agents
+  ---
+  duration_ms: 681.9345
+  type: 'test'
+  ...
+# Subtest: reads isolate two admitted agents and replay an original snapshot while a new request sees current state
+ok 11 - reads isolate two admitted agents and replay an original snapshot while a new request sees current state
+  ---
+  duration_ms: 519.3616
+  type: 'test'
+  ...
+# Subtest: exact request validation, capability and scope checks run before cached replay
+ok 12 - exact request validation, capability and scope checks run before cached replay
+  ---
+  duration_ms: 1157.0738
+  type: 'test'
+  ...
+# Subtest: busy profile gate denies reads without exposing inventory
+ok 13 - busy profile gate denies reads without exposing inventory
+  ---
+  duration_ms: 329.3084
+  type: 'test'
+  ...
+# Subtest: session budget caps distinct inventory reads at 64 while allowing duplicates
+ok 14 - session budget caps distinct inventory reads at 64 while allowing duplicates
+  ---
+  duration_ms: 1302.6503
+  type: 'test'
+  ...
+# Subtest: stop, death and reconnect retire old selectors; inventory reads and blocked commands have no simulation side effects
+ok 15 - stop, death and reconnect retire old selectors; inventory reads and blocked commands have no simulation side effects
+  ---
+  duration_ms: 627.6345
+  type: 'test'
+  ...
+# Subtest: inventory read projects live own assets with shared catalog capacities and no profile mutation
+ok 16 - inventory read projects live own assets with shared catalog capacities and no profile mutation
+  ---
+  duration_ms: 3.9377
+  type: 'test'
+  ...
+# Subtest: projection strips private fields from profile, equipment and bag rows
+ok 17 - projection strips private fields from profile, equipment and bag rows
+  ---
+  duration_ms: 0.6839
+  type: 'test'
+  ...
+# Subtest: reads reflect new authoritative state only when captured again
+ok 18 - reads reflect new authoritative state only when captured again
+  ---
+  duration_ms: 0.4807
+  type: 'test'
+  ...
+# Subtest: invalid, missing, overfull or duplicate ownership fails closed without fabricating inventory
+ok 19 - invalid, missing, overfull or duplicate ownership fails closed without fabricating inventory
+  ---
+  duration_ms: 2.4009
+  type: 'test'
+  ...
+# Subtest: projection never invokes source getters, array accessors or proxies
+ok 20 - projection never invokes source getters, array accessors or proxies
+  ---
+  duration_ms: 0.416
+  type: 'test'
+  ...
+# Subtest: wire inventory validates exact bounded data and canonical items, not claims of ownership
+ok 21 - wire inventory validates exact bounded data and canonical items, not claims of ownership
+  ---
+  duration_ms: 0.6931
+  type: 'test'
+  ...
+# Subtest: inventory result requires correlation, exact reason and view or an explicit denial
+ok 22 - inventory result requires correlation, exact reason and view or an explicit denial
+  ---
+  duration_ms: 0.5194
+  type: 'test'
+  ...
+# Subtest: managed projection suppresses raw profile/save while preserving the private read result lane
+ok 23 - managed projection suppresses raw profile/save while preserving the private read result lane
+  ---
+  duration_ms: 0.4667
+  type: 'test'
+  ...
+# Subtest: run.mjs exposes fresh private inventory and market context, then fences reads across stop and reentry
+ok 24 - run.mjs exposes fresh private inventory and market context, then fences reads across stop and reentry
+  ---
+  duration_ms: 1621.1831
+  type: 'test'
+  ...
+# Subtest: market wire and projection validators enforce exact bounded shapes without town selectors
+ok 25 - market wire and projection validators enforce exact bounded shapes without town selectors
+  ---
+  duration_ms: 1.3852
+  type: 'test'
+  ...
+# Subtest: market client requires a fresh authenticated active authority and market_read capability
+ok 26 - market client requires a fresh authenticated active authority and market_read capability
+  ---
+  duration_ms: 1.6658
+  type: 'test'
+  ...
+# Subtest: market client sends exact list and quote shapes, single-flights, and binds quote result to request
+ok 27 - market client sends exact list and quote shapes, single-flights, and binds quote result to request
+  ---
+  duration_ms: 1.7115
+  type: 'test'
+  ...
+# Subtest: market view requires a new server read after movement or a newer denial
+ok 28 - market view requires a new server read after movement or a newer denial
+  ---
+  duration_ms: 0.7525
+  type: 'test'
+  ...
+# Subtest: market cached replay does not refresh time and only current fresh authorized views expose data
+ok 29 - market cached replay does not refresh time and only current fresh authorized views expose data
+  ---
+  duration_ms: 1.0111
+  type: 'test'
+  ...
+# Subtest: market epoch changes, revocation, stop, timeout, and the 64-query limit invalidate reads safely
+ok 30 - market epoch changes, revocation, stop, timeout, and the 64-query limit invalidate reads safely
+  ---
+  duration_ms: 5.0101
+  type: 'test'
+  ...
+# Subtest: private market reads isolate two agent accounts and expose only current-town market data
+ok 31 - private market reads isolate two agent accounts and expose only current-town market data
+  ---
+  duration_ms: 480.7209
+  type: 'test'
+  ...
+# Subtest: quote projection matches the shared commerce helper and rejects unavailable physical service
+ok 32 - quote projection matches the shared commerce helper and rejects unavailable physical service
+  ---
+  duration_ms: 364.6906
+  type: 'test'
+  ...
+# Subtest: market query replay preserves original data, conflicts on changed args, and rechecks location first
+ok 33 - market query replay preserves original data, conflicts on changed args, and rechecks location first
+  ---
+  duration_ms: 305.5442
+  type: 'test'
+  ...
+# Subtest: exact requests and identifiers are validated and only managed market_read agents can use the lane
+ok 34 - exact requests and identifiers are validated and only managed market_read agents can use the lane
+  ---
+  duration_ms: 1113.7817
+  type: 'test'
+  ...
+# Subtest: busy and naval service gates deny reads before cached replay
+ok 35 - busy and naval service gates deny reads before cached replay
+  ---
+  duration_ms: 303.6141
+  type: 'test'
+  ...
+# Subtest: 64-query session cap includes denied quotes; invalid requests do not consume a slot
+ok 36 - 64-query session cap includes denied quotes; invalid requests do not consume a slot
+  ---
+  duration_ms: 1320.1514
+  type: 'test'
+  ...
+# Subtest: stop, revoke, death, resume and reconnect reject retired selectors and generic writes have no effects
+ok 37 - stop, revoke, death, resume and reconnect reject retired selectors and generic writes have no effects
+  ---
+  duration_ms: 491.8603
+  type: 'test'
+  ...
+# Subtest: managed runner reads live market and inventory, ages views, and fences stop/reentry results
+ok 38 - managed runner reads live market and inventory, ages views, and fences stop/reentry results
+  ---
+  duration_ms: 3029.2569
+  type: 'test'
+  ...
+# Subtest: fresh private inventory and market are detached, bounded read-only projections
+ok 39 - fresh private inventory and market are detached, bounded read-only projections
+  ---
+  duration_ms: 2.9913
+  type: 'test'
+  ...
+# Subtest: authorized read methods are advertised before their first result, without forwarding a historical view
+ok 40 - authorized read methods are advertised before their first result, without forwarding a historical view
+  ---
+  duration_ms: 0.716
+  type: 'test'
+  ...
+# Subtest: a least-privilege requested subset of the server grant retains its private reads
+ok 41 - a least-privilege requested subset of the server grant retains its private reads
+  ---
+  duration_ms: 0.7124
+  type: 'test'
+  ...
+# Subtest: historical, stale, expired, unauthorized, dead, stopped, or mismatched economic views are omitted
+ok 42 - historical, stale, expired, unauthorized, dead, stopped, or mismatched economic views are omitted
+  ---
+  duration_ms: 3.6532
+  type: 'test'
+  ...
+# Subtest: maximum catalog views fail closed when required context exceeds its byte budget
+ok 43 - maximum catalog views fail closed when required context exceeds its byte budget
+  ---
+  duration_ms: 1.493
+  type: 'test'
+  ...
+# Subtest: readCommerce returns bounded current list and quote projections without side effects
+ok 44 - readCommerce returns bounded current list and quote projections without side effects
+  ---
+  duration_ms: 349.3583
+  type: 'test'
+  ...
+# Subtest: readCommerce enforces exact bounded shape, physical town service, life, and naval lock
+ok 45 - readCommerce enforces exact bounded shape, physical town service, life, and naval lock
+  ---
+  duration_ms: 262.7831
+  type: 'test'
+  ...
+# Subtest: readCommerce preserves list and quote semantics of human commerce transport
+ok 46 - readCommerce preserves list and quote semantics of human commerce transport
+  ---
+  duration_ms: 284.6269
+  type: 'test'
+  ...
+1..46
+# tests 46
+# suites 0
+# pass 46
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 30274.7761

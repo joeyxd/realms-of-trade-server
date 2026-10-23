@@ -1,0 +1,271 @@
+{
+  "schema": "st01c-film-source/v1",
+  "engine": "5.8.0-55116800+++UE5+Release-5.8",
+  "profile": "Filmic SDR sRGB; neutral grading; no bloom; 6500K/0 tint; explicit target gamma2.2",
+  "sourceSha256": {
+    "Shaders/Private/ACES/ACESCommon.ush": "74bc182d346ed6b06a39989a0a694b9fb55eb6c1d2900da5c74dd3edd61ba8ac",
+    "Shaders/Private/TonemapCommon.ush": "6014ec0a4c5c38ea24869c408ef14a195200d277612f956d17c60312e82e930e",
+    "Shaders/Private/PostProcessCombineLUTs.usf": "3a18c19033b7e924fe81283df6775ad5d92fe98cc662071b20dd6a7ddece40ed",
+    "Shaders/Private/PostProcessTonemap.usf": "9f5510d84f222ba20c813d5b8638478d6ee1da73a10bd25a81e35631280e5365",
+    "Shaders/Private/GammaCorrectionCommon.ush": "ea65801253c3950508f754886facfdec3ca03d701ee6d63c27da453ba0572954",
+    "Source/Runtime/Engine/Private/Scene.cpp": "2223ff5f59c5bfed3d718d76fba7470560841edead2e03349acaddb6268d9dde",
+    "Source/Runtime/Engine/Private/TextureRenderTarget2D.cpp": "211e007db31de48039e65e3cf59fac23dbc4a943d3f63601d05469464a15e227",
+    "Source/Runtime/Renderer/Private/PostProcess/PostProcessCombineLUTs.cpp": "6a8b3e34a47246fb648e02c5b334130076489cd7bc05339ff44a2e048a52566a",
+    "Source/Runtime/Renderer/Private/PostProcess/PostProcessTonemap.cpp": "1f8aac9618e4cd4e328ac7d7601ea6f5e29ad14813cf4b3a64f72ecebb2b52e4",
+    "Shaders/Private/ACES/ACES_v1.3.ush": "c2be7dba2fde2242576adae8e2ad140cdc0242132006286a3e567c89f214fbc8",
+    "Build/Build.version": "2dbc75e44f11207d10b94639b222bbcecd2eb2e45eb0a901d0cca1005d36125e"
+  },
+  "matrices": {
+    "AP0_2_XYZ_MAT": [
+      [
+        0.9525523959,
+        0,
+        9.36786e-05
+      ],
+      [
+        0.3439664498,
+        0.7281660966,
+        -0.0721325464
+      ],
+      [
+        0,
+        0,
+        1.0088251844
+      ]
+    ],
+    "XYZ_2_AP0_MAT": [
+      [
+        1.0498110175,
+        0,
+        -9.74845e-05
+      ],
+      [
+        -0.4959030231,
+        1.3733130458,
+        0.0982400361
+      ],
+      [
+        0,
+        0,
+        0.9912520182
+      ]
+    ],
+    "AP1_2_XYZ_MAT": [
+      [
+        0.6624541811,
+        0.1340042065,
+        0.156187687
+      ],
+      [
+        0.2722287168,
+        0.6740817658,
+        0.0536895174
+      ],
+      [
+        -0.0055746495,
+        0.0040607335,
+        1.0103391003
+      ]
+    ],
+    "XYZ_2_AP1_MAT": [
+      [
+        1.6410233797,
+        -0.3248032942,
+        -0.2364246952
+      ],
+      [
+        -0.6636628587,
+        1.6153315917,
+        0.0167563477
+      ],
+      [
+        0.0117218943,
+        -0.008284442,
+        0.9883948585
+      ]
+    ],
+    "AP0_2_AP1_MAT": [
+      [
+        1.4514393161,
+        -0.2365107469,
+        -0.2149285693
+      ],
+      [
+        -0.0765537734,
+        1.1762296998,
+        -0.0996759264
+      ],
+      [
+        0.0083161484,
+        -0.0060324498,
+        0.9977163014
+      ]
+    ],
+    "AP1_2_AP0_MAT": [
+      [
+        0.6954522414,
+        0.1406786965,
+        0.1638690622
+      ],
+      [
+        0.0447945634,
+        0.8596711185,
+        0.0955343182
+      ],
+      [
+        -0.0055258826,
+        0.0040252103,
+        1.0015006723
+      ]
+    ],
+    "XYZ_2_sRGB_MAT": [
+      [
+        3.2409699419,
+        -1.5373831776,
+        -0.4986107603
+      ],
+      [
+        -0.9692436363,
+        1.8759675015,
+        0.0415550574
+      ],
+      [
+        0.0556300797,
+        -0.2039769589,
+        1.0569715142
+      ]
+    ],
+    "sRGB_2_XYZ_MAT": [
+      [
+        0.4123907993,
+        0.3575843394,
+        0.1804807884
+      ],
+      [
+        0.2126390059,
+        0.7151686788,
+        0.0721923154
+      ],
+      [
+        0.0193308187,
+        0.1191947798,
+        0.9505321522
+      ]
+    ],
+    "D65_2_D60_CAT": [
+      [
+        1.0130349146,
+        0.0061052578,
+        -0.0149709436
+      ],
+      [
+        0.0076982301,
+        0.9981633521,
+        -0.0050320385
+      ],
+      [
+        -0.0028413174,
+        0.0046851567,
+        0.9245061375
+      ]
+    ],
+    "D60_2_D65_CAT": [
+      [
+        0.9872240087,
+        -0.0061132286,
+        0.0159532883
+      ],
+      [
+        -0.0075983718,
+        1.0018614847,
+        0.0053300358
+      ],
+      [
+        0.0030725771,
+        -0.0050959615,
+        1.0816806031
+      ]
+    ],
+    "BlueCorrect": [
+      [
+        0.9404372683,
+        -0.0183068787,
+        0.0778696104
+      ],
+      [
+        0.0083786969,
+        0.8286599939,
+        0.1629613092
+      ],
+      [
+        0.0005471261,
+        -0.0008833746,
+        1.0003362486
+      ]
+    ],
+    "BlueCorrectInv": [
+      [
+        1.06318,
+        0.0233956,
+        -0.0865726
+      ],
+      [
+        -0.0106337,
+        1.20632,
+        -0.19569
+      ],
+      [
+        -0.000590887,
+        0.00105248,
+        0.999538
+      ]
+    ],
+    "Wide_2_XYZ_MAT": [
+      [
+        0.5441691,
+        0.2395926,
+        0.1666943
+      ],
+      [
+        0.2394656,
+        0.702153,
+        0.0583814
+      ],
+      [
+        -0.0023439,
+        0.0361834,
+        1.0552183
+      ]
+    ]
+  },
+  "controls": {
+    "FilmSlope": 0.88,
+    "FilmToe": 0.55,
+    "FilmShoulder": 0.26,
+    "FilmBlackClip": 0,
+    "FilmWhiteClip": 0.04,
+    "BlueCorrection": 0.6,
+    "ExpandGamut": 1,
+    "ToneCurveAmount": 1
+  },
+  "lut": {
+    "size": 32,
+    "max": 1.05,
+    "channelQuantizationBits": 10,
+    "shaper": "Log2",
+    "linearRange": 14,
+    "linearGrey": 0.18,
+    "exposureGrey": 444,
+    "codeValueMax": 1023,
+    "targetDisplayGamma": 2.2,
+    "sdrEncoding": "sRGB",
+    "inverseGammaY": 1
+  },
+  "captureInputs": false,
+  "backendMetadata": {
+    "file": ".scratch/unreal/color05/color-platform.json",
+    "sha256": "e97557f5de5863fe6f26d5dbad25d4e5d361f1a1c23a93f35945e891d54d47cd",
+    "containsPixelsOrParticles": false
+  },
+  "profilePolicy": "32-cube Log2 explicitly configured; source LUTMax1.05; neutral grading; SDR sRGB gamma2.2; preferred10bit supported by measured RHI capability"
+}

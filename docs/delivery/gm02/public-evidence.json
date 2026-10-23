@@ -1,0 +1,34 @@
+{
+  "schema": "gm02-public/v1",
+  "at": "2026-10-10T19:38:10.421Z",
+  "production": true,
+  "simulatedAuth": false,
+  "checks": [
+    "public_health_version_and_storage",
+    "public_guest_denied_gm",
+    "public_optimized_model_hash_and_bytes",
+    "real_public_browser_guest_join",
+    "real_owner_high_quality_gizmo_frames_have_no_caught_errors",
+    "real_owner_recovery_session_password_prompt_gm_placement_and_local_save",
+    "real_owner_gm02_base_rock_numeric_edit_is_draft_only_and_map_stays_unchanged",
+    "real_owner_gm02_saved_base_override_reopens_and_restore_returns_original_matrix",
+    "real_owner_gm02_base_duplicate_inherits_proxy_and_circle_radius_autosizes",
+    "real_owner_gm02_private_walk_moves_with_w_and_restores_camera_document_and_map",
+    "real_owner_gm02_signout_during_walk_removes_private_preview_without_join_or_map_mutation",
+    "real_owner_signout_closes_editor"
+  ],
+  "errors": [],
+  "version": "0.6.0-alpha.25",
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0
+  },
+  "guestBoot": {
+    "online": true,
+    "transport": "ws",
+    "serverMarked": true,
+    "signedIn": false
+  }
+}

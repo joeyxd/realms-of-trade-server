@@ -1,0 +1,397 @@
+{
+  "schema": "mn.delivery.v1",
+  "cut": "D08c.3",
+  "date": "2026-10-07",
+  "generatedAt": "2026-10-07T14:34:44.982Z",
+  "node": "v24.14.0",
+  "protocol": 18,
+  "mode": "ephemeral isolated local crew trial; ordinary game remains off",
+  "regressionBase": "265195718b8f99d78729570849ef1c2c3cf85982",
+  "archiveBase": "0379b2e47ea64c46e6c9064bd271b013a974910f",
+  "committedDelta": [
+    {
+      "file": "server/pearlEcsEffect.mjs",
+      "commit": "265195718b8f99d78729570849ef1c2c3cf85982",
+      "normalizedSha256": "6a40d2cd07da93dc1f9b98f166118a5930487103a213323ee832444595cf7904"
+    },
+    {
+      "file": "server/pearlStaging.mjs",
+      "commit": "265195718b8f99d78729570849ef1c2c3cf85982",
+      "normalizedSha256": "498d9a7492909aeb921d299c0b3ebc883adf6ce73003d6ae49d8bd23a87b8684"
+    },
+    {
+      "file": "src/net/localServer.js",
+      "commit": "265195718b8f99d78729570849ef1c2c3cf85982",
+      "normalizedSha256": "8bcf179becddca680388bb6748ece17b05d791bcedc83f712315e38f940b99fb"
+    },
+    {
+      "file": "src/net/pearlInputBoundary.js",
+      "commit": "265195718b8f99d78729570849ef1c2c3cf85982",
+      "normalizedSha256": "36649705ef3473330f89d86421946ca3e722eba216ded9b60a637044333201bd"
+    },
+    {
+      "file": "tests/pearl-input-boundary.test.mjs",
+      "commit": "265195718b8f99d78729570849ef1c2c3cf85982",
+      "normalizedSha256": "5e860b1ac5f4f6aaee04c7652238004f73789b19e66545beeb09884e74001a0f"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "file": "src/client/gameClient.js",
+      "bytes": 39690,
+      "sha256": "b5ef735dfb1dbe552b40a7e01ae21ea73603cccd302b319325f4bd6bf1001037",
+      "normalizedSha256": "b5ef735dfb1dbe552b40a7e01ae21ea73603cccd302b319325f4bd6bf1001037",
+      "isolatedNormalizedSha256": "b5ef735dfb1dbe552b40a7e01ae21ea73603cccd302b319325f4bd6bf1001037"
+    },
+    {
+      "file": "src/client/navalDeckPrediction.js",
+      "bytes": 6124,
+      "sha256": "b83a4106091d10f1000db32ef148fb70ad0f1402e578ff8cc3d9e2c3e7157c53",
+      "normalizedSha256": "b83a4106091d10f1000db32ef148fb70ad0f1402e578ff8cc3d9e2c3e7157c53",
+      "isolatedNormalizedSha256": "b83a4106091d10f1000db32ef148fb70ad0f1402e578ff8cc3d9e2c3e7157c53"
+    },
+    {
+      "file": "src/net/navalPilotServer.js",
+      "bytes": 3520,
+      "sha256": "5770ab01ed21c41dc619715e1d5150d0e1caf700f1198ed04069b86d35010639",
+      "normalizedSha256": "5770ab01ed21c41dc619715e1d5150d0e1caf700f1198ed04069b86d35010639",
+      "isolatedNormalizedSha256": "5770ab01ed21c41dc619715e1d5150d0e1caf700f1198ed04069b86d35010639"
+    },
+    {
+      "file": "src/net/protocol.js",
+      "bytes": 4086,
+      "sha256": "2895daad43fcb7a7cc04451ef781f38b632a7eecbf267ee6c7e54e1b829a0519",
+      "normalizedSha256": "2895daad43fcb7a7cc04451ef781f38b632a7eecbf267ee6c7e54e1b829a0519",
+      "isolatedNormalizedSha256": "2895daad43fcb7a7cc04451ef781f38b632a7eecbf267ee6c7e54e1b829a0519"
+    },
+    {
+      "file": "src/sim/naval/pilot.js",
+      "bytes": 16580,
+      "sha256": "0e41b44ba2b232549141d9418df4d4cc2eca959a6079ba429a47e784aa721bdc",
+      "normalizedSha256": "0e41b44ba2b232549141d9418df4d4cc2eca959a6079ba429a47e784aa721bdc",
+      "isolatedNormalizedSha256": "0e41b44ba2b232549141d9418df4d4cc2eca959a6079ba429a47e784aa721bdc"
+    },
+    {
+      "file": "src/sim/naval/trial.js",
+      "bytes": 8923,
+      "sha256": "ec213215392178b9863a4c57d10fb0e827e4ed0aac0a6002b425e18d38e7edc7",
+      "normalizedSha256": "ec213215392178b9863a4c57d10fb0e827e4ed0aac0a6002b425e18d38e7edc7",
+      "isolatedNormalizedSha256": "ec213215392178b9863a4c57d10fb0e827e4ed0aac0a6002b425e18d38e7edc7"
+    },
+    {
+      "file": "src/sim/naval/deckWalk.js",
+      "bytes": 4325,
+      "sha256": "a12c02f2401d5cc94d37f06eeb32a7d477e5f3abc44993b71324df86ff729ca1",
+      "normalizedSha256": "a12c02f2401d5cc94d37f06eeb32a7d477e5f3abc44993b71324df86ff729ca1",
+      "isolatedNormalizedSha256": "a12c02f2401d5cc94d37f06eeb32a7d477e5f3abc44993b71324df86ff729ca1"
+    },
+    {
+      "file": "src/sim/world.js",
+      "bytes": 39543,
+      "sha256": "f259f84db47f16c567f1a0314c3cc53977894f083872250ebd42dd8a2fc4eab4",
+      "normalizedSha256": "1dafccd5888146f1e209e1982b40cf95d3810477ac76bc6082e17fb2a3d64781",
+      "isolatedNormalizedSha256": "1dafccd5888146f1e209e1982b40cf95d3810477ac76bc6082e17fb2a3d64781"
+    },
+    {
+      "file": "tools/naval-pilot/main.js",
+      "bytes": 31919,
+      "sha256": "233884625d49166ae9657b681546e4baf627b93d8835fd7cc43fdd7e0989e593",
+      "normalizedSha256": "233884625d49166ae9657b681546e4baf627b93d8835fd7cc43fdd7e0989e593",
+      "isolatedNormalizedSha256": "233884625d49166ae9657b681546e4baf627b93d8835fd7cc43fdd7e0989e593"
+    },
+    {
+      "file": "tools/naval-pilot/index.html",
+      "bytes": 4480,
+      "sha256": "b2c9e622551774545cab12499dcde4c2cd5cb7359b9c1b9232cc5cd9da2148fd",
+      "normalizedSha256": "b2c9e622551774545cab12499dcde4c2cd5cb7359b9c1b9232cc5cd9da2148fd",
+      "isolatedNormalizedSha256": "b2c9e622551774545cab12499dcde4c2cd5cb7359b9c1b9232cc5cd9da2148fd"
+    },
+    {
+      "file": "tools/naval-pilot/style.css",
+      "bytes": 10470,
+      "sha256": "036508d47d3cd28b053cb5bd8abb566592ffbd2873de25f543c776133c56e542",
+      "normalizedSha256": "036508d47d3cd28b053cb5bd8abb566592ffbd2873de25f543c776133c56e542",
+      "isolatedNormalizedSha256": "036508d47d3cd28b053cb5bd8abb566592ffbd2873de25f543c776133c56e542"
+    },
+    {
+      "file": "tests/naval-deck-walk.test.mjs",
+      "bytes": 5177,
+      "sha256": "2667c8f60a13e28dbf298838746386b28bc503a61d19ee5296f4c7dd5efe3296",
+      "normalizedSha256": "2667c8f60a13e28dbf298838746386b28bc503a61d19ee5296f4c7dd5efe3296",
+      "isolatedNormalizedSha256": "2667c8f60a13e28dbf298838746386b28bc503a61d19ee5296f4c7dd5efe3296"
+    },
+    {
+      "file": "tests/naval-deck-prediction.test.mjs",
+      "bytes": 6110,
+      "sha256": "d9fea0e16c3167e8a867763d89d40a27dc51107baa8118305df28ce3b2ef7792",
+      "normalizedSha256": "d9fea0e16c3167e8a867763d89d40a27dc51107baa8118305df28ce3b2ef7792",
+      "isolatedNormalizedSha256": "d9fea0e16c3167e8a867763d89d40a27dc51107baa8118305df28ce3b2ef7792"
+    },
+    {
+      "file": "tests/naval-crew-authority.test.mjs",
+      "bytes": 17294,
+      "sha256": "21a993109dd7af446c5684adab2ca09b5fae059f128713d1c221cb8f5fea1130",
+      "normalizedSha256": "21a993109dd7af446c5684adab2ca09b5fae059f128713d1c221cb8f5fea1130",
+      "isolatedNormalizedSha256": "21a993109dd7af446c5684adab2ca09b5fae059f128713d1c221cb8f5fea1130"
+    },
+    {
+      "file": "tests/naval-crew-client.test.mjs",
+      "bytes": 13429,
+      "sha256": "91e0d09f7254df6f24bac6ba2a65de83c51c0a36fbe5ebd42f94b6ecc1ed300a",
+      "normalizedSha256": "91e0d09f7254df6f24bac6ba2a65de83c51c0a36fbe5ebd42f94b6ecc1ed300a",
+      "isolatedNormalizedSha256": "91e0d09f7254df6f24bac6ba2a65de83c51c0a36fbe5ebd42f94b6ecc1ed300a"
+    }
+  ],
+  "regression": {
+    "files": [
+      "tests/combat.test.mjs",
+      "tests/naval-contact.test.mjs",
+      "tests/naval-damage-integration.test.mjs",
+      "tests/naval-handling.test.mjs",
+      "tests/naval-lab-camera.test.mjs",
+      "tests/naval-lab-clock.test.mjs",
+      "tests/naval-lab-feedback.test.mjs",
+      "tests/naval-lab-hud-state.test.mjs",
+      "tests/naval-lab-input.test.mjs",
+      "tests/naval-lab-look.test.mjs",
+      "tests/naval-lab-raft-skin.test.mjs",
+      "tests/naval-lab-reference-fx.test.mjs",
+      "tests/naval-lab-scenery.test.mjs",
+      "tests/naval-lab-server.test.mjs",
+      "tests/naval-lab-speed-feel.test.mjs",
+      "tests/naval-navigation.test.mjs",
+      "tests/naval-operational.test.mjs",
+      "tests/naval-structure.test.mjs",
+      "tests/naval-trial-authority.test.mjs",
+      "tests/naval-trial-body.test.mjs",
+      "tests/pearl-tick-access.test.mjs",
+      "tests/pearl-tick-effects.test.mjs",
+      "tests/raft-editor.test.mjs",
+      "tests/raft-input.test.mjs",
+      "tests/raft-materials.test.mjs",
+      "tests/raft-movement.test.mjs",
+      "tests/raft-production.test.mjs",
+      "tests/raft-production-server.test.mjs",
+      "tests/raft-renderer.test.mjs",
+      "tests/rafts.test.mjs",
+      "tests/rafts-store.test.mjs",
+      "tests/tattoos.test.mjs",
+      "tests/tattoos2.test.mjs",
+      "tests/world-host.test.mjs",
+      "tests/world-state.test.mjs",
+      "tests/naval-pilot-authority.test.mjs",
+      "tests/naval-pilot-client.test.mjs",
+      "tests/naval-pilot-geometry.test.mjs",
+      "tests/naval-pilot-prediction.test.mjs",
+      "tests/pearl-tick-apply.test.mjs",
+      "tests/naval-deck-walk.test.mjs",
+      "tests/naval-deck-prediction.test.mjs",
+      "tests/naval-crew-authority.test.mjs",
+      "tests/naval-crew-client.test.mjs",
+      "tests/pearl-profile-snapshot.test.mjs",
+      "tests/pearl-input-boundary.test.mjs"
+    ],
+    "tests": 384,
+    "pass": 384,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 94233.0178,
+    "exitCode": 0,
+    "logSha256": "56a578fdc08b15d5fe1b726145f25e8e2512cb435d8338f34b802ba2d2ee914c",
+    "localLog": ".scratch/d08c3-regression.log",
+    "newCrewTests": {
+      "locomotion": 4,
+      "prediction": 5,
+      "authority": 7,
+      "client": 5,
+      "total": 21
+    }
+  },
+  "browser": {
+    "file": "docs/delivery/d08c3-relative-crew/evidence.json",
+    "sha256": "cd9bdbc3b46eff7dbfc638b182b54f117520d03940bcaff19561cd539b34499f",
+    "ok": true,
+    "environment": "isolated Chrome headless/SwiftShader; cloned local transport; no physical device/FPS/WAN/audio acceptance",
+    "beforeFinalAdjustment": "operational geometry validation when re-entering walk after internal wall damage; covered by final authority regression",
+    "scenarios": [
+      {
+        "viewport": {
+          "name": "desktop-1280x800",
+          "width": 1280,
+          "height": 800,
+          "touch": false
+        },
+        "house": false,
+        "ok": true,
+        "touchEvents": [],
+        "conservation": {
+          "profile": true,
+          "source": true,
+          "guest": true,
+          "noBodies": true,
+          "noOverflow": true,
+          "errors": [],
+          "assetErrors": [],
+          "gl": 0
+        }
+      },
+      {
+        "viewport": {
+          "name": "mobile-portrait-390x844",
+          "width": 390,
+          "height": 844,
+          "touch": true
+        },
+        "house": false,
+        "ok": true,
+        "touchEvents": [
+          {
+            "type": "touch",
+            "trusted": true
+          }
+        ],
+        "conservation": {
+          "profile": true,
+          "source": true,
+          "guest": true,
+          "noBodies": true,
+          "noOverflow": true,
+          "errors": [],
+          "assetErrors": [],
+          "gl": 0
+        }
+      },
+      {
+        "viewport": {
+          "name": "mobile-landscape-844x390",
+          "width": 844,
+          "height": 390,
+          "touch": true
+        },
+        "house": false,
+        "ok": true,
+        "touchEvents": [
+          {
+            "type": "touch",
+            "trusted": true
+          }
+        ],
+        "conservation": {
+          "profile": true,
+          "source": true,
+          "guest": true,
+          "noBodies": true,
+          "noOverflow": true,
+          "errors": [],
+          "assetErrors": [],
+          "gl": 0
+        }
+      },
+      {
+        "viewport": {
+          "name": "desktop-1280x800",
+          "width": 1280,
+          "height": 800,
+          "touch": false
+        },
+        "house": true,
+        "ok": true,
+        "touchEvents": [],
+        "conservation": {
+          "profile": true,
+          "source": true,
+          "guest": true,
+          "noBodies": true,
+          "noOverflow": true,
+          "errors": [],
+          "assetErrors": [],
+          "gl": 0
+        }
+      }
+    ],
+    "captures": [
+      {
+        "file": "docs/delivery/d08c3-relative-crew/desktop-1280x800-ui-v1.png",
+        "bytes": 734431,
+        "sha256": "ec7301e838eb2a58a8e21086e3f58783f36ed5b0a7d05b0726af4ac85ababc59",
+        "inspected": true
+      },
+      {
+        "file": "docs/delivery/d08c3-relative-crew/desktop-1280x800-canvas-v1.png",
+        "bytes": 565513,
+        "sha256": "394756e9d4a31c4f124a2f320e9b92c61363a3ecdc01915a69b04d7e0db3dbc0",
+        "inspected": true
+      },
+      {
+        "file": "docs/delivery/d08c3-relative-crew/mobile-portrait-390x844-ui-v1.png",
+        "bytes": 257990,
+        "sha256": "4de6413b9528c25c8aa100a175a4a0921556b7e2c5c967214927430af3036f98",
+        "inspected": true
+      },
+      {
+        "file": "docs/delivery/d08c3-relative-crew/mobile-portrait-390x844-canvas-v1.png",
+        "bytes": 165268,
+        "sha256": "75d9e94c3c643d5b479350e12fea516ed938c01667a2949ab1ffc2b926019b46",
+        "inspected": true
+      },
+      {
+        "file": "docs/delivery/d08c3-relative-crew/mobile-landscape-844x390-ui-v1.png",
+        "bytes": 340561,
+        "sha256": "952ed7cb076470d9832501f9e02473d58a734b0154346943bb354b3759d76005",
+        "inspected": true
+      },
+      {
+        "file": "docs/delivery/d08c3-relative-crew/mobile-landscape-844x390-canvas-v1.png",
+        "bytes": 234429,
+        "sha256": "432cac41be0f99d63f21093ab2bc9b233c3d6babbbc184f5f2cba4bd7365b3ad",
+        "inspected": true
+      },
+      {
+        "file": "docs/delivery/d08c3-relative-crew/desktop-1280x800-house-ui-v1.png",
+        "bytes": 727894,
+        "sha256": "1d1cd4064d1300ef1a82b3c990457be73f2c20e2a49af56d5585d21c4a3f9038",
+        "inspected": true
+      },
+      {
+        "file": "docs/delivery/d08c3-relative-crew/desktop-1280x800-house-canvas-v1.png",
+        "bytes": 558729,
+        "sha256": "9030218d0387eaba11075089631793cc93ff7f5a05ee51fa4e41a99f88af18a1",
+        "inspected": true
+      }
+    ]
+  },
+  "qaScript": {
+    "file": "tools/qa-naval-crew.mjs",
+    "sha256": "9562781d381a40b52c86e7a7d5e02fffe606978b28a857db3927dc19aa5293f5"
+  },
+  "reuse": {
+    "exported": false,
+    "newTextureRequests": 0,
+    "candidates": [
+      {
+        "file": "MM_Walk_InPlace.uasset",
+        "bytes": 716238
+      },
+      {
+        "file": "MM_Walk_Fwd.uasset",
+        "bytes": 549134
+      },
+      {
+        "file": "MM_Run_Fwd.uasset",
+        "bytes": 482628
+      }
+    ],
+    "source": "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Demo\\UE5_Manny\\Animations\\Manny",
+    "decision": "existing procedural character/stepMover/RaftDeck/rendering; no compatible exported rig verified; Unreal unchanged"
+  },
+  "limits": [
+    "local trial only",
+    "four technical crew slots, not material/skill progression",
+    "discrete coast return fence, not continuous contact/HP",
+    "no public activation or persistent risk",
+    "no combat/dash/crew collision/human ballast/building/production aboard",
+    "physical device/balance acceptance pending"
+  ]
+}

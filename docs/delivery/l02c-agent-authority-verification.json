@@ -1,0 +1,155 @@
+{
+  "schema": "l02c-agent-authority-verification/v1",
+  "status": "local_software_verified",
+  "generatedAt": "2026-10-08T21:18:52.521Z",
+  "checkout": {
+    "head": "da98c6b162670808bbf31c08574ef60be6b8a7fa",
+    "branch": "claude/loving-lovelace-ptbif7",
+    "sharedDirty": true,
+    "missionCommit": null,
+    "hashBasis": "Complete root-run TAP with before/after fingerprints; shared checkout is not an immutable snapshot."
+  },
+  "protocol": {
+    "version": 28,
+    "previous": 27,
+    "changedByMission": true,
+    "agentOrderVersion": 1
+  },
+  "agentTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs tests/agent-movement.test.mjs tests/agent-movement-network.test.mjs tests/agent-movement-runner.test.mjs tests/agent-pve.test.mjs tests/agent-pve-network.test.mjs tests/agent-pve-runner.test.mjs tests/agent-authority.test.mjs tests/agent-authority-network.test.mjs tests/agent-authority-runner.test.mjs",
+    "head": "da98c6b162670808bbf31c08574ef60be6b8a7fa",
+    "startedAt": "2026-10-08T21:11:50.807Z",
+    "finishedAt": "2026-10-08T21:12:45.549Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 164,
+    "pass": 163,
+    "fail": 0,
+    "skipped": 1,
+    "cancelled": 0,
+    "durationMs": 54586.6971,
+    "stderr": "",
+    "log": "agents-tests.tap",
+    "changedDuringSuite": [],
+    "dependencyCount": 353,
+    "dependencyHashes": "docs/delivery/l02c-agent-authority/agents-tests.json"
+  },
+  "regressionTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/server.test.mjs tests/accounts-server.test.mjs tests/account-auth.test.mjs tests/account-import.test.mjs tests/naval-pilot-authority.test.mjs tests/naval-crew-authority.test.mjs tests/pearl-input-boundary.test.mjs tests/pearl-host-mount.test.mjs tests/death-host-mount.test.mjs tests/combat-death-host.test.mjs tests/death-drop-host.test.mjs tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs tests/combat.test.mjs tests/weapons.test.mjs tests/lawless.test.mjs tests/items.test.mjs",
+    "head": "da98c6b162670808bbf31c08574ef60be6b8a7fa",
+    "startedAt": "2026-10-08T21:11:29.432Z",
+    "finishedAt": "2026-10-08T21:12:48.281Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 206,
+    "pass": 206,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "durationMs": 78717.4308,
+    "stderr": "",
+    "log": "regression-tests.tap",
+    "changedDuringSuite": [],
+    "dependencyCount": 339,
+    "dependencyHashes": "docs/delivery/l02c-agent-authority/regression-tests.json"
+  },
+  "dependencyStability": {
+    "status": "verified",
+    "finalDrift": [],
+    "noRuntimeEditsAfterAcceptance": true
+  },
+  "planIntegrity": {
+    "agreedDirectionRows": 22,
+    "agreementAndDemonstrationUnchanged": true,
+    "da3Unchanged": true,
+    "da3State": "Propuesto; por acordar",
+    "baseline": "docs/delivery/l02c-agent-authority/baseline.json"
+  },
+  "localProof": {
+    "realWebSocket": true,
+    "realChildCli": true,
+    "authenticatedResolver": "injected local fixture; no production account-provider verification",
+    "ownerAndCharacterAccounts": "separate",
+    "serverPolicy": "trusted opt-in API only",
+    "defaultEntrypointEnabled": false,
+    "inferenceCalls": 0,
+    "liveDeployment": false,
+    "newSqlMigrations": false,
+    "externalServicesTouched": false,
+    "existingEmbeddedSqlRegressionRan": true
+  },
+  "guarantees": [
+    "exclusive controller",
+    "authenticated account owner principal",
+    "fresh server session and control epoch",
+    "direct > goal > reflex with task CAS",
+    "queue/carry/last cleared and neutral scheduled before next allowed tick",
+    "discarded commands receive no application ACK",
+    "late tasks and old epochs rejected",
+    "death/expiry/disconnect/failing admission retire controller",
+    "resume never restores old tasks",
+    "token excluded from CLI arguments/output/context/owner files",
+    "bounded reentry attempts and action history"
+  ],
+  "limits": [
+    "No provisioning, owner UI, production activation or custody workflow",
+    "Per-process bindings/leases without durable restart recovery or multi-host exclusivity",
+    "neutralPending does not prove a physical tick has run",
+    "Applied effects, including started attacks, are not rolled back",
+    "Lost receipts preserve uncertain/unproven status",
+    "Capability/task input checks do not prove high-level trajectory fidelity",
+    "PvE proximity suppression is not a complete PvP/perception policy",
+    "Windows symlink escape test skipped due to EPERM",
+    "No real model/tokenizer/cost verification; L03-L06 pending"
+  ],
+  "unrealReuse": {
+    "sourceReadOnly": true,
+    "candidates": [
+      {
+        "path": "C:/Unreal/ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/Character/Blueprints/BP_ARPG_PlayerController.uasset",
+        "bytes": 5365068
+      },
+      {
+        "path": "C:/Unreal/ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/AI/Behavior/AIBehaviorTree.uasset",
+        "bytes": 111879
+      }
+    ],
+    "decision": "Blueprints are conceptual references, not portable Node/ws authority; no export or source modification"
+  },
+  "sourceFiles": {
+    "server/agentControl.mjs": "1c00b104c0a5379b0998c11cd8fce6353452c567fe44eefcbb20e2075247d8c9",
+    "server/host.mjs": "82aeb58ace2febd2a7980cf0ee7425f39e68060074c3549d9f36bb6bca452b3a",
+    "server/index.mjs": "488609658152b90a23af88b57c0568503351d0e2996178a45cd1f27e158f31cb",
+    "src/net/localServer.js": "ec3a2b436a3d6a56edb249673c94ce8920d1458dc51628c10e038c06dd0e0e96",
+    "src/net/protocol.js": "f96a120bb0e1974c39e087e747008bb8cca5212fdd85662d9e0445c5acb3fb52",
+    "tools/agent/network-client.mjs": "d42917f37275776699ef0a1af992f907d80c6f752df04fbd95d84e66c47c9206",
+    "tools/agent/network-runner.mjs": "ec0d0be5273a2d18f646d28f6e3d47e3483fa516a421c5b99f3201ad633da542",
+    "tools/agent/run.mjs": "43aa56596b975bfab00670a65dec6fc43e3926c3d4a6ee7a915b15bc145920e9",
+    "tools/qa-agent-authority.mjs": "ebe48a6a8adb4028bc6e0be2ee138c74fc4fdf9ec54a47e4cc34f6d2798b9702",
+    "tools/qa-agent-authority-evidence.mjs": "54b41633b05f43e1917bcbdd7f252167a82e1089a301c8c411c3ab285e5ca9d4",
+    "tests/agent-authority.test.mjs": "8f0a92f50fe3cf0b516e0b45106bb4926f9408c97fd921d46889c8119614008b",
+    "tests/agent-authority-network.test.mjs": "4f5b2e29a411a05a0df9da01b349a611656f7e24b85dd3f33fd7170e20fec293",
+    "tests/agent-authority-runner.test.mjs": "87793f5eca9076409e583623defe386f00f0e4c737ef28acf080edb204296a73",
+    "docs/agents/authority-runner.md": "c554a45c90c77cea536e0600d246fca25ad7b8d9c9dc7d305b654e0b8e2c0255",
+    "docs/briefs/l02c-agent-authority.md": "edbcc523d82bef4725a27d6f7f3edb46c931a0581c4f45f5612fb590fd0970f7",
+    "docs/delivery/l02c-agent-authority.md": "8c7d106e4ddc9247efdad69d720d0a63e8981c06fe04723de4e82e943544cd5e",
+    "PLAN-EXTRA-LLM.md": "1928c8db88cf5dde39936cc7743e325aeaf34db62b8a87ed9ab0d44ab165cbde",
+    "PLAN-DELIVERY.md": "8373a0be0d7867210a911701d3d1c94d541ac7ae1ea09bc21b2d704574dad44e",
+    "DESIGN.md": "f5e308d7a0a0348c10a383ffd465a0d787718f30c8f3677263c30b2ff6c90e0a",
+    "docs/HANDOFF.md": "1bc1842fae28b742410354cbc8652d7c42dc88ff035d51046b7fe811bd11e856",
+    "docs/agents/interface-v1.md": "18a014a99b8a35c1c9266487655c819adef991c5eafad6bfaaa4e11c9ec4e345",
+    "docs/agents/network-runner.md": "5103774f4735d12f211366163a9874f1a0266281aa5715d7acf304f46b773fff",
+    "docs/agents/lifecycle-runner.md": "dc6562d486bf1dcabe86a9f6d34f057468759b1f07d950b009f57bbcec63e447",
+    "docs/agents/movement-runner.md": "aac0dbc353c64ccddf5ec0c97d804e8ddd0250cf9b5dcd488b653ca1e51b1d80",
+    "docs/agents/pve-runner.md": "0864c94c6ee3ba63a2e3709066113eb6df87b81b3e9774ff0b682fbb28471b85",
+    "docs/agents/chat-runner.md": "f3a445ed78e640d49d7a60175235c71a5b12dac7fd550fd2353dc20a09142cf3"
+  },
+  "evidenceFiles": {
+    "docs/delivery/l02c-agent-authority/agents-tests.tap": "db1b12b8d731777be2ded90492945e08b7ebcf1a4b7428167778139b971eff3b",
+    "docs/delivery/l02c-agent-authority/agents-tests.json": "af59851d9e33bf6069bf3c21179bcc9833d5dbcd930b40c1a2987a593afe4ece",
+    "docs/delivery/l02c-agent-authority/regression-tests.tap": "095c9a774838bf89e6de54e189c2bbebb0011b0364069cbce898791b6834fa9d",
+    "docs/delivery/l02c-agent-authority/regression-tests.json": "9d84898236c14f156714b75e19ce084bffd4b8ef16906599316553d0e64f274c",
+    "docs/delivery/l02c-agent-authority/baseline.json": "90024e1d844b1c7ac9ca59fc321dede74f7272a1adc40dd1ffb924b13f88433a"
+  },
+  "nextSlice": "L03a: bounded structured decisions, complete prompt budget, timeout and one request in flight"
+}

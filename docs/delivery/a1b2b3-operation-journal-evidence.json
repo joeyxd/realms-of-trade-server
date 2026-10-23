@@ -1,0 +1,140 @@
+{
+  "schema": "realms.community.operation-journal-acceptance.v1",
+  "checkedAt": "2026-10-09T20:22:08.994Z",
+  "reviewBase": "07aed9110e08b720184bd9bd236310b20b41403a",
+  "runtime": "v24.14.0",
+  "uniqueCases": 131,
+  "newUniqueCases": 27,
+  "regressionCases": 104,
+  "groups": [
+    {
+      "log": ".scratch/a1b2b3-focused-acceptance.log",
+      "tests": 26,
+      "pass": 26,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "duration_ms": 16028.5442,
+      "command": "node --test --test-concurrency=1 tests/community-operation-recovery.test.mjs tests/community-operation-sql.test.mjs tests/community-operation-startup-sql.test.mjs"
+    },
+    {
+      "log": ".scratch/a1b2b3-startup-final.log",
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "duration_ms": 5608.896,
+      "command": "node --test --test-concurrency=1 tests/community-operation-startup-sql.test.mjs",
+      "repeatedCases": 5,
+      "addedCases": 1
+    },
+    {
+      "log": ".scratch/a1b2b3-regression-acceptance.log",
+      "tests": 104,
+      "pass": 104,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "duration_ms": 50913.2701,
+      "command": "node --test --test-concurrency=1 tests/community-contribution.test.mjs tests/community-contribution-sql.test.mjs tests/community-contribution-boundaries.test.mjs tests/community-contribution-coexistence.test.mjs tests/community-character-saves.test.mjs tests/community-scoped-sessions.test.mjs tests/community-scoped-sessions-sql.test.mjs tests/community-character-bindings.test.mjs tests/community-bound-sessions.test.mjs tests/community-bound-auth-sql.test.mjs tests/community-identity.test.mjs tests/community-identity-sql.test.mjs"
+    }
+  ],
+  "syntax": [
+    {
+      "file": "server/community/memoryContributionStore.mjs",
+      "exitCode": 0
+    },
+    {
+      "file": "server/community/operationJournalContract.mjs",
+      "exitCode": 0
+    },
+    {
+      "file": "server/community/operationRecovery.mjs",
+      "exitCode": 0
+    },
+    {
+      "file": "server/community/supabaseOperationStore.mjs",
+      "exitCode": 0
+    },
+    {
+      "file": "tests/community-operation-recovery.test.mjs",
+      "exitCode": 0
+    },
+    {
+      "file": "tests/community-operation-sql.test.mjs",
+      "exitCode": 0
+    },
+    {
+      "file": "tests/community-operation-startup-sql.test.mjs",
+      "exitCode": 0
+    },
+    {
+      "file": "tests/helpers/community-operation-sql.mjs",
+      "exitCode": 0
+    }
+  ],
+  "files": [
+    {
+      "file": "server/community/memoryContributionStore.mjs",
+      "sha256": "8b36d1dcaf45c61070eaabbd11971e3c6f9e7d688877e0b650deaff51e93244d",
+      "gitBlob": "17e0e584c98f7aa773ac2d017eadc13e93dfca35"
+    },
+    {
+      "file": "server/community/operationJournalContract.mjs",
+      "sha256": "687a0c8e3a5db8fd202cb17d261ba6b2fa7bb9092edd9ab0fc3150bd154eb126",
+      "gitBlob": "d959ec859a0b972ce94ec33ac55a587ce9e56e15"
+    },
+    {
+      "file": "server/community/operationRecovery.mjs",
+      "sha256": "407952de39191387a84c91a2de9a9cc790e167f1461806713a25b06a01de43cb",
+      "gitBlob": "7ddbaac36ed636180e66a7ca1cd96dee7b7e96ac"
+    },
+    {
+      "file": "server/community/supabaseOperationStore.mjs",
+      "sha256": "d65942e75b5d1bb3b99a51f1a4139ffdc6084614748c0b7bd89a3630016b4f50",
+      "gitBlob": "deda5a7be1f932c3b6307c28aa50ac2d4efa6663"
+    },
+    {
+      "file": "server/migrations/community/005_operation_journal.sql",
+      "sha256": "39fcbe94e30324328f03665dd25a7f34cbba0beeb867d2e892788a570f7c19db",
+      "gitBlob": "a98312e0d92df4764fa7aafd2e959db74c6e5b7e"
+    },
+    {
+      "file": "tests/community-operation-recovery.test.mjs",
+      "sha256": "e8754255ea9e103123241470fc2e382546a56354267c7836a5c7ae7ce7c772d0",
+      "gitBlob": "cdb27336f8c0d0055a7fefc4f53bc7ff63444245"
+    },
+    {
+      "file": "tests/community-operation-sql.test.mjs",
+      "sha256": "b657555132c728688b6e6be6c1c14b55148c5cbd7f2f72138e7c76ac62d7de9c",
+      "gitBlob": "7b22bb86776a76790998fdfef16b61c0103ea05d"
+    },
+    {
+      "file": "tests/community-operation-startup-sql.test.mjs",
+      "sha256": "9689e79cdc227ca79afe9ff499f456545330c09e1ab2418def46cedba9d43cee",
+      "gitBlob": "59f502835c2b56e601214e2329e760bade5cc03d"
+    },
+    {
+      "file": "tests/helpers/community-operation-sql.mjs",
+      "sha256": "a0816daf1a19d865f442176b85ab94ca1f527685abf9ddb41306eb0a10edce5d",
+      "gitBlob": "7b71cd0bbec7399b701bcd02165039b61236ad94"
+    }
+  ],
+  "conditions": {
+    "database": "local PGlite; serialized queries",
+    "transport": "real Supabase SDK with fixture fetch",
+    "startup": "single owner; no second writer; optional unmounted barrier",
+    "cleanDiskReopen": true,
+    "abruptCrashTested": false,
+    "independentPostgresConnectionsTested": false,
+    "liveSqlApplied": false,
+    "mountedInSessions": false,
+    "mountedInGameHost": false,
+    "ecsPublication": false,
+    "distributedLease": false,
+    "envReadOrChanged": false,
+    "deployed": false,
+    "browserRequired": false
+  }
+}

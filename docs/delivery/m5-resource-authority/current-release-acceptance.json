@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-10T18:43:12.533Z",
+  "revision": "4c6743b87b71ba765e316cd1652d1e4f23991501",
+  "version": "0.6.0-alpha.23",
+  "protocol": 36,
+  "pass": 57,
+  "fail": 0,
+  "durationMs": 29317.4626,
+  "scope": "resource authority, SQL, process crashes, profile compatibility and coastal pilot learning",
+  "artifact": "current-release-acceptance.tap",
+  "sha256": {
+    "server/host.mjs": "33a9e33367c7188ae7ec17af1242ff194849d1334990549b3ca18d8293822bf1",
+    "server/economicAuthority.mjs": "4b5240e1560a94e5a66d5d18f1a11c6bc0621bb777ef22a9d167228422b6b595",
+    "server/economicOperation.mjs": "78d4bd741ba8da33035ecbc6d647e0f2797cbaf5f79041174a0e0cc77c0e8ceb",
+    "server/resourceState.mjs": "017d05193dd62a49204b3712d419a00f18ca314c1dda48c9e5da6300158e5eb6",
+    "server/store.mjs": "4058fae30d1efbf1baa936229352a1cc4c4fdb252edcf7979e06bcdf7c0a2ba2",
+    "server/worldState.mjs": "fb1614187b94e21152eb8b5d9791bbc5ce92369fd70093b0a66c682f65ac0c60",
+    "server/migrations/015_resource_operations.sql": "596ffe1675264790f9247f35fdd4a972b045b7f408c35dcbf3b23aa82df6e9bb",
+    "src/sim/systems/progression.js": "e6a97a603c4bbea5185f11afb987a1191eb1f9ace2b67a005d789d357c15a5cd",
+    "src/net/localServer.js": "443d705894785a23fe735ff63b447c807aaeef4a17cf1e452f3790010ee2cfeb",
+    "src/net/protocol.js": "29c441c192de4bde5c192c28166dd50b916fed34f21fd39c12733fce829d5948"
+  }
+}

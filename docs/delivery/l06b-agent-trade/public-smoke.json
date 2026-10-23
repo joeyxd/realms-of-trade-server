@@ -1,0 +1,55 @@
+{
+  "schema": "mn.l06b.trade.public.v1",
+  "at": "2026-10-10T19:58:30.174Z",
+  "target": "public TLS",
+  "pass": true,
+  "checks": [
+    {
+      "check": "public_health_200",
+      "pass": true
+    },
+    {
+      "check": "durable_M5_resources_healthy",
+      "pass": true,
+      "version": "0.6.0-alpha.26",
+      "logging": true
+    },
+    {
+      "check": "published_protocol",
+      "pass": true,
+      "protocol": 38
+    },
+    {
+      "check": "operator_tools_not_public",
+      "pass": true
+    },
+    {
+      "check": "ordinary_guest_real_public_entry",
+      "pass": true
+    },
+    {
+      "check": "public_guest_market_forbidden",
+      "pass": true
+    },
+    {
+      "check": "public_guest_trade_forbidden_without_receipt",
+      "pass": true
+    },
+    {
+      "check": "public_guest_budget_forbidden",
+      "pass": true
+    },
+    {
+      "check": "unconfigured_public_agent_admission_denied",
+      "pass": true
+    },
+    {
+      "check": "old_protocol_requires_reload",
+      "pass": true
+    }
+  ],
+  "limits": [
+    "Guest wire entry only; no authenticated economic transaction repeated.",
+    "Public agent pilot/trade/provider remains disabled; SQL017 not applied by this cut."
+  ]
+}

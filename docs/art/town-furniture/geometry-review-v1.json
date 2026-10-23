@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "family": "town-furniture-v1",
+  "staticPropsCompared": 26,
+  "staticGeometryUnchanged": true,
+  "PCcameraUnchanged": true,
+  "benchBefore": {
+    "meshSubmissions": 6,
+    "triangles": 188,
+    "attributesBytes": 12840
+  },
+  "benchAfter": {
+    "meshSubmissions": 2,
+    "triangles": 284,
+    "attributesBytes": 40512
+  },
+  "benchSubmissionTriangleDelta": 96,
+  "propsBefore": {
+    "meshSubmissions": 28,
+    "triangles": 46834,
+    "attributesBytes": 7462448
+  },
+  "propsAfter": {
+    "meshSubmissions": 28,
+    "triangles": 46834,
+    "attributesBytes": 7462448
+  },
+  "propsShapeUnchanged": true,
+  "resourcesUnchanged": true,
+  "buffersScope": "Per mesh attribute/index totals; legacy shared leg geometry repeated four times. Not VRAM or physical FPS.",
+  "afterViews": 21,
+  "afterQualityTransitions": 28
+}

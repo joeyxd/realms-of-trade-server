@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "family": "dock-ropes-v1",
+  "policy": "Exact props.js copied before S16; exact final after sources. --check verifies immutable historical copies without refreshing from live sources.",
+  "files": [
+    {
+      "phase": "before",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/dock-ropes-v1/before/props.source.js",
+      "bytes": 36388,
+      "sha256": "9e5bfebb7e6035aecc4aedc7fc1a72c57978c1d73c1f0c1300b2b207b6d03446"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/dock-ropes-v1/after/props.js",
+      "bytes": 36535,
+      "sha256": "b4e61d6af9d4a521abfc9cbe4c5ae95fa6e276938d3f5013542427dcaf014d7b"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/dockRopes.js",
+      "snapshot": "docs/art/source/dock-ropes-v1/after/dockRopes.js",
+      "bytes": 4182,
+      "sha256": "e5ef70a1486581d620a62e0385a35683b096e9bc16e646671c4633259f9f1822"
+    },
+    {
+      "phase": "after",
+      "source": "tests/dock-ropes.test.mjs",
+      "snapshot": "docs/art/source/dock-ropes-v1/after/dock-ropes.test.mjs",
+      "bytes": 9517,
+      "sha256": "7a4781f8818dd454fa2626cf223e1c17780ed637e32b7e6fac2c1a33ee1721b7"
+    },
+    {
+      "phase": "after",
+      "source": "tools/qa-dock-ropes.playwright.js",
+      "snapshot": "docs/art/source/dock-ropes-v1/after/qa-dock-ropes.playwright.js",
+      "bytes": 7921,
+      "sha256": "32e2d988831a3861da79615b25bada42cc92f8f69b23a1756aea46dbdba67c76"
+    },
+    {
+      "phase": "after",
+      "source": "tools/prepare-dock-ropes-sources.mjs",
+      "snapshot": "docs/art/source/dock-ropes-v1/after/prepare-dock-ropes-sources.mjs",
+      "bytes": 3657,
+      "sha256": "6a4266a43ba38806aa42155f358cfb22b019add2c6e72c971be6b1bb13527ff7"
+    },
+    {
+      "phase": "after",
+      "source": "tools/register-dock-ropes-catalog.mjs",
+      "snapshot": "docs/art/source/dock-ropes-v1/after/register-dock-ropes-catalog.mjs",
+      "bytes": 17790,
+      "sha256": "5c5d702e8a9908a7943aa8731565fd64e01280c3581d22af50ec7974f92dd528"
+    },
+    {
+      "phase": "after",
+      "source": "tools/verify-dock-ropes-catalog.mjs",
+      "snapshot": "docs/art/source/dock-ropes-v1/after/verify-dock-ropes-catalog.mjs",
+      "bytes": 5042,
+      "sha256": "b00c2a21436f4a0f5e752b0b12572cb4e7f23d492585070fa867a24b3e6160d4"
+    }
+  ],
+  "reusedAssets": [
+    {
+      "id": "tex:raft-comic-v1",
+      "path": "assets/textures/raft/comic-materials-v1.webp",
+      "bytes": 308536,
+      "sha256": "8fd911b1f4c3e64d8a2a2f812c9b85cc82b86c9d562f71eeb8447e6204fa3a54"
+    },
+    {
+      "id": "tex:raft-comic-v1",
+      "path": "assets/textures/raft/comic-materials-v1-mobile.webp",
+      "bytes": 82878,
+      "sha256": "464486d6ff3f108b6c9e0593bbb95dc9697fa1ac8907afa1225f1909cae6f719"
+    }
+  ]
+}

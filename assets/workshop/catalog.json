@@ -1,0 +1,1173 @@
+{
+  "schema": "marea.asset-workshop.catalog.v1",
+  "generatedAt": "2026-10-14",
+  "coverage": {
+    "label": "Muestra piloto AW01; no es catálogo completo",
+    "pilotCandidates": 20,
+    "integratedControls": 8,
+    "indexedEntries": 28,
+    "fullCatalog": false,
+    "frozenSourceCensus": {
+      "physicalFiles": 53947,
+      "unrealManifestPacks": 48,
+      "sourceSnapshot": "intake-2026-10-14-batch2"
+    }
+  },
+  "entries": [
+    {
+      "id": "aw-pilot-01",
+      "name": "Caldero nuevo",
+      "originalName": "SM_Cauldron",
+      "packId": "AdvancedVillagePack",
+      "packName": "Advanced Village Pack",
+      "type": "model",
+      "categories": [
+        "Construcción",
+        "Decoración",
+        "Fabricación"
+      ],
+      "materials": [],
+      "tags": [
+        "comparación nueva",
+        "malla estática",
+        "AW01"
+      ],
+      "aliases": [
+        "caldero",
+        "olla",
+        "caldero village",
+        "cauldron"
+      ],
+      "notes": "comparación nueva · malla estática",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "AdvancedVillagePack/Meshes/SM_Cauldron.uasset",
+        "paths": [
+          "AdvancedVillagePack/Meshes/SM_Cauldron.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-02",
+      "name": "Caldero de control anterior",
+      "originalName": "SM_DemoCauldron",
+      "packId": "RPGEnvironmentVFX",
+      "packName": "RPG Environment VFX",
+      "type": "model",
+      "categories": [
+        "Construcción",
+        "Decoración",
+        "Fabricación"
+      ],
+      "materials": [],
+      "tags": [
+        "control anterior",
+        "malla estática",
+        "AW01"
+      ],
+      "aliases": [
+        "caldero anterior",
+        "demo cauldron",
+        "olla antigua"
+      ],
+      "notes": "control anterior · malla estática",
+      "isNew": false,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "RPGEnvironmentVFX/Essentials/Mesh/Mesh/SM_DemoCauldron.uasset",
+        "paths": [
+          "RPGEnvironmentVFX/Essentials/Mesh/Mesh/SM_DemoCauldron.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-03",
+      "name": "Algodón intacto y cosechado",
+      "originalName": "SM_Cotton_A + SM_Cotton_A_Harvested",
+      "packId": "UltimateFarming",
+      "packName": "Ultimate Farming",
+      "type": "model",
+      "categories": [
+        "Plantas",
+        "Recursos"
+      ],
+      "materials": [],
+      "tags": [
+        "dos estados",
+        "variantes",
+        "AW01"
+      ],
+      "aliases": [
+        "algodón",
+        "cotton",
+        "planta de algodón",
+        "cosechado",
+        "harvested"
+      ],
+      "notes": "dos estados · variantes",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "UltimateFarming/Meshes/SM_Cotton_A.uasset",
+        "paths": [
+          "UltimateFarming/Meshes/SM_Cotton_A.uasset",
+          "UltimateFarming/Meshes/SM_Cotton_A_Harvested.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-04",
+      "name": "Planta de banana",
+      "originalName": "banana_01_01",
+      "packId": "PN_Banana",
+      "packName": "Tropical Vegetation: Banana Plants",
+      "type": "model",
+      "categories": [
+        "Plantas",
+        "Recursos"
+      ],
+      "materials": [],
+      "tags": [
+        "vegetación tropical",
+        "AW01"
+      ],
+      "aliases": [
+        "banana",
+        "plátano",
+        "banano",
+        "planta de plátano"
+      ],
+      "notes": "vegetación tropical",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "PN_Banana/Meshes/plants/banana_01_01.uasset",
+        "paths": [
+          "PN_Banana/Meshes/plants/banana_01_01.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-05",
+      "name": "Palma Kobo",
+      "originalName": "SM-Palm-01",
+      "packId": "Kobo_Nature",
+      "packName": "Kobo Nature",
+      "type": "model",
+      "categories": [
+        "Plantas",
+        "Decoración"
+      ],
+      "materials": [],
+      "tags": [
+        "vegetación tropical",
+        "AW01"
+      ],
+      "aliases": [
+        "palma",
+        "palm",
+        "kobo"
+      ],
+      "notes": "vegetación tropical",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "Kobo_Nature/Meshes/SM-Palm/SM-Palm-01.uasset",
+        "paths": [
+          "Kobo_Nature/Meshes/SM-Palm/SM-Palm-01.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-06",
+      "name": "Puerta",
+      "originalName": "SM_door_01",
+      "packId": "Greek_island",
+      "packName": "Greek Island",
+      "type": "model",
+      "categories": [
+        "Construcción",
+        "Decoración"
+      ],
+      "materials": [],
+      "tags": [
+        "malla estática",
+        "AW01"
+      ],
+      "aliases": [
+        "puerta",
+        "door",
+        "puerta de casa"
+      ],
+      "notes": "malla estática",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "Greek_island/Assets/Houses/SM_door_01.uasset",
+        "paths": [
+          "Greek_island/Assets/Houses/SM_door_01.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-07",
+      "name": "Barco de referencia",
+      "originalName": "SM_Boat_01",
+      "packId": "Greek_island",
+      "packName": "Greek Island",
+      "type": "model",
+      "categories": [
+        "Transporte",
+        "Decoración"
+      ],
+      "materials": [],
+      "tags": [
+        "referencia visual",
+        "AW01"
+      ],
+      "aliases": [
+        "barco",
+        "boat",
+        "bote griego",
+        "embarcación"
+      ],
+      "notes": "referencia visual",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "Greek_island/Assets/Boat/SM_Boat_01.uasset",
+        "paths": [
+          "Greek_island/Assets/Boat/SM_Boat_01.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-08",
+      "name": "Trimsheet madera",
+      "originalName": "MI_Trimsheet_Wood_01a",
+      "packId": "Bazaar_Meshingun",
+      "packName": "The Bazaar",
+      "type": "material",
+      "categories": [
+        "Materiales",
+        "Construcción"
+      ],
+      "materials": [
+        "MI_Trimsheet_Wood_01a"
+      ],
+      "tags": [
+        "madera",
+        "AW01"
+      ],
+      "aliases": [
+        "madera",
+        "wood",
+        "trimsheet",
+        "trim sheet",
+        "atlas madera"
+      ],
+      "notes": "madera",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "Bazaar_Meshingun/Environment/Assets/Material/Tileable/MI_Trimsheet_Wood_01a.uasset",
+        "paths": [
+          "Bazaar_Meshingun/Environment/Assets/Material/Tileable/MI_Trimsheet_Wood_01a.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-09",
+      "name": "Material metal",
+      "originalName": "MI_Metalware_01a",
+      "packId": "Bazaar_Meshingun",
+      "packName": "The Bazaar",
+      "type": "material",
+      "categories": [
+        "Materiales",
+        "Decoración"
+      ],
+      "materials": [
+        "MI_Metalware_01a"
+      ],
+      "tags": [
+        "metal",
+        "AW01"
+      ],
+      "aliases": [
+        "metal",
+        "metalware",
+        "material metálico"
+      ],
+      "notes": "metal",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "Bazaar_Meshingun/Environment/Assets/Material/Prop/MI_Metalware_01a.uasset",
+        "paths": [
+          "Bazaar_Meshingun/Environment/Assets/Material/Prop/MI_Metalware_01a.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-10",
+      "name": "Material vidrio",
+      "originalName": "M_Glass",
+      "packId": "UltimateFarming",
+      "packName": "Ultimate Farming",
+      "type": "material",
+      "categories": [
+        "Materiales"
+      ],
+      "materials": [
+        "M_Glass"
+      ],
+      "tags": [
+        "transparencia",
+        "AW01"
+      ],
+      "aliases": [
+        "vidrio",
+        "cristal",
+        "glass"
+      ],
+      "notes": "transparencia",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "UltimateFarming/Materials/MasterMaterials/M_Glass.uasset",
+        "paths": [
+          "UltimateFarming/Materials/MasterMaterials/M_Glass.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-11",
+      "name": "Textura cuero",
+      "originalName": "T_leather",
+      "packId": "FANTASTIC_-_Village_Pack-52529a12",
+      "packName": "FANTASTIC - Village Pack",
+      "type": "texture",
+      "categories": [
+        "Materiales",
+        "Recursos"
+      ],
+      "materials": [],
+      "tags": [
+        "textura",
+        "AW01"
+      ],
+      "aliases": [
+        "cuero",
+        "piel",
+        "leather"
+      ],
+      "notes": "textura",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "FabLibrary",
+        "package": "FANTASTIC_-_Village_Pack-52529a12/fbx/fbx_and_textures_fantast_extracted/2d/textures/T_leather.png",
+        "paths": [
+          "FANTASTIC_-_Village_Pack-52529a12/fbx/fbx_and_textures_fantast_extracted/2d/textures/T_leather.png"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-12",
+      "name": "Balcón FBX",
+      "originalName": "SM_BLD_balcony_v01_01",
+      "packId": "FANTASTIC_-_Village_Pack-52529a12",
+      "packName": "FANTASTIC - Village Pack",
+      "type": "model",
+      "categories": [
+        "Construcción",
+        "Decoración"
+      ],
+      "materials": [],
+      "tags": [
+        "fbx",
+        "arquitectura",
+        "AW01"
+      ],
+      "aliases": [
+        "balcón",
+        "balcon",
+        "balcony"
+      ],
+      "notes": "fbx · arquitectura",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "FabLibrary",
+        "package": "FANTASTIC_-_Village_Pack-52529a12/fbx/fbx_and_textures_fantast_extracted/3d/buildings/SM_BLD_balcony_v01_01.fbx",
+        "paths": [
+          "FANTASTIC_-_Village_Pack-52529a12/fbx/fbx_and_textures_fantast_extracted/3d/buildings/SM_BLD_balcony_v01_01.fbx"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-13",
+      "name": "Cierva con caminar",
+      "originalName": "SK_DeerDoe + ANIM_DeerDoe_Walk",
+      "packId": "AnimalVarietyPack",
+      "packName": "Animal Variety Pack",
+      "type": "skeletal-mesh",
+      "categories": [
+        "Personajes",
+        "Animación"
+      ],
+      "materials": [],
+      "tags": [
+        "animal",
+        "esqueleto",
+        "AW03"
+      ],
+      "aliases": [
+        "cierva",
+        "venado",
+        "deer",
+        "walk",
+        "caminar"
+      ],
+      "notes": "animal · esqueleto",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "AnimalVarietyPack/DeerStagAndDoe/Meshes/SK_DeerDoe.uasset",
+        "paths": [
+          "AnimalVarietyPack/DeerStagAndDoe/Meshes/SK_DeerDoe.uasset",
+          "AnimalVarietyPack/DeerStagAndDoe/Animations/ANIM_DeerDoe_Walk.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-14",
+      "name": "Goblin con ataque",
+      "originalName": "SK_Goblin_Body_Armor + Anim_Goblin_body_attack",
+      "packId": "Goblin",
+      "packName": "Goblin",
+      "type": "skeletal-mesh",
+      "categories": [
+        "Personajes",
+        "Combate"
+      ],
+      "materials": [],
+      "tags": [
+        "esqueleto",
+        "animación",
+        "AW03"
+      ],
+      "aliases": [
+        "goblin",
+        "duende",
+        "ataque"
+      ],
+      "notes": "esqueleto · animación",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "Goblin/Mesh/Goblin_armor/SK_Goblin_Body_Armor.uasset",
+        "paths": [
+          "Goblin/Mesh/Goblin_armor/SK_Goblin_Body_Armor.uasset",
+          "Goblin/Animation/Anim_Goblin_body_attack.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-15",
+      "name": "Accesorio modular ROG",
+      "originalName": "SK_L_Bracer_Barb_T1",
+      "packId": "ROG_Modular_Armor",
+      "packName": "ROG Modular Armor",
+      "type": "skeletal-mesh",
+      "categories": [
+        "Personajes",
+        "Equipo"
+      ],
+      "materials": [],
+      "tags": [
+        "accesorio",
+        "AW03"
+      ],
+      "aliases": [
+        "brazalete",
+        "bracer",
+        "armadura modular",
+        "rog"
+      ],
+      "notes": "accesorio",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "ROG_Modular_Armor/Accessories_Robes/CC/CC_Female/Bracers/SkeletalMeshes/SK_L_Bracer_Barb_T1.uasset",
+        "paths": [
+          "ROG_Modular_Armor/Accessories_Robes/CC/CC_Female/Bracers/SkeletalMeshes/SK_L_Bracer_Barb_T1.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-16",
+      "name": "Espada para combate",
+      "originalName": "SK_Blade_DragonSword",
+      "packId": "InfinityBladeWeapons",
+      "packName": "Infinity Blade Weapons",
+      "type": "skeletal-mesh",
+      "categories": [
+        "Combate",
+        "Equipo"
+      ],
+      "materials": [],
+      "tags": [
+        "arma",
+        "AW03"
+      ],
+      "aliases": [
+        "espada",
+        "sword",
+        "dragon sword",
+        "arma"
+      ],
+      "notes": "arma",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "InfinityBladeWeapons/Weapons/Blade/Swords/Blade_DragonSword/SK_Blade_DragonSword.uasset",
+        "paths": [
+          "InfinityBladeWeapons/Weapons/Blade/Swords/Blade_DragonSword/SK_Blade_DragonSword.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-17",
+      "name": "Impacto de fuego",
+      "originalName": "NS_Fire_Slash_Impact",
+      "packId": "Hack_And_Slash_FX",
+      "packName": "Hack and Slash FX",
+      "type": "effect",
+      "categories": [
+        "Efectos",
+        "Combate"
+      ],
+      "materials": [],
+      "tags": [
+        "niagara",
+        "efecto",
+        "AW04"
+      ],
+      "aliases": [
+        "fuego",
+        "fire",
+        "impacto",
+        "slash",
+        "niagara"
+      ],
+      "notes": "niagara · efecto",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "Hack_And_Slash_FX/VFX_Niagara/Impacts/NS_Fire_Slash_Impact.uasset",
+        "paths": [
+          "Hack_And_Slash_FX/VFX_Niagara/Impacts/NS_Fire_Slash_Impact.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-18",
+      "name": "Vocalización de ataque",
+      "originalName": "voice_female_a_attack_01_Cue",
+      "packId": "HumanVocalizations",
+      "packName": "Human Vocalizations",
+      "type": "audio",
+      "categories": [
+        "Audio",
+        "Combate"
+      ],
+      "materials": [],
+      "tags": [
+        "cue de audio",
+        "AW03"
+      ],
+      "aliases": [
+        "voz",
+        "vocalización",
+        "vocalizacion",
+        "attack voice",
+        "audio"
+      ],
+      "notes": "cue de audio",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "HumanVocalizations/HumanFemaleA/Cues/voice_female_a_attack_01_Cue.uasset",
+        "paths": [
+          "HumanVocalizations/HumanFemaleA/Cues/voice_female_a_attack_01_Cue.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-19",
+      "name": "Icono de cuero",
+      "originalName": "Tex_leather_01",
+      "packId": "CraftResourcesIcons",
+      "packName": "Craft Resources Icons",
+      "type": "texture",
+      "categories": [
+        "Interfaz",
+        "Recursos"
+      ],
+      "materials": [],
+      "tags": [
+        "icono",
+        "textura",
+        "AW01"
+      ],
+      "aliases": [
+        "icono de cuero",
+        "leather icon",
+        "icono piel"
+      ],
+      "notes": "icono · textura",
+      "isNew": true,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "CraftResourcesIcons/Textures/Tex_leather_01.png",
+        "paths": [
+          "CraftResourcesIcons/Textures/Tex_leather_01.png"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "aw-pilot-20",
+      "name": "Chispas de forja de control",
+      "originalName": "NS_ForgeSparks",
+      "packId": "RPGEnvironmentVFX",
+      "packName": "RPG Environment VFX",
+      "type": "effect",
+      "categories": [
+        "Efectos",
+        "Materiales"
+      ],
+      "materials": [],
+      "tags": [
+        "control de efecto",
+        "niagara",
+        "AW04"
+      ],
+      "aliases": [
+        "chispas",
+        "forja",
+        "forge sparks",
+        "spark",
+        "niagara"
+      ],
+      "notes": "control de efecto · niagara",
+      "isNew": false,
+      "sourceRevision": "intake-2026-10-14-batch2:3418c84f7d2faf5122e358be9766f5a64ab40e735122a3cafe9699386619cb55",
+      "source": {
+        "project": "survival project",
+        "package": "RPGEnvironmentVFX/VFX/Niagara/NS_ForgeSparks.uasset",
+        "paths": [
+          "RPGEnvironmentVFX/VFX/Niagara/NS_ForgeSparks.uasset"
+        ]
+      },
+      "preview": null,
+      "limitations": [
+        "Candidato de metadata: clase, preview y conversión no verificados; esta ficha no certifica portabilidad."
+      ]
+    },
+    {
+      "id": "model:coast-rock-v1",
+      "name": "Roca costera integrada",
+      "originalName": "model:coast-rock-v1",
+      "packId": "marea-negra-integrated",
+      "packName": "MAREA NEGRA integrado",
+      "type": "model",
+      "categories": [
+        "Control integrado",
+        "Decoración"
+      ],
+      "materials": [],
+      "tags": [
+        "integrado",
+        "control AW01"
+      ],
+      "aliases": [
+        "roca",
+        "coast rock"
+      ],
+      "notes": "Dreamrise SM_Rock geometry, vertex-painted coastal derivative; three runtime silhouettes. No new textures. See docs/delivery/coast-rocks-v1.md.",
+      "isNew": false,
+      "sourceRevision": "integrated:sha256:042fafbf69a687587b3793c6cd15a754bc66fc2387e3a815b047d94025cadc97",
+      "source": {
+        "project": "MAREA NEGRA",
+        "package": "models/coast-rock-v1.glb",
+        "paths": [
+          "models/coast-rock-v1.glb"
+        ],
+        "dependencies": []
+      },
+      "preview": {
+        "kind": "model",
+        "desktop": {
+          "url": "assets/models/coast-rock-v1.glb",
+          "bytes": 7964,
+          "sha256": "783c9087f355ce6f8d176741a89f516b6bf30e739cfe6e7b5381922ef53aaf88"
+        },
+        "mobile": {
+          "url": "assets/models/coast-rock-v1.glb",
+          "bytes": 7964,
+          "sha256": "783c9087f355ce6f8d176741a89f516b6bf30e739cfe6e7b5381922ef53aaf88",
+          "label": "Derivado compartido: aún sin variante móvil optimizada"
+        },
+        "label": "Referencia integrada del juego; no es una importación del piloto Unreal."
+      },
+      "limitations": [
+        "Control de referencia integrado; ficha de biblioteca para comparar búsqueda y revisión, sin publicar cambios al juego."
+      ]
+    },
+    {
+      "id": "model:beach-shell-fan-v1",
+      "name": "Concha abanico integrada",
+      "originalName": "model:beach-shell-fan-v1",
+      "packId": "marea-negra-integrated",
+      "packName": "MAREA NEGRA integrado",
+      "type": "model",
+      "categories": [
+        "Control integrado",
+        "Recursos"
+      ],
+      "materials": [],
+      "tags": [
+        "integrado",
+        "control AW01"
+      ],
+      "aliases": [
+        "concha",
+        "shell"
+      ],
+      "notes": "S04 painted beach geometry; normals and vertex color, no new textures. Pebbles reuse S02 SM_Rock. See docs/delivery/beach-details-v1.md.",
+      "isNew": false,
+      "sourceRevision": "integrated:sha256:dbf411eae5ac91f0ec373c6f24d16d13235c7b5f28c1c4c4a16f10fd2281f893",
+      "source": {
+        "project": "MAREA NEGRA",
+        "package": "models/beach-shell-fan-v1.glb",
+        "paths": [
+          "models/beach-shell-fan-v1.glb"
+        ],
+        "dependencies": []
+      },
+      "preview": {
+        "kind": "model",
+        "desktop": {
+          "url": "assets/models/beach-shell-fan-v1.glb",
+          "bytes": 9700,
+          "sha256": "50d91531bea7d0f4a158141f9805316410651b3b707beacdc2f019d0b99d218f"
+        },
+        "mobile": {
+          "url": "assets/models/beach-shell-fan-v1.glb",
+          "bytes": 9700,
+          "sha256": "50d91531bea7d0f4a158141f9805316410651b3b707beacdc2f019d0b99d218f",
+          "label": "Derivado compartido: aún sin variante móvil optimizada"
+        },
+        "label": "Referencia integrada del juego; no es una importación del piloto Unreal."
+      },
+      "limitations": [
+        "Control de referencia integrado; ficha de biblioteca para comparar búsqueda y revisión, sin publicar cambios al juego."
+      ]
+    },
+    {
+      "id": "model:palm-tall-v1",
+      "name": "Palma alta integrada",
+      "originalName": "model:palm-tall-v1",
+      "packId": "marea-negra-integrated",
+      "packName": "MAREA NEGRA integrado",
+      "type": "model",
+      "categories": [
+        "Control integrado",
+        "Plantas"
+      ],
+      "materials": [],
+      "tags": [
+        "integrado",
+        "control AW01"
+      ],
+      "aliases": [
+        "palmera",
+        "palm"
+      ],
+      "notes": "S05 geometry + authored atlas UV. Two parts, _FLEX/_PAINT custom attributes; shared textures applied by vegetation.js. See docs/delivery/palm-family-v1.md.",
+      "isNew": false,
+      "sourceRevision": "integrated:sha256:9c691dee9c25655fbce6512e7ef8f8984b52cb589a7a6f914301a85a1c3b46af",
+      "source": {
+        "project": "MAREA NEGRA",
+        "package": "models/palm-tall-v1.glb",
+        "paths": [
+          "models/palm-tall-v1.glb"
+        ],
+        "dependencies": []
+      },
+      "preview": {
+        "kind": "model",
+        "desktop": {
+          "url": "assets/models/palm-tall-v1.glb",
+          "bytes": 123256,
+          "sha256": "4c76201fe013ddb9652097d89c3806df47b2733af4af55226f16dc86dfb7db8f"
+        },
+        "mobile": {
+          "url": "assets/models/palm-tall-v1.glb",
+          "bytes": 123256,
+          "sha256": "4c76201fe013ddb9652097d89c3806df47b2733af4af55226f16dc86dfb7db8f",
+          "label": "Derivado compartido: aún sin variante móvil optimizada"
+        },
+        "label": "Referencia integrada del juego; no es una importación del piloto Unreal."
+      },
+      "limitations": [
+        "Control de referencia integrado; ficha de biblioteca para comparar búsqueda y revisión, sin publicar cambios al juego."
+      ]
+    },
+    {
+      "id": "model:palm-base-open-v1",
+      "name": "Base de palma abierta integrada",
+      "originalName": "model:palm-base-open-v1",
+      "packId": "marea-negra-integrated",
+      "packName": "MAREA NEGRA integrado",
+      "type": "model",
+      "categories": [
+        "Control integrado",
+        "Plantas"
+      ],
+      "materials": [],
+      "tags": [
+        "integrado",
+        "control AW01"
+      ],
+      "aliases": [
+        "base de palma"
+      ],
+      "notes": "S06 two-part cosmetic base: rigid roots and low leaf rosettes. Shared S05 bark; separate compact leaf atlas. See docs/delivery/palm-bases-v1.md.",
+      "isNew": false,
+      "sourceRevision": "integrated:sha256:255b5360c0f8bb009d30875557ae1dae47ec019a2c987d32b964b74e82935d98",
+      "source": {
+        "project": "MAREA NEGRA",
+        "package": "models/palm-base-open-v1.glb",
+        "paths": [
+          "models/palm-base-open-v1.glb"
+        ],
+        "dependencies": []
+      },
+      "preview": {
+        "kind": "model",
+        "desktop": {
+          "url": "assets/models/palm-base-open-v1.glb",
+          "bytes": 54728,
+          "sha256": "9c60830701a8cbeda29762ded51d52f485069d3c7d0fd40ed296684f68f56c08"
+        },
+        "mobile": {
+          "url": "assets/models/palm-base-open-v1.glb",
+          "bytes": 54728,
+          "sha256": "9c60830701a8cbeda29762ded51d52f485069d3c7d0fd40ed296684f68f56c08",
+          "label": "Derivado compartido: aún sin variante móvil optimizada"
+        },
+        "label": "Referencia integrada del juego; no es una importación del piloto Unreal."
+      },
+      "limitations": [
+        "Control de referencia integrado; ficha de biblioteca para comparar búsqueda y revisión, sin publicar cambios al juego."
+      ]
+    },
+    {
+      "id": "model:shrub-round-v1",
+      "name": "Arbusto redondo integrado",
+      "originalName": "model:shrub-round-v1",
+      "packId": "marea-negra-integrated",
+      "packName": "MAREA NEGRA integrado",
+      "type": "model",
+      "categories": [
+        "Control integrado",
+        "Plantas"
+      ],
+      "materials": [],
+      "tags": [
+        "integrado",
+        "control AW01"
+      ],
+      "aliases": [
+        "arbusto",
+        "shrub"
+      ],
+      "notes": "S07 cosmetic shrub: rigid painted wood and four atlas leaf silhouettes. Wind and alpha in vegetation.js. See docs/delivery/shrubs-v1.md.",
+      "isNew": false,
+      "sourceRevision": "integrated:sha256:5cc05093a45d949012d2876157d829a3456976d8015e6d26218b0aea37c05e5a",
+      "source": {
+        "project": "MAREA NEGRA",
+        "package": "models/shrub-round-v1.glb",
+        "paths": [
+          "models/shrub-round-v1.glb"
+        ],
+        "dependencies": []
+      },
+      "preview": {
+        "kind": "model",
+        "desktop": {
+          "url": "assets/models/shrub-round-v1.glb",
+          "bytes": 24720,
+          "sha256": "7ff75f2d4701c9da14651e39faa15b2cdf2b53f382f4835df526740084b5b5cd"
+        },
+        "mobile": {
+          "url": "assets/models/shrub-round-v1.glb",
+          "bytes": 24720,
+          "sha256": "7ff75f2d4701c9da14651e39faa15b2cdf2b53f382f4835df526740084b5b5cd",
+          "label": "Derivado compartido: aún sin variante móvil optimizada"
+        },
+        "label": "Referencia integrada del juego; no es una importación del piloto Unreal."
+      },
+      "limitations": [
+        "Control de referencia integrado; ficha de biblioteca para comparar búsqueda y revisión, sin publicar cambios al juego."
+      ]
+    },
+    {
+      "id": "model:beach-debris-branch-v1",
+      "name": "Rama de costa integrada",
+      "originalName": "model:beach-debris-branch-v1",
+      "packId": "marea-negra-integrated",
+      "packName": "MAREA NEGRA integrado",
+      "type": "model",
+      "categories": [
+        "Control integrado",
+        "Decoración"
+      ],
+      "materials": [],
+      "tags": [
+        "integrado",
+        "control AW01"
+      ],
+      "aliases": [
+        "rama",
+        "debris"
+      ],
+      "notes": "S09 opaque painted coastal debris; stacked planks derive from audited Dreamrise SM_Logs after visual review; no new textures. Cosmetic, no collider. See docs/delivery/beach-debris-v1.md.",
+      "isNew": false,
+      "sourceRevision": "integrated:sha256:e99d1c98aa358b0eb4c3da7d4bd30f394b74109e61b159822f8db2dfb3ed4831",
+      "source": {
+        "project": "MAREA NEGRA",
+        "package": "models/beach-debris-branch-v1.glb",
+        "paths": [
+          "models/beach-debris-branch-v1.glb"
+        ],
+        "dependencies": []
+      },
+      "preview": {
+        "kind": "model",
+        "desktop": {
+          "url": "assets/models/beach-debris-branch-v1.glb",
+          "bytes": 6612,
+          "sha256": "070250b366e84066a6a96e74f52e826c19659d0ab1f6944a9d9088d781a03c75"
+        },
+        "mobile": {
+          "url": "assets/models/beach-debris-branch-v1.glb",
+          "bytes": 6612,
+          "sha256": "070250b366e84066a6a96e74f52e826c19659d0ab1f6944a9d9088d781a03c75",
+          "label": "Derivado compartido: aún sin variante móvil optimizada"
+        },
+        "label": "Referencia integrada del juego; no es una importación del piloto Unreal."
+      },
+      "limitations": [
+        "Control de referencia integrado; ficha de biblioteca para comparar búsqueda y revisión, sin publicar cambios al juego."
+      ]
+    },
+    {
+      "id": "model:item-resina-v1",
+      "name": "Resina integrada",
+      "originalName": "model:item-resina-v1",
+      "packId": "marea-negra-integrated",
+      "packName": "MAREA NEGRA integrado",
+      "type": "model",
+      "categories": [
+        "Control integrado",
+        "Recursos"
+      ],
+      "materials": [],
+      "tags": [
+        "integrado",
+        "control AW01"
+      ],
+      "aliases": [
+        "resina",
+        "resin"
+      ],
+      "notes": "Resina. Tripo original artwork; 512/256 WebP. Gameplay visual.",
+      "isNew": false,
+      "sourceRevision": "integrated:sha256:671a29d88c122ac7e33d340a1367f8646cec690ef7594c248365d78d827c4cd7",
+      "source": {
+        "project": "MAREA NEGRA",
+        "package": "models/items-v1/resina-desktop.glb",
+        "paths": [
+          "models/items-v1/resina-desktop.glb",
+          "models/items-v1/resina-mobile.glb"
+        ],
+        "dependencies": []
+      },
+      "preview": {
+        "kind": "model",
+        "desktop": {
+          "url": "assets/models/items-v1/resina-desktop.glb",
+          "bytes": 59732,
+          "sha256": "ab5d0235ccbc9ab370be625c0a6ff447eb56eaf6bac3d179352a89e98851a8bd"
+        },
+        "mobile": {
+          "url": "assets/models/items-v1/resina-mobile.glb",
+          "bytes": 36476,
+          "sha256": "2d6a482b9da720a5fceb77c5c5aa1f5fb8f7accd1198e09963c579ae4470f4cc"
+        },
+        "label": "Referencia integrada del juego; no es una importación del piloto Unreal."
+      },
+      "limitations": [
+        "Control de referencia integrado; ficha de biblioteca para comparar búsqueda y revisión, sin publicar cambios al juego."
+      ]
+    },
+    {
+      "id": "model:item-antorcha-v1",
+      "name": "Antorcha integrada",
+      "originalName": "model:item-antorcha-v1",
+      "packId": "marea-negra-integrated",
+      "packName": "MAREA NEGRA integrado",
+      "type": "model",
+      "categories": [
+        "Control integrado",
+        "Recursos"
+      ],
+      "materials": [],
+      "tags": [
+        "integrado",
+        "control AW01"
+      ],
+      "aliases": [
+        "antorcha",
+        "torch"
+      ],
+      "notes": "Antorcha apagada. Tripo original artwork; 512/256 WebP. Gameplay visual.",
+      "isNew": false,
+      "sourceRevision": "integrated:sha256:2007cdc1986fe0c3a43f4e3c59515c219bb90c293c902868a67fd5ec932c73a1",
+      "source": {
+        "project": "MAREA NEGRA",
+        "package": "models/items-v1/antorcha-desktop.glb",
+        "paths": [
+          "models/items-v1/antorcha-desktop.glb",
+          "models/items-v1/antorcha-mobile.glb"
+        ],
+        "dependencies": []
+      },
+      "preview": {
+        "kind": "model",
+        "desktop": {
+          "url": "assets/models/items-v1/antorcha-desktop.glb",
+          "bytes": 78028,
+          "sha256": "20bdb2816f062ec0308e139a94f3680643c90af1ab57f070865981a5fe512f40"
+        },
+        "mobile": {
+          "url": "assets/models/items-v1/antorcha-mobile.glb",
+          "bytes": 42364,
+          "sha256": "e4ef37493c1a1963c334dc0355644a3f85f864ce28bc78a8e43381c3585aa9fa"
+        },
+        "label": "Referencia integrada del juego; no es una importación del piloto Unreal."
+      },
+      "limitations": [
+        "Control de referencia integrado; ficha de biblioteca para comparar búsqueda y revisión, sin publicar cambios al juego."
+      ]
+    }
+  ]
+}

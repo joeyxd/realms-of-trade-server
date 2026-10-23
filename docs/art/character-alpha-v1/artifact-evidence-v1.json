@@ -1,0 +1,885 @@
+{
+  "schema": "character-alpha-artifact-evidence/v1",
+  "generatedAt": "2026-10-08T14:50:38.022Z",
+  "status": "pass",
+  "selectedImages": 27,
+  "transparentImages": 26,
+  "httpArtifactCount": 62,
+  "preservedOriginalCount": 29,
+  "entries": [
+    {
+      "path": "docs/art/source/character-alpha-v1/female-base-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/female-base-v1.png",
+      "status": 200,
+      "bytes": 1515200,
+      "sha256": "1c6665b9570be3b572cf14237bc61eac3786083ef1cd3355b3600a8750b1afe8",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/female-base-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-base-v1.png",
+      "status": 200,
+      "bytes": 214883,
+      "sha256": "7f9344326efbdf381a9fedbbd066a004b27d510acfaf540f0aed9f0cd8c77d6d",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/female-boots-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/female-boots-v1.png",
+      "status": 200,
+      "bytes": 1053511,
+      "sha256": "07f0630135b23ef5cc1c0b492f7b0f12761060ac063ae29860e0ac5d94e6bf65",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/female-boots-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-boots-v1.png",
+      "status": 200,
+      "bytes": 126335,
+      "sha256": "b8c50d42be5272b91d51863c4fe698d73820553922dc8a150cea9ab98b901184",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/female-breeches-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/female-breeches-v1.png",
+      "status": 200,
+      "bytes": 1896615,
+      "sha256": "16d672f9e3c4f1890b7f478bd8efae24d5f02553c75dfa17038bbd188bf75944",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/female-breeches-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-breeches-v1.png",
+      "status": 200,
+      "bytes": 365279,
+      "sha256": "ed7f28b1be237f77b823fa31f05ca0cbd2a296c7d594ff2799f3600cc892af8c",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/female-brows-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/female-brows-v1.png",
+      "status": 200,
+      "bytes": 603024,
+      "sha256": "033a704d51733fb88ec6dcb57762cbb82a2cb68b7ff9b5ae8462b398797466a5",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/female-brows-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-brows-v1.png",
+      "status": 200,
+      "bytes": 17600,
+      "sha256": "296a5738a853bcd692e10853b7ba4131f4f7ae62ea18044f928e3d42910c4886",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/female-eyes-amber-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/female-eyes-amber-v1.png",
+      "status": 200,
+      "bytes": 784365,
+      "sha256": "6f834c739801d63eb926e161cc6cab2945d33e06cb76533e1ac99a2ca99afa29",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/female-eyes-amber-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-eyes-amber-v1.png",
+      "status": 200,
+      "bytes": 48353,
+      "sha256": "89f7ffafde975df24f3b5cfc87111f5854863f9e5c9d6eda93eebce4af762acf",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/female-hair-pony-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/female-hair-pony-v1.png",
+      "status": 200,
+      "bytes": 1557308,
+      "sha256": "8868686376b1c3f3b00529fe0ebe9b84f2c86e7f48021c666c9c22ce825672e8",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/female-hair-pony-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-hair-pony-v1.png",
+      "status": 200,
+      "bytes": 270060,
+      "sha256": "9e27ad78dc5df7161330b83569caef921b024781151d95a9f0023c804a45cebc",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/female-mouth-smile-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/female-mouth-smile-v1.png",
+      "status": 200,
+      "bytes": 642242,
+      "sha256": "27dee3c25bb036bfc4ac6534aebf7c045daa6bf82bb4d162dbe4d72c3266fe7e",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/female-mouth-smile-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-mouth-smile-v1.png",
+      "status": 200,
+      "bytes": 13365,
+      "sha256": "c0c6bd1b162b89f7f8a4cbfd027f1b69c1540802c8696d08e5cb76f64a9de597",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/female-scout-master-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/female-scout-master-v1.png",
+      "status": 200,
+      "bytes": 1941574,
+      "sha256": "0ea6cb33ce60d3a28f1e27289fb5bf5e446b3e90800babf76b4ec68aa78f07e4",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/female-scout-master-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-scout-master-v1.png",
+      "status": 200,
+      "bytes": 352172,
+      "sha256": "1c2bdb3c1e17f1fd7d049fb91a076014891fdbf6319cfd7bab2c2094171f9bc7",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/female-shirt-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/female-shirt-v1.png",
+      "status": 200,
+      "bytes": 1400994,
+      "sha256": "ffefe91f1d3520c57c58d9994d2dc37911654e9c3c39be6110ba3ec2ea1da50b",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/female-shirt-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/female-shirt-v1.png",
+      "status": 200,
+      "bytes": 237899,
+      "sha256": "db1a35b9bb94dd390e6f97c9e802b82d965930ee9e508f14db3ee67a34311faa",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/harbor-background-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/harbor-background-v1.png",
+      "status": 200,
+      "bytes": 3021109,
+      "sha256": "99ee28d0b1767a1f9e26c06b6f9901052d77f1892341b4f3f515444e4a3c157c",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/harbor-background-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/harbor-background-v1.png",
+      "status": 200,
+      "bytes": 376054,
+      "sha256": "044ddee487c4dfa335b43a4dd5dd286af32481b8243500f5fb3e28b2508c2d82",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 341
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-base-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-base-v1.png",
+      "status": 200,
+      "bytes": 1540799,
+      "sha256": "957f35ac9973a1a0720cb0e12c72cbbc43b10bcc8891064973240f27c75c951a",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-base-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-base-v1.png",
+      "status": 200,
+      "bytes": 231066,
+      "sha256": "d9f0ce1827598899efff6c6185b061387a67f9fd25faa1d4fc4c6d6b72091086",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-beard-short-v2.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-beard-short-v2.png",
+      "status": 200,
+      "bytes": 699665,
+      "sha256": "92ab50768084face2a7d79531ae9ab4f67ae8e95f143e6f46018b7186bd7aee7",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-beard-short-v2.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-beard-short-v2.png",
+      "status": 200,
+      "bytes": 40993,
+      "sha256": "fa8c0708d60a1ec7defd3f211590d3ac338c5fe899b5d0964e71375d8c31d80f",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-boots-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-boots-v1.png",
+      "status": 200,
+      "bytes": 969505,
+      "sha256": "df5fef680e5edc7dc8274c5b5b119436de3dcf669e7ec334cf4b3d0f81c554ab",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-boots-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-boots-v1.png",
+      "status": 200,
+      "bytes": 113870,
+      "sha256": "b70a76c8565e47194d623313893c29809480b6267a229d6dd8d5d64fd64b76ce",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-breeches-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-breeches-v1.png",
+      "status": 200,
+      "bytes": 1871791,
+      "sha256": "d17562e16d2f9fdc3dbecd6d350ddc75059993f33080e982d7d99cdb1d6004d9",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-breeches-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-breeches-v1.png",
+      "status": 200,
+      "bytes": 359145,
+      "sha256": "1ad7e0fc7107c73f8d70085ddfd66290d7a6b44ee5b3bab7b21ce6e36d0acb94",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-brows-scout-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-brows-scout-v1.png",
+      "status": 200,
+      "bytes": 574052,
+      "sha256": "d38138d66c39fc568ffdeb6b53a99138328eccb0eb20830e1626f3b3641c5013",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-brows-scout-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-brows-scout-v1.png",
+      "status": 200,
+      "bytes": 25148,
+      "sha256": "616232597f737409d7bd43a34dc89ae94a0e6a482a5bc06c2d7867ada5bad450",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-eyes-amber-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-eyes-amber-v1.png",
+      "status": 200,
+      "bytes": 511135,
+      "sha256": "663c3bcdf90cd9f85cf0fc29fe51eb782cbd81cbcb426ed8139061a83b5f931c",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-eyes-amber-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-eyes-amber-v1.png",
+      "status": 200,
+      "bytes": 13142,
+      "sha256": "fd99cb30c1ef8f94f0cdb909fed52bbd31c0dc62b65a4f1950d71779e23e2406",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-eyes-blue-v2.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-eyes-blue-v2.png",
+      "status": 200,
+      "bytes": 588310,
+      "sha256": "f169acdfe47bea3e081792e9473b5dfa53d0816174c9c02e1861bddfec30dce6",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-eyes-blue-v2.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-eyes-blue-v2.png",
+      "status": 200,
+      "bytes": 13192,
+      "sha256": "ef73983fa139de2f734b4f86a916a385eb6c1e1081336e365ebee1d6f17e32dc",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-hair-scout-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-hair-scout-v1.png",
+      "status": 200,
+      "bytes": 628719,
+      "sha256": "d55192bc8f69af6e77b60f47d3181755193ca034edd721d8768efb8ae82b1d14",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-hair-scout-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-hair-scout-v1.png",
+      "status": 200,
+      "bytes": 45074,
+      "sha256": "6ca0da4d8ebf03880fb919b4ac7ed73671dc2498c4c6284511c376891112ed66",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-hair-swept-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-hair-swept-v1.png",
+      "status": 200,
+      "bytes": 1055326,
+      "sha256": "8cfca9f8deb2695cdce800d4045a5a939268e683ebbda5bdff324f9a5f09dc2c",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-hair-swept-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-hair-swept-v1.png",
+      "status": 200,
+      "bytes": 144785,
+      "sha256": "c51e35f4ea2cb2e3ddc58fa97e5170c434917721333f4720cb4a357d997fb8ed",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-mouth-smile-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-mouth-smile-v1.png",
+      "status": 200,
+      "bytes": 525183,
+      "sha256": "a32eefebc170bf77557009e34915e904003f44c14c606cb618c05606bab315b8",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-mouth-smile-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-mouth-smile-v1.png",
+      "status": 200,
+      "bytes": 11623,
+      "sha256": "10685d4e4254504e7e3b182cce3aa6ff514b2741d1071718bf1786589d2d7bb9",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-scout-master-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-scout-master-v1.png",
+      "status": 200,
+      "bytes": 1885419,
+      "sha256": "ccba6952f37893d1e5c738564bd3b299d38dac3fceff0c758a9649f9c887704c",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-scout-master-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-scout-master-v1.png",
+      "status": 200,
+      "bytes": 339076,
+      "sha256": "641f52ea0468099ac6bd1bde48bc09ad18a59d0db5478a413e5842e8fea046cb",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/male-shirt-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/male-shirt-v1.png",
+      "status": 200,
+      "bytes": 1197799,
+      "sha256": "e0983468cc25a5c9e8ea8846fca7c2b6de5dfb376c2d0b6fa0b9291e9906694b",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/male-shirt-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/male-shirt-v1.png",
+      "status": 200,
+      "bytes": 186190,
+      "sha256": "c0f4e2533d27a52dfb590f76b21e256f9d9c826cee9580cc8c9c73da2b76eb53",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/scout-gloves-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/scout-gloves-v1.png",
+      "status": 200,
+      "bytes": 970941,
+      "sha256": "861b437a540c3ee14c73edaaffef4639fe0167149f697448aaa1025ed89c82de",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/scout-gloves-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/scout-gloves-v1.png",
+      "status": 200,
+      "bytes": 109255,
+      "sha256": "7fcb04f4c9e6716a65acba3ada27d2fadfb822dbdb6670966af1d261a88729ec",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/scout-goggles-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/scout-goggles-v1.png",
+      "status": 200,
+      "bytes": 676112,
+      "sha256": "5b72d5a2fc6a39906ea6a827af23ab1f543ce8fab9bf1753ce1f632786b9dd47",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/scout-goggles-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/scout-goggles-v1.png",
+      "status": 200,
+      "bytes": 39693,
+      "sha256": "33a87a6d31425daf24b9c9ac60453e50d54bd4ba7ae269ae1018e9f448c8bbd4",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/scout-harness-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/scout-harness-v1.png",
+      "status": 200,
+      "bytes": 1453917,
+      "sha256": "e2d5942bf897f41cfb43f9e37899aaa05db4fa6c842d06fb2245bf147ef50b9d",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/scout-harness-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/scout-harness-v1.png",
+      "status": 200,
+      "bytes": 203166,
+      "sha256": "5b085627bd765170f0227a903de0ed115ef8b3f1b5a0a97954f5276bf5a6141d",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/scout-pouch-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/scout-pouch-v1.png",
+      "status": 200,
+      "bytes": 1546808,
+      "sha256": "b174ed35dff71fe65a5a2097366a1eea25f54cd088f2461c6b15a401cd944d1c",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/scout-pouch-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/scout-pouch-v1.png",
+      "status": 200,
+      "bytes": 265202,
+      "sha256": "bd66e55354058989f9c4038276876eff878d61863956d25f7b324460c669aba7",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/scout-rope-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/scout-rope-v1.png",
+      "status": 200,
+      "bytes": 1209115,
+      "sha256": "825bdd26dbb19df33a1d4b20831b9d0cfeccf907c54b86b8ddab5b49452e205b",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/scout-rope-v1.png",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/scout-rope-v1.png",
+      "status": 200,
+      "bytes": 127492,
+      "sha256": "44fae2f06f422f76357ec649ccec15aaf031f36ebcf2d48ab08cb6d63b7d2fa3",
+      "contentType": "image/png",
+      "dimensions": {
+        "width": 512,
+        "height": 768
+      }
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/manifest.json",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/manifest.json",
+      "status": 200,
+      "bytes": 21913,
+      "sha256": "1fef94fe1a4af0e93faaaa6f8f280b399e0362ffb5115d30b79dacddc00fba89",
+      "contentType": "application/json"
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/prompts.json",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/prompts.json",
+      "status": 200,
+      "bytes": 52923,
+      "sha256": "32ba1d841b24c02284f1458ba45b3542837b84b5895163fb4c99b981ab03c8c6",
+      "contentType": "application/json"
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/selected-sources.json",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/selected-sources.json",
+      "status": 200,
+      "bytes": 27200,
+      "sha256": "df24c6fbd2205089d6acf7de47b446e865f5c41897dafea0b5333b15bef459a1",
+      "contentType": "application/json"
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/alpha-inspection.json",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/alpha-inspection.json",
+      "status": 200,
+      "bytes": 29823,
+      "sha256": "5cda18ac56697c8e7bc4b46e9209d042e6b1efcc73d3ffbd22d8b3a15b81bc4d",
+      "contentType": "application/json"
+    },
+    {
+      "path": "docs/art/source/character-alpha-v1/mobile/derivatives-receipt.json",
+      "url": "http://127.0.0.1:5194/docs/art/source/character-alpha-v1/mobile/derivatives-receipt.json",
+      "status": 200,
+      "bytes": 23174,
+      "sha256": "9466b4958bd2ce932f7c6a5820c09c46b56493b0422a7d9ad1127306c6f86745",
+      "contentType": "application/json"
+    },
+    {
+      "path": "tools/character-alpha-lab/index.html",
+      "url": "http://127.0.0.1:5194/tools/character-alpha-lab/index.html",
+      "status": 200,
+      "bytes": 4083,
+      "sha256": "3cfe3a490e340e9f9da238bda53a334249a099d15f33d4f5dac0a8ececbdce92",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "path": "tools/character-alpha-lab/main.js",
+      "url": "http://127.0.0.1:5194/tools/character-alpha-lab/main.js",
+      "status": 200,
+      "bytes": 14882,
+      "sha256": "2231cc6d3303c51b7ef298f358931053117c15b1be0a52f7ce91fb4fd366abbd",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "path": "tools/character-alpha-lab/style.css",
+      "url": "http://127.0.0.1:5194/tools/character-alpha-lab/style.css",
+      "status": 200,
+      "bytes": 12231,
+      "sha256": "8045634f346614ee9bf6f5890e922dd951328937fe806e21366d3b975b01fa02",
+      "contentType": "text/css; charset=utf-8"
+    }
+  ],
+  "preserved": [
+    {
+      "file": "male-scout-master-v1.png",
+      "sha256": "ccba6952f37893d1e5c738564bd3b299d38dac3fceff0c758a9649f9c887704c",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-base-v1.png",
+      "sha256": "957f35ac9973a1a0720cb0e12c72cbbc43b10bcc8891064973240f27c75c951a",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "female-scout-master-v1.png",
+      "sha256": "0ea6cb33ce60d3a28f1e27289fb5bf5e446b3e90800babf76b4ec68aa78f07e4",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-hair-scout-v1.png",
+      "sha256": "d55192bc8f69af6e77b60f47d3181755193ca034edd721d8768efb8ae82b1d14",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-eyes-amber-v1.png",
+      "sha256": "663c3bcdf90cd9f85cf0fc29fe51eb782cbd81cbcb426ed8139061a83b5f931c",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-brows-scout-v1.png",
+      "sha256": "d38138d66c39fc568ffdeb6b53a99138328eccb0eb20830e1626f3b3641c5013",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-mouth-smile-v1.png",
+      "sha256": "a32eefebc170bf77557009e34915e904003f44c14c606cb618c05606bab315b8",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "female-base-v1.png",
+      "sha256": "1c6665b9570be3b572cf14237bc61eac3786083ef1cd3355b3600a8750b1afe8",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "harbor-background-v1.png",
+      "sha256": "99ee28d0b1767a1f9e26c06b6f9901052d77f1892341b4f3f515444e4a3c157c",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-shirt-v1.png",
+      "sha256": "e0983468cc25a5c9e8ea8846fca7c2b6de5dfb376c2d0b6fa0b9291e9906694b",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-breeches-v1.png",
+      "sha256": "d17562e16d2f9fdc3dbecd6d350ddc75059993f33080e982d7d99cdb1d6004d9",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-boots-v1.png",
+      "sha256": "df5fef680e5edc7dc8274c5b5b119436de3dcf669e7ec334cf4b3d0f81c554ab",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "scout-goggles-v1.png",
+      "sha256": "5b72d5a2fc6a39906ea6a827af23ab1f543ce8fab9bf1753ce1f632786b9dd47",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-beard-short-v1.png",
+      "sha256": "e957d43513d34dcfc0bea2c87541d61f76dac61baecbf6ef5b130bda7c54efc3",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "female-eyes-amber-v1.png",
+      "sha256": "6f834c739801d63eb926e161cc6cab2945d33e06cb76533e1ac99a2ca99afa29",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "female-brows-v1.png",
+      "sha256": "033a704d51733fb88ec6dcb57762cbb82a2cb68b7ff9b5ae8462b398797466a5",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "female-mouth-smile-v1.png",
+      "sha256": "27dee3c25bb036bfc4ac6534aebf7c045daa6bf82bb4d162dbe4d72c3266fe7e",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "female-hair-pony-v1.png",
+      "sha256": "8868686376b1c3f3b00529fe0ebe9b84f2c86e7f48021c666c9c22ce825672e8",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-hair-swept-v1.png",
+      "sha256": "8cfca9f8deb2695cdce800d4045a5a939268e683ebbda5bdff324f9a5f09dc2c",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-eyes-blue-v1.png",
+      "sha256": "5fc0d4d71ebfb7a0ca2da98f17c4916499a7bb5cd984d09ebf25f2ba42ce2d4c",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "scout-gloves-v1.png",
+      "sha256": "861b437a540c3ee14c73edaaffef4639fe0167149f697448aaa1025ed89c82de",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "scout-pouch-v1.png",
+      "sha256": "b174ed35dff71fe65a5a2097366a1eea25f54cd088f2461c6b15a401cd944d1c",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "scout-rope-v1.png",
+      "sha256": "825bdd26dbb19df33a1d4b20831b9d0cfeccf907c54b86b8ddab5b49452e205b",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "scout-harness-v1.png",
+      "sha256": "e2d5942bf897f41cfb43f9e37899aaa05db4fa6c842d06fb2245bf147ef50b9d",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "female-shirt-v1.png",
+      "sha256": "ffefe91f1d3520c57c58d9994d2dc37911654e9c3c39be6110ba3ec2ea1da50b",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "female-breeches-v1.png",
+      "sha256": "16d672f9e3c4f1890b7f478bd8efae24d5f02553c75dfa17038bbd188bf75944",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "female-boots-v1.png",
+      "sha256": "07f0630135b23ef5cc1c0b492f7b0f12761060ac063ae29860e0ac5d94e6bf65",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-eyes-blue-v2.png",
+      "sha256": "f169acdfe47bea3e081792e9473b5dfa53d0816174c9c02e1861bddfec30dce6",
+      "matchesGeneratedOriginal": true
+    },
+    {
+      "file": "male-beard-short-v2.png",
+      "sha256": "92ab50768084face2a7d79531ae9ab4f67ae8e95f143e6f46018b7186bd7aee7",
+      "matchesGeneratedOriginal": true
+    }
+  ],
+  "excludedImages": [
+    {
+      "file": "male-beard-short-v1.png",
+      "sha256": "e957d43513d34dcfc0bea2c87541d61f76dac61baecbf6ef5b130bda7c54efc3",
+      "reason": "Rejected dangling jaw outline; replaced by v2, kept as generation evidence",
+      "transparencyCheck": "pass"
+    },
+    {
+      "file": "male-eyes-blue-v1.png",
+      "sha256": "5fc0d4d71ebfb7a0ca2da98f17c4916499a7bb5cd984d09ebf25f2ba42ce2d4c",
+      "reason": "Rejected alpha; replaced by v2, kept as generation evidence",
+      "transparencyCheck": "fail"
+    }
+  ],
+  "limits": "Local HTTP/static assets and original bytes only; no gameplay, 3D, FPS or author visual approval"
+}

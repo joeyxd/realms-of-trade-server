@@ -1,0 +1,105 @@
+{
+  "at": "2026-10-12T17:49:38.971Z",
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.65",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 49302,
+    "uptime": 955,
+    "stepMs": 1.509,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 18,
+        "replays": 2
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true,
+        "torchRules": 2
+      },
+      "foraging": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true,
+        "meals": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "companionPairing": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 4519,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 2721,
+      "late": 241,
+      "trimmed": 1044,
+      "clamped": 19,
+      "kbOut": 88885.9,
+      "kbIn": 496,
+      "dropped": 0
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "ticket": "T-1019-09",
+  "date": "2026-10-19",
+  "base": "20dfd3e alpha.73 protocol 62",
+  "harness": "Playwright 1.64.1 chromium headless, scratchpad studio-shot.mjs, fake endpoint fake-openai.mjs on 127.0.0.1:18080 (Bearer required)",
+  "studio": "node tools/agent/companion-studio-server.mjs --directory <tmp>/companion --base-url http://127.0.0.1:8080/v1 --model demo-local --port 8765, MN_INFERENCE_HOME=<tmp>/home",
+  "steps": [
+    "register endpoint Demo local http://127.0.0.1:18080/v1 key sk-demo-12345678 default demo-chat",
+    "Probar modelos -> 3 models cached (demo-chat, demo-mini, demo-vision)",
+    "select demo-mini -> badge 'Demo local · demo-mini'",
+    "Probar completado 'Di hola en una frase corta.' -> ok, tokens 12/9, latency 2 ms, HTTP 200, servedModel demo-mini-2026-01-01"
+  ],
+  "fake_endpoint_log": [
+    "GET /v1/models ok",
+    "POST /v1/chat/completions model=demo-mini"
+  ],
+  "store_after": {
+    "endpoints": 1,
+    "apiKey_stored": true,
+    "active": { "modelId": "demo-mini" },
+    "catalog": { "models": 3, "error": null, "updatedAt_equals_checkedAt": true },
+    "usage": { "requests": 1, "failures": 0, "promptTokens": 12, "completionTokens": 9, "latencyMsTotal": 2, "lastError": null }
+  },
+  "checks": {
+    "key_in_dom": false,
+    "mobile_390_horizontal_overflow": false,
+    "console_errors": 0
+  },
+  "captures_sha256": {
+    "01-empty.png": "570b8a1365705b0c7aced93de549c3530c7dacea0b6fda4eda53837ea334bfe7",
+    "02-probed.png": "814464285ce03c60497f6841bdb8add4f52a044764535089f6fbc3a17067a03f",
+    "03-completion.png": "a58e4973b0421ea837baba541339cdcf6854b7c1785ec0b657f952a9abd0ed93",
+    "04-mobile-390.png": "d48653ee312607f8adbf489a9bacd6c4d005949f941b2dd55b3b8d9cfb64e551"
+  },
+  "tests": { "studio_and_transports": "64/64 in 5 files", "deploy_gate": "202/202 in 29 files" }
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "mn.companion-availability.public.v1",
+  "at": "2026-10-11T16:22:36.174Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "gameVersion": "0.6.0-alpha.51",
+  "protocolVersion": 55,
+  "world": "marea-negra",
+  "production": true,
+  "simulatedAuth": false,
+  "providerCalls": false,
+  "gameplayMutations": false,
+  "checks": [
+    {
+      "name": "public_alpha_and_durable_companion_config_readiness",
+      "pass": true,
+      "version": "0.6.0-alpha.51",
+      "protocol": 55
+    },
+    {
+      "name": "temporary_verified_account_created_without_seed_profile",
+      "pass": true
+    },
+    {
+      "name": "real_login_and_host_created_normal_profile",
+      "pass": true,
+      "profileVersion": 2
+    }
+  ],
+  "screenshots": [],
+  "errors": [
+    "locator.textContent: Error: strict mode violation: locator('.mn-companions-setup') resolved to 2 elements:\n    1) <p class=\"mn-companions-setup\">Puedes volver al juego. El centro muestra la prep…</p> aka getByText('Puedes volver al juego. El')\n    2) <p class=\"mn-companions-setup\"></p> aka getByRole('paragraph').filter({ hasText: /^$/ })\n\nCall log:\n\u001b[2m  - waiting for locator('.mn-companions-setup')\u001b[22m\n\n    at C:\\DEV\\real of trade\\area17-market\\tools\\qa-companion-availability-public.mjs:204:59",
+    "cleanup: AssertionError [ERR_ASSERTION]: temporary session/profile did not settle before cleanup\n    at file:///C:/DEV/real%20of%20trade/area17-market/tools/qa-companion-availability-public.mjs:265:16"
+  ],
+  "pass": false
+}

@@ -1,0 +1,854 @@
+{
+  "url": "http://127.0.0.1:5198/tools/naval-pilot/",
+  "generatedAt": "2026-10-07T05:41:40.122Z",
+  "scenarios": [
+    {
+      "viewport": {
+        "name": "desktop-1280x800",
+        "width": 1280,
+        "height": 800,
+        "mobile": false
+      },
+      "inputMode": "Playwright keyboard events",
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c2-pilot-deck\\desktop-1280x800-canvas-v1.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c2-pilot-deck\\desktop-house-canvas-v1.png"
+      ],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "baseline": {
+        "shipId": "8dd5ab08-d920-468a-8efc-0fec6eaf2de0:r1",
+        "savedShipJson": "{\"kind\":\"raft\",\"id\":\"8dd5ab08-d920-468a-8efc-0fec6eaf2de0:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}",
+        "profileJson": "{\"v\":1,\"lvl\":1,\"xp\":0,\"gold\":0,\"pot\":2,\"uid\":2,\"bag\":[],\"eq\":{\"weapon\":{\"u\":1,\"b\":\"sable\",\"r\":0,\"l\":1,\"a\":[],\"s\":1},\"head\":null,\"chest\":null,\"boots\":null,\"ring1\":null,\"ring2\":null},\"mast\":[[1,0],[1,0]],\"sk\":{\"has\":{},\"lo\":[[\"lunge\",\"wave\"],[\"blast\",\"blink\"]],\"free\":1},\"quests\":{\"tierra\":[1,0]},\"flags\":{\"tut\":0,\"tier\":1,\"tierSel\":1},\"items\":{},\"cp\":\"spawn\",\"stats\":{\"kills\":0,\"wins\":0,\"gold\":0,\"items\":0,\"pk\":0,\"deaths\":0},\"eco\":{\"id\":\"8dd5ab08d920468a8efc1\",\"pack\":{\"cap\":10,\"goods\":{}},\"ships\":[{\"kind\":\"raft\",\"id\":\"8dd5ab08-d920-468a-8efc-0fec6eaf2de0:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}],\"raftV\":1,\"tradeRev\":0,\"deeds\":[]},\"pirateId\":\"8dd5ab08-d920-468a-8efc-0fec6eaf2de0:p1\",\"pearls\":{\"swallowed\":null,\"bag\":[]}}",
+        "sourceEcsPose": {
+          "x": 105.1759435013211,
+          "y": 0.72,
+          "z": 126.45439089993741,
+          "yaw": 0.9097531579442095
+        },
+        "parts": 6
+      },
+      "activeAlignment": {
+        "shipId": "8dd5ab08-d920-468a-8efc-0fec6eaf2de0:r1",
+        "ack": 47,
+        "clientActive": true,
+        "serverActive": true,
+        "local": {
+          "x": 108.21272556703822,
+          "y": 0.72,
+          "z": 125.09228402652515,
+          "f": 0.9922240542204159,
+          "vx": 0,
+          "vz": 0,
+          "st": 0,
+          "mag": 0,
+          "wade": 0,
+          "dashT": -1,
+          "dashes": 0,
+          "charges": 1,
+          "maxCharges": 1,
+          "recharge": 0,
+          "iframes": 0,
+          "hp": 100,
+          "maxHp": 100,
+          "dead": 0,
+          "deadT": 0,
+          "act": 0,
+          "actT": 0.016666666666666666,
+          "atkStage": 0,
+          "atkT": 0,
+          "guardT": -1,
+          "guardSt": 60,
+          "catchN": 0,
+          "catchHv": 0,
+          "catchT": 0,
+          "riposte": 0,
+          "chain": 0,
+          "chainT": 99,
+          "level": 1,
+          "xp": 0,
+          "hurtInv": 0,
+          "stagger": 0,
+          "god": 0,
+          "weapon": 0,
+          "cdQ": 0,
+          "cdE": 0,
+          "castK": 0,
+          "castT": 0,
+          "potions": 2,
+          "potCd": 0,
+          "mastery": 17,
+          "guardMax": 60,
+          "skQ": 0,
+          "skE": 1,
+          "fmQ": 0,
+          "fmE": 0,
+          "rkQ": 1,
+          "rkE": 1,
+          "skG": 7,
+          "cdG": 0,
+          "elem": 0,
+          "chg": 0,
+          "empT": 0,
+          "cdr": 0
+        },
+        "predicted": {
+          "x": 108.21272556703822,
+          "y": 0.72,
+          "z": 125.09228402652515,
+          "f": 0.992224054220415
+        },
+        "serverPoint": {
+          "x": 108.21272556703822,
+          "y": 0.72,
+          "z": 125.09228402652515,
+          "f": 0.992224054220415
+        },
+        "actual": {
+          "x": 108.21272556703822,
+          "y": 0.72,
+          "z": 125.09228402652515,
+          "f": 0.992224054220415
+        },
+        "serverDeck": {
+          "y": 0.72,
+          "kind": "deck",
+          "id": "8dd5ab08-d920-468a-8efc-0fec6eaf2de0:r1"
+        },
+        "clientDeck": {
+          "y": 0.72,
+          "kind": "deck",
+          "id": "8dd5ab08-d920-468a-8efc-0fec6eaf2de0:r1"
+        },
+        "raftPose": {
+          "x": 105.73499392715601,
+          "y": 0.72,
+          "z": 127.0571875663272,
+          "yaw": 0.9922240542204159
+        },
+        "serverPose": {
+          "x": 105.73499392715601,
+          "y": 0.72,
+          "z": 127.0571875663272,
+          "yaw": 0.9922240542204162
+        },
+        "pendingInputCount": 2
+      },
+      "overflow": {
+        "width": 1280,
+        "viewport": 1280,
+        "height": 874,
+        "viewportHeight": 800
+      },
+      "blurNeutralCommand": {
+        "t": "ship_input",
+        "epoch": 1,
+        "seq": 284,
+        "throttle": 0,
+        "brake": 1,
+        "steer": 0
+      },
+      "blurNeutralAck": 302,
+      "runtime": {
+        "tick": 400,
+        "active": true,
+        "epoch": 1,
+        "ack": 308,
+        "shipId": "8dd5ab08-d920-468a-8efc-0fec6eaf2de0:r1",
+        "hull": "100%",
+        "shipPose": {
+          "x": 108.13931573065723,
+          "y": 0.72,
+          "z": 128.63675265289487,
+          "yaw": 1.0389879727224702
+        },
+        "pilotPose": {
+          "x": 110.522485530995,
+          "y": 0.72,
+          "z": 126.5581709963901,
+          "f": 1.0389879727224702
+        },
+        "rig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "errors": [],
+        "connected": true,
+        "ready": true,
+        "controls": {
+          "throttle": 0,
+          "brake": 1,
+          "steer": 0
+        },
+        "glError": 0,
+        "assetErrors": [],
+        "mobile": false,
+        "lastPilotEvent": {
+          "active": true,
+          "ok": true,
+          "epoch": 1,
+          "op": "mount"
+        },
+        "sourceEcsPose": {
+          "x": 105.1759435013211,
+          "y": 0.72,
+          "z": 126.45439089993741,
+          "yaw": 0.9097531579442095
+        }
+      },
+      "afterLeave": {
+        "savedShipJson": "{\"kind\":\"raft\",\"id\":\"8dd5ab08-d920-468a-8efc-0fec6eaf2de0:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}",
+        "profileJson": "{\"v\":1,\"lvl\":1,\"xp\":0,\"gold\":0,\"pot\":2,\"uid\":2,\"bag\":[],\"eq\":{\"weapon\":{\"u\":1,\"b\":\"sable\",\"r\":0,\"l\":1,\"a\":[],\"s\":1},\"head\":null,\"chest\":null,\"boots\":null,\"ring1\":null,\"ring2\":null},\"mast\":[[1,0],[1,0]],\"sk\":{\"has\":{},\"lo\":[[\"lunge\",\"wave\"],[\"blast\",\"blink\"]],\"free\":1},\"quests\":{\"tierra\":[1,0]},\"flags\":{\"tut\":0,\"tier\":1,\"tierSel\":1},\"items\":{},\"cp\":\"spawn\",\"stats\":{\"kills\":0,\"wins\":0,\"gold\":0,\"items\":0,\"pk\":0,\"deaths\":0},\"eco\":{\"id\":\"8dd5ab08d920468a8efc1\",\"pack\":{\"cap\":10,\"goods\":{}},\"ships\":[{\"kind\":\"raft\",\"id\":\"8dd5ab08-d920-468a-8efc-0fec6eaf2de0:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}],\"raftV\":1,\"tradeRev\":0,\"deeds\":[]},\"pirateId\":\"8dd5ab08-d920-468a-8efc-0fec6eaf2de0:p1\",\"pearls\":{\"swallowed\":null,\"bag\":[]}}",
+        "sourceEcsPose": {
+          "x": 105.1759435013211,
+          "y": 0.72,
+          "z": 126.45439089993741,
+          "yaw": 0.9097531579442095
+        }
+      },
+      "houseBaseline": {
+        "shipId": "cfe3cd16-e339-4b5f-9559-0d08232a3c9b:r1",
+        "savedShipJson": "{\"kind\":\"raft\",\"id\":\"cfe3cd16-e339-4b5f-9559-0d08232a3c9b:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,3,0,3],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",2,0,0,0],[\"foundation\",3,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"foundation\",2,1,0,0],[\"foundation\",3,1,0,0],[\"foundation\",0,2,0,0],[\"foundation\",1,2,0,0],[\"foundation\",2,2,0,0],[\"foundation\",3,2,0,0],[\"foundation\",0,3,0,0],[\"foundation\",1,3,0,0],[\"foundation\",2,3,0,0],[\"foundation\",3,3,0,0],[\"sail\",0,0,0,0],[\"sail\",3,0,0,0],[\"crate\",0,3,0,0],[\"crate\",3,3,0,0],[\"pillar\",1,2,0,0],[\"pillar\",2,2,0,0],[\"floor\",1,2,1,0],[\"floor\",2,2,1,0],[\"wall\",1,2,1,0],[\"wall\",2,2,1,0],[\"bed\",1,2,1,0],[\"roof\",1,2,1,0],[\"roof\",2,2,1,0]],\"work\":{}},\"hold\":{\"cap\":12,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}",
+        "profileJson": "{\"v\":1,\"lvl\":1,\"xp\":0,\"gold\":0,\"pot\":2,\"uid\":2,\"bag\":[],\"eq\":{\"weapon\":{\"u\":1,\"b\":\"sable\",\"r\":0,\"l\":1,\"a\":[],\"s\":1},\"head\":null,\"chest\":null,\"boots\":null,\"ring1\":null,\"ring2\":null},\"mast\":[[1,0],[1,0]],\"sk\":{\"has\":{},\"lo\":[[\"lunge\",\"wave\"],[\"blast\",\"blink\"]],\"free\":1},\"quests\":{\"tierra\":[1,0]},\"flags\":{\"tut\":0,\"tier\":1,\"tierSel\":1},\"items\":{},\"cp\":\"spawn\",\"stats\":{\"kills\":0,\"wins\":0,\"gold\":0,\"items\":0,\"pk\":0,\"deaths\":0},\"eco\":{\"id\":\"cfe3cd16e3394b5f95591\",\"pack\":{\"cap\":10,\"goods\":{}},\"ships\":[{\"kind\":\"raft\",\"id\":\"cfe3cd16-e339-4b5f-9559-0d08232a3c9b:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,3,0,3],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",2,0,0,0],[\"foundation\",3,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"foundation\",2,1,0,0],[\"foundation\",3,1,0,0],[\"foundation\",0,2,0,0],[\"foundation\",1,2,0,0],[\"foundation\",2,2,0,0],[\"foundation\",3,2,0,0],[\"foundation\",0,3,0,0],[\"foundation\",1,3,0,0],[\"foundation\",2,3,0,0],[\"foundation\",3,3,0,0],[\"sail\",0,0,0,0],[\"sail\",3,0,0,0],[\"crate\",0,3,0,0],[\"crate\",3,3,0,0],[\"pillar\",1,2,0,0],[\"pillar\",2,2,0,0],[\"floor\",1,2,1,0],[\"floor\",2,2,1,0],[\"wall\",1,2,1,0],[\"wall\",2,2,1,0],[\"bed\",1,2,1,0],[\"roof\",1,2,1,0],[\"roof\",2,2,1,0]],\"work\":{}},\"hold\":{\"cap\":12,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}],\"raftV\":1,\"tradeRev\":0,\"deeds\":[]},\"pirateId\":\"cfe3cd16-e339-4b5f-9559-0d08232a3c9b:p1\",\"pearls\":{\"swallowed\":null,\"bag\":[]}}",
+        "sourceEcsPose": {
+          "x": 101.14147661250877,
+          "y": 0.72,
+          "z": 128.38391854241289,
+          "yaw": 0.9097531579442095
+        },
+        "parts": 29
+      },
+      "houseAlignment": {
+        "shipId": "cfe3cd16-e339-4b5f-9559-0d08232a3c9b:r1",
+        "ack": 7,
+        "clientActive": true,
+        "serverActive": true,
+        "local": {
+          "x": 107.8071175592422,
+          "y": 0.72,
+          "z": 124.70027486132334,
+          "f": 0.9097531579442091,
+          "vx": 0,
+          "vz": 0,
+          "st": 0,
+          "mag": 0,
+          "wade": 0,
+          "dashT": -1,
+          "dashes": 0,
+          "charges": 1,
+          "maxCharges": 1,
+          "recharge": 0,
+          "iframes": 0,
+          "hp": 100,
+          "maxHp": 100,
+          "dead": 0,
+          "deadT": 0,
+          "act": 0,
+          "actT": 0.016666666666666666,
+          "atkStage": 0,
+          "atkT": 0,
+          "guardT": -1,
+          "guardSt": 60,
+          "catchN": 0,
+          "catchHv": 0,
+          "catchT": 0,
+          "riposte": 0,
+          "chain": 0,
+          "chainT": 99,
+          "level": 1,
+          "xp": 0,
+          "hurtInv": 0,
+          "stagger": 0,
+          "god": 0,
+          "weapon": 0,
+          "cdQ": 0,
+          "cdE": 0,
+          "castK": 0,
+          "castT": 0,
+          "potions": 2,
+          "potCd": 0,
+          "mastery": 17,
+          "guardMax": 60,
+          "skQ": 0,
+          "skE": 1,
+          "fmQ": 0,
+          "fmE": 0,
+          "rkQ": 1,
+          "rkE": 1,
+          "skG": 7,
+          "cdG": 0,
+          "elem": 0,
+          "chg": 0,
+          "empT": 0,
+          "cdr": 0
+        },
+        "predicted": {
+          "x": 107.8071175592422,
+          "y": 0.72,
+          "z": 124.70027486132334,
+          "f": 0.9097531579442091
+        },
+        "serverPoint": {
+          "x": 107.8071175592422,
+          "y": 0.72,
+          "z": 124.70027486132334,
+          "f": 0.9097531579442091
+        },
+        "actual": {
+          "x": 107.8071175592422,
+          "y": 0.72,
+          "z": 124.70027486132334,
+          "f": 0.9097531579442091
+        },
+        "serverDeck": {
+          "y": 0.72,
+          "kind": "deck",
+          "id": "cfe3cd16-e339-4b5f-9559-0d08232a3c9b:r1"
+        },
+        "clientDeck": {
+          "y": 0.72,
+          "kind": "deck",
+          "id": "cfe3cd16-e339-4b5f-9559-0d08232a3c9b:r1"
+        },
+        "raftPose": {
+          "x": 101.14147661250877,
+          "y": 0.72,
+          "z": 128.38391854241286,
+          "yaw": 0.9097531579442091
+        },
+        "serverPose": {
+          "x": 101.14147661250877,
+          "y": 0.72,
+          "z": 128.38391854241286,
+          "yaw": 0.9097531579442095
+        },
+        "pendingInputCount": 1
+      },
+      "houseAfterLeave": {
+        "savedShipJson": "{\"kind\":\"raft\",\"id\":\"cfe3cd16-e339-4b5f-9559-0d08232a3c9b:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,3,0,3],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",2,0,0,0],[\"foundation\",3,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"foundation\",2,1,0,0],[\"foundation\",3,1,0,0],[\"foundation\",0,2,0,0],[\"foundation\",1,2,0,0],[\"foundation\",2,2,0,0],[\"foundation\",3,2,0,0],[\"foundation\",0,3,0,0],[\"foundation\",1,3,0,0],[\"foundation\",2,3,0,0],[\"foundation\",3,3,0,0],[\"sail\",0,0,0,0],[\"sail\",3,0,0,0],[\"crate\",0,3,0,0],[\"crate\",3,3,0,0],[\"pillar\",1,2,0,0],[\"pillar\",2,2,0,0],[\"floor\",1,2,1,0],[\"floor\",2,2,1,0],[\"wall\",1,2,1,0],[\"wall\",2,2,1,0],[\"bed\",1,2,1,0],[\"roof\",1,2,1,0],[\"roof\",2,2,1,0]],\"work\":{}},\"hold\":{\"cap\":12,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}",
+        "profileJson": "{\"v\":1,\"lvl\":1,\"xp\":0,\"gold\":0,\"pot\":2,\"uid\":2,\"bag\":[],\"eq\":{\"weapon\":{\"u\":1,\"b\":\"sable\",\"r\":0,\"l\":1,\"a\":[],\"s\":1},\"head\":null,\"chest\":null,\"boots\":null,\"ring1\":null,\"ring2\":null},\"mast\":[[1,0],[1,0]],\"sk\":{\"has\":{},\"lo\":[[\"lunge\",\"wave\"],[\"blast\",\"blink\"]],\"free\":1},\"quests\":{\"tierra\":[1,0]},\"flags\":{\"tut\":0,\"tier\":1,\"tierSel\":1},\"items\":{},\"cp\":\"spawn\",\"stats\":{\"kills\":0,\"wins\":0,\"gold\":0,\"items\":0,\"pk\":0,\"deaths\":0},\"eco\":{\"id\":\"cfe3cd16e3394b5f95591\",\"pack\":{\"cap\":10,\"goods\":{}},\"ships\":[{\"kind\":\"raft\",\"id\":\"cfe3cd16-e339-4b5f-9559-0d08232a3c9b:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,3,0,3],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",2,0,0,0],[\"foundation\",3,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"foundation\",2,1,0,0],[\"foundation\",3,1,0,0],[\"foundation\",0,2,0,0],[\"foundation\",1,2,0,0],[\"foundation\",2,2,0,0],[\"foundation\",3,2,0,0],[\"foundation\",0,3,0,0],[\"foundation\",1,3,0,0],[\"foundation\",2,3,0,0],[\"foundation\",3,3,0,0],[\"sail\",0,0,0,0],[\"sail\",3,0,0,0],[\"crate\",0,3,0,0],[\"crate\",3,3,0,0],[\"pillar\",1,2,0,0],[\"pillar\",2,2,0,0],[\"floor\",1,2,1,0],[\"floor\",2,2,1,0],[\"wall\",1,2,1,0],[\"wall\",2,2,1,0],[\"bed\",1,2,1,0],[\"roof\",1,2,1,0],[\"roof\",2,2,1,0]],\"work\":{}},\"hold\":{\"cap\":12,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}],\"raftV\":1,\"tradeRev\":0,\"deeds\":[]},\"pirateId\":\"cfe3cd16-e339-4b5f-9559-0d08232a3c9b:p1\",\"pearls\":{\"swallowed\":null,\"bag\":[]}}",
+        "sourceEcsPose": {
+          "x": 101.14147661250877,
+          "y": 0.72,
+          "z": 128.38391854241289,
+          "yaw": 0.9097531579442095
+        }
+      },
+      "ok": true
+    },
+    {
+      "viewport": {
+        "name": "mobile-portrait-390x844",
+        "width": 390,
+        "height": 844,
+        "mobile": true
+      },
+      "inputMode": "CDP-emulated trusted touch",
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c2-pilot-deck\\mobile-portrait-390x844-canvas-v1.png"
+      ],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "baseline": {
+        "shipId": "7e748164-1c53-4d4e-8c18-a0011f918d1f:r1",
+        "savedShipJson": "{\"kind\":\"raft\",\"id\":\"7e748164-1c53-4d4e-8c18-a0011f918d1f:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}",
+        "profileJson": "{\"v\":1,\"lvl\":1,\"xp\":0,\"gold\":0,\"pot\":2,\"uid\":2,\"bag\":[],\"eq\":{\"weapon\":{\"u\":1,\"b\":\"sable\",\"r\":0,\"l\":1,\"a\":[],\"s\":1},\"head\":null,\"chest\":null,\"boots\":null,\"ring1\":null,\"ring2\":null},\"mast\":[[1,0],[1,0]],\"sk\":{\"has\":{},\"lo\":[[\"lunge\",\"wave\"],[\"blast\",\"blink\"]],\"free\":1},\"quests\":{\"tierra\":[1,0]},\"flags\":{\"tut\":0,\"tier\":1,\"tierSel\":1},\"items\":{},\"cp\":\"spawn\",\"stats\":{\"kills\":0,\"wins\":0,\"gold\":0,\"items\":0,\"pk\":0,\"deaths\":0},\"eco\":{\"id\":\"7e7481641c534d4e8c181\",\"pack\":{\"cap\":10,\"goods\":{}},\"ships\":[{\"kind\":\"raft\",\"id\":\"7e748164-1c53-4d4e-8c18-a0011f918d1f:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}],\"raftV\":1,\"tradeRev\":0,\"deeds\":[]},\"pirateId\":\"7e748164-1c53-4d4e-8c18-a0011f918d1f:p1\",\"pearls\":{\"swallowed\":null,\"bag\":[]}}",
+        "sourceEcsPose": {
+          "x": 105.1759435013211,
+          "y": 0.72,
+          "z": 126.45439089993741,
+          "yaw": 0.9097531579442095
+        },
+        "parts": 6
+      },
+      "touch": {
+        "method": "Chrome CDP touchStart/touchEnd; trusted browser touch pointer events through DOM",
+        "pointerEvents": [
+          {
+            "type": "pointerdown",
+            "pointerType": "touch",
+            "trusted": true
+          },
+          {
+            "type": "pointerup",
+            "pointerType": "touch",
+            "trusted": true
+          },
+          {
+            "type": "pointerdown",
+            "pointerType": "touch",
+            "trusted": true
+          },
+          {
+            "type": "pointerup",
+            "pointerType": "touch",
+            "trusted": true
+          }
+        ]
+      },
+      "activeAlignment": {
+        "shipId": "7e748164-1c53-4d4e-8c18-a0011f918d1f:r1",
+        "ack": 388,
+        "clientActive": true,
+        "serverActive": true,
+        "local": {
+          "x": 110.46484461293551,
+          "y": 0.72,
+          "z": 126.98325277491554,
+          "f": 1.1200418110774093,
+          "vx": 0,
+          "vz": 0,
+          "st": 0,
+          "mag": 0,
+          "wade": 0,
+          "dashT": -1,
+          "dashes": 0,
+          "charges": 1,
+          "maxCharges": 1,
+          "recharge": 0,
+          "iframes": 0,
+          "hp": 100,
+          "maxHp": 100,
+          "dead": 0,
+          "deadT": 0,
+          "act": 0,
+          "actT": 0.016666666666666666,
+          "atkStage": 0,
+          "atkT": 0,
+          "guardT": -1,
+          "guardSt": 60,
+          "catchN": 0,
+          "catchHv": 0,
+          "catchT": 0,
+          "riposte": 0,
+          "chain": 0,
+          "chainT": 99,
+          "level": 1,
+          "xp": 0,
+          "hurtInv": 0,
+          "stagger": 0,
+          "god": 0,
+          "weapon": 0,
+          "cdQ": 0,
+          "cdE": 0,
+          "castK": 0,
+          "castT": 0,
+          "potions": 2,
+          "potCd": 0,
+          "mastery": 17,
+          "guardMax": 60,
+          "skQ": 0,
+          "skE": 1,
+          "fmQ": 0,
+          "fmE": 0,
+          "rkQ": 1,
+          "rkE": 1,
+          "skG": 7,
+          "cdG": 0,
+          "elem": 0,
+          "chg": 0,
+          "empT": 0,
+          "cdr": 0
+        },
+        "predicted": {
+          "x": 110.46484461293551,
+          "y": 0.72,
+          "z": 126.98325277491554,
+          "f": 1.1200418110774102
+        },
+        "serverPoint": {
+          "x": 110.46484461293551,
+          "y": 0.72,
+          "z": 126.98325277491554,
+          "f": 1.1200418110774102
+        },
+        "actual": {
+          "x": 110.46484461293551,
+          "y": 0.72,
+          "z": 126.98325277491554,
+          "f": 1.1200418110774102
+        },
+        "serverDeck": {
+          "y": 0.72,
+          "kind": "deck",
+          "id": "7e748164-1c53-4d4e-8c18-a0011f918d1f:r1"
+        },
+        "clientDeck": {
+          "y": 0.72,
+          "kind": "deck",
+          "id": "7e748164-1c53-4d4e-8c18-a0011f918d1f:r1"
+        },
+        "raftPose": {
+          "x": 108.25779152001337,
+          "y": 0.72,
+          "z": 129.24796393641557,
+          "yaw": 1.1200418110774093
+        },
+        "serverPose": {
+          "x": 108.25779152001337,
+          "y": 0.72,
+          "z": 129.24796393641557,
+          "yaw": 1.1200418110774095
+        },
+        "pendingInputCount": 1
+      },
+      "overflow": {
+        "width": 390,
+        "viewport": 390,
+        "height": 942,
+        "viewportHeight": 844
+      },
+      "blurNeutralCommand": {
+        "t": "ship_input",
+        "epoch": 1,
+        "seq": 563,
+        "throttle": 0,
+        "brake": 1,
+        "steer": 0
+      },
+      "blurNeutralAck": 581,
+      "runtime": {
+        "tick": 703,
+        "active": true,
+        "epoch": 1,
+        "ack": 587,
+        "shipId": "7e748164-1c53-4d4e-8c18-a0011f918d1f:r1",
+        "hull": "100%",
+        "shipPose": {
+          "x": 109.11388575987735,
+          "y": 0.72,
+          "z": 129.7259107406666,
+          "yaw": 1.1604229365083634
+        },
+        "pilotPose": {
+          "x": 111.2277129145021,
+          "y": 0.72,
+          "z": 127.37394671875403,
+          "f": 1.160422936508363
+        },
+        "rig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "errors": [],
+        "connected": true,
+        "ready": true,
+        "controls": {
+          "throttle": 0,
+          "brake": 1,
+          "steer": 0
+        },
+        "glError": 0,
+        "assetErrors": [],
+        "mobile": true,
+        "lastPilotEvent": {
+          "active": true,
+          "ok": true,
+          "epoch": 1,
+          "op": "mount"
+        },
+        "sourceEcsPose": {
+          "x": 105.1759435013211,
+          "y": 0.72,
+          "z": 126.45439089993741,
+          "yaw": 0.9097531579442095
+        }
+      },
+      "afterLeave": {
+        "savedShipJson": "{\"kind\":\"raft\",\"id\":\"7e748164-1c53-4d4e-8c18-a0011f918d1f:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}",
+        "profileJson": "{\"v\":1,\"lvl\":1,\"xp\":0,\"gold\":0,\"pot\":2,\"uid\":2,\"bag\":[],\"eq\":{\"weapon\":{\"u\":1,\"b\":\"sable\",\"r\":0,\"l\":1,\"a\":[],\"s\":1},\"head\":null,\"chest\":null,\"boots\":null,\"ring1\":null,\"ring2\":null},\"mast\":[[1,0],[1,0]],\"sk\":{\"has\":{},\"lo\":[[\"lunge\",\"wave\"],[\"blast\",\"blink\"]],\"free\":1},\"quests\":{\"tierra\":[1,0]},\"flags\":{\"tut\":0,\"tier\":1,\"tierSel\":1},\"items\":{},\"cp\":\"spawn\",\"stats\":{\"kills\":0,\"wins\":0,\"gold\":0,\"items\":0,\"pk\":0,\"deaths\":0},\"eco\":{\"id\":\"7e7481641c534d4e8c181\",\"pack\":{\"cap\":10,\"goods\":{}},\"ships\":[{\"kind\":\"raft\",\"id\":\"7e748164-1c53-4d4e-8c18-a0011f918d1f:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}],\"raftV\":1,\"tradeRev\":0,\"deeds\":[]},\"pirateId\":\"7e748164-1c53-4d4e-8c18-a0011f918d1f:p1\",\"pearls\":{\"swallowed\":null,\"bag\":[]}}",
+        "sourceEcsPose": {
+          "x": 105.1759435013211,
+          "y": 0.72,
+          "z": 126.45439089993741,
+          "yaw": 0.9097531579442095
+        }
+      },
+      "ok": true
+    },
+    {
+      "viewport": {
+        "name": "mobile-landscape-844x390",
+        "width": 844,
+        "height": 390,
+        "mobile": true
+      },
+      "inputMode": "CDP-emulated trusted touch",
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c2-pilot-deck\\mobile-landscape-844x390-canvas-v1.png"
+      ],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "baseline": {
+        "shipId": "d2194895-3f7b-4547-a8e4-c181951e7631:r1",
+        "savedShipJson": "{\"kind\":\"raft\",\"id\":\"d2194895-3f7b-4547-a8e4-c181951e7631:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}",
+        "profileJson": "{\"v\":1,\"lvl\":1,\"xp\":0,\"gold\":0,\"pot\":2,\"uid\":2,\"bag\":[],\"eq\":{\"weapon\":{\"u\":1,\"b\":\"sable\",\"r\":0,\"l\":1,\"a\":[],\"s\":1},\"head\":null,\"chest\":null,\"boots\":null,\"ring1\":null,\"ring2\":null},\"mast\":[[1,0],[1,0]],\"sk\":{\"has\":{},\"lo\":[[\"lunge\",\"wave\"],[\"blast\",\"blink\"]],\"free\":1},\"quests\":{\"tierra\":[1,0]},\"flags\":{\"tut\":0,\"tier\":1,\"tierSel\":1},\"items\":{},\"cp\":\"spawn\",\"stats\":{\"kills\":0,\"wins\":0,\"gold\":0,\"items\":0,\"pk\":0,\"deaths\":0},\"eco\":{\"id\":\"d21948953f7b4547a8e41\",\"pack\":{\"cap\":10,\"goods\":{}},\"ships\":[{\"kind\":\"raft\",\"id\":\"d2194895-3f7b-4547-a8e4-c181951e7631:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}],\"raftV\":1,\"tradeRev\":0,\"deeds\":[]},\"pirateId\":\"d2194895-3f7b-4547-a8e4-c181951e7631:p1\",\"pearls\":{\"swallowed\":null,\"bag\":[]}}",
+        "sourceEcsPose": {
+          "x": 105.1759435013211,
+          "y": 0.72,
+          "z": 126.45439089993741,
+          "yaw": 0.9097531579442095
+        },
+        "parts": 6
+      },
+      "touch": {
+        "method": "Chrome CDP touchStart/touchEnd; trusted browser touch pointer events through DOM",
+        "pointerEvents": [
+          {
+            "type": "pointerdown",
+            "pointerType": "touch",
+            "trusted": true
+          },
+          {
+            "type": "pointerup",
+            "pointerType": "touch",
+            "trusted": true
+          },
+          {
+            "type": "pointerdown",
+            "pointerType": "touch",
+            "trusted": true
+          },
+          {
+            "type": "pointerup",
+            "pointerType": "touch",
+            "trusted": true
+          }
+        ]
+      },
+      "activeAlignment": {
+        "shipId": "d2194895-3f7b-4547-a8e4-c181951e7631:r1",
+        "ack": 377,
+        "clientActive": true,
+        "serverActive": true,
+        "local": {
+          "x": 110.28620308217648,
+          "y": 0.72,
+          "z": 126.84660569818034,
+          "f": 1.1263827661459604,
+          "vx": 0,
+          "vz": 0,
+          "st": 0,
+          "mag": 0,
+          "wade": 0,
+          "dashT": -1,
+          "dashes": 0,
+          "charges": 1,
+          "maxCharges": 1,
+          "recharge": 0,
+          "iframes": 0,
+          "hp": 100,
+          "maxHp": 100,
+          "dead": 0,
+          "deadT": 0,
+          "act": 0,
+          "actT": 0.016666666666666666,
+          "atkStage": 0,
+          "atkT": 0,
+          "guardT": -1,
+          "guardSt": 60,
+          "catchN": 0,
+          "catchHv": 0,
+          "catchT": 0,
+          "riposte": 0,
+          "chain": 0,
+          "chainT": 99,
+          "level": 1,
+          "xp": 0,
+          "hurtInv": 0,
+          "stagger": 0,
+          "god": 0,
+          "weapon": 0,
+          "cdQ": 0,
+          "cdE": 0,
+          "castK": 0,
+          "castT": 0,
+          "potions": 2,
+          "potCd": 0,
+          "mastery": 17,
+          "guardMax": 60,
+          "skQ": 0,
+          "skE": 1,
+          "fmQ": 0,
+          "fmE": 0,
+          "rkQ": 1,
+          "rkE": 1,
+          "skG": 7,
+          "cdG": 0,
+          "elem": 0,
+          "chg": 0,
+          "empT": 0,
+          "cdr": 0
+        },
+        "predicted": {
+          "x": 110.28620308217648,
+          "y": 0.72,
+          "z": 126.84660569818034,
+          "f": 1.1263827661459604
+        },
+        "serverPoint": {
+          "x": 110.28620308217648,
+          "y": 0.72,
+          "z": 126.84660569818034,
+          "f": 1.1263827661459604
+        },
+        "actual": {
+          "x": 110.28620308217648,
+          "y": 0.72,
+          "z": 126.84660569818034,
+          "f": 1.1263827661459604
+        },
+        "serverDeck": {
+          "y": 0.72,
+          "kind": "deck",
+          "id": "d2194895-3f7b-4547-a8e4-c181951e7631:r1"
+        },
+        "clientDeck": {
+          "y": 0.72,
+          "kind": "deck",
+          "id": "d2194895-3f7b-4547-a8e4-c181951e7631:r1"
+        },
+        "raftPose": {
+          "x": 108.09355469486749,
+          "y": 0.72,
+          "z": 129.1252660611198,
+          "yaw": 1.1263827661459604
+        },
+        "serverPose": {
+          "x": 108.09355469486749,
+          "y": 0.72,
+          "z": 129.1252660611198,
+          "yaw": 1.1263827661459604
+        },
+        "pendingInputCount": 2
+      },
+      "overflow": {
+        "width": 844,
+        "viewport": 844,
+        "height": 675,
+        "viewportHeight": 390
+      },
+      "blurNeutralCommand": {
+        "t": "ship_input",
+        "epoch": 1,
+        "seq": 535,
+        "throttle": 0,
+        "brake": 1,
+        "steer": 0
+      },
+      "blurNeutralAck": 547,
+      "runtime": {
+        "tick": 671,
+        "active": true,
+        "epoch": 1,
+        "ack": 549,
+        "shipId": "d2194895-3f7b-4547-a8e4-c181951e7631:r1",
+        "hull": "100%",
+        "shipPose": {
+          "x": 109.02611762828985,
+          "y": 0.72,
+          "z": 129.63725713049124,
+          "yaw": 1.1698529338010981
+        },
+        "pilotPose": {
+          "x": 111.11767211208108,
+          "y": 0.72,
+          "z": 127.26546459290854,
+          "f": 1.1698529338010992
+        },
+        "rig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "errors": [],
+        "connected": true,
+        "ready": true,
+        "controls": {
+          "throttle": 0,
+          "brake": 1,
+          "steer": 0
+        },
+        "glError": 0,
+        "assetErrors": [],
+        "mobile": true,
+        "lastPilotEvent": {
+          "active": true,
+          "ok": true,
+          "epoch": 1,
+          "op": "mount"
+        },
+        "sourceEcsPose": {
+          "x": 105.1759435013211,
+          "y": 0.72,
+          "z": 126.45439089993741,
+          "yaw": 0.9097531579442095
+        }
+      },
+      "afterLeave": {
+        "savedShipJson": "{\"kind\":\"raft\",\"id\":\"d2194895-3f7b-4547-a8e4-c181951e7631:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}",
+        "profileJson": "{\"v\":1,\"lvl\":1,\"xp\":0,\"gold\":0,\"pot\":2,\"uid\":2,\"bag\":[],\"eq\":{\"weapon\":{\"u\":1,\"b\":\"sable\",\"r\":0,\"l\":1,\"a\":[],\"s\":1},\"head\":null,\"chest\":null,\"boots\":null,\"ring1\":null,\"ring2\":null},\"mast\":[[1,0],[1,0]],\"sk\":{\"has\":{},\"lo\":[[\"lunge\",\"wave\"],[\"blast\",\"blink\"]],\"free\":1},\"quests\":{\"tierra\":[1,0]},\"flags\":{\"tut\":0,\"tier\":1,\"tierSel\":1},\"items\":{},\"cp\":\"spawn\",\"stats\":{\"kills\":0,\"wins\":0,\"gold\":0,\"items\":0,\"pk\":0,\"deaths\":0},\"eco\":{\"id\":\"d21948953f7b4547a8e41\",\"pack\":{\"cap\":10,\"goods\":{}},\"ships\":[{\"kind\":\"raft\",\"id\":\"d2194895-3f7b-4547-a8e4-c181951e7631:r1\",\"rev\":1,\"berth\":2,\"berthBasis\":[0,1,0,1],\"n\":\"La Balsa\",\"grid\":{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}},\"hold\":{\"cap\":6,\"goods\":{}},\"at\":\"aldea\",\"hp\":1,\"look\":null}],\"raftV\":1,\"tradeRev\":0,\"deeds\":[]},\"pirateId\":\"d2194895-3f7b-4547-a8e4-c181951e7631:p1\",\"pearls\":{\"swallowed\":null,\"bag\":[]}}",
+        "sourceEcsPose": {
+          "x": 105.1759435013211,
+          "y": 0.72,
+          "z": 126.45439089993741,
+          "yaw": 0.9097531579442095
+        }
+      },
+      "ok": true
+    }
+  ],
+  "failures": [],
+  "ok": true,
+  "outputDir": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c2-pilot-deck"
+}

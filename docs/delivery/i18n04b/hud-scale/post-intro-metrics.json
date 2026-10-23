@@ -1,0 +1,123 @@
+{
+  "pass": true,
+  "fixture": "real Hud.show intro + locale/title change + live --ui-scale mutation; actual MiniMap + PersonalLanternActions; src/main.js intercepted as empty module; no 3D scene/WebGL/network",
+  "browser": "Chrome via Playwright",
+  "before": {
+    "scale": "1",
+    "tracker": {
+      "x": 1016,
+      "y": 194,
+      "right": 1266,
+      "bottom": 296,
+      "width": 250,
+      "height": 102
+    },
+    "actionbar": {
+      "x": 367,
+      "y": 404,
+      "right": 913,
+      "bottom": 486,
+      "width": 546,
+      "height": 82
+    },
+    "trackerTransform": "matrix(1, 0, 0, 1, 0, 0)",
+    "trackerInlineTransform": "",
+    "actionbarTransform": "matrix(1, 0, 0, 1, -273, 0)",
+    "actionbarInlineTransform": "",
+    "lantern": {
+      "x": 1125.953125,
+      "y": 308,
+      "right": 1262,
+      "bottom": 356,
+      "width": 136.046875,
+      "height": 48
+    },
+    "lanternHidden": false
+  },
+  "afterTitle": {
+    "title": "First steps",
+    "transform": "matrix(1, 0, 0, 1, 0, 0)",
+    "inlineTransform": ""
+  },
+  "afterScale": {
+    "lang": "en",
+    "scale": "1.3",
+    "tracker": {
+      "x": 941,
+      "y": 194,
+      "right": 1266,
+      "bottom": 295.98907470703125,
+      "width": 325,
+      "height": 101.98907470703125
+    },
+    "trackerTransform": "matrix(1.3, 0, 0, 1.3, 0, 0)",
+    "actionbar": {
+      "x": 285.1000061035156,
+      "y": 379.3999938964844,
+      "right": 994.9000549316406,
+      "bottom": 486,
+      "width": 709.800048828125,
+      "height": 106.60000610351562
+    },
+    "actionbarTransform": "matrix(1.3, 0, 0, 1.3, -273, 0)",
+    "lantern": {
+      "x": 1148.28125,
+      "y": 308,
+      "right": 1262,
+      "bottom": 356,
+      "width": 113.71875,
+      "height": 48
+    },
+    "lanternHidden": false,
+    "lanternText": "Torch N · 2:00",
+    "lanternLocale": "en",
+    "minimap": {
+      "x": 1124,
+      "y": 28,
+      "right": 1250,
+      "bottom": 154,
+      "width": 126,
+      "height": 126
+    },
+    "caption": {
+      "x": 1101,
+      "y": 162,
+      "right": 1273,
+      "bottom": 174.09375,
+      "width": 172,
+      "height": 12.09375
+    },
+    "overlapCaption": false,
+    "overlapActionbar": false,
+    "overlapLantern": false,
+    "lastVisibleAtScrollEnd": true,
+    "scrollTop": 190,
+    "scrollHeight": 264,
+    "clientHeight": 74,
+    "title": "First steps",
+    "rows": [
+      {
+        "id": "move",
+        "text": "Move with WASD or the arrow keys"
+      },
+      {
+        "id": "dash",
+        "text": "Dash with SPACE"
+      },
+      {
+        "id": "attack",
+        "text": "Hit the dummy: a 3-hit combo (left click)"
+      },
+      {
+        "id": "parry",
+        "text": "Enter the ring and return a cannonball with your sword (time your left click)"
+      },
+      {
+        "id": "guard",
+        "text": "Catch a cannonball: raise your guard (right click) at the right moment"
+      }
+    ]
+  },
+  "errors": [],
+  "screenshot": "post-intro-500-en.png"
+}

@@ -1,0 +1,15 @@
+{
+  "phase": "restarted",
+  "recordedAt": "2026-10-10T18:48:15.561378+00:00",
+  "revision": "4c6743b87b71ba765e316cd1652d1e4f23991501",
+  "container": "f789f28aa883",
+  "mode": "ordered-stop-with-12-second-offline-window",
+  "offlineMs": 13581,
+  "uptimeBefore": 206,
+  "uptimeAfter": 8,
+  "checkpoint": {
+    "worldVersion": 1371,
+    "resourceTick": 11792,
+    "resourceHash": "46b1dfd68899d610a86b1ccc48f542288a639e322d9210b6738097acc2f0efe7"
+  }
+}

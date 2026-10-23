@@ -1,0 +1,31 @@
+{
+  "schema": "mn.companion-availability.public.v1",
+  "at": "2026-10-11T16:27:41.525Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "gameVersion": "0.6.0-alpha.51",
+  "protocolVersion": 55,
+  "world": "marea-negra",
+  "production": true,
+  "simulatedAuth": false,
+  "providerCalls": false,
+  "gameplayMutations": false,
+  "checks": [
+    {
+      "name": "public_alpha_and_durable_companion_config_readiness",
+      "pass": true,
+      "version": "0.6.0-alpha.51",
+      "protocol": 55
+    },
+    {
+      "name": "temporary_verified_account_created_without_seed_profile",
+      "pass": true
+    }
+  ],
+  "screenshots": [],
+  "errors": [
+    "Error: bounded browser wait expired: client ready\n    at wait (file:///C:/DEV/real%20of%20trade/area17-market/tools/qa-companion-availability-public.mjs:80:17)\n    at async file:///C:/DEV/real%20of%20trade/area17-market/tools/qa-companion-availability-public.mjs:181:3",
+    "session close: page.waitForFunction: Timeout 15000ms exceeded.",
+    "cleanup: AssertionError [ERR_ASSERTION]: temporary session/profile did not settle before cleanup\n    at file:///C:/DEV/real%20of%20trade/area17-market/tools/qa-companion-availability-public.mjs:278:16"
+  ],
+  "pass": false
+}

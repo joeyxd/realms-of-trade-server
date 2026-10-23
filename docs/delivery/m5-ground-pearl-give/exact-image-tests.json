@@ -1,0 +1,50 @@
+{
+  "recordedAt": "2026-10-12T17:21:54.412742+00:00",
+  "revision": "e237768aa53e0df31e35e44cae66ec4e0ce65879",
+  "imageId": "sha256:8ff6d3af76c60606bcfd4373520f67524ff1c689f34190772fec0625a8f11c8b",
+  "runtimeSha256": {
+    "server/groundPearlGive.mjs": "3c8211af4c7f3953e76f23c2b950be1db87e9124288135d5fd097fa2bdc7c4b3",
+    "server/groundPearlLifecycle.mjs": "06cd134d12b6927f78898afc189a01814a35f971fb9be48c099859b28bf27066",
+    "server/groundPearlLeave.mjs": "1951ee7cd1948c7fbfd96d2574f7d3fbc8264fe220d538c419d23379f3e3c755",
+    "server/pearlGround.mjs": "1921255a227c6f2469b44901746115e99b4fc3c63985a7f34c9a833783478443",
+    "server/pearlOperations.mjs": "a3998dd4344db4ab05315c1ba7a494f6360b7079c457976e5708f95a3f4af26e",
+    "server/profileSessions.mjs": "1377615f6b2c7cbff09a19a7d77a0c177203422c177618fd097baad5a349d76a",
+    "server/pearlMutationGate.mjs": "bab07451d5b834d12cdbedfcc0d8572b60bb5efc488e82b883e127a9581562ec",
+    "server/groundProfileBaseline.mjs": "d49782812ed2ce35e60ee137c192a773cc9a21f1e222e145482fd70e31961176",
+    "server/groundHostAuthority.mjs": "b32b7d0ab0147988cc6c513f9116601c49ca1bfefa75bb62a032b5ebd76c3971",
+    "server/groundTransaction.mjs": "ec2c65fb6401a0d51d8c5720f268a58d22c3f95156452e97964dcf32b848d822",
+    "server/groundTransactionSession.mjs": "81abcc5a6319d4b225a6dd3bece26b2e1da316d4525dbe35f08ac257a078e93a",
+    "server/groundTransactionJournal.mjs": "bdedb4074bfffcaca8b29ac50faf0ce992dfefbf5ec882544940507124dd790a",
+    "server/groundCurrentHydration.mjs": "f7fa1d9952dd660f02649b12e8eb037f8eccc8223fc787d3cd33fe5d7b76b201",
+    "server/host.mjs": "059de3b23d2ee826b93f58e179df6d2e472112690a01352ab5cda73bd7618c28",
+    "server/store.mjs": "6f24d0d026e3319034cd10864fefd966af8a3f9dab3b1c6e9c5e9cbc8352592b",
+    "src/net/localServer.js": "b5d3136c3f0034cea01157a60ab7e3dd19014fe1bc4af5ac08f51d9ffa1e47fb",
+    "src/sim/systems/pearls.js": "8bc6623804f23fd966a95437fbaf9716cc5bda15d050442a3a15fa776aa2b49f",
+    "src/sim/systems/inventory.js": "721a2bc857dc03f93ee250ce1646e34a4fa543a0d220f2c865b3290c904c9245",
+    "server/migrations/003_pearl_operations.sql": "77c92847099f366b0481bf55a71b0fca7138e716726003d2050db34ecef9b096",
+    "server/migrations/004_pearl_ground.sql": "b11876cbb629b5f9b08cb5cd4233a9841c48eeb89e8047c250d2dd83d4daa5ee",
+    "server/migrations/018_ground_transactions.sql": "71594268c9160cda5df728704844d363ad8249a5589b85bc80ce585e157df700",
+    "server/migrations/019_ground_transaction_journal.sql": "0a50ea847be585f4b5209a69d1011aa5de9aa689197a7768b84608b8802cc644",
+    "server/migrations/023_ground_world_adoption.sql": "3c8fd68638d36b19647f312fe126fc98e9e0fb8a9f8a0ca33ec72c98741e15ed"
+  },
+  "counts": {
+    "tests": 74,
+    "pass": 74,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "tests": [
+    "tests/ground-pearl-give.test.mjs",
+    "tests/ground-pearl-command-route.test.mjs",
+    "tests/ground-pearl-leave.test.mjs",
+    "tests/ground-pearl-mint.test.mjs",
+    "tests/ground-current-hydration.test.mjs",
+    "tests/ground-pearl-pickup.test.mjs",
+    "tests/ground-pearl-return.test.mjs",
+    "tests/ground-family-boundary.test.mjs",
+    "tests/ground-host-authority.test.mjs"
+  ],
+  "scope": "Exact production image, network none and no live credentials. Memory tests of give/leave/mint, command routing, adapters and owner boundaries. SQL crash durability is tested locally, common public mount remains disabled."
+}

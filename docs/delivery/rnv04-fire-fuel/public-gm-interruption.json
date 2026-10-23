@@ -1,0 +1,36 @@
+{
+  "schema": "mn.fire.public.interruption.v1",
+  "at": "2026-10-10T22:57:20.035Z",
+  "completedAt": "2026-10-10T22:59:19.278Z",
+  "sourceRun": "public-a98fa3d0-113d-4437-b165-0b771b63a1fe.json",
+  "pass": false,
+  "passedChecks": [
+    "public_health_and_release",
+    "rendered_public_minimap",
+    "normal_login_and_wss_admission",
+    "paid_hand_torch",
+    "extinguish_and_relight_reuse_paid_fuel"
+  ],
+  "cause": "Concurrent GM map activation closed the client with content_revision during reload. This attempt remains failed; the full stable alpha34 run was repeated separately.",
+  "diagnostic": {
+    "closes": [
+      {
+        "code": 1012,
+        "reason": "content_revision",
+        "clean": true
+      }
+    ],
+    "netLost": true,
+    "transport": "ws",
+    "closed": true,
+    "mode": "title",
+    "errors": [],
+    "readyState": "complete",
+    "loadingText": ""
+  },
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 3,
+    "receiptPolicy": "operation receipts intentionally retained"
+  }
+}

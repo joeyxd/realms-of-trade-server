@@ -1,0 +1,37 @@
+{
+  "schema": "mn.m5-controlled-restart.v1",
+  "pass": true,
+  "before": {
+    "uptime": 1270,
+    "worldVersion": 561,
+    "economicCompleted": 19,
+    "economicReplays": 10,
+    "players": 0,
+    "sockets": 0,
+    "container": {
+      "image": "marea-negra:alpha-d24f782a779e",
+      "imageId": "sha256:b526b65d83437c042d1d6cbeaa54ad436f6075cf043d0fe6406d73c7604461bf",
+      "revision": "d24f782a779ed4e15d0ba72d2d3af346efb0382f",
+      "startedAt": "2026-10-10T05:09:22.052675658Z"
+    }
+  },
+  "after": {
+    "uptime": 2,
+    "worldVersion": 562,
+    "errors": 0,
+    "storageErrors": 0,
+    "economic": {
+      "enabled": true,
+      "pending": 0,
+      "failed": false,
+      "completed": 0,
+      "replays": 0
+    },
+    "container": {
+      "image": "marea-negra:alpha-d24f782a779e",
+      "imageId": "sha256:b526b65d83437c042d1d6cbeaa54ad436f6075cf043d0fe6406d73c7604461bf",
+      "revision": "d24f782a779ed4e15d0ba72d2d3af346efb0382f",
+      "startedAt": "2026-10-10T05:30:38.141499649Z"
+    }
+  }
+}

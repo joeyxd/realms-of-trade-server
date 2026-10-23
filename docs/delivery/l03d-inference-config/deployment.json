@@ -1,0 +1,79 @@
+{
+  "schema": "mn.l03d.inference-config.deployment-snapshot.v1",
+  "at": "2026-10-11T03:33:57.297666+00:00",
+  "container": "marea-negra-alpha-marea-negra-alpha-1",
+  "revision": "8a779b5584d268cb7927fb68b7ffd23bd41cf276",
+  "version": "0.6.0-alpha.42",
+  "image": "marea-negra:alpha-8a779b5584d2",
+  "imageId": "sha256:38ad13b6d0d1d5ebce8450e2f66b2735dde469dc325487d106fddf4e23b67bd0",
+  "containerId": "4f023fb9de7db7eaa2587f5fc8829e5731972cb8d00690858bfa88549076742d",
+  "running": true,
+  "health": "healthy",
+  "startedAt": "2026-10-11T03:33:27.156901126Z",
+  "oomKilled": false,
+  "currentRelease": "/opt/marea-negra/releases/8a779b5584d268cb7927fb68b7ffd23bd41cf276",
+  "updateState": {},
+  "validation": {
+    "revision": "8a779b5584d268cb7927fb68b7ffd23bd41cf276",
+    "image_id": "sha256:38ad13b6d0d1d5ebce8450e2f66b2735dde469dc325487d106fddf4e23b67bd0",
+    "tests_passed": true
+  },
+  "offlineCounts": {
+    "tests": 109,
+    "pass": 109,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "sourceHashes": {
+    "server/agentControl.mjs": "1cddb3f93107773f3e5780ba82c50a364f620239d70e86afe13dd8fdca8ae8d1",
+    "server/host.mjs": "dbc5fe03fe803aac8031bf21a09275b2fa35c1c673de8d4e6607c5aea2af32c3",
+    "server/index.mjs": "ba08f26b1200dc4d2416ea49e9ff2f49dccd878b5d0de16fa27b2085bab277b0",
+    "server/store.mjs": "4ff0983dfb9e496de3d25fca970b1413a0c3f6aa65ad7f864aea96fc1f5d280f",
+    "server/companionConfig.mjs": "403771b339f94144180170bde6236bf5796a51f2e5f4ddcbe8ed89964f7c8873",
+    "server/companionConfigStore.mjs": "8f6eb72c5b625620ca5a341238c48b9bdbc78526424f76cf6f53a689e8661ee3",
+    "server/migrations/025_companion_config.sql": "afc1e4fae6afa37d8f8111be5e84cab056371fbff303daf54846396eef40d492",
+    "server/companionControl.mjs": "35d1ff4da3ff59b8f3fe98709c4dc55b576915ad56e31bb223e81fd26270b62b",
+    "server/companionControlStore.mjs": "a3e31b353639e84c5f1684d6abb89a41d87ca01cf860c880bc856b0ecb04f64f",
+    "server/migrations/027_companion_control.sql": "61e52ba34ed6c67c96efc9bf7837fee129c693e7211189762b8a23569c923ba2",
+    "server/inferenceConfig.mjs": "84d2163d006f766e712bd175e9b5e83096c54ce8ed55b1443434ff3133c32fb0",
+    "server/inferenceConfigStore.mjs": "4d1c924292d380bcdb4c1bb61245e84b05e70801681b836579512ebc2eba29f3",
+    "server/migrations/028_inference_config.sql": "e8449f9e173ff54e79e8857b058af63b8e9ca36fe22a31c1683c18b1c71956ce",
+    "src/net/protocol.js": "ffdfac8e090f5b43e559fa5673377359ff0ff46ade3d459652a2607c9932f048",
+    "src/net/companionConfig.js": "11a7b14f2c971d51c9c25be38390911a2cd0116da13ddbb6f9a3bfb137e632f2",
+    "src/net/inferenceConfig.js": "e0690bbcd2abafc56c9a853dcd5b93fb38187c1f6e949c39c4353246e07ef325",
+    "src/client/companions.js": "c087fc4dabb2439e66e549a2e1c628d8153c5c53a412d20dc96008aac9fc18ab",
+    "src/client/companionConfig.js": "5c1f094201fccb9f69bd1625deb3ce848a528776589c1990d1c691c807bd3d0d",
+    "src/client/inferenceConfig.js": "327af25e1db460812bce900586867ebb6f62fea6c66b1a2d02a1bc0db10630fc",
+    "src/ui/companions.js": "4f4b1a95b2472fef3fe87484c3e4038edfdbdc8e5b963fee6ae598ddc1f8d20f",
+    "src/ui/companionConfig.js": "e42f1d3c14da2d9dbf9cbf44a0d9b829b096b9105ebb47b860bd34eede012198",
+    "src/ui/inferenceConfig.js": "ff2c9a0c61fb37c4de32d040e4faa1a7a7635d99162265dfbec956b5cdf7b709",
+    "src/main.js": "c6500f52209751f2dca9b4d4f85cd2c560eaeefa6e3c3f29dc49f51ebfb18b14",
+    "src/client/gameClient.js": "188b5f6ecdc5a75e461e93a74227480016cf26f14a1b0f55c93b4a9b7500302c",
+    "src/editor/editor.js": "00ec43bbdf88811cb5aa6d565e71076660815aac03547ee542f4813ccee7b20c",
+    "src/editor/editor.css": "1620632d62ff665cb114c110d1f5386f174edbd9618ddfd7d529399a71e8aa5f",
+    "src/editor/templatePanel.js": "7350d06fd9c6593ac1ed9fa6a8981c450279de121ff93cd33c9b2fcbb24bec99",
+    "src/editor/templateStore.js": "258dd758138aafc2f7b51b60b2fcd1813a00a947eb82da9384d96ffdaba09cdb",
+    "src/editor/templates.js": "3fa3cc832cece03022df4b1495fa330d7ff0a6e6e36e18f1d0504dbe8b94c23a",
+    "styles/hud.css": "3482c6fb057a3b81ae4ffa478266a6a624082cfa45ecd8febd3b12002aa036e4",
+    "styles/minimap.css": "d052d9119892194a0318d40603d68f733e9e5bfd6dcad2bde50ca9ffad18b007",
+    "server/groundHostAuthority.mjs": "4b8ed855beac255af377ae37ed7b3e29fde98287f6cca72f64b611b96c3ed157"
+  },
+  "readiness": {
+    "schema": "SQL028",
+    "durable": true,
+    "version": 1,
+    "catalogEmpty": true
+  },
+  "authorities": [
+    "marea-negra-alpha-marea-negra-alpha-1"
+  ],
+  "timer": "active",
+  "scope": "SQL028 private owner/world connection-model configuration metadata only, with SQL025/SQL027 and gameplay regressions retained. No provider request, credential inspection, catalog provisioning, generation, spend ledger, or binding provisioning.",
+  "limits": [
+    "Readiness is queried through the internal store abstraction using the running container environment; credential values are neither collected nor emitted.",
+    "The snapshot identifies active image/source and updater test evidence; it does not prove authenticated public owner acceptance or provider/model availability.",
+    "Configured ceilings are saved metadata only; no shared spend reservation or generation is implemented by this cut."
+  ]
+}

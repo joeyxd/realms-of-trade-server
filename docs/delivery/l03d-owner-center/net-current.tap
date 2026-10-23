@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: two players at 100 ms RTT: prediction holds, they see each other walk and swing
+ok 1 - two players at 100 ms RTT: prediction holds, they see each other walk and swing
+  ---
+  duration_ms: 6577.7903
+  type: 'test'
+  ...
+# Subtest: a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+ok 2 - a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+  ---
+  duration_ms: 4.4847
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8263.8529

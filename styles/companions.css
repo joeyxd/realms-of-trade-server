@@ -1,0 +1,152 @@
+/* Companion panels (src/ui/companions*.js): the panel, its rows and the Ficha, Crear, Conectar and presence views.
+   One source of the look, the UI kit (styles/kit.css): navy plate, steel hairlines, orange brush for the main action,
+   Barlow Condensed italic caps. The modules keep only layout rules in their injected <style>; every colour, font,
+   border, background, radius and shadow lives here. */
+
+/* ---- Panel plate (the kit's 9-slice frame, like .kit-plate) ------------------------------------------------------ */
+.mn-companions-panel {
+  padding: 2px; color: var(--kit-text); font: 500 15px/1.35 var(--f-body);
+  border: 16px solid transparent; border-image: var(--kit-frame) 48 fill / 16px round;
+  filter: drop-shadow(0 8px 14px #000a);
+  scrollbar-width: thin; scrollbar-color: var(--kit-line-soft) transparent;
+}
+@media (pointer: coarse), (max-width: 760px) { .mn-companions-panel { border-image-slice: 24 fill; } }
+.mn-companion-config { scrollbar-width: thin; scrollbar-color: var(--kit-line-soft) transparent; }
+
+/* ---- Titles and headings --------------------------------------------------------------------------------------- */
+.mn-companions-header h2 { font: italic 800 26px / .95 var(--f-display); text-transform: uppercase; color: var(--kit-white); text-shadow: 0 2px 0 #0009; }
+.mn-companions-header, .mn-companion-config-header, .mn-companion-create-header, .mn-companion-pairing-header {
+  padding-bottom: 10px; border-bottom: 1px solid var(--kit-line-faint);
+}
+.mn-companion-config-header h3, .mn-companion-create-header h3, .mn-companion-pairing-header h3 {
+  font: italic 800 24px / 1 var(--f-display); text-transform: uppercase; letter-spacing: .01em; color: var(--kit-white); text-shadow: 0 2px 0 #0009;
+}
+.mn-companion-presence h3, .mn-companion-config label > span, .mn-companion-create label:not(.mn-companion-create-choice) > span, .mn-companion-create legend {
+  font: italic 600 15px / 1 var(--f-display); text-transform: uppercase; letter-spacing: .03em; color: var(--kit-sky);
+}
+.mn-companion-config h4, .mn-companion-create h4, .mn-companion-create h5, .mn-companion-pairing-code strong {
+  margin: 0; font: italic 600 18px / 1.05 var(--f-display); text-transform: uppercase; letter-spacing: .01em; color: var(--kit-sky);
+}
+.mn-companion-create h5 { font-size: 15px; }
+.mn-companion-create legend { padding: 0 0 6px; }
+.mn-companion-create-form { display: grid; gap: 12px; }
+.mn-companion-create fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+
+/* ---- Text ------------------------------------------------------------------------------------------------------ */
+.mn-companions-status, .mn-companion-config-status, .mn-companion-create-status, .mn-companion-pairing-status, .mn-companion-presence-status,
+.mn-companion-create p, .mn-companions-name { color: var(--kit-text); }
+.mn-companions-name { font: italic 700 19px / 1.1 var(--f-display); text-transform: uppercase; letter-spacing: .01em; }
+.mn-companions-setup, .mn-companions-details, .mn-companion-config-note, .mn-companion-create-note, .mn-companion-pairing-note,
+.mn-companion-presence-note, .mn-companion-config small { color: var(--kit-dim); }
+.mn-companions-details, .mn-companion-presence-note, .mn-companion-presence-status { font-size: 14px; }
+.mn-companion-create-note { margin: 0; }
+.mn-companion-create-doc, .mn-companion-create li, .mn-companion-config li { font: 500 15px / 1.35 var(--f-body); color: var(--kit-text); }
+.mn-companion-create-doc { margin: 0; }
+.mn-companion-create ul { margin: 0; padding-left: 18px; }
+
+/* ---- Cards (the kit's inset: dark glass with a steel hairline) --------------------------------------------------- */
+.mn-companions-row, .mn-companion-config-goal, .mn-companion-create-review, .mn-companion-create-saved,
+.mn-companion-pairing-code, .mn-companion-pairing-guide, .mn-companion-presence {
+  border: 1px solid var(--kit-line-soft); border-radius: 3px; background: linear-gradient(#0a1726d9, #0b1a29e6); box-shadow: inset 0 0 30px #0008;
+}
+.mn-companion-presence { margin-bottom: 8px; }
+.mn-companion-pairing-code { border-color: var(--kit-orange-d); }
+.mn-companion-pairing-code-value { font: 700 17px / 1.4 ui-monospace, 'Cascadia Mono', Consolas, monospace; letter-spacing: .05em; color: var(--kit-orange-l); }
+.mn-companion-pairing-command {
+  border: 1px solid var(--kit-line-faint); border-radius: 3px; background: var(--kit-deep); color: var(--kit-text);
+  font: 500 12.5px / 1.5 ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+/* Online badge: the row says it in colour as well as in words. */
+.mn-companions-row[data-online="true"]:not([data-stopped="true"]) .mn-companions-details { color: var(--kit-ok); }
+.mn-companions-row[data-online="false"] .mn-companions-details, .mn-companions-row[data-stopped="true"] .mn-companions-details { color: var(--kit-dim); }
+
+/* ---- Buttons (steel border, dark navy gradient, italic caps, like .ch-tab) --------------------------------------- */
+:is(.mn-companions-refresh, .mn-companions-stop, .mn-companions-close, .mn-companion-config button, .mn-companion-create button,
+    .mn-companion-pairing button, .mn-companion-presence button) {
+  border: 1px solid var(--kit-line-soft); border-radius: 4px; background: linear-gradient(#10243899, #08131f99); box-shadow: inset 0 0 0 1px #0006;
+  font: italic 700 18px / 1 var(--f-display); text-transform: uppercase; letter-spacing: .01em; color: #e3eaf1;
+}
+:is(.mn-companions-refresh, .mn-companions-stop, .mn-companions-close, .mn-companion-config button, .mn-companion-create button,
+    .mn-companion-pairing button, .mn-companion-presence button):hover:not(:disabled) { border-color: var(--kit-line); color: var(--kit-white); }
+:is(.mn-companions-panel button, .mn-companion-config button, .mn-companion-create button, .mn-companion-pairing button, .mn-companion-presence button):disabled { opacity: .55; }
+.mn-companions-panel > :is(.mn-companion-create-open, .mn-companion-pair-open, .mn-inference-open) { display: block; width: 100%; margin-top: 8px; }
+.mn-companions-header .mn-companions-refresh { min-height: 44px; }
+
+/* Rows: the caps font is wider than the old system font, so a narrow row wraps its buttons under the text instead of squeezing it. */
+.mn-companions-row { flex-wrap: wrap; }
+.mn-companions-info { flex: 1 1 120px; }
+.mn-companions-actions { margin-left: auto; }
+.mn-companions-row .mn-companions-stop { font-size: 16px; }
+
+/* Close: like .ch-x. */
+button.mn-companions-close { background: #0a1726cc; color: #c3d0dc; font: 400 24px / 1 var(--f-display); font-style: normal; text-transform: none; }
+button.mn-companions-close:hover:not(:disabled) { color: var(--kit-white); border-color: var(--kit-orange); }
+
+/* The main action of each view: the orange brush of .ch-tab.on with dark text. */
+button.mn-companion-primary, button.mn-companion-config-save, button.mn-companion-create-open, button.mn-companions-resume,
+.mn-companion-presence button[data-op="join"] {
+  border-style: solid; border-color: transparent; border-width: 0 14px; border-image: var(--kit-brush-clean) 0 150 fill / 0 14px stretch;
+  background: none; box-shadow: none; color: #111a24; text-shadow: none;
+}
+button.mn-companion-primary:hover:not(:disabled), button.mn-companion-config-save:hover:not(:disabled), button.mn-companion-create-open:hover:not(:disabled),
+button.mn-companions-resume:hover:not(:disabled), .mn-companion-presence button[data-op="join"]:hover:not(:disabled) { color: #111a24; filter: brightness(1.1); }
+
+/* Stop and retire: the kit's red. */
+button.mn-companions-stop[data-control-op="stop"], .mn-companion-presence button[data-op="retire"] { border-color: var(--kit-bad); color: var(--kit-bad); }
+button.mn-companions-stop[data-control-op="stop"]:hover:not(:disabled), .mn-companion-presence button[data-op="retire"]:hover:not(:disabled) { border-color: var(--kit-bad); color: var(--kit-white); background: #ff7d6b2e; }
+
+/* ---- Fields ---------------------------------------------------------------------------------------------------- */
+.mn-companion-config textarea, .mn-companion-config select, .mn-companion-create select, .mn-companion-create textarea,
+.mn-companion-create input:not([type="checkbox"]):not([type="radio"]) {
+  border: 1px solid var(--kit-line-soft); border-radius: 3px; background: var(--kit-deep); color: var(--kit-text); font: 500 15px / 1.4 var(--f-body);
+}
+.mn-companion-create input[type="checkbox"], .mn-companion-create input[type="radio"] { accent-color: var(--kit-orange); }
+.mn-companion-create-choice > span { font: 500 15px / 1.3 var(--f-body); }
+
+/* ---- Focus ----------------------------------------------------------------------------------------------------- */
+.mn-companions button:focus-visible, .mn-companions-panel button:focus-visible, .mn-companion-config :is(button, textarea, select):focus-visible,
+.mn-companion-create :is(button, input, select, textarea):focus-visible, .mn-companion-pairing button:focus-visible, .mn-companion-presence button:focus-visible {
+  outline: 2px solid var(--kit-orange); outline-offset: 2px;
+}
+
+/* ---- HUD toggle: the same plate as its neighbours (.icon-btn, styles/vars.css); the touch icon is in hud.css -------- */
+.mn-companions-toggle {
+  border: 1px solid #6f8fae; border-radius: 6px; background: linear-gradient(180deg, #16304a, #0b1826); box-shadow: inset 0 0 0 1px #00000080, 0 3px 8px #00000080;
+  font: italic 700 16px / 1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; color: #dfe8f0;
+}
+.mn-companions-toggle:hover, .mn-companions-toggle[aria-expanded="true"] { border-color: var(--kit-orange); color: var(--kit-white); }
+
+/* ---- Hosted inference center: owner connections and server companions --------------------------------------- */
+.mn-hosted-inference { display: flex; flex-direction: column; gap: 12px; padding: 12px; max-height: min(72vh, 720px); overflow-y: auto; color: var(--kit-text); font: 500 15px/1.35 var(--f-body); }
+.mn-hosted-inference[hidden], .mn-hosted-inference [hidden] { display: none; }
+.mn-hosted-inference *, .mn-hosted-inference { box-sizing: border-box; min-width: 0; overflow-wrap: anywhere; }
+.mn-hosted-header, .mn-hosted-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.mn-hosted-header { justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--kit-line-faint); }
+.mn-hosted-inference h3 { margin: 0; font: italic 800 24px/1 var(--f-display); text-transform: uppercase; color: var(--kit-white); }
+.mn-hosted-inference h4 { margin: 0; font: italic 600 19px/1.1 var(--f-display); text-transform: uppercase; color: var(--kit-sky); }
+.mn-hosted-body, .mn-hosted-list, .mn-hosted-card { display: grid; gap: 10px; }
+.mn-hosted-body { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+.mn-hosted-card { padding: 12px; border: 1px solid var(--kit-line-soft); border-radius: 3px; background: var(--kit-deep); }
+.mn-hosted-card p, .mn-hosted-status { margin: 0; }
+.mn-hosted-note { color: var(--kit-dim); font-size: 14px; }
+.mn-hosted-warning { color: var(--kit-orange-l); }
+.mn-hosted-status { min-height: 1.4em; }
+.mn-hosted-inference label { display: grid; gap: 6px; }
+.mn-hosted-inference label > span { font: italic 600 15px/1.1 var(--f-display); text-transform: uppercase; color: var(--kit-sky); }
+.mn-hosted-inference :is(input, select, textarea) { width: 100%; min-height: 44px; padding: 9px; border: 1px solid var(--kit-line-soft); border-radius: 3px; background: var(--kit-deep); color: var(--kit-text); font: 500 15px/1.4 var(--f-body); }
+.mn-hosted-inference textarea { resize: vertical; }
+.mn-hosted-inference input[type="checkbox"] { width: 44px; accent-color: var(--kit-orange); }
+.mn-hosted-inference button { min-height: 44px; padding: 10px 14px; cursor: pointer; white-space: normal; }
+.mn-hosted-inference button:disabled { cursor: wait; opacity: .55; }
+.mn-hosted-inference :is(button, input, select, textarea):focus-visible { outline: 2px solid var(--kit-orange); outline-offset: 2px; }
+.mn-hosted-actions > button { flex: 1 1 130px; }
+.mn-hosted-badge { justify-self: start; padding: 4px 8px; border: 1px solid var(--kit-line-soft); border-radius: 3px; color: var(--kit-sky); }
+.mn-hosted-reply { white-space: pre-wrap; }
+.mn-companions-panel:has(.mn-hosted-inference:not([hidden])) { width: min(820px, calc(100cqw - 24px)); overflow: hidden; }
+@media (max-width: 600px) {
+  .mn-hosted-inference { padding: 8px; max-height: 72vh; }
+  .mn-hosted-body { grid-template-columns: minmax(0, 1fr); }
+  .mn-hosted-header, .mn-hosted-actions { flex-direction: column; align-items: stretch; }
+  .mn-hosted-actions > button { flex-basis: auto; }
+}

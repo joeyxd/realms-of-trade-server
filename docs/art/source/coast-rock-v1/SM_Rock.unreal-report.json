@@ -1,0 +1,161 @@
+{
+  "case": "S02 beach-rock geometry trial",
+  "dependencies": {
+    "dependencyGraph": {
+      "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal": [
+        "/Game/Dreamrise_SMSK/Assets/Materials/M_Base",
+        "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+      ],
+      "/Game/Dreamrise_SMSK/Assets/Materials/M_Base": [
+        "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+      ],
+      "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Rock": [
+        "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal",
+        "/Script/NavigationSystem"
+      ],
+      "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette": [
+        "/Script/InterchangeEngine"
+      ]
+    },
+    "exactExpectedClosure": true,
+    "expectedGamePackages": [
+      "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal",
+      "/Game/Dreamrise_SMSK/Assets/Materials/M_Base",
+      "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Rock",
+      "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+    ],
+    "gameAssets": [
+      {
+        "class": "MaterialInstanceConstant",
+        "objectPath": "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal.MI_Base_Normal",
+        "package": "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal"
+      },
+      {
+        "class": "Material",
+        "objectPath": "/Game/Dreamrise_SMSK/Assets/Materials/M_Base.M_Base",
+        "package": "/Game/Dreamrise_SMSK/Assets/Materials/M_Base"
+      },
+      {
+        "class": "StaticMesh",
+        "objectPath": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Rock.SM_Rock",
+        "package": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Rock"
+      },
+      {
+        "class": "Texture2D",
+        "objectPath": "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette.T_ColorPalette",
+        "package": "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+      }
+    ],
+    "gamePackageCount": 4,
+    "gamePackages": [
+      "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal",
+      "/Game/Dreamrise_SMSK/Assets/Materials/M_Base",
+      "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Rock",
+      "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+    ],
+    "missingGameReferences": [],
+    "nonGameDependencies": [
+      "/Script/InterchangeEngine",
+      "/Script/NavigationSystem"
+    ],
+    "rootPackage": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Rock"
+  },
+  "engine": "UE 5.8 project commandlet",
+  "errors": [],
+  "exportOptions": {
+    "bakeMode": "disabled",
+    "defaultLod": 0,
+    "renderMode": "NullRHI",
+    "shaderCompile": "disabled",
+    "sourceModel": false,
+    "uniformScale": 0.01,
+    "vertexColors": true
+  },
+  "glbBytes": 12184,
+  "glbInspection": {
+    "bytes": 12184,
+    "materialReferences": [
+      {
+        "materialIndex": 0,
+        "materialName": null,
+        "meshIndex": 0,
+        "primitiveIndex": 0
+      }
+    ],
+    "materials": [
+      {
+        "pbrMetallicRoughness": {}
+      }
+    ],
+    "meshPrimitiveCount": 1,
+    "positionVertexCountSummedAcrossPrimitives": 192,
+    "primitives": [
+      {
+        "indexCount": 192,
+        "name": "SM_Rock",
+        "primitiveIndex": 0,
+        "triangleCount": 64,
+        "vertexColorSets": [],
+        "vertexCount": 192
+      }
+    ],
+    "sceneCount": 1,
+    "triangleCountSummedAcrossPrimitives": 64,
+    "version": 2,
+    "vertexColors": [
+      {
+        "hasVertexColors": false,
+        "meshIndex": 0,
+        "primitiveIndex": 0,
+        "sets": []
+      }
+    ]
+  },
+  "mesh": {
+    "asset": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Rock.SM_Rock",
+    "bounds": {
+      "dimensionsAtExportScaleMeters": {
+        "x": 2.7307830810546876,
+        "y": 2.275617218017578,
+        "z": 1.5565701293945313
+      },
+      "dimensionsCm": {
+        "x": 273.07830810546875,
+        "y": 227.5617218017578,
+        "z": 155.65701293945312
+      },
+      "extentCm": {
+        "x": 136.53915405273438,
+        "y": 113.7808609008789,
+        "z": 77.82850646972656
+      },
+      "originCm": {
+        "x": 2.82977294921875,
+        "y": -6.638069152832031,
+        "z": 50.62748718261719
+      }
+    },
+    "class": "StaticMesh",
+    "lods": [
+      {
+        "lod": 0,
+        "sectionCount": 1,
+        "triangleCount": 64
+      }
+    ],
+    "materialReferences": [
+      {
+        "index": 0,
+        "material": "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal.MI_Base_Normal",
+        "slot": "WorldGridMaterial"
+      }
+    ],
+    "package": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Rock",
+    "sourceScale": "Unreal centimeters"
+  },
+  "objectPath": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Rock.SM_Rock",
+  "outputGlb": "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\out\\SM_Rock.glb",
+  "packagePath": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_Rock",
+  "projectFile": "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\S02RockExport.uproject",
+  "status": "exported"
+}

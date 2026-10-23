@@ -1,0 +1,69 @@
+{
+  "schema": "mn.starter-workshop.public.v1",
+  "at": "2026-10-11T02:02:24.968Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "mode": "timed-logging-only",
+  "protocol": 46,
+  "gameVersion": "0.6.0-alpha.38",
+  "checks": [
+    {
+      "name": "public_tls_release_and_sql023_024_026_readiness",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.38",
+      "protocolVersion": 46,
+      "realPlayers": 0,
+      "workshopReady": true,
+      "resourcesReady": true
+    },
+    {
+      "name": "disconnected_timed_logging_axe_seed",
+      "pass": true,
+      "cargoKinds": 0
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "logging_rejects_client_quality_and_invented_challenge",
+      "pass": true,
+      "clientQualityRejected": true,
+      "challengeRejected": true,
+      "profileUnchanged": true,
+      "palmUnchanged": true
+    },
+    {
+      "name": "three_hit_timed_palm_gather_durable_yield_and_exact_replay",
+      "pass": true,
+      "qualities": [
+        0,
+        0,
+        0
+      ],
+      "counts": [
+        0,
+        0,
+        3
+      ],
+      "finalLogs": 3,
+      "practice": 10,
+      "replayHistorical": true
+    },
+    {
+      "name": "timed_logging_yield_processed_at_normal_bench",
+      "pass": true,
+      "planks": 1,
+      "logsRemaining": 1,
+      "practice": 10
+    }
+  ],
+  "errors": [],
+  "pass": true,
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 4,
+    "receiptPolicy": "economic receipts intentionally retained"
+  },
+  "completedAt": "2026-10-11T02:03:00.992Z"
+}

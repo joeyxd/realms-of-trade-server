@@ -1,0 +1,21 @@
+{
+  "baseCommit": "686163698af018cbc906f406a1bc0ad8290f2b8b",
+  "counts": {
+    "tests": 235,
+    "pass": 235,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "testFiles": 34,
+  "reviewedUpstreamBackendChanges": [
+    "server/agentControl.mjs",
+    "server/host.mjs",
+    "src/net/protocol.js"
+  ],
+  "simDeployAndSelected31TestsUnchanged": true,
+  "packageDependenciesAndScriptsUnchanged": true,
+  "finalSourceHashesMatch": true,
+  "scope": "Full previous core31 regression repeated after companion host integration, plus three companion test files. Earlier 213 and 22 results overlap this final suite."
+}

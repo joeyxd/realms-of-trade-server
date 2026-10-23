@@ -1,0 +1,458 @@
+{
+  "pass": true,
+  "browser": "Chrome via Playwright",
+  "fixture": "real Hud.show intro awaited; ES/EN title transition awaited; visible PersonalLanternActions + MiniMap; live --ui-scale set after transitions; empty src/main.js interception; no scene/WebGL/game network",
+  "rows": [
+    {
+      "name": "1280x800-scale1-en",
+      "width": 1280,
+      "height": 800,
+      "scale": 1,
+      "locale": "en",
+      "pass": true,
+      "metrics": {
+        "lang": "en",
+        "scale": "1",
+        "hudHidden": false,
+        "tracker": {
+          "x": 1016,
+          "y": 194,
+          "right": 1266,
+          "bottom": 462.015625,
+          "width": 250,
+          "height": 268.015625
+        },
+        "trackerInlineTransform": "",
+        "trackerDisplay": "block",
+        "overflowY": "auto",
+        "actionbar": {
+          "x": 367,
+          "y": 704,
+          "right": 913,
+          "bottom": 786,
+          "width": 546,
+          "height": 82
+        },
+        "actionbarInlineTransform": "",
+        "lantern": {
+          "x": 1148.28125,
+          "y": 608,
+          "right": 1262,
+          "bottom": 656,
+          "width": 113.71875,
+          "height": 48
+        },
+        "lanternHidden": false,
+        "lanternText": "Torch N · 2:00",
+        "minimap": {
+          "x": 1124,
+          "y": 28,
+          "right": 1250,
+          "bottom": 154,
+          "width": 126,
+          "height": 126
+        },
+        "caption": {
+          "x": 1101,
+          "y": 162,
+          "right": 1273,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375
+        },
+        "overlapCaption": false,
+        "overlapActionbar": false,
+        "overlapLantern": false,
+        "scrollEnd": {
+          "scrollTop": 0,
+          "scrollHeight": 264,
+          "clientHeight": 264,
+          "lastVisible": true
+        },
+        "visibleRows": [
+          "move",
+          "dash",
+          "attack",
+          "parry",
+          "guard"
+        ],
+        "title": "First steps"
+      }
+    },
+    {
+      "name": "1280x800-scale1-es",
+      "width": 1280,
+      "height": 800,
+      "scale": 1,
+      "locale": "es",
+      "pass": true,
+      "metrics": {
+        "lang": "es",
+        "scale": "1",
+        "hudHidden": false,
+        "tracker": {
+          "x": 1016,
+          "y": 194,
+          "right": 1266,
+          "bottom": 462.015625,
+          "width": 250,
+          "height": 268.015625
+        },
+        "trackerInlineTransform": "",
+        "trackerDisplay": "block",
+        "overflowY": "auto",
+        "actionbar": {
+          "x": 367,
+          "y": 704,
+          "right": 913,
+          "bottom": 786,
+          "width": 546,
+          "height": 82
+        },
+        "actionbarInlineTransform": "",
+        "lantern": {
+          "x": 1125.953125,
+          "y": 608,
+          "right": 1262,
+          "bottom": 656,
+          "width": 136.046875,
+          "height": 48
+        },
+        "lanternHidden": false,
+        "lanternText": "Antorcha N · 2:00",
+        "minimap": {
+          "x": 1124,
+          "y": 28,
+          "right": 1250,
+          "bottom": 154,
+          "width": 126,
+          "height": 126
+        },
+        "caption": {
+          "x": 1101,
+          "y": 162,
+          "right": 1273,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375
+        },
+        "overlapCaption": false,
+        "overlapActionbar": false,
+        "overlapLantern": false,
+        "scrollEnd": {
+          "scrollTop": 0,
+          "scrollHeight": 264,
+          "clientHeight": 264,
+          "lastVisible": true
+        },
+        "visibleRows": [
+          "move",
+          "dash",
+          "attack",
+          "parry",
+          "guard"
+        ],
+        "title": "Primeros pasos"
+      }
+    },
+    {
+      "name": "1280x500-scale1_3-en",
+      "width": 1280,
+      "height": 500,
+      "scale": 1.3,
+      "locale": "en",
+      "screenshot": "500-en.png",
+      "pass": true,
+      "metrics": {
+        "lang": "en",
+        "scale": "1.3",
+        "hudHidden": false,
+        "tracker": {
+          "x": 941,
+          "y": 194,
+          "right": 1266,
+          "bottom": 295.98907470703125,
+          "width": 325,
+          "height": 101.98907470703125
+        },
+        "trackerInlineTransform": "",
+        "trackerDisplay": "block",
+        "overflowY": "auto",
+        "actionbar": {
+          "x": 285.1000061035156,
+          "y": 379.3999938964844,
+          "right": 994.9000549316406,
+          "bottom": 486,
+          "width": 709.800048828125,
+          "height": 106.60000610351562
+        },
+        "actionbarInlineTransform": "",
+        "lantern": {
+          "x": 1148.28125,
+          "y": 308,
+          "right": 1262,
+          "bottom": 356,
+          "width": 113.71875,
+          "height": 48
+        },
+        "lanternHidden": false,
+        "lanternText": "Torch N · 2:00",
+        "minimap": {
+          "x": 1124,
+          "y": 28,
+          "right": 1250,
+          "bottom": 154,
+          "width": 126,
+          "height": 126
+        },
+        "caption": {
+          "x": 1101,
+          "y": 162,
+          "right": 1273,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375
+        },
+        "overlapCaption": false,
+        "overlapActionbar": false,
+        "overlapLantern": false,
+        "scrollEnd": {
+          "scrollTop": 190,
+          "scrollHeight": 264,
+          "clientHeight": 74,
+          "lastVisible": true
+        },
+        "visibleRows": [
+          "move"
+        ],
+        "title": "First steps",
+        "wheelScroll": {
+          "scrollTop": 190,
+          "lastVisible": true
+        }
+      }
+    },
+    {
+      "name": "1280x500-scale1_3-es",
+      "width": 1280,
+      "height": 500,
+      "scale": 1.3,
+      "locale": "es",
+      "screenshot": "500-es.png",
+      "pass": true,
+      "metrics": {
+        "lang": "es",
+        "scale": "1.3",
+        "hudHidden": false,
+        "tracker": {
+          "x": 941,
+          "y": 194,
+          "right": 1266,
+          "bottom": 295.98907470703125,
+          "width": 325,
+          "height": 101.98907470703125
+        },
+        "trackerInlineTransform": "",
+        "trackerDisplay": "block",
+        "overflowY": "auto",
+        "actionbar": {
+          "x": 285.1000061035156,
+          "y": 379.3999938964844,
+          "right": 994.9000549316406,
+          "bottom": 486,
+          "width": 709.800048828125,
+          "height": 106.60000610351562
+        },
+        "actionbarInlineTransform": "",
+        "lantern": {
+          "x": 1125.953125,
+          "y": 308,
+          "right": 1262,
+          "bottom": 356,
+          "width": 136.046875,
+          "height": 48
+        },
+        "lanternHidden": false,
+        "lanternText": "Antorcha N · 2:00",
+        "minimap": {
+          "x": 1124,
+          "y": 28,
+          "right": 1250,
+          "bottom": 154,
+          "width": 126,
+          "height": 126
+        },
+        "caption": {
+          "x": 1101,
+          "y": 162,
+          "right": 1273,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375
+        },
+        "overlapCaption": false,
+        "overlapActionbar": false,
+        "overlapLantern": false,
+        "scrollEnd": {
+          "scrollTop": 190,
+          "scrollHeight": 264,
+          "clientHeight": 74,
+          "lastVisible": true
+        },
+        "visibleRows": [
+          "move"
+        ],
+        "title": "Primeros pasos",
+        "wheelScroll": {
+          "scrollTop": 190,
+          "lastVisible": true
+        }
+      }
+    },
+    {
+      "name": "844x390-scale1-en",
+      "width": 844,
+      "height": 390,
+      "scale": 1,
+      "locale": "en",
+      "pass": true,
+      "metrics": {
+        "lang": "en",
+        "scale": "1",
+        "hudHidden": false,
+        "tracker": {
+          "x": 10,
+          "y": 118,
+          "right": 260,
+          "bottom": 149,
+          "width": 250,
+          "height": 31
+        },
+        "trackerInlineTransform": "",
+        "trackerDisplay": "flex",
+        "overflowY": "visible",
+        "actionbar": {
+          "x": 149,
+          "y": 294,
+          "right": 695,
+          "bottom": 376,
+          "width": 546,
+          "height": 82
+        },
+        "actionbarInlineTransform": "",
+        "lantern": {
+          "x": 721.28125,
+          "y": 111,
+          "right": 835,
+          "bottom": 159,
+          "width": 113.71875,
+          "height": 48
+        },
+        "lanternHidden": false,
+        "lanternText": "Torch N · 2:00",
+        "minimap": {
+          "x": 688,
+          "y": 28,
+          "right": 814,
+          "bottom": 154,
+          "width": 126,
+          "height": 126
+        },
+        "caption": {
+          "x": 665,
+          "y": 162,
+          "right": 837,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375
+        },
+        "overlapCaption": false,
+        "overlapActionbar": false,
+        "overlapLantern": false,
+        "scrollEnd": {
+          "scrollTop": 0,
+          "scrollHeight": 27,
+          "clientHeight": 27,
+          "lastVisible": false
+        },
+        "visibleRows": [
+          "attack"
+        ],
+        "title": "First steps"
+      }
+    },
+    {
+      "name": "844x390-scale1-es",
+      "width": 844,
+      "height": 390,
+      "scale": 1,
+      "locale": "es",
+      "pass": true,
+      "metrics": {
+        "lang": "es",
+        "scale": "1",
+        "hudHidden": false,
+        "tracker": {
+          "x": 10,
+          "y": 118,
+          "right": 260,
+          "bottom": 149,
+          "width": 250,
+          "height": 31
+        },
+        "trackerInlineTransform": "",
+        "trackerDisplay": "flex",
+        "overflowY": "visible",
+        "actionbar": {
+          "x": 149,
+          "y": 294,
+          "right": 695,
+          "bottom": 376,
+          "width": 546,
+          "height": 82
+        },
+        "actionbarInlineTransform": "",
+        "lantern": {
+          "x": 698.953125,
+          "y": 111,
+          "right": 835,
+          "bottom": 159,
+          "width": 136.046875,
+          "height": 48
+        },
+        "lanternHidden": false,
+        "lanternText": "Antorcha N · 2:00",
+        "minimap": {
+          "x": 688,
+          "y": 28,
+          "right": 814,
+          "bottom": 154,
+          "width": 126,
+          "height": 126
+        },
+        "caption": {
+          "x": 665,
+          "y": 162,
+          "right": 837,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375
+        },
+        "overlapCaption": false,
+        "overlapActionbar": false,
+        "overlapLantern": false,
+        "scrollEnd": {
+          "scrollTop": 0,
+          "scrollHeight": 27,
+          "clientHeight": 27,
+          "lastVisible": false
+        },
+        "visibleRows": [
+          "attack"
+        ],
+        "title": "Primeros pasos"
+      }
+    }
+  ],
+  "errors": []
+}

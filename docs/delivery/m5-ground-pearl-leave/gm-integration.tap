@@ -1,0 +1,511 @@
+TAP version 13
+# Subtest: authored resource admission is gated, appended by CAS, installed from map.gmResources, and gathered through normal authority
+ok 1 - authored resource admission is gated, appended by CAS, installed from map.gmResources, and gathered through normal authority
+  ---
+  duration_ms: 409.2817
+  type: 'test'
+  ...
+# Subtest: authored palms enforce tool and range checks, then award v2 logging once on the third hit
+ok 2 - authored palms enforce tool and range checks, then award v2 logging once on the third hit
+  ---
+  duration_ms: 449.6
+  type: 'test'
+  ...
+# Subtest: authored stone pickup uses normal authority and an operation replay cannot duplicate the reward
+ok 3 - authored stone pickup uses normal authority and an operation replay cannot duplicate the reward
+  ---
+  duration_ms: 252.8796
+  type: 'test'
+  ...
+# Subtest: removed and moved authored nodes retain depleted state through rollback, reactivation, and restart
+ok 4 - removed and moved authored nodes retain depleted state through rollback, reactivation, and restart
+  ---
+  duration_ms: 623.0856
+  type: 'test'
+  ...
+# Subtest: append-only roster creates schema-correct palm ledgers for resource baselines v1, v2, and v3
+    # Subtest: v1
+    ok 1 - v1
+      ---
+      duration_ms: 237.2073
+      type: 'test'
+      ...
+    # Subtest: v2
+    ok 2 - v2
+      ---
+      duration_ms: 238.4923
+      type: 'test'
+      ...
+    # Subtest: v3
+    ok 3 - v3
+      ---
+      duration_ms: 229.9447
+      type: 'test'
+      ...
+    1..3
+ok 5 - append-only roster creates schema-correct palm ledgers for resource baselines v1, v2, and v3
+  ---
+  duration_ms: 706.4396
+  type: 'test'
+  ...
+# Subtest: CAS conflict and ambiguous SQL acknowledgement fence the host without installing the target map
+    # Subtest: conflict
+    ok 1 - conflict
+      ---
+      duration_ms: 218.4905
+      type: 'test'
+      ...
+    # Subtest: ambiguous
+    ok 2 - ambiguous
+      ---
+      duration_ms: 383.4533
+      type: 'test'
+      ...
+    1..2
+ok 6 - CAS conflict and ambiguous SQL acknowledgement fence the host without installing the target map
+  ---
+  duration_ms: 602.3524
+  type: 'test'
+  ...
+# Subtest: unsupported ground-authority resource admission rejects before roster writes
+ok 7 - unsupported ground-authority resource admission rejects before roster writes
+  ---
+  duration_ms: 474.3268
+  type: 'test'
+  ...
+# Subtest: resource aliases resolve only to the pinned physical assets and stable simulation IDs
+ok 8 - resource aliases resolve only to the pinned physical assets and stable simulation IDs
+  ---
+  duration_ms: 1.1614
+  type: 'test'
+  ...
+# Subtest: authored resources compile to stable grounded nodes and install as a separate projection
+ok 9 - authored resources compile to stable grounded nodes and install as a separate projection
+  ---
+  duration_ms: 441.3629
+  type: 'test'
+  ...
+# Subtest: shared publication validation enforces resource transform, spacing and authored collider limits
+ok 10 - shared publication validation enforces resource transform, spacing and authored collider limits
+  ---
+  duration_ms: 335.4384
+  type: 'test'
+  ...
+# Subtest: draft and publication admission pin physical assets and hash the compiled functional layout
+ok 11 - draft and publication admission pin physical assets and hash the compiled functional layout
+  ---
+  duration_ms: 1223.7795
+  type: 'test'
+  ...
+# Subtest: content registry and M5 host activate resources, gather normally, rollback and restore on restart without pruning
+ok 12 - content registry and M5 host activate resources, gather normally, rollback and restore on restart without pruning
+  ---
+  duration_ms: 2582.4138
+  type: 'test'
+  ...
+# Subtest: lost pointer ACK reconciles an admitted functional layout and exact retry does not admit twice
+ok 13 - lost pointer ACK reconciles an admitted functional layout and exact retry does not admit twice
+  ---
+  duration_ms: 3135.0444
+  type: 'test'
+  ...
+# Subtest: lost SQL ACK fences gameplay before pointer switch and leaves only inactive durable rows
+ok 14 - lost SQL ACK fences gameplay before pointer switch and leaves only inactive durable rows
+  ---
+  duration_ms: 3581.6751
+  type: 'test'
+  ...
+# Subtest: SQL036 extends v1 safely and admits append-only resource identities with CAS
+ok 15 - SQL036 extends v1 safely and admits append-only resource identities with CAS
+  ---
+  duration_ms: 1396.8124
+  type: 'test'
+  ...
+# Subtest: SQL036 rejects malformed, mutated, retyped, oversized and non-default appended rows without writes
+ok 16 - SQL036 rejects malformed, mutated, retyped, oversized and non-default appended rows without writes
+  ---
+  duration_ms: 1775.3361
+  type: 'test'
+  ...
+# Subtest: SQL036 preserves v1/v2/v3 validation, exact logging defaults, and freezes ordinary saves
+ok 17 - SQL036 preserves v1/v2/v3 validation, exact logging defaults, and freezes ordinary saves
+  ---
+  duration_ms: 10221.5187
+  type: 'test'
+  ...
+# Subtest: SQL036 readiness and private helper/service RPC privileges
+ok 18 - SQL036 readiness and private helper/service RPC privileges
+  ---
+  duration_ms: 1784.4631
+  type: 'test'
+  ...
+# Subtest: SQL036 keeps an already stored SQL033 receipt replayable byte-for-byte
+ok 19 - SQL036 keeps an already stored SQL033 receipt replayable byte-for-byte
+  ---
+  duration_ms: 2114.9492
+  type: 'test'
+  ...
+# Subtest: GameHost GM palm and stone receipts commit through the SQL036 economic writer
+ok 20 - GameHost GM palm and stone receipts commit through the SQL036 economic writer
+  ---
+  duration_ms: 5282.7596
+  type: 'test'
+  ...
+# Subtest: default pearl command still uses the existing immediate gameplay helper
+ok 21 - default pearl command still uses the existing immediate gameplay helper
+  ---
+  duration_ms: 397.7856
+  type: 'test'
+  ...
+# Subtest: mounted false, true and async command decisions never fall through to a local pearl mutation
+ok 22 - mounted false, true and async command decisions never fall through to a local pearl mutation
+  ---
+  duration_ms: 288.1971
+  type: 'test'
+  ...
+# Subtest: command access rejection precedes the receipted dispatch hook
+ok 23 - command access rejection precedes the receipted dispatch hook
+  ---
+  duration_ms: 257.3938
+  type: 'test'
+  ...
+# Subtest: selector leave reserves and persists an owned pearl, then applies only at the common tick boundary
+ok 24 - selector leave reserves and persists an owned pearl, then applies only at the common tick boundary
+  ---
+  duration_ms: 10905.4911
+  type: 'test'
+  ...
+# Subtest: real CMD pearl leave is routed only when mounted; give, swallow, combat, unknown, spit and sell fail closed
+ok 25 - real CMD pearl leave is routed only when mounted; give, swallow, combat, unknown, spit and sell fail closed
+  ---
+  duration_ms: 7049.2693
+  type: 'test'
+  ...
+# Subtest: shutdown fences a SQL committed leave until recovery
+ok 26 - shutdown fences a SQL committed leave until recovery
+  ---
+  duration_ms: 6499.4402
+  type: 'test'
+  ...
+# Subtest: a normally applied leave hydrates as one source after restart and can be picked up once
+ok 27 - a normally applied leave hydrates as one source after restart and can be picked up once
+  ---
+  duration_ms: 9257.5711
+  type: 'test'
+  ...
+# Subtest: disconnect and shutdown fence a retained leave receipt before gameplay apply
+ok 28 - disconnect and shutdown fence a retained leave receipt before gameplay apply
+  ---
+  duration_ms: 7639.0734
+  type: 'test'
+  ...
+# Subtest: taking over the common completion callback prevents a retained leave from applying
+ok 29 - taking over the common completion callback prevents a retained leave from applying
+  ---
+  duration_ms: 7223.733
+  type: 'test'
+  ...
+# Subtest: mounted leave command fences a null pearl hook before legacy mutation
+ok 30 - mounted leave command fences a null pearl hook before legacy mutation
+  ---
+  duration_ms: 6687.7439
+  type: 'test'
+  ...
+# Subtest: mounted leave command fences a replacement pearl hook before legacy mutation
+ok 31 - mounted leave command fences a replacement pearl hook before legacy mutation
+  ---
+  duration_ms: 7373.288
+  type: 'test'
+  ...
+# Subtest: planner prepares detached helper delta and atomically applies the exact durable receipt
+ok 32 - planner prepares detached helper delta and atomically applies the exact durable receipt
+  ---
+  duration_ms: 50.784
+  type: 'test'
+  ...
+# Subtest: planner rejects holder, generation, profile and duplicate UID drift without mutation
+    # Subtest: holder
+    ok 1 - holder
+      ---
+      duration_ms: 12.9322
+      type: 'test'
+      ...
+    # Subtest: version
+    ok 2 - version
+      ---
+      duration_ms: 10.5878
+      type: 'test'
+      ...
+    # Subtest: profile
+    ok 3 - profile
+      ---
+      duration_ms: 10.3368
+      type: 'test'
+      ...
+    # Subtest: ledger
+    ok 4 - ledger
+      ---
+      duration_ms: 11.9182
+      type: 'test'
+      ...
+    # Subtest: duplicate profile
+    ok 5 - duplicate profile
+      ---
+      duration_ms: 11.9931
+      type: 'test'
+      ...
+    # Subtest: duplicate drop
+    ok 6 - duplicate drop
+      ---
+      duration_ms: 11.77
+      type: 'test'
+      ...
+    # Subtest: row shape
+    ok 7 - row shape
+      ---
+      duration_ms: 10.3559
+      type: 'test'
+      ...
+    1..7
+ok 33 - planner rejects holder, generation, profile and duplicate UID drift without mutation
+  ---
+  duration_ms: 81.0451
+  type: 'test'
+  ...
+# Subtest: durable row accessors are rejected without invocation
+ok 34 - durable row accessors are rejected without invocation
+  ---
+  duration_ms: 4.2388
+  type: 'test'
+  ...
+# Subtest: assertBaseline allows settlement session counters while assertCurrent fences them
+ok 35 - assertBaseline allows settlement session counters while assertCurrent fences them
+  ---
+  duration_ms: 33.328
+  type: 'test'
+  ...
+# Subtest: captured ECS progress is carried into the profile and RNG replacement fences a plan
+ok 36 - captured ECS progress is carried into the profile and RNG replacement fences a plan
+  ---
+  duration_ms: 18.6285
+  type: 'test'
+  ...
+# Subtest: in-place target geometry drift and allocator descriptor drift fence the plan
+ok 37 - in-place target geometry drift and allocator descriptor drift fence the plan
+  ---
+  duration_ms: 54.9337
+  type: 'test'
+  ...
+# Subtest: wrong receipt and publication callback failure leave all state untouched
+ok 38 - wrong receipt and publication callback failure leave all state untouched
+  ---
+  duration_ms: 37.3812
+  type: 'test'
+  ...
+# Subtest: synchronous apply failure restores profile, receipt fields, drop order, ledger and dirty state
+ok 39 - synchronous apply failure restores profile, receipt fields, drop order, ledger and dirty state
+  ---
+  duration_ms: 29.5844
+  type: 'test'
+  ...
+# Subtest: adopted SQL023 world enters the real GameHost, gathers through its common journal, and restarts on the same clock
+ok 40 - adopted SQL023 world enters the real GameHost, gathers through its common journal, and restarts on the same clock
+  ---
+  duration_ms: 7479.9646
+  type: 'test'
+  ...
+# Subtest: v1 upgrade keeps clean cycles, quarantines every legacy hit, and rejects impossible history
+ok 41 - v1 upgrade keeps clean cycles, quarantines every legacy hit, and rejects impossible history
+  ---
+  duration_ms: 2.2605
+  type: 'test'
+  ...
+# Subtest: unknown legacy provenance cannot bypass the respawn deadline or invent a clean cycle
+ok 42 - unknown legacy provenance cannot bypass the respawn deadline or invent a clean cycle
+  ---
+  duration_ms: 0.5431
+  type: 'test'
+  ...
+# Subtest: v2 ledger is strict, canonical, and conserves node revision and hit history
+ok 43 - v2 ledger is strict, canonical, and conserves node revision and hit history
+  ---
+  duration_ms: 0.6743
+  type: 'test'
+  ...
+# Subtest: offline completion accounts include current contributors, while expired legacy cycles start fresh
+ok 44 - offline completion accounts include current contributors, while expired legacy cycles start fresh
+  ---
+  duration_ms: 0.358
+  type: 'test'
+  ...
+# Subtest: legacy partial cycle earns nothing; a fresh cooperative cycle credits only current contributors
+ok 45 - legacy partial cycle earns nothing; a fresh cooperative cycle credits only current contributors
+  ---
+  duration_ms: 11.4058
+  type: 'test'
+  ...
+# Subtest: normal completed cycles reset contributors after respawn and logging cadence applies after award
+ok 46 - normal completed cycles reset contributors after respawn and logging cadence applies after award
+  ---
+  duration_ms: 10.869
+  type: 'test'
+  ...
+# Subtest: resource restore pauses offline, keeps partial work, and retains revisions
+ok 47 - resource restore pauses offline, keeps partial work, and retains revisions
+  ---
+  duration_ms: 363.3703
+  type: 'test'
+  ...
+# Subtest: invalid or incompatible resource snapshots fail before changing any live node
+ok 48 - invalid or incompatible resource snapshots fail before changing any live node
+  ---
+  duration_ms: 335.6744
+  type: 'test'
+  ...
+# Subtest: resource migration must pass before world creation and cannot silently fall back
+ok 49 - resource migration must pass before world creation and cannot silently fall back
+  ---
+  duration_ms: 237.4024
+  type: 'test'
+  ...
+# Subtest: worlds with durable resources refuse an old snapshot-only resource host
+ok 50 - worlds with durable resources refuse an old snapshot-only resource host
+  ---
+  duration_ms: 523.5775
+  type: 'test'
+  ...
+# Subtest: world autosaves checkpoint only monotonic resource time and preserve the epoch across restarts
+ok 51 - world autosaves checkpoint only monotonic resource time and preserve the epoch across restarts
+  ---
+  duration_ms: 551.7108
+  type: 'test'
+  ...
+# Subtest: two players race for one resource; shared depletion and exact replay cannot duplicate goods
+ok 52 - two players race for one resource; shared depletion and exact replay cannot duplicate goods
+  ---
+  duration_ms: 8.5351
+  type: 'test'
+  ...
+# Subtest: rejects malformed and extra fields without coercion
+ok 53 - rejects malformed and extra fields without coercion
+  ---
+  duration_ms: 1.2739
+  type: 'test'
+  ...
+# Subtest: denies far, dead, moving, attacking, dashing, water, dock, and deck actions
+ok 54 - denies far, dead, moving, attacking, dashing, water, dock, and deck actions
+  ---
+  duration_ms: 1.2323
+  type: 'test'
+  ...
+# Subtest: gathering remains available while a non-aboard player is naval-locked
+ok 55 - gathering remains available while a non-aboard player is naval-locked
+  ---
+  duration_ms: 1.0967
+  type: 'test'
+  ...
+# Subtest: gathering requires calm, a live player entity, and a node revision below the cap
+ok 56 - gathering requires calm, a live player entity, and a node revision below the cap
+  ---
+  duration_ms: 1.0772
+  type: 'test'
+  ...
+# Subtest: gather capacity keeps maxMass and rejects a stone heavier than the remaining pack allowance
+ok 57 - gather capacity keeps maxMass and rejects a stone heavier than the remaining pack allowance
+  ---
+  duration_ms: 1.5148
+  type: 'test'
+  ...
+# Subtest: logging aim retry reuses the exact request and a correlated denial clears pending UI state
+ok 58 - logging aim retry reuses the exact request and a correlated denial clears pending UI state
+  ---
+  duration_ms: 0.5566
+  type: 'test'
+  ...
+# Subtest: craft requires calm, bench proximity, and no naval lock; pack mutation conserves units
+ok 59 - craft requires calm, bench proximity, and no naval lock; pack mutation conserves units
+  ---
+  duration_ms: 1.8839
+  type: 'test'
+  ...
+# Subtest: full pack, revision conflicts and save preflight are atomic
+ok 60 - full pack, revision conflicts and save preflight are atomic
+  ---
+  duration_ms: 1.344
+  type: 'test'
+  ...
+# Subtest: cooldown and respawn use world ticks; receipt window is bounded and clearable on detach
+ok 61 - cooldown and respawn use world ticks; receipt window is bounded and clearable on detach
+  ---
+  duration_ms: 1.1933
+  type: 'test'
+  ...
+# Subtest: keeps only the newest 64 operation receipts per player
+ok 62 - keeps only the newest 64 operation receipts per player
+  ---
+  duration_ms: 1.117
+  type: 'test'
+  ...
+# Subtest: bench crafting rejects missing materials, full output capacity, and revision overflow
+ok 63 - bench crafting rejects missing materials, full output capacity, and revision overflow
+  ---
+  duration_ms: 0.9786
+  type: 'test'
+  ...
+# Subtest: HTTP listener and simulation wait for initial world load and creation CAS
+ok 64 - HTTP listener and simulation wait for initial world load and creation CAS
+  ---
+  duration_ms: 408.7765
+  type: 'test'
+  ...
+# Subtest: world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+ok 65 - world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+  ---
+  duration_ms: 377.1639
+  type: 'test'
+  ...
+# Subtest: ambiguous save failure fences the host and preserves the last confirmed world generation
+ok 66 - ambiguous save failure fences the host and preserves the last confirmed world generation
+  ---
+  duration_ms: 292.8167
+  type: 'test'
+  ...
+# Subtest: autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+ok 67 - autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+  ---
+  duration_ms: 329.0646
+  type: 'test'
+  ...
+# Subtest: load failure never opens the HTTP listener or manufactures a replacement world
+ok 68 - load failure never opens the HTTP listener or manufactures a replacement world
+  ---
+  duration_ms: 233.1547
+  type: 'test'
+  ...
+# Subtest: shutdown aborts a stuck startup load and late null result cannot write a world
+ok 69 - shutdown aborts a stuck startup load and late null result cannot write a world
+  ---
+  duration_ms: 225.7091
+  type: 'test'
+  ...
+# Subtest: createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+ok 70 - createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+  ---
+  duration_ms: 245.442
+  type: 'test'
+  ...
+# Subtest: createGameServer can close cleanly before listen begins
+ok 71 - createGameServer can close cleanly before listen begins
+  ---
+  duration_ms: 232.9815
+  type: 'test'
+  ...
+1..71
+# tests 83
+# suites 0
+# pass 83
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 117821.265

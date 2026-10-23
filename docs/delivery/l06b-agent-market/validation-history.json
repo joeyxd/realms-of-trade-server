@@ -1,0 +1,75 @@
+{
+  "scope": "L06b-2a",
+  "priorAttempts": [
+    {
+      "attempt": 1,
+      "startedAt": "2026-10-10T16:34:56.525Z",
+      "finishedAt": "2026-10-10T16:38:23.202Z",
+      "exitCode": 1,
+      "stable": true,
+      "counts": {
+        "tests": 666,
+        "pass": 660,
+        "fail": 1,
+        "skipped": 5
+      },
+      "failed": [
+        "task and grant expiration are swept with the host timer stopped"
+      ]
+    },
+    {
+      "attempt": 2,
+      "startedAt": "2026-10-10T16:39:43.023Z",
+      "finishedAt": "2026-10-10T16:43:58.390Z",
+      "exitCode": 1,
+      "stable": true,
+      "counts": {
+        "tests": 666,
+        "pass": 660,
+        "fail": 1,
+        "skipped": 5
+      },
+      "failed": [
+        "pending identity and unauthenticated sockets receive no world frames; legacy and agent snapshots differ only by pilot contract"
+      ]
+    },
+    {
+      "attempt": 3,
+      "startedAt": "2026-10-10T16:44:39.665Z",
+      "finishedAt": "2026-10-10T16:50:07.671Z",
+      "exitCode": 1,
+      "stable": true,
+      "counts": {
+        "tests": 666,
+        "pass": 656,
+        "fail": 5,
+        "skipped": 5
+      },
+      "failed": [
+        "PvE ATTACK carried from a late command is revalidated after merge if a live player enters range before the tick",
+        "run.mjs uses durable budget across restarts, reports adapter usage, and keeps network body active on denial",
+        "same-ID retry recovers a lost C01 reply without duplicating delivery",
+        "CLI goal permission is opt-in, writes only objectives, keeps credentials private and exits on owner stop",
+        "real WS body attacks with authoritative damage, retreats on confirmed low HP, consumes one potion, and respects the map boundary"
+      ]
+    }
+  ],
+  "focused": {
+    "files": 5,
+    "tests": 32,
+    "pass": 32,
+    "fail": 0,
+    "sourceChanges": false
+  },
+  "final": {
+    "startedAt": "2026-10-10T16:52:27.267Z",
+    "finishedAt": "2026-10-10T16:56:30.038Z",
+    "files": 84,
+    "tests": 725,
+    "pass": 720,
+    "fail": 0,
+    "skipped": 5,
+    "exitCode": 0,
+    "stable": true
+  }
+}

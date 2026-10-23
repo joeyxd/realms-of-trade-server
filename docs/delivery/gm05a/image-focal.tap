@@ -1,0 +1,130 @@
+TAP version 13
+# Subtest: projection keeps stable base data and builds a fresh indexed collision contract
+ok 1 - projection keeps stable base data and builds a fresh indexed collision contract
+  ---
+  duration_ms: 2620.239635
+  type: 'test'
+  ...
+# Subtest: null projection clones colliders and query results keep generated-map index semantics
+ok 2 - null projection clones colliders and query results keep generated-map index semantics
+  ---
+  duration_ms: 2123.163702
+  type: 'test'
+  ...
+# Subtest: base decoration override and hidden edit compile into exact projection without mutating document or props
+ok 3 - base decoration override and hidden edit compile into exact projection without mutating document or props
+  ---
+  duration_ms: 1920.742529
+  type: 'test'
+  ...
+# Subtest: in-place installation changes only collider list and query function
+ok 4 - in-place installation changes only collider list and query function
+  ---
+  duration_ms: 1970.897729
+  type: 'test'
+  ...
+# Subtest: route validation rejects only clearance losses against previously walkable routes
+ok 5 - route validation rejects only clearance losses against previously walkable routes
+  ---
+  duration_ms: 2018.041661
+  type: 'test'
+  ...
+# Subtest: a blocked part of the base route does not grandfather a new obstruction on its clear remainder
+ok 6 - a blocked part of the base route does not grandfather a new obstruction on its clear remainder
+  ---
+  duration_ms: 0.679885
+  type: 'test'
+  ...
+# Subtest: route clearance uses analytic segment-circle overlap for small obstacles between samples
+ok 7 - route clearance uses analytic segment-circle overlap for small obstacles between samples
+  ---
+  duration_ms: 0.375029
+  type: 'test'
+  ...
+# Subtest: v2 canonical shape stays unchanged, v3 requires terrain, and terrain validates exact canonical samples
+ok 8 - v2 canonical shape stays unchanged, v3 requires terrain, and terrain validates exact canonical samples
+  ---
+  duration_ms: 7.05571
+  type: 'test'
+  ...
+# Subtest: terrain compilation uses alternating mesh triangles, keeps source immutable, and projects walking/material queries
+ok 9 - terrain compilation uses alternating mesh triangles, keeps source immutable, and projects walking/material queries
+  ---
+  duration_ms: 5.667776
+  type: 'test'
+  ...
+# Subtest: changed samples protect their interpolation neighbors across the dry coast boundary
+ok 10 - changed samples protect their interpolation neighbors across the dry coast boundary
+  ---
+  duration_ms: 16.40764
+  type: 'test'
+  ...
+# Subtest: freshwater spring and its interpolation margin are rejected by client and server-shared sculpt policy
+ok 11 - freshwater spring and its interpolation margin are rejected by client and server-shared sculpt policy
+  ---
+  duration_ms: 99.507527
+  type: 'test'
+  ...
+# Subtest: all brushes produce atomic terrain documents and history undo/redo restores the exact sample set
+ok 12 - all brushes produce atomic terrain documents and history undo/redo restores the exact sample set
+  ---
+  duration_ms: 199.451873
+  type: 'test'
+  ...
+# Subtest: terrain moves editable base decorations as explicit overrides and stepMover walks the compiled slope
+ok 13 - terrain moves editable base decorations as explicit overrides and stepMover walks the compiled slope
+  ---
+  duration_ms: 128.009796
+  type: 'test'
+  ...
+# Subtest: stroke interpolation is continuous, non-mutating, and invalid gestures reject as a whole
+ok 14 - stroke interpolation is continuous, non-mutating, and invalid gestures reject as a whole
+  ---
+  duration_ms: 47.132151
+  type: 'test'
+  ...
+# Subtest: terrain v3 projects the movement sampler and resets to the exact v2 baseline
+ok 15 - terrain v3 projects the movement sampler and resets to the exact v2 baseline
+  ---
+  duration_ms: 2630.556409
+  type: 'test'
+  ...
+# Subtest: v2 documents retain their historical shape and projection without terrain fields
+ok 16 - v2 documents retain their historical shape and projection without terrain fields
+  ---
+  duration_ms: 2197.798493
+  type: 'test'
+  ...
+# Subtest: client publication and server save reject samples in protected ground
+ok 17 - client publication and server save reject samples in protected ground
+  ---
+  duration_ms: 2302.883374
+  type: 'test'
+  ...
+# Subtest: publication checks object support against the projected ground height
+ok 18 - publication checks object support against the projected ground height
+  ---
+  duration_ms: 1574.633898
+  type: 'test'
+  ...
+# Subtest: activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+ok 19 - activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+  ---
+  duration_ms: 1657.465456
+  type: 'test'
+  ...
+# Subtest: terrain draft saves, prepares, activates, reloads exact heights, admits matching peer, and rolls back to legacy
+ok 20 - terrain draft saves, prepares, activates, reloads exact heights, admits matching peer, and rolls back to legacy
+  ---
+  duration_ms: 33299.521164
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 62767.171186

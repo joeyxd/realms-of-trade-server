@@ -1,0 +1,83 @@
+{
+  "schema": "gm03b2-deployment/v1",
+  "at": "2026-10-10T22:59:18.383364+00:00",
+  "release": "9266c40f367dfa1a8aa1e786b57a23fcb8e4898c",
+  "image": "sha256:14ae83fab1550f1f9a327866f2e2ef206ccf59876ef9d8ed72e6e1ea9d178a79",
+  "imageRevision": "9266c40f367dfa1a8aa1e786b57a23fcb8e4898c",
+  "container": "71634cb5c0b08ffee216d3f736638d491694ffbfdb007be13083d405a990f416",
+  "running": true,
+  "health": "healthy",
+  "contentMount": "/opt/marea-negra/content",
+  "content": {
+    "version": 1,
+    "worldId": "marea-negra",
+    "generation": 1,
+    "revisionId": "28fc2f65f898abec3fe58093020ad6bd001cf27a62bf91a22ade2137040ec911"
+  },
+  "retainedRevisions": 1,
+  "receipts": 1,
+  "lock": {
+    "inode": 98077,
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0o660"
+  },
+  "updaterSha256": "3e5e9ad641fb0dd45e88c571d3aaab136422c7acf154ae189a6370afda6d899d",
+  "updaterService": "inactive",
+  "timer": "inactive",
+  "public": {
+    "health": 200,
+    "version": "0.6.0-alpha.34",
+    "players": 0,
+    "sockets": 1,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 3,
+        "replays": 1
+      },
+      "groundTransactions": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1685,
+        "errors": 0
+      }
+    },
+    "content": {
+      "generation": 1,
+      "revisionId": "28fc2f65f898abec3fe58093020ad6bd001cf27a62bf91a22ade2137040ec911"
+    }
+  }
+}

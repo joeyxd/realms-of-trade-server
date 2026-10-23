@@ -1,0 +1,112 @@
+{
+  "id": "niagara-7970b1ee9b5555d3",
+  "atlasId": "component-8117bd91eb290326-8x1-alpha",
+  "role": "source-texture",
+  "sourcePath": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\NS\\NS_Spline_Holy.uasset",
+  "sourceSha256": "7970b1ee9b5555d324f690f61c2819fae7de0f01e0a54b840ab8f56d8a315f0f",
+  "component": {
+    "textureSha256": "8117bd91eb290326d1c8dcfb4bb2d219e053ab23ac920304464f38db91e59cf4",
+    "columns": 8,
+    "rows": 1,
+    "mapping": "original-alpha-to-white",
+    "name": "T_Vfx_Stamp_Lightbeam_81"
+  },
+  "sourceBinding": {
+    "systemSha256": "7970b1ee9b5555d324f690f61c2819fae7de0f01e0a54b840ab8f56d8a315f0f",
+    "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Holy.NS_Spline_Holy:Detail001_3.NiagaraSpriteRendererProperties_0",
+    "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_ParticleSubUVAdd_stamp_lightbeam_81",
+    "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Lightbeam_81"
+  },
+  "frames": [
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-110287b7f03f7498\\frame_000_source_0000.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-110287b7f03f7498\\frame_001_source_0001.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-110287b7f03f7498\\frame_002_source_0002.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-110287b7f03f7498\\frame_003_source_0003.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-110287b7f03f7498\\frame_004_source_0004.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-110287b7f03f7498\\frame_005_source_0005.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-110287b7f03f7498\\frame_006_source_0006.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-110287b7f03f7498\\frame_007_source_0007.png"
+  ],
+  "duration": 2,
+  "worldWidth": 3,
+  "worldHeight": 6,
+  "desktopTile": 256,
+  "blend": "alpha",
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-110287b7f03f7498",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_Lightbeam_81.uasset",
+      "sha256": "8117bd91eb290326d1c8dcfb4bb2d219e053ab23ac920304464f38db91e59cf4",
+      "bytes": 26040
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_Lightbeam_81.png",
+      "sha256": "72c7b9f73de3abd6cbea127bf4b15ff7e52f1600e636c8b410a720ddb6ed8d0b",
+      "bytes": 19197,
+      "format": "PNG",
+      "width": 512,
+      "height": 128,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 8,
+      "rows": 1,
+      "cells": 8,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "original-alpha-to-white",
+    "mappingFormula": "RGB=white; A=native source alpha without remapping",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-7970b1ee9b5555d3",
+        "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_Holy",
+        "sourceBinding": {
+          "systemSha256": "7970b1ee9b5555d324f690f61c2819fae7de0f01e0a54b840ab8f56d8a315f0f",
+          "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Holy.NS_Spline_Holy:Detail001_3.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_ParticleSubUVAdd_stamp_lightbeam_81",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Lightbeam_81"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_Holy.NS_Spline_Holy:",
+          "matched": true
+        },
+        "parameterName": "baseTex"
+      }
+    ]
+  }
+}

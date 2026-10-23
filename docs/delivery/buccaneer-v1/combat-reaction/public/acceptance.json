@@ -1,0 +1,323 @@
+{
+  "generatedAt": "2026-10-12T05:32:47.550Z",
+  "revision": "efd05a765405506aad0bcc0cc5883c354c66d9a4",
+  "sources": [
+    {
+      "file": "src/data/meta.js",
+      "bytes": 253,
+      "sha256": "d60ae75268cfb7fa65c0452c294e64c439b9a23f6798947461aed508084c98c9"
+    },
+    {
+      "file": "src/data/weapons.js",
+      "bytes": 7987,
+      "sha256": "4dc0e01c228b03dc030734d9b3ee71373d150fa91dd748dc1c2290c4ce28dae9"
+    },
+    {
+      "file": "src/net/protocol.js",
+      "bytes": 7345,
+      "sha256": "1595accb85ea5f9c43cfa671932523006deb7fb7c2d09cfc84659ba0633cc860"
+    },
+    {
+      "file": "src/sim/ecs.js",
+      "bytes": 13579,
+      "sha256": "6a53a378933619f1bc61e510d1be991761f2cb129673e4844edfd80c9a2bd8bd"
+    },
+    {
+      "file": "src/sim/world.js",
+      "bytes": 46441,
+      "sha256": "d312b010ef8ea1f788ea3bea13f69917bca91afe6a494e93c51c40acdcced8bb"
+    },
+    {
+      "file": "src/sim/projectiles.js",
+      "bytes": 29250,
+      "sha256": "d2275f8da6ec06be04a088ebd66f9a63b75dc3f9037279a3358c6e359d4bd303"
+    },
+    {
+      "file": "src/sim/projectileClash.js",
+      "bytes": 2728,
+      "sha256": "91304c61dce9da69f300e38a376557798548415eca2dd2e43b6332c73cc42f50"
+    },
+    {
+      "file": "src/sim/systems/combat.js",
+      "bytes": 39785,
+      "sha256": "54970e41dadfe8a4b95e1d89ee905ef57a3157966f718295996e34d645268ba1"
+    },
+    {
+      "file": "src/sim/systems/skills.js",
+      "bytes": 39431,
+      "sha256": "8ad84d2efb395a1177d80ae631451fca5123e2e6ab0b0d8eaba6b4e602aa60b5"
+    },
+    {
+      "file": "src/render/assets/characterReaction.js",
+      "bytes": 5461,
+      "sha256": "a61e655d6e54e45ff508b5c2683957c43885599c7f8ce9eb852945ca05815ad7"
+    },
+    {
+      "file": "src/render/pistolRecoil.js",
+      "bytes": 2364,
+      "sha256": "bf25657b932b8234d9cf1ebabe9a3ee861c64a52967ab0b4f617399d91bbc665"
+    },
+    {
+      "file": "src/ui/feedback.js",
+      "bytes": 44043,
+      "sha256": "f974d2c28754d187e71d7ba9fb0921c55ebbb91c30aa1656e773929a66f5d424"
+    },
+    {
+      "file": "src/render/scene.js",
+      "bytes": 21284,
+      "sha256": "35e25e63901d710678b945ee42b66c2d440a2d7343c50a59f81097c1d2547359"
+    },
+    {
+      "file": "src/client/gameClient.js",
+      "bytes": 44039,
+      "sha256": "4a2a892e29de981db2551fec4138ddeac76565789a22be2182039d972f60df28"
+    },
+    {
+      "file": "src/client/swimStatus.js",
+      "bytes": 6041,
+      "sha256": "e7ef9e78ece9b6c98c2edb1a79aac0b72ad65f97a505124a087a0836cd311b07"
+    },
+    {
+      "file": "src/main.js",
+      "bytes": 111336,
+      "sha256": "0f4f5d9f5b80d9ec89bf237a56acb1c01b20da629cefc8baf3f491cecb2508ee"
+    },
+    {
+      "file": "src/render/characters.js",
+      "bytes": 39555,
+      "sha256": "1701b03838c7f59e1471c1ff46d85fc5e3415d6c77706054a8111e617b3051e3"
+    },
+    {
+      "file": "src/render/charlooks.js",
+      "bytes": 65926,
+      "sha256": "3d8f688b3918bb6eebc20f4b9d44dddd1aef3c9e611ee83773c4ab9a547c12ab"
+    },
+    {
+      "file": "src/render/assets/registry.js",
+      "bytes": 14336,
+      "sha256": "e9aed5398916bd97af3033fa46677027088741fa3f1cd1a3865ede7f12542658"
+    },
+    {
+      "file": "src/render/assets/characterSwim.js",
+      "bytes": 3168,
+      "sha256": "88207cdc6a735ef1d798d239eb3dc859ee94f18092d2b87515f09431883b9deb"
+    },
+    {
+      "file": "src/render/assets/characterFigure.js",
+      "bytes": 2339,
+      "sha256": "ac7b2bdf77590b7bb47892e6490f051650cc28011bd73f72bcf2a9c1f8674281"
+    },
+    {
+      "file": "src/ui/hud.js",
+      "bytes": 44340,
+      "sha256": "10c72a1a0e735acc4eae219f8b250fd5cb13e8c95c2471500b87212ad810fdb4"
+    },
+    {
+      "file": "src/ui/touch.js",
+      "bytes": 21393,
+      "sha256": "735c0fb7cbf08ca9ab047d1807b9988e570278aaf020f7d092e4bcc117b49998"
+    },
+    {
+      "file": "src/ui/title.js",
+      "bytes": 9518,
+      "sha256": "57aae1b4c232b8a7d9d6969a94d03d975239ad81e75b6f7103e516d1adc42cb8"
+    },
+    {
+      "file": "src/ui/characterScreen.js",
+      "bytes": 36812,
+      "sha256": "fa21d037c1ba633bc7e2ac794c358239a9d4bed860d5233b21855e3a8ca8d682"
+    },
+    {
+      "file": "assets/manifest.json",
+      "bytes": 14812,
+      "sha256": "65895835467d40c3a21ef04ba5be1d28c38cacaa29a363dbe05cdfc5b12b48d1"
+    },
+    {
+      "file": "assets/models/buccaneer-v1-desktop.glb",
+      "bytes": 2117640,
+      "sha256": "096aff75f8e1e0b2b1c522b65fc622c42d5b25fa29d24f6d0b6921feea25271c"
+    },
+    {
+      "file": "assets/models/buccaneer-v1-mobile.glb",
+      "bytes": 1546564,
+      "sha256": "b6b4b6716bbc4e90fa1b34e621b1d1fada7c2100667211e5ad40d36f812fa0b1"
+    }
+  ],
+  "sessions": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900,
+      "touch": false,
+      "errors": [],
+      "checks": [
+        "real guest entry / authoritative pistol kit",
+        "primary and secondary real input",
+        "distinct shot recoil / client-only original hit pose probe",
+        "ordinary movement enters real water",
+        "native loop and device variant",
+        "ordinary movement returns to shore and weapons",
+        "Spanish / English controls"
+      ],
+      "start": {
+        "x": 102.53048327204941,
+        "z": 94.04520189781083,
+        "weapon": 1
+      },
+      "fires": [
+        {
+          "hand": 1,
+          "secondary": false,
+          "amplitude": 1
+        },
+        {
+          "hand": -1,
+          "secondary": true,
+          "amplitude": 1.45
+        }
+      ],
+      "reactionProbe": {
+        "active": true,
+        "weight": 1,
+        "visible": true,
+        "sameGeometry": true,
+        "sameMeshes": true,
+        "bones": 15,
+        "duration": 1.2916666269302368
+      },
+      "waterTarget": {
+        "x": 115.46479672720743,
+        "z": 99.40276995092208
+      },
+      "swimStart": {
+        "st": 2,
+        "bones": 65,
+        "width": 1024,
+        "time": 0.05819999999999709,
+        "actionTime": 0.05819999999999709,
+        "baseVisible": false,
+        "nativeVisible": true
+      },
+      "swimLoop": {
+        "st": 2,
+        "bones": 65,
+        "width": 1024,
+        "time": 6.983100000000003,
+        "actionTime": 1.2747665077209525,
+        "baseVisible": false,
+        "nativeVisible": true
+      },
+      "english": {
+        "l": "Left pistol (hold): rapid fire. Its bullets can intercept enemy projectiles in flight",
+        "r": "Right pistol (hold): powerful, slower fire. Intercepts enemy bullets; only this shot returns heavy projectiles"
+      },
+      "appErrors": [],
+      "passed": true
+    },
+    {
+      "name": "mobile",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "errors": [],
+      "checks": [
+        "real guest entry / authoritative pistol kit",
+        "primary and secondary real input",
+        "distinct shot recoil / client-only original hit pose probe",
+        "ordinary movement enters real water",
+        "native loop and device variant",
+        "ordinary movement returns to shore and weapons",
+        "Spanish / English controls"
+      ],
+      "start": {
+        "x": 102.53048327204941,
+        "z": 94.04520189781083,
+        "weapon": 1
+      },
+      "fires": [
+        {
+          "hand": 1,
+          "secondary": false,
+          "amplitude": 1
+        },
+        {
+          "hand": 1,
+          "secondary": false,
+          "amplitude": 1
+        },
+        {
+          "hand": -1,
+          "secondary": true,
+          "amplitude": 1.45
+        }
+      ],
+      "reactionProbe": {
+        "active": true,
+        "weight": 1,
+        "visible": true,
+        "sameGeometry": true,
+        "sameMeshes": true,
+        "bones": 15,
+        "duration": 1.2916666269302368
+      },
+      "waterTarget": {
+        "x": 115.46479672720743,
+        "z": 99.40276995092208
+      },
+      "swimStart": {
+        "st": 2,
+        "bones": 65,
+        "width": 512,
+        "time": 0.20420000000000074,
+        "actionTime": 0.20420000000000074,
+        "baseVisible": false,
+        "nativeVisible": true
+      },
+      "swimLoop": {
+        "st": 2,
+        "bones": 65,
+        "width": 512,
+        "time": 6.729200000000011,
+        "actionTime": 1.0208665077209589,
+        "baseVisible": false,
+        "nativeVisible": true
+      },
+      "english": {
+        "l": "Left pistol (hold): rapid fire. Its bullets can intercept enemy projectiles in flight",
+        "r": "Right pistol (hold): powerful, slower fire. Intercepts enemy bullets; only this shot returns heavy projectiles"
+      },
+      "appErrors": [],
+      "passed": true
+    }
+  ],
+  "before": {
+    "version": "0.6.0-alpha.62",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "errors": 0,
+      "unsaved": 0,
+      "tickBlocked": false,
+      "worldReady": true
+    },
+    "pending": 0
+  },
+  "after": {
+    "version": "0.6.0-alpha.62",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "errors": 0,
+      "unsaved": 0,
+      "tickBlocked": false,
+      "worldReady": true
+    },
+    "pending": 0
+  }
+}

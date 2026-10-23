@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "generated_date": "2026-10-07",
+  "timezone": "America/Mexico_City",
+  "tool": "built-in imagegen tool; exact model identifier not returned",
+  "asset_type": "raster concept references",
+  "distinction": "These PNGs are painted 2D concept sheets, not production 3D meshes or topology-ready model data.",
+  "visual_review": {
+    "shared": "Adult bald base characters shown from front, side profile, and back, with a separate head view, plain sleeveless top and shorts.",
+    "female_brows": "Neutral visible eyebrows are retained as a guide for the face; they do not prescribe the final brow geometry.",
+    "limits": "The sheets guide proportions and appearance; they do not guarantee exact orthographic alignment, consistent measurements, or production topology."
+  },
+  "files": [
+    {
+      "path": "male-concept-v1.png",
+      "sha256": "74c602a02d35d210102c5a3848d2c0c12dfe49e9f268e60625a1f1d0f77ee268",
+      "bytes": 1866059,
+      "width": 1536,
+      "height": 1024,
+      "mime_type": "image/png",
+      "role": "adult male modular base concept"
+    },
+    {
+      "path": "female-concept-v1.png",
+      "sha256": "4cca04754e693776fca0c099794fb9ffe76cc9009333259388a74a3dc58ae0a7",
+      "bytes": 1817190,
+      "width": 1536,
+      "height": 1024,
+      "mime_type": "image/png",
+      "role": "adult female modular base concept"
+    }
+  ]
+}

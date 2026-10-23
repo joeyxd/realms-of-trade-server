@@ -1,0 +1,377 @@
+{
+  "delivery": "D09f SQL007 Supabase batch commit follow-up",
+  "date": "2026-10-06",
+  "storageCommit": "85f201051f86fae2c6fbbed104e4020bd06d3f32",
+  "sourceCommit": "fa226d261d2ae41616d1d59532c0269193f02be7",
+  "productionSources": [
+    {
+      "file": "server/store.mjs",
+      "sha256": "2e00978daca09666ff526a0587c3a1cd33e54a022ba12db7c19398c71eceb20f",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/pearlBatch.mjs",
+      "sha256": "17d8946a07881e6841bed3519af6b66fcce6e72001015f12d884624a326e01d8",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/pearlOperations.mjs",
+      "sha256": "a3998dd4344db4ab05315c1ba7a494f6360b7079c457976e5708f95a3f4af26e",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/pearlGround.mjs",
+      "sha256": "1921255a227c6f2469b44901746115e99b4fc3c63985a7f34c9a833783478443",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/pearlJournal.mjs",
+      "sha256": "4ffa1d3b62cb837b50fdd066d94a12fa664d49a4ce1aec1e776b4560220d4beb",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/profileSessions.mjs",
+      "sha256": "9bafa14fb1fd7448ddff9c1d43abb53df2c7a84a9d5a33cb83211bdf9b9bb320",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/pearlQueue.mjs",
+      "sha256": "bd5adbcaca305ca13bc61719e4e9ab8e0db75caf06ba16c1f642c08a79635c8c",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/pearlMutationGate.mjs",
+      "sha256": "e3250fd8018aef53c8cb63deb709e7775a73bdef6b82d855f570f26ab1411e83",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/pearlStaging.mjs",
+      "sha256": "561b0cfabeda56bda5299302bfbd3795ba303e573a7762db69c6afe67d610226",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/pearlEcsEffect.mjs",
+      "sha256": "8e5e81841170c2045ee345ce436e62bbeab5cb237658c745ff54f3faa37ef424",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/host.mjs",
+      "sha256": "ad37a19f432a812402e3d51158b12d606d9ad1a08eca41587913fae34010feb5",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "src/net/localServer.js",
+      "sha256": "b5e83035c799be50a9ab9b5e6c5a79836e22502445cde6d11f2e953f32d81825",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "src/net/protocol.js",
+      "sha256": "782c8a7ae25f12bd16337173808c440409613ed1b61b8fcdebb93c120d56d84f",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "src/sim/systems/inventory.js",
+      "sha256": "da34e995584bba4e4f5bf81297ae01b4470be629e8882959054d3f490bbb0bb6",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "src/sim/systems/pearls.js",
+      "sha256": "21f5cd9adc51a8e610b45d1d6278d642ab879698a0c0310512a10bc13417adac",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "src/sim/systems/pearlEffect.js",
+      "sha256": "e8a27184d444020d166d7bdd46d3d9014e1e044901acf42c53be8974213b5eaa",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "src/sim/systems/stats.js",
+      "sha256": "2d6df7c144d01e9f5b66f259ede516d82b14bff48430536ba0dbe824a1e0b8e6",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "src/data/pearls.js",
+      "sha256": "8ad387abbe06a2e15776a8b7b1e4a67bb12f12becb508dc4420b8f38a97c8412",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "src/data/tuning.js",
+      "sha256": "818c9aa5cd328bc2bb9a34fa277ce5879a919c36ff6829ec25f05ffba14c7c34",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/migrations/001_store.sql",
+      "sha256": "29d7762215c754d1367ce1ab19142e5eecbaeeb59c7743e54ac19db6d7db1583",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/migrations/002_accounts.sql",
+      "sha256": "12a3a71523bc4f574f2873d5907ab9bd3236163e6db34697a2dba22a9fa07ae1",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/migrations/003_pearl_operations.sql",
+      "sha256": "77c92847099f366b0481bf55a71b0fca7138e716726003d2050db34ecef9b096",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/migrations/004_pearl_ground.sql",
+      "sha256": "b11876cbb629b5f9b08cb5cd4233a9841c48eeb89e8047c250d2dd83d4daa5ee",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/migrations/005_pearl_journal.sql",
+      "sha256": "85783e38d4aace762c71f89aa43e06b91989444b96d107baff0856977675bfad",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/migrations/006_pearl_same_holder.sql",
+      "sha256": "babc657ae756dd65c3a83bf7ad323eef842f0990432a2747b2d6ccf22fd711df",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    },
+    {
+      "file": "server/migrations/007_pearl_batch.sql",
+      "sha256": "2bf141865e5d4b7030c0aefc544357a4249dc161ed14e5e9ca061e9086ae1559",
+      "matchesBase": true,
+      "unchangedDuringLive": true
+    }
+  ],
+  "liveRunner": {
+    "file": "tools/verify-pearl-batch.mjs",
+    "sha256": "094c0b7e87b7657d2e2767a281c3a8df9c65b12e20567761d614c2e14e141538",
+    "localTestsBeforeLive": 6,
+    "unchangedDuringLive": true
+  },
+  "finalRunner": {
+    "file": "tools/verify-pearl-batch.mjs",
+    "sha256": "fced2bbe7f44838ef4908c9f9854acf0ed5eb7075ec787fab1b91124fb6eba92",
+    "postLiveChange": "Added realpath guards before manifest creation and before manifest file read; no RPC, fixture or cleanup behavior changed."
+  },
+  "acceptance": {
+    "kind": "live Supabase SDK storage and receipt verification",
+    "checks": 31,
+    "passed": 31,
+    "failed": 0,
+    "freshNodeProcesses": 4,
+    "scope": "canary-batch-088ff7ac-e38d-4629-849f-f10ec51aeabb",
+    "syntheticProfiles": 2,
+    "managedUIDs": 13,
+    "gameplayFixturesRemoved": true,
+    "retainedTerminalAuditRows": 1,
+    "retainedAudit": {
+      "operationId": "7e0fa9d1-d90c-48a7-9c72-22ef45783180",
+      "family": "ground",
+      "state": "rejected"
+    },
+    "checksDetail": [
+      {
+        "phase": "prepare",
+        "check": "exact-fixtures-absent-before-seeding",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "two-profiles-thirteen-managed-UIDs-tracked-and-legacy-seeded",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "setup-replace-reacquire-nine-UIDs-with-generations-one-two-three",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badProfile-rejects-whole-batch-without-state-or-receipt-change",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badUnique-rejects-whole-batch-without-state-or-receipt-change",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badOwner-rejects-whole-batch-without-state-or-receipt-change",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badKind-rejects-whole-batch-without-state-or-receipt-change",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badWorld-rejects-whole-batch-without-state-or-receipt-change",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badGold-rejects-whole-batch-without-state-or-receipt-change",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badXP-rejects-whole-batch-without-state-or-receipt-change",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badMastery-rejects-whole-batch-without-state-or-receipt-change",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "partialDeath-rejects-whole-batch-without-state-or-receipt-change",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badOrder-rejects-whole-batch-without-state-or-receipt-change",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badMetadata-rejects-whole-batch-without-state-or-receipt-change",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "preexisting-003-and-004-UUIDs-cannot-be-batches",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "005-intent-blocks-batch-UUID-and-is-settled-without-dispatch",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "nine-UID-death-one-profile-CAS-and-independent-generations",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "two-UID-legacy-replacement-commits-but-SDK-reply-is-discarded",
+        "ok": true
+      },
+      {
+        "phase": "recover",
+        "check": "fresh-process-read-only-receipt-recovery-zero-mutation-dispatches",
+        "ok": true
+      },
+      {
+        "phase": "recover",
+        "check": "exact-replays-never-advance-profile-UID-location-or-since-again",
+        "ok": true
+      },
+      {
+        "phase": "recover",
+        "check": "same-UUID-changed-ground-is-rejected-and-original-receipt-preserved",
+        "ok": true
+      },
+      {
+        "phase": "recover",
+        "check": "batch-UUID-blocks-003-004-005-and-direct-receipt-inserts",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "third-process-current-profile-ledger-location-receipt-and-timestamps",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "later-progress-save-and-historical-batch-replay-preserve-new-XP",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "004-pickup-after-death-and-old-batch-replay-cannot-resurrect-ground",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "public-commit-RPC-denied",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "public-receipt-RPC-denied",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "public-validator-RPC-denied",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "public-batch-table-read-denied",
+        "ok": true
+      },
+      {
+        "phase": "cleanup",
+        "check": "all-known-fixtures-settled-and-exact-current-state-before-cleanup",
+        "ok": true
+      },
+      {
+        "phase": "cleanup",
+        "check": "exact-synthetic-gameplay-fixtures-removed-one-terminal-audit-retained",
+        "ok": true
+      }
+    ],
+    "localEvidence": "shots/review/m5-batch-live-088ff7ac-e38d-4629-849f-f10ec51aeabb.json",
+    "log": "shots/review/m5-batch-live-088ff7ac-e38d-4629-849f-f10ec51aeabb.log",
+    "fixtureManifest": ".scratch\\m5-batch-live-088ff7ac-e38d-4629-849f-f10ec51aeabb.json"
+  },
+  "localAcceptance": {
+    "kind": "final runner SDK/PGlite safety and recovery",
+    "tests": 7,
+    "passed": 7,
+    "failed": 0,
+    "node": "v24.14.0",
+    "baseCommit": "fa226d261d2ae41616d1d59532c0269193f02be7",
+    "isolatedRepo": "C:\\DEV\\real of trade\\realms-of-trade-server\\.scratch\\m5-batch-live-accept-79112113-b225-4a35-a0aa-518046c45021\\repo",
+    "command": "node --test tests/pearl-batch-canary.test.mjs",
+    "log": "shots/review/m5-batch-live-local-accept.log",
+    "runnerSha256": "fced2bbe7f44838ef4908c9f9854acf0ed5eb7075ec787fab1b91124fb6eba92",
+    "testSha256": "e1996813055b774627ffbe1b54378af09809e827688c7e825616fc3ffe11be1d",
+    "externalNetwork": false,
+    "envCopied": false
+  },
+  "limits": [
+    "No batch intent journal/ProfileSessions queue or staging/tick activation",
+    "No GameHost restart, browser/client acceptance or deployment",
+    "No affinity schema, credit or power/UI implementation",
+    "Only pearl slots participate in the death transaction, not gold/equipment/world losses",
+    "Live public-role denials only; authenticated branch covered by existing local SQL tests",
+    "Reply loss deliberately injected after successful live commit, not an actual provider outage",
+    "No forced independent-backend race or multi-host lease acceptance",
+    "Partial cleanup models only seeding prefixes before since checkpoint; later interruptions retain fixtures for explicit review"
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "gm04b-deployment/v1",
+  "at": "2026-10-11T03:23:20.974730+00:00",
+  "release": "6c42e849a05a140296751daf88110c536eb4b07e",
+  "image": "sha256:874a1ec2c92a9c4e52e102971d608390fef2b1da70813c1b712f4fb9d02c2b4c",
+  "imageRevision": "6c42e849a05a140296751daf88110c536eb4b07e",
+  "container": "07c64164d0246c8bd315e93051591cd6c89bb26aa6f364aebd219304f7b1ebb5",
+  "running": true,
+  "health": "healthy",
+  "contentMount": "/opt/marea-negra/content",
+  "content": {
+    "version": 1,
+    "worldId": "marea-negra",
+    "generation": 4,
+    "revisionId": null
+  },
+  "retainedRevisions": 4,
+  "receipts": 4,
+  "lock": {
+    "inode": 98077,
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0o660"
+  },
+  "updaterSha256": "3e5e9ad641fb0dd45e88c571d3aaab136422c7acf154ae189a6370afda6d899d",
+  "updaterService": "inactive",
+  "timer": "active",
+  "public": {
+    "health": 200,
+    "version": "0.6.0-alpha.41",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2092,
+        "errors": 0
+      }
+    },
+    "content": {
+      "generation": 4,
+      "revisionId": null
+    }
+  }
+}

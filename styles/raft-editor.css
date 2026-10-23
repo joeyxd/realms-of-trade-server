@@ -1,0 +1,92 @@
+.raft-editor {
+  position: absolute; z-index: 42; right: 12px; top: 12px; width: min(310px, calc(100% - 24px));
+  max-height: calc(100% - 24px); overflow: auto; box-sizing: border-box; padding: 12px;
+  color: #f7e7bc; background: linear-gradient(145deg, rgb(33 27 26), rgb(15 22 26));
+  border: 2px solid #b9894d; border-radius: 9px; box-shadow: 0 5px 0 #3a2923, 0 12px 35px #0009;
+  font: 600 13px/1.25 system-ui, sans-serif; text-shadow: 0 1px #000; touch-action: manipulation; pointer-events: auto;
+}
+.raft-editor[hidden] { display: none; }
+.building-raft #touch .t-cluster, .building-raft #touch .joy-rest { display: none; }
+.building-raft #touch .joy-zone { top: auto; bottom: 0; height: 20%; width: 30%; }
+.building-raft .actionbar, .building-raft .tracker, .building-raft .prompt { visibility: hidden; }
+.raft-build-launcher[hidden] { display: none; }
+.raft-build-launcher { position: absolute; z-index: 41; right: 18px; bottom: 82px; min-height: 46px; padding: 0 15px; border: 2px solid #d6a95b; border-radius: 7px; background: linear-gradient(#79542e, #513924); color: #fff0c3; font: 800 14px system-ui, sans-serif; text-shadow: 0 1px #000; box-shadow: 0 4px 0 #34231d, 0 8px 20px #0008; touch-action: manipulation; }
+.raft-editor button, .raft-editor select { color: inherit; font: inherit; }
+.raft-editor button { min-height: 34px; border: 1px solid #806447; border-radius: 5px; background: #383332; cursor: pointer; }
+.raft-editor button:active { transform: translateY(1px); }
+.raft-editor button:disabled { opacity: .48; cursor: default; }
+.re-head, .re-options, .raft-editor footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.re-head { color: #f4bd65; letter-spacing: .07em; font-size: 12px; }
+.raft-editor .re-close { width: 36px; min-height: 34px; font-size: 23px; line-height: 1; }
+.re-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; margin: 8px 0; }
+.raft-editor .re-tabs .on, .raft-editor [data-part].on { border-color: #f6c767; background: #674b30; box-shadow: inset 0 0 0 1px #e1ab54; }
+.re-pieces { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+.raft-editor .re-pieces button { display: flex; min-width: 0; min-height: 54px; padding: 4px 2px; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+.re-pieces i { font-style: normal; color: #edc176; font-size: 20px; line-height: 1; }
+.re-pieces span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
+.re-repair-list { display: grid; gap: 4px; max-height: 156px; margin: 5px 0; overflow: auto; overscroll-behavior: contain; }
+.raft-editor .re-repair-list button { display: flex; min-width: 0; min-height: 42px; padding: 5px 7px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; border-color: #806f57; background: linear-gradient(105deg, #313b38, #292c2c); text-align: left; }
+.raft-editor .re-repair-list button[aria-pressed="true"] { border-color: #7bc8bd; background: #254544; box-shadow: inset 0 0 0 1px #69b8ad; }
+.re-repair-list button b { max-width: 100%; overflow: hidden; color: #e8d8b5; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.re-repair-list button span { max-width: 100%; overflow: hidden; color: #aebbb0; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.re-repair-empty { padding: 7px; color: #b6ac98; font-size: 10px; }
+.re-details { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; min-height: 32px; margin: 7px 0; padding: 6px 7px; border-left: 3px solid #d39a54; background: #ffffff0b; }
+.re-details small { text-align: right; color: #d6c6a5; font-size: 10px; }
+.re-capacity { display: grid; gap: 4px; margin: 5px 0 7px; padding: 7px 8px; border: 1px solid #73c4c14a; border-radius: 6px; background: linear-gradient(110deg, #18323899, #ffffff08); }
+.re-capacity > div { display: flex; justify-content: space-between; gap: 6px; color: #b9cbc4; font-size: 9px; }
+.re-capacity > div b { color: #eee2c9; font-size: 9px; text-align: right; }
+.re-capacity-kicker { color: #74cbc4; font-size: 8px; font-weight: 900; letter-spacing: .1em; }
+.re-capacity-note { color: #a99f8d; font-size: 8px; }
+.re-capacity-warning { color: #ffad99; font-size: 9px; font-weight: 800; }
+.re-options { margin: 5px 0; }
+.re-options label { display: flex; align-items: center; gap: 6px; }
+.raft-editor select { min-height: 34px; background: #383332; border: 1px solid #806447; border-radius: 5px; padding: 0 7px; }
+.raft-editor .re-rotate { padding: 0 10px; }
+.re-status { min-height: 33px; margin: 5px 0; padding: 6px 7px; border-radius: 4px; background: #080d10a8; color: #dbe5d4; }
+.re-supplies { display: flex; gap: 5px; }
+.raft-editor .re-supplies button { flex: 1; min-height: 31px; border-color: #7a7652; background: #343a2e; color: #e4d79a; font-size: 10px; }
+.re-supplies:empty { display: none; }
+.re-remove-choice { display: flex; align-items: center; gap: 6px; min-height: 32px; color: #e9c88d; font-size: 11px; }
+.raft-editor .re-cycle { min-height: 30px; padding: 3px 7px; }
+.re-remove-choice span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.raft-editor footer {
+  position: sticky; bottom: -12px; z-index: 2; align-items: stretch; margin: 7px -12px -12px; padding: 8px 12px 12px;
+  background: linear-gradient(180deg, rgb(20 25 27 / 0%), rgb(20 25 27 / 96%) 22%);
+}
+.re-route { max-width: 54%; align-self: center; color: #b6ac98; font-size: 9px; }
+.raft-editor .re-action { flex: 1; min-height: 42px; border-color: #ddb45e; background: linear-gradient(#79542e, #513924); color: #fff0c3; font-weight: 800; }
+.raft-editor.is-reinforce .re-action { border-color: #91b9bf; background: linear-gradient(#386168, #24444a); color: #e7ffff; }
+.raft-editor.is-reinforce .re-pieces, .raft-editor.is-reinforce .re-options { display: none; }
+.raft-editor.is-repair .re-pieces, .raft-editor.is-repair .re-options, .raft-editor.is-repair .re-supplies, .raft-editor.is-repair .re-remove-choice { display: none; }
+.raft-editor:not(.is-repair) .re-repair-list { display: none; }
+.raft-editor.is-remove .re-action { border-color: #cf8061; background: linear-gradient(#743e33, #4f2e2c); }
+@media (max-width: 700px), (max-height: 430px) {
+  .raft-build-launcher { right: 7px; bottom: 7px; min-height: 44px; padding: 0 11px; font-size: 12px; }
+  .raft-editor { right: 5px; top: 5px; width: min(278px, calc(100% - 10px)); max-height: calc(100% - 10px); padding: 7px; font-size: 12px; }
+  .raft-editor footer { bottom: -7px; margin: 5px -7px -7px; padding: 7px; }
+  .re-head { font-size: 10px; }
+  .raft-editor button { min-height: 32px; }
+  .raft-editor .re-pieces { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; }
+  .raft-editor .re-pieces button { min-height: 43px; }
+  .re-pieces i { font-size: 17px; }
+  .re-pieces span { font-size: 9px; }
+  .re-repair-list { max-height: 128px; gap: 3px; margin: 3px 0; }
+  .raft-editor .re-repair-list button { min-height: 40px; padding: 4px 6px; }
+  .re-repair-list button b { font-size: 9px; }
+  .re-repair-list button span, .re-repair-empty { font-size: 8px; }
+  .re-details { min-height: 25px; margin: 4px 0; padding: 4px; }
+  .re-details small { font-size: 9px; }
+  .re-status { min-height: 25px; margin: 4px 0; padding: 4px; }
+  .raft-editor .re-supplies button { min-height: 29px; font-size: 9px; }
+  .re-route { font-size: 8px; }
+  .raft-editor .re-action { min-height: 38px; }
+}
+@media (max-height: 430px) {
+  .raft-editor { overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; }
+  .re-capacity { gap: 2px; margin: 3px 0 5px; padding: 5px 6px; }
+  .re-capacity > div { align-items: baseline; }
+  .re-capacity > div span { flex: 0 0 68px; }
+  .re-capacity > div b { max-width: 72%; line-height: 1.15; }
+  .re-capacity-kicker { font-size: 9px; }
+  .re-capacity-note { font-size: 9px; line-height: 1.15; }
+}

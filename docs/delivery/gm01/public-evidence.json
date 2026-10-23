@@ -1,0 +1,22 @@
+{
+  "schema": "gm01-public/v1",
+  "at": "2026-10-10T16:21:48.614Z",
+  "production": true,
+  "simulatedAuth": false,
+  "checks": [
+    "public_health_version_and_storage",
+    "public_guest_denied_gm",
+    "public_optimized_model_hash_and_bytes",
+    "real_public_browser_guest_join",
+    "real_owner_recovery_session_password_prompt_gm_placement_and_local_save",
+    "real_owner_signout_closes_editor"
+  ],
+  "errors": [],
+  "version": "0.6.0-alpha.18",
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0
+  }
+}

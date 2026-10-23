@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-10-13T06:34:51.232890+00:00",
+  "revision": "46902fe7942c766e8a452fe606e711c6214725f5",
+  "counts": {
+    "tests": 101,
+    "pass": 100,
+    "fail": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "accepted": false,
+  "reason": "The pearl-input-boundary test statically imports the SQL/PGlite helper; production image omits dev dependencies. All 100 memory cases passed. The corrected image cohort excludes that SQL-coupled file; local regression includes it. No runtime change.",
+  "error": "ERR_MODULE_NOT_FOUND: Cannot find package @electric-sql/pglite imported from /app/tests/helpers/pearl-same-holder-sql.mjs",
+  "scope": "Initial exact-image test selection; preserved failure, not relabeled as a passing cohort."
+}

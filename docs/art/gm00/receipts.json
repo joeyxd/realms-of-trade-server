@@ -1,0 +1,735 @@
+{
+  "version": 1,
+  "generatedBy": "tools/gm-assets/gm-assets.mjs",
+  "toolchain": {
+    "@gltf-transform/core": "4.5.0",
+    "@gltf-transform/extensions": "4.5.0",
+    "@gltf-transform/functions": "4.5.0",
+    "meshoptimizer": "0.22.0",
+    "sharp": "0.35.5"
+  },
+  "visualReview": "pending",
+  "originalsModified": false,
+  "assets": [
+    {
+      "id": "model:gm-rock-2k",
+      "diagnostic": false,
+      "source": {
+        "file": "Tropical_Rock_Formation.glb",
+        "bytes": 8836372,
+        "sha256": "6e38f2f611fdb3afa0356b0a991f77c1ee777b99b81f0dc7f0af12b3c93baf4c",
+        "triangles": 19469,
+        "textures": [
+          {
+            "name": "Tropical_Rock_Formation_normal",
+            "mimeType": "image/png",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 4012644
+          },
+          {
+            "name": "Tropical_Rock_Formation_basecolor",
+            "mimeType": "image/jpeg",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 1498599
+          },
+          {
+            "name": "Tropical_Rock_Formation_metallic-Tropical_Rock_Formation_roughness",
+            "mimeType": "image/png",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 2570893
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.5000001,
+            0,
+            -0.4764072
+          ],
+          "max": [
+            0.5000001,
+            0.4551134,
+            0.4764072
+          ],
+          "size": [
+            1.0000001,
+            0.4551134,
+            0.9528143
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [],
+        "extensionsRequired": []
+      },
+      "output": {
+        "file": "assets/editor/gm-rock-2k-a12adb2c88e0.glb",
+        "bytes": 3271288,
+        "sha256": "a12adb2c88e014df68aa4a5fbc8b525c1d0563378403b272ec93cc6421999f79",
+        "triangles": 19469,
+        "textures": [
+          {
+            "name": "Tropical_Rock_Formation_normal",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 1007114
+          },
+          {
+            "name": "Tropical_Rock_Formation_basecolor",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 1295456
+          },
+          {
+            "name": "Tropical_Rock_Formation_metallic-Tropical_Rock_Formation_roughness",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 214374
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.5000001,
+            0,
+            -0.4764072
+          ],
+          "max": [
+            0.5000001,
+            0.4551134,
+            0.4764072
+          ],
+          "size": [
+            1.0000001,
+            0.4551134,
+            0.9528143
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [
+          "EXT_texture_webp"
+        ]
+      },
+      "droppedOptionalExtensions": [],
+      "recipe": {
+        "format": "GLB + EXT_texture_webp",
+        "textureMax": 2048,
+        "textures": "WebP quality 95 effort 6, direct from untouched source maps",
+        "geometry": null,
+        "fit": {
+          "mode": "size",
+          "size": 4
+        }
+      }
+    },
+    {
+      "id": "model:gm-rock-1k",
+      "diagnostic": false,
+      "source": {
+        "file": "Tropical_Rock_Formation.glb",
+        "bytes": 8836372,
+        "sha256": "6e38f2f611fdb3afa0356b0a991f77c1ee777b99b81f0dc7f0af12b3c93baf4c",
+        "triangles": 19469,
+        "textures": [
+          {
+            "name": "Tropical_Rock_Formation_normal",
+            "mimeType": "image/png",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 4012644
+          },
+          {
+            "name": "Tropical_Rock_Formation_basecolor",
+            "mimeType": "image/jpeg",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 1498599
+          },
+          {
+            "name": "Tropical_Rock_Formation_metallic-Tropical_Rock_Formation_roughness",
+            "mimeType": "image/png",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 2570893
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.5000001,
+            0,
+            -0.4764072
+          ],
+          "max": [
+            0.5000001,
+            0.4551134,
+            0.4764072
+          ],
+          "size": [
+            1.0000001,
+            0.4551134,
+            0.9528143
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [],
+        "extensionsRequired": []
+      },
+      "output": {
+        "file": "assets/editor/gm-rock-1k-f40e26c2711a.glb",
+        "bytes": 1546948,
+        "sha256": "f40e26c2711a0935cefbb9ba7ae441ef43fad6ca83f1b868811845bb53ea09fc",
+        "triangles": 19469,
+        "textures": [
+          {
+            "name": "Tropical_Rock_Formation_normal",
+            "mimeType": "image/webp",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 338076
+          },
+          {
+            "name": "Tropical_Rock_Formation_basecolor",
+            "mimeType": "image/webp",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 378812
+          },
+          {
+            "name": "Tropical_Rock_Formation_metallic-Tropical_Rock_Formation_roughness",
+            "mimeType": "image/webp",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 75714
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.5000001,
+            0,
+            -0.4764072
+          ],
+          "max": [
+            0.5000001,
+            0.4551134,
+            0.4764072
+          ],
+          "size": [
+            1.0000001,
+            0.4551134,
+            0.9528143
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [
+          "EXT_texture_webp"
+        ]
+      },
+      "droppedOptionalExtensions": [],
+      "recipe": {
+        "format": "GLB + EXT_texture_webp",
+        "textureMax": 1024,
+        "textures": "WebP quality 95 effort 6, direct from untouched source maps",
+        "geometry": null,
+        "fit": {
+          "mode": "size",
+          "size": 4
+        }
+      }
+    },
+    {
+      "id": "model:gm-coral-2k",
+      "diagnostic": true,
+      "source": {
+        "file": "colorful coral reef 3d model.glb",
+        "bytes": 61741336,
+        "sha256": "a947c70b340dcd3ebea55c34b511f74af2b547a5bddb4175b32310fc4a4128f6",
+        "triangles": 2000696,
+        "textures": [
+          {
+            "name": "colorful+coral+reef+3d+model_basecolor.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 1577826
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_rm.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 881780
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_normal.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 429765
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.4578247,
+            0,
+            -0.3105927
+          ],
+          "max": [
+            0.4578247,
+            0.9999695,
+            0.3105927
+          ],
+          "size": [
+            0.9156494,
+            0.9999695,
+            0.6211853
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [
+          "KHR_materials_volume",
+          "FB_ngon_encoding"
+        ],
+        "extensionsRequired": []
+      },
+      "output": {
+        "file": ".scratch/gm-assets/benchmarks/gm-coral-2k-5939d384d693.glb",
+        "bytes": 60661284,
+        "sha256": "5939d384d693a046375383581935c0d61e1326e5648d15964e8e96cd5b721050",
+        "triangles": 2000696,
+        "textures": [
+          {
+            "name": "colorful+coral+reef+3d+model_basecolor.jpg",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 1083276
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_rm.jpg",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 548522
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_normal.jpg",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 177590
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.4578247,
+            0,
+            -0.3105927
+          ],
+          "max": [
+            0.4578247,
+            0.9999695,
+            0.3105927
+          ],
+          "size": [
+            0.9156494,
+            0.9999695,
+            0.6211853
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [
+          "EXT_texture_webp",
+          "KHR_materials_volume"
+        ]
+      },
+      "droppedOptionalExtensions": [
+        "FB_ngon_encoding"
+      ],
+      "recipe": {
+        "format": "GLB + EXT_texture_webp",
+        "textureMax": 2048,
+        "textures": "WebP quality 95 effort 6, direct from untouched source maps",
+        "geometry": null,
+        "fit": {
+          "mode": "size",
+          "size": 4
+        }
+      }
+    },
+    {
+      "id": "model:gm-coral-1k",
+      "diagnostic": true,
+      "source": {
+        "file": "colorful coral reef 3d model.glb",
+        "bytes": 61741336,
+        "sha256": "a947c70b340dcd3ebea55c34b511f74af2b547a5bddb4175b32310fc4a4128f6",
+        "triangles": 2000696,
+        "textures": [
+          {
+            "name": "colorful+coral+reef+3d+model_basecolor.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 1577826
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_rm.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 881780
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_normal.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 429765
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.4578247,
+            0,
+            -0.3105927
+          ],
+          "max": [
+            0.4578247,
+            0.9999695,
+            0.3105927
+          ],
+          "size": [
+            0.9156494,
+            0.9999695,
+            0.6211853
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [
+          "KHR_materials_volume",
+          "FB_ngon_encoding"
+        ],
+        "extensionsRequired": []
+      },
+      "output": {
+        "file": ".scratch/gm-assets/benchmarks/gm-coral-1k-e11468d2fef6.glb",
+        "bytes": 59564232,
+        "sha256": "e11468d2fef6bc8f3bde6e2f618b0f666710b0ca185809aafb0a52dff05ac408",
+        "triangles": 2000696,
+        "textures": [
+          {
+            "name": "colorful+coral+reef+3d+model_basecolor.jpg",
+            "mimeType": "image/webp",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 426938
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_rm.jpg",
+            "mimeType": "image/webp",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 226382
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_normal.jpg",
+            "mimeType": "image/webp",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 59024
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.4578247,
+            0,
+            -0.3105927
+          ],
+          "max": [
+            0.4578247,
+            0.9999695,
+            0.3105927
+          ],
+          "size": [
+            0.9156494,
+            0.9999695,
+            0.6211853
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [
+          "EXT_texture_webp",
+          "KHR_materials_volume"
+        ]
+      },
+      "droppedOptionalExtensions": [
+        "FB_ngon_encoding"
+      ],
+      "recipe": {
+        "format": "GLB + EXT_texture_webp",
+        "textureMax": 1024,
+        "textures": "WebP quality 95 effort 6, direct from untouched source maps",
+        "geometry": null,
+        "fit": {
+          "mode": "size",
+          "size": 4
+        }
+      }
+    },
+    {
+      "id": "model:gm-coral-200k",
+      "diagnostic": false,
+      "source": {
+        "file": "colorful coral reef 3d model.glb",
+        "bytes": 61741336,
+        "sha256": "a947c70b340dcd3ebea55c34b511f74af2b547a5bddb4175b32310fc4a4128f6",
+        "triangles": 2000696,
+        "textures": [
+          {
+            "name": "colorful+coral+reef+3d+model_basecolor.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 1577826
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_rm.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 881780
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_normal.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 429765
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.4578247,
+            0,
+            -0.3105927
+          ],
+          "max": [
+            0.4578247,
+            0.9999695,
+            0.3105927
+          ],
+          "size": [
+            0.9156494,
+            0.9999695,
+            0.6211853
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [
+          "KHR_materials_volume",
+          "FB_ngon_encoding"
+        ],
+        "extensionsRequired": []
+      },
+      "output": {
+        "file": "assets/editor/gm-coral-200k-2k-668675002a5e.glb",
+        "bytes": 8596920,
+        "sha256": "668675002a5e485eccbca57ba076dfb1f7c3db89bcecdea8bdf9ed66b37a5eec",
+        "triangles": 199999,
+        "textures": [
+          {
+            "name": "colorful+coral+reef+3d+model_basecolor.jpg",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 1083276
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_rm.jpg",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 548522
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_normal.jpg",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 177590
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.4577942,
+            0.0002747,
+            -0.3105927
+          ],
+          "max": [
+            0.4578247,
+            0.9999695,
+            0.310379
+          ],
+          "size": [
+            0.9156189,
+            0.9996948,
+            0.6209717
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [
+          "EXT_texture_webp",
+          "KHR_materials_volume"
+        ]
+      },
+      "droppedOptionalExtensions": [
+        "FB_ngon_encoding"
+      ],
+      "recipe": {
+        "format": "GLB + EXT_texture_webp",
+        "textureMax": 2048,
+        "textures": "WebP quality 95 effort 6, direct from untouched source maps",
+        "geometry": {
+          "method": "meshoptimizer simplify via glTF Transform",
+          "targetTriangles": 200000,
+          "ratio": 0.09996521,
+          "error": 0.002,
+          "normalBake": false
+        },
+        "fit": {
+          "mode": "size",
+          "size": 4
+        }
+      }
+    },
+    {
+      "id": "model:gm-coral-50k",
+      "diagnostic": false,
+      "source": {
+        "file": "colorful coral reef 3d model.glb",
+        "bytes": 61741336,
+        "sha256": "a947c70b340dcd3ebea55c34b511f74af2b547a5bddb4175b32310fc4a4128f6",
+        "triangles": 2000696,
+        "textures": [
+          {
+            "name": "colorful+coral+reef+3d+model_basecolor.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 1577826
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_rm.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 881780
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_normal.jpg",
+            "mimeType": "image/jpeg",
+            "width": 4096,
+            "height": 4096,
+            "bytes": 429765
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.4578247,
+            0,
+            -0.3105927
+          ],
+          "max": [
+            0.4578247,
+            0.9999695,
+            0.3105927
+          ],
+          "size": [
+            0.9156494,
+            0.9999695,
+            0.6211853
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [
+          "KHR_materials_volume",
+          "FB_ngon_encoding"
+        ],
+        "extensionsRequired": []
+      },
+      "output": {
+        "file": "assets/editor/gm-coral-50k-2k-695c22cd2568.glb",
+        "bytes": 3482648,
+        "sha256": "695c22cd2568501f618bcf1bb6228f1f885d14ba21931de93ffcb4847f938831",
+        "triangles": 49999,
+        "textures": [
+          {
+            "name": "colorful+coral+reef+3d+model_basecolor.jpg",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 1083276
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_rm.jpg",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 548522
+          },
+          {
+            "name": "colorful+coral+reef+3d+model_normal.jpg",
+            "mimeType": "image/webp",
+            "width": 2048,
+            "height": 2048,
+            "bytes": 177590
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.4572754,
+            0.0002747,
+            -0.3097076
+          ],
+          "max": [
+            0.4578247,
+            0.9995728,
+            0.310379
+          ],
+          "size": [
+            0.9151001,
+            0.9992981,
+            0.6200867
+          ],
+          "fitSize": 4
+        },
+        "extensionsUsed": [
+          "EXT_texture_webp",
+          "KHR_materials_volume"
+        ]
+      },
+      "droppedOptionalExtensions": [
+        "FB_ngon_encoding"
+      ],
+      "recipe": {
+        "format": "GLB + EXT_texture_webp",
+        "textureMax": 2048,
+        "textures": "WebP quality 95 effort 6, direct from untouched source maps",
+        "geometry": {
+          "method": "meshoptimizer simplify via glTF Transform",
+          "targetTriangles": 50000,
+          "ratio": 0.0249913,
+          "error": 0.01,
+          "normalBake": false
+        },
+        "fit": {
+          "mode": "size",
+          "size": 4
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,264 @@
+{
+  "schema": "l03g-companion-presence-browser/v1",
+  "version": "0.6.0-alpha.68",
+  "at": "2026-10-13T06:31:21.065Z",
+  "simulatedAuth": true,
+  "gameplay": "memory store; not durable",
+  "durableProductionGate": false,
+  "production": false,
+  "controllerStarted": false,
+  "modelCalled": false,
+  "inferenceCredentialsPresent": false,
+  "rendering": {
+    "browser": "Chrome headless",
+    "angle": "default"
+  },
+  "checks": [
+    "memory_fixture_starts_with_Brisa_and_stopped_controller",
+    "Mis_compañeros_shows_compact_safe_port_presence_before_the_list",
+    "desktop_1280x720_ES_presence_panel_has_no_horizontal_overflow",
+    "Salir_conmigo_spawns_normal_host_body_without_resuming_the_mind",
+    "Sígueme_changes_only_the_server_owned_order",
+    "Espera_aquí_keeps_the_body_present",
+    "Volver_al_ancla_moves_toward_the_safe_anchor",
+    "Descansar_en_el_puerto_retires_only_after_returning_healthy",
+    "disabled_host_hides_actions_and_preserves_recovery_message",
+    "English_mobile_390x844_copy_and_presence_layout_fit",
+    "landscape_844x390_actions_are_reachable_and_touch_sized",
+    "browser_errors_empty_and_fixture_never_started_a_model"
+  ],
+  "screenshots": [
+    "presence-desktop-es-resting.png",
+    "presence-desktop-es-present.png",
+    "presence-desktop-es-disabled-recovery.png",
+    "presence-mobile-en-disabled-recovery.png",
+    "presence-landscape-en-actions.png"
+  ],
+  "errors": [],
+  "diagnostics": {
+    "pageErrors": [],
+    "consoleErrors": [],
+    "failedRequests": []
+  },
+  "fixture": {
+    "account": "22222222-2222-4222-8222-222222222222",
+    "world": "companion-presence-browser-fixture",
+    "startingPresence": "resting",
+    "controlStopped": true
+  },
+  "limitations": [
+    "Authentication is simulated and companion/gameplay records use the in-memory store.",
+    "The disabled-host and recovery messages are UI projections exercised locally; production SQL readiness is covered separately.",
+    "No controller process, provider request, credential, or model inference is used."
+  ],
+  "layouts": {
+    "desktopEs": {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "documentWidth": 1280,
+      "panel": {
+        "left": 430,
+        "top": 12,
+        "right": 850,
+        "bottom": 708,
+        "width": 420,
+        "height": 696
+      },
+      "panelScrollWidth": 418,
+      "panelClientWidth": 418,
+      "presence": {
+        "left": 445,
+        "top": 280.5625,
+        "right": 835,
+        "bottom": 673.734375,
+        "width": 390,
+        "height": 393.171875
+      },
+      "presenceScrollWidth": 388,
+      "presenceClientWidth": 388,
+      "buttons": [
+        {
+          "text": "Salir conmigo",
+          "left": 456,
+          "top": 462.734375,
+          "right": 636,
+          "bottom": 506.734375,
+          "height": 44
+        },
+        {
+          "text": "Sígueme",
+          "left": 644,
+          "top": 462.734375,
+          "right": 824,
+          "bottom": 506.734375,
+          "height": 44
+        },
+        {
+          "text": "Espera aquí",
+          "left": 456,
+          "top": 514.734375,
+          "right": 636,
+          "bottom": 558.734375,
+          "height": 44
+        },
+        {
+          "text": "Volver al ancla",
+          "left": 644,
+          "top": 514.734375,
+          "right": 824,
+          "bottom": 558.734375,
+          "height": 44
+        },
+        {
+          "text": "Descansar en el puerto",
+          "left": 456,
+          "top": 566.734375,
+          "right": 636,
+          "bottom": 610.734375,
+          "height": 44
+        },
+        {
+          "text": "Actualizar presencia",
+          "left": 456,
+          "top": 618.734375,
+          "right": 824,
+          "bottom": 662.734375,
+          "height": 44
+        }
+      ]
+    },
+    "mobileEn": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "documentWidth": 390,
+      "panel": {
+        "left": 12,
+        "top": 39.234375,
+        "right": 378,
+        "bottom": 804.765625,
+        "width": 366,
+        "height": 765.53125
+      },
+      "panelScrollWidth": 364,
+      "panelClientWidth": 364,
+      "presence": {
+        "left": 27,
+        "top": 307.796875,
+        "right": 363,
+        "bottom": 686.0625,
+        "width": 336,
+        "height": 378.265625
+      },
+      "presenceScrollWidth": 334,
+      "presenceClientWidth": 334,
+      "buttons": [
+        {
+          "text": "Refresh presence",
+          "left": 38,
+          "top": 631.0625,
+          "right": 352,
+          "bottom": 675.0625,
+          "height": 44
+        }
+      ]
+    },
+    "landscapeEn": {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "documentWidth": 844,
+      "panel": {
+        "left": 212,
+        "top": 12,
+        "right": 632,
+        "bottom": 378,
+        "width": 420,
+        "height": 366
+      },
+      "panelScrollWidth": 418,
+      "panelClientWidth": 418,
+      "presence": {
+        "left": 227,
+        "top": 280.5625,
+        "right": 617,
+        "bottom": 653.578125,
+        "width": 390,
+        "height": 373.015625
+      },
+      "presenceScrollWidth": 388,
+      "presenceClientWidth": 388,
+      "buttons": [
+        {
+          "text": "Come with me",
+          "left": 238,
+          "top": 442.578125,
+          "right": 418,
+          "bottom": 486.578125,
+          "height": 44
+        },
+        {
+          "text": "Follow me",
+          "left": 426,
+          "top": 442.578125,
+          "right": 606,
+          "bottom": 486.578125,
+          "height": 44
+        },
+        {
+          "text": "Wait here",
+          "left": 238,
+          "top": 494.578125,
+          "right": 418,
+          "bottom": 538.578125,
+          "height": 44
+        },
+        {
+          "text": "Return to anchor",
+          "left": 426,
+          "top": 494.578125,
+          "right": 606,
+          "bottom": 538.578125,
+          "height": 44
+        },
+        {
+          "text": "Rest at the harbor",
+          "left": 238,
+          "top": 546.578125,
+          "right": 418,
+          "bottom": 590.578125,
+          "height": 44
+        },
+        {
+          "text": "Refresh presence",
+          "left": 238,
+          "top": 598.578125,
+          "right": 606,
+          "bottom": 642.578125,
+          "height": 44
+        }
+      ]
+    }
+  },
+  "body": {
+    "present": true,
+    "entity": 28,
+    "order": "wait",
+    "slotCount": 2,
+    "controllerStopped": true,
+    "pairingCodeCount": 0,
+    "admittedControllerCount": 0,
+    "retiredAtAnchor": true,
+    "controlStoppedAfterPresence": true,
+    "profileAndControllerUntouched": true
+  },
+  "disabledHostAndRecovery": {
+    "projectionSimulated": true,
+    "actionsHidden": true,
+    "copyRetained": true
+  }
+}
