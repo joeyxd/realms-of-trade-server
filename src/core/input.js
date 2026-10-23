@@ -48,6 +48,7 @@ export class Input {
     // Walking with WASD does not change it: mouse + keyboard keeps aiming with the cursor.
     this.aimDevice = 'keys';
     this.interactEdge = false;
+    this.touchAct = false; this.padAct = false; // TA03: the touch action button / pad X held (hold-to-chop)
     // Skill slots: edges since the last fixed tick and what each source holds; the cancel edge; RMB swallowed.
     const emptySlots = () => ({ q: false, e: false, r: false, g: false });
     this.slots = { down: emptySlots(), up: emptySlots() };
@@ -122,6 +123,7 @@ export class Input {
     this.keys.clear();
     this.pressed = this.mouseHeld = this.keyHeld = this.padHeld = this.touchHeld = 0;
     this.interactEdge = this.cancelEdge = this.previewing = this.swallowRmb = false;
+    this.touchAct = this.padAct = false;
     this.touchAim = null;
     this.joy.active = false; this.joy.x = this.joy.y = 0;
     for (const src of SRC) for (const slot in this.slotSrc[src]) this.slotSrc[src][slot] = false;
@@ -131,6 +133,9 @@ export class Input {
 
   // Buttons held right now (mouse, J/K, gamepad triggers, touch secondary action), as command bits.
   get held() { return this.enabled && !this.buildContext ? this.mouseHeld | this.keyHeld | this.padHeld | this.touchHeld : 0; }
+
+  // TA03: F, the touch action button or pad X is down right now (hold-to-chop; the edge still goes through consumeInteract).
+  get interactHeld() { return this.enabled && !this.buildContext && (this.keys.has('KeyF') || this.touchAct || this.padAct); }
 
   // A slot key going down / up from a source ('key' | 'pad' | 'touch'). Held = any source holds it.
   slotDown(slot, src) {
@@ -162,7 +167,7 @@ export class Input {
     for (const p of pads) if (p && p.connected) { g = p; break; }
     const P = this.pad;
     if (!g) {
-      P.active = false; P.aim = false; this.padHeld = 0;
+      P.active = false; P.aim = false; this.padHeld = 0; this.padAct = false;
       for (const [i, slot] of PAD_SLOTS) if (P.prev[i]) { P.prev[i] = false; this.slotUp(slot, 'pad'); }
       return;
     }
@@ -188,6 +193,7 @@ export class Input {
     for (const [i, bit, hold] of (this.jump ? PAD_PRESS_JUMP : PAD_PRESS)) {
       const d = down(i);
       if (d) { any = true; if (hold && !this.buildContext) held |= bit; }
+      if (bit === BTN.INTERACT) this.padAct = d;
       if (d && !P.prev[i] && this.enabled && !this.buildContext && !(i === 1 && bCancel)) { this.pressed |= bit; if (bit === BTN.INTERACT) this.interactEdge = true; }
       P.prev[i] = d;
     }

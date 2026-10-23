@@ -80,6 +80,7 @@ export class TouchControls {
         <button class="tbtn t-skill t-g" data-l10n-aria-label="touch.pearl" aria-label="${attr('touch.pearl')}" hidden><span class="sweep"></span>${face('comet', 'touch.comet')}</button>
         <button class="tbtn t-pot" data-l10n-aria-label="touch.potion" aria-label="${attr('touch.potion')}"><span class="sweep"></span>${face('flask', null)}<b class="cnt">0</b></button>
         <button class="tbtn t-act" data-l10n-aria-label="touch.interact" aria-label="${attr('touch.interact')}" hidden>${face('talk', '')}</button>
+        <button class="tbtn t-crit" data-l10n-aria-label="touch.crit" aria-label="${attr('touch.crit')}" hidden>${face('burst', 'touch.critFace')}</button>
       </div>`;
     this.probe = root.querySelector('.safe-probe'); // its padding is the safe-area insets (already remapped when the stage turns)
     this.update();
@@ -135,7 +136,13 @@ export class TouchControls {
     this.jumpBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressJump(); });
     for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) this.jumpBtn.addEventListener(ev, () => input.releaseJump());
     this.setJump(false);
-    root.querySelector('.t-act').addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressInteract(); });
+    const act = root.querySelector('.t-act');
+    // TA03: the action button also reports being held (hold-to-chop); the edge still goes out as before.
+    act.addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressInteract(); input.touchAct = true; });
+    for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) act.addEventListener(ev, () => { input.touchAct = false; });
+    // TA03: the crit button of the chop swing (next to ACT, only while a swing runs); main.js sets onCrit.
+    this.critBtn = root.querySelector('.t-crit'); this.onCrit = null;
+    this.critBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); this.onCrit?.(); });
     root.querySelector('.t-pot').addEventListener('pointerdown', (e) => { e.preventDefault(); input.press(BTN.POTION); });
     // The aim line from a button's centre along a drag (stage px), shared by the skills and the two fire buttons.
     const line = root.querySelector('.aimline');
@@ -381,6 +388,14 @@ export class TouchControls {
     b.querySelector('.lbl').textContent = a.verb;
     b.setAttribute('aria-label', a.verb);
     if (!was) { b.hidden = false; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
+  }
+
+  // TA03: the chop crit button: null (hidden) or { pulse, spent }; it pulses while the swing is inside the green.
+  setCrit(s) {
+    const b = this.critBtn;
+    b.hidden = !s;
+    b.classList.toggle('pulse', !!s?.pulse);
+    b.classList.toggle('spent', !!s?.spent);
   }
 
   show() { this.root.hidden = false; this.update(); }

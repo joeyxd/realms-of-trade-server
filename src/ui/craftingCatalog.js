@@ -2,6 +2,7 @@
 // Gameplay (inputs, outputs, bench rules) stays in data/resources.js; this file only decides how it reads.
 import { CRAFT_RECIPES, RESOURCE_KINDS, HARVEST } from '../data/resources.js';
 import { FIRE_SECONDS } from '../data/fire.js';
+import { AXES } from '../data/chopping.js';
 import { GOODS } from '../data/goods.js';
 import { DT } from '../data/tuning.js';
 import { formatNumber } from '../core/i18n.js';
@@ -138,6 +139,29 @@ export const RECIPE_UI = {
       { icon: 'clock', es: 'Ritmo de tala', en: 'Chop pace', value: palm.actionTicks, max: 120, text: seconds(palm.actionTicks) },
     ],
   },
+  // TA03: the iron and steel axes (data/chopping.js CHOP_RECIPES); the bench lists them only while the world is in chop mode.
+  hacha_hierro: {
+    cat: 'tools', order: 1.1,
+    es: { name: 'Hacha de hierro', desc: 'Corta una palmera en la mitad de golpes que la de piedra.',
+      flavor: 'Filo de verdad, forjado con el hierro de la isla.\nCada golpe pesa el doble.', motto: 'Golpea. Rápido. Dos veces.' },
+    en: { name: 'Iron Axe', desc: 'Fells a palm in half the swings of the stone axe.',
+      flavor: 'A true edge, forged from the island iron.\nEvery swing hits twice as hard.', motto: 'Swing fast. Hit twice.' },
+    stats: () => [
+      { icon: 'hit', es: 'Daño por golpe', en: 'Damage per swing', value: AXES[2].damage, max: 3, text: `${AXES[2].damage}` },
+      { icon: 'clock', es: 'Ritmo de tala', en: 'Chop pace', value: AXES[1].cadence - AXES[2].cadence, max: 40, text: seconds(AXES[2].cadence) },
+    ],
+  },
+  hacha_acero: {
+    cat: 'tools', order: 1.2,
+    es: { name: 'Hacha de acero', desc: 'La más rápida: una palmera grande cae en cuatro golpes.',
+      flavor: 'Acero templado y mango de palma.\nLa isla se queda sin sombra.', motto: 'Corta. Limpio. Sin pausa.' },
+    en: { name: 'Steel Axe', desc: 'The fastest: a large palm falls in four swings.',
+      flavor: 'Tempered steel on a palm-wood haft.\nThe island runs out of shade.', motto: 'Cut clean. Never pause.' },
+    stats: () => [
+      { icon: 'hit', es: 'Daño por golpe', en: 'Damage per swing', value: AXES[3].damage, max: 3, text: `${AXES[3].damage}` },
+      { icon: 'clock', es: 'Ritmo de tala', en: 'Chop pace', value: AXES[1].cadence - AXES[3].cadence, max: 40, text: seconds(AXES[3].cadence) },
+    ],
+  },
   pico_piedra: {
     cat: 'tools', order: 2,
     es: { name: 'Pico de piedra', desc: 'Parte rocas grandes y abre vetas de hierro.',
@@ -203,4 +227,6 @@ const ITEM_GLYPH = {
   tronco: svg('<path fill="#8d5a2c" d="M4.2 9.4 16.6 4c1.8-.8 3.8.2 4.5 2s-.2 3.9-2 4.6L6.8 16z"/><ellipse cx="5.6" cy="12.7" rx="2.7" ry="3.6" transform="rotate(-23 5.6 12.7)" fill="#e2b27a"/><path fill="none" stroke="#a5713b" stroke-width=".8" d="M4.8 12.2a1 1.4-23 1 0 1.4.9"/>'),
   piedra: CRAFT_ICONS.stone.replace('currentColor', '#aab3bc'),
 };
-export const itemGlyph = (id) => ITEM_GLYPH[id] || svg('<path fill="#8fa3b6" d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path fill="#0d1b2b" opacity=".35" d="m12 12 8-4.5v9L12 21z"/>');
+// The iron and steel axes share the stone axe's drawn glyph until they have painted art.
+const GLYPH_ALIAS = { hacha_hierro: 'hacha_piedra', hacha_acero: 'hacha_piedra' };
+export const itemGlyph = (id) => ITEM_GLYPH[GLYPH_ALIAS[id] || id] || svg('<path fill="#8fa3b6" d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path fill="#0d1b2b" opacity=".35" d="m12 12 8-4.5v9L12 21z"/>');

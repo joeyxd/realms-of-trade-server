@@ -69,6 +69,7 @@ import { PersonalLanternActions } from './ui/personalLanternActions.js';
 import { CommercePanel } from './ui/commerce.js';
 import { shoreStopAvailable } from './ui/shoreStopState.js';
 import { ResourceActions } from './ui/resourceActions.js';
+import { ChopController, ChopBar, pickupMessage } from './ui/chopping.js';
 import { WorkbenchPanel } from './ui/workbench.js';
 import { CommunityPanel } from './ui/community.js';
 import { ArtisanPanel } from './ui/artisan.js';
@@ -84,8 +85,8 @@ import { phaseAt } from './data/clock.js';
 import { elementVisual } from './data/elements.js';
 import { audio } from './audio/engine.js';
 import { sfx } from './audio/sfx.js';
-import { harvestSound } from './audio/harvest.js';
-import { startHarvestPose } from './render/harvestPose.js';
+import { harvestSound, chopSound } from './audio/harvest.js';
+import { startHarvestPose, startChopPose } from './render/harvestPose.js';
 import { Ambience } from './audio/ambience.js';
 import { Music } from './audio/music.js';
 import { assets } from './render/assets/registry.js';
@@ -138,7 +139,7 @@ async function boot() {
   // ?lag=&jitter= add artificial latency per direction (testing).
   const transportP = createTransport({
     seed: GAME.seed, bots: 5, preferWorker: params.get('worker') !== '0', debug,
-    server: params.get('server'), solo: params.has('solo'), lagMs: +params.get('lag') || 0, jitterMs: +params.get('jitter') || 0,
+    server: params.get('server'), solo: params.has('solo'), lagMs: +params.get('lag') || 0, jitterMs: +params.get('jitter') || 0, chop: params.get('chop') === '1', // TA03: solo hold-to-chop
   });
   const canvas = $('#game');
   await assetsP;
@@ -307,6 +308,7 @@ async function boot() {
     toast: (html) => hud.toast(html, 4200), sound: () => sfx.pickup(0) });
   const workbench = new WorkbenchPanel({ parent: $('#ui'), profile: () => client?.profile, player: () => ps,
     bench: () => client?.resources?.bench,
+    chop: () => client?.resources?.chop === 1, // TA03: the iron and steel axes are listed only in chop mode
     enabled: () => st.mode === 'playing' && !!client?.joined && !pause.open && input.enabled && !client.t.closed,
     blocked: () => !!(client.naval.active || client.deck.active || client.voyage?.active),
     submit: (command) => resources.send(command),
@@ -321,6 +323,18 @@ async function boot() {
     },
   });
   resources.openWorkbench = () => workbench.open({ recipe: 'madera' }); // the bench prompt is about logs → planks
+  // TA03: hold-to-chop (ui/chopping.js). Everything below runs only while client.resources.chop === 1.
+  const CHOP_REFUSALS = new Set(['combat', 'land', 'far', 'depleted', 'node', 'dead']);
+  const chop = new ChopController({ client: () => client, profile: () => client?.profile, player: () => ps,
+    send: (cmd) => { if (!client?.joined || client.t?.closed) return false; try { client.send(cmd); return true; } catch { return false; } },
+    enabled: () => resources.enabled(), held: () => input.interactHeld && st.chopPrompt, aboard: () => !!(client.naval.active || client.deck.active),
+    onSwing: (s) => startChopPose(world.views.get(client.youServer), s),
+    onPickup: (ack) => { hud.toast(pickupMessage(ack.goods), 3200); chopSound('pickup', {}, 0); },
+    onPackFull: () => hud.toast(ltext('systems.chop.packFull'), 3500),
+    onRefuse: (why) => hud.toast(why === 'tool' ? ltext('systems.resource.needAxeToast')
+      : ltext(CHOP_REFUSALS.has(why) ? `systems.chop.refuse.${why}` : 'systems.resource.unknown'), 3500) });
+  resources.chop = chop;
+  const chopBar = new ChopBar({ parent: $('#ui') });
   // TAB: the crafting menu anywhere on foot (hand recipes). E crafts while it is open (handled by the panel).
   input.onHotkey('Tab', () => { if (st.mode !== 'playing' || pause.open) return false; return workbench.toggle(); });
   const raftDoors = new RaftDoorActions({ client: () => client,
@@ -368,7 +382,7 @@ async function boot() {
     resources.onResult(ev); workbench.onResult(ev);
   }));
   bus.on('loggingAim', ev => safe('loggingAim', () => resources.onAim(ev)));
-  bus.on('you:welcome', () => { resources.reset(); workbench.reset(); world.resources.reset(); world.harvestGoods.reset(); });
+  bus.on('you:welcome', () => { resources.reset(); chop.reset(); workbench.reset(); world.resources.reset(); world.harvestGoods.reset(); });
   const community = new CommunityPanel({ parent: $('#ui'), profile: () => client?.profile,
     context: () => workbench.context(),
     enabled: () => st.online && st.mode === 'playing' && !!client?.joined && !pause.open && input.enabled && !client.t.closed,
@@ -439,6 +453,7 @@ async function boot() {
   input.onHotkey('PadSelect', panelKey(() => charPanel.toggle('gear')));
   const touch = new TouchControls($('#touch'), input);
   touch.setScale(settings.touchSize); touch.setHaptics(settings.haptics !== false);
+  touch.onCrit = () => safe('chop crit', () => chop.crit()); // TA03: the crit button next to ACT
   // PT06: the server's jump mode (WELCOME.jump) decides the controls: on, Space / A / the touch button jump and Shift / B
   // dash; off keeps today's Space = dash and no button.
   bus.on('you:welcome', () => { const on = client.pred.jumpMode !== 'off'; input.setJump(on); touch.setJump(on); });
@@ -891,6 +906,30 @@ async function boot() {
   }
 
   const views = world.views;
+  // TA03: public hold-to-chop events. Part B (render / audio) draws and sounds them; the controller only follows the swing.
+  const rangeOf = (id) => { const rec = client.entities.get(id); return rec ? Math.hypot(ps.x - rec.r.x, ps.z - rec.r.z) : Infinity; };
+  bus.on('chopSwing', (ev) => safe('chop swing', () => {
+    if (ev.e !== client.youServer && rangeOf(ev.e) < 26) startChopPose(views.get(ev.e), { cadence: ev.cadence });
+  }));
+  bus.on('chopHit', (ev) => safe('chop hit', () => {
+    chop.onHit(ev);
+    const hit = world.resources.chopHit(ev);
+    if (!hit) return;
+    const distance = Math.hypot(ps.x - hit.x, ps.z - hit.z), mine = ev.e === client.youServer;
+    // The floating damage number is the combat one (worldUI.float, classes dmg / crit: bigger and gold).
+    if (distance < 26) worldUI.float(hit.x, hit.y, hit.z, ev.crit ? `${rich('feedback.call.critical')} ${ev.damage}` : String(ev.damage), ev.crit ? 'crit' : 'dmg');
+    if (mine && ev.crit) world.rig.punchIn(0.25);
+    chopSound(ev.crit ? 'crit' : 'hit', { size: hit.size }, distance);
+  }));
+  bus.on('chopFell', (ev) => safe('chop fell', () => {
+    chop.onFell(ev);
+    const fell = world.resources.chopFell(ev);
+    if (fell) chopSound('fell', { size: fell.size }, Math.hypot(ps.x - fell.x, ps.z - fell.z));
+  }));
+  bus.on('pilePickup', (ev) => safe('pile pickup', () => {
+    const rec = ev.e === client.youServer ? null : client.entities.get(ev.e);
+    world.resources.pilePickup(ev, ev.e === client.youServer ? { x: ps.x, y: ps.y + 1, z: ps.z } : rec ? { x: rec.r.x, y: rec.r.y + 1, z: rec.r.z } : null);
+  }));
   bus.on('resourceHit', (ev) => safe('harvest effects', () => {
     if (!world.resources.hit(ev)) return;
     const distance = Math.hypot(ps.x - ev.x, ps.z - ev.z);
@@ -1432,6 +1471,9 @@ async function boot() {
       // The slot keys through the aim controller: an area's press goes out on release, aimed at its marker.
       readSlots();
       input.consumeSlots(slotIn);
+      // TA03: while a chop swing runs, G is the crit key and never reaches the skill slot (with no swing it stays the skill).
+      if (slotIn.down.g && chop.crit()) st.chopG = true;
+      if (st.chopG) { slotIn.down.g = slotIn.held.g = slotIn.up.g = false; if (!input.slotHeld('g')) st.chopG = false; }
       slotIn.mode = input.aimDevice === 'touch' ? 'indicator' : settings.launch || 'indicator';
       const ac = aimCtl.step(slotIn);
       input.previewing = !!(ac.preview && ac.preview.kind === 'ground');
@@ -1603,6 +1645,7 @@ async function boot() {
         const rack = !npc && !chest && !runes && !ps.dead ? rackNear(map, ps.x, ps.z) : null;
         const other = (ps.weapon + 1) % WEAPON_KINDS.length;
         const resourceInteraction = !workbench.active && !navalInteraction && !npc && !chest && !runes && !rack ? resources.interaction() : null;
+        st.chopPrompt = !!resourceInteraction?.chop; // holding F chops only while F shows the chop prompt (no NPC, chest, rack or nearer rock)
         const bench = client.resources?.bench;
         if (bench) {
           if (!worldUI.labels.has('workbench')) worldUI.addLabel('workbench', ltext('runtime.bench'), { cls: 'quest', color: '#e6b75b', range: 17 });
@@ -1782,6 +1825,13 @@ async function boot() {
         else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
         resources.update();
+        safe('chop', () => { // TA03: the hold loop, the highlighted palm, the swing bar and the touch crit button
+          chop.update();
+          world.resources.setChopTarget(chop.target);
+          const bar = chop.bar();
+          chopBar.render(bar);
+          touch.setCrit(bar ? { pulse: bar.inGreen && !bar.crit, spent: !!bar.crit } : null);
+        });
         const portableLights = [];
         if (playing) for (const rec of client.entities.values()) {
           const root = rec.view?.root;

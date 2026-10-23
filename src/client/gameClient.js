@@ -187,6 +187,11 @@ export class GameClient {
       this.bus.emit('resourceHit', ev);
       return;
     }
+    // TA03: public hold-to-chop events (they carry `e`, not `to`) reach the bus under their own names.
+    if (ev.type === 'chopSwing' || ev.type === 'chopHit' || ev.type === 'chopFell' || ev.type === 'pilePickup') {
+      this.bus.emit(ev.type, ev);
+      return;
+    }
     if (ev.type === 'navalDeck' || ev.type === 'navalInvite' || ev.type === 'navalImpact' || ev.type === 'navalGust') {
       if (ev.to === this.youServer) this.bus.emit(ev.type, ev);
       return;

@@ -491,6 +491,14 @@ export default {
     "GUARDIA",
     "GUARD"
   ],
+  "touch.crit": [
+    "Golpe crítico",
+    "Critical strike"
+  ],
+  "touch.critFace": [
+    "CRÍTICO",
+    "CRIT"
+  ],
   "touch.jump": [
     "Saltar",
     "Jump"

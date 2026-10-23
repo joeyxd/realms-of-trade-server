@@ -54,11 +54,11 @@ export class WorkerTransport extends BaseTransport {
 
 // Fallback when module workers are unavailable (old browsers, restrictive sandboxes).
 export class InProcessTransport extends BaseTransport {
-  constructor(seed, bots, debug = false) {
+  constructor(seed, bots, debug = false, chop = false) {
     super();
     this.kind = 'inprocess';
     this.inbox = [];
-    this.server = new LocalServer({ fire: true, freshwater: true, survival: true, harvestLoot: true, seed, bots, debug, send: (_id, m) => this.inbox.push(m) });
+    this.server = new LocalServer({ fire: true, freshwater: true, survival: true, harvestLoot: true, chop: chop === true, seed, bots, debug, send: (_id, m) => this.inbox.push(m) });
     this.server.connect(1);
     this.server.start();
     this.inbox.push({ t: MSG.READY });
@@ -103,7 +103,7 @@ export function wsUrlFor(base = location.href) {
 
 // Online when a server is named (?server=ws://…) or this page came from one (and not ?solo); otherwise the
 // Worker (or in-process) local server. Result: the transport, plus `status` when online.
-export async function createTransport({ seed, bots = 5, preferWorker = true, timeout = 4000, debug = false, server = null, solo = false, lagMs = 0, jitterMs = 0 }) {
+export async function createTransport({ seed, bots = 5, preferWorker = true, timeout = 4000, debug = false, server = null, solo = false, lagMs = 0, jitterMs = 0, chop = false }) {
   if (!solo) {
     let url = server;
     if (!url && servedByGameServer()) url = wsUrlFor();
@@ -125,7 +125,7 @@ export async function createTransport({ seed, bots = 5, preferWorker = true, tim
         const timer = setTimeout(() => resolve(false), timeout);
         worker.addEventListener('error', () => { clearTimeout(timer); resolve(false); }, { once: true });
         worker.addEventListener('message', (ev) => { if (ev.data && ev.data.t === MSG.READY) { clearTimeout(timer); resolve(true); } });
-        worker.postMessage({ t: 'boot', seed, bots, debug });
+        worker.postMessage({ t: 'boot', seed, bots, debug, chop: chop === true });
       });
       if (ok) return t;
       worker.terminate();
@@ -134,5 +134,5 @@ export async function createTransport({ seed, bots = 5, preferWorker = true, tim
       console.warn('[net] worker failed:', err);
     }
   }
-  return new InProcessTransport(seed, bots, debug);
+  return new InProcessTransport(seed, bots, debug, chop);
 }

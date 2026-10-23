@@ -8,6 +8,7 @@ import { LoggingTimingPanel } from './loggingTiming.js';
 import { t, text, rich, dataParam, translateData, getLocale } from '../core/i18n.js';
 
 const MAX_GATHERS = 8, RETRY_MS = 5000;
+const AXE_NAMES = { 1: 'Hacha de piedra', 2: 'Hacha de hierro', 3: 'Hacha de acero' }; // data catalog sources (src/i18n/data.js)
 const TIMING_COPY = {
   es: { aim_busy: 'No se pudo iniciar el ritmo. Espera un momento e int\u00e9ntalo de nuevo.',
     aim_revision: 'La palmera cambi\u00f3. Ac\u00e9rcate e inicia otro ritmo.', aim_tool: 'Necesitas un hacha para talar.',
@@ -49,6 +50,7 @@ export class ResourceActions {
     Object.assign(this, { client, player, enabled, toast, sound, onGather, onChange, locale, now });
     this.craftPending = null; this.gathers = new Map(); this.predictedHits = new Set(); this.openWorkbench = null; this.gatherUntil = 0; this.latestGather = null;
     this.aim = null; this.aimRequest = null; this.timingPanel = null;
+    this.chop = null; // TA03: the ChopController (main.js sets it)
   }
   get pending() { return this.craftPending || this.gathers.values().next().value || null; }
   get copy() { const locale = this.locale() === 'en' ? 'en' : 'es'; return { ...COPY[locale], ...TIMING_COPY[locale] }; }
@@ -138,7 +140,7 @@ export class ResourceActions {
       const hit = Math.min(maxHits, (node.hits || 0) + 1);
       const remainingHits = Number.isSafeInteger(node.remaining) ? node.remaining : maxHits - (node.hits || 0);
       const expectedYield = def.yield || def.count || (cutting ? HARVEST.palmYield : 1);
-      const toolOwned = !def.tool || c.profile?.tools?.[def.tool] === 1;
+      const toolOwned = !def.tool || c.profile?.tools?.[def.tool] >= 1; // TA03: the axe is a tier 1..3
       const needsTool = def.tool && !toolOwned;
       const wait = Math.max(0, this.gatherUntil - this.now());
       const icon = def.tool === 'pickaxe' ? 'mine' : cutting ? 'axe' : 'chest';
@@ -146,6 +148,9 @@ export class ResourceActions {
       if (needsTool) return { html: t('systems.resource.needTool', { resource: translateData(def.name),
         tool: t(def.tool === 'pickaxe' ? 'systems.resource.pickaxe' : 'systems.resource.axe') }),
         verb, icon, run: () => this.toast(text(def.tool === 'pickaxe' ? 'systems.resource.needPickaxeToast' : 'systems.resource.needAxeToast')) };
+      // TA03: chop mode replaces the aim / gather flow for palms with a hold (the controller in ui/chopping.js does the rest).
+      if (cutting && c.resources?.chop === 1) return { html: `<span class="kbd">F</span> ${t('systems.chop.hold')}`, verb: t('systems.chop.verb'), icon,
+        chop: true, run: () => this.chop?.press() };
       if (timingEnabled) {
         if (this.aim?.node === node.id && this.aim.rev === node.rev)
           return { html: `<span class="kbd">F</span> ${t('systems.resource.strikeRhythm')}`, verb: t('systems.resource.log'), icon,
@@ -257,7 +262,7 @@ export class ResourceActions {
     if (this.craftPending || this.gathers.size >= MAX_GATHERS || this.now() < this.gatherUntil) return false;
     const node = c.resources?.nodes?.find((n) => n.id === command.node), def = RESOURCE_KINDS[node?.kind];
     if (!node?.ready || !def || node.rev !== command.expectedRev || [...this.gathers.values()].some((p) => p.command.node === node.id)) return false;
-    if (def.tool && c.profile?.tools?.[def.tool] !== 1) return false;
+    if (def.tool && !(c.profile?.tools?.[def.tool] >= 1)) return false;
     const timedPalm = node.kind === 'palm' && (c.resources?.timing === true || node.timing === true);
     const pack = this.backpack().pack, yieldCount = timedPalm ? 6 : (def.yield || 1);
     if (!pack || !load({ ...pack, goods: { ...pack.goods } }, def.good, yieldCount)) { this.toast(text('systems.resource.full')); return false; }
@@ -278,6 +283,7 @@ export class ResourceActions {
     return true;
   }
   onResult(event) {
+    if (this.chop?.onResult(event)) return; // TA03: chop, crit and pickup acks belong to the chop controller
     const gather = this.gathers.get(event.opId), pending = gather || this.craftPending;
     if (!pending || pending.command.opId !== event.opId || pending.command.op !== event.op) return;
     const node = this.client().resources?.nodes?.find((row) => row.id === pending.command.node);
@@ -328,7 +334,7 @@ export class ResourceActions {
     this.sound?.();
     const count = Number.isSafeInteger(event.count) && event.count > 0 ? event.count : 1;
     this.toast(event.op === 'craft' ? (event.tool
-      ? rich('systems.resource.toast.craftedTool', { tool: dataParam(event.tool === 'axe' ? 'Hacha de piedra' : 'Pico de piedra') })
+      ? rich('systems.resource.toast.craftedTool', { tool: dataParam(event.tool === 'axe' ? AXE_NAMES[event.tier] || AXE_NAMES[1] : 'Pico de piedra') })
       : rich('systems.resource.toast.woodMade', { count }))
       : `${rich(event.good === 'piedra' ? 'systems.resource.gain.stone' : event.good === 'mineral_hierro' ? 'systems.resource.gain.ore' : 'systems.resource.gain.logs', { count })} · ${text(event.good === 'piedra'
         ? 'systems.resource.toast.stoneHint' : event.good === 'mineral_hierro' ? 'systems.resource.toast.oreHint' : 'systems.resource.toast.logHint')}`);

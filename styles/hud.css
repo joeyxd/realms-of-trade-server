@@ -455,6 +455,24 @@ body.touch .actionbar { display: none; }
 .slot[data-slot='g'].empty { opacity: 0.5; }
 #touch .t-pot { --c: 255 84 128; --d: 48; --lx: var(--l-potion-x); --ly: var(--l-potion-y); padding: 0; }
 #touch .t-act { --c: 255 172 40; --d: 64; --lx: var(--l-act-x); --ly: var(--l-act-y); }
+/* TA03: the chop crit button sits left of ACT on the bottom row (the safe-area insets are already in --l-act-x); the centre stays free. */
+#touch .t-crit { --c: 255 214 77; --d: 54; --lx: calc(var(--l-act-x) - 63 * var(--tb)); --ly: var(--l-act-y); }
+#touch .t-crit[hidden] { display: none; }
+#touch .t-crit.spent { filter: grayscale(0.8); opacity: 0.55; }
+#touch .t-crit.pulse { animation: tcrit 360ms ease-in-out infinite; }
+@keyframes tcrit {
+  0%, 100% { box-shadow: 0 0 0 1.5px rgb(18 10 36 / 0.55), inset 0 2px 0 rgb(255 255 255 / 0.22), 0 0 6px 1px rgb(255 214 77 / 0.4); }
+  50% { box-shadow: 0 0 0 1.5px rgb(18 10 36 / 0.55), inset 0 2px 0 rgb(255 255 255 / 0.22), 0 0 18px 7px rgb(255 214 77 / 0.9); }
+}
+/* TA03: the per-swing chop bar over the player's feet area: fills over the swing, the green zone at its end. */
+.chop-bar { position: absolute; z-index: 60; left: 50%; bottom: 24%; width: min(9.5rem, 40vw); height: .6rem; transform: translateX(-50%);
+  border: 2px solid rgba(7, 17, 28, .85); border-radius: .4rem; background: rgba(28, 24, 20, .82); overflow: hidden; pointer-events: none; }
+.chop-bar[hidden] { display: none; }
+.chop-bar__green { position: absolute; top: 0; bottom: 0; right: 0; background: rgba(102, 193, 129, .78); }
+.chop-bar__fill { position: absolute; top: 0; bottom: 0; left: 0; background: rgba(217, 133, 54, .9); }
+.chop-bar[data-window='green'] .chop-bar__fill { background: rgba(255, 225, 120, .95); }
+.chop-bar[data-crit='hit'] { border-color: #ffe14d; box-shadow: 0 0 .7rem rgba(255, 225, 77, .85); }
+.chop-bar[data-crit='miss'] { border-color: #8d8d8d; opacity: .75; }
 /* The freshwater button (main.js adds it to the cluster; freshwater.css gives its colour and size). */
 #touch .t-water { --lx: var(--l-water-x); --ly: var(--l-water-y); }
 #touch .t-parry .lbl, #touch .t-r .lbl, #touch .t-jump .lbl { font-size: calc(9.5px * var(--tb)); }

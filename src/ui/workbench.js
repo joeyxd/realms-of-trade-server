@@ -1,6 +1,7 @@
 // Crafting menu: recipes by category, materials, real base stats and the backpack. Hand recipes craft anywhere on
 // land; the rest need the shore workbench. The server stays authoritative; this panel only previews and asks.
 import { CRAFT_RECIPES, HARVEST, WOOD_RECIPE } from '../data/resources.js';
+import { CHOP_RECIPES } from '../data/chopping.js';
 import { FIRE_SECONDS } from '../data/fire.js';
 import { onLocaleChange, formatNumber, t, translateData } from '../core/i18n.js';
 import { GOODS, GOOD_IDS } from '../data/goods.js';
@@ -20,14 +21,15 @@ const esc = (text) => String(text).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '
 export const TORCH_RECIPE = Object.freeze({ id: 'antorcha', name: 'Antorcha', inputs: Object.freeze({ tronco: 2, resina: 1 }),
   fire: 'handTorch', hand: true, count: 1, max: 1 });
 const LEGACY_TORCH_RECIPE = Object.freeze({ ...TORCH_RECIPE, inputs: Object.freeze({ madera: 1 }) });
-const RECIPES = Object.freeze({ ...CRAFT_RECIPES, [TORCH_RECIPE.id]: TORCH_RECIPE });
+// TA03: the iron and steel axes exist only in chop mode (recipesIn hides them otherwise; the server refuses them too).
+const RECIPES = Object.freeze({ ...CRAFT_RECIPES, ...CHOP_RECIPES, [TORCH_RECIPE.id]: TORCH_RECIPE });
 const recipeFor = (id = WOOD_RECIPE.id, rules = 2) => id === TORCH_RECIPE.id && rules !== 2
   ? LEGACY_TORCH_RECIPE : RECIPES[id] || RECIPES[WOOD_RECIPE.id] || WOOD_RECIPE;
 const recipeInputs = (recipe) => recipe.inputs || { [recipe.input]: recipe.count || 1 };
 const recipeOutput = (recipe) => recipe.output;
 const isToolRecipe = (recipe) => !!recipe.tool;
 const clock = (seconds) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-const recipesIn = (cat) => Object.values(RECIPES).filter((r) => RECIPE_UI[r.id]?.cat === cat)
+const recipesIn = (cat, chopOn = false) => Object.values(RECIPES).filter((r) => RECIPE_UI[r.id]?.cat === cat && (chopOn || !CHOP_RECIPES[r.id]))
   .sort((a, b) => (RECIPE_UI[a.id].order || 0) - (RECIPE_UI[b.id].order || 0));
 const recipeText = (id, lang) => RECIPE_UI[id]?.[lang] || RECIPE_UI[id]?.es || { name: recipeFor(id).name, desc: '', flavor: '', motto: '' };
 // Absolute: a relative url() inside a custom property resolves against the stylesheet that uses it.
@@ -49,7 +51,7 @@ export function workbenchPreview(profile, n, recipeId = WOOD_RECIPE.id, torchRul
   const needs = Object.entries(inputs).map(([good, each]) => ({ good, count: each, owned: packKnown ? (pack.goods[good] || 0) : 0,
     name: GOODS[good]?.name || good }));
   const materialsFit = needs.every((item) => Number.isSafeInteger(item.owned) && item.owned >= item.count * (Number.isSafeInteger(n) && n > 0 ? n : 0));
-  const ownedTool = tool ? (profile?.tools?.[recipe.tool] === 1) : false;
+  const ownedTool = tool ? (profile?.tools?.[recipe.tool] >= (recipe.tier || 1)) : false; // TA03: a tier at or below the owned one is owned
   const output = recipeOutput(recipe), outputCount = recipe.count || 1;
   const deltaPerBatch = (noGoods ? 0 : outputCount * goodVolume(output)) - needs.reduce((sum, item) => sum + item.count * goodVolume(item.good), 0);
   const massDeltaPerBatch = (noGoods ? 0 : outputCount * goodMass(output)) - needs.reduce((sum, item) => sum + item.count * goodMass(item.good), 0);
@@ -89,8 +91,8 @@ export function craftAcknowledgementMatches(pending, ev) {
 const TAB_HTML = CRAFT_CATEGORIES.map((cat) => `<button class="cr-tab" type="button" role="tab" data-cat="${cat}"><span class="cr-tab-ico">${CRAFT_ICONS[cat]}</span><span data-t="tabs.${cat}"></span></button>`).join('');
 
 export class WorkbenchPanel {
-  constructor({ parent, profile, player, bench, enabled, blocked, submit, onContext, torch, submitFire }) {
-    Object.assign(this, { parent, profile, player, bench, enabled, blocked, submitCommand: submit, onContext, torch, submitFire });
+  constructor({ parent, profile, player, bench, enabled, blocked, submit, onContext, torch, submitFire, chop }) {
+    Object.assign(this, { parent, profile, player, bench, enabled, blocked, submitCommand: submit, onContext, torch, submitFire, chop });
     this.active = false; this.pending = null; this.qty = 1; this.recipe = 'hacha_piedra'; this.cat = 'tools';
     this.lastResult = ''; this.resultSource = null; this.resultTone = ''; this._contextNotified = false; this.lang = '';
     this.root = document.createElement('section'); this.root.className = 'workbench-panel'; this.root.hidden = true;
@@ -163,7 +165,7 @@ export class WorkbenchPanel {
   }
   selectCategory(cat) {
     if (!CRAFT_CATEGORIES.includes(cat) || this.pending) return;
-    this.cat = cat; const first = recipesIn(cat)[0];
+    this.cat = cat; const first = recipesIn(cat, this.chopOn())[0];
     if (RECIPE_UI[this.recipe]?.cat !== cat) { this.recipe = first ? first.id : null; this.qty = 1; this.clearResult(); }
     this.update();
   }
@@ -182,6 +184,7 @@ export class WorkbenchPanel {
     if (Math.abs(player.y - bench.y) > 1.5 || Math.hypot(player.x - bench.x, player.z - bench.z) > HARVEST.benchRadius) return null;
     return { ...base, bench };
   }
+  chopOn() { return call(this.chop) === true; } // TA03: client.resources.chop === 1
   torchRules() { return call(this.torch)?.torchRules === 2 ? 2 : 1; }
   craftContext(recipeId = this.recipe) { return recipeFor(recipeId, this.torchRules()).hand ? this.baseContext() : this.context(); }
   /** The hand torch slot as the server last confirmed it (client.fire); null while the fire system is off. */
@@ -243,7 +246,7 @@ export class WorkbenchPanel {
     const preview = recipe?.fire ? this.firePreview(rawPreview, torch) : rawPreview;
     const retryReady = !!pending && performance.now() - pending.sentAt >= 5000;
     const pack = profile?.eco?.pack, tools = profile?.tools || {};
-    const renderKey = JSON.stringify([lang, this.cat, this.recipe, preview, !!ctx, !!bench, pending?.command.opId, pending?.ackRev, retryReady,
+    const renderKey = JSON.stringify([lang, this.chopOn(), this.cat, this.recipe, preview, !!ctx, !!bench, pending?.command.opId, pending?.ackRev, retryReady,
       this.lastResult, this.resultTone, pack?.goods, pack?.cap, pack?.maxMass, profile?.attr, tools, torch]);
     if (renderKey === this.renderKey) return; this.renderKey = renderKey;
     if (lang !== this.lang) { this.lang = lang; this.root.lang = lang; this.applyStatic(lang); this.listKey = ''; }
@@ -254,7 +257,7 @@ export class WorkbenchPanel {
     this.root.classList.toggle('is-pending', !!pending);
   }
   renderList(lang, t, tools, pending, torch = null) {
-    const list = this.$('[data-recipe-list]'), recipes = recipesIn(this.cat), key = `${lang}:${this.cat}`;
+    const list = this.$('[data-recipe-list]'), recipes = recipesIn(this.cat, this.chopOn()), key = `${lang}:${this.cat}:${this.chopOn()}`;
     if (this.listKey !== key) {
       this.listKey = key;
       const rows = recipes.map((r) => `<button type="button" class="cr-row" role="option" data-recipe="${r.id}">${itemIcon(r.id, 'cr-tile')}<span class="cr-name">${esc(recipeText(r.id, lang).name)}</span><span class="cr-owned" data-owned-tool="${r.tool || ''}" hidden>✓</span></button>`);
@@ -268,7 +271,7 @@ export class WorkbenchPanel {
     for (const b of list.querySelectorAll('[data-recipe]')) {
       const on = b.dataset.recipe === this.recipe; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); b.disabled = !!pending && !on;
       const owned = b.querySelector('[data-owned-tool]'), tool = owned?.dataset.ownedTool;
-      if (owned) owned.hidden = !(tool && tools[tool] === 1) && !(b.dataset.recipe === TORCH_RECIPE.id && torch?.seconds > 0);
+      if (owned) owned.hidden = !(tool && tools[tool] >= (RECIPES[b.dataset.recipe]?.tier || 1)) && !(b.dataset.recipe === TORCH_RECIPE.id && torch?.seconds > 0);
     }
   }
   renderDetail(lang, t, recipe, p, ctx, bench, pending, retryReady) {
@@ -338,7 +341,7 @@ export class WorkbenchPanel {
     }
     this.$('[data-inv]').innerHTML = html;
     this.$('[data-tools]').innerHTML = [['axe', 'hacha_piedra'], ['pickaxe', 'pico_piedra']].map(([tool, id]) => {
-      const owned = tools[tool] === 1, name = recipeText(id, lang).name;
+      const owned = tools[tool] >= 1, name = recipeText(tool === 'axe' && tools.axe >= 2 ? ['hacha_piedra', 'hacha_hierro', 'hacha_acero'][Math.min(3, tools.axe) - 1] : id, lang).name;
       return `<div class="cr-slot cr-belt-slot ${owned ? 'is-owned' : 'is-missing'}" title="${esc(name)} · ${esc(owned ? t.beltOwned : t.beltMissing)}">${itemIcon(id, 'cr-slot-art')}</div>`;
     }).join('') + (torch ? `<div class="cr-slot cr-belt-slot ${torch.seconds > 0 ? 'is-owned' : 'is-missing'}${torch.seconds > 0 && torch.lit ? ' is-lit' : ''}" title="${esc(torch.seconds > 0
       ? fill(t.torchOn, { time: clock(torch.seconds) }) : `${recipeText(TORCH_RECIPE.id, lang).name} · ${t.beltMissing}`)}">${itemIcon(TORCH_RECIPE.id, 'cr-slot-art')}</div>` : '');

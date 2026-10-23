@@ -41,7 +41,7 @@ const TEXT = {
     volume: 'Volumen', weight: 'Peso', backpackTier: 'Mochila {n} de {max}', pending: 'Llegando',
     food: 'Saciedad', water: 'Hidratación', needPen: 'Hambre y sed: −{n} % de vida y aguante máximos', noRegen: 'sin recuperar aguante',
     eat: 'Comer', drink: 'Beber', eatHint: '{verb} {name} · {gain} · en Agua y provisiones', gainSat: '+{n} saciedad', gainHyd: '+{n} hidratación',
-    beltTools: { axe: 'Hacha de piedra', pickaxe: 'Pico de piedra' }, missing: 'Sin fabricar',
+    beltTools: { axe: 'Hacha de piedra', pickaxe: 'Pico de piedra' }, axes: ['Hacha de piedra', 'Hacha de hierro', 'Hacha de acero'], missing: 'Sin fabricar',
     quick: 'Acceso rápido', rotate: 'Girar', zoom: 'Zoom', reset: 'Restablecer vista',
     views: ['Frente', 'Perfil', 'Espalda'], hintBack: 'Volver', hintEquip: 'Equipar', dbl: 'Doble clic',
     empty: 'Vacío', inBag: 'En tu bolsa', noneInBag: 'No llevas nada para este hueco.', pick: 'Elige un hueco o un objeto para verlo.',
@@ -65,7 +65,7 @@ const TEXT = {
     volume: 'Volume', weight: 'Weight', backpackTier: 'Backpack {n} of {max}', pending: 'Arriving',
     food: 'Satiety', water: 'Hydration', needPen: 'Hunger and thirst: −{n}% max health and stamina', noRegen: 'no stamina recovery',
     eat: 'Eat', drink: 'Drink', eatHint: '{verb} {name} · {gain} · in Water and provisions', gainSat: '+{n} satiety', gainHyd: '+{n} hydration',
-    beltTools: { axe: 'Stone Axe', pickaxe: 'Stone Pickaxe' }, missing: 'Not crafted',
+    beltTools: { axe: 'Stone Axe', pickaxe: 'Stone Pickaxe' }, axes: ['Stone Axe', 'Iron Axe', 'Steel Axe'], missing: 'Not crafted',
     quick: 'Quick access', rotate: 'Rotate', zoom: 'Zoom', reset: 'Reset view',
     views: ['Front', 'Side', 'Back'], hintBack: 'Back', hintEquip: 'Equip', dbl: 'Double-click',
     empty: 'Empty', inBag: 'In your bag', noneInBag: 'Nothing in your bag fits this slot.', pick: 'Pick a slot or an item to inspect it.',
@@ -395,7 +395,8 @@ export class CharacterScreen extends CharPanel {
   equipHtml(p, T, lang) {
     const st = this.stats(), tools = p.tools || {}, used = holdUsed(p.eco.pack);
     const fixed = (cls, label, icon, value, attrs = '') => `<div class="ch-slot ch-fixed ${cls}" ${attrs}><span class="ch-slot-label">${esc(label)}</span><span class="ch-slot-box">${icon}<b class="ch-count">${value}</b></span></div>`;
-    const belt = [['axe', 'hacha_piedra'], ['pickaxe', 'pico_piedra']].map(([tool, id]) => `<span class="ch-belt-slot ${tools[tool] === 1 ? 'is-owned' : 'is-missing'}" title="${esc(T.beltTools[tool])}${tools[tool] === 1 ? '' : ` · ${esc(T.missing)}`}">${atlasIcon(id, 'ch-belt-ico')}</span>`).join('')
+    const toolName = (tool) => tool === 'axe' && tools.axe >= 1 ? T.axes[Math.min(3, tools.axe) - 1] : T.beltTools[tool]; // TA03: the axe is a tier 1..3
+    const belt = [['axe', 'hacha_piedra'], ['pickaxe', 'pico_piedra']].map(([tool, id]) => `<span class="ch-belt-slot ${tools[tool] >= 1 ? 'is-owned' : 'is-missing'}" title="${esc(toolName(tool))}${tools[tool] >= 1 ? '' : ` · ${esc(T.missing)}`}">${atlasIcon(id, 'ch-belt-ico')}</span>`).join('')
       + `<span class="ch-belt-slot is-soon" title="${esc(T.soon)}">${I.plus}</span>`.repeat(2);
     return `<h2 class="ch-h"><span class="ch-h-ico">${I.palm}</span>${esc(T.equipment)}</h2>
       <div class="ch-equip">
@@ -434,7 +435,8 @@ export class CharacterScreen extends CharPanel {
         grid += `<button class="ch-good is-food" type="button" data-eat="${g}" title="${esc(hint)} · ${fmtNum(pack.goods[g], lang)}" aria-label="${esc(hint)}">${atlasIcon(g, 'ch-good-ico')}<b>${fmtNum(pack.goods[g], lang)}</b><i class="ch-eat">${esc(verb)}</i></button>`;
       } else grid += g ? `<div class="ch-good${pending[g] ? ' is-pending' : ''}" title="${esc(goodName(g, lang))} · ${fmtNum(pack.goods[g], lang)}${pending[g] ? ` · ${esc(T.pending)}` : ''}">${atlasIcon(g, 'ch-good-ico')}<b>${fmtNum(pack.goods[g], lang)}</b></div>` : '<div class="ch-good is-empty"></div>';
     }
-    const belt = [['axe', 'hacha_piedra'], ['pickaxe', 'pico_piedra']].map(([tool, id]) => `<span class="ch-belt-slot ${tools[tool] === 1 ? 'is-owned' : 'is-missing'}" title="${esc(T.beltTools[tool])}">${atlasIcon(id, 'ch-belt-ico')}</span>`).join('');
+    const toolName = (tool) => tool === 'axe' && tools.axe >= 1 ? T.axes[Math.min(3, tools.axe) - 1] : T.beltTools[tool]; // TA03: the axe is a tier 1..3
+    const belt = [['axe', 'hacha_piedra'], ['pickaxe', 'pico_piedra']].map(([tool, id]) => `<span class="ch-belt-slot ${tools[tool] >= 1 ? 'is-owned' : 'is-missing'}" title="${esc(toolName(tool))}">${atlasIcon(id, 'ch-belt-ico')}</span>`).join('');
     return `<h2 class="ch-h"><span class="ch-h-ico">${I.backpack}</span>${esc(T.goods)}${tier === null ? '' : `<small>${esc(fill(T.backpackTier, { n: tier + 1, max: CARRY.maxBackpack + 1 }))}</small>`}</h2>
       <div class="ch-meter"><span>${esc(T.volume)}</span><span class="ch-cap"><i style="width:${pct(used / (pack.cap || 1))}"></i></span><b>${fmtNum(used, lang)} / ${fmtNum(pack.cap, lang)}</b></div>
       ${weighed ? `<div class="ch-meter"><span>${esc(T.weight)}</span><span class="ch-cap is-weight${mass > comfort ? ' is-over' : ''}"><i style="width:${pct(mass / (comfort || 1))}"></i></span><b>${fmtNum(mass, lang, 1)} / ${fmtNum(comfort, lang)}</b></div>` : ''}

@@ -39,3 +39,16 @@ export function harvestSound(event, distance = 0) {
     burst(t, event.kind === 'stone' ? 2600 : 1300, .07, .13 * volume);
   }
 }
+
+export function chopSound(kind, { size, crit } = {}, distance = 0) {
+  if (!audio.ready || !Number.isFinite(distance) || distance > 22) return;
+  const volume = Math.max(0, 1 - distance / 22), t = audio.now, pitch = size === 'small' ? 1.2 : size === 'large' ? .8 : 1;
+  if (kind === 'hit' || kind === 'crit') {
+    const bright = kind === 'crit' || crit;
+    knock(t, (bright ? 290 : 195) * pitch, .13, .25 * volume); burst(t, 1250 * pitch, .09, .32 * volume);
+    burst(t + .03, 3300, .21, .10 * volume);
+    if (bright) { knock(t + .065, 390 * pitch, .1, .22 * volume); burst(t + .065, 4200, .1, .18 * volume); }
+  } else if (kind === 'fell') {
+    burst(t + .22, 650, .35, .25 * volume); burst(t + .54, 1800, .35, .19 * volume); knock(t + .65, 90, .22, .23 * volume);
+  } else if (kind === 'pickup') knock(t, 420, .075, .12 * volume);
+}

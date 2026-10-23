@@ -11,6 +11,7 @@ import { palmVariant } from './palmGeometry.js';
 import { naturalRockMaterial } from './rockMaterials.js';
 import { RAFT_ATLAS_ID, mapRaftUV } from './raftMaterials.js';
 import { dockWoodMaterial } from './dockWood.js';
+import { barColor, barVisible, pileLayout, pileLogCount, fallDirection } from './chopVisuals.js';
 
 const mat4 = new THREE.Matrix4();
 const position = new THREE.Vector3();
@@ -18,9 +19,11 @@ const scale = new THREE.Vector3();
 const rotation = new THREE.Quaternion();
 const axisY = new THREE.Vector3(0, 1, 0);
 const axisZ = new THREE.Vector3(0, 0, 1);
+const palmTilt = new THREE.Quaternion(), particleEuler = new THREE.Euler();
 const easeOut = (t) => 1 - (1 - t) * (1 - t);
 const MINING_SCALE = 2.4;
 const MINING_DEPLETED_SCALE = .30;
+const EMPTY_ROWS = [];
 
 // Match the pickup's broad cross-section to a clean painted board area. The dock's
 // 23px strip stretches its knot across a log and makes the grain look perpendicular.
@@ -186,6 +189,27 @@ export class ResourceNodes {
     this.palmNotchMat = toon({ color: 0x553622 }, { comic: false, key: 'resource-palm-notch' });
     this.markerGroup = new THREE.Group(); this.markerGroup.name = 'nearby-resource-markers'; this.group.add(this.markerGroup);
     this.particlePool = makePalmParticlePool(this.group);
+    this.chopMode = false; this.chopTarget = null; this.chopFocus = null; this.chopFrame = 0;
+    this.chopGroup = new THREE.Group(); this.chopGroup.visible = false; this.group.add(this.chopGroup);
+    this.chopBars = Array.from({ length: 8 }, () => {
+      const bg = new THREE.Sprite(new THREE.SpriteMaterial({ color: 0x302c27, depthTest: false, depthWrite: false }));
+      const fill = new THREE.Sprite(new THREE.SpriteMaterial({ color: 0x75bd42, depthTest: false, depthWrite: false }));
+      bg.center.set(0, .5); fill.center.set(0, .5); bg.scale.set(1.2, .14, 1);
+      bg.renderOrder = 10; fill.renderOrder = 11; bg.visible = fill.visible = false;
+      this.chopGroup.add(bg, fill); return { bg, fill };
+    });
+    const log = () => { const mesh = new THREE.Mesh(this.wood, this.woodPaint); mesh.userData.nm = this.woodNm; return mesh; };
+    this.chopPiles = Array.from({ length: 48 }, () => {
+      const group = new THREE.Group(); group.visible = false; this.chopGroup.add(group);
+      for (let i = 0; i < 8; i++) group.add(log());
+      return { id: null, node: null, group, count: 0, hop: 0, seen: 0, layout: Array.from({ length: 8 }, () => ({})) };
+    });
+    this.chopFlights = Array.from({ length: 48 }, () => {
+      const mesh = log(); mesh.visible = false; this.chopGroup.add(mesh);
+      return { mesh, t: 1, x: 0, y: 0, z: 0, tx: 0, ty: 0, tz: 0 };
+    });
+    this.nextFlight = 0;
+    this.nodeIds = new Set(); this.palmIds = new Set();
     this._initPalmInstances();
     this.group.userData.resources = { maxNodes: HARVEST.maxActiveNodes || HARVEST.maxNodes, maxPalms: this.maxPalms,
       textures: [], gameplay: true, loaded: [...(importedRock ? [COAST_ROCK_ID] : []), ...(wood ? [DEBRIS_IDS[1]] : []), ...(planks ? [DEBRIS_IDS[2]] : [])] };
@@ -313,7 +337,7 @@ export class ResourceNodes {
         }
         const inRange = Math.hypot(focus.x - node.x, focus.z - node.z) < 84;
         const falling = anim?.type === 'fall';
-        const felled = !falling && (record.felled || (node.hits || 0) >= 3);
+        const felled = !falling && (record.felled || (!this.chopMode && (node.hits || 0) >= 3));
         if (inRange && !felled) {
           visibleCount++;
           let px = node.x, py = node.y, pz = node.z, yaw = node.rot || 0;
@@ -322,11 +346,11 @@ export class ResourceNodes {
             const t = animT;
             if (anim.type === 'fall') {
               const angle = Math.PI * .49 * easeOut(t);
-              tilt = new THREE.Quaternion().setFromAxisAngle(axisZ, angle);
+              tilt = palmTilt.setFromAxisAngle(anim.axis || axisZ, angle);
               py = node.y + .03;
             } else {
               const envelope = 1 - t;
-              const wobble = Math.sin(t * Math.PI * 5) * .12 * envelope;
+              const wobble = Math.sin(t * Math.PI * 5) * .12 * envelope * (anim.strength || 1);
               px += Math.sin(anim.seed) * wobble; pz += Math.cos(anim.seed) * wobble;
               yaw += wobble * .5;
             }
@@ -351,7 +375,7 @@ export class ResourceNodes {
       }
       meshes.trunk.instanceMatrix.needsUpdate = true; meshes.fronds.instanceMatrix.needsUpdate = true;
     }
-    if (this.stumpMeshes) for (const mesh of Object.values(this.stumpMeshes)) mesh.instanceMatrix.needsUpdate = true;
+    if (this.stumpMeshes) this.stumpMeshes.body.instanceMatrix.needsUpdate = this.stumpMeshes.top.instanceMatrix.needsUpdate = true;
     this.group.userData.palmResources.visiblePalms = visibleCount;
     this.group.userData.palmResources.damagedPalms = damagedCount;
     this.group.userData.palmResources.stumps = stumpCount;
@@ -372,25 +396,30 @@ export class ResourceNodes {
 
   _updateParticles(dt) {
     const pool = this.particlePool;
+    let active = 0;
     for (let i = 0; i < 48; i++) {
       const p = pool.items[i];
       const mesh = i < 32 ? pool.chipMesh : pool.leafMesh, slot = i < 32 ? i : i - 32;
       if (!p || p.t >= p.life) { invisibleMatrix(mesh, slot); continue; }
       p.t += dt; p.vy -= 4.5 * dt;
+      if (p.t < p.life) active++;
       p.x += p.vx * dt; p.y += p.vy * dt; p.z += p.vz * dt;
       p.spin += dt * (p.leaf ? 4 : 8);
       const fade = Math.max(.001, (1 - p.t / p.life) * p.size);
-      rotation.setFromEuler(new THREE.Euler(p.leaf ? Math.PI * .5 : p.spin, p.spin, p.leaf ? p.spin : 0));
+      rotation.setFromEuler(particleEuler.set(p.leaf ? Math.PI * .5 : p.spin, p.spin, p.leaf ? p.spin : 0));
       position.set(p.x, p.y, p.z); scale.set(fade, fade, fade);
       mat4.compose(position, rotation, scale); mesh.setMatrixAt(slot, mat4); mesh.instanceMatrix.needsUpdate = true;
     }
-    this.group.userData.palmResources.particles = pool.items.filter((p) => p && p.t < p.life).length;
+    this.group.userData.palmResources.particles = active;
     pool.chipMesh.instanceMatrix.needsUpdate = pool.leafMesh.instanceMatrix.needsUpdate = true;
   }
 
   // A public event starts the visual response once per authoritative node revision.
   reset() {
     this.hitRevisions.clear(); this.palmAnimations.clear(); this.particlePool.items.length = 0;
+    for (const p of this.chopPiles) { p.id = null; p.group.visible = false; }
+    for (const f of this.chopFlights) { f.t = 1; f.mesh.visible = false; }
+    this.chopTarget = null; this.chopGroup.visible = false;
     for (const record of this.records.values()) { record.hit = null; record.group.rotation.set(0, 0, 0); }
   }
 
@@ -428,11 +457,96 @@ export class ResourceNodes {
     return true;
   }
 
+  setChopTarget(id) { this.chopTarget = id; if (this.chopMode && this.chopFocus) this._chopBars(this.chopFocus); }
+
+  _chopBars(focus) {
+    let shown = 0;
+    for (let pass = 0; pass < 2; pass++) for (let variant = 0; variant < 3; variant++) for (let i = 0; i < this.palmSlots[variant].length; i++) {
+      const record = this.palmSlots[variant][i];
+      const n = record.node;
+      if ((n.id === this.chopTarget) !== (pass === 0)) continue;
+      if (!barVisible(record.hp, record.maxHp, record.felled, n.id === this.chopTarget,
+        Math.hypot(n.x - focus.x, n.z - focus.z), shown)) continue;
+      const bar = this.chopBars[shown++], fraction = Math.min(1, record.hp / record.maxHp);
+      bar.bg.visible = bar.fill.visible = true;
+      bar.bg.position.set(n.x, n.y + 6.3 * (n.scale || 1), n.z); bar.fill.position.copy(bar.bg.position);
+      bar.fill.scale.set(1.2 * fraction, .09, 1); bar.fill.material.color.setHex(barColor(fraction));
+    }
+    for (let i = shown; i < 8; i++) this.chopBars[i].bg.visible = this.chopBars[i].fill.visible = false;
+  }
+
+  chopHit(ev) {
+    const r = this.palmRecords.get(ev?.node); if (!r || ev.cancelled) return null;
+    const n = r.node; r.hp = ev.hp; r.maxHp = ev.maxHp;
+    this.palmAnimations.set(n.id, { type: 'shake', t: 0, duration: ev.crit ? .4 : .28, strength: ev.crit ? 2.2 : 1, seed: n.rev * 1.37 });
+    for (let i = 0; i < (ev.crit ? 16 : 8); i++) this._particle(n.x, n.y + 1.1 * (n.scale || 1), n.z, n.rev * 7 + i);
+    if (this.chopFocus) this._chopBars(this.chopFocus);
+    this.onChange?.(); return { x: n.x, y: n.y + 1.6 * (n.scale || 1), z: n.z, size: n.size || 'medium' };
+  }
+
+  chopFell(ev) {
+    const r = this.palmRecords.get(ev?.node); if (!r) return null;
+    const n = r.node, dir = fallDirection(ev.dir, n.rot || 0), c = Math.cos(n.rot || 0), s = Math.sin(n.rot || 0);
+    r.felled = true; r.hp = 0;
+    this.palmAnimations.set(n.id, { type: 'fall', t: 0, duration: 1, axis: new THREE.Vector3(s * dir.x + c * dir.z, 0, -c * dir.x + s * dir.z) });
+    for (let i = 0; i < 12; i++) this._particle(n.x, n.y + 1.1 * (n.scale || 1), n.z, n.rev * 7 + i);
+    for (let i = 0; i < 4; i++) this._particle(n.x, n.y + 3 + i * .2, n.z, n.rev * 13 + i, true);
+    if (this.chopFocus) this._chopBars(this.chopFocus);
+    this.onChange?.(); return { x: n.x, y: n.y + 1.6 * (n.scale || 1), z: n.z, size: n.size || 'medium' };
+  }
+
+  pilePickup(ev, to) {
+    const p = this.chopPiles.find((row) => row.id === ev.pile); if (!p) return false;
+    for (let i = 0; i < Math.min(ev.count, 6); i++) {
+      const f = this.chopFlights[this.nextFlight++ % this.chopFlights.length], row = p.layout[i % p.count];
+      f.x = p.node.x + row.x; f.y = p.node.y + row.y; f.z = p.node.z + row.z;
+      f.tx = to?.x ?? f.x; f.ty = to?.y ?? f.y; f.tz = to?.z ?? f.z; f.t = 0;
+      f.mesh.position.set(f.x, f.y, f.z); f.mesh.scale.setScalar(.65); f.mesh.visible = true;
+    }
+    if (ev.left === 0) { p.removed = true; p.group.visible = false; }
+    this.onChange?.(); return true;
+  }
+
+  _chopUpdate(snapshot, focus, dt) {
+    this._chopBars(focus); const frame = ++this.chopFrame;
+    for (const p of this.chopPiles) {
+      let present = false;
+      for (const node of snapshot.piles || EMPTY_ROWS) if (p.id === node.id) { present = true; break; }
+      if (!present) { p.id = null; p.group.visible = false; }
+    }
+    for (const node of snapshot.piles || EMPTY_ROWS) {
+      let p = null;
+      for (let i = 0; i < 48; i++) if (this.chopPiles[i].id === node.id) { p = this.chopPiles[i]; break; }
+      if (!p) {
+        for (let i = 0; i < 48; i++) if (this.chopPiles[i].id === null) { p = this.chopPiles[i]; break; }
+        if (!p) continue;
+        p.id = node.id; p.hop = 0; p.removed = false; pileLayout(node.id, 8, p.layout);
+      }
+      p.seen = frame;
+      if (p.removed && node.rev <= p.node.rev) continue;
+      p.removed = false;
+      p.node = node; p.count = pileLogCount(node.goods.tronco); p.hop = Math.min(1, p.hop + dt / .3);
+      p.group.visible = true; p.group.position.set(node.x, node.y + Math.sin(p.hop * Math.PI) * .28, node.z);
+      for (let i = 0; i < 8; i++) {
+        const mesh = p.group.children[i], row = p.layout[i]; mesh.visible = i < p.count;
+        mesh.position.set(row.x, row.y, row.z); mesh.rotation.y = row.yaw; mesh.scale.setScalar(.65);
+      }
+    }
+    for (const p of this.chopPiles) if (p.seen !== frame) { p.id = null; p.group.visible = false; }
+    for (const f of this.chopFlights) {
+      if (f.t >= 1) continue;
+      f.t = Math.min(1, f.t + dt / .35); const t = easeOut(f.t);
+      f.mesh.position.set(f.x + (f.tx - f.x) * t, f.y + (f.ty - f.y) * t + Math.sin(f.t * Math.PI) * .8, f.z + (f.tz - f.z) * t);
+      f.mesh.scale.setScalar(.65 * (1 - f.t)); f.mesh.visible = f.t < 1;
+    }
+  }
+
   update(snapshot, focus, time) {
     if (!snapshot || !focus) { this.group.visible = false; return; }
     this.group.visible = true; this.palmTime = time || 0;
+    this.chopMode = snapshot.chop === 1; this.chopGroup.visible = this.chopMode; this.chopFocus = focus;
     const dt = Math.min(.05, Math.max(0, (time || 0) - (this._lastTime || time || 0)));
-    const ids = new Set(), palmIds = new Set();
+    const ids = this.nodeIds, palmIds = this.palmIds; ids.clear(); palmIds.clear();
     let miningNodes = 0, ironOreNodes = 0, miningDrawCalls = 0, crackDrawCalls = 0;
     for (const node of snapshot.nodes || []) {
       ids.add(node.id);
@@ -441,7 +555,14 @@ export class ResourceNodes {
         const record = this._recordPalm(node);
         if (!record) continue;
         this.palmSeenRev.set(node.id, Math.max(this.palmSeenRev.get(node.id) || 0, node.rev || 0));
-        record.felled = (node.hits || 0) >= HARVEST.palmHits;
+        if (!this.chopMode) record.felled = (node.hits || 0) >= HARVEST.palmHits;
+        else {
+          record.felled = node.ready === false || this.palmAnimations.get(node.id)?.type === 'fall';
+          if (record.hpSnapshot !== node || record.snapshotHp !== node.hp || record.snapshotMaxHp !== node.maxHp) {
+            record.hp = node.hp; record.maxHp = node.maxHp; record.hpSnapshot = node;
+            record.snapshotHp = node.hp; record.snapshotMaxHp = node.maxHp;
+          }
+        }
         continue;
       }
       let record = this.records.get(node.id);
@@ -508,6 +629,7 @@ export class ResourceNodes {
     }
     this._updatePalmInstances(focus, time || 0, dt);
     this._updateParticles(dt);
+    if (this.chopMode) this._chopUpdate(snapshot, focus, dt);
     const miningMeta = this.group.userData.miningResources;
     miningMeta.nodes = miningNodes; miningMeta.ironOre = ironOreNodes;
     miningMeta.drawCalls = miningDrawCalls;
