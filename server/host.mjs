@@ -90,7 +90,7 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, skillOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, torchResinCoconutOperations = false, agentTrade = false, jump = 'off',
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, skillOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, torchResinCoconutOperations = false, agentTrade = false, jump = 'off', chop = false,
     groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false,
     inferenceCatalog = [], inferenceConfigAllowMemory = false, companionCreation = false, companionCreationAllowMemory = false,
     companionPairing = false, companionPairingAllowMemory = false, companionPresence = false, companionPresenceAllowMemory = false,
@@ -103,6 +103,7 @@ export class GameHost {
     }
     if (typeof resourceOperations !== 'boolean' || resourceOperations && !economicOperations) throw new StoreError('configuration');
     this.resourceOperations = resourceOperations;
+    if (chop && resourceOperations) { log('[srv] MN_CHOP=1 refused: resource operations are on until the v4 economy (TA04); chopping stays off'); chop = false; }
     if (typeof loggingOperations !== 'boolean' || loggingOperations && !resourceOperations) throw new StoreError('configuration');
     this.loggingOperations = loggingOperations;
     if (typeof artisanOperations !== 'boolean' || artisanOperations && !loggingOperations) throw new StoreError('configuration');
@@ -184,7 +185,7 @@ export class GameHost {
     this.unsavedProfiles = new Map();
     this.stats = { bytesOut: 0, bytesIn: 0, msgsOut: 0, msgsIn: 0, dropped: 0, stepMs: 0, steps: 0 };
     this.server = new LocalServer({ fire: fireOperations, freshwater: freshwaterOperations, survival: canteenOperations, meals: specialMealOperations,
-      harvestLoot: torchResinCoconutOperations, jump: jumpModeOf(jump),
+      harvestLoot: torchResinCoconutOperations, jump: jumpModeOf(jump), chop: chop === true,
       seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true, chat, ...(saves ? { saves } : {}),
       send: (id, msg) => this.sendTo(id, msg),
       profileAccess: (id, entity) => this.profileAvailable(id, entity),
@@ -804,6 +805,7 @@ export class GameHost {
         attributes: { enabled: this.attributeOperations, ready: this.attributeOperations && !!this.worldState?.ready },
         skills: { enabled: this.skillOperations, ready: this.skillOperations && !!this.worldState?.ready },
         jump: { mode: this.server.world.jumpMode },
+        chop: { enabled: this.server.world.chopVersion === 1 },
         companionCreation: { enabled: this.companionCreation.enabled, ready: this.companionCreation.ready,
           pending: this.companionCreation.busy.size },
         companionPairing: { enabled: this.companionPairing.enabled, ready: this.companionPairing.ready },

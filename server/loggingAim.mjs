@@ -36,7 +36,7 @@ export class LoggingAim {
     if (!h.healthy() || h.economicAuthority.busy || client.paused || !h.commandAvailable(id, e, { world: true, target: null })) return { why: 'busy' };
     if (!e || !c.alive[e] || c.dead[e] || c.hp[e] <= 0) return { why: 'dead' };
     if (!node || node.kind !== 'palm' || node.rev !== expectedRev) return { why: 'revision' };
-    if (p.tools?.axe !== 1) return { why: 'tool' };
+    if (!(p.tools?.axe >= 1)) return { why: 'tool' };
     if (c.moveMag[e] > 1e-6 || Math.hypot(c.vx[e], c.vz[e]) > 1e-6 || c.dashT[e] >= 0 || c.castK[e] > 0 || c.atkStage[e] > 0) return { why: 'busy' };
     if (c.regenT[e] < TRADE.calm) return { why: 'combat' };
     if (w.navalPilot?.aboard?.(e) || w.raftDeck?.surface(c.x[e], c.z[e], c.y[e]) ||

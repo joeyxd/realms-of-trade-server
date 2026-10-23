@@ -30,6 +30,7 @@ import { beginFreshwater, stepFreshwater, localFreshwaterCmd, freshwaterStatus }
 import { checkedFreshwaterCommand } from '../sim/systems/freshwaterProfile.js';
 import { commerceCmd, clearCommerceReceipts } from '../sim/systems/commerce.js';
 import { installResources, resourceCmd, publicResources, clearResourceReceipts } from '../sim/systems/resources.js';
+import { stepChopping } from '../sim/systems/chopping.js';
 import { stepRaftWork } from '../sim/systems/raftProduction.js';
 import { ownerRaftCapacity } from '../sim/systems/raftCapacity.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
@@ -65,7 +66,7 @@ export class LocalServer {
   #ownsTickPublication = false;
   #afterWorld = false; #holdingPublication = false;
 
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, residentStep = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false, survival = false, meals = false, harvestLoot = false, jump = 'off' }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, residentStep = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false, survival = false, meals = false, harvestLoot = false, jump = 'off', chop = false }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -106,6 +107,7 @@ export class LocalServer {
     installResources(this.world);
     this.world.fireEnabled = fire;
     this.world.harvestLootEnabled = harvestLoot === true;
+    this.world.chopVersion = chop === true ? 1 : 0; // TA02: MN_CHOP hold-to-chop
     this.world.freshwaterEnabled = freshwater;
     this.world.survivalEnabled = survival === true;
     this.world.mealsEnabled = meals === true;
@@ -762,6 +764,7 @@ export class LocalServer {
       }
     }
     w.stepWorld();
+    if (w.chopVersion === 1) stepChopping(w);
     if (this.#applyFailed) throw new TypeError('failed tick boundary');
     // Retain the admitted completion owner across the whole step. A world callback cannot remove
     // or replace it to publish around persistent capture, even when the replacement returns true.

@@ -48,7 +48,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth,
   worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null, chat = chatFromEnv(process.env), walletLink = null, agentControl = null, agentPilot = null,
   economicOperations = false, communityRequirements = null, gmAccountIds = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, skillOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, torchResinCoconutOperations = false, agentTrade = false,
-  gmDraftsAllowMemory = false, companionConfigAllowMemory = false, companionControlAllowMemory = false, jump = 'off',
+  gmDraftsAllowMemory = false, companionConfigAllowMemory = false, companionControlAllowMemory = false, jump = 'off', chop = false,
   inferenceCatalog = inferenceCatalogFromEnv(process.env), inferenceConfigAllowMemory = false, hostedInference = null,
   companionCreation = false, companionCreationAllowMemory = false,
   companionPairing = false, companionPairingAllowMemory = false,
@@ -66,7 +66,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
       Object.keys(pearlStartup).some((key) => !['journal', 'accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)))) throw new StoreError('configuration');
   if (worldId === undefined) worldId = 'marea-negra';
   const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs, chat,
-    pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, jump, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, workshopOperations, attributeOperations, skillOperations, fireOperations, freshwaterOperations, canteenOperations, specialMealOperations, torchResinCoconutOperations, agentTrade, groundTransactions, companionConfigAllowMemory, companionControlAllowMemory, inferenceCatalog, inferenceConfigAllowMemory, companionCreation, companionCreationAllowMemory, companionPairing, companionPairingAllowMemory, companionPresence, companionPresenceAllowMemory, hostedInference });
+    pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, jump, chop, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, workshopOperations, attributeOperations, skillOperations, fireOperations, freshwaterOperations, canteenOperations, specialMealOperations, torchResinCoconutOperations, agentTrade, groundTransactions, companionConfigAllowMemory, companionControlAllowMemory, inferenceCatalog, inferenceConfigAllowMemory, companionCreation, companionCreationAllowMemory, companionPairing, companionPairingAllowMemory, companionPresence, companionPresenceAllowMemory, hostedInference });
   let gmDrafts = null, gmContent = null, publication = null;
   if (resolvePlayer && gmAccountIds?.length && worldId !== null || gmContentDirectory !== null) {
     const baseRevision = 'terrain-s21-v1';
@@ -241,6 +241,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       attributeOperations: env.MN_ATTRIBUTE_OPERATIONS === '1',
       skillOperations: env.MN_SKILL_OPERATIONS === '1',
       jump: jumpFromEnv(env.MN_JUMP),
+      chop: env.MN_CHOP === '1',
       fireOperations: env.MN_FIRE_OPERATIONS === '1',
       freshwaterOperations: env.MN_FRESHWATER_OPERATIONS === '1',
       canteenOperations: env.MN_CANTEEN_OPERATIONS === '1',

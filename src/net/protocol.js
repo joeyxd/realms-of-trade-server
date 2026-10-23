@@ -1,7 +1,7 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
 import { jumpStage } from '../sim/systems/jump.js';
-export const PROTOCOL_VERSION = 70; // IC08: hosted inference (69: IC05b/c companion craft and tool nodes)
+export const PROTOCOL_VERSION = 71; // TA02: hold-to-chop resource ops chop, crit, pickup (70: IC08 hosted inference)
 
 export const MSG = {
   // client -> server

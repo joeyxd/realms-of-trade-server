@@ -78,7 +78,7 @@ test('new and legacy profiles sanitize utility tools into bounded integer slots'
   const legacy = copy(fresh); delete legacy.tools;
   assert.deepEqual(sanitizeProfile(legacy).tools, { axe: 0, pickaxe: 0 });
   for (const [input, expected] of [
-    [{ axe: 2, pickaxe: -1 }, { axe: 0, pickaxe: 0 }],
+    [{ axe: 2, pickaxe: -1 }, { axe: 2, pickaxe: 0 }], // TA02: the axe keeps tiers 0..3
     [{ axe: 0.5, pickaxe: '1' }, { axe: 0, pickaxe: 0 }],
     [{ axe: null, pickaxe: 1 }, { axe: 0, pickaxe: 1 }],
   ]) assert.deepEqual(sanitizeProfile({ ...fresh, tools: input }).tools, expected);

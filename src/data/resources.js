@@ -15,8 +15,11 @@ export const WOOD_RECIPE = Object.freeze({ id: 'madera', input: 'tronco', output
 export const newTools = () => ({ axe: 0, pickaxe: 0 });
 export function sanitizeTools(raw) {
   const out = newTools();
-  if (raw && typeof raw === 'object' && !Array.isArray(raw))
-    for (const key of Object.keys(out)) if (raw[key] === 1) out[key] = 1;
+  if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+    if (raw.pickaxe === 1) out.pickaxe = 1;
+    // TA02: the axe has tiers 0..3 (stone, iron, steel); the pickaxe stays a flag.
+    if (Number.isSafeInteger(raw.axe) && raw.axe >= 0 && raw.axe <= 3) out.axe = raw.axe;
+  }
   return out;
 }
 // `hand`: craftable anywhere on land (the crafting menu), without standing at the materials bench. The stone tools take

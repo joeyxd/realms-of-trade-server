@@ -1,12 +1,14 @@
 // Session-local coastal gathering and the first simple material recipe.
 import { DT } from '../../data/tuning.js';
 import { HARVEST, RESOURCE_KINDS, CRAFT_RECIPES, sanitizeTools, resourceLayout } from '../../data/resources.js';
+import { CHOP_RECIPES } from '../../data/chopping.js';
 import { GOODS } from '../../data/goods.js';
 import { harvestLoot } from '../../data/harvestLoot.js';
 import { TRADE } from './trade.js';
 import { holdUsed, load, unload } from '../economy/cargo.js';
 import { C } from '../ecs.js';
 import { evaluateLoggingChallenge } from './loggingTiming.js';
+import { chopCmd, pickupCmd, palmView, publicPiles, forgetChopPlayer } from './chopping.js';
 
 const MAX_RECEIPTS = 64;
 const MAX_OWNERS = 256;
@@ -52,11 +54,13 @@ export function publicResources(w) {
       const hits = n.readyTick > 0 && n.readyTick <= w.tick ? 0 : (n.hits || 0);
       Object.assign(view, { hits, remaining: Math.max(0, RESOURCE_KINDS[n.kind].hits - hits) });
       if (n.kind === 'palm') Object.assign(view, { propIndex: n.propIndex, scale: n.scale, rot: n.rot });
+      if (n.kind === 'palm' && w.chopVersion === 1) Object.assign(view, palmView(w, n));
     }
     nodes.push(view);
   }
   nodes.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
   return { nodes, bench: r.bench ? { ...r.bench } : null,
+    ...(w.chopVersion === 1 ? { chop: 1, piles: publicPiles(w) } : {}),
     ...(w.harvestLootEnabled === true ? { lootRules: 1 } : {}),
     ...(r.timing === undefined ? {} : { timing: r.timing }),
     ...(typeof r.logicalTick === 'function' ? { logicalTick: r.logicalTick() } : {}) };
@@ -65,9 +69,10 @@ export function publicResources(w) {
 export function clearResourceReceipts(w, e) {
   w?.resources?.receipts?.delete(e);
   w?.resources?.cooldowns?.delete(e);
+  forgetChopPlayer(w, e);
 }
 
-function emit(w, e, msg, ok, why = '', rev = 0, extra = null) {
+export function emit(w, e, msg, ok, why = '', rev = 0, extra = null) {
   const ack = { type: 'resource', to: e,
     op: typeof msg?.op === 'string' && msg.op.length <= 16 ? msg.op : '',
     opId: typeof msg?.opId === 'string' ? msg.opId.slice(0, 64) : '', ok, why, rev };
@@ -76,12 +81,15 @@ function emit(w, e, msg, ok, why = '', rev = 0, extra = null) {
   return ack;
 }
 
-function exactSchema(msg) {
+const recipeOf = (w, id) => owns(CRAFT_RECIPES, id) ? CRAFT_RECIPES[id] : w.chopVersion === 1 && owns(CHOP_RECIPES, id) ? CHOP_RECIPES[id] : null;
+
+function exactSchema(w, msg) {
   if (!msg || typeof msg !== 'object' || Array.isArray(msg)
       || msg.type !== 'resource'
       || (msg.t !== undefined && msg.t !== 'cmd')) return false;
   const fields = msg.op === 'gather' ? ['node', 'expectedRev']
-    : msg.op === 'craft' ? ['recipe', 'expectedRev', 'n'] : null;
+    : msg.op === 'craft' ? ['recipe', 'expectedRev', 'n']
+    : msg.op === 'pickup' && w.chopVersion === 1 ? ['pile', 'expectedRev'] : null;
   if (!fields) return false;
   const allowed = new Set(['type', 't', 'op', 'opId', ...fields,
     ...(msg.op === 'gather' && owns(msg, 'challenge') ? ['challenge'] : []),
@@ -92,11 +100,13 @@ function exactSchema(msg) {
     && (!owns(msg, 'challenge') || (msg.op === 'gather' && typeof msg.challenge === 'string' && OP_ID.test(msg.challenge)))
     && (!owns(msg, 'lootRules') || (msg.op === 'gather' && msg.lootRules === 1))
     && (msg.op !== 'gather' || (typeof msg.node === 'string' && msg.node.length > 0 && msg.node.length <= 40))
-    && (msg.op !== 'craft' || (typeof msg.recipe === 'string' && owns(CRAFT_RECIPES, msg.recipe)
-      && (!owns(msg, 'n') || (Number.isSafeInteger(msg.n) && msg.n >= 1 && msg.n <= CRAFT_RECIPES[msg.recipe].max))));
+    && (msg.op !== 'pickup' || (typeof msg.pile === 'string' && /^pile-\d{1,10}$/.test(msg.pile)))
+    && (msg.op !== 'craft' || (typeof msg.recipe === 'string' && !!recipeOf(w, msg.recipe)
+      && (!owns(msg, 'n') || (Number.isSafeInteger(msg.n) && msg.n >= 1 && msg.n <= recipeOf(w, msg.recipe).max))));
 }
 
 function signature(msg) {
+  if (msg.op === 'pickup') return JSON.stringify([msg.op, msg.pile, msg.expectedRev]);
   return msg.op === 'gather'
     ? JSON.stringify([msg.op, msg.node, msg.expectedRev, msg.challenge ?? null, msg.lootRules ?? null])
     : JSON.stringify([msg.op, msg.recipe, msg.expectedRev, msg.n ?? 1]);
@@ -119,14 +129,14 @@ function validPack(pack) {
   return holdUsed(pack) <= pack.cap;
 }
 
-function busy(w, e) {
+export function busy(w, e) {
   const c = w.ecs;
   return c.moveMag[e] > 1e-6 || Math.hypot(c.vx[e], c.vz[e]) > 1e-6
     || c.dashT[e] >= 0 || c.dashBuffer[e] > 0 || c.castK[e] > 0 || c.castLock[e] > 0
     || c.atkStage[e] > 0;
 }
 
-function onLand(w, e) {
+export function onLand(w, e) {
   const c = w.ecs;
   if (!Number.isFinite(c.x[e]) || !Number.isFinite(c.y[e]) || !Number.isFinite(c.z[e])) return false;
   const ground = w.map.groundAt(c.x[e], c.z[e]);
@@ -148,7 +158,7 @@ function fits(profile, pack, newTradeRev, saveFits, tools = null) {
   return true;
 }
 
-function commit(w, e, profile, pack, newTradeRev, saveFits, tools = null) {
+export function commit(w, e, profile, pack, newTradeRev, saveFits, tools = null) {
   if (!fits(profile, pack, newTradeRev, saveFits, tools)) return false;
   profile.eco.pack = pack;
   profile.eco.tradeRev = newTradeRev;
@@ -160,7 +170,8 @@ function commit(w, e, profile, pack, newTradeRev, saveFits, tools = null) {
 export function resourceCmd(w, e, msg, saveFits = () => true) {
   const r = w?.resources;
   if (!r) return false;
-  if (!exactSchema(msg)) { emit(w, e, msg, false, 'schema'); return false; }
+  if (w.chopVersion === 1 && (msg?.op === 'chop' || msg?.op === 'crit')) return chopCmd(w, e, msg);
+  if (!exactSchema(w, msg)) { emit(w, e, msg, false, 'schema'); return false; }
 
   const sig = signature(msg);
   const existing = r.receipts.get(e)?.get(msg.opId);
@@ -181,6 +192,7 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
   const c = w.ecs, profile = w.profiles?.get(e);
   if (!c?.alive?.[e] || c.dead[e] > 0 || !(c.mask[e] & C.PLAYER) || !(c.hp[e] > 0)) return deny('dead');
   if (!profile?.eco || !validPack(profile.eco.pack)) return deny('pack');
+  if (msg.op === 'pickup') return pickupCmd(w, e, msg, profile, deny, remember, saveFits);
   if (busy(w, e)) return deny('busy', profile.eco.tradeRev || 0);
   if (!onLand(w, e)) return deny('land', profile.eco.tradeRev || 0);
   if (c.regenT[e] < TRADE.calm) return deny('combat', profile.eco.tradeRev || 0);
@@ -195,6 +207,7 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
     if (w.navalPilot?.aboard?.(e)) return deny('land', tradeRev);
     const node = r.nodes.get(msg.node);
     if (!node) return deny('node', tradeRev);
+    if (w.chopVersion === 1 && node.kind === 'palm') return deny('chopMode', node.rev);
     if (node.kind === 'palm' && w.harvestLootEnabled === true && msg.lootRules !== 1) return deny('schema', node.rev);
     if (owns(msg, 'lootRules') && (msg.lootRules !== 1 || node.kind !== 'palm' || w.harvestLootEnabled !== true)) return deny('schema', node.rev);
     if (msg.expectedRev !== node.rev) return deny('revision', node.rev);
@@ -204,7 +217,7 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
     if (Math.hypot(c.x[e] - node.x, c.z[e] - node.z) > HARVEST.radius) return deny('far', node.rev);
     if (tradeRev >= HARVEST.maxRev) return deny('revisionLimit', node.rev);
     const kind = RESOURCE_KINDS[node.kind], good = kind?.good;
-    if (kind.tool && profile.tools?.[kind.tool] !== 1) return deny('tool', node.rev, { tool: kind.tool });
+    if (kind.tool && !(profile.tools?.[kind.tool] >= 1)) return deny('tool', node.rev, { tool: kind.tool });
     const pack = { ...profile.eco.pack, goods: { ...profile.eco.pack.goods } };
     const work = !!kind.hits, isPalm = node.kind === 'palm';
     let timing = null, timingQuality = 0;
@@ -267,7 +280,7 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
   if (tradeRev >= HARVEST.maxRev) return deny('revisionLimit', tradeRev);
   if (w.navalPilot?.locked?.(e)) return deny('busy', tradeRev);
   if (c.regenT[e] < TRADE.calm) return deny('combat', tradeRev);
-  const recipe = CRAFT_RECIPES[msg.recipe], n = msg.n ?? 1, count = n * recipe.count;
+  const recipe = recipeOf(w, msg.recipe), n = msg.n ?? 1, count = n * recipe.count;
   if (!recipe.hand) {
     const bench = r.bench;
     if (!bench) return deny('bench', tradeRev);
