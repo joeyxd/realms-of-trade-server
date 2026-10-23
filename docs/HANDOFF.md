@@ -1,5 +1,17 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**VR08 desenfoque sobre el agua, 2026-10-23 (T-1023-03), versión 0.6.0-alpha.101, sin cambio de protocolo ni SQL:**
+Arregla el reporte de Joi en el playtest R2 (balsa nítida, todo el mar desenfocado). Solo src/render/pipeline.js y
+scene.js. El CoC toma lo más cercano entre la profundidad opaca y el punto donde el rayo de la vista corta el plano del
+mar (`DOF.waterY` 0; water.js dibuja un plano plano sin escribir profundidad); uniforms `uProj` y `uWater`; rtNormal no
+cambia (el agua SSR lo lee). Al pilotar, scene.js pone `pipeline.dof.naval = ctx.naval` y el desenfoque usa las bandas
+`dofCfg.naval` (cerca 0,5 + caída 0,25, lejos 2 + caída 4): nítido de 3,8 a 22 u, desenfoque completo a 53 u, el mar
+queda nítido hasta casi el horizonte. Parte nítida de la pantalla (CoC < 0,1), antes -> después: final del muelle z1
+8 -> 63 %, z0 10 -> 61, balsa en el mar 12 -> 62, orilla z2 62 -> 72, playa sin agua 71 -> 71 (sin cambio fuera del
+mar). Ajustable en vivo con `window.__mn.world.pipeline.dofCfg.naval`. Tests que cargan pipeline.js y scene.js 31/31.
+Pendiente de gusto para Joi: al pilotar casi solo se desenfocan el horizonte y el cielo; lo que está bajo el agua toma el
+CoC de la superficie.
+
 **TA02+TA03 tala, 2026-10-23, versión 0.6.0-alpha.100, protocolo 71, sin SQL:** talar manteniendo el botón, como en Don't
 Starve, detrás de `MN_CHOP` (apagado por defecto). Mantener F o tocar CHOP golpea en bucle; G o el botón táctil CRIT en la
 franja verde de la barra da crítico. Hachas de piedra, hierro y acero: 0.90/0.55/0.40 s por golpe, daño 1/2/3 (hierro y
