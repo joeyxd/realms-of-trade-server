@@ -1,5 +1,43 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**GM07b1 + GM07b2, 2026-10-22 — terreno por teselas: el GM esculpe y pinta toda la isla, y los jugadores cargan el mundo por teselas (alpha.96, protocolo 68, SQL042):**
+Cortes b1 y b2 de [GM07](briefs/gm07-terrain-tiles.md) y [GM07b2](briefs/gm07b2-server.md), juntos en un solo push.
+`PROTOCOL_VERSION` 68 (documento v5 y `content.terrain` v5). **SQL042** (`server/migrations/042_gm_terrain_tiles.sql`)
+aplicado por Joi en Supabase y comprobado el 2026-10-22 (`mn_gm_terrain_tiles_ready` responde 42501): tabla de teselas de
+borrador, RPC `mn_put_gm_terrain_tiles` (con recolector de 24 h de teselas sin cabeza), `mn_get_gm_terrain_tiles`, validador
+v5 y `mn_save_gm_draft` que responde `tiles_missing` antes de escribir el recibo. `/status` `storage.gmTerrainTiles` se pone
+en true tras el arranque con este código.
+- Formato (b1a, `src/editor/terrainTiles.js`): teselas MNT1 de 70 m ancladas al mundo (64 en el mapa de 560 m), alturas en
+  mm y hasta 8 canales de material por tesela, identidad = sha256 de los bytes, 64 KiB como máximo. Documento v5:
+  `terrain = {version: 3, tileSize: 70, tiles: [[tx, tz, sha256, bytes], ...]}`. Altura absoluta en [-40, +200] m (se
+  acaba el +/-12 m); el piso 0,75 m y las zonas protegidas siguen hasta GM06b. `y` de objetos hasta 256. Los documentos
+  v3/v4 se convierten al abrirlos (`convertDocumentToV5`); las revisiones v3/v4 publicadas conservan su identidad.
+- Editor (b1b, `terrainSession.js`): pinceles por tesela sobre todo el mapa (se acaba el tope de 20.000 muestras), historial
+  de teselas de 64 MiB, IndexedDB `marea-gm-drafts-v1` en versión 2 (ojo: una build anterior ya no abre esa base,
+  VersionError), exportación v2 con las teselas.
+- Borradores en línea (b2a/b2b): `POST /api/gm/terrain-tiles` (binario: u32 LE de longitud + bytes, 64 teselas y 4 MiB
+  por petición; cada tesela se decodifica, se recodifica igual y pasa las reglas del mapa) y `POST /api/gm/terrain-tiles/read`;
+  el editor sube las teselas que faltan y reintenta una vez con la misma operación si el guardado dice `tiles_missing`.
+- Publicación (b2c): prepare v5 lee las teselas del store una vez, compila y valida el mapa entero; `content.terrain` v5 =
+  `{format: 'marea.gm.terrain-tiles', version: 1, tileSize, tiles, heightsSha256 (float32 LE), materialsSha256}`; el registro
+  guarda las teselas como blobs `terrain-tile`; activación y arranque instalan desde el registro; `gmContentCheck` del
+  actualizador reconstruye desde el registro.
+- Jugador (b2d): `GET|HEAD /api/world/terrain-tiles/<sha256>`, pública, solo hashes de la revisión activa (el mapa servible
+  se reemplaza en cada instalación), `immutable`, ETag, 304 y gzip asíncrono cacheado por revisión activa.
+  `loadGmWorldContent` comprueba los metadatos v5, baja las teselas de 6 en 6, verifica longitud y sha256, compila, compara
+  `heightsSha256` y `materialsSha256` e instala; `main.js` reinstala con las mismas teselas al cerrar el editor.
+- Medido (`tools/qa-gm07-player-load.mjs`, cliente nuevo, local): la isla entera son **25 de 64 teselas editables** (el
+  piso deja fuera el mar), 245.300 bytes, 57.875 en gzip (0,236), 61,5 ms del contenido a la última tesela; la segunda
+  visita saca las 25 de la caché HTTP. qa-gm05a (10/10) y qa-gm05b (11/11) pasan en v5.
+- Puerta de deploy: 31 tests gm-* puros entran en `deploy/vps-update.py` TESTS (29 -> 60 ficheros; +25 s, 82 s en una copia
+  con solo lo que lleva la imagen y `npm ci --omit=dev`). Fuera: los que importan `three` (devDependency, no está en la
+  imagen), los que leen `docs/`, los SQL y los lentos (identidad, ground-host, publicación de teselas, carga del jugador).
+- Tests: gm-* 439 en verde (gm-terrain-tiles, -store, -sql, -http, -remote, -publication, -player nuevos).
+  Tickets T-1021-57, T-1021-60, T-1022-22, T-1022-25, T-1022-26, T-1022-36, T-1022-40.
+- Pendiente: GM07c (malla por tesela con reconstrucción parcial). Coste conocido: una publicación v5 compila el terreno
+  unas 3 veces y la activación unas 5, de forma síncrona en el proceso del juego (cientos de ms a segundos); `registry.list()`
+  decodifica todas las teselas retenidas. Sin GC de blobs del registro ni retención de `mn_gm_draft_operations`.
+
 **R1b HUD táctil (Farol, Chat, fila de menús, Primeros pasos), 2026-10-22 — alpha.95, protocolo 67 sin cambios:**
 Versión 0.6.0-alpha.95; sin protocolo ni SQL; solo cliente táctil (escritorio igual). Desde la captura de Joi a 844x390: la fila de menús va en el borde
 superior, a la derecha junto al minimapa (top 8, right 110) y algo transparente; banner y barra de jefe debajo (top 60); "Mis compañeros" es un

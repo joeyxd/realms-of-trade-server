@@ -1,7 +1,7 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
 import { jumpStage } from '../sim/systems/jump.js';
-export const PROTOCOL_VERSION = 67; // PT06 jump: BTN.JUMP (btn/prs 11 bits), ENT.JMP, WELCOME.jump
+export const PROTOCOL_VERSION = 68; // GM07b: terrain tiles (document v5, content.terrain v5, tile route)
 
 export const MSG = {
   // client -> server
