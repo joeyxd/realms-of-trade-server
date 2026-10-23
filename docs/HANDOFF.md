@@ -1,5 +1,18 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**IC08, 2026-10-22 — el modelo del compañero se escribe en el juego y la mente corre en el servidor (alpha.98, protocolo 70):**
+[Entrega](delivery/ic08-hosted-inference.md), [contrato](briefs/ic08-hosted-inference.md). Sin SQL; versión 0.6.0-alpha.98,
+`PROTOCOL_VERSION` 70 (`hosted_inference` y `hosted_inference_result`). Decisión de Joi: URL, clave y modelo se escriben en
+Mis compañeros -> Centro de inferencia (sustituye al panel L03d, cuyo código queda); el servidor guarda la clave sellada
+AES-256-GCM en el volumen `marea-companions` y ejecuta el controlador emparejado en modo alojado (loopback, mente de
+endpoint, valla de salida solo https contra redes privadas). El runtime del compañero pasó de `tools/agent/` a
+`server/agent/` (cuñas de reexportación en tools) porque la imagen solo lleva src, server, styles, assets y deploy. Los
+cinco paneles de compañero siguen el kit de inventario y habilidades (`styles/companions.css`). Apagado por defecto:
+`MN_HOSTED_INFERENCE=1`, `MN_HOSTED_INFERENCE_KEY` (base64 de 32 bytes), `MN_HOSTED_INFERENCE_ACCOUNTS` (ids de auth.users
+como `GM_ACCOUNT_IDS`), `MN_HOSTED_INFERENCE_MAX` (2). Tests nuevos 17/17, suites de compañero 170/170, gate 386/386.
+Tickets T-1022-45 a T-1022-48. Pendiente: bandera en /status, ids de modelo de más de 128 caracteres, socket alojado
+fuera del tope MAX_PLAYERS + 4.
+
 **IC05b+IC05c, 2026-10-21 — el cuerpo del compañero fabrica hacha o pico de piedra y trabaja palmeras, rocas y mineral de hierro (alpha.97, protocolo 69):**
 [Entrega](delivery/ic05b-companion-craft-chop.md). Sin SQL; versión 0.6.0-alpha.97, `PROTOCOL_VERSION` 69 (la op `craft` es
 nueva y los clientes viejos la rechazan). Nueva op de presencia `craft {recipe}` (`hacha_piedra` o `pico_piedra`), para el

@@ -153,11 +153,47 @@ export class CompanionPairingService {
     this.busy.add(sock);
     let operation, abandoned = false;
     try {
-      operation = Promise.resolve().then(async () => {
+      operation = this.ownerOperation(session, sock, message.op, () => abandoned);
+      operation.finally(() => this.busy.delete(sock)).catch(() => {});
+      const result = await this.bounded(operation);
+      reply(result.why, { ...(result.code ? { code: result.code, expiresAtMs: result.expiresAtMs } : {}) });
+    } catch {
+      abandoned = true;
+      reply('unavailable');
+    } finally {
+      if (!operation) this.busy.delete(sock);
+    }
+  }
+
+  // IC08: the hosted controller's code comes from the same 'issue' path as the owner's own request, on the
+  // owner's socket, with the same preconditions and why codes; `character` must be the owner's companion.
+  async issueHosted(sock, character) {
+    const session = this.principal(sock);
+    if (!session) return { why: 'forbidden' };
+    if (!this.ready) return { why: 'unavailable' };
+    if (this.busy.has(sock) || this.busy.size >= MAX_IN_FLIGHT) return { why: 'busy' };
+    this.busy.add(sock);
+    let operation, abandoned = false;
+    try {
+      operation = this.ownerOperation(session, sock, 'issue', () => abandoned, character);
+      operation.finally(() => this.busy.delete(sock)).catch(() => {});
+      return await this.bounded(operation);
+    } catch {
+      abandoned = true;
+      return { why: 'unavailable' };
+    } finally {
+      if (!operation) this.busy.delete(sock);
+    }
+  }
+
+  ownerOperation(session, sock, op, isAbandoned, character = null) {
+    const h = this.host;
+    return Promise.resolve().then(async () => {
         if (this.principal(sock) !== session) throw new Error('session');
-        const owner = await this.loadOwned(session, sock, () => !abandoned);
-        if (this.principal(sock) !== session || abandoned) throw new Error('session');
-        if (!owner) return { why: message.op === 'issue' ? 'not_created' : null };
+        const owner = await this.loadOwned(session, sock, () => !isAbandoned());
+        if (this.principal(sock) !== session || isAbandoned()) throw new Error('session');
+        if (!owner || character !== null && owner.record.characterKey !== character) return { why: op === 'issue' ? 'not_created' : null };
+        const message = { op };
         if (message.op === 'load') return { why: null };
         if (message.op === 'revoke') {
           this.revokeOwner(sessionOwner(session), 'revoked');
@@ -166,7 +202,7 @@ export class CompanionPairingService {
         // With body presence on this answers "presence_body_required" unless the owner's body is live.
         const blocked = await h.companionPresence?.pairingBlocked(sessionOwner(session), owner.record.characterKey);
         if (blocked) return { why: typeof blocked === 'string' ? blocked : 'busy' };
-        if (this.principal(sock) !== session || abandoned) throw new Error('session');
+        if (this.principal(sock) !== session || isAbandoned()) throw new Error('session');
         if (!h.companionControl.allowed(owner.record.characterKey)) return { why: 'stopped' };
         // Replacing a code also invalidates any earlier admission and active socket.
         this.revokeOwner(sessionOwner(session), 'repaired');
@@ -176,7 +212,7 @@ export class CompanionPairingService {
           world: h.worldState.id, owner: sessionOwner(session),
         }));
         if (!refreshed || refreshed.characterKey !== owner.record.characterKey ||
-            this.principal(sock) !== session || !validSession(session, h) || abandoned ||
+            this.principal(sock) !== session || !validSession(session, h) || isAbandoned() ||
             !h.companionControl.allowed(refreshed.characterKey)) return { why: 'forbidden' };
         owner.record = refreshed;
         // L03g-b: the body may have left while the record reloaded; a code never outlives it.
@@ -190,16 +226,7 @@ export class CompanionPairingService {
           ownerSession: session, ownerSock: sock, record: refreshed, content: copy(h.contentIdentity ?? { generation: 0, revisionId: null }),
           ownerPeer, expiresAtMs: now + CODE_TTL_MS });
         return { why: null, code, expiresAtMs: now + CODE_TTL_MS };
-      });
-      operation.finally(() => this.busy.delete(sock)).catch(() => {});
-      const result = await this.bounded(operation);
-      reply(result.why, { ...(result.code ? { code: result.code, expiresAtMs: result.expiresAtMs } : {}) });
-    } catch {
-      abandoned = true;
-      reply('unavailable');
-    } finally {
-      if (!operation) this.busy.delete(sock);
-    }
+    });
   }
 
   claim(sock, message) {

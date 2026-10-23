@@ -18,8 +18,11 @@ services:
       ORIGINS: https://${GAME_HOSTNAME:?Set GAME_HOSTNAME to the public HTTPS hostname}
       NODE_OPTIONS: --max-old-space-size=640
       MN_GM_CONTENT_DIR: /var/lib/marea-content
+      MN_HOSTED_INFERENCE_DIR: /var/lib/marea-companions
     volumes:
       - /opt/marea-negra/content:/var/lib/marea-content
+      # IC08 hosted inference: sealed endpoint keys and hosted companion files (memory, budget).
+      - marea-companions:/var/lib/marea-companions
     init: true
     restart: unless-stopped
     stop_grace_period: 90s
@@ -77,6 +80,10 @@ services:
       traefik.http.routers.mn-alpha-http.service: mn-alpha
       traefik.http.middlewares.mn-alpha-https.redirectscheme.scheme: https
       traefik.http.middlewares.mn-alpha-https.redirectscheme.permanent: "true"
+
+volumes:
+  marea-companions:
+    name: marea-companions
 
 networks:
   coolify:

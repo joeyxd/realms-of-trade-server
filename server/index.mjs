@@ -23,6 +23,7 @@ import { PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { generateWorld } from '../src/sim/worldgen.js';
 import { createGmContentService } from './gmContent.mjs';
 import { inferenceCatalogFromEnv } from './inferenceConfig.mjs';
+import { hostedInferenceFromEnv } from './hostedInference.mjs';
 import { jumpModeOf } from '../src/sim/systems/jump.js';
 
 // MN_JUMP = off | lab | game (PT06). Unset or unknown = off; an unknown value warns once and never stops the boot.
@@ -48,7 +49,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null, chat = chatFromEnv(process.env), walletLink = null, agentControl = null, agentPilot = null,
   economicOperations = false, communityRequirements = null, gmAccountIds = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, skillOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, torchResinCoconutOperations = false, agentTrade = false,
   gmDraftsAllowMemory = false, companionConfigAllowMemory = false, companionControlAllowMemory = false, jump = 'off',
-  inferenceCatalog = inferenceCatalogFromEnv(process.env), inferenceConfigAllowMemory = false,
+  inferenceCatalog = inferenceCatalogFromEnv(process.env), inferenceConfigAllowMemory = false, hostedInference = null,
   companionCreation = false, companionCreationAllowMemory = false,
   companionPairing = false, companionPairingAllowMemory = false,
   companionPresence = false, companionPresenceAllowMemory = false,
@@ -65,7 +66,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
       Object.keys(pearlStartup).some((key) => !['journal', 'accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)))) throw new StoreError('configuration');
   if (worldId === undefined) worldId = 'marea-negra';
   const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs, chat,
-    pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, jump, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, workshopOperations, attributeOperations, skillOperations, fireOperations, freshwaterOperations, canteenOperations, specialMealOperations, torchResinCoconutOperations, agentTrade, groundTransactions, companionConfigAllowMemory, companionControlAllowMemory, inferenceCatalog, inferenceConfigAllowMemory, companionCreation, companionCreationAllowMemory, companionPairing, companionPairingAllowMemory, companionPresence, companionPresenceAllowMemory });
+    pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, jump, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, workshopOperations, attributeOperations, skillOperations, fireOperations, freshwaterOperations, canteenOperations, specialMealOperations, torchResinCoconutOperations, agentTrade, groundTransactions, companionConfigAllowMemory, companionControlAllowMemory, inferenceCatalog, inferenceConfigAllowMemory, companionCreation, companionCreationAllowMemory, companionPairing, companionPairingAllowMemory, companionPresence, companionPresenceAllowMemory, hostedInference });
   let gmDrafts = null, gmContent = null, publication = null;
   if (resolvePlayer && gmAccountIds?.length && worldId !== null || gmContentDirectory !== null) {
     const baseRevision = 'terrain-s21-v1';
@@ -248,6 +249,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       companionCreation: env.MN_COMPANION_CREATION === '1',
       companionPairing: env.MN_COMPANION_PAIRING === '1',
       companionPresence: env.MN_COMPANION_PRESENCE === '1',
+      hostedInference: hostedInferenceFromEnv(env),
       communityRequirements: env.MN_COMMUNITY_REQUIREMENTS ? JSON.parse(env.MN_COMMUNITY_REQUIREMENTS) : null,
       ...worldConfigFromEnv(env),
     });

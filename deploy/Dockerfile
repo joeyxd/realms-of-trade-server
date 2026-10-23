@@ -23,6 +23,8 @@ COPY --chown=node:node src/ ./src/
 COPY --chown=node:node styles/ ./styles/
 COPY --chown=node:node assets/ ./assets/
 COPY --chown=node:node deploy/runtime.mjs ./deploy/runtime.mjs
+# IC08: mount point of the marea-companions volume; a fresh named volume inherits this owner.
+RUN mkdir -p /var/lib/marea-companions && chown node:node /var/lib/marea-companions && chmod 700 /var/lib/marea-companions
 
 USER node
 EXPOSE 5173

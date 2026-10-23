@@ -34,8 +34,8 @@ import { CompanionsClient } from './client/companions.js';
 import { CompanionsUI } from './ui/companions.js';
 import { CompanionConfigClient } from './client/companionConfig.js';
 import { CompanionConfigUI } from './ui/companionConfig.js';
-import { InferenceConfigClient } from './client/inferenceConfig.js';
-import { InferenceConfigUI } from './ui/inferenceConfig.js';
+import { HostedInferenceClient } from './client/hostedInference.js';
+import { HostedInferenceUI } from './ui/hostedInference.js';
 import { CompanionCreationClient } from './client/companionCreation.js';
 import { CompanionCreationUI } from './ui/companionCreation.js';
 import { CompanionPairingClient } from './client/companionPairing.js';
@@ -601,7 +601,7 @@ async function boot() {
     joined: () => st.online && st.mode === 'playing' && client.joined && !transport.closed });
   const companionConfig = new CompanionConfigClient({ transport, auth: accountAuth,
     joined: () => st.online && st.mode === 'playing' && client.joined && !transport.closed });
-  const inferenceConfig = new InferenceConfigClient({ transport, auth: accountAuth,
+  const hostedInference = new HostedInferenceClient({ transport, auth: accountAuth,
     joined: () => st.online && st.mode === 'playing' && client.joined && !transport.closed });
   const companionCreation = new CompanionCreationClient({ transport, auth: accountAuth,
     joined: () => st.online && st.mode === 'playing' && client.joined && !transport.closed });
@@ -637,9 +637,9 @@ async function boot() {
   const companionConfigEditor = new CompanionConfigUI(companionsPanel.panel, { client: companionConfig,
     lang: getLocale(), onClose: () => companionsPanel.closeConfiguration() });
   companionsPanel.setConfigurationEditor(companionConfigEditor);
-  const inferenceConfigEditor = new InferenceConfigUI(companionsPanel.panel, { client: inferenceConfig,
+  const hostedInferenceEditor = new HostedInferenceUI(companionsPanel.panel, { client: hostedInference,
     lang: getLocale(), onClose: () => companionsPanel.closeInference() });
-  companionsPanel.setInferenceEditor(inferenceConfigEditor);
+  companionsPanel.setInferenceEditor(hostedInferenceEditor);
   const companionCreationEditor = new CompanionCreationUI(companionsPanel.panel, { client: companionCreation,
     lang: getLocale(), onClose: () => companionsPanel.closeCreation() });
   companionsPanel.setCreationEditor(companionCreationEditor);
@@ -661,7 +661,7 @@ async function boot() {
     if (key) companionPresence.load({ refresh: true });
   });
   companions.subscribe((state) => companionsPanel.setState(state));
-  onLocaleChange(() => { companionsPanel.setLanguage(getLocale()); companionConfigEditor.setLanguage(getLocale()); inferenceConfigEditor.setLanguage(getLocale()); companionCreationEditor.setLanguage(getLocale()); companionPairingEditor.setLanguage(getLocale()); companionPresencePanel.setLanguage(getLocale()); });
+  onLocaleChange(() => { companionsPanel.setLanguage(getLocale()); companionConfigEditor.setLanguage(getLocale()); hostedInferenceEditor.setLanguage(getLocale()); companionCreationEditor.setLanguage(getLocale()); companionPairingEditor.setLanguage(getLocale()); companionPresencePanel.setLanguage(getLocale()); });
   document.addEventListener('pointerdown', (event) => {
     if (companionsPanel.isOpen && !companionsPanel.container.contains(event.target) &&
         !companionsPanel.panel.contains(event.target)) companionsPanel.close();
@@ -861,7 +861,7 @@ async function boot() {
   }
   // The server went away: a veil with a way back (reload = reconnect; settings and weapon are saved).
   function netLost(contentChanged = false) {
-    companionsPanel?.close(); companions.disconnect(); companionConfig.disconnect(); inferenceConfig.disconnect(); companionCreation.disconnect(); companionPairing.disconnect(); companionPresence.disconnect();
+    companionsPanel?.close(); companions.disconnect(); companionConfig.disconnect(); hostedInference.disconnect(); companionCreation.disconnect(); companionPairing.disconnect(); companionPresence.disconnect();
     if (gmEditor?.active) void gmEditor.close({ force: true });
     if (skillStudio?.active) skillStudio.close({ force: true });
     if (assetWorkshop?.active) assetWorkshop.close({ force: true });
@@ -1192,7 +1192,7 @@ async function boot() {
           client.join(settings.name, settings.skin, weaponIndex(settings.weapon), saved, account);
         });
         if (r.k !== 'ok') {
-          joiningCompanionAccount = null; companions.setSession(null); companionConfig.setSession(null); inferenceConfig.setSession(null); companionCreation.setSession(null); companionPairing.setSession(null); companionPresence.setSession(null);
+          joiningCompanionAccount = null; companions.setSession(null); companionConfig.setSession(null); hostedInference.setSession(null); companionCreation.setSession(null); companionPairing.setSession(null); companionPresence.setSession(null);
           if (r.k === 'timeout') transport.close();
           const joinErrors = {
             version: rich('join.version'),
@@ -1219,7 +1219,7 @@ async function boot() {
       accountPanel?.hide();
       await title.hide();
     } catch {
-      joiningCompanionAccount = null; companions.setSession(null); companionConfig.setSession(null); inferenceConfig.setSession(null); companionCreation.setSession(null); companionPairing.setSession(null); companionPresence.setSession(null);
+      joiningCompanionAccount = null; companions.setSession(null); companionConfig.setSession(null); hostedInference.setSession(null); companionCreation.setSession(null); companionPairing.setSession(null); companionPresence.setSession(null);
       title.message(rich('join.recover'));
     } finally {
       st.boarding = false;
@@ -1231,7 +1231,7 @@ async function boot() {
     st.mode = 'playing';
     companions.setSession(joiningCompanionAccount);
     companionConfig.setSession(joiningCompanionAccount);
-    inferenceConfig.setSession(joiningCompanionAccount);
+    hostedInference.setSession(joiningCompanionAccount);
     companionCreation.setSession(joiningCompanionAccount); companionPairing.setSession(joiningCompanionAccount);
     companionPresence.setSession(joiningCompanionAccount);
     companionsPanel.setVisible(true);

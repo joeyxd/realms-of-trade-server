@@ -10,6 +10,7 @@ import { CompanionPairingService } from './companionPairing.mjs';
 import { CompanionPresenceService } from './companionPresence.mjs';
 import { CompanionControlService } from './companionControl.mjs';
 import { InferenceConfigService } from './inferenceConfig.mjs';
+import { HostedInferenceService } from './hostedInference.mjs';
 import { LocalServer } from '../src/net/localServer.js';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { LagLink } from '../src/net/lagLink.js';
@@ -92,7 +93,8 @@ export class GameHost {
     economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, skillOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, torchResinCoconutOperations = false, agentTrade = false, jump = 'off',
     groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false,
     inferenceCatalog = [], inferenceConfigAllowMemory = false, companionCreation = false, companionCreationAllowMemory = false,
-    companionPairing = false, companionPairingAllowMemory = false, companionPresence = false, companionPresenceAllowMemory = false } = {}) {
+    companionPairing = false, companionPairingAllowMemory = false, companionPresence = false, companionPresenceAllowMemory = false,
+    hostedInference = null } = {}) {
     if (groundTransactions !== null) {
       groundTransactions = assemblyOptions(groundTransactions, ['journal']);
       if (Object.keys(groundTransactions).length !== 1 || !groundTransactions.journal || !economicOperations ||
@@ -226,6 +228,8 @@ export class GameHost {
     this.companionPairing = new CompanionPairingService(this, { enabled: companionPairing, allowMemory: companionPairingAllowMemory });
     this.companionPresence = new CompanionPresenceService(this, { enabled: companionPresence, allowMemory: companionPresenceAllowMemory });
     this.inferenceConfig = new InferenceConfigService(this, { catalog: inferenceCatalog, allowMemory: inferenceConfigAllowMemory });
+    // IC08: off unless configured; misconfiguration is reported per request, never a boot failure.
+    this.hostedInference = new HostedInferenceService(this, hostedInference ?? { enabled: false });
   }
 
   get pearlStaging() { return this.#pearlStaging; }
@@ -743,6 +747,7 @@ export class GameHost {
     if (this.#requiresPearlStartup) { this.#stopPearls(); return; }
     this.closing = true;
     clearInterval(this.timer); clearInterval(this.worldTimer);
+    this.hostedInference?.close();
     this.companionPresence?.revokeMinds('fenced'); // Attached minds lose their pairing first (1008).
     for (const sock of [...this.sockets.values()]) {
       try { sock.ws.close(1011, 'storage'); } catch { /* gone */ }
@@ -846,6 +851,7 @@ export class GameHost {
     if (this.companionConfig.handle(sock, msg)) return;
     if (this.companionCreation.handle(sock, msg)) return;
     if (this.inferenceConfig.handle(sock, msg)) return;
+    if (this.hostedInference.handle(sock, msg)) return;
     if ([MSG.AGENT_CONTROL, MSG.AGENT_TASK, MSG.AGENT_CANCEL, MSG.AGENT_RELEASE].includes(msg.t)) {
       this.agentMessage(sock, msg); return;
     }
@@ -1637,6 +1643,7 @@ export class GameHost {
     this.worldState?.cancelLoad();
     if (this.#deathDrops?.pending) this.#deathDrops.fail();
     if (this.#pearlGround?.pending) this.#pearlGround.fail();
+    this.hostedInference?.close(); // Hosted controllers end with the server; none is restored at boot.
     this.companionPresence?.revokeMinds('server_close'); // Attached minds lose their pairing first (1008).
     for (const sock of [...this.sockets.values()]) { try { sock.ws.close(1001, 'server restart'); } catch { /* gone */ } this.onClose(sock); }
     if (this.wss) this.wss.close();

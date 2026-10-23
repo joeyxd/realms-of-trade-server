@@ -1,7 +1,7 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
 import { jumpStage } from '../sim/systems/jump.js';
-export const PROTOCOL_VERSION = 69; // IC05b/c: companion craft and tool nodes (68: GM07b terrain tiles)
+export const PROTOCOL_VERSION = 70; // IC08: hosted inference (69: IC05b/c companion craft and tool nodes)
 
 export const MSG = {
   // client -> server
@@ -20,6 +20,7 @@ export const MSG = {
   AGENT_COMPANION_PAIR: 'agent_companion_pair', // private owner load/issue/revoke or pre-admission one-use claim
   AGENT_COMPANION_PRESENCE: 'agent_companion_presence', // owner load/order, or its attached mind load/follow/wait/return/gather; host chooses identity and anchor
   INFERENCE_CONFIG: 'inference_config', // private owner/world configuration only; no provider call or credentials
+  HOSTED_INFERENCE: 'hosted_inference', // IC08 owner ops: load, save, delete, probe, test, start, stop (docs/briefs/ic08-hosted-inference.md)
   AGENT_INVENTORY: 'agent_inventory', // managed pilot read: {requestId,epoch,sessionId}; no account/entity selector
   AGENT_MARKET: 'agent_market', // managed pilot read: {requestId,epoch,sessionId,op,g?,n?,side?}; server selects town
   AGENT_TRADE: 'agent_trade', // managed trade: {opId,epoch,sessionId,op,g,n,expectedTotal}; server selects account/town
@@ -44,6 +45,7 @@ export const MSG = {
   AGENT_COMPANION_PAIR_RESULT: 'agent_companion_pair_result', // private ephemeral pairing result; never broadcast or persisted
   AGENT_COMPANION_PRESENCE_RESULT: 'agent_companion_presence_result', // private presence receipt; no provider grant
   INFERENCE_CONFIG_RESULT: 'inference_config_result', // private CAS head and admitted metadata; not a budget reservation
+  HOSTED_INFERENCE_RESULT: 'hosted_inference_result', // IC08 {requestId, op, ok, why, state, test?}; requestId null + op 'status' is a push
   AGENT_INVENTORY_RESULT: 'agent_inventory_result', // {requestId,epoch,sessionId,ok,why,tick,replay,inventory}
   AGENT_MARKET_RESULT: 'agent_market_result', // {requestId,epoch,sessionId,ok,why,tick,replay,market}; advisory only
   AGENT_TRADE_RESULT: 'agent_trade_result', // private durable receipt; historical results never hydrate current inventory
