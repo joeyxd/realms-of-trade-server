@@ -1,5 +1,6 @@
 import { onLocaleChange } from '../core/locale.js';
-import { mapAtlas } from '../ui/mapCanvas.js';
+import { describeMap } from '../ui/cartography.js';
+import { paintTerrain } from '../ui/mapCanvas.js';
 import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
 
 const labels = {
@@ -88,10 +89,10 @@ export class TerrainPanel {
     }
     const map = this.editor.draftMap || this.editor.map;
     if (map && map !== this.renderedMap) {
-      const atlas = mapAtlas(map, doc), context = this.mapCanvas.getContext('2d');
+      // Every stroke compiles a new map: paint the chart at its own 168 px, not the 640 px shared atlas (GM07c).
+      const context = this.mapCanvas.getContext('2d');
       this.mapCanvas.setAttribute('aria-label', this.editor._t('Current terrain preview', 'Vista previa del terreno actual'));
-      context?.clearRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
-      context?.drawImage(atlas.base, 0, 0, this.mapCanvas.width, this.mapCanvas.height);
+      if (context) paintTerrain(context, map, describeMap(map).frame, this.mapCanvas.width);
       this.renderedMap = map;
     }
     const help = key => { const node = doc.createElement('p'); node.className = 'gm-terrain-help'; node.textContent = this.t(key); node.dataset.terrainHelp = key; return node; };

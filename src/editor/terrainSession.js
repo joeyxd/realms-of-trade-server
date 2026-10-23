@@ -158,11 +158,13 @@ export class TerrainSession {
 
   // Write a patch into the grid and keep the old values; the outer ring is never editable (base ocean, D2).
   _apply(patch) {
-    const { indices } = patch, keys = new Set();
+    const { indices } = patch, keys = new Set(), region = { i0: Infinity, j0: Infinity, i1: -1, j1: -1 };
     for (const k of indices) {
       const i = k % TERRAIN_GRID_SIZE, j = (k - i) / TERRAIN_GRID_SIZE;
       if (i === 0 || j === 0 || i === TERRAIN_GRID_SEGMENTS || j === TERRAIN_GRID_SEGMENTS) fail('protected_ground');
       keys.add(terrainTileKey(Math.floor((i - HALF) / TILE_SIZE), Math.floor((j - HALF) / TILE_SIZE)));
+      region.i0 = Math.min(region.i0, i); region.i1 = Math.max(region.i1, i);
+      region.j0 = Math.min(region.j0, j); region.j1 = Math.max(region.j1, j);
     }
     const { deltasMm, weights } = this.grid, heights = !!patch.deltasMm;
     const old = heights ? new Int32Array(indices.length) : new Uint8Array(indices.length * 4);
@@ -171,7 +173,7 @@ export class TerrainSession {
       if (heights) { old[n] = deltasMm[k]; deltasMm[k] = patch.deltasMm[n]; continue; }
       for (let c = 0; c < 4; c++) { old[n * 4 + c] = weights[k * 4 + c]; weights[k * 4 + c] = patch.weights[n * 4 + c]; }
     }
-    return { indices, old, heights, dirtyTiles: [...keys] };
+    return { indices, old, heights, dirtyTiles: [...keys], region };
   }
 
   _revert({ indices, old, heights }) {
@@ -210,8 +212,10 @@ export class TerrainSession {
 
   /**
    * Commit one stroke: patch, validate the dirty tiles, compile, then encode and hash only the dirty tiles. Returns
-   * { document v5, tiles: Map of the new blobs, map, dirtyTiles, timings (ms) }. A refusal leaves the grid with the
-   * same bytes as before. One commit at a time: a second call while one is pending fails with busy.
+   * { document v5, tiles: Map of the new blobs, map, dirtyTiles, region, timings (ms) }; `region` holds the grid
+   * bounds of the changed vertices (i0, j0, i1, j1, inclusive) and `from`, the compiled map they changed (GM07c).
+   * A refusal leaves the grid with the same bytes as before. One commit at a time: a second call while one is
+   * pending fails with busy.
    */
   async commit(edit) {
     if (this.pending) fail('busy');
@@ -253,7 +257,8 @@ export class TerrainSession {
       const references = [...byKey.values()].sort((a, b) => a[1] - b[1] || a[0] - b[0]);
       const document = validateDocument({ ...draft, terrain: { ...draft.terrain, tiles: references } });
       this.references = copyReferences(references); this.compiled = after;
-      return { document, tiles, map: after, dirtyTiles: applied.dirtyTiles, timings };
+      return { document, tiles, map: after, dirtyTiles: applied.dirtyTiles,
+        region: { ...applied.region, from: previous.compiled }, timings };
     } catch (error) {
       if (applied) this._revert(applied);
       this.references = previous.references; this.compiled = previous.compiled;

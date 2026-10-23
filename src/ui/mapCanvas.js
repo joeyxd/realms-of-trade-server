@@ -37,6 +37,16 @@ export function terrainColor(map, x, z) {
   return [r, g, b, 255];
 }
 
+/** Terrain colours alone over a square canvas of `size` pixels in the map's frame (the atlas base, a small chart). */
+export function paintTerrain(ctx, map, frame, size) {
+  const img = ctx.createImageData(size, size);
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    const p = unprojectMap(frame, x + .5, y + .5, size);
+    img.data.set(terrainColor(map, p.x, p.z), (y * size + x) * 4);
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
 export function mapAtlas(map, document) {
   const description = describeMap(map);
   const signature = JSON.stringify([description, map.terrainRevision]);
@@ -44,12 +54,7 @@ export function mapAtlas(map, document) {
   if (cached?.signature === signature && cached.groundAt === map.groundAt && cached.masks === map.masks &&
       cached.onDock === map.onDock && cached.materialWeightsAt === map.materialWeightsAt) return cached;
   const base = document.createElement('canvas'); base.width = base.height = SIZE;
-  const ctx = base.getContext('2d'), img = ctx.createImageData(SIZE, SIZE);
-  for (let y = 0; y < SIZE; y++) for (let x = 0; x < SIZE; x++) {
-    const p = unprojectMap(description.frame, x + .5, y + .5, SIZE);
-    img.data.set(terrainColor(map, p.x, p.z), (y * SIZE + x) * 4);
-  }
-  ctx.putImageData(img, 0, 0);
+  paintTerrain(base.getContext('2d'), map, description.frame, SIZE);
   const atlas = { signature, description, base, groundAt: map.groundAt, masks: map.masks, onDock: map.onDock, materialWeightsAt: map.materialWeightsAt };
   atlases.set(map, atlas); return atlas;
 }

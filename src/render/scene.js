@@ -92,7 +92,8 @@ export class GameScene {
     this.freshwaterSpring = createFreshwaterSpring(map);
     if (this.freshwaterSpring) this.scene.add(this.freshwaterSpring);
     this.scene.add(createSeabed(map));
-    this.water = createWater(map, createHeightTexture(terrainMap));
+    // A GM terrain gets one water texel per grid vertex (1 m, GM07c); the procedural island keeps 256.
+    this.water = createWater(map, createHeightTexture(terrainMap, terrainMap.gmTerrain ? 561 : 256));
     this.water.layers.set(LAYER.WATER);
     this.scene.add(this.water);
     this.pipeline.water = { setMode: (ssr) => this.water.userData.setMode(ssr) };

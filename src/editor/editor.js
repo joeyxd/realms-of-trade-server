@@ -419,7 +419,7 @@ export class WorldEditor {
       try {
         const result = await this.terrain.commit(edit);
         if (!this.active || session !== this.session) return false;
-        this._commit(result.document, { tiles: result.tiles, map: result.map });
+        this._commit(result.document, { tiles: result.tiles, map: result.map, region: result.region });
         return true;
       } catch (error) {
         this.lastError = error;
@@ -434,12 +434,12 @@ export class WorldEditor {
     finally { if (this.terrainTask === task) this.terrainTask = null; if (this.active) this._updateButtons(); }
   }
 
-  _renderDocument(document, { map = null, preview = false } = {}) {
+  _renderDocument(document, { map = null, preview = false, region = null } = {}) {
     this._validateBaseReferences(document, map);
     const terrainKey = JSON.stringify(document.terrain || null);
     if (map) {
-      // A stroke supplies its compiled map; after a preview the next render resyncs from the document.
-      this.draftMap = map; this.terrainPreview.apply(map); this.terrainKey = preview ? null : terrainKey;
+      // A stroke supplies its compiled map (and the region it changed); after a preview the next render resyncs.
+      this.draftMap = map; this.terrainPreview.apply(map, { region }); this.terrainKey = preview ? null : terrainKey;
     } else if (this.terrainKey !== terrainKey) {
       this.draftMap = this._terrainSurface(document);
       this.terrainPreview.apply(this.draftMap); this.terrainKey = terrainKey;
@@ -904,7 +904,7 @@ export class WorldEditor {
   }
 
   /** Commit a document to history; a terrain stroke also passes its new tiles and its compiled map. */
-  _commit(document, { tiles = null, map = null } = {}) {
+  _commit(document, { tiles = null, map = null, region = null } = {}) {
     try {
       if (document.objects.some(item => resourceAdapter(item.assetId))) {
         const surface = map || this._terrainSurface(document, tiles);
@@ -921,7 +921,7 @@ export class WorldEditor {
     }
     this.document = this.history.current();
     this.dirty = JSON.stringify(this.document) !== this.lastSavedJson;
-    this._renderDocument(this.document, map ? { map } : {}); this.onChanged({ document: clone(this.document), dirty: this.dirty });
+    this._renderDocument(this.document, map ? { map, region } : {}); this.onChanged({ document: clone(this.document), dirty: this.dirty });
     this._updateButtons(); this._scheduleSave();
     if (this.terrainRoot?.hidden === false) this.terrainPanel.render();
     this.resourcePanel?.render();

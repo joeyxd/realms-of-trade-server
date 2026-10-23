@@ -45,13 +45,16 @@ export function createTerrainPreview({ scene, map, invalidate = () => {} } = {})
     currentMap = map;
     invalidate();
   };
-  const apply = (projectedMap) => {
+  // A stroke's `region` (grid bounds plus the map it changed, TerrainSession.commit) limits the update to those
+  // vertices when the preview shows that very map (GM07c); anything else rewrites the whole grid.
+  const apply = (projectedMap, { region = null } = {}) => {
     if (disposed) return;
     if (!projectedMap || projectedMap === map || projectedMap.gmTerrain !== true) {
       restore();
       return;
     }
     const paintOnly = !!projectedMap.terrain && !!currentMap.terrain && sameHeights(projectedMap, currentMap);
+    const dirty = activeGeometry && heightTexture && region?.from === currentMap ? region : null;
     if (!activeGeometry) {
       const temporary = createTerrain(projectedMap, { segments: 560 });
       activeGeometry = temporary.geometry;
@@ -62,10 +65,10 @@ export function createTerrainPreview({ scene, map, invalidate = () => {} } = {})
       terrain.geometry = activeGeometry;
     } else {
       // Reuse GPU buffers while a sculpt stroke updates the projected sample set.
-      updateTerrainGeometry(terrain, projectedMap, { segments: 560, paintOnly });
+      updateTerrainGeometry(terrain, projectedMap, { segments: 560, paintOnly, region: dirty });
     }
-    if (heightTexture && !paintOnly) updateHeightTexture(projectedMap, heightTexture);
-    else if (!heightTexture) heightTexture = createHeightTexture(projectedMap);
+    if (heightTexture && !paintOnly) updateHeightTexture(projectedMap, heightTexture, { region: dirty });
+    else if (!heightTexture) heightTexture = createHeightTexture(projectedMap, 561);
     setWaterHeight(heightTexture);
     currentMap = projectedMap;
     invalidate();

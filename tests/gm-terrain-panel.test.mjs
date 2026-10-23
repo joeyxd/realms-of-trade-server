@@ -32,7 +32,7 @@ class Element {
     this.draws ||= [];
     return {
       createImageData: (width, height) => ({ data: new Uint8ClampedArray(width * height * 4) }),
-      putImageData: (image) => { this.imageData = image; }, clearRect: () => {},
+      putImageData: (image) => { this.imageData = image; this.draws.push([image]); }, clearRect: () => {},
       drawImage: (...args) => this.draws.push(args),
     };
   }

@@ -526,6 +526,7 @@ Cortes: GM07b0 identidad del contenido; GM07b1 formato y editor; GM07b2 servidor
 GM07c malla por tesela con reconstrucción parcial (requisito de los pinceles grandes de GM08).
 **GM07b0 construido** (T-1021-25, alpha.91): el id de esquema 2 nombra el contenido y lo que usa; un deploy conserva la revisión activa.
 **GM07b1 y GM07b2 construidos** (alpha.96, protocolo 68, SQL042; HANDOFF 2026-10-22): teselas MNT1 y documento v5, editor sobre todo el mapa, borradores, publicación y carga del jugador por teselas.
+**GM07c construido** (T-1022-50, 2026-10-22, sin push): una sola malla 561 x 561 con reescritura y subida por región sucia (un trazo de 4 m pasa de 153 ms y 13,8 MB a 0,1 ms y 3,5 KB), textura de altura del agua 561 x 561 en terreno GM, mapa del panel a 168 px; la malla por tesela queda para GM06b si la carga por zonas la pide.
 
 ## 10 Arquitectura de implementación propuesta
 

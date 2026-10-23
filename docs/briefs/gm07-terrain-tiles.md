@@ -131,6 +131,13 @@ re-checked after every fetch.
 - GM07c rendering: one mesh per tile with dirty-tile rebuild (today every stroke rewrites 314,721 vertices,
   `src/render/terrain.js:268-300`), a water height texture at 1 texel/m or tiled (today 256 x 256 over 560 m),
   minimap atlas invalidated by dirty tiles. Precondition for GM08's 128 m brushes.
+  Built 2026-10-22 (T-1022-50) with one change: the mesh stays one 561 x 561 grid and a stroke rewrites only the
+  vertex rectangle it changed (plus one ring), uploaded as one range per row. Per-tile meshes were not needed: the
+  cost was CPU and upload (153 ms and 13.8 MB per stroke, half of it base masks that never change), not draw calls,
+  and 64 meshes would multiply the shadow and outline passes and every 'terrain' consumer. Measured in Node: a
+  4 m stroke 153 ms -> 0.1 ms and 3.5 KB; a 128 m-radius rectangle about 16 % of a whole rewrite. Water height
+  texture 561 x 561 for GM terrain (1 texel per vertex, region refill); the panel chart paints its 168 px itself
+  (83 ms -> 9 ms per stroke). Per-tile meshes stay an option for GM06b zone loading.
 
 ## Acceptance (for the builds)
 

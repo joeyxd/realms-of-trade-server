@@ -264,8 +264,22 @@ export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrai
   return mesh;
 }
 
-/** Update a terrain mesh's existing canonical grid buffers from a projected map. */
-export function updateTerrainGeometry(mesh, map, { segments = 560, paintOnly = false } = {}) {
+const wholeUploads = new WeakSet();
+
+// Grid vertex bounds of a changed region grown by one vertex (normals and the water texels read the neighbours).
+function regionBounds(region, segments) {
+  if (!region) return { i0: 0, j0: 0, i1: segments, j1: segments };
+  const { i0, j0, i1, j1 } = region;
+  if (![i0, j0, i1, j1].every(Number.isInteger) || i0 > i1 || j0 > j1) throw new RangeError('Terrain region is invalid');
+  return { i0: Math.max(0, i0 - 1), j0: Math.max(0, j0 - 1), i1: Math.min(segments, i1 + 1), j1: Math.min(segments, j1 + 1) };
+}
+
+/**
+ * Update a terrain mesh's existing canonical grid buffers from a projected map. With a `region` (grid vertex bounds
+ * i0, j0, i1, j1, inclusive) only those vertices and their neighbours are rewritten and uploaded, one range per row
+ * (GM07c: a stroke no longer rewrites and uploads all 314,721 vertices).
+ */
+export function updateTerrainGeometry(mesh, map, { segments = 560, paintOnly = false, region = null } = {}) {
   const geometry = mesh?.geometry;
   const position = geometry?.getAttribute('position');
   const normal = geometry?.getAttribute('normal');
@@ -278,25 +292,46 @@ export function updateTerrainGeometry(mesh, map, { segments = 560, paintOnly = f
   const size = map.size, half = size / 2, step = size / segments;
   const p = position.array, nr = normal.array, ms = masks.array;
   const weights = [0, 0, 0, 0];
-  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+  const { i0, j0, i1, j1 } = regionBounds(region, segments);
+  // Masks come from the base map: a region against a map with the same masks function keeps them (half the cost).
+  const keepMasks = paintOnly || (!!region?.from && region.from.masks === map.masks);
+  const attributes = paintOnly ? [paint] : keepMasks ? [paint, position, normal] : [paint, position, normal, masks];
+  for (const attribute of attributes) {
+    // Ranges narrow the next upload: a whole update drops pending ranges, and a region update leaves a whole
+    // upload that has not reached the GPU yet as it is (three uploads only the ranges when there are any).
+    if (!region) {
+      attribute.clearUpdateRanges(); wholeUploads.add(attribute);
+      attribute.onUpload(() => wholeUploads.delete(attribute));
+    } else if (!wholeUploads.has(attribute)) {
+      for (let j = j0; j <= j1; j++) attribute.addUpdateRange((j * n + i0) * attribute.itemSize, (i1 - i0 + 1) * attribute.itemSize);
+    }
+  }
+  let low = Infinity, high = -Infinity;
+  for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
     const k = j * n + i, x = -half + i * step, z = -half + j * step;
     weights.fill(0); map.materialWeightsAt?.(x, z, weights);
     for (let c = 0; c < 4; c++) paint.array[k * 4 + c] = Math.round(weights[c] * 255);
     if (paintOnly) continue;
     p[k * 3] = x; p[k * 3 + 1] = map.heightAt(x, z); p[k * 3 + 2] = z;
+    low = Math.min(low, p[k * 3 + 1]); high = Math.max(high, p[k * 3 + 1]);
     const e = step * 0.5;
     const nx = map.heightAt(x - e, z) - map.heightAt(x + e, z);
     const nz = map.heightAt(x, z - e) - map.heightAt(x, z + e);
     const l = Math.hypot(nx, 2 * e, nz);
     nr[k * 3] = nx / l; nr[k * 3 + 1] = (2 * e) / l; nr[k * 3 + 2] = nz / l;
+    if (keepMasks) continue;
     const m = map.masks(x, z);
     ms[k * 4] = m.path; ms[k * 4 + 1] = m.volcanic; ms[k * 4 + 2] = m.arenaFloor; ms[k * 4 + 3] = m.lava;
   }
   paint.needsUpdate = true;
-  if (!paintOnly) {
-    position.needsUpdate = true; normal.needsUpdate = true; masks.needsUpdate = true;
-    geometry.computeBoundingBox(); geometry.computeBoundingSphere();
-  }
+  if (paintOnly) return;
+  position.needsUpdate = true; normal.needsUpdate = true;
+  if (!keepMasks) masks.needsUpdate = true;
+  if (!region || !geometry.boundingBox) { geometry.computeBoundingBox(); geometry.computeBoundingSphere(); return; }
+  // The bounds only grow during a session: culling stays safe without a pass over every vertex.
+  geometry.boundingBox.min.y = Math.min(geometry.boundingBox.min.y, low);
+  geometry.boundingBox.max.y = Math.max(geometry.boundingBox.max.y, high);
+  geometry.boundingBox.getBoundingSphere(geometry.boundingSphere ??= new THREE.Sphere());
 }
 
 // Flat seabed under everything beyond the culled deep-ocean cells, so the water always has an
@@ -325,18 +360,25 @@ export function createHeightTexture(map, res = 256) {
   return tex;
 }
 
-export function updateHeightTexture(map, texture) {
+/** Refill the water height texture; a `region` (grid vertex bounds over `segments`) refills only its texels. */
+export function updateHeightTexture(map, texture, { region = null, segments = 560 } = {}) {
   if (!texture?.image?.data) throw new TypeError('Height texture is unavailable');
   const { data, width, height } = texture.image;
   if (width !== height || data.length !== width * height) throw new RangeError('Height texture must be square single-channel data');
-  fillHeightData(map, data, width);
+  let texels;
+  if (region) {
+    const bounds = regionBounds(region, segments), scale = (width - 1) / segments;
+    texels = { i0: Math.floor(bounds.i0 * scale), j0: Math.floor(bounds.j0 * scale),
+      i1: Math.min(width - 1, Math.ceil(bounds.i1 * scale)), j1: Math.min(width - 1, Math.ceil(bounds.j1 * scale)) };
+  }
+  fillHeightData(map, data, width, texels);
   texture.needsUpdate = true;
   return texture;
 }
 
-function fillHeightData(map, data, res) {
+function fillHeightData(map, data, res, { i0 = 0, j0 = 0, i1 = res - 1, j1 = res - 1 } = {}) {
   const size = map.size, half = size / 2;
-  for (let j = 0; j < res; j++) for (let i = 0; i < res; i++) {
+  for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
     const x = -half + (i / (res - 1)) * size, z = -half + (j / (res - 1)) * size;
     data[j * res + i] = THREE.DataUtils.toHalfFloat(map.heightAt(x, z));
   }
