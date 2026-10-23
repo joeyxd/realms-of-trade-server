@@ -14,7 +14,7 @@ import { compileTerrainGrid, compileTerrainMap, createTerrainGrid, terrainEditab
   validateTerrainForMap, validateTerrainGridForMap, TERRAIN_GRID_SIZE } from '../src/editor/terrainData.js';
 import { convertDocumentToV5, decodeTile, encodeTile, gridToTiles, terrainDomain, terrainTileRange, terrainToGrid,
   tilesToGrid, tileSha256, validateTerrainTilesForMap, verifyTileBlobs, isEditableVertex,
-  TERRAIN_TILES_NOT_READY, TILE_VERTICES } from '../src/editor/terrainTiles.js';
+  TILE_VERTICES } from '../src/editor/terrainTiles.js';
 import { paintTerrainDocument } from '../src/editor/terrainPaint.js';
 import { applyScatter, planScatter, scatterParameters } from '../src/editor/scatterBrush.js';
 import { installGmContent, projectGmContent } from '../src/editor/contentProjection.js';
@@ -33,7 +33,6 @@ const MAGIC = [0x4d, 0x4e, 0x54, 0x31];
 const map = generateWorld(GAME.seed);
 const exported = JSON.parse(await readFile(path.join(ROOT,
   'docs/delivery/gm05a/local/final-visible-5/terrain-v3-export.json'), 'utf8')).document;
-const notReady = (error) => error?.code === TERRAIN_TILES_NOT_READY;
 const coded = (code) => (error) => error?.code === code;
 const vertex = (x, z) => (z + 280) * TERRAIN_GRID_SIZE + x + 280;
 const local = (u, v) => v * 70 + u;
@@ -541,7 +540,7 @@ test('draft HTTP saves a document v5 (GM07b2b) and prepares it with its tiles (G
   assert.deepEqual(stored.head.document, tilesDocument());
 });
 
-test('world content load refuses a document v5; projection, install and validation need its tiles; the registry its terrain', async () => {
+test('a document v5 needs its tiles for projection, install and validation; the player load refuses an unprepared one; the registry its terrain', async () => {
   const document = tilesDocument(map.seed), active = { untouched: true };
   // GM07b2c: a document v5 projects, installs and validates from its tile bytes; without them it refuses, untouched.
   assert.throws(() => projectGmContent(map, document, BASE), coded('tile_blobs'));
@@ -552,11 +551,13 @@ test('world content load refuses a document v5; projection, install and validati
   assert.equal(projected.heights, map.heights);
   assert.equal(projected.gmTerrain, false);
   assert.equal(validateGmPublication({ map, document, baseRevision: BASE, tiles: new Map() }).valid, true);
-  // The player load (GM07b2d) still refuses it.
+  // The player load (GM07b2d) loads v5 from the tile route, but an unprepared revision is refused before any tile fetch.
   const revisionId = 'a'.repeat(64);
   const body = { ok: true, generation: 1, revisionId, revision: { revisionId, version: PREPARATION_VERSION, content: { document } } };
+  const fetched = [];
   await assert.rejects(loadGmWorldContent({ httpBase: 'http://localhost/', map: {}, baseMap: map, gameVersion: 'test', protocolVersion: 1,
-    fetchImpl: async () => ({ ok: true, json: async () => body }) }), notReady);
+    fetchImpl: async (url) => { fetched.push(String(url)); return { ok: true, json: async () => body }; } }), /Invalid prepared revision/);
+  assert.deepEqual(fetched, ['http://localhost/api/world/content']);
   const directory = await mkdtemp(path.join(os.tmpdir(), 'gm-terrain-tiles-'));
   try {
     const registry = createGmContentRegistry({ directory, root: ROOT, worldId: 'tiles-world',

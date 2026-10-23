@@ -1,3 +1,5 @@
+import { promisify } from 'node:util';
+import { gzip as gzipCallback } from 'node:zlib';
 import { projectGmContent, installGmContent, validateGmRoutes } from '../src/editor/contentProjection.js';
 import { createGmContentRegistry } from './gmContentRegistry.mjs';
 import { validateGmContentObstacles } from './gmContentObstacles.mjs';
@@ -5,6 +7,7 @@ import { resourceLayout } from '../src/data/resources.js';
 import { sameRevisionIdentity } from '../src/editor/publicationArtifact.js';
 import { isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
 
+const gzip = promisify(gzipCallback);
 const error = (code) => Object.assign(new Error(code), { code });
 const clone = (value) => structuredClone(value);
 
@@ -12,6 +15,7 @@ const clone = (value) => structuredClone(value);
 export function createGmContentService({ directory, root, worldId, baseMap, baseRevision, game, publication, lock, registryFault }) {
   const registry = createGmContentRegistry({ directory, root, worldId, lock, fault: registryFault });
   let active = { generation: 0, revisionId: null, revision: null }, ready = false;
+  let servable = null, gzipped = new Map();
   // { revision, tiles } or { revision: null, tiles: null } for base. tiles: the verified terrain tiles of a document v5
   // from the registry blobs (GM07b2c), null for v2-v4.
   async function checked(id) {
@@ -32,6 +36,11 @@ export function createGmContentService({ directory, root, worldId, baseMap, base
   function install(state, revision, tiles = null) {
     installGmContent(game.server.world.map, baseMap, revision?.content.document ?? null, baseRevision, { tiles });
     game.installContentResources?.();
+    // GM07b2d S10: the public tile route answers only the tiles the installed revision references; replaced on every
+    // install (so an older revision's hash 404s at once), with the gzip cache of the previous revision dropped.
+    servable = tiles && isTerrainTilesDocument(revision?.content.document)
+      ? new Map(revision.content.document.terrain.tiles.map((reference) => [reference[2], tiles.get(reference[2])])) : null;
+    gzipped = new Map();
     active = { generation: state.generation, revisionId: state.revisionId, revision };
     game.contentIdentity = { generation: state.generation, revisionId: state.revisionId };
   }
@@ -43,6 +52,16 @@ export function createGmContentService({ directory, root, worldId, baseMap, base
       install(state, revision, tiles); ready = true;
     },
     get ready() { return ready; },
+    // GM07b2d S10: the bytes of a tile of the ACTIVE revision, or null (not referenced by it, or no v5 active).
+    terrainTile(sha256) { return servable?.get(sha256) ?? null; },
+    // The same bytes gzipped (async, so a 64 KiB tile never blocks the tick), cached until the next install.
+    terrainTileGzip(sha256) {
+      const bytes = servable?.get(sha256);
+      if (!bytes) return Promise.resolve(null);
+      const cache = gzipped;
+      if (!cache.has(sha256)) cache.set(sha256, gzip(bytes).catch((failure) => { cache.delete(sha256); throw failure; }));
+      return cache.get(sha256);
+    },
     snapshot() { return clone({ ...active, baseline: active.revision ? {
       props: baseMap.props, colliders: baseMap.colliders, resources: resourceLayout(baseMap),
     } : null }); },

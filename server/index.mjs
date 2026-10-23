@@ -87,6 +87,29 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
     const { journal, ...startupOptions } = pearlStartup;
     game.mountPearlStartup(startupOptions);
   }
+  // GM07b2d S10: GET|HEAD /api/world/terrain-tiles/<sha256>, public and immutable (the hash is the content), only for
+  // the tiles of the ACTIVE revision; gzip when the client accepts it (the proxy leaves an encoded response alone).
+  async function terrainTileRoute(req, res, hash) {
+    if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405, { allow: 'GET, HEAD' }).end(); return; }
+    const bytes = /^[a-f0-9]{64}$/.test(hash) ? gmContent?.terrainTile(hash) : null;
+    if (!bytes) { res.writeHead(404, { 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' }).end(); return; }
+    const etag = `"${hash}"`, headers = { 'content-type': 'application/octet-stream', 'cache-control': 'public, max-age=31536000, immutable',
+      etag, vary: 'accept-encoding', 'x-content-type-options': 'nosniff' };
+    if (String(req.headers['if-none-match'] ?? '').split(',').some((tag) => ['*', etag].includes(tag.trim().replace(/^W\//, '')))) {
+      res.writeHead(304, headers).end(); return;
+    }
+    const gzipOk = String(req.headers['accept-encoding'] ?? '').split(',').some((part) => {
+      const [name, q] = part.trim().toLowerCase().split(/\s*;\s*q=/); return name === 'gzip' && (q === undefined || Number(q) > 0);
+    });
+    let body = bytes;
+    if (gzipOk) {
+      try { body = await gmContent.terrainTileGzip(hash) ?? null; } catch { body = bytes; }
+      if (!body) { res.writeHead(404, { 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' }).end(); return; }
+      if (body !== bytes) headers['content-encoding'] = 'gzip';
+    }
+    res.writeHead(200, { ...headers, 'content-length': body.length });
+    res.end(req.method === 'HEAD' ? undefined : body);
+  }
   const server = http.createServer((req, res) => {
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
@@ -98,6 +121,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
       res.writeHead(200, { 'content-type': MIME['.json'], 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
       res.end(req.method === 'HEAD' ? undefined : JSON.stringify({ ok: true, ...content })); return;
     }
+    if (p.startsWith('/api/world/terrain-tiles/')) { void terrainTileRoute(req, res, p.slice(25)); return; }
     if (['/api/gm/draft', '/api/gm/prepare', '/api/gm/revisions', '/api/gm/activate', '/api/gm/terrain-tiles',
       '/api/gm/terrain-tiles/read'].includes(p)) {
       if (gmDrafts) void gmDrafts.handle(req, res, { prepareRevision: p === '/api/gm/prepare',

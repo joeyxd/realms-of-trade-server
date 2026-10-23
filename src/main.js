@@ -727,7 +727,7 @@ async function boot() {
               } };
             },
             onClose: ({ saved, recoveryDocument }) => {
-              installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null); activeTerrain.apply(map); gmContentLayer?.resume();
+              installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null, 'terrain-s21-v1', { tiles: gmContent?.tiles }); activeTerrain.apply(map); gmContentLayer?.resume();
               if (!saved && recoveryDocument) gmRecoveries.set(gmOwner, { document: recoveryDocument, revision: gmEditor.revision });
               else gmRecoveries.delete(gmOwner);
               gmCameraPose = { position: world.camera.position.clone(), quaternion: world.camera.quaternion.clone() };
@@ -757,7 +757,7 @@ async function boot() {
         gmWorldUIHidden = worldUI.root.hidden; worldUI.root.hidden = true;
         world.setTitleShadows(false); world.nearFade(false);
       } catch (error) {
-        installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null); activeTerrain.apply(map); gmContentLayer?.resume();
+        installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null, 'terrain-s21-v1', { tiles: gmContent?.tiles }); activeTerrain.apply(map); gmContentLayer?.resume();
         st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();
         world.setTitleShadows(true); input.enabled = false;
         title.message(rich('runtime.gmFail') +
