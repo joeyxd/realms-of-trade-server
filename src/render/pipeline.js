@@ -22,18 +22,21 @@ import { worldNormalMat } from './toon.js';
 
 export const LAYER = { WORLD: 0, FX: 1, NO_OUTLINE: 2, WATER: 3 };
 
-// Depth of field: the HD-2D diorama / tilt-shift look (high and ultra; quality.js `dof` is the tier strength).
-// Distances are view depths in world units; the focus is the camera rig's distance (scene.js sets
-// pipeline.dof.focus every frame). Read every frame: tweak live through window.__mn.world.pipeline.dofCfg.
+// Depth of field: the HD-2D diorama look (high and ultra; quality.js `dof` is the tier strength). The circle of confusion
+// comes from the scene depth relative to the focus distance (the camera rig's distance; scene.js sets pipeline.dof.focus
+// every frame), so the same bands hold at every zoom level (15, 20, 27 u): at pitch 48 and FOV 35 the ground at the bottom
+// edge of the screen lies about 0.22 x focus nearer than the player, the ground at the top edge about 0.4 x focus farther.
+// Read every frame: tweak live through window.__mn.world.pipeline.dofCfg.
 const DOF = {
-  range: 3.5, // half-width of the sharp band around the focus distance (about +-5 u of ground at the 48 deg pitch)
-  falloffFar: 8, // behind the band: depth over which the blur ramps up to full (background)
-  falloffNear: 4, // in front of the band: the same toward the camera (foreground)
-  tilt: 1, // tilt-shift floor: blur toward the top and bottom of the screen whatever the depth
+  nearStart: 0.24, // in front of the focus: sharp while depth > focus x (1 - nearStart), so the visible ground stays sharp
+  nearFalloff: 0.08, // then the blur ramps to full over this fraction of the focus (palm crowns and roofs toward the camera blur fully)
+  farStart: 0.15, // behind the focus: sharp while depth < focus x (1 + farStart), about the upper quarter of the screen on flat ground
+  farFalloff: 0.4, // then the blur ramps over this fraction of the focus (a soft background from real depth, about 0.7 at the top edge)
+  tilt: 0, // tilt-shift floor: blur toward the top and bottom of the screen whatever the depth (0 = off; live-tweakable)
   tiltStart: 0.2, tiltEnd: 0.5, // the tilt ramps from 0 to `tilt` between these distances (screen heights) off the centre line
-  maxBlurPx: 10, // blur reach at full CoC, in half-res pixels of a 900-px-tall canvas (scaled with the screen height)
+  maxBlurPx: 16, // blur reach at full CoC, in half-res pixels of a 900-px-tall canvas (scaled with the screen height)
   blend: 2.5, // composite weight of the blurred image = min(1, CoC x blend): 1 is a linear mix (a half-sharp double image
-  // in the ramp); 2.5 lets the blur take over from CoC 0.4, where its reach (4 half-res px) already hides the sharp edge
+  // in the ramp); 2.5 lets the blur take over from CoC 0.4, where its reach (6.4 half-res px) already hides the sharp edge
 };
 
 // Shared uniforms for FX materials (soft particles against the scene depth).
@@ -191,16 +194,18 @@ void main() {
 }
 `;
 
-// Depth of field. Circle of confusion 0..1 from the opaque scene depth (linearised like the outline pass' linD):
-// distance outside the sharp band on each side, floored by the tilt-shift ramp toward the top and bottom edges.
-// The sky (depth 1 = far) blurs fully. Shared by the downsample and the composite (same uniform objects).
+// Depth of field. Circle of confusion 0..1 from the opaque scene depth (linearised like the outline pass' linD) relative to
+// the focus distance, d = depth / focus - 1 (0 in focus, -1 at the camera, +1 twice as far): each side has its own sharp
+// band and ramp as fractions of the focus, so the bands hold at every zoom level. The tilt-shift ramp toward the top and
+// bottom edges floors it (off by default). The sky (depth 1 = far) blurs fully. Shared by the downsample and the composite
+// (same uniform objects).
 const DOF_COC = /* glsl */ `
 #include <packing>
 uniform sampler2D tDepth;
-uniform float uNear, uFar, uFocus, uRange, uFallNear, uFallFar, uTilt, uTiltA, uTiltB;
+uniform float uNear, uFar, uFocus, uNearStart, uNearFall, uFarStart, uFarFall, uTilt, uTiltA, uTiltB;
 float dofCoc(vec2 uv) {
-  float d = -perspectiveDepthToViewZ(texture2D(tDepth, uv).r, uNear, uFar) - uFocus;
-  float c = d > 0.0 ? smoothstep(0.0, uFallFar, d - uRange) : smoothstep(0.0, uFallNear, -d - uRange);
+  float d = -perspectiveDepthToViewZ(texture2D(tDepth, uv).r, uNear, uFar) / uFocus - 1.0;
+  float c = d > 0.0 ? smoothstep(0.0, uFarFall, d - uFarStart) : smoothstep(0.0, uNearFall, -d - uNearStart);
   return max(c, uTilt * smoothstep(uTiltA, uTiltB, abs(uv.y - 0.5)));
 }
 `;
@@ -480,7 +485,7 @@ export class Pipeline {
     if (this.dofDown) return;
     const coc = {
       tDepth: { value: this.rtNormal.depthTexture }, uNear: { value: 0.5 }, uFar: { value: 1400 }, uFocus: { value: 20 },
-      uRange: { value: DOF.range }, uFallNear: { value: DOF.falloffNear }, uFallFar: { value: DOF.falloffFar },
+      uNearStart: { value: DOF.nearStart }, uNearFall: { value: DOF.nearFalloff }, uFarStart: { value: DOF.farStart }, uFarFall: { value: DOF.farFalloff },
       uTilt: { value: DOF.tilt }, uTiltA: { value: DOF.tiltStart }, uTiltB: { value: DOF.tiltEnd },
     };
     this.dofU = coc; // shared by the downsample and the composite
@@ -707,8 +712,8 @@ export class Pipeline {
   renderDof() {
     const r = this.renderer, q = this.dofQuad, cfg = this.dofCfg, u = this.dofU, cam = this.camera;
     const pass = (mat, target) => { q.mesh.material = mat; r.setRenderTarget(target); r.render(q.scene, this.quadCam); };
-    u.uNear.value = cam.near; u.uFar.value = cam.far; u.uFocus.value = this.dof.focus;
-    u.uRange.value = cfg.range; u.uFallNear.value = cfg.falloffNear; u.uFallFar.value = cfg.falloffFar;
+    u.uNear.value = cam.near; u.uFar.value = cam.far; u.uFocus.value = Math.max(0.1, this.dof.focus); // the CoC divides by it
+    u.uNearStart.value = cfg.nearStart; u.uNearFall.value = cfg.nearFalloff; u.uFarStart.value = cfg.farStart; u.uFarFall.value = cfg.farFalloff;
     u.uTilt.value = cfg.tilt; u.uTiltA.value = cfg.tiltStart; u.uTiltB.value = cfg.tiltEnd;
     const a = this.rtDofA, b = this.rtDofB, bu = this.dofBlur.uniforms;
     r.autoClear = true;
