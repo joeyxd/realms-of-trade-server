@@ -96,6 +96,10 @@ export default {
     "Haz un dash con ESPACIO",
     "Dash with SPACE"
   ],
+  "tutorial.dashShift": [
+    "Haz un dash con SHIFT",
+    "Dash with SHIFT"
+  ],
   "tutorial.attackTouch": [
     "Golpea al muñeco: combo de 3 (ATK)",
     "Hit the dummy: a 3-hit combo (ATK)"
@@ -300,6 +304,10 @@ export default {
     "<span class=\"kbd\">ESPACIO</span> para hacer dash",
     "<span class=\"kbd\">SPACE</span> to dash"
   ],
+  "runtime.shiftDash": [
+    "<span class=\"kbd\">SHIFT</span> para hacer dash",
+    "<span class=\"kbd\">SHIFT</span> to dash"
+  ],
   "runtime.tapCombo": [
     "Toca <b>ATK</b> tres veces seguidas",
     "Tap <b>ATK</b> three times in a row"
@@ -482,6 +490,14 @@ export default {
   "touch.guardFace": [
     "GUARDIA",
     "GUARD"
+  ],
+  "touch.jump": [
+    "Saltar",
+    "Jump"
+  ],
+  "touch.jumpFace": [
+    "SALTO",
+    "JUMP"
   ],
   "touch.lunge": [
     "ESTOC",

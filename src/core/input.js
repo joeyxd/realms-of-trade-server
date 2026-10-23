@@ -1,6 +1,7 @@
 // Keyboard / mouse / touch / gamepad input. Produces raw axes (screen-relative), held buttons and press
 // edges that the fixed tick consumes, plus UI hotkeys dispatched immediately.
-// Gamepad (standard mapping): left stick moves, right stick aims, RT primary attack, LT guard / pistol secondary, A dash,
+// Gamepad (standard mapping): left stick moves, right stick aims, RT primary attack, LT guard / pistol secondary, A dash
+// (PT06, jump on: Space / A jump and stay held for the variable height, Shift / B dash; see setJump),
 // X interact, RB Q, LB E, Y R, B cancels an area being aimed, D-pad up potion (M4), Start pause, Select the bag
 // (hotkey 'PadSelect').
 // The skill slots Q / E / R are not presses here: their down / up edges and held state per source (keys, pad,
@@ -14,13 +15,15 @@ const MOVE_KEYS = {
   KeyA: [-1, 0], ArrowLeft: [-1, 0], KeyD: [1, 0], ArrowRight: [1, 0],
 };
 // J / K: primary and secondary action without a mouse (they aim at the nearest threat or enemy). Both can be held.
-const PRESS_KEYS = { Space: BTN.DASH, KeyF: BTN.INTERACT, KeyJ: BTN.ATTACK, KeyK: BTN.GUARD, Digit1: BTN.POTION, Numpad1: BTN.POTION };
+const PRESS_KEYS = { KeyF: BTN.INTERACT, KeyJ: BTN.ATTACK, KeyK: BTN.GUARD, Digit1: BTN.POTION, Numpad1: BTN.POTION }; // Space, Shift: pressBit
 const HOLD_KEYS = { KeyJ: BTN.ATTACK, KeyK: BTN.GUARD };
 const SLOT_KEYS = { KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyG: 'g' };
 const PAD_SLOTS = [[5, 'q'], [4, 'e'], [3, 'r'], [13, 'g']]; // D-pad down: pearl power.
 const SRC = ['key', 'pad', 'touch'];
 // Standard gamepad buttons → command bits (held ones also count as held).
 const PAD_PRESS = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.DASH, false], [2, BTN.INTERACT, false], [12, BTN.POTION, false]];
+// PT06, jump on: A jumps (held, for the height), B dashes (while an area is being aimed B still cancels it instead).
+const PAD_PRESS_JUMP = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.JUMP, true], [1, BTN.DASH, false], [2, BTN.INTERACT, false], [12, BTN.POTION, false]];
 const PAD_DEAD = 0.18;
 const BLOCK_DEFAULT = new Set(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab', 'F3', 'F4']);
 
@@ -36,6 +39,7 @@ export class Input {
     this.wheel = 0;
     this.joy = { active: false, x: 0, y: 0 };
     this.enabled = false;
+    this.jump = false; // PT06: WELCOME.jump is lab or game (main.js calls setJump); off keeps Space = dash
     this.buildContext = false;
     this.padBlocked = new Set();
     this.hotkeys = new Map();
@@ -61,13 +65,15 @@ export class Input {
       if (e.repeat) return;
       this.keys.add(e.code);
       if (this.buildContext) return;
-      if (PRESS_KEYS[e.code] && this.enabled) { this.pressed |= PRESS_KEYS[e.code]; }
+      const pb = this.pressBit(e.code);
+      if (pb && this.enabled) { this.pressed |= pb; if (pb === BTN.JUMP) this.keyHeld |= BTN.JUMP; }
       if (HOLD_KEYS[e.code]) { this.keyHeld |= HOLD_KEYS[e.code]; this.aimDevice = 'keys'; }
       if (SLOT_KEYS[e.code] && this.enabled) this.slotDown(SLOT_KEYS[e.code], 'key');
       if (e.code === 'KeyF' && this.enabled) this.interactEdge = true;
     });
     addEventListener('keyup', (e) => {
       this.keys.delete(e.code);
+      if (e.code === 'Space') this.keyHeld &= ~BTN.JUMP;
       if (HOLD_KEYS[e.code]) this.keyHeld &= ~HOLD_KEYS[e.code];
       if (SLOT_KEYS[e.code]) this.slotUp(SLOT_KEYS[e.code], 'key');
     });
@@ -96,6 +102,15 @@ export class Input {
   }
 
   onHotkey(code, fn) { this.hotkeys.set(code, fn); }
+
+  // PT06: with the jump on, Space jumps (and stays held for the variable height) and Shift dashes; off keeps today's
+  // Space = dash, so production never changes. Called from WELCOME.jump; a held jump bit never survives the switch.
+  setJump(on) { this.jump = !!on; this.keyHeld &= ~BTN.JUMP; this.touchHeld &= ~BTN.JUMP; }
+  pressBit(code) {
+    if (code === 'Space') return this.jump ? BTN.JUMP : BTN.DASH;
+    if (code === 'ShiftLeft' || code === 'ShiftRight') return this.jump ? BTN.DASH : 0;
+    return PRESS_KEYS[code] || 0;
+  }
 
   // Construction preserves movement, but never carries a combat press across its boundary.
   setBuildContext(active) {
@@ -167,12 +182,16 @@ export class Input {
       return d;
     };
     let held = 0, any = P.aim || Math.hypot(P.mx, P.my) > 0;
-    for (const [i, bit, hold] of PAD_PRESS) {
+    // B first: while an area is being aimed its press cancels the area (and is no dash in jump mode).
+    const b = down(1), bCancel = b && !P.prev[1] && this.previewing;
+    if (bCancel) this.cancelEdge = true;
+    for (const [i, bit, hold] of (this.jump ? PAD_PRESS_JUMP : PAD_PRESS)) {
       const d = down(i);
       if (d) { any = true; if (hold && !this.buildContext) held |= bit; }
-      if (d && !P.prev[i] && this.enabled && !this.buildContext) { this.pressed |= bit; if (bit === BTN.INTERACT) this.interactEdge = true; }
+      if (d && !P.prev[i] && this.enabled && !this.buildContext && !(i === 1 && bCancel)) { this.pressed |= bit; if (bit === BTN.INTERACT) this.interactEdge = true; }
       P.prev[i] = d;
     }
+    P.prev[1] = b;
     const start = down(9);
     if (start && !P.prev[9]) { const hk = this.hotkeys.get('Escape'); if (hk) hk({ code: 'Escape' }); }
     P.prev[9] = start;
@@ -185,9 +204,6 @@ export class Input {
       if (d && !P.prev[i]) this.slotDown(slot, 'pad'); else if (!d && P.prev[i]) this.slotUp(slot, 'pad');
       P.prev[i] = d;
     }
-    const b = down(1);
-    if (b && !P.prev[1] && this.previewing) this.cancelEdge = true;
-    P.prev[1] = b;
     this.padHeld = held;
     P.active = any || P.active;
     if (any) { this.lastDevice = 'gamepad'; this.aimDevice = 'gamepad'; }
@@ -208,6 +224,9 @@ export class Input {
   }
 
   pressDash() { if (this.enabled && !this.buildContext) this.pressed |= BTN.DASH; }
+  // PT06 touch jump button: the press, and the held bit until the finger lifts (the variable height).
+  pressJump() { if (this.enabled && !this.buildContext) { this.pressed |= BTN.JUMP; this.touchHeld |= BTN.JUMP; this.lastDevice = 'touch'; this.aimDevice = 'touch'; } }
+  releaseJump() { this.touchHeld &= ~BTN.JUMP; }
   press(bit) { if (this.enabled && !this.buildContext) { this.pressed |= bit; this.lastDevice = 'touch'; this.aimDevice = 'touch'; } }
   pressInteract() { if (this.enabled && !this.buildContext) { this.pressed |= BTN.INTERACT; this.interactEdge = true; } }
 

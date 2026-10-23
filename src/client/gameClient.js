@@ -19,7 +19,8 @@ import { NavalPilotPrediction } from './navalPilotPrediction.js';
 import { NavalDeckPrediction } from './navalDeckPrediction.js';
 import { interpolatePilotPose, pilotPoint } from '../sim/naval/pilotGeometry.js';
 import { swimLoadOf } from '../sim/systems/swimming.js';
-import { jumpModeOf } from '../sim/systems/jump.js';
+import { jumpModeOf, jumpStage, airStage } from '../sim/systems/jump.js';
+import { standingHeight } from '../sim/systems/movement.js';
 
 const BUF_MAX = 40;
 const KILL_EVENTS = { parry: KILL.REFLECT, destroy: KILL.DESTROY, phit: KILL.HIT, guard: KILL.BLOCK };
@@ -833,6 +834,7 @@ export class GameClient {
       r.x = a.x + a.vx * ex; r.z = a.z + a.vz * ex; r.y = a.y; r.f = a.f;
       r.vx = a.vx; r.vz = a.vz; r.st = a.st; r.mag = a.mag; r.wade = a.wade; r.dashes = a.dashes;
       r.hp = a.hp; r.maxHp = a.maxHp; r.act = a.act; r.actT = a.actT + Math.max(0, time - a.time); r.lvl = a.lvl; r.wpn = a.wpn; r.elem = a.elem;
+      r.jmp = a.jmp | 0; r.gy = this.groundUnder(r);
       return;
     }
     const t = Math.min(1, (time - a.time) / (c.time - a.time));
@@ -842,10 +844,14 @@ export class GameClient {
     r.st = t < 0.5 ? a.st : c.st; r.mag = lerp(a.mag, c.mag, t); r.wade = lerp(a.wade, c.wade, t);
     r.dashes = c.dashes;
     r.hp = c.hp; r.maxHp = c.maxHp; r.lvl = c.lvl; r.wpn = t < 0.5 ? a.wpn : c.wpn; r.elem = t < 0.5 ? a.elem : c.elem;
+    r.jmp = (t < 0.5 ? a.jmp : c.jmp) | 0; r.gy = this.groundUnder(r); // PT06: the jump stage and the floor for the shadow
     // Action: keep counting time inside the same action, switch when the next sample does.
     if (c.act === a.act) { r.act = a.act; r.actT = lerp(a.actT, c.actT, t); }
     else { r.act = t < 0.5 ? a.act : c.act; r.actT = t < 0.5 ? a.actT + (time - a.time) : Math.max(0, c.actT - (c.time - time)); }
   }
+
+  // PT06: the floor under a body for its shadow (a deck or the terrain); on the ground it is the body's own y.
+  groundUnder(r) { return airStage(r.jmp) ? standingHeight(this.pred, r.x, r.z, r.y) : r.y; }
 
   // Interpolated, error-smoothed local player state for rendering.
   localState(alpha, out) {
@@ -865,6 +871,8 @@ export class GameClient {
     out.dashT = ecs.dashT[e]; out.dashes = ecs.dashCount[e];
     out.charges = ecs.dashCharges[e]; out.maxCharges = ecs.dashMax[e]; out.recharge = ecs.dashRecharge[e];
     out.iframes = ecs.iframes[e];
+    // PT06: the jump stage (JUMP_STAGE) and vertical speed for the pose, the floor under the body for the shadow.
+    out.jmp = jumpStage(ecs, e); out.jmpVy = ecs.jmpVy[e]; out.gy = this.groundUnder(out);
     out.hp = ecs.hp[e]; out.maxHp = ecs.maxHp[e]; out.dead = ecs.dead[e]; out.deadT = ecs.deadT[e];
     out.act = ecs.act[e]; out.actT = ecs.actT[e] + alpha * DT;
     out.atkStage = ecs.atkStage[e]; out.atkT = ecs.atkT[e];

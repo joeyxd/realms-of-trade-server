@@ -16,6 +16,7 @@ import { xpToNext } from './sim/systems/combat.js';
 import { PTYPE, SHOT } from './sim/projectiles.js';
 import { ENEMIES } from './data/enemies.js';
 import { BTN } from './sim/systems/movement.js';
+import { airStage } from './sim/systems/jump.js';
 import { rackNear, skillOf, skillNum, rainR } from './sim/systems/skills.js';
 import { canStand } from './sim/systems/movement.js';
 import { castKind, isArt, ARTS, skillId } from './data/tattoos.js';
@@ -438,6 +439,9 @@ async function boot() {
   input.onHotkey('PadSelect', panelKey(() => charPanel.toggle('gear')));
   const touch = new TouchControls($('#touch'), input);
   touch.setScale(settings.touchSize); touch.setHaptics(settings.haptics !== false);
+  // PT06: the server's jump mode (WELCOME.jump) decides the controls: on, Space / A / the touch button jump and Shift / B
+  // dash; off keeps today's Space = dash and no button.
+  bus.on('you:welcome', () => { const on = client.pred.jumpMode !== 'off'; input.setJump(on); touch.setJump(on); });
   const freshwaterTouchButton = document.createElement('button');
   freshwaterTouchButton.type = 'button'; freshwaterTouchButton.className = 'tbtn t-water';
   freshwaterTouchButton.hidden = !isTouch;
@@ -449,6 +453,7 @@ async function boot() {
   });
   touch.root.querySelector('.t-cluster').appendChild(freshwaterTouchButton);
   const pause = new PauseMenu($('#pause'), settings, {
+    jump: () => !!client && client.pred.jumpMode !== 'off', // PT06: the controls list shows Space = jump, Shift = dash
     onChange: (key) => {
       saveSettings();
       if (['master', 'sfx', 'music', 'ambience', 'muted'].includes(key)) { audio.set(settings); hud.setMuted(settings.muted); }
@@ -910,6 +915,7 @@ async function boot() {
     feedback.handle(ev);
     if (ev.type === 'fire' && ev.me) onTutorial('fire', ev);
     if (ev.type === 'respawn' && ev.me) st.snapCam = true;
+    if (ev.type === 'hurt' && ev.kind === 'fall' && ev.me) world.rig.punchIn(0.5); // PT06: a hard landing thumps the camera
     if (ev.type === 'equip' && ev.me) onEquip(ev.weapon);
     if (ev.type === 'talk' && ev.me) dialog.show(ev, st.lastLine);
     if (ev.type === 'skillDenied' && ev.me) charPanel.denyTattoo();
@@ -988,7 +994,8 @@ async function boot() {
   // quests (the server's): the village, Brea, the archers, the sentinels and HELLFIRE are quests now.
   const TRACK = [
     { id: 'move', text: isTouch ? ltext('tutorial.moveTouch') : ltext('tutorial.move') },
-    { id: 'dash', text: isTouch ? ltext('tutorial.dashTouch') : ltext('tutorial.dash') },
+    // PT06: with the jump on, Space jumps and the dash moved to Shift (read on each refresh: the mode arrives with WELCOME).
+    { id: 'dash', get text() { return isTouch ? ltext('tutorial.dashTouch') : ltext(client.pred.jumpMode !== 'off' ? 'tutorial.dashShift' : 'tutorial.dash'); } },
     { id: 'attack', text: isTouch ? ltext('tutorial.attackTouch') : ltext('tutorial.attack') },
     { id: 'parry', text: isTouch ? ltext('tutorial.parryTouch') : ltext('tutorial.parry') },
     { id: 'guard', text: isTouch ? ltext('tutorial.guardTouch') : ltext('tutorial.guard') },
@@ -1535,6 +1542,17 @@ async function boot() {
               view.lastDashes = s.dashes;
             }
           }
+          // PT06: a dust puff on the takeoff and the landing (anyone's), a step sound and a camera punch for your own landing.
+          const jmp = s.jmp | 0, inAir = airStage(jmp);
+          if (view.lastJmp !== undefined && inAir !== airStage(view.lastJmp) && playing) {
+            const gy = Number.isFinite(s.gy) ? s.gy : s.y, mat = client.pred.raftDeck.surface(s.x, s.z, gy) ? 'wood' : map.materialAt(s.x, s.z);
+            if (inAir) world.effects.footstep(s.x, gy, s.z, mat, s.wade);
+            else {
+              world.effects.dashBurst(s.x, gy, s.z, Math.sin(s.f), Math.cos(s.f), mat, s.wade);
+              if (rec.id === client.youServer) { sfx.step(mat, ps.wade); world.rig.punchIn(0.18); }
+            }
+          }
+          view.lastJmp = jmp;
           view.footprintDeck = !!client.pred.raftDeck.surface(s.x, s.z, s.y);
           view.update(simDt, s);
           navigation.poseCharacter(view, s, rec.id, simDt);
@@ -1602,7 +1620,7 @@ async function boot() {
         else if (resourceInteraction) act = resourceInteraction.html;
         else if (nearShip) act = rich('runtime.raftHint');
         else if (st.tut === 'move') act = isTouch ? t('runtime.joy') : rich('runtime.wasd');
-        else if (st.tut === 'dash') act = isTouch ? rich('runtime.tapDash') : rich('runtime.spaceDash');
+        else if (st.tut === 'dash') act = isTouch ? rich('runtime.tapDash') : rich(client.pred.jumpMode !== 'off' ? 'runtime.shiftDash' : 'runtime.spaceDash'); // PT06: Shift dashes with the jump on
         else if (st.tut === 'attack') {
           const d = Math.hypot(ps.x - map.practice.dummy.x, ps.z - map.practice.dummy.z);
           act = weaponOf(ps.weapon).basic === 'pistol' ? rich(`runtime.pistolPrimary${isTouch ? 'Touch' : 'Mouse'}`)

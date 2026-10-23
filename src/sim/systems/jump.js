@@ -14,6 +14,8 @@ const V = J.mu * J.fps; // u/s per mu/f
 
 // What a remote client poses (ENT.JMP): 0 ground, 1 jump, 2 double, 3 triple, 4 freefall, 5 landing, 6 sliding on steep ground.
 export const JUMP_STAGE = { GROUND: 0, JUMP: 1, DOUBLE: 2, TRIPLE: 3, FREEFALL: 4, LANDING: 5, STEEP: 6 };
+// A stage with the body off its floor (the shadow drops, the pose flies): the four air actions and the steep slide.
+export const airStage = (j) => (j >= 1 && j <= 4) || j === JUMP_STAGE.STEEP;
 export const jumpOn = (world) => world.jumpMode === 'lab' || world.jumpMode === 'game';
 export const jumpModeOf = (v) => (v === 'lab' || v === 'game' ? v : 'off');
 export function jumpStage(ecs, e) {

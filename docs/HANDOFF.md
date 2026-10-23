@@ -15,6 +15,28 @@ no hay desenfoque (decisión de gusto pendiente de Joi). QA: `tools/shot.mjs --p
 un punto a 3 u de profundidad y los dos faroles del muelle. Tests de agua 12/12, tests que cargan el pipeline 31/31;
 capturas fuera de git (visual-revamp/.scratch/t1022-21-*, t1022-33-dof). Pendiente: Joi lo revisa en el servidor y en
 una GPU real.
+**PT06 parte 2 (cliente), 2026-10-22 — tecla, mando, botón táctil, poses y sombra del salto (sin versión: la pone el push; sin protocolo):**
+Sin SQL, sin cambios en sim ni servidor salvo `airStage` (un helper exportado en `src/sim/systems/jump.js`). Todo depende de WELCOME.jump: con el salto
+en off (producción hoy) nada cambia: Espacio sigue siendo dash, el botón táctil no existe. Con lab o game, `src/core/input.js` (`setJump`, llamado desde
+main.js en `you:welcome`): Espacio = BTN.JUMP, pulsación más bit mantenido mientras la tecla sigue abajo (la altura variable de Mario: soltar corta la subida);
+Shift izquierdo o derecho = dash; mando A = salto (mantenido), B = dash (si hay un área apuntándose, B la cancela como antes); táctil `pressJump` /
+`releaseJump`. `src/ui/touch.js`: botón `.t-jump` (verde, icono flecha arriba, texto SALTO/JUMP) en el hueco `jump` reservado por PT03, entre DASH y
+GUARDIA, oculto hasta `setJump(true)`; se suelta en pointerup, pointercancel y lostpointercapture. `src/client/gameClient.js`: el estado de render lleva
+`jmp` (etapa JUMP_STAGE), `jmpVy` (solo el local) y `gy` (el suelo bajo el cuerpo: cubierta o terreno, `standingHeight`), también en `sampleRemote` para
+los demás cuerpos. `src/render/characters.js`: la sombra (blob) se queda en el suelo y encoge con la altura; subida con piernas recogidas y brazos arriba,
+suspensión con brazos abiertos, caída con brazos abajo, deslizamiento en ladera echado atrás; estirón al despegar y aplastamiento al aterrizar con los
+mismos muelles del dash, agachada de 0.3 s al aterrizar; el triple da una voltereta hacia delante en los primeros 0.9 s (el hueso body gira sobre el
+centro del cuerpo); en el aire la zancada se para y no suenan pasos. `src/main.js`: polvo al despegar y al aterrizar (de cualquiera), paso y golpe de
+cámara en tu aterrizaje, golpe de cámara 0.5 cuando el servidor cobra daño por caída (el evento hurt kind fall ya pasa por el flash, el número y el sonido
+de daño); la lista de controles de la pausa muestra "ESPACIO saltar" y "SHIFT dash" con el salto activo (`src/ui/pause.js` recibe `jump`), y el paso
+del tutorial de la playa y su pista flotante dicen SHIFT. Falta: la etiqueta SPC de la barra rápida de escritorio (`src/ui/hud.js`, en obra por la ronda R1b)
+sigue diciendo SPC con el salto activo; la pista del título ("ESPACIO para hacer dash") se muestra antes de WELCOME y no cambia.
+Parte 3 pendiente: altura de obstáculos (los colisionadores no tienen altura, todo es pared) y golpes cuerpo a cuerpo con altura.
+Pruebas: tests/jump-client.test.mjs (7: teclado, mando, táctil, botón en DOM falso, estado de render con cliente y servidor, i18n); jump-world y
+jump-sm64 25/25; gate 203/203. QA en navegador (Playwright, fuera del repo): ápice 2.722 u con Espacio mantenido, 0.692 u con un toque, cadena simple,
+doble y triple con ápice 7.087 u, Shift hace dash, botón táctil visible y saltando, sin errores de consola. Truco para medir: las capturas congelan la
+página en SwiftShader; se mide envolviendo `client.tickInput` (una muestra por tick) y se captura aparte. T-1022-37.
+
 **PT06 parte 1 (simulación y red), 2026-10-22 — salto de Mario 64 exacto detrás de `MN_JUMP` (sin versión: la pone el push; protocolo 67):**
 Sin SQL. Interruptor del servidor `MN_JUMP` = off | lab | game (sin valor o desconocido = off con un aviso; nunca para el arranque). off es el juego de
 antes. lab: Mario exacto, sin costo de carga, carrera a 10.8 u/s (tope de Mario 32 mu/f). game: la misma física, cada salto gasta una carga de dash y sin

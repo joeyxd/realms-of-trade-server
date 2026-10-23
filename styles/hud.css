@@ -445,6 +445,7 @@ body.touch .actionbar { display: none; }
 #touch .tbtn.on { background: radial-gradient(circle at 50% 32%, rgb(var(--c) / 0.58), rgb(var(--c) / 0.26) 72%); transform: translate(-50%, -50%) scale(0.92); }
 #touch .t-atk { --c: 255 98 64; --d: 92; --lx: var(--l-atk-x); --ly: var(--l-atk-y); }
 #touch .t-dash { --c: 40 224 204; --d: 70; --lx: var(--l-dash-x); --ly: var(--l-dash-y); padding-bottom: calc(9px * var(--tb)); }
+#touch .t-jump { --c: 128 232 112; --d: 62; --lx: var(--l-jump-x); --ly: var(--l-jump-y); }
 #touch .t-parry { --c: 84 156 255; --d: 62; --lx: var(--l-parry-x); --ly: var(--l-parry-y); }
 #touch .t-q { --c: 176 112 255; --d: 58; --lx: var(--l-q-x); --ly: var(--l-q-y); }
 #touch .t-e { --c: 176 112 255; --d: 58; --lx: var(--l-e-x); --ly: var(--l-e-y); }
@@ -456,7 +457,7 @@ body.touch .actionbar { display: none; }
 #touch .t-act { --c: 255 172 40; --d: 64; --lx: var(--l-act-x); --ly: var(--l-act-y); }
 /* The freshwater button (main.js adds it to the cluster; freshwater.css gives its colour and size). */
 #touch .t-water { --lx: var(--l-water-x); --ly: var(--l-water-y); }
-#touch .t-parry .lbl, #touch .t-r .lbl { font-size: calc(9.5px * var(--tb)); }
+#touch .t-parry .lbl, #touch .t-r .lbl, #touch .t-jump .lbl { font-size: calc(9.5px * var(--tb)); }
 
 /* Icon (~56 % of the button, white line over an ink under-stroke) and the short label under it. */
 #touch .tbtn .ico { position: relative; width: 56%; aspect-ratio: 1; display: block; flex: none; }

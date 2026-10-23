@@ -7,13 +7,14 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const GPU_TIER = { strong: 'strong', mid: 'mid', weak: 'weak' };
 
 export class PauseMenu {
-  constructor(root, settings, { onChange, onResume, onNewGame, gpu }) {
+  constructor(root, settings, { onChange, onResume, onNewGame, gpu, jump }) {
     this.root = root;
     this.s = settings;
     this.onChange = onChange;
     this.onResume = onResume;
     this.onNewGame = onNewGame;
     this.gpu = gpu || (() => null); // { name, tier } of the graphics card, for the quality hint
+    this.jump = jump || (() => false); // PT06: the server's jump is on (Space jumps, Shift dashes)
     this.open = false;
     this.tab = 'settings';
     this.confirmingNew = false;
@@ -61,7 +62,8 @@ export class PauseMenu {
     const controlsHtml = `
       <div class="section controls-list">
         <span><span class="kbd">W</span> <span class="kbd">A</span> <span class="kbd">S</span> <span class="kbd">D</span></span><span>${t('controls.move')}</span>
-        <span class="kbd">${t('controls.key.space')}</span><span>${t('controls.dash')}</span>
+        ${this.jump() ? `<span class="kbd">${t('controls.key.space')}</span><span>${t('controls.jump')}</span>
+        <span class="kbd">${t('controls.key.shift')}</span><span>${t('controls.dash')}</span>` : `<span class="kbd">${t('controls.key.space')}</span><span>${t('controls.dash')}</span>`}
         <span class="kbd">F</span><span>${t('controls.interact')}</span>
         <span class="kbd">N</span><span>${t('ui.controls.lantern')}</span>
         <span class="kbd">${t('controls.key.wheel')}</span><span>${t('controls.zoom')}</span>

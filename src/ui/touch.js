@@ -26,6 +26,7 @@ export const ICONS = {
   pistolLong: ico('<path d="M2 8h20l2 2v3H10l-1 3H6l-1 6H2l1.5-9L2 11z"/><path d="M4 22l2-6M18 9h4"/>'),
   shield: ico('<path d="M12 3l8 3v6c0 5-3.5 8-8 9.5C7.5 20 4 17 4 12V6z"/><path d="M12 7.5v9"/>'),
   dash: ico('<path d="M13 5.5l6.5 6.5-6.5 6.5"/><path d="M3.5 8.5h6M2.5 12.5h8M4.5 16.5h6"/>'),
+  jump: ico('<path d="M12 19.5V6.5"/><path d="M6.5 12l5.5-5.5 5.5 5.5"/><path d="M4.5 21h15"/>'),
   thrust: ico('<path d="M4 20L19 5"/><path d="M11 5h8v8"/><path d="M6.5 13.5l4 4"/>'),
   crescent: ico('<path d="M4.5 18C7.5 9 15 4.5 21 4.5c-4.5 3-7.5 7.5-8.2 13.5-2.2-1.5-5.2-1.5-8.3 0z"/><path d="M2.5 13h4"/>'),
   spiral: ico('<path d="M12 12a1 1 0 0 1 1-1 2 2 0 0 1 2 2 3.5 3.5 0 0 1-3.5 3.5 5 5 0 0 1-5-5 6.5 6.5 0 0 1 6.5-6.5 8 8 0 0 1 8 8"/>'),
@@ -58,7 +59,7 @@ const KITS = {
 };
 
 const face = (icon, label) => `<span class="ico">${ICONS[icon]}</span>${label == null ? '' : `<span class="lbl">${label?.startsWith('touch.') ? ltext(label) : label}</span>`}`;
-const BUZZ = { 't-dash': 9, 't-pot': 12, 't-act': 7, 't-parry': 6 }; // ms
+const BUZZ = { 't-dash': 9, 't-jump': 9, 't-pot': 12, 't-act': 7, 't-parry': 6 }; // ms
 const SWEEP_INK = 'rgb(10 6 24 / 0.58)';
 const cone = (deg) => `conic-gradient(transparent 0deg ${deg}deg, ${SWEEP_INK} ${deg}deg 360deg)`;
 
@@ -71,6 +72,7 @@ export class TouchControls {
       <div class="t-cluster">
         <button class="tbtn t-atk" data-l10n-aria-label="touch.attack" aria-label="${attr('touch.attack')}">${face('sword', 'ATK')}</button>
         <button class="tbtn t-dash" aria-label="Dash"><span class="sweep"></span>${face('dash', 'DASH')}<span class="pips"></span></button>
+        <button class="tbtn t-jump" data-l10n-aria-label="touch.jump" aria-label="${attr('touch.jump')}" hidden>${face('jump', 'touch.jumpFace')}</button>
         <button class="tbtn t-parry" data-l10n-aria-label="touch.guard" aria-label="${attr('touch.guard')}"><span class="sweep"></span>${face('shield', 'touch.guardFace')}</button>
         <button class="tbtn t-skill t-q" data-l10n-aria-label="touch.q" aria-label="${attr('touch.q')}"><span class="sweep"></span>${face('thrust', 'touch.lunge')}</button>
         <button class="tbtn t-skill t-e" data-l10n-aria-label="touch.e" aria-label="${attr('touch.e')}"><span class="sweep"></span>${face('crescent', 'touch.blade')}</button>
@@ -127,6 +129,12 @@ export class TouchControls {
     zone.addEventListener('pointerup', end);
     zone.addEventListener('pointercancel', end);
     root.querySelector('.t-dash').addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressDash(); });
+    // PT06: the jump button in the reserved `jump` slot, hidden until WELCOME says the jump is on (setJump): the press on
+    // the touch, held until the finger lifts (the variable height), like Space / A.
+    this.jumpBtn = root.querySelector('.t-jump');
+    this.jumpBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressJump(); });
+    for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) this.jumpBtn.addEventListener(ev, () => input.releaseJump());
+    this.setJump(false);
     root.querySelector('.t-act').addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressInteract(); });
     root.querySelector('.t-pot').addEventListener('pointerdown', (e) => { e.preventDefault(); input.press(BTN.POTION); });
     // The aim line from a button's centre along a drag (stage px), shared by the skills and the two fire buttons.
@@ -238,6 +246,7 @@ export class TouchControls {
 
   // The settings' touchSize (0.85 / 1 / 1.18), live.
   setHaptics(on) { this.haptics = !!on; }
+  setJump(on) { this.jumpBtn.hidden = !on; } // PT06: the server's jump mode (off hides the button)
   buzz(ms) { if (this.haptics && navigator.vibrate) try { navigator.vibrate(ms); } catch { /* blocked */ } }
 
   setScale(v) {

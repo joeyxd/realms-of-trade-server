@@ -168,6 +168,8 @@ export default {
   'controls.key.space': ['ESPACIO', 'SPACE'], 'controls.key.wheel': ['Rueda', 'Mouse wheel'],
   'controls.key.hold': ['mantener', 'hold'], 'controls.key.mouse': ['Ratón', 'Mouse'],
   'controls.dash': ['Dash: invulnerable 0,22 s. Una carga en Nv 1, dos desde Nv 2', 'Dash: invulnerable for 0.22 s. One charge at Lv 1, two from Lv 2'],
+  'controls.jump': ['Saltar: mantén para subir más; salta justo al aterrizar para encadenar doble y triple. Una caída alta hace daño', 'Jump: hold to rise higher; jump right as you land to chain a double and a triple. A high fall hurts'],
+  'controls.key.shift': ['SHIFT', 'SHIFT'],
   'controls.interact': ['Hablar / interactuar. Junto a un armero: cambiar de arma (sable ↔ pistolas)', 'Talk / interact. Near a gunsmith: switch weapons (saber ↔ pistols)'],
   'controls.zoom': ['Zoom (3 niveles)', 'Zoom (3 levels)'], 'controls.rotate': ['Rotar cámara 90° (actívalo en Ajustes)', 'Rotate camera 90° (enable in Settings)'],
   'controls.pause': ['Pausa', 'Pause'], 'controls.performance': ['Rendimiento', 'Performance'],

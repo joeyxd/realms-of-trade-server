@@ -20,6 +20,7 @@ import { createPistolRecoil, kickPistolRecoil, stepPistolRecoil } from './pistol
 import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
 import { ACT } from '../sim/ecs.js';
+import { JUMP_STAGE, airStage } from '../sim/systems/jump.js';
 import { SKILLS } from '../data/weapons.js';
 
 export const SKINS = LOOKS;
@@ -168,6 +169,9 @@ export class CharacterView {
     this.phase = 0;
     this.run = 0;
     this.dash = 0;
+    // PT06 jump layer: weight, time in the air, the landing crouch timer, the floor-to-feet height, the vertical speed.
+    this.jumpW = 0; this.airT = 0; this.landT = 0; this.wasAir = false; this.jumpH = 0; this.vyJ = 0; this.lastY = null;
+    this.restBody = this.body.position.clone();
     this.lean = 0;
     this.roll = 0;
     this.lastF = null;
@@ -299,7 +303,20 @@ export class CharacterView {
     // Abordaje (ACT.LEAP, M4.7): the body rides the jump's parabola h · 4u(1 − u), render only; the shadow stays down.
     const lift = (s.act | 0) === ACT.LEAP ? this.leapLift(s.actT || 0) : 0;
     this.root.position.y += lift;
-    this.blob.position.y = 0.03 - lift;
+    // PT06 jump (s.jmp: JUMP_STAGE, s.gy: the floor under the body): the shadow stays on the floor and shrinks with the
+    // height; the vertical speed (s.jmpVy when known, else from y) drives the pose; the takeoff stretches, the landing
+    // squashes (the same springs as the dash).
+    const jmp = s.jmp | 0, air = airStage(jmp);
+    const h = air && Number.isFinite(s.gy) ? Math.max(0, s.y - s.gy) : 0;
+    this.blob.position.y = 0.03 - lift - h;
+    this.jumpH = h;
+    const vyRaw = Number.isFinite(s.jmpVy) ? s.jmpVy : this.lastY === null ? 0 : (s.y - this.lastY) / Math.max(dt, 1e-4);
+    this.lastY = s.y;
+    this.vyJ = air ? damp(this.vyJ, vyRaw, 24, dt) : 0;
+    if (air && !this.wasAir) { this.sy.v += 2.0; this.sz.v -= 1.2; this.airT = 0; }
+    if (!air && this.wasAir) { this.sy.v -= 2.4; this.sz.v += 1.4; this.landT = 0.3; }
+    this.wasAir = air;
+    if (air) this.airT += dt; else this.landT = Math.max(0, this.landT - dt);
     if (this.lastF === null) this.lastF = s.f;
     const turnRate = angleDelta(this.lastF, s.f) / Math.max(dt, 1e-4);
     this.lastF = s.f;
@@ -308,7 +325,7 @@ export class CharacterView {
     const speed = Math.hypot(s.vx, s.vz);
     const swimming = s.st === 2;
     const dashing = s.st === 1;
-    this.run = damp(this.run, swimming ? 0 : dashing ? 0.25 : clamp(speed / 6.5, 0, 1), 10, dt);
+    this.run = damp(this.run, swimming || air ? 0 : dashing ? 0.25 : clamp(speed / 6.5, 0, 1), 10, dt);
     this.dash = damp(this.dash, dashing ? 1 : 0, dashing ? 26 : 8, dt);
     if (dashing && !this.wasDash) { this.sz.v += 2.2; this.sy.v -= 1.6; }
     if (!dashing && this.wasDash) this.sy.v -= 1.4;
@@ -330,7 +347,7 @@ export class CharacterView {
     const prev = this.phase;
     this.phase += dt * (speed / this.stride) * TAU * (dashing ? 0.15 : 1) * (this.back ? -1 : 1);
     const H = Math.PI;
-    if (!swimming && this.run > 0.3 && Math.floor((prev - H / 2) / H) !== Math.floor((this.phase - H / 2) / H)) {
+    if (!swimming && !air && this.run > 0.3 && Math.floor((prev - H / 2) / H) !== Math.floor((this.phase - H / 2) / H)) {
       const foot = Math.floor((this.phase - H / 2) / H) & 1;
       if (this.onStep) this.onStep(foot);
       if (this.onFootprint) this.onFootprint(foot, s);
@@ -404,7 +421,7 @@ export class CharacterView {
     this.clothF.rotation.x = this.cf.x;
     this.clothB.rotation.x = this.cb.x;
 
-    this.blob.scale.setScalar(this.blobSize * (1 + this.dash * 0.2));
+    this.blob.scale.setScalar(this.blobSize * (1 + this.dash * 0.2) / (1 + 0.12 * this.jumpH));
     this.blob.visible = (s.wade || 0) < 0.4;
     // Hit flash fades fast (80 ms at full, DESIGN §7).
     this.flashA = Math.max(0, this.flashA - dt * 6);
@@ -504,6 +521,32 @@ export class CharacterView {
     }
     if (act !== ACT.DEAD) this.downW = damp(this.downW, 0, 8, dt);
 
+    // PT06 jump pose (s.jmp: 1 single, 2 double, 3 triple, 4 freefall, 6 steep slide; the landing crouch runs on landT):
+    // rising tucks the legs and throws the arms up, hanging spreads them, falling reaches down; the triple adds a
+    // somersault (below). An action with a pose of its own (a swing begun before the takeoff) keeps it.
+    const jmp = s.jmp | 0, air = airStage(jmp);
+    this.jumpW = damp(this.jumpW, air || this.landT > 0 ? 1 : 0, air ? 24 : 10, dt);
+    const jw = this.jumpW * (1 - w);
+    if (jw > 0.01) {
+      w = Math.max(w, jw);
+      if (jmp === JUMP_STAGE.STEEP) { // sliding down a slope: leaning back, arms up, legs out
+        T.cx = -0.35; T.hy = -0.08;
+        set('armR', -2.2, -0.5); set('armL', -2.2, 0.5); set('foreR', -0.4); set('foreL', -0.4);
+        set('thighR', -0.7); set('thighL', -0.7); set('shinR', 0.35); set('shinL', 0.35);
+      } else if (air) {
+        const up = clamp(this.vyJ / 12, -1, 1), rise = Math.max(0, up), fall = Math.max(0, -up), hang = 1 - rise - fall;
+        T.cx = -0.18 * rise + 0.12 * fall; T.hy = -0.02;
+        set('armR', -2.6 * rise - 1.2 * hang - 0.6 * fall, -0.25 - 0.5 * hang - 1.15 * fall);
+        set('armL', -2.6 * rise - 1.2 * hang - 0.6 * fall, 0.25 + 0.5 * hang + 1.15 * fall);
+        set('foreR', -0.5); set('foreL', -0.5);
+        set('thighR', -1.1 * rise - 0.5 * hang - 0.25 * fall); set('thighL', -0.7 * rise - 0.3 * hang - 0.45 * fall);
+        set('shinR', 1.3 * rise + 0.6 * hang + 0.35 * fall); set('shinL', 1.1 * rise + 0.5 * hang + 0.25 * fall);
+      } else { // the landing crouch, fading over landT (the arms keep walking)
+        const k = this.landT / 0.3;
+        T.cx = 0.35 * k; T.hy = -0.12 * k;
+      }
+    }
+
     const pist = this.weaponKind === 'pistolas';
     // Pistols firing: both arms out to the front, each kicking up on its own shot.
     this.shootW = damp(this.shootW, act === ACT.SHOOT ? 1 : 0, act === ACT.SHOOT ? 30 : 7, dt);
@@ -593,6 +636,12 @@ export class CharacterView {
       }
     }
     this.body.rotation.y = spin;
+    // The triple's somersault: one forward turn over the first 0.9 s in the air, about the body's centre (the body bone
+    // pivots at its own origin: translate so the centre stays put). Everything else keeps the bone at rest.
+    const fa = air && jmp === JUMP_STAGE.TRIPLE ? TAU * sm(this.airT / 0.9) : 0;
+    const rb = this.restBody, dy = this.height / this.scale * 0.5 - rb.y;
+    this.body.rotation.x += fa;
+    this.body.position.set(rb.x, rb.y + dy * (1 - Math.cos(fa)), rb.z - dy * Math.sin(fa));
 
     // Flinch (hit impulse) on top of everything.
     this.hitK = Math.max(0, this.hitK - dt * 5);
