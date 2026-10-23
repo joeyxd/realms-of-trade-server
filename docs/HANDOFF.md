@@ -1,5 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**R1b HUD táctil (Farol, Chat, fila de menús, Primeros pasos), 2026-10-22 — alpha.95, protocolo 67 sin cambios:**
+Versión 0.6.0-alpha.95; sin protocolo ni SQL; solo cliente táctil (escritorio igual). Desde la captura de Joi a 844x390: la fila de menús va en el borde
+superior, a la derecha junto al minimapa (top 8, right 110) y algo transparente; banner y barra de jefe debajo (top 60); "Mis compañeros" es un
+icono (persona con chispa de IA). Farol/antorcha y Chat son botones redondos de 44 px con el cristal de los botones táctiles, juntos bajo la columna
+izquierda (--left-row y --left-x en #ui; hud.js escribe --party-n y --trk-h ahí), nunca sobre el joystick; el panel del chat se abre como hoja a la
+izquierda en pantallas bajas. "Primeros pasos" se pliega a una línea con flecha y un toque lo abre; en tablet pasa a la columna izquierda como en el
+móvil. #hud va sobre #touch en táctil para que el tracker gane a la zona del joystick. Se quitó la zona LANTERN de touchLayout.js; TOPROW sigue a la
+fila. Arreglo de paso: tracker, tripulación y avisos cuentan las barras de comida y agua (el tracker tapaba el reloj). QA de navegador fuera de git a
+1024x768, 932x430, 844x390 y 667x375. Pendiente de R1b: la X para cerrar paneles, paneles semitransparentes, tarjeta de misión, barra rápida (PT12/PT13).
+
 **Push R1 del playtest (PT08, PT02, PT03, PT06 partes 1 y 2), 2026-10-22 — el salto llega al servidor público (alpha.94, protocolo 67):**
 Versión 0.6.0-alpha.94; protocolo 67 (BTN.JUMP, ENT.JMP y WELCOME.jump de PT06 parte 1); sin SQL. Integrado desde claude/playtest sobre 5402a0c
 con cherry-pick en un worktree aparte (push-pt06), porque el worktree playtest guarda trabajo R1b sin commitear de otra sesión: la rama
