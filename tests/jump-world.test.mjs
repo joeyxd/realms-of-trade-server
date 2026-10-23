@@ -45,7 +45,7 @@ test('the default is off: the jump bit does nothing and y follows the floor on e
   assert.equal(Math.hypot(ecs.vx[e], ecs.vz[e]) <= tuning.player.runSpeed + 1e-9, true, 'off keeps run speed 6.5');
 });
 
-test('lab: walking off a 5 u drop is a freefall that lands; Mario run speed 10.8', () => {
+test('lab: walking off a 5 u drop is a freefall that lands; lab run speed 8.5', () => {
   const a = arena({ jump: 'lab', map: world((x) => (x < 3 ? FLOOR + 5 : FLOOR)), x: 0, z: 0 });
   const ecs = a.w.ecs, e = a.e;
   const acts = new Set();
@@ -54,7 +54,7 @@ test('lab: walking off a 5 u drop is a freefall that lands; Mario run speed 10.8
   assert.ok(acts.has(8), 'FREEFALL_LAND');
   assert.equal(ecs.y[e], FLOOR);
   assert.equal(ecs.hp[e], ecs.maxHp[e], '5 u hurts nobody');
-  near(Math.hypot(ecs.vx[e], ecs.vz[e]), 10.8, 1e-6, 'lab run speed');
+  near(Math.hypot(ecs.vx[e], ecs.vz[e]), 8.5, 1e-6, 'lab run speed');
 });
 
 test('fall damage: 13.5 u costs 25 percent, 12.5 u nothing, 34 u half in lab and death in game', () => {
@@ -227,8 +227,8 @@ test('the height history: a shot tested at a rewound tick uses the feet where th
   assert.equal(run('lab', false).hit, true, 'the same shot at the present tick hits a jumper standing on the floor');
 });
 
-test('the wire: BTN.JUMP survives sanitizeCmd, ENT carries the stage, protocol 67', () => {
-  assert.equal(PROTOCOL_VERSION, 67);
+test('the wire: BTN.JUMP survives sanitizeCmd, ENT carries the stage, protocol 67 or later', () => {
+  assert.ok(PROTOCOL_VERSION >= 67, `protocol ${PROTOCOL_VERSION}`); // the jump wire landed in 67
   assert.equal(ENT.JMP, 20);
   assert.equal(BTN.JUMP, 1024);
   const c = sanitizeCmd({ seq: 1, btn: J | BTN.DASH, prs: J, mx: 0, mz: 0 });

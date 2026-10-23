@@ -214,7 +214,7 @@ export function stepMover(world, e, cmd, dt) {
     }
     const speed = swimming ? (ecs.swimStamina[e] <= 0 ? tuning.swim.exhaustedSpeed :
       tuning.swim.speed * (1 - tuning.swim.loadSlow * ecs.swimLoad[e])) :
-      ecs.speed[e] * (world.jumpMode === 'lab' ? tuning.jump.lab.runSpeed / P.runSpeed : 1); // lab: Mario's walk cap
+      ecs.speed[e] * (world.jumpMode === 'lab' ? tuning.jump.lab.runSpeed / P.runSpeed : 1); // lab: the jump lab's run speed
     const tx = mx * speed * mul, tz = mz * speed * mul;
     const rate = (len > 0.05 ? P.accel : P.decel) * dt;
     let ddx = tx - ecs.vx[e], ddz = tz - ecs.vz[e];

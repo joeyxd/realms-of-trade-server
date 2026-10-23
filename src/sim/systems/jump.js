@@ -1,7 +1,7 @@
 // PT06: the Super Mario 64 jump on the shared sim (the server and the client's prediction run it identically).
 // Single, double and triple jump, freefall and the landing actions, ported from n64decomp/sm64 9921382 (the lines
 // are quoted in short comments; the numbers live in tuning.jump, in Mario units). Switch: world.jumpMode =
-// 'off' (today's game, nothing here runs) | 'lab' (Mario exact, run speed 10.8) | 'game' (a jump spends a dash charge,
+// 'off' (today's game, nothing here runs) | 'lab' (Mario's rules, run 8.5 u/s, air cap 25) | 'game' (a jump spends a dash charge,
 // big falls kill). Clock: the jump logic runs at SM64's 30 Hz; one SM64 frame = 2 sim ticks, phased per mover from
 // the takeoff tick (ecs.jmpPh: 0 = first tick of a frame). Speeds are u/s (1 mu/f = 0.3375 u/s), lengths u.
 import { tuning } from '../../data/tuning.js';
@@ -135,7 +135,7 @@ function airHorizontal(ecs, e, mx, mz, len) {
     fwd += mag * Math.cos(d) * J.accel; // :230
     side = mag * Math.sin(d) * J.side; // :231
   }
-  if (fwd > J.cap) fwd -= J.capOver; // :235 (air speed is not capped: net +0.15 mu/f per frame above 32)
+  if (fwd > J.cap) fwd -= J.capOver; // :235 (air speed is not capped: net +0.15 mu/f per frame above the cap)
   if (fwd < J.minFwd) fwd += J.minAdd; // :238
   ecs.jmpFwd[e] = fwd * V; ecs.jmpSide[e] = side * V;
   const sf = Math.sin(ecs.facing[e]), cf = Math.cos(ecs.facing[e]);

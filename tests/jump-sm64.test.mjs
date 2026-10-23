@@ -48,12 +48,12 @@ test('single jump from standing: apex 2.7225 u, about 44 ticks in the air', () =
   assert.ok(a.w.ecs.jmpAct[a.e] >= 5, 'landed');
 });
 
-test('single jump at the lab run speed 10.8 u/s: apex 3.8025 u; in game mode at 6.5 u/s: 3.350 u', () => {
+test('single jump at the lab run speed 8.5 u/s: apex 3.5533 u; in game mode at 6.5 u/s: 3.350 u', () => {
   const a = lab();
   runUp(a);
-  near(Math.hypot(a.w.ecs.vx[a.e], a.w.ecs.vz[a.e]), 10.8, 1e-6, 'lab run speed');
+  near(Math.hypot(a.w.ecs.vx[a.e], a.w.ecs.vz[a.e]), 8.5, 1e-6, 'lab run speed');
   assert.ok(jumpNow(a, { mx: 1 }));
-  near(glide(a, { mx: 1 }).apex, 3.8025, 0.03, 'lab apex');
+  near(glide(a, { mx: 1 }).apex, 3.5533, 0.03, 'lab apex'); // vy 42 + 25.19 / 4 (PT14; Mario's 10.8 gave 3.8025)
   const g = arena({ jump: 'game', map: flat, x: 0, z: 0 });
   runUp(g);
   near(Math.hypot(g.w.ecs.vx[g.e], g.w.ecs.vz[g.e]), 6.5, 1e-6, 'game run speed');
@@ -67,15 +67,15 @@ test('A released on the first frame quarters the climb: apex 0.692 u', () => {
   near(glide(a, { held: false }).apex, 0.692, 0.02, 'apex');
 });
 
-test('double jump: apex 4.095 u from standing, 5.40 u at 10.8 u/s; triple 7.0875 u even with A released at once', () => {
+test('double jump: apex 4.095 u from standing, 5.1125 u at 8.5 u/s; triple 7.0875 u even with A released at once', () => {
   const a = lab();
   single(a);
   assert.equal(press(a), 2);
   near(glide(a).apex, 4.095, 0.02, 'double from standing');
   const b = lab();
-  inLanding(b, 5, 10.8); // JUMP_LAND at the cap speed
+  inLanding(b, 5, 8.5); // JUMP_LAND at the lab run speed
   assert.equal(press(b), 2);
-  near(glide(b, { mx: 1 }).apex, 5.40, 0.03, 'double at 10.8');
+  near(glide(b, { mx: 1 }).apex, 5.1125, 0.03, 'double at 8.5');
   const c = lab();
   inLanding(c, 6, 10); // DOUBLE_JUMP_LAND, fast enough
   assert.equal(press(c, 0, { held: false }), 3);
@@ -119,6 +119,19 @@ test('triple needs forward speed above 6.75 u/s at the double landing, else a si
   assert.equal(press(b), 1);
 });
 
+test('PT14: at the lab run speed 8.5 with the stick held the triple still chains, the double landing well above 6.75 u/s', () => {
+  const a = lab();
+  const ecs = a.w.ecs, e = a.e;
+  runUp(a);
+  near(Math.hypot(ecs.vx[e], ecs.vz[e]), 8.5, 1e-6, 'lab run speed');
+  single(a, { mx: 1 });
+  assert.equal(press(a, 0, { mx: 1 }), 2);
+  glide(a, { mx: 1 });
+  assert.equal(ecs.jmpAct[e], 6, 'DOUBLE_JUMP_LAND');
+  assert.ok(ecs.jmpFwd[e] > 6.75 + 1, `forward ${ecs.jmpFwd[e]} u/s at the double landing`);
+  assert.equal(press(a, 0, { mx: 1 }), 3);
+});
+
 test('A during the triple landing frames is ignored, then a single', () => {
   const a = lab();
   inLanding(a, 7, 9); // TRIPLE_JUMP_LAND
@@ -151,14 +164,14 @@ test('the facing is fixed in the air; a sideways stick drifts at most 3.375 u/s'
   near(side, 3.375, 1e-6, 'sideways speed');
 });
 
-test('air forward speed climbs to the 10.8 u/s cap and stays within 0.34 u/s of it for the first frames', () => {
+test('air forward speed climbs to the 8.4375 u/s cap (25 mu/f) and stays within 0.34 u/s of it for the first frames', () => {
   const a = lab();
   runUp(a);
   assert.ok(jumpNow(a, { mx: 1 }));
-  near(Math.hypot(a.w.ecs.vx[a.e], a.w.ecs.vz[a.e]), (32 * 0.8 - 0.35 + 1.5) * 0.3375, 1e-6, 'frame 1: 0.8 * 32, drag, stick');
+  near(Math.hypot(a.w.ecs.vx[a.e], a.w.ecs.vz[a.e]), 8.5 * 0.8 + (1.5 - 0.35) * 0.3375, 1e-6, 'frame 1: 0.8 * run, drag, stick');
   let top = 0;
   for (let i = 0; i < 20; i++) { a.step({ btn: J, mx: 1 }); top = Math.max(top, Math.hypot(a.w.ecs.vx[a.e], a.w.ecs.vz[a.e])); }
-  assert.ok(top <= 10.8 + 0.34 + 1e-9 && top > 10.5, `top ${top}`); // SM64 air speed creeps +0.15 mu/f a frame past 32 (airborne.c:234)
+  assert.ok(top <= 8.4375 + 0.34 + 1e-9 && top > 8.3, `top ${top}`); // SM64 air speed creeps +0.15 mu/f a frame past the cap (airborne.c:234)
 });
 
 test('terminal fall speed is -25.3125 u/s (-75 mu/f)', () => {

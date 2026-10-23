@@ -168,13 +168,14 @@ export const tuning = {
     mu: 0.01125, fps: 30,
     vy: [42, 52, 69], vyFwd: [0.25, 0.25, 0], fwdKeep: 0.8, // JUMP, DOUBLE, TRIPLE entry: mario.c:824, 786, 797
     gravity: 4, terminal: -75, cutVy: 20, cutDiv: 4, // mario_step.c:576-577, :528, :560 (the vel/4 cut while A is up)
-    drag: 0.35, accel: 1.5, side: 10, cap: 32, capOver: 1, minFwd: -16, minAdd: 2, // airborne.c:224, 230, 231, 235-240
+    drag: 0.35, accel: 1.5, side: 10, cap: 25, capOver: 1, minFwd: -16, minAdd: 2, // airborne.c:224, 230, 231, 235-240
+    // (cap: Mario's 32 mu/f was too fast on the phone, PT14 R2 scales it with lab.runSpeed 10.8 -> 8.5; triple needs > 20)
     landFrames: 4, doubleTimer: 5, landKeep: 0.98, landDecel: 4, landDecelMin: 16, tripleFwd: 20, // moving.c:26-56, :1726, :150
     squish: 30, // frames; airborne.c:97 (halves the jump vy, turns a double into a single)
     fallGate: -55, fallTier1: 12.9375, fallTier2: 33.75, // airborne.c:84, 79, 85 (vy gate in mu/f; heights in u)
     cliffDrop: 1.125, // u; a ground step lower than this leaves the ground (mario_step.c:287: 100 mu)
     cliffSlope: 1, // our heightfield: descent (and landing) slope above this is a fall / a slide (same 45 deg as maxSlope)
-    lab: { runSpeed: 10.8, cost: 0, fall: [0.25, 0.5] }, // Mario walk cap 32 mu/f; fall damage as fractions of maxHp
+    lab: { runSpeed: 8.5, cost: 0, fall: [0.25, 0.5] }, // u/s (25.2 mu/f; Mario's walk cap 32 = 10.8); fall: fractions of maxHp
     game: { cost: 1, fall: [0.25, 1] }, // one dash charge per jump; a big fall kills
   },
 
