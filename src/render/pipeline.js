@@ -37,6 +37,10 @@ const DOF = {
   maxBlurPx: 16, // blur reach at full CoC, in half-res pixels of a 900-px-tall canvas (scaled with the screen height)
   blend: 2.5, // composite weight of the blurred image = min(1, CoC x blend): 1 is a linear mix (a half-sharp double image
   // in the ramp); 2.5 lets the blur take over from CoC 0.4, where its reach (6.4 half-res px) already hides the sharp edge
+  waterY: 0, // the sea plane's height (water.js: one flat plane at the origin); the CoC is judged at its surface
+  // Bands under the naval camera (scene.js sets pipeline.dof.naval): the low chase view sees the sea from about 0.4 x focus
+  // below the hull to the horizon, so the sharp band reaches far ahead and only the horizon goes soft.
+  naval: { nearStart: 0.5, nearFalloff: 0.25, farStart: 2, farFalloff: 4 },
 };
 
 // Shared uniforms for FX materials (soft particles against the scene depth).
@@ -197,14 +201,21 @@ void main() {
 // Depth of field. Circle of confusion 0..1 from the opaque scene depth (linearised like the outline pass' linD) relative to
 // the focus distance, d = depth / focus - 1 (0 in focus, -1 at the camera, +1 twice as far): each side has its own sharp
 // band and ramp as fractions of the focus, so the bands hold at every zoom level. The tilt-shift ramp toward the top and
-// bottom edges floors it (off by default). The sky (depth 1 = far) blurs fully. Shared by the downsample and the composite
-// (same uniform objects).
+// bottom edges floors it (off by default). The sky (depth 1 = far) blurs fully. The water draws without depth (the SSR
+// water reads this depth texture), so where the view ray meets the sea plane before the opaque surface (the seabed, the
+// sky) the depth is the ray's hit with the plane: uProj = projection e0, e5, e8, e9; uWater.xyz = world up in view space,
+// w = camera height above the plane (0: no water test). Shared by the downsample and the composite (same uniform objects).
 const DOF_COC = /* glsl */ `
 #include <packing>
 uniform sampler2D tDepth;
 uniform float uNear, uFar, uFocus, uNearStart, uNearFall, uFarStart, uFarFall, uTilt, uTiltA, uTiltB;
+uniform vec4 uProj, uWater;
 float dofCoc(vec2 uv) {
-  float d = -perspectiveDepthToViewZ(texture2D(tDepth, uv).r, uNear, uFar) / uFocus - 1.0;
+  float z = -perspectiveDepthToViewZ(texture2D(tDepth, uv).r, uNear, uFar);
+  vec2 ndc = uv * 2.0 - 1.0;
+  float k = dot(uWater.xyz, vec3((ndc.x + uProj.z) / uProj.x, (ndc.y + uProj.w) / uProj.y, -1.0));
+  if (uWater.w > 0.0 && k < 0.0) z = min(z, uWater.w / -k);
+  float d = z / uFocus - 1.0;
   float c = d > 0.0 ? smoothstep(0.0, uFarFall, d - uFarStart) : smoothstep(0.0, uNearFall, -d - uNearStart);
   return max(c, uTilt * smoothstep(uTiltA, uTiltB, abs(uv.y - 0.5)));
 }
@@ -460,7 +471,7 @@ export class Pipeline {
     WATERU.tRefract.value = this.rtRefract.texture;
     // Depth of field. focus (view depth, world units) and enabled are set by the scene every frame; force is the
     // URL's ?dof= strength (null = the tier's). Targets and materials exist only while the strength is above 0.
-    this.dof = { focus: 20, enabled: true, force: null };
+    this.dof = { focus: 20, enabled: true, naval: false, force: null };
     this.dofCfg = DOF;
     this.dofStrength = 0;
     this.dofActive = false; // the last frame drew the DOF passes (QA stat)
@@ -487,6 +498,7 @@ export class Pipeline {
       tDepth: { value: this.rtNormal.depthTexture }, uNear: { value: 0.5 }, uFar: { value: 1400 }, uFocus: { value: 20 },
       uNearStart: { value: DOF.nearStart }, uNearFall: { value: DOF.nearFalloff }, uFarStart: { value: DOF.farStart }, uFarFall: { value: DOF.farFalloff },
       uTilt: { value: DOF.tilt }, uTiltA: { value: DOF.tiltStart }, uTiltB: { value: DOF.tiltEnd },
+      uProj: { value: new THREE.Vector4(1, 1, 0, 0) }, uWater: { value: new THREE.Vector4() },
     };
     this.dofU = coc; // shared by the downsample and the composite
     const dm = (frag, uniforms) => new THREE.ShaderMaterial({ uniforms, vertexShader: FS_QUAD_VERT, fragmentShader: frag, depthTest: false, depthWrite: false });
@@ -713,7 +725,11 @@ export class Pipeline {
     const r = this.renderer, q = this.dofQuad, cfg = this.dofCfg, u = this.dofU, cam = this.camera;
     const pass = (mat, target) => { q.mesh.material = mat; r.setRenderTarget(target); r.render(q.scene, this.quadCam); };
     u.uNear.value = cam.near; u.uFar.value = cam.far; u.uFocus.value = Math.max(0.1, this.dof.focus); // the CoC divides by it
-    u.uNearStart.value = cfg.nearStart; u.uNearFall.value = cfg.nearFalloff; u.uFarStart.value = cfg.farStart; u.uFarFall.value = cfg.farFalloff;
+    const band = this.dof.naval && cfg.naval ? cfg.naval : cfg;
+    u.uNearStart.value = band.nearStart; u.uNearFall.value = band.nearFalloff; u.uFarStart.value = band.farStart; u.uFarFall.value = band.farFalloff;
+    const pe = cam.projectionMatrix.elements, we = cam.matrixWorld.elements;
+    u.uProj.value.set(pe[0], pe[5], pe[8], pe[9]);
+    u.uWater.value.set(we[1], we[5], we[9], Math.max(0, we[13] - cfg.waterY)); // matrixWorld row 1: up in view space, height
     u.uTilt.value = cfg.tilt; u.uTiltA.value = cfg.tiltStart; u.uTiltB.value = cfg.tiltEnd;
     const a = this.rtDofA, b = this.rtDofB, bu = this.dofBlur.uniforms;
     r.autoClear = true;

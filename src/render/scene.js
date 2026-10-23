@@ -303,9 +303,10 @@ export class GameScene {
     U.mnTime.value = this.time;
     this.pipeline.update(dt);
     // Depth of field: focus at the rig's distance (the player); under the naval chase camera (not the rig) at the
-    // focus point's view depth; off on the title orbit.
+    // focus point's view depth, with the naval bands; off on the title orbit.
     const dof = this.pipeline.dof;
     dof.enabled = !!ctx.playing;
+    dof.naval = !!ctx.naval;
     dof.focus = ctx.naval ? -this.tmpV.copy(ctx.focus).applyMatrix4(this.camera.matrixWorldInverse).z : this.rig.dist;
     this.focus.copy(ctx.focus);
     this.grass.update(ctx.focus);
