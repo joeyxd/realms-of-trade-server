@@ -194,6 +194,7 @@ try {
     validateTerrainForMap(checkMap, doc.terrain);
   }
   evidence.site = sites.map(item => ({ tool: item.tool, ...item.center }));
+  // The site search runs the v3 reference sculpt in Node (a pure function); the browser strokes below commit v5 tiles.
   await check('real_seed_has_five_policy_valid_strokes_on_existing_dry_ground', async () => {
     assert.equal(sites.length, 5);
     assert.ok(sites.every(item => item.document.version === 3 && item.document.terrain.samples.length > 0));
@@ -265,6 +266,22 @@ try {
       JSON.stringify(before), { timeout: 15000 });
   };
 
+  // The largest decoded tile delta (mm) and paint weight within `half` metres of a point in the current v5 document.
+  const tileSignal = (center, half) => page.evaluate(async ({ center, half }) => {
+    const { decodeTile } = await import('/src/editor/terrainTiles.js');
+    const doc = __mn.gmEditor.history.current(), tiles = __mn.gmEditor.history.tilesOf(doc);
+    let deltaMm = 0, weight = 0;
+    for (const [tx, tz, sha256] of doc.terrain.tiles) {
+      const tile = decodeTile(tiles.get(sha256), doc.base.revision);
+      for (let v = 0, n = 0; v < 70; v++) for (let u = 0; u < 70; u++, n++) {
+        if (Math.abs(70 * tx + u - center.x) > half || Math.abs(70 * tz + v - center.z) > half) continue;
+        deltaMm = Math.max(deltaMm, Math.abs(tile.deltasMm[n]));
+        for (const channel of tile.channels) weight = Math.max(weight, channel.weights[n]);
+      }
+    }
+    return { tiles: doc.terrain.tiles.length, deltaMm, weight };
+  }, { center, half });
+
   const brushInputs = ['raise', 'lower', 'flatten', 'smooth', 'ramp'];
   for (let i = 0; i < brushInputs.length; i++) {
     const { tool, points, center } = sites[i];
@@ -278,14 +295,16 @@ try {
         await drawStroke('raise', [raise.point], terraceBefore);
       }
       evidence.rampTerrace = await page.evaluate(({ point }) => ({ point, height: __mn.gmEditor.draftMap.groundAt(point.x, point.z),
-        baseHeight: __mn.gmEditor.map.groundAt(point.x, point.z), samples: __mn.gmEditor.history.current().terrain.samples.length }),
+        baseHeight: __mn.gmEditor.map.groundAt(point.x, point.z), tiles: __mn.gmEditor.history.current().terrain.tiles.length }),
       { point: sites[i].preRaises.at(-1).point });
     }
     const before = await page.evaluate(() => structuredClone(__mn.gmEditor.history.current()));
     await drawStroke(tool, points, before);
     const current = await page.evaluate(() => structuredClone(__mn.gmEditor.history.current()));
-    evidence.brushes.push({ tool, point: center, samples: current.terrain.samples.length });
-    assert.equal(current.version, 3);
+    const signal = await tileSignal(center, 8);
+    evidence.brushes.push({ tool, point: center, tiles: current.terrain.tiles.length, maxDeltaMm: signal.deltaMm });
+    assert.equal(current.version, 5);
+    assert.ok(current.terrain.tiles.length > 0 && signal.deltaMm > 0, `${tool} should leave a non-zero tile delta at the stroke: ${JSON.stringify(signal)}`);
     assert.notDeepEqual(current, before, `${tool} should commit a changed history document`);
   }
   await check('mouse_pointer_executes_raise_lower_flatten_smooth_and_two_click_ramp_as_real_history_edits', async () => {
@@ -298,7 +317,8 @@ try {
   const beforeInvalid = await page.evaluate(() => structuredClone(__mn.gmEditor.history.current()));
   const spawn = await page.evaluate(() => __mn.gmEditor.map.landmarks.spawn);
   let protectedPreflight = null;
-  try { sculptTerrainDocument({ map, document: beforeInvalid, baseRevision: BASE_REVISION,
+  // The v3 reference sculpt takes a v3 document: the planned strokes' last document stands for the browser's v5 history.
+  try { sculptTerrainDocument({ map, document: sites.at(-1).document, baseRevision: BASE_REVISION,
     tool: 'raise', points: [spawn], radius: 6, strength: .5, falloff: .5, level: 4 }); }
   catch (error) { protectedPreflight = error; }
   assert.ok(protectedPreflight, 'spawn preflight must reject this gesture');
@@ -376,7 +396,7 @@ try {
   await page.locator('[data-action="redo"]').click();
   assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), undoTarget);
   assert.notDeepEqual(undone, undoTarget);
-  await check('undo_redo_restores_exact_v3_sample_and_decoration_override_state', async () => {});
+  await check('undo_redo_restores_exact_v5_tile_reference_and_decoration_override_state', async () => {});
 
   phase = 'walk_test_and_visual_evidence';
   const rampLocation = sites[4].center, rampHigh = sites[4].points[0], rampLow = sites[4].points[1];
@@ -460,6 +480,8 @@ try {
 
   await focusAt(rampLocation, 9);
   await page.locator('[data-action="tab-terrain"]').click();
+  // Leaving the Terrain tab deselects the tool, and the brush controls stay hidden until one is chosen.
+  await page.locator('[data-terrain-tool]').selectOption('raise');
   await setLanguage('en');
   await page.setViewportSize({ width: 1440, height: 900 }); await page.waitForTimeout(250);
   await shot('terrain-en-closeup-1440x900');
@@ -483,23 +505,40 @@ try {
     assert.equal(evidence.screenshots.length, 5);
   });
 
-  phase = 'local_save_reopen_export_import_v3_and_v2_compatibility';
+  phase = 'local_save_reopen_export_import_v5_and_v2_compatibility';
+  // Every tile the current document references is held by the history with its declared length and sha256.
+  const heldTiles = () => page.evaluate(async () => {
+    const { tileSha256 } = await import('/src/editor/terrainTiles.js');
+    const doc = __mn.gmEditor.history.current(), tiles = __mn.gmEditor.history.tilesOf(doc);
+    let valid = 0;
+    for (const [, , sha256, length] of doc.terrain.tiles) {
+      const bytes = tiles.get(sha256);
+      if (bytes?.length === length && await tileSha256(bytes) === sha256) valid++;
+    }
+    return { referenced: doc.terrain.tiles.length, valid };
+  });
   await page.locator('[data-action="save"]').click(); await page.waitForFunction(() => !__mn.gmEditor.dirty, null, { timeout: 15000 });
-  const savedV3 = await page.evaluate(() => structuredClone(__mn.gmEditor.history.current()));
+  const savedV5 = await page.evaluate(() => structuredClone(__mn.gmEditor.history.current()));
   const [download] = await Promise.all([page.waitForEvent('download'), page.locator('[data-action="export"]').click()]);
-  const exportPath = resolve(out, 'terrain-v3-export.json'); await download.saveAs(exportPath);
+  const exportPath = resolve(out, 'terrain-v5-export.json'); await download.saveAs(exportPath);
   const exported = JSON.parse(await fs.promises.readFile(exportPath, 'utf8'));
-  assert.equal(exported.document.version, 3); assert.ok(exported.document.terrain.samples.length > 0);
+  assert.equal(exported.document.version, 5); assert.ok(exported.document.terrain.tiles.length > 0);
+  assert.deepEqual(Object.keys(exported.tiles).sort(), exported.document.terrain.tiles.map(reference => reference[2]).sort());
   await page.locator('[data-action="close"]').click(); await page.waitForFunction(() => __mn.st.mode === 'title');
   await page.locator('#btn-gm-editor').click(); await page.waitForFunction(() => __mn.st.mode === 'editor' && __mn.gmEditor.active);
-  assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), savedV3);
+  assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), savedV5);
+  const reopened = await heldTiles();
+  assert.deepEqual(reopened, { referenced: savedV5.terrain.tiles.length, valid: savedV5.terrain.tiles.length });
   await page.locator('[data-role="import"]').setInputFiles(exportPath);
-  await page.waitForFunction(() => __mn.gmEditor.history.current().version === 3 && !__mn.gmEditor.dirty &&
+  await page.waitForFunction(() => __mn.gmEditor.history.current().version === 5 && !__mn.gmEditor.dirty &&
     document.querySelector('[data-role="status"]')?.textContent?.includes('importado'));
-  assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), savedV3);
-  await check('local_save_reopen_export_and_import_preserve_v3_while_fresh_v2_remains_legacy_shaped', async () => {
+  assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), savedV5);
+  const imported = await heldTiles();
+  assert.deepEqual(imported, reopened);
+  evidence.v5Persistence = { tiles: savedV5.terrain.tiles.length, reopened, imported, exportFile: 'terrain-v5-export.json' };
+  await check('local_save_reopen_export_and_import_preserve_v5_tiles_while_fresh_v2_remains_legacy_shaped', async () => {
     assert.equal(initial.version, 2); assert.equal(Object.hasOwn(initial, 'terrain'), false);
-    assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), savedV3);
+    assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), savedV5);
   });
 
   if (production && process.env.MN_GM_CHAIN_MODULE) {
@@ -507,10 +546,8 @@ try {
     await context.close(); context = null; page = null;
     const chainModule = resolve(process.env.MN_GM_CHAIN_MODULE);
     const { runPublicCanary } = await import(pathToFileURL(chainModule).href);
-    const activeTerrain = savedV3.terrain;
-    const sample = activeTerrain.samples.find(([index, delta]) => delta !== 0);
-    assert.ok(sample, 'the public canary needs a changed terrain sample');
-    const index = sample[0], row = Math.floor(index / 561), col = index % 561;
+    assert.equal(savedV5.version, 5);
+    assert.ok(savedV5.terrain.tiles.length > 0, 'the public canary needs changed terrain tiles');
     const onActive = async ({ origin: activeOrigin, revisionId, generation, document, terrain, sample: activeSample, timeoutMs }) => {
       const peerContext = await browser.newContext({ viewport: { width: 1280, height: 800 } });
       try {
@@ -532,13 +569,18 @@ try {
         await peer.waitForFunction(() => window.__mn && __mn.gmContent?.ok === true, null, { timeout: timeoutMs || 90000 });
         const loaded = await peer.evaluate(async ({ revisionId, generation, terrain, sample }) => {
           const { gmContentHash } = await import('/src/editor/activeContent.js');
+          const { tileSha256 } = await import('/src/editor/terrainTiles.js');
           const content = __mn.gmContent, map = __mn.map;
+          // A v5 terrain hashes the heights as float32 little-endian (heightsSha256); v3 and v4 hash canonical JSON.
+          const heights = new DataView(new ArrayBuffer(map.heights.length * 4));
+          map.heights.forEach((height, k) => heights.setFloat32(k * 4, height, true));
           return { loaded: !!content?.ok && content.revisionId === revisionId && content.generation === generation && map.gmTerrain === true,
-            terrainHash: await gmContentHash(Array.from(map.heights)), height: map.heights[sample.index],
+            terrainHash: terrain.heightsSha256 ? await tileSha256(new Uint8Array(heights.buffer)) : await gmContentHash(Array.from(map.heights)),
+            height: map.heights[sample.index],
             content: { generation: content.generation, revisionId: content.revisionId } };
         }, { revisionId, generation, terrain, sample: activeSample });
         assert.equal(loaded.loaded, true, 'the fresh guest must load the activated revision before HELLO');
-        assert.equal(loaded.terrainHash, terrain.sha256);
+        assert.equal(loaded.terrainHash, terrain.heightsSha256 ?? terrain.sha256);
         assert.equal(loaded.height, activeSample.expectedHeight);
         assert.equal(await peer.evaluate(() => __mn.gmContent.revision?.content?.document?.version), document.version);
         await peer.waitForFunction(() => getComputedStyle(document.getElementById('fade')).display === 'none');
@@ -570,7 +612,7 @@ try {
       stroke: __mn.gmEditor.terrainInteraction?.stroke && {
         points: __mn.gmEditor.terrainInteraction.stroke.points,
         error: __mn.gmEditor.terrainInteraction.stroke.error?.code || __mn.gmEditor.terrainInteraction.stroke.error?.message || null,
-        resultSamples: __mn.gmEditor.terrainInteraction.stroke.result?.terrain?.samples?.length ?? null,
+        resultTiles: __mn.gmEditor.terrainInteraction.stroke.result?.terrain?.tiles?.length ?? null,
       },
       lastError: __mn.gmEditor.lastError?.code || __mn.gmEditor.lastError?.message || null,
       terrainStatus: document.querySelector('[data-role="status"]')?.textContent,

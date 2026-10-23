@@ -12,7 +12,9 @@ import { PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { generateWorld } from '../src/sim/worldgen.js';
 import { paintTerrainDocument } from '../src/editor/terrainPaint.js';
 import { sculptTerrainDocument } from '../src/editor/terrainSculpt.js';
-import { compileTerrainMap, validateTerrainForMap } from '../src/editor/terrainData.js';
+import { validateTerrainForMap } from '../src/editor/terrainData.js';
+import { compileTerrainTiles, validateTerrainTilesForMap } from '../src/editor/terrainTiles.js';
+import { DRAFT_DATABASE_VERSION, readDraftExport } from '../src/editor/draftStore.js';
 
 const publicOrigin = process.env.MN_GM_QA_ORIGIN?.replace(/\/+$/, '') || '';
 const production = !!publicOrigin;
@@ -215,6 +217,7 @@ try {
   const plan = paintSites(map, initial);
   for (const item of plan) validateTerrainForMap(map, item.document.terrain);
   evidence.paintSites = plan.map(({ material, shape, point }) => ({ material, shape, ...point }));
+  // The site search runs the v4 reference painter in Node (a pure function); the browser strokes below commit v5 tiles.
   await check('preflight_selects_four_policy_valid_dry_sites_for_the_four_ground_families_and_brush_shapes', async () => {
     assert.deepEqual(plan.map(({ material }) => material), ['grass', 'dirt', 'sand', 'rock']);
     assert.deepEqual(plan.map(({ shape }) => shape), ['circle', 'square', 'ellipse', 'circle']);
@@ -252,6 +255,28 @@ try {
     for (let i = 0; i < array.length; i += 3) { minX = Math.min(minX, array[i]); maxX = Math.max(maxX, array[i]); minZ = Math.min(minZ, array[i + 2]); maxZ = Math.max(maxZ, array[i + 2]); }
     return { width: maxX - minX, depth: maxZ - minZ };
   });
+  // What the current v5 document's decoded tiles hold: counts of edited vertices, a hash of every material channel, and
+  // the largest height delta (mm) and paint weight within `half` metres of `center`.
+  const terrainDigest = (center = { x: 0, z: 0 }, half = 6) => page.evaluate(async ({ center, half }) => {
+    const { decodeTile } = await import('/src/editor/terrainTiles.js');
+    const doc = __mn.gmEditor.history.current(), tiles = __mn.gmEditor.history.tilesOf(doc);
+    let deltaVertices = 0, weightVertices = 0, nearDeltaMm = 0, nearWeight = 0, weightsHash = 2166136261;
+    for (const [tx, tz, sha256] of doc.terrain.tiles) {
+      const tile = decodeTile(tiles.get(sha256), doc.base.revision);
+      for (const channel of tile.channels) {
+        weightsHash = Math.imul(weightsHash ^ (tx + 16) * 64 + (tz + 16) * 8 + channel.id, 16777619);
+        for (let n = 0; n < channel.weights.length; n++) weightsHash = Math.imul(weightsHash ^ channel.weights[n], 16777619);
+      }
+      for (let v = 0, n = 0; v < 70; v++) for (let u = 0; u < 70; u++, n++) {
+        const near = Math.abs(70 * tx + u - center.x) <= half && Math.abs(70 * tz + v - center.z) <= half;
+        const weight = tile.channels.reduce((largest, channel) => Math.max(largest, channel.weights[n]), 0);
+        if (tile.deltasMm[n] !== 0) deltaVertices++;
+        if (weight > 0) weightVertices++;
+        if (near) { nearDeltaMm = Math.max(nearDeltaMm, Math.abs(tile.deltasMm[n])); nearWeight = Math.max(nearWeight, weight); }
+      }
+    }
+    return { tiles: doc.terrain.tiles.length, deltaVertices, weightVertices, nearDeltaMm, nearWeight, weightsHash: weightsHash >>> 0 };
+  }, { center, half });
   const paintStroke = async ({ material, shape, point }) => {
     await setTool('paint');
     await page.locator('[data-terrain-select="material"]').selectOption(material);
@@ -267,8 +292,11 @@ try {
     const result = await page.evaluate(({ point }) => ({ document: structuredClone(__mn.gmEditor.history.current()),
       material: __mn.gmEditor.draftMap.materialAt(point.x, point.z), chart: document.querySelector('.gm-terrain-map')?.toDataURL() }), { point });
     assert.equal(result.material, material, `${material} should be the dominant material under the real pointer stroke`);
-    assert.equal(result.document.version, 4);
-    evidence.paint.push({ material, shape, point, ...outline, materials: result.document.terrain.materials.length });
+    assert.equal(result.document.version, 5);
+    const digest = await terrainDigest(point);
+    assert.ok(result.document.terrain.tiles.length > 0 && digest.nearWeight > 0,
+      `${material} should leave a non-zero material channel in its tile: ${JSON.stringify(digest)}`);
+    evidence.paint.push({ material, shape, point, ...outline, tiles: result.document.terrain.tiles.length, nearWeight: digest.nearWeight });
     return result.document;
   };
 
@@ -321,16 +349,21 @@ try {
   await check('undo_and_redo_restore_the_exact_material_blends', async () => {});
 
   phase = 'sculpt_after_paint_and_private_walk';
-  const sculpt = sculptSite(map, afterStrongDoc, plan.map(item => item.point));
+  // The v3/v4 reference sculpt takes a v4 document: the planned paints' last document stands for the browser's v5 history.
+  const sculpt = sculptSite(map, plan.at(-1).document, plan.map(item => item.point));
   await setTool('raise'); await setField('radius', 3); await setField('strength', .5); await focusAt(sculpt.point, 16);
   const beforeSculpt = await page.evaluate(() => structuredClone(__mn.gmEditor.history.current()));
+  const digestBefore = await terrainDigest(sculpt.point);
   await pointerClick(sculpt.point);
   await page.waitForFunction(previous => JSON.stringify(__mn.gmEditor.history.current()) !== previous, JSON.stringify(beforeSculpt), { timeout: 15000 });
   const afterSculpt = await page.evaluate(() => structuredClone(__mn.gmEditor.history.current()));
-  assert.equal(afterSculpt.version, 4); assert.ok(afterSculpt.terrain.samples.length > 0);
-  assert.deepEqual(afterSculpt.terrain.materials, beforeSculpt.terrain.materials, 'sculpting should preserve all painted material rows');
-  await check('real_pointer_sculpt_after_paint_keeps_the_material_layer_and_adds_height_samples', async () => {
-    assert.ok(afterSculpt.terrain.samples.length > 0); assert.deepEqual(afterSculpt.terrain.materials, beforeSculpt.terrain.materials);
+  const digestAfter = await terrainDigest(sculpt.point);
+  assert.equal(afterSculpt.version, 5); assert.ok(digestAfter.nearDeltaMm > 0 && digestAfter.deltaVertices > digestBefore.deltaVertices);
+  assert.equal(digestAfter.weightsHash, digestBefore.weightsHash, 'sculpting should preserve every painted material channel');
+  assert.equal(digestAfter.weightVertices, digestBefore.weightVertices);
+  evidence.sculptAfterPaint = { before: digestBefore, after: digestAfter };
+  await check('real_pointer_sculpt_after_paint_keeps_the_material_channels_and_adds_height_deltas', async () => {
+    assert.equal(digestAfter.weightsHash, digestBefore.weightsHash); assert.ok(digestAfter.deltaVertices > 0);
   });
 
   await page.evaluate(point => { __mn.gmEditor.terrainInteraction.lastPoint = { ...point }; }, plan[0].point);
@@ -357,14 +390,23 @@ try {
   await page.evaluate(() => __mn.gmEditor.saveNow());
   await page.waitForFunction(() => !__mn.gmEditor.dirty && !__mn.gmEditor.saveTimer, null, { timeout: 15000 });
   const saved = await page.evaluate(() => structuredClone(__mn.gmEditor.history.current()));
-  assert.equal(saved.version, 4); assert.equal(saved.terrain.version, 2);
-  assert.ok(saved.terrain.samples.length > 0 && saved.terrain.materials.length > 0);
-  validateTerrainForMap(map, saved.terrain);
-  const compiled = compileTerrainMap(map, saved.terrain);
+  const digestSaved = await terrainDigest(sculpt.point);
+  assert.equal(saved.version, 5); assert.equal(saved.terrain.version, 3);
+  assert.ok(saved.terrain.tiles.length > 0 && digestSaved.deltaVertices > 0 && digestSaved.weightVertices > 0);
+  // The document and its tile bytes leave the browser as the export envelope; Node checks and compiles them.
+  const savedExport = await readDraftExport(await page.evaluate(async () => {
+    const { serializeDraftExport } = await import('/src/editor/draftStore.js');
+    const doc = __mn.gmEditor.history.current();
+    return serializeDraftExport(doc, __mn.gmEditor.history.tilesOf(doc));
+  }));
+  assert.deepEqual(savedExport.document, saved);
+  const savedSource = { tiles: saved.terrain.tiles, blobs: savedExport.tiles };
+  validateTerrainTilesForMap(map, savedSource, saved.base.revision);
+  const compiled = compileTerrainTiles(map, savedSource, saved.base.revision);
   assert.equal(compiled.gmTerrain, true);
   assert.deepEqual(plan.map(item => compiled.materialAt(item.point.x, item.point.z)), ['grass', 'dirt', 'sand', 'rock']);
-  evidence.document = { version: saved.version, terrainVersion: saved.terrain.version,
-    heightSamples: saved.terrain.samples.length, materialSamples: saved.terrain.materials.length,
+  evidence.document = { version: saved.version, terrainVersion: saved.terrain.version, tiles: saved.terrain.tiles.length,
+    heightVertices: digestSaved.deltaVertices, materialVertices: digestSaved.weightVertices,
     materialAtPaintSites: plan.map(item => compiled.materialAt(item.point.x, item.point.z)) };
   await page.locator('[data-action="close"]').click();
   await page.waitForFunction(() => __mn.st.mode === 'title' && !__mn.gmEditor?.active, null, { timeout: 20000 });
@@ -373,8 +415,9 @@ try {
     JSON.stringify(saved), { timeout: 15000 });
   const reloaded = await page.evaluate(() => structuredClone(__mn.gmEditor.history.current()));
   assert.deepEqual(reloaded, saved);
-  await check('save_now_and_editor_reopen_reload_the_exact_v4_document_from_indexeddb', async () => {
-    assert.equal(reloaded.version, 4); assert.deepEqual(reloaded, saved);
+  assert.deepEqual(await terrainDigest(sculpt.point), digestSaved, 'the reopened tiles decode to the saved heights and material channels');
+  await check('save_now_and_editor_reopen_reload_the_exact_v5_document_and_tiles_from_indexeddb', async () => {
+    assert.equal(reloaded.version, 5); assert.deepEqual(reloaded, saved);
   });
 
   phase = 'restore_original_buffers_and_visual_captures';
@@ -504,33 +547,48 @@ try {
     await moveTo(framing.center); await page.waitForTimeout(250); await screenshot(`terrain-${lang}-1440x900`);
   }
   // Mobile screenshots use a genuinely coarse-pointer context, so the registry loads mobileSrc assets.
-  const mobileDraftSeed = await page.evaluate(async () => {
+  // The seed is the stored draft record plus the tile bytes it references (the `tiles` store of the drafts database).
+  const mobileDraftSeed = await page.evaluate(async ({ databaseVersion }) => {
     const key = __mn.gmEditor.store.key;
     if (typeof key !== 'string' || !key.startsWith('draft:')) throw new Error('Active editor draft store key is unavailable');
-    const record = await new Promise((resolve, reject) => {
-    const request = indexedDB.open('marea-gm-drafts-v1', 1);
-    request.onerror = () => reject(request.error);
-      request.onsuccess = () => { const tx = request.result.transaction('drafts', 'readonly'); const get = tx.objectStore('drafts').get(key);
-        get.onsuccess = () => resolve(get.result); get.onerror = () => reject(get.error); };
+    const database = await new Promise((resolve, reject) => {
+      const request = indexedDB.open('marea-gm-drafts-v1', databaseVersion);
+      request.onerror = () => reject(request.error); request.onsuccess = () => resolve(request.result);
     });
-    return { key, record };
-  });
+    const read = (store, id) => new Promise((resolve, reject) => {
+      const get = database.transaction(store, 'readonly').objectStore(store).get(id);
+      get.onsuccess = () => resolve(get.result); get.onerror = () => reject(get.error);
+    });
+    const record = await read('drafts', key), tiles = {};
+    for (const [, , sha256] of record?.document?.terrain?.tiles ?? []) {
+      const bytes = await read('tiles', sha256);
+      let binary = ''; for (const byte of bytes) binary += String.fromCharCode(byte);
+      tiles[sha256] = btoa(binary);
+    }
+    database.close();
+    return { key, record, tiles };
+  }, { databaseVersion: DRAFT_DATABASE_VERSION });
   assert.deepEqual(mobileDraftSeed.record?.document, saved, 'mobile capture must copy the exact account/server-scoped saved local draft');
+  assert.deepEqual(Object.keys(mobileDraftSeed.tiles).sort(), saved.terrain.tiles.map(reference => reference[2]).sort());
   const mobileContext = await browser.newContext({ viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true,
     deviceScaleFactor: 2, ...(production ? { storageState: await context.storageState() } : {}) });
   await setup(mobileContext);
-  await mobileContext.addInitScript(({ key, record, targetOrigin }) => {
+  await mobileContext.addInitScript(({ key, record, tiles, targetOrigin, databaseVersion }) => {
     if (window !== window.top || location.origin !== targetOrigin) return;
     window.__gm05bSeedReady = new Promise((resolve, reject) => {
-      const request = indexedDB.open('marea-gm-drafts-v1', 1);
-      request.onupgradeneeded = () => { if (!request.result.objectStoreNames.contains('drafts')) request.result.createObjectStore('drafts'); };
+      const request = indexedDB.open('marea-gm-drafts-v1', databaseVersion);
+      request.onupgradeneeded = () => {
+        for (const store of ['drafts', 'tiles']) if (!request.result.objectStoreNames.contains(store)) request.result.createObjectStore(store);
+      };
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
-        const db = request.result, tx = db.transaction('drafts', 'readwrite');
-        tx.objectStore('drafts').put(record, key); tx.oncomplete = () => resolve(true); tx.onerror = () => reject(tx.error);
+        const db = request.result, tx = db.transaction(['drafts', 'tiles'], 'readwrite');
+        tx.objectStore('drafts').put(record, key);
+        for (const [sha256, base64] of Object.entries(tiles)) tx.objectStore('tiles').put(Uint8Array.from(atob(base64), char => char.charCodeAt(0)), sha256);
+        tx.oncomplete = () => resolve(true); tx.onerror = () => reject(tx.error);
       };
     });
-  }, { ...mobileDraftSeed, targetOrigin: origin });
+  }, { ...mobileDraftSeed, targetOrigin: origin, databaseVersion: DRAFT_DATABASE_VERSION });
   const mobilePage = await mobileContext.newPage();
   const previousPage = page; page = mobilePage;
   page.on('pageerror', error => evidence.pageErrors.push(redact(`${error.name}:${error.message}`)));
@@ -589,17 +647,22 @@ try {
         await peer.waitForFunction(() => window.__mn && __mn.gmContent?.ok === true, null, { timeout: timeoutMs || 90000 });
         const loaded = await peer.evaluate(async ({ revisionId, generation, terrain, sample, material }) => {
           const { gmContentHash } = await import('/src/editor/activeContent.js');
+          const { tileSha256 } = await import('/src/editor/terrainTiles.js');
           const content = __mn.gmContent, map = __mn.map;
+          // A v5 terrain hashes heights as float32 little-endian and the weights as they are; v3 and v4 hash canonical JSON.
+          const heights = new DataView(new ArrayBuffer(map.heights.length * 4));
+          map.heights.forEach((height, k) => heights.setFloat32(k * 4, height, true));
+          const tiled = !!terrain.heightsSha256;
           return { loaded: !!content?.ok && content.revisionId === revisionId && content.generation === generation && map.gmTerrain === true,
-            terrainHash: await gmContentHash(Array.from(map.heights)),
-            materialsHash: await gmContentHash(content.revision?.content?.document?.terrain?.materials || []),
+            terrainHash: tiled ? await tileSha256(new Uint8Array(heights.buffer)) : await gmContentHash(Array.from(map.heights)),
+            materialsHash: tiled ? await tileSha256(map.terrain.weights) : await gmContentHash(content.revision?.content?.document?.terrain?.materials || []),
             height: sample?.index == null ? null : map.heights[sample.index],
             material: map.materialAt(material.x, material.z),
             materialWeights: map.materialWeightsAt(material.x, material.z),
             documentVersion: content.revision?.content?.document?.version };
         }, { revisionId, generation, terrain, sample, material });
         assert.equal(loaded.loaded, true, 'fresh guest must load the activated revision before HELLO');
-        assert.equal(loaded.terrainHash, terrain.sha256);
+        assert.equal(loaded.terrainHash, terrain.heightsSha256 ?? terrain.sha256);
         assert.equal(loaded.materialsHash, terrain.materialsSha256);
         if (sample?.index != null) assert.equal(loaded.height, sample.expectedHeight);
         assert.equal(loaded.material, material.expected || 'rock');
