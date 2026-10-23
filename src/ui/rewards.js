@@ -215,7 +215,7 @@ export class Rewards {
       case 'quest': {
         const Q = QUESTS[ev.id];
         if (!Q) break;
-        if (ev.st === 'start') { sfx.questStart(); H.toast(`${rich('reward.quest_new')} ${dataText(Q.name)}<br><small>${dataText(Q.text)}</small>`, 5200); }
+        if (ev.st === 'start') { sfx.questStart(); H.toast(`${rich('reward.quest_new')} ${dataText(Q.name)}<br><small>${dataText(Q.text)}</small>`, 5200, { fold: true }); }
         else if (ev.st === 'progress') this.over(`${dataText(Q.name)} ${formatNumber(ev.n)}/${formatNumber(ev.of)}`, 'xp', { life: 1.1, rise: 26 });
         else if (ev.st === 'ready') { sfx.questStart(); H.toast(rich('reward.quest_ready', { quest: dataParam(Q.name), npc: Q.turnin === 'vendor' ? 'Tía Perla' : 'Capitana Brea' }), 4600); }
         else if (ev.st === 'done') {

@@ -1904,7 +1904,7 @@ async function boot() {
   assetEntry.ready = true; assetEntry.render();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount().then(() => accountSetup?.consumeLink());
-  window.__mn = { world, client, settings, st, ps, map, gmContent, gmContentLayer, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, skillEntry, assetEntry, companions, get assetWorkshop() { return assetWorkshop; }, get skillStudio() { return skillStudio; }, get gmEditor() { return gmEditor; }, panels: { firePanel, freshwaterPanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
+  window.__mn = { world, client, hud, settings, st, ps, map, gmContent, gmContentLayer, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, skillEntry, assetEntry, companions, get assetWorkshop() { return assetWorkshop; }, get skillStudio() { return skillStudio; }, get gmEditor() { return gmEditor; }, panels: { firePanel, freshwaterPanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

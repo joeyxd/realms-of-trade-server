@@ -6,7 +6,10 @@ import { gsap } from 'gsap';
 import { SKINS } from '../render/characters.js';
 import { WEAPONS, SKILLS, formed } from '../data/weapons.js';
 import { TATTOOS } from '../data/tattoos.js';
+import { GAME } from '../data/meta.js';
 
+// The tracker steps the player closed with its X (PT11); under the save key, so "reset save" clears it too.
+const TRACKER_CLOSED = GAME.saveKey + '.trackerClosed';
 const hex = (n) => '#' + n.toString(16).padStart(6, '0');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 // Skill id → icon key where they differ; roman ranks.
@@ -100,7 +103,7 @@ export class Hud {
       <div id="enc-info" class="outlined" hidden></div>
       <div id="zone-banner"><div class="zname outlined"></div><div class="zsub"></div><div class="zline"></div></div>
       <div id="toasts"></div>
-      <div class="tracker frame-dark"><h3>${ltext('tutorial.first')}</h3><ul></ul></div>
+      <div class="tracker frame-dark"><h3>${ltext('tutorial.first')}</h3><ul></ul><button class="trk-x" type="button" data-l10n-aria-label="hud.trackerClose" aria-label="${attr('hud.trackerClose')}"></button></div>
       <div id="chain" class="outlined" hidden><span class="x">${ltext('hud.chain')}</span><b>x2</b></div>
       <div class="actionbar frame">
         <div class="wname"></div>
@@ -127,7 +130,19 @@ export class Hud {
     const tracker = root.querySelector('.tracker'), ui = root.parentElement || root;
     tracker.setAttribute('aria-expanded', 'false');
     tracker.addEventListener('click', () => tracker.setAttribute('aria-expanded', String(tracker.classList.toggle('open'))));
-    if (typeof ResizeObserver === 'function') new ResizeObserver(() => ui.style.setProperty('--trk-h', `${tracker.offsetHeight}px`)).observe(tracker);
+    this.trkH = () => ui.style.setProperty('--trk-h', `${tracker.offsetHeight}px`);
+    if (typeof ResizeObserver === 'function') new ResizeObserver(this.trkH).observe(tracker);
+    // PT11: the open folded tracker shows an X that closes it until its steps change (setQuests); the closed signature
+    // is kept per viewer, so a reload does not bring back a list the player put away. Hiding it is measured by hand:
+    // the observer does not report display: none.
+    this.tracker = tracker;
+    tracker.querySelector('.trk-x').addEventListener('click', (e) => {
+      e.stopPropagation();
+      tracker.classList.remove('open'); tracker.setAttribute('aria-expanded', 'false');
+      tracker.classList.add('closed');
+      this.trkH();
+      try { localStorage.setItem(TRACKER_CLOSED, this.last.trk || ''); } catch {}
+    });
     this.toasts = root.querySelector('#toasts');
     this.banner = root.querySelector('#zone-banner');
     this.muteBtn = root.querySelector('#hud-mute');
@@ -473,6 +488,12 @@ export class Hud {
     this.root.querySelector('.tracker h3').textContent = title;
     this.trackerUl.innerHTML = items.map((it) => `<li class="${it.done ? 'done' : ''}${it.ready ? ' ready' : ''}" data-id="${esc(it.id)}"><span class="chk"></span><span class="txt">${it.text}</span></li>`).join('');
     if (was && was.split('|')[0] !== title) gsap.from(this.root.querySelector('.tracker'), { x: 40, opacity: 0, duration: 0.5, ease: 'back.out(2)', clearProps: 'transform,opacity' });
+    // A step is a row and its done / ready flags (a counter in the text is not): a new one reopens a closed tracker.
+    this.last.trk = items.map((it) => `${it.id}:${it.done ? 1 : 0}${it.ready ? 1 : 0}`).join('|');
+    let closed = '';
+    try { closed = localStorage.getItem(TRACKER_CLOSED) || ''; } catch {}
+    const shut = closed === this.last.trk;
+    if (shut !== this.tracker.classList.contains('closed')) { this.tracker.classList.toggle('closed', shut); this.trkH(); }
   }
 
   // The weapon decides LMB and Q / E / R: icons, tooltips and the name over the bar.
@@ -614,13 +635,28 @@ export class Hud {
     tl.to(b, { opacity: 0, duration: 0.6, delay: 2.6 });
   }
 
-  toast(html, ms = 3200) {
+  // { fold: true } (the mission card, PT11): on touch it shows its first line with a chevron and an X (hud.css); a tap
+  // opens the rest and holds it on screen until folded again, the X dismisses it. Elsewhere it is a plain toast.
+  toast(html, ms = 3200, { fold = false } = {}) {
     const el = document.createElement('div');
-    el.className = 'toast frame-dark';
+    el.className = fold ? 'toast frame-dark fold' : 'toast frame-dark';
     el.innerHTML = html;
     this.toasts.prepend(el);
     gsap.fromTo(el, { x: -30, opacity: 0, scale: 0.9 }, { x: 0, opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(2)' });
-    gsap.to(el, { opacity: 0, x: -20, duration: 0.4, delay: ms / 1000, onComplete: () => el.remove() });
+    const out = () => gsap.to(el, { opacity: 0, x: -20, duration: 0.4, delay: ms / 1000, onComplete: () => el.remove() });
+    let fade = out();
+    if (fold) {
+      const x = document.createElement('button');
+      x.type = 'button'; x.className = 'toast-x';
+      setAttributeText(x, 'aria-label', 'hud.toastClose');
+      el.append(x);
+      el.addEventListener('click', (e) => {
+        fade?.kill();
+        if (e.target === x) { el.remove(); return; }
+        const open = el.classList.toggle('open');
+        if (open) { fade = null; gsap.set(el, { opacity: 1, x: 0 }); } else fade = out();
+      });
+    }
     while (this.toasts.children.length > 4) this.toasts.lastChild.remove();
   }
 

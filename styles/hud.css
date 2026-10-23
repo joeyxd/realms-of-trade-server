@@ -177,6 +177,10 @@
 .tracker li.done { color: var(--text-dim); }
 .tracker li.done .txt { text-decoration: line-through; text-decoration-color: rgba(255, 240, 200, 0.5); }
 .tracker li.done .chk { background: var(--good); border-color: var(--ink); box-shadow: inset 0 0 0 2px #fff6; }
+/* PT11: the X that closes the folded tracker or a mission card (shown by the compact and touch rules below). */
+.trk-x, .toast-x { display: none; position: absolute; top: 0; right: 0; width: 32px; height: 30px; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent; }
+.trk-x::before, .trk-x::after, .toast-x::before, .toast-x::after { content: ''; position: absolute; left: 50%; top: 50%; width: 13px; height: 2.5px; margin: -1.25px 0 0 -6.5px; border-radius: 2px; background: var(--brass-l); box-shadow: 0 1px 0 var(--ink); transform: rotate(45deg); }
+.trk-x::after, .toast-x::after { transform: rotate(-45deg); }
 
 /* World-space prompts and nameplates */
 #world-ui { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
@@ -567,10 +571,13 @@ body.touch .actionbar { display: none; }
   .tracker { padding-right: 26px; pointer-events: auto; cursor: pointer; }
   .tracker::after { content: ''; position: absolute; right: 11px; top: 9px; width: 6px; height: 6px; border: solid var(--brass-l); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); filter: drop-shadow(1px 1px 0 var(--ink)); }
   .tracker.open { flex-direction: column; align-items: stretch; gap: 4px; }
-  .tracker.open::after { top: 13px; transform: rotate(-135deg); }
+  .tracker.open::after { top: 13px; right: 40px; transform: rotate(-135deg); }
   #hud .tracker.open li { display: grid; }
   .tracker.open ul { gap: 4px; }
   .tracker.open li .txt { white-space: normal; }
+  /* PT11: open, it shows an X beside the chevron; closed, it stays hidden until its steps change (hud.js setQuests). */
+  .tracker.open .trk-x { display: block; }
+  .tracker.closed { display: none; } #hud:has(.tracker.closed) { --trk: 0px; }
   /* Touch: the tracker sits over the joystick half, so the HUD layer goes above #touch (the panels stay above it,
      z 20+; the Chat and the lantern too). Here the Chat and lantern row starts under the tracker (hud.js writes
      --party-n and --trk-h, the tracker's height, on #ui); the other layouts set --left-row at the end of this file. */
@@ -738,10 +745,29 @@ body.touch:not(.is-naval) #toasts { top: calc(var(--left-row) + 52px); left: cal
   body.touch:not(.is-naval) .tracker li .txt { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   body.touch:not(.is-naval) .tracker::after { content: ''; position: absolute; right: 11px; top: 9px; width: 6px; height: 6px; border: solid var(--brass-l); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); filter: drop-shadow(1px 1px 0 var(--ink)); }
   body.touch:not(.is-naval) #hud .tracker.open { flex-direction: column; align-items: stretch; gap: 4px; }
-  body.touch:not(.is-naval) .tracker.open::after { top: 13px; transform: rotate(-135deg); }
+  body.touch:not(.is-naval) .tracker.open::after { top: 13px; right: 40px; transform: rotate(-135deg); }
   body.touch:not(.is-naval) #hud .tracker.open li { display: grid; }
   body.touch:not(.is-naval) .tracker.open ul { gap: 4px; }
   body.touch:not(.is-naval) .tracker.open li .txt { white-space: normal; }
+  body.touch:not(.is-naval) #hud .tracker.open .trk-x { display: block; }
+  body.touch:not(.is-naval) #hud .tracker.closed { display: none; }
+}
+/* Touch (PT11): the tracker and the toasts are see-through glass over the game. */
+body.touch .tracker.frame-dark, body.touch .toast.frame-dark {
+  background: linear-gradient(180deg, rgba(13, 27, 43, 0.56), rgba(9, 20, 32, 0.6));
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.22);
+  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+}
+/* The mission card folds to its first line with a chevron and an X; a tap opens the rest and holds it on screen (hud.js
+   toast fold). Only where #hud sits above the joystick zone (z-index 1 above): on narrower stages it stays a full toast. */
+@container stage (min-width: 721px) {
+  body.touch:not(.is-naval) #toasts .toast.fold { position: relative; padding-right: 58px; pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  body.touch:not(.is-naval) #toasts .toast.fold:not(.open) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.touch:not(.is-naval) #toasts .toast.fold:not(.open) :is(br, small) { display: none; }
+  body.touch:not(.is-naval) #toasts .toast.fold::after { content: ''; position: absolute; right: 40px; top: 50%; margin-top: -5px; width: 6px; height: 6px; border: solid var(--brass-l); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); filter: drop-shadow(1px 1px 0 var(--ink)); }
+  body.touch:not(.is-naval) #toasts .toast.fold.open::after { top: 13px; margin-top: 0; transform: rotate(-135deg); }
+  body.touch:not(.is-naval) #toasts .toast.fold .toast-x { display: block; top: 50%; margin-top: -15px; }
+  body.touch:not(.is-naval) #toasts .toast.fold.open .toast-x { top: 0; margin-top: 0; }
 }
 
 /* Touch (R1b PT09): the companions toggle is an icon button like its neighbours (a person with an AI spark; its title stays
