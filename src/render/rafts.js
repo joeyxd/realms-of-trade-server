@@ -278,7 +278,9 @@ export class RaftLayer {
         helm.position.set(foot.x + ahead.x * 0.45, foot.y, foot.z + ahead.z * 0.45);
         helm.rotation.y = heading;
         const tiller = helm.userData.tiller;
-        tiller.rotation.y = clamp(cleanNum(state.steer), -1, 1) * 0.42;
+        // Positive steer turns the bow toward raft-local +x; the blade and the handle sit aft of the post,
+        // so they swing toward +x too and the blade trails to the side the raft turns.
+        tiller.rotation.y = -clamp(cleanNum(state.steer), -1, 1) * 0.42;
         steerAngle = tiller.rotation.y;
         view.visual.updateMatrixWorld(true);
         const toWorld = (point) => {

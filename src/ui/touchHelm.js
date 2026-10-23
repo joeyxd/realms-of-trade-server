@@ -1,6 +1,8 @@
 import { t, onLocaleChange, translateData } from '../core/i18n.js';
 
 const DEAD_ZONE = 0.12;
+// Bottom share of the sail lever's track that brakes; styles/naval-touch.css draws its line at the same height.
+const LEVER_BRAKE_ZONE = 0.22;
 const ICONS = Object.freeze({
   wind: [{ d: 'M3 8h11c4 0 4-5 1-5-2 0-3 1-3 2' }, { d: 'M3 12h16c3 0 3 5 0 5-2 0-3-1-3-2' }, { d: 'M3 16h6' }],
   capture: [{ d: 'M4 12h5l3-4 3 8 3-4h2' }, { tag: 'circle', attrs: { cx: '12', cy: '12', r: '9' } }],
@@ -38,7 +40,7 @@ function createIcon(doc, name) {
 
 /** Reusable, touch-first helm controls. Pointer state is local to this instance. */
 export class TouchHelm {
-  constructor(container, { onMove = () => {}, onLook = () => {}, onAction = () => {}, onGesture = () => {},
+  constructor(container, { onMove = () => {}, onLook = () => {}, onAction = () => {}, onGesture = () => {}, onLever = null,
     actions = [], enabled = true, toLocal = null, layout = 'legacy', storageKey = null } = {}) {
     const doc = container?.ownerDocument;
     if (!container?.appendChild || !doc?.createElement) throw new TypeError('TouchHelm requires a DOM container');
@@ -55,6 +57,8 @@ export class TouchHelm {
     this.wrapper.setAttribute('data-enabled', this.enabled ? 'true' : 'false');
     this.container.appendChild(this.wrapper);
     this.buildStick('move', t('systems.touch.move')); this.buildStick('look', t('systems.touch.camera'));
+    this.lever = null;
+    if (typeof onLever === 'function') { this.callbacks.onLever = onLever; this.buildLever(); }
     this.actionRow = makeElement(doc, 'div', 'naval-touch-actions');
     this.actionRow.setAttribute('aria-label', t('systems.touch.navActions')); this.wrapper.appendChild(this.actionRow);
     this.slotButtons = [];
@@ -75,9 +79,14 @@ export class TouchHelm {
     this.actionRow.setAttribute('aria-label', t('systems.touch.navActions'));
     for (const [name, stick] of this.sticks) {
       const label = t(name === 'move' ? 'systems.touch.move' : 'systems.touch.camera');
-      stick.pad.setAttribute('aria-label', t(name === 'move' ? 'systems.touch.moveHelp' : 'systems.touch.cameraHelp'));
+      stick.pad.setAttribute('aria-label', t(name !== 'move' ? 'systems.touch.cameraHelp' : this.layout === 'reference' ? 'systems.touch.helmHelp' : 'systems.touch.moveHelp'));
       stick.pad.querySelector('.naval-touch-cue').textContent = name === 'move' ? t('systems.touch.moveCue') : t('systems.touch.cameraCue');
       stick.pad.querySelector('.naval-touch-caption').textContent = name === 'move' && this.layout === 'reference' ? t('systems.touch.helm') : label.toUpperCase();
+    }
+    if (this.lever) {
+      this.lever.element.setAttribute('aria-label', t('systems.touch.sailHelp'));
+      this.lever.caption.textContent = t('systems.touch.sail').toUpperCase();
+      this.lever.brake.textContent = t('systems.touch.brake').toUpperCase();
     }
     for (const record of this.buttons.values()) {
       const label = translateData(record.action.label);
@@ -98,7 +107,7 @@ export class TouchHelm {
 
   buildStick(name, label) {
     const pad = makeElement(this.doc, 'div', `naval-touch-stick naval-touch-stick-${name}`);
-    const accessibleLabel = name === 'move' ? t('systems.touch.moveHelp') : t('systems.touch.cameraHelp');
+    const accessibleLabel = t(name !== 'move' ? 'systems.touch.cameraHelp' : this.layout === 'reference' ? 'systems.touch.helmHelp' : 'systems.touch.moveHelp');
     pad.setAttribute('role', 'group'); pad.setAttribute('aria-label', accessibleLabel); pad.setAttribute('data-stick', name);
     const ring = makeElement(this.doc, 'div', 'naval-touch-ring'); ring.setAttribute('aria-hidden', 'true');
     const puck = makeElement(this.doc, 'div', 'naval-touch-puck'); puck.setAttribute('aria-hidden', 'true');
@@ -119,6 +128,70 @@ export class TouchHelm {
     this.listen(pad, 'pointerdown', (event) => this.startStick(event, stick));
     this.listen(pad, 'pointermove', (event) => this.moveStick(event, stick));
     return stick;
+  }
+
+  // A vertical sail lever: it stays where it is left between stopped and full sail; the brake zone under
+  // zero springs back to zero on release. The owner sets the shown value with setLever.
+  buildLever() {
+    const element = makeElement(this.doc, 'div', 'naval-touch-lever');
+    element.setAttribute('role', 'slider'); element.setAttribute('aria-orientation', 'vertical');
+    element.setAttribute('aria-valuemin', '0'); element.setAttribute('aria-valuemax', '100');
+    element.setAttribute('aria-label', t('systems.touch.sailHelp')); element.setAttribute('data-lever', 'sail');
+    const track = makeElement(this.doc, 'div', 'naval-touch-lever-track');
+    const fill = makeElement(this.doc, 'div', 'naval-touch-lever-fill');
+    const knob = makeElement(this.doc, 'div', 'naval-touch-lever-knob');
+    const caption = makeElement(this.doc, 'span', 'naval-touch-lever-caption'); caption.textContent = t('systems.touch.sail').toUpperCase();
+    const brake = makeElement(this.doc, 'span', 'naval-touch-lever-brake'); brake.textContent = t('systems.touch.brake').toUpperCase();
+    track.appendChild(fill); track.appendChild(knob); element.appendChild(track); element.appendChild(caption); element.appendChild(brake);
+    this.wrapper.appendChild(element);
+    this.lever = { element, track, fill, knob, caption, brake, value: 0, shown: null, pointerId: null };
+    this.listen(element, 'pointerdown', (event) => this.startLever(event));
+    this.listen(element, 'pointermove', (event) => this.moveLever(event));
+    this.renderLever();
+  }
+
+  renderLever() {
+    const lever = this.lever; if (!lever || lever.shown === lever.value) return;
+    const value = lever.value, sail = Math.max(0, value);
+    const height = value >= 0 ? LEVER_BRAKE_ZONE + value * (1 - LEVER_BRAKE_ZONE) : LEVER_BRAKE_ZONE * (1 + value);
+    lever.knob.style.bottom = `${(height * 100).toFixed(1)}%`;
+    lever.fill.style.height = `${(sail * (1 - LEVER_BRAKE_ZONE) * 100).toFixed(1)}%`;
+    lever.element.setAttribute('aria-valuenow', String(Math.round(sail * 100)));
+    lever.element.setAttribute('data-brake', value < 0 ? 'true' : 'false');
+    lever.shown = value;
+  }
+
+  setLever({ visible = true, value = 0 } = {}) {
+    const lever = this.lever; if (!lever || this.disposed) return;
+    if (lever.element.hidden !== !visible) lever.element.hidden = !visible;
+    if (lever.pointerId !== null) return; // a held drag wins over the owner's echo
+    lever.value = clamp(Number.isFinite(value) ? value : 0, -1, 1); this.renderLever();
+  }
+
+  startLever(event) {
+    const lever = this.lever;
+    if (!lever || !this.enabled || this.disposed || lever.element.hidden || lever.pointerId !== null || event.pointerId == null ||
+        (event.pointerType === 'mouse' && event.button !== 0)) return;
+    lever.pointerId = event.pointerId; this.pointers.set(event.pointerId, { kind: 'lever', element: lever.element });
+    this.capture(lever.element, event.pointerId); this.callbacks.onGesture(); this.moveLever(event); event.preventDefault?.();
+  }
+
+  moveLever(event) {
+    const lever = this.lever;
+    if (!lever || lever.pointerId !== event.pointerId || !this.enabled || this.disposed) return;
+    const rect = lever.track.getBoundingClientRect?.() || { left: 0, top: 0, width: 20, height: 140 };
+    const center = this.toLocal(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    const height = Math.max(1, lever.track.offsetHeight || rect.height || 140), point = this.toLocal(event.clientX || 0, event.clientY || 0);
+    const share = clamp((center.y + height / 2 - point.y) / height, 0, 1);
+    let value = share >= LEVER_BRAKE_ZONE ? (share - LEVER_BRAKE_ZONE) / (1 - LEVER_BRAKE_ZONE) : share / LEVER_BRAKE_ZONE - 1;
+    if (Math.abs(value) < 0.04) value = 0; else if (value > 0.96) value = 1;
+    lever.value = value; this.renderLever(); this.callbacks.onLever(value); event.preventDefault?.();
+  }
+
+  releaseLever() {
+    const lever = this.lever; if (!lever) return;
+    lever.pointerId = null;
+    if (lever.value < 0) { lever.value = 0; this.renderLever(); this.callbacks.onLever(0); }
   }
 
   createReferencePadIcon(name) {
@@ -402,6 +475,7 @@ export class TouchHelm {
   finishPointer(event, activate) {
     const record = this.pointers.get(event.pointerId); if (!record) return;
     this.pointers.delete(event.pointerId);
+    if (record.kind === 'lever') { this.releaseLever(); return; }
     if (record.kind === 'slot') {
       clearTimeout(record.timer);
       if (activate && record.longPressed) this.recentLongPressRelease = { ...this.recentLongPressRelease, pointerId: event.pointerId, expiresAt: Date.now() + 500 };
@@ -449,12 +523,14 @@ export class TouchHelm {
     for (const stick of this.sticks.values()) {
       stick.pointerId = null; stick.origin = null; stick.value = { x: 0, y: 0 }; stick.puck.style.transform = 'translate(0px, 0px)';
     }
+    this.releaseLever();
     this.callbacks.onMove(Object.freeze({ x: 0, y: 0 })); this.callbacks.onLook(Object.freeze({ x: 0, y: 0 }));
   }
 
   diagnostics() {
     return Object.freeze({ enabled: this.enabled, disposed: this.disposed, pointers: this.pointers.size,
       move: Object.freeze({ ...this.sticks.get('move').value }), look: Object.freeze({ ...this.sticks.get('look').value }),
+      lever: this.lever ? this.lever.value : null,
       actions: this.buttons.size, picker: !!this.picker && !this.picker.hidden, pickerSlot: this.pickerSlot,
       bindings: Object.freeze([...this.bindings]), preferredBindings: Object.freeze([...this.preferredBindings]), layout: this.layout });
   }

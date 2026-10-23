@@ -1094,8 +1094,8 @@ export default {
     "Sailing maneuvers"
   ],
   "nav.sailKeys": [
-    "WASD · navegar   Q · ráfaga   E · cubierta   G · amarrar",
-    "WASD · sail   Q · gust   E · deck   G · dock"
+    "A/D · timón   W/S · vela   Q · ráfaga   E · cubierta   G · amarrar",
+    "A/D · helm   W/S · sail   Q · gust   E · deck   G · dock"
   ],
   "nav.walkKeys": [
     "WASD · caminar   E · timón   G · amarrar",

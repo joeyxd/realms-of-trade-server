@@ -71,6 +71,35 @@ test('radial dead zone is neutral and positive stick y means braking', () => {
   assert.deepEqual(h.moves.at(-1), { x: 0, y: 0 }); h.helm.dispose();
 });
 
+test('the sail lever stays where it is released, springs back from the brake and yields to a held drag', () => {
+  const levers = [], h = harness({ layout: 'reference', onLever: (value) => levers.push(value) });
+  const lever = h.helm.lever.element;
+  // The fake track is 104 px tall from y 0: the top is full sail, the bottom 22 percent brakes.
+  h.send(lever, 'pointerdown', { pointerId: 3, pointerType: 'touch', clientX: 10, clientY: 0 });
+  assert.equal(levers.at(-1), 1);
+  h.send(lever, 'pointermove', { pointerId: 3, clientX: 10, clientY: 52 });
+  assert.ok(Math.abs(levers.at(-1) - 0.28 / 0.78) < 1e-9);
+  h.helm.setLever({ value: 0 });
+  assert.ok(h.helm.diagnostics().lever > 0.3, 'the owner echo does not move a held lever');
+  h.end('pointerup', 3);
+  assert.ok(h.helm.diagnostics().lever > 0.3, 'released in the sail zone it stays');
+  h.send(lever, 'pointerdown', { pointerId: 4, pointerType: 'touch', clientX: 10, clientY: 104 });
+  assert.equal(levers.at(-1), -1);
+  assert.equal(lever.getAttribute('data-brake'), 'true');
+  h.end('pointerup', 4);
+  assert.equal(levers.at(-1), 0); assert.equal(h.helm.diagnostics().lever, 0);
+  h.send(lever, 'pointerdown', { pointerId: 5, pointerType: 'touch', clientX: 10, clientY: 100 });
+  h.document.defaultView.dispatchEvent(new Event('blur'));
+  assert.equal(levers.at(-1), 0, 'blur releases a held brake');
+  h.helm.setLever({ visible: false, value: 0.5 });
+  assert.equal(lever.hidden, true);
+  const count = levers.length;
+  h.send(lever, 'pointerdown', { pointerId: 6, pointerType: 'touch', clientX: 10, clientY: 0 });
+  assert.equal(levers.length, count, 'a hidden lever ignores touches');
+  assert.equal(harness().helm.lever, null, 'without onLever there is no lever');
+  h.helm.dispose();
+});
+
 test('cancel, lost capture, blur and hidden page neutralize without tap-stuck state and can rearm', () => {
   const h = harness();
   h.send(h.stick('move'), 'pointerdown', { pointerId: 8, pointerType: 'touch', clientX: 52, clientY: 52 });

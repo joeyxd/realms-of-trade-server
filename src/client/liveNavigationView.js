@@ -20,6 +20,7 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, Number.isFinite(v) ? v : 
 const finite = (v, fallback = 0) => Number.isFinite(v) ? v : fallback;
 const distance = (a, b) => Math.hypot((a?.x || 0) - (b?.x || 0), (a?.z || 0) - (b?.z || 0));
 const axesNeutral = Object.freeze({ x: 0, y: 0 });
+const SAIL_STEP = 0.25; // one W/S press moves the sticky sail lever a quarter
 export const NAVAL_SHORTCUTS = Object.freeze({ capture: 'Q', bag: 'I', mode: 'E', center: 'Y', map: 'M',
   land: 'G', dock: 'G', recall: 'G', reboard: 'F', mount: 'F', leave: 'E', lantern: 'V' });
 
@@ -45,6 +46,7 @@ export class LiveNavigationView {
     this.world = world; this.getClient = client; this.input = input; this.isTouch = !!isTouch;
     this.stage = stage; this.parent = parent; this.onClosePanels = onClosePanels; this.isActive = active;
     this.axes = { ...axesNeutral }; this.lastAxes = { throttle: 0, brake: 0, steer: 0 };
+    this.sail = 0; this.leverBrake = 0; this.keyBrake = false; this.leverKeys = { up: false, down: false }; this.wasHelm = false;
     this.cameraWasNaval = false; this.lastPose = null; this.lastBody = null; this.lastRaft = null;
     this.helmVisuals = new Map(); this.lastFeel = { fov: 35, roll: 0 }; this.captureHeld = false; this.actionSignature = '';
     this.lastNotice = ''; this.disposed = false; this.paused = false; this.effectsWasActive = false;
@@ -106,6 +108,7 @@ export class LiveNavigationView {
     this.touch = new TouchHelm(parent, { enabled: false, layout: 'reference', storageKey: 'mn:naval-touch-loadout:v1',
       toLocal: stage?.toLocal?.bind(stage), onMove: (value) => { this.axes = { x: value.x, y: -value.y }; },
       onLook: (value) => this.sceneCamera.setLook(value), onGesture: () => { this.sound.unlock(); onClosePanels(); },
+      onLever: (value) => { this.sail = clamp(value, 0, 1); this.leverBrake = clamp(-value, 0, 1); },
       onAction: (id) => this.runAction(id), actions: [] });
     this.touch.wrapper.classList.toggle('is-desktop', !isTouch);
     setAttributeText(this.touch.wrapper, 'aria-label', isTouch ? 'nav.controls' : 'nav.manoeuvres');
@@ -137,6 +140,13 @@ export class LiveNavigationView {
         }
         return previous?.(event) || false;
       };
+      this.panelShortcuts.push({ key, previous, handler }); input.onHotkey?.(key, handler);
+    }
+    // Key-down edges step the sail lever even when a quick tap falls between two frames; the key still
+    // reaches the held set, so S at zero can brake while held.
+    for (const key of ['KeyW', 'ArrowUp', 'KeyS', 'ArrowDown']) {
+      const previous = input.hotkeys?.get(key);
+      const handler = (event) => { this.leverKey(key); return previous?.(event) || false; };
       this.panelShortcuts.push({ key, previous, handler }); input.onHotkey?.(key, handler);
     }
     globalThis.addEventListener?.('blur', this.onBlur);
@@ -181,6 +191,7 @@ export class LiveNavigationView {
     this.sceneCamera.reducedMotion = !!reducedMotion;
     if (this.sound.enabled === !!muted) this.sound.setEnabled(!muted);
     this.world.rafts?.update?.(records, this.world.time || 0, c?.youServer || 0);
+    this.stepLever(enabled);
     const frameAxes = this.fixedAxes();
     this.lastAxes = frameAxes?.naval || { throttle: 0, brake: 0, steer: 0 };
     this.updateAllHelms(records, dt, body, c);
@@ -252,9 +263,42 @@ export class LiveNavigationView {
     let ky = (keys?.has?.('KeyW') || keys?.has?.('ArrowUp') ? 1 : 0) - (keys?.has?.('KeyS') || keys?.has?.('ArrowDown') ? 1 : 0);
     let x = clamp(this.axes.x || (this.input.joy?.active ? this.input.joy.x : 0) || pad.mx || kx, -1, 1);
     let y = clamp(this.axes.y || (this.input.joy?.active ? this.input.joy.y : 0) || pad.my || ky, -1, 1);
+    // The chase camera shows raft-local +x on screen-left, so the stick's x is mirrored for the rudder
+    // and the deck walker. At the helm the stick only steers; the sticky sail lever owns throttle and brake.
+    const helm = !!(c?.naval?.active && !c?.deck?.active);
+    const steer = x ? -x : 0;
     const length = Math.hypot(x, y); if (length > 1) { x /= length; y /= length; }
     const capture = !!(this.captureHeld || this.input.slotHeld?.('q') || keys?.has?.('KeyQ') || pad.prev?.[5]);
-    return { naval: { throttle: Math.max(0, y), brake: Math.max(0, -y), steer: x, capture }, deck: { mx: x, mz: y } };
+    const throttle = helm ? clamp(this.sail, 0, 1) : 0;
+    const brake = helm ? Math.max(clamp(this.leverBrake, 0, 1), this.keyBrake ? 1 : 0) : 0;
+    return { naval: { throttle, brake, steer, capture }, deck: { mx: x ? -x : 0, mz: y } };
+  }
+
+  // W/S, the arrows and the pad stick step the lever on each press; S at zero brakes while it is held.
+  // Taking the helm starts the lever at zero, so a raft never sails off on its own.
+  atHelm() { const c = this.client(); return !!(c?.naval?.active && !c?.deck?.active && this.canAct()); }
+
+  nudgeSail(up) {
+    const sail = clamp(this.sail, 0, 1);
+    if (up) this.sail = Math.min(1, (Math.floor(sail / SAIL_STEP + 1e-6) + 1) * SAIL_STEP);
+    else if (sail > 0) this.sail = Math.max(0, (Math.ceil(sail / SAIL_STEP - 1e-6) - 1) * SAIL_STEP);
+    else this.keyBrake = true;
+  }
+
+  leverKey(code) { if (this.atHelm()) this.nudgeSail(code === 'KeyW' || code === 'ArrowUp'); }
+
+  stepLever(enabled) {
+    // Only a real change of station resets the lever: a pause or an open panel keeps the sail set.
+    const c = this.client(), station = !!(c?.naval?.active && !c?.deck?.active), helm = station && !!enabled;
+    if (station && !this.wasHelm) { this.sail = 0; this.leverBrake = 0; }
+    this.wasHelm = station;
+    const keys = this.input.keys, pad = this.input.pad || {}, held = this.leverKeys || { up: false, down: false };
+    const up = helm && pad.my > 0.5, down = helm && pad.my < -0.5;
+    if (up && !held.up) this.nudgeSail(true);
+    if (down && !held.down) this.nudgeSail(false);
+    if (!helm || !(down || keys?.has?.('KeyS') || keys?.has?.('ArrowDown'))) this.keyBrake = false;
+    this.leverKeys = { up, down };
+    this.touch?.setLever?.({ visible: helm, value: clamp(this.sail, 0, 1) - Math.max(clamp(this.leverBrake, 0, 1), this.keyBrake ? 1 : 0) });
   }
 
   fixedInput() {
@@ -408,6 +452,7 @@ export class LiveNavigationView {
 
   clearInput(sendNeutral = false) {
     this.axes = { ...axesNeutral }; this.captureHeld = false;
+    this.sail = 0; this.leverBrake = 0; this.keyBrake = false;
     this.touch?.clear();
     if (!sendNeutral) return;
     const c = this.client(); c?.neutralNaval?.(); c?.neutralDeck?.();
