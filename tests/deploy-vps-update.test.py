@@ -2,6 +2,8 @@ import importlib.util
 import io
 import json
 import os
+import shutil
+import subprocess
 import tempfile
 import unittest
 from contextlib import ExitStack, contextmanager
@@ -219,7 +221,7 @@ class VpsUpdateTests(unittest.TestCase):
         self.assertIn("--depth=8", args)
         self.assertIn("--no-tags", args)
         self.assertIn("--filter=blob:none", args)
-        self.assertIn(f"refs/heads/{update.BRANCH}:refs/remotes/origin/{update.BRANCH}", args)
+        self.assertIn(f"+refs/heads/{update.BRANCH}:refs/remotes/origin/{update.BRANCH}", args)
         self.assertEqual(kwargs["timeout"], update.FETCH_TIMEOUT)
         git_calls = [call.args[0] for call in git.call_args_list]
         self.assertIn(["--git-dir", str(source), "config", "remote.origin.promisor", "true"], git_calls)
@@ -277,7 +279,7 @@ class VpsUpdateTests(unittest.TestCase):
         self.assertEqual(checks["fetch"], 2)
         self.assertEqual(checks["ancestor"], 3)
 
-    def test_non_ancestor_is_rejected_after_bounded_deepen_without_force(self):
+    def test_non_ancestor_is_rejected_after_bounded_deepen(self):
         fetches = []
 
         def fake_git(args, **kwargs):
@@ -297,7 +299,36 @@ class VpsUpdateTests(unittest.TestCase):
         for args in fetches:
             self.assertIn("--deepen=32", args)
             self.assertNotIn("--force", args)
-            self.assertIn(f"refs/heads/{update.BRANCH}:refs/remotes/origin/{update.BRANCH}", args)
+            self.assertIn(f"+refs/heads/{update.BRANCH}:refs/remotes/origin/{update.BRANCH}", args)
+
+    @unittest.skipUnless(shutil.which("git"), "needs the git executable")
+    def test_push_past_the_shallow_depth_reaches_the_ancestry_check(self):
+        # 2026-10-22: an 8-commit push stalled every poll as non-fast-forward before reject_rewind ran.
+        with tempfile.TemporaryDirectory() as temp:
+            work, source = Path(temp) / "work", Path(temp) / "source.git"
+
+            def commits(count):
+                for index in range(count):
+                    subprocess.run(["git", "-C", str(work), "-c", "user.name=t", "-c", "user.email=t@t",
+                                    "-c", "commit.gpgsign=false", "commit", "-q", "--allow-empty",
+                                    "-m", f"c{index}"], check=True)
+
+            subprocess.run(["git", "init", "-q", "-b", update.BRANCH, str(work)], check=True)
+            commits(3)
+            with ExitStack() as stack:
+                stack.enter_context(mock.patch.object(update, "SOURCE", source))
+                stack.enter_context(mock.patch.object(update, "REPO", work.as_uri()))
+                update.ensure_source()
+                active = update.remote_sha()
+                commits(10)
+                update.ensure_source()
+                candidate = update.remote_sha()
+                self.assertNotEqual(candidate, active)
+                update.reject_rewind(candidate, active)
+                subprocess.run(["git", "-C", str(work), "reset", "-q", "--hard", "HEAD~12"], check=True)
+                update.ensure_source()
+                with self.assertRaisesRegex(update.UpdateError, "rewinds or diverges"):
+                    update.reject_rewind(update.remote_sha(), candidate)
 
     def test_resource_gate_uses_sampled_cpu_iowait_memory_and_disk(self):
         baseline = [100000, 0, 0, 100000, 0, 0, 0, 0]

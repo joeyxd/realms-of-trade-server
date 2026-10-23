@@ -401,8 +401,10 @@ def ensure_source():
         git(["--git-dir", str(SOURCE), "remote", "set-url", "origin", REPO])
     git(["--git-dir", str(SOURCE), "config", "remote.origin.promisor", "true"])
     git(["--git-dir", str(SOURCE), "config", "remote.origin.partialclonefilter", "blob:none"])
+    # Forced: a push of 8+ commits leaves the old tip past the shallow boundary, so Git cannot prove a
+    # fast-forward here; reject_rewind deepens and decides instead.
     git(["--git-dir", str(SOURCE), "fetch", "--filter=blob:none", "--depth=8", "--no-tags", "origin",
-         f"refs/heads/{BRANCH}:refs/remotes/origin/{BRANCH}"], timeout=FETCH_TIMEOUT)
+         f"+refs/heads/{BRANCH}:refs/remotes/origin/{BRANCH}"], timeout=FETCH_TIMEOUT)
 
 
 def prefetch_release_blobs(sha):
@@ -481,7 +483,7 @@ def reject_rewind(candidate, active):
         if deepen_count == 4:
             break
         git(["--git-dir", str(SOURCE), "fetch", "--filter=blob:none", "--deepen=32", "--no-tags", "origin",
-             f"refs/heads/{BRANCH}:refs/remotes/origin/{BRANCH}"], timeout=FETCH_TIMEOUT)
+             f"+refs/heads/{BRANCH}:refs/remotes/origin/{BRANCH}"], timeout=FETCH_TIMEOUT)
     raise UpdateError("active revision ancestry remains unknown after bounded shallow fetches")
 
 
