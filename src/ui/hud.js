@@ -122,6 +122,12 @@ export class Hud {
     this.sweep = this.dashSlot.querySelector('.sweep');
     this.chargesEl = this.dashSlot.querySelector('.charges');
     this.trackerUl = root.querySelector('.tracker ul');
+    // R1b: on a compact landscape stage the tracker folds to one line with a chevron; a tap opens every row (hud.css
+    // .tracker.open). Its height goes to #ui as --trk-h, so the touch Chat and lantern row under it follow it.
+    const tracker = root.querySelector('.tracker'), ui = root.parentElement || root;
+    tracker.setAttribute('aria-expanded', 'false');
+    tracker.addEventListener('click', () => tracker.setAttribute('aria-expanded', String(tracker.classList.toggle('open'))));
+    if (typeof ResizeObserver === 'function') new ResizeObserver(() => ui.style.setProperty('--trk-h', `${tracker.offsetHeight}px`)).observe(tracker);
     this.toasts = root.querySelector('#toasts');
     this.banner = root.querySelector('#zone-banner');
     this.muteBtn = root.querySelector('#hud-mute');
@@ -541,7 +547,7 @@ export class Hud {
     if (key === this.partyKey) return;
     this.partyKey = key;
     this.partyEl.hidden = !list.length;
-    this.root.style.setProperty('--party-n', Math.min(3, list.length)); // the toasts start under the crew
+    (this.root.parentElement || this.root).style.setProperty('--party-n', Math.min(3, list.length)); // on #ui: the toasts and the touch Chat row start under the crew
     this.partyEl.innerHTML = list.slice(0, 3).map((p) => {
       const f = Math.max(0, Math.min(1, p.hp / Math.max(1, p.maxHp)));
       const icon = p.weapon === 1 ? ICONS.pistol : ICONS.sword;

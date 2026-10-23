@@ -55,25 +55,18 @@ export const joyZone = (w, h) => ({ x0: 0, y0: 0.3 * h, x1: 0.5 * w, y1: h });
 
 // Boxes of other HUD parts that no slot may touch (stage px, same frame as the slots). Each mirrors a CSS rule: change
 // them together (tests/touch-layout.test.mjs sweeps every one over the stage grid, tools/qa-touch-layout.mjs checks the
-// real DOM with every button and the lantern forced visible).
-// LANTERN: styles/hud.css `body.touch:not(.is-naval) .personal-lantern` (bottom 8px + safe-b, right 30cqw + 12px +
-// safe-r; the bound lantern is about 72 x 48 px, the box is 8 px wider and 4 px taller, up and to the left). The 8 px
-// is the lowest the lantern can sit and still clear the middle zone (0.8 h) on an 844 x 390 stage with a 21 px home bar (1 px to spare).
-export const LANTERN_W = 80, LANTERN_H = 52, LANTERN_BOTTOM = 8, LANTERN_RIGHT = 12;
+// real DOM with every button and the lantern forced visible). The lantern needs no box since R1b: on touch it sits beside
+// the Chat in the left column (styles/hud.css `body.touch:not(.is-naval) .personal-lantern`), far from the cluster.
 // MINIMAP: styles/minimap.css `.world-minimap.is-touch` (84 px round, top 12 + safe-t, right 18 + safe-r) and its place
 // label under it (`.minimap-caption`, 10 px below the map, one 9-10 px line, 16 px wider on each side).
 export const MINIMAP_LEFT = 122, MINIMAP_BOTTOM = 120;
 // TOPROW: styles/hud.css `@container stage (min-width: 721px) and (max-width: 900px) and (max-height: 480px)`: the
-// account row (companions, chip, icon buttons) sits at top 92 + safe-t, 44 px high, right-aligned to 120 px + safe-r
-// from the right edge (minimap.css `body:has(.world-minimap.is-touch) #hud .hud-top-right`), left end at 18 + 226 px.
-export const TOPROW_TOP = 92, TOPROW_BOTTOM = 138, TOPROW_RIGHT = 120, TOPROW_LEFT = 244;
+// account row (chip, icon buttons, companions) sits on the top border at 8 + safe-t, 44 px high, right-aligned to
+// 110 px + safe-r from the right edge (beside the minimap); its left end never passes the player column (18 + 226 px).
+export const TOPROW_TOP = 8, TOPROW_BOTTOM = 52, TOPROW_RIGHT = 110, TOPROW_LEFT = 244;
 export function keepOuts(w, h, safe = {}) {
-  const l = safe.l || 0, r = safe.r || 0, t = safe.t || 0, b = safe.b || 0;
-  const lanternRight = w - (0.3 * w + LANTERN_RIGHT + r), lanternBottom = h - LANTERN_BOTTOM - b;
-  const list = [
-    { name: 'lantern', x0: lanternRight - LANTERN_W, y0: lanternBottom - LANTERN_H, x1: lanternRight, y1: lanternBottom },
-    { name: 'minimap', x0: w - r - MINIMAP_LEFT, y0: 0, x1: w - r, y1: t + MINIMAP_BOTTOM },
-  ];
+  const l = safe.l || 0, r = safe.r || 0, t = safe.t || 0;
+  const list = [{ name: 'minimap', x0: w - r - MINIMAP_LEFT, y0: 0, x1: w - r, y1: t + MINIMAP_BOTTOM }];
   if (h <= 480 && w >= 721 && w <= 900) list.push({ name: 'toprow', x0: l + TOPROW_LEFT, y0: t + TOPROW_TOP, x1: w - r - TOPROW_RIGHT, y1: t + TOPROW_BOTTOM });
   return list;
 }

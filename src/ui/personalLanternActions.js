@@ -168,6 +168,9 @@ export class PersonalLanternActions {
     this.button.setAttribute('aria-pressed', String(lit));
     this.button.setAttribute('aria-label', `${label} (N)`);
     this.button.title = `${label} (N)`;
+    // Touch draws the button as a round icon (hud.css): which icon, and the torch's time left under it.
+    this.button.setAttribute('data-kind', fuelEnabled ? 'torch' : 'lantern');
+    this.button.setAttribute('data-timer', fire?.seconds > 0 ? timer(fire.seconds) : '');
     this.button.textContent = text;
   }
 }

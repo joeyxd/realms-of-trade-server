@@ -154,21 +154,8 @@ test('the setting never makes the buttons smaller: tb is non-decreasing in the u
   }
 });
 
-test('keep-out lantern: no slot touches the bound lantern box (bottom strip, right edge at 70 % of the width)', () => {
-  sweep(S, (L, { w, h, i, name }) => {
-    const z = keepOuts(w, h, i).find((k) => k.name === 'lantern');
-    assert.ok(z, `${name}: the lantern keep-out exists`);
-    // The box is anchored as hud.css says: right edge at w - (30 % + 12 px + safe-r), bottom 8 px + safe-b above the edge.
-    assert.ok(Math.abs(z.x1 - (0.7 * w - 12 - i.r)) < EPS && Math.abs(z.y1 - (h - 8 - i.b)) < EPS, `${name}: box anchor`);
-    assert.ok(z.x1 - z.x0 >= 72 && z.y1 - z.y0 >= 48, `${name}: the box covers the 72 x 48 lantern`);
-    for (const c of allCircles(L)) assert.ok(!hits(c, z), `${name}: ${c.k} touches the lantern box`);
-    // ... and the box itself sits in the bottom strip: inside the safe box, out of the middle and the joystick half.
-    assert.ok(z.x0 >= i.l + 8 && z.x1 <= w - i.r - 8 && z.y0 >= i.t + 8 && z.y1 <= h - i.b - 8, `${name}: lantern box inside the safe box`);
-    // The lantern itself (72 x 48, the box is 8 px wider and 4 px taller) is clear of the middle and the joystick half.
-    const lantern = { x0: z.x1 - 72, y0: z.y1 - 48, x1: z.x1, y1: z.y1 };
-    const mid = centralZone(w, h), jz = joyZone(w, h), cut = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
-    assert.ok(!cut(lantern, mid) && !cut(lantern, jz), `${name}: the lantern is clear of the middle and the joystick half`);
-  });
+test('keep-out lantern: gone since R1b (the lantern sits beside the Chat in the left column, away from the cluster)', () => {
+  sweep(S, (L, { w, h, i, name }) => assert.ok(!keepOuts(w, h, i).some((k) => k.name === 'lantern'), `${name}: no lantern box`));
 });
 
 test('keep-out minimap: no slot touches the touch minimap or its place label (every stage the layout fits)', () => {
@@ -183,10 +170,10 @@ test('keep-out minimap: no slot touches the touch minimap or its place label (ev
   });
 });
 
-test('keep-out toprow: on the 721-900 px compact landscape stage no slot touches the account row (top 92, 44 px high)', () => {
+test('keep-out toprow: on the 721-900 px compact landscape stage no slot touches the account row (top border, 44 px high)', () => {
   const lo = keepOuts(844, 390, I[0]).find((k) => k.name === 'toprow');
   assert.ok(lo, '844x390 has the account-row keep-out');
-  assert.ok(lo.y0 <= 92 && lo.y1 >= 92 + 44 && lo.x1 >= 844 - 120, 'the box covers the row measured at 844x390 (613..724 x 92..136)');
+  assert.ok(lo.y0 <= 8 && lo.y1 >= 8 + 44 && lo.x1 >= 844 - 110, 'the box covers the row on the top border at 844x390 (..734 x 8..52)');
   for (const [w, h] of [[915, 412], [932, 430], [1024, 768]]) assert.ok(!keepOuts(w, h, I[0]).some((k) => k.name === 'toprow'), `${w}x${h} has no account-row keep-out (another media query)`);
   sweep(S, (L, { w, h, i, name }) => {
     for (const z of keepOuts(w, h, i).filter((k) => k.name === 'toprow')) for (const c of allCircles(L)) assert.ok(!hits(c, z), `${name}: ${c.k} touches the account row`);
