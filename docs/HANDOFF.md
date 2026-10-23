@@ -1,5 +1,17 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**TA02+TA03 tala, 2026-10-23, versión 0.6.0-alpha.100, protocolo 71, sin SQL:** talar manteniendo el botón, como en Don't
+Starve, detrás de `MN_CHOP` (apagado por defecto). Mantener F o tocar CHOP golpea en bucle; G o el botón táctil CRIT en la
+franja verde de la barra da crítico. Hachas de piedra, hierro y acero: 0.90/0.55/0.40 s por golpe, daño 1/2/3 (hierro y
+acero salen en el banco solo en modo tala). Palmeras pequeña, mediana y grande: 4/7/12 PV y 2/3/5 troncos; al caer dejan
+un montón en el suelo que se recoge solo ("+N troncos"). Cliente: barras de PV, sacudida, astillas, números de daño, caída
+dirigida, pose por cadencia con tinte del hacha, cuatro sonidos, textos ES y EN. `PROTOCOL_VERSION` 71 (ops `chop`, `crit`,
+`pickup`). Con `MN_RESOURCE_OPERATIONS=1` el host rechaza `MN_CHOP=1` y lo registra: la SQL de prod fija 3 golpes, 3 a 6
+troncos y la lista de recetas, así que en prod solo se prueba en solo, `/?solo&chop=1` (el pirata necesita `hacha_piedra`:
+tronco 3 y piedra 2). `/status` lleva `storage.chop.enabled`. Pendiente TA04: economía v4 (recibos `fell` y `pickup`,
+recetas de hacha en la lista SQL) con su propia migración y readiness; la 043 es de inventario, así que tala toma la
+siguiente libre. El cuerpo del compañero (IC05b) aún manda `gather` de palmera, que en modo tala se rechaza `chopMode`.
+
 **IC08 seguimientos, 2026-10-22 (T-1022-50), versión 0.6.0-alpha.99, sin cambio de protocolo ni SQL:** `/status` lleva
 `storage.hostedInference` {enabled, ready, running, max}. Los ids de modelo llegan a 200 caracteres en el centro, el
 transporte, la política del registro, el controlador alojado, el runtime local y el Studio (antes 128). Los sockets de los
