@@ -12,6 +12,27 @@ function sameHeights(a, b) {
   return true;
 }
 
+// GM08: the bounds of the vertices of `region` (561 grid) whose height or paint differ between two compiled maps, or
+// null. A gesture's region is the union of its strokes, mostly unchanged since the last frame: the rewrite and upload
+// follow what moved, and the commit after a preview finds almost nothing left to change.
+function changedBounds(a, b, { i0, j0, i1, j1 }) {
+  const ha = a.heights, hb = b.heights, pa = a.terrainPaint || null, pb = b.terrainPaint || null;
+  let x0 = Infinity, y0 = Infinity, x1 = -1, y1 = -1;
+  for (let j = j0; j <= j1; j++) for (let i = i0, k = j * 561 + i0; i <= i1; i++, k++) {
+    let differs = ha !== hb && ha[k] !== hb[k];
+    if (!differs && pa !== pb) for (let c = k * 4; c < k * 4 + 4; c++) if ((pa ? pa[c] : 0) !== (pb ? pb[c] : 0)) { differs = true; break; }
+    if (!differs) continue;
+    x0 = Math.min(x0, i); x1 = Math.max(x1, i); y0 = Math.min(y0, j); y1 = j;
+  }
+  return x1 < 0 ? null : { i0: x0, j0: y0, i1: x1, j1: y1 };
+}
+
+/** GM08: the union of two grid vertex regions ({ i0, j0, i1, j1 }; either may be null), without `from`. */
+export function joinRegions(a, b) {
+  if (!a || !b) { const r = a || b; return r ? { i0: r.i0, j0: r.j0, i1: r.i1, j1: r.j1 } : null; }
+  return { i0: Math.min(a.i0, b.i0), j0: Math.min(a.j0, b.j0), i1: Math.max(a.i1, b.i1), j1: Math.max(a.j1, b.j1) };
+}
+
 /** Render a private GM terrain projection while retaining the live scene objects and materials. */
 export function createTerrainPreview({ scene, map, invalidate = () => {} } = {}) {
   if (!scene || !map) throw new TypeError('createTerrainPreview requires scene and map');
@@ -53,8 +74,15 @@ export function createTerrainPreview({ scene, map, invalidate = () => {} } = {})
       restore();
       return;
     }
+    // Compiled maps are snapshots: the map already shown needs no rewrite (a preview that changed nothing).
+    if (projectedMap === currentMap && activeGeometry && heightTexture) return;
     const paintOnly = !!projectedMap.terrain && !!currentMap.terrain && sameHeights(projectedMap, currentMap);
-    const dirty = activeGeometry && heightTexture && region?.from === currentMap ? region : null;
+    let dirty = activeGeometry && heightTexture && region?.from === currentMap ? region : null;
+    if (dirty) {
+      const changed = changedBounds(currentMap, projectedMap, dirty);
+      if (!changed) { currentMap = projectedMap; return; }
+      dirty = { ...changed, from: region.from };
+    }
     if (!activeGeometry) {
       const temporary = createTerrain(projectedMap, { segments: 560 });
       activeGeometry = temporary.geometry;

@@ -1,16 +1,20 @@
 import { onLocaleChange } from '../core/locale.js';
 import { describeMap } from '../ui/cartography.js';
 import { paintTerrain } from '../ui/mapCanvas.js';
-import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
+import { TERRAIN_EDIT_FEATHER, TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
+import { TERRAIN_BRUSH_MAX_RADIUS } from './terrainBrush.js';
 
 const labels = {
   title: ['Terrain brushes', 'Pinceles de terreno'],
   tool: ['Tool', 'Herramienta'], radius: ['Radius', 'Radio'], strength: ['Strength', 'Fuerza'],
   falloff: ['Soft edge', 'Caída suave'], level: ['Level', 'Nivel'], material: ['Ground family', 'Familia de suelo'],
   shape: ['Brush shape', 'Forma del pincel'], aspect: ['Ellipse aspect', 'Proporción de elipse'], rotation: ['Rotation', 'Rotación'],
-  map: ['Current terrain', 'Terreno actual'],
-  dryHelp: ['Brushes only affect existing dry ground. Paths, services, docks and protected objects block the whole stroke.',
-    'Los pinceles solo afectan suelo seco existente. Caminos, servicios, muelles y objetos protegidos bloquean el trazo completo.'],
+  map: ['Current terrain', 'Terreno actual'], flow: ['Flow', 'Flujo'],
+  stroke: ['Single pass', 'Pasada única'], airbrush: ['Airbrush', 'Aerógrafo'],
+  dryHelp: [`Brushes shape existing dry ground. Docks, paths, services, the shore and protected objects stay as they are: the brush fades out ${TERRAIN_EDIT_FEATHER} m before them.`,
+    `Los pinceles modelan el suelo seco existente. Muelles, caminos, servicios, la costa y los objetos protegidos se quedan como están: el pincel se desvanece ${TERRAIN_EDIT_FEATHER} m antes.`],
+  flowHelp: ['Airbrush: every pass adds more, and holding the pointer still keeps adding (about the strength per second). Single pass: going over the same ground again in one stroke adds nothing.',
+    'Aerógrafo: cada pasada suma más, y mantener el puntero quieto sigue sumando (más o menos la fuerza por segundo). Pasada única: repasar el mismo suelo en un trazo no suma.'],
   strengthHelp: ['Strength sets the height change for raise/lower, the blend amount for flatten/smooth, and the paint blend amount. A ramp uses its two endpoints and ignores strength.',
     'La fuerza define el cambio de altura al subir/bajar, la mezcla al aplanar/suavizar y la intensidad de pintura. La rampa usa sus dos extremos e ignora la fuerza.'],
   paintHelp: ['Paint blends the selected ground family into terrain. Erase removes paint and restores the automatic surface.',
@@ -32,7 +36,7 @@ export class TerrainPanel {
     if (!root || !editor) throw new TypeError('TerrainPanel requires root and editor');
     this.root = root; this.editor = editor; this.document = root.ownerDocument || document; this.onTool = onTool;
     this.tool = null; this.radius = 6; this.strength = 0.5; this.falloff = 0.5; this.level = 2.4;
-    this.material = 'grass'; this.shape = 'circle'; this.aspect = 0.5; this.rotation = 0;
+    this.material = 'grass'; this.shape = 'circle'; this.aspect = 0.5; this.rotation = 0; this.flow = 'stroke';
     this.mapCanvas = null; this.renderedMap = null;
     this.element = this.document.createElement('section'); this.element.className = 'gm-terrain-panel';
     this.onChange = (event) => {
@@ -97,13 +101,14 @@ export class TerrainPanel {
     }
     const help = key => { const node = doc.createElement('p'); node.className = 'gm-terrain-help'; node.textContent = this.t(key); node.dataset.terrainHelp = key; return node; };
     const mapLabel = doc.createElement('h4'); mapLabel.textContent = this.t('map');
-    this.element.replaceChildren(title, selectLabel, this._control('radius', this._input('radius', 2, 24, 0.5)),
+    this.element.replaceChildren(title, selectLabel, this._control('radius', this._input('radius', 2, TERRAIN_BRUSH_MAX_RADIUS, 0.5)),
       this._control('strength', this._input('strength', 0.05, 1, 0.05)), this._control('falloff', this._input('falloff', 0, 1, 0.05)),
+      this._control('flow', this._select('flow', ['stroke', 'airbrush'])),
       this._control('level', this._input('level', TERRAIN_MIN_HEIGHT, TERRAIN_GRID_MAX_HEIGHT, 0.1)),
       this._control('material', this._select('material', ['grass', 'dirt', 'sand', 'rock'])),
       this._control('shape', this._select('shape', ['circle', 'square', 'ellipse'])),
       this._control('aspect', this._input('aspect', 0.25, 1, 0.05)), this._control('rotation', this._input('rotation', 0, 360, 5)),
-      help('dryHelp'), help('strengthHelp'), help('paintHelp'), help('shapeHelp'), help('rampHelp'), mapLabel, this.mapCanvas);
+      help('dryHelp'), help('strengthHelp'), help('flowHelp'), help('paintHelp'), help('shapeHelp'), help('rampHelp'), mapLabel, this.mapCanvas);
     this._syncValues(); this._syncControls();
   }
   _syncValues() {
@@ -117,20 +122,21 @@ export class TerrainPanel {
     const sculptMode = ['raise', 'lower', 'flatten', 'smooth'].includes(this.tool);
     const visibility = { material: this.tool === 'paint', level: this.tool === 'flatten', shape: !rampMode,
       aspect: !rampMode && this.shape === 'ellipse', rotation: !rampMode && this.shape !== 'circle',
-      radius: !!this.tool, strength: !!this.tool, falloff: !!this.tool };
+      radius: !!this.tool, strength: !!this.tool, falloff: !!this.tool, flow: sculptMode || paintMode };
     for (const [field, shown] of Object.entries(visibility)) {
       const node = this.element.querySelector(`[data-terrain-control="${field}"]`);
       if (node) node.hidden = !shown;
     }
-    for (const key of ['paintHelp', 'shapeHelp', 'strengthHelp', 'rampHelp', 'dryHelp']) {
+    for (const key of ['paintHelp', 'shapeHelp', 'strengthHelp', 'flowHelp', 'rampHelp', 'dryHelp']) {
       const node = this.element.querySelector(`[data-terrain-help="${key}"]`);
       if (node) node.hidden = key === 'paintHelp' ? !paintMode : key === 'rampHelp' ? !rampMode :
-        key === 'strengthHelp' ? !(sculptMode || paintMode) : !this.tool;
+        key === 'strengthHelp' ? !(sculptMode || paintMode) : key === 'flowHelp' ? !((sculptMode || paintMode) && this.flow === 'airbrush') : !this.tool;
     }
     this._syncValues();
   }
   parameters() { return { tool: this.tool, radius: this.radius, strength: this.strength, falloff: this.falloff, level: this.level,
-    material: this.material, shape: this.tool === 'ramp' ? 'circle' : this.shape, aspect: this.aspect, rotation: this.rotation }; }
+    material: this.material, shape: this.tool === 'ramp' ? 'circle' : this.shape, aspect: this.aspect, rotation: this.rotation,
+    flow: this.tool === 'ramp' ? 'stroke' : this.flow }; }
   select(tool) {
     if (tool !== null && !tools.includes(tool)) throw new RangeError('Unknown terrain tool');
     this.tool = tool;

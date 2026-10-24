@@ -78,7 +78,7 @@ test('tool and paint controls expose shared brush parameters with relevant contr
     const rotationInput = panel.element.children.flatMap(node => node.children).find(node => node.dataset.terrainField === 'rotation');
     rotationInput.value = '45'; panel.element.dispatch('input', rotationInput);
     assert.deepEqual(panel.parameters(), { tool: 'paint', radius: 12.5, strength: 0.5, falloff: 0.5, level: 2.4,
-      material: 'rock', shape: 'ellipse', aspect: 0.35, rotation: 45 });
+      material: 'rock', shape: 'ellipse', aspect: 0.35, rotation: 45, flow: 'stroke' });
     assert.equal(panel.element.querySelector('[data-terrain-control="material"]').hidden, false);
     assert.equal(panel.element.querySelector('[data-terrain-control="level"]').hidden, true);
     shape.value = 'circle'; panel.element.dispatch('change', shape);

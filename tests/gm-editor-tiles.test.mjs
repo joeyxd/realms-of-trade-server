@@ -224,7 +224,7 @@ test('a document v5 without its tiles, or with a tampered tile, is refused with 
 
 // --- Strokes ---
 
-test('flatten raises ground 150 m above base where allowed (beyond the old 12 m); above +200 m is refused', async (t) => {
+test('flatten raises ground 150 m above base where allowed (beyond the old 12 m); strokes stop under +200 m', async (t) => {
   const center = freeCenter(4, 3), base = map.heights[center.k];
   const opened = await openTerrainDocument({ map, baseRevision: BASE, document: empty() });
   const { history, terrain } = session(opened);
@@ -242,11 +242,18 @@ test('flatten raises ground 150 m above base where allowed (beyond the old 12 m)
   const top = await terrain.commit({ ...tall, document: history.current(), level: 199.9 });
   history.commit(top.document, { tiles: top.tiles });
   assert.ok(Math.abs(top.map.heights[center.k] - 199.9) < 1e-4);
+  // GM08: a raise past +200 m stops 2 mm under it instead of refusing the stroke.
+  const capped = await terrain.commit(raise(history.current(), [center], { strength: 1 }));
+  history.commit(capped.document, { tiles: capped.tiles });
+  assert.ok(capped.map.heights[center.k] <= 200 && capped.map.heights[center.k] > 199.99, `capped at ${capped.map.heights[center.k]}`);
+  // The validator stays the authority: a patch past +200 m is refused and leaves the grid byte-identical.
   const grid = gridBytes(terrain.grid), references = structuredClone(terrain.references), surface = terrain.surface();
   const over = raise(history.current(), [center], { strength: 1 });
+  terrain._patch = () => ({ indices: Int32Array.of(center.k), deltasMm: Int32Array.of(terrain.grid.deltasMm[center.k] + 10) });
   assert.throws(() => terrain.preview(over), coded('height_range'));
   await assert.rejects(terrain.commit(over), coded('height_range'));
-  assert.equal(Buffer.compare(gridBytes(terrain.grid), grid), 0, 'the refused stroke leaves the grid byte-identical');
+  delete terrain._patch;
+  assert.equal(Buffer.compare(gridBytes(terrain.grid), grid), 0, 'the refused patch leaves the grid byte-identical');
   assert.deepEqual(terrain.references, references);
   assert.strictEqual(terrain.surface(), surface);
   assert.throws(() => sculptTerrainGrid({ map, surface, grid: terrain.grid, baseRevision: BASE, ...tall, document: history.current(), level: 200.01 }),
@@ -255,22 +262,37 @@ test('flatten raises ground 150 m above base where allowed (beyond the old 12 m)
     coded('parameters'));
 });
 
-test('a refused stroke leaves the grid byte-identical: protected places and the outer ring', async () => {
+test('GM08: strokes over protected places and the outer ring leave them untouched; a forged patch is refused', async () => {
   const opened = await openTerrainDocument({ map, baseRevision: BASE, document: paintedV4() });
   const { history, terrain } = session(opened);
-  const grid = gridBytes(terrain.grid), references = structuredClone(terrain.references);
-  const spawn = map.landmarks.spawn;
-  for (const edit of [raise(history.current(), [spawn]), { ...raise(history.current(), [spawn]), tool: 'paint', material: 'rock' },
-    raise(history.current(), [{ x: -279.5, z: 0 }], { radius: 3 })]) {
-    let code;
-    try { await terrain.commit(edit); } catch (error) { code = error.code; }
-    assert.ok(['protected_ground', 'protected_route', 'protected_area'].includes(code), `${edit.tool}: ${code}`);
-    assert.throws(() => terrain.preview(edit), (error) => error.code === code);
-    assert.equal(Buffer.compare(gridBytes(terrain.grid), grid), 0, 'byte-identical grid');
-    assert.deepEqual(terrain.references, references);
+  const mask = editable ??= terrainEditableMask(map), spawn = map.landmarks.spawn;
+  let changed = 0;
+  for (const edit of [{ tool: 'raise', points: [spawn], radius: 24 }, { tool: 'paint', points: [spawn], radius: 24, material: 'rock' },
+    { tool: 'raise', points: [{ x: -279.5, z: 0 }], radius: 3 }]) {
+    const deltas = terrain.grid.deltasMm.slice(), weights = terrain.grid.weights.slice();
+    const result = await terrain.commit(raise(history.current(), edit.points, edit));
+    history.commit(result.document, { tiles: result.tiles });
+    for (let k = 0; k < mask.length; k++) {
+      const same = terrain.grid.deltasMm[k] === deltas[k] && [0, 1, 2, 3].every((c) => terrain.grid.weights[k * 4 + c] === weights[k * 4 + c]);
+      if (!same && !mask[k]) assert.fail(`${edit.tool} touched vertex ${k}, off the editable mask`);
+      if (!same) changed++;
+    }
   }
+  assert.ok(changed > 0, 'the 24 m strokes at the spawn reach the editable ground around it');
+  // The validator stays the authority: a patch on the spawn vertex is refused and leaves the grid byte-identical.
+  const k = Math.round(spawn.z + 280) * TERRAIN_GRID_SIZE + Math.round(spawn.x + 280);
+  assert.equal(mask[k], 0);
+  const grid = gridBytes(terrain.grid), references = structuredClone(terrain.references), edit = raise(history.current(), [spawn]);
+  terrain._patch = () => ({ indices: Int32Array.of(k), deltasMm: Int32Array.of(terrain.grid.deltasMm[k] + 500) });
+  let code;
+  try { await terrain.commit(edit); } catch (error) { code = error.code; }
+  assert.ok(['protected_ground', 'protected_route', 'protected_area'].includes(code), `forged: ${code}`);
+  assert.throws(() => terrain.preview(edit), (error) => error.code === code);
+  delete terrain._patch;
+  assert.equal(Buffer.compare(gridBytes(terrain.grid), grid), 0, 'byte-identical grid');
+  assert.deepEqual(terrain.references, references);
   assert.throws(() => sculptTerrainDocument({ map, baseRevision: BASE, ...raise(paintedV4(), [spawn]) }),
-    (error) => ['protected_ground', 'protected_route', 'protected_area'].includes(error.code), 'the v3/v4 path refuses it too');
+    (error) => ['protected_ground', 'protected_route', 'protected_area'].includes(error.code), 'the v3/v4 path still refuses it');
 });
 
 test('grid strokes keep the stroke semantics of the v3/v4 path (same tiles after conversion)', async () => {

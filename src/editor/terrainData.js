@@ -230,8 +230,9 @@ function projectTerrain(baseMap, heights, changedCells, paint, terrain) {
     for (let k = 0; k < 4; k++) if (weights[k] > best) { best = weights[k]; material = TERRAIN_MATERIALS[k]; }
     return material;
   };
+  // terrainPaint: the four weights per vertex this map draws (null: none), compared by the editor preview (GM08).
   return { ...baseMap, heights, heightAt, groundAt, materialAt, fullsegments: TERRAIN_GRID_SEGMENTS,
-    gmTerrain: true, terrain, materialWeightsAt,
+    gmTerrain: true, terrain, materialWeightsAt, terrainPaint: paint,
     terrainProjection: true, terrainSource: baseMap.terrainSource || baseMap };
 }
 
@@ -454,4 +455,43 @@ export function terrainEditableMask(baseMap) {
     mask[j * TERRAIN_GRID_SIZE + i] = free;
   }
   return mask;
+}
+
+/** GM08: the distance in metres over which a brush fades out before a vertex it may not touch. */
+export const TERRAIN_EDIT_FEATHER = 4;
+const editWeightCache = new WeakMap();
+
+/**
+ * GM08: the share of a stroke each vertex takes, so a brush of any size stops softly at docks, paths, services, the
+ * shore and the outer ring instead of refusing the whole stroke: 0 off terrainEditableMask, rising with a smoothstep
+ * to 1 at TERRAIN_EDIT_FEATHER m (chamfer distance) from the nearest vertex off the mask. Cached per base map (as the
+ * edit policy); the caller must not modify the returned array.
+ */
+export function terrainEditWeights(baseMap) {
+  const cached = editWeightCache.get(baseMap);
+  if (cached && cached.groundAt === baseMap.groundAt) return cached.weights;
+  const mask = terrainEditableMask(baseMap), N = TERRAIN_GRID_SIZE, distance = new Float32Array(TERRAIN_SAMPLE_COUNT);
+  for (let k = 0; k < TERRAIN_SAMPLE_COUNT; k++) distance[k] = mask[k] ? Infinity : 0;
+  // Two chamfer passes (1 and sqrt 2): distance to the nearest vertex off the mask, exact enough below a few metres.
+  for (let j = 0; j < N; j++) for (let i = 0, k = j * N; i < N; i++, k++) {
+    if (distance[k] === 0) continue;
+    let d = distance[k];
+    if (i > 0) d = Math.min(d, distance[k - 1] + 1);
+    if (j > 0) d = Math.min(d, distance[k - N] + 1, i > 0 ? distance[k - N - 1] + Math.SQRT2 : d, i < N - 1 ? distance[k - N + 1] + Math.SQRT2 : d);
+    distance[k] = d;
+  }
+  for (let j = N - 1; j >= 0; j--) for (let i = N - 1, k = j * N + i; i >= 0; i--, k--) {
+    if (distance[k] === 0) continue;
+    let d = distance[k];
+    if (i < N - 1) d = Math.min(d, distance[k + 1] + 1);
+    if (j < N - 1) d = Math.min(d, distance[k + N] + 1, i < N - 1 ? distance[k + N + 1] + Math.SQRT2 : d, i > 0 ? distance[k + N - 1] + Math.SQRT2 : d);
+    distance[k] = d;
+  }
+  const weights = new Float32Array(TERRAIN_SAMPLE_COUNT);
+  for (let k = 0; k < TERRAIN_SAMPLE_COUNT; k++) {
+    const t = Math.min(1, distance[k] / TERRAIN_EDIT_FEATHER);
+    weights[k] = t * t * (3 - 2 * t);
+  }
+  editWeightCache.set(baseMap, { groundAt: baseMap.groundAt, weights });
+  return weights;
 }

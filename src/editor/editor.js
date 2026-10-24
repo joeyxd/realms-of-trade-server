@@ -17,8 +17,8 @@ import { TemplatePanel } from './templatePanel.js';
 import { validateTemplate, instantiateTemplate } from './templates.js';
 import { compileTerrainMap, OBJECT_MAX_Y, OBJECT_MIN_Y, validateTerrainForMap } from './terrainData.js';
 import { isTerrainTilesDocument } from './terrainTiles.js';
-import { TerrainSession, openTerrainDocument, tileReferences } from './terrainSession.js';
-import { createTerrainPreview } from './terrainPreview.js';
+import { TerrainSession, openTerrainDocument, tileKeysRegion, tileReferences } from './terrainSession.js';
+import { createTerrainPreview, joinRegions } from './terrainPreview.js';
 import { TerrainPanel } from './terrainPanel.js';
 import { TerrainInteraction } from './terrainInteraction.js';
 import { ScatterPanel } from './scatterPanel.js';
@@ -411,20 +411,28 @@ export class WorldEditor {
     return this.terrain ? this.terrain.surfaceFor(document, tiles) : this.map;
   }
 
-  /** Commit one terrain stroke through the session (async: tile hashing). Resolves true when history took it. */
-  async _commitTerrainStroke(edit) {
+  /**
+   * Commit one terrain stroke through the session (async: tile hashing). Resolves true when history took it. `gesture`
+   * ({ region, shown }, GM08) is what the stroke's previews rendered: the scene shows `shown`, so the commit renders
+   * the union of the gesture's region and its own from there.
+   */
+  async _commitTerrainStroke(edit, gesture = null) {
     if (this.terrainTask || !this.terrain || !this.active) return false;
     const session = this.session;
+    const regionFrom = (region) => gesture?.shown ? { ...joinRegions(gesture.region, region), from: gesture.shown } : region;
     const task = (async () => {
       try {
         const result = await this.terrain.commit(edit);
         if (!this.active || session !== this.session) return false;
-        this._commit(result.document, { tiles: result.tiles, map: result.map, region: result.region });
+        this._commit(result.document, { tiles: result.tiles, map: result.map, region: regionFrom(result.region) });
         return true;
       } catch (error) {
         this.lastError = error;
         if (this.active && session === this.session) {
-          try { this._renderDocument(this.history.current()); } catch { /* The last rendered state stays. */ }
+          try {
+            const current = this.history.current();
+            this._renderDocument(current, gesture?.shown ? { map: this._terrainSurface(current), region: regionFrom(null) } : {});
+          } catch { /* The last rendered state stays. */ }
         }
         return false;
       }
@@ -1213,9 +1221,13 @@ export class WorldEditor {
     if (!this.history || this.dragging || this.terrainTask) return;
     this.terrainInteraction?.cancel();
     this.scatterInteraction?.cancel();
-    // Undo and redo restore the grid from tiles: the session decodes only the tiles whose reference differs.
+    // Undo and redo restore the grid from tiles: the session decodes only the tiles whose reference differs, and the
+    // scene rewrites only those tiles' vertices (GM08).
     const doc = this.history[kind](); this.document = doc; this.dirty = JSON.stringify(doc) !== this.lastSavedJson;
-    this._renderDocument(doc); this.onChanged({ document: clone(doc), dirty: this.dirty }); this._scheduleSave();
+    const shown = this.terrainPreview?.map;
+    const rewritten = this.terrain && (isTerrainTilesDocument(doc) || doc.terrain === undefined) ? this.terrain.sync(doc) : [];
+    this._renderDocument(doc, rewritten.length ? { map: this.terrain.surface(), region: { ...tileKeysRegion(rewritten), from: shown } } : {});
+    this.onChanged({ document: clone(doc), dirty: this.dirty }); this._scheduleSave();
     if (this.terrainRoot?.hidden === false) this.terrainPanel.render();
     this.resourcePanel?.render();
   }

@@ -62,6 +62,18 @@ export async function openTerrainDocument({ map, baseRevision, document, tiles =
 // Tile (tx, tz) owns grid rows j = 70tz + v + 280 and columns i = 70tx + u + 280 (D1).
 const tileRow = (tx, tz, v) => (TILE_SIZE * tz + v + HALF) * TERRAIN_GRID_SIZE + TILE_SIZE * tx + HALF;
 
+/** GM08: the grid vertex bounds ({ i0, j0, i1, j1 }) of tiles by key ('tx,tz', as sync returns them); null for none. */
+export function tileKeysRegion(keys) {
+  let region = null;
+  for (const key of keys) {
+    const [tx, tz] = key.split(',').map(Number), i0 = TILE_SIZE * tx + HALF, j0 = TILE_SIZE * tz + HALF;
+    const i1 = Math.min(TERRAIN_GRID_SEGMENTS, i0 + TILE_SIZE - 1), j1 = Math.min(TERRAIN_GRID_SEGMENTS, j0 + TILE_SIZE - 1);
+    region = region ? { i0: Math.min(region.i0, i0), j0: Math.min(region.j0, j0), i1: Math.max(region.i1, i1), j1: Math.max(region.j1, j1) }
+      : { i0, j0, i1, j1 };
+  }
+  return region;
+}
+
 // Write a decoded tile into its region of the grid; null clears the region (absent means base).
 function writeTile(grid, tx, tz, tile) {
   const { deltasMm, weights } = grid;
@@ -194,8 +206,9 @@ export class TerrainSession {
   }
 
   /**
-   * The stroke as it would commit, without hashing: { document (terrain references not updated yet), map }. The grid
-   * is back to its bytes before the call when this returns or throws.
+   * The stroke as it would commit, without hashing: { document (terrain references not updated yet), map, region }.
+   * `region` (as commit's, GM08) bounds the changed vertices against `region.from`, the map the stroke started from;
+   * absent when nothing changes. The grid is back to its bytes before the call when this returns or throws.
    */
   preview(edit) {
     if (this.pending) fail('busy');
@@ -206,7 +219,8 @@ export class TerrainSession {
     try {
       validateTerrainGridForMap(this.map, this.grid, { dirtyTiles: applied.dirtyTiles });
       const after = compileTerrainGrid(this.map, this.grid);
-      return { document: this._document(edit, before, after, this.references, applied.heights), map: after };
+      return { document: this._document(edit, before, after, this.references, applied.heights), map: after,
+        region: { ...applied.region, from: before } };
     } finally { this._revert(applied); }
   }
 

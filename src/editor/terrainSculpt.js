@@ -1,14 +1,18 @@
 import { validateDocument } from './document.js';
 import { compileTerrainMap, TERRAIN_GRID_SIZE, TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MAX_DELTA_MM, TERRAIN_MIN_HEIGHT,
-  validateTerrainForMap } from './terrainData.js';
+  terrainEditWeights, validateTerrainForMap } from './terrainData.js';
 import { gmEditableBaseProps } from './baseIdentity.js';
-import { brushParameters, brushWeight, strokePath } from './terrainBrush.js';
+import { airbrushInfluence, BRUSH_FLOWS, brushParameters, brushWeight, strokeInfluence, strokePath, strokeSpacing,
+  TERRAIN_BRUSH_MAX_RADIUS } from './terrainBrush.js';
 
 const fail = code => { const error = new TypeError(`Terrain sculpt failed: ${code}`); error.code = code; throw error; };
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
+// GM08: grid strokes stop 2 mm inside the 0.75 m floor and the +200 m ceiling (millimetre rounding stays inside).
+const GRID_FLOOR = TERRAIN_MIN_HEIGHT + .002, GRID_CEILING = TERRAIN_GRID_MAX_HEIGHT - .002;
 
-function checkedInput({ map, document, baseRevision, tool, points, radius = 6, strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4 }) {
+function checkedInput({ map, document, baseRevision, tool, points, radius = 6, strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4 },
+  maxRadius = 24) {
   const doc = validateDocument(document);
   if (!map || !Number.isSafeInteger(map.seed) || doc.base.seed !== (map.seed >>> 0) ||
       doc.base.revision !== baseRevision || typeof baseRevision !== 'string') fail('base_mismatch');
@@ -16,7 +20,7 @@ function checkedInput({ map, document, baseRevision, tool, points, radius = 6, s
   if (!Array.isArray(points) || points.length < (tool === 'ramp' ? 2 : 1) ||
       (tool === 'ramp' && points.length !== 2) ||
       points.some(p => !p || !Number.isFinite(p.x) || !Number.isFinite(p.z) || Math.abs(p.x) > map.half || Math.abs(p.z) > map.half)) fail('points');
-  try { brushParameters({ radius, strength, falloff, shape, aspect, rotation }); }
+  try { brushParameters({ radius, strength, falloff, shape, aspect, rotation }, { maxRadius }); }
   catch { fail('parameters'); }
   // GM07 D4: flatten reaches the [-40, +200] m range; the 0.75 m floor stays.
   if (!Number.isFinite(level) || level < TERRAIN_MIN_HEIGHT || level > TERRAIN_GRID_MAX_HEIGHT) fail('parameters');
@@ -144,47 +148,45 @@ export function sculptTerrainDocument({ map, document, baseRevision, tool, point
 }
 
 /**
- * GM07 grid entry point beside sculptTerrainDocument: the same tools, parameters and per-vertex rule over a dense
- * grid (terrainData.js createTerrainGrid). `map` is the base map, `surface` the compiled map of `grid` (the heights
- * the stroke starts from). The grid is not modified: the result is the patch of every vertex whose delta changes,
- * { indices, deltasMm } in ascending vertex order. No 12 m or 20,000-sample cap applies here; the caller validates
- * the patched grid (validateTerrainGridForMap) and owns tiles and history (terrainSession.js).
+ * GM07 grid entry point beside sculptTerrainDocument: the same tools and per-vertex rule over a dense grid
+ * (terrainData.js createTerrainGrid). `map` is the base map, `surface` the compiled map of `grid` (the heights the
+ * stroke starts from). The grid is not modified: the result is the patch of every vertex whose delta changes,
+ * { indices, deltasMm } in ascending vertex order. GM08: radius up to TERRAIN_BRUSH_MAX_RADIUS, a dab every
+ * strokeSpacing(radius), flow 'stroke' or 'airbrush'; each vertex takes its terrainEditWeights share, so protected
+ * places, the shore and the outer ring stay untouched instead of refusing the stroke, and no vertex is moved below the
+ * 0.75 m floor or above +200 m (one already beyond stays where it is). No 12 m or 20,000-sample cap applies here; the
+ * caller validates the patched grid (validateTerrainGridForMap) and owns tiles and history (terrainSession.js).
  */
 export function sculptTerrainGrid({ map, surface, grid, document, baseRevision, tool, points, radius = 6,
-  strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4 } = {}) {
-  const input = checkedInput({ map, document, baseRevision, tool, points, radius, strength, falloff, shape, aspect, rotation, level });
+  strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4, flow = 'stroke' } = {}) {
+  const input = checkedInput({ map, document, baseRevision, tool, points, radius, strength, falloff, shape, aspect, rotation, level },
+    TERRAIN_BRUSH_MAX_RADIUS);
+  if (!BRUSH_FLOWS.includes(flow)) fail('parameters');
   if (!(grid?.deltasMm instanceof Int32Array) || grid.deltasMm.length !== map.heights?.length ||
       surface?.heights?.length !== map.heights.length) fail('grid');
-  const path = tool === 'ramp' ? [] : strokePath(points);
-  const brush = brushParameters({ radius, strength, falloff, shape, aspect, rotation });
-  const footprint = squareReach(shape, radius, rotation);
+  const brush = brushParameters({ radius, strength, falloff, shape, aspect, rotation }, { maxRadius: TERRAIN_BRUSH_MAX_RADIUS });
   const rampEndpoints = tool === 'ramp' ? [surface.groundAt(points[0].x, points[0].z), surface.groundAt(points[1].x, points[1].z)] : null;
-  const minI = clamp(Math.floor(Math.min(...points.map(p => p.x)) + map.half - footprint - 1), 0, 560);
-  const maxI = clamp(Math.ceil(Math.max(...points.map(p => p.x)) + map.half + footprint + 1), 0, 560);
-  const minJ = clamp(Math.floor(Math.min(...points.map(p => p.z)) + map.half - footprint - 1), 0, 560);
-  const maxJ = clamp(Math.ceil(Math.max(...points.map(p => p.z)) + map.half + footprint + 1), 0, 560);
-  const width = maxI - minI + 1, influence = new Float64Array(width * (maxJ - minJ + 1));
+  let field;
   if (tool === 'ramp') {
-    for (let j = minJ; j <= maxJ; j++) for (let i = minI; i <= maxI; i++)
-      influence[(j - minJ) * width + i - minI] = weight(rampDistance({ x: i - map.half, z: j - map.half }, points[0], points[1]), radius, falloff);
-  } else {
-    // Each path sample only reaches its own footprint window: the same maximum as the document loop, at stroke cost.
-    for (const center of path) {
-      const i0 = clamp(Math.floor(center.x + map.half - footprint - 1), minI, maxI), i1 = clamp(Math.ceil(center.x + map.half + footprint + 1), minI, maxI);
-      const j0 = clamp(Math.floor(center.z + map.half - footprint - 1), minJ, maxJ), j1 = clamp(Math.ceil(center.z + map.half + footprint + 1), minJ, maxJ);
-      for (let j = j0; j <= j1; j++) for (let i = i0, n = (j - minJ) * width + i0 - minI; i <= i1; i++, n++) {
-        const value = brushWeight(i - map.half - center.x, j - map.half - center.z, brush);
-        if (value > influence[n]) influence[n] = value;
-      }
-    }
-  }
+    const footprint = squareReach(shape, radius, rotation);
+    const i0 = clamp(Math.floor(Math.min(points[0].x, points[1].x) + map.half - footprint - 1), 0, 560);
+    const i1 = clamp(Math.ceil(Math.max(points[0].x, points[1].x) + map.half + footprint + 1), 0, 560);
+    const j0 = clamp(Math.floor(Math.min(points[0].z, points[1].z) + map.half - footprint - 1), 0, 560);
+    const j1 = clamp(Math.ceil(Math.max(points[0].z, points[1].z) + map.half + footprint + 1), 0, 560);
+    const width = i1 - i0 + 1, values = new Float64Array(width * (j1 - j0 + 1));
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++)
+      values[(j - j0) * width + i - i0] = weight(rampDistance({ x: i - map.half, z: j - map.half }, points[0], points[1]), radius, falloff);
+    field = { i0, j0, i1, j1, width, values };
+  } else field = strokeInfluence(strokePath(points, strokeSpacing(radius)), brush, { half: map.half, flow });
+  const share = terrainEditWeights(map), airbrush = flow === 'airbrush' && tool !== 'ramp', blend = tool !== 'raise' && tool !== 'lower';
   const heights = surface.heights, sampleHeight = (i, j) => heights[j * TERRAIN_GRID_SIZE + i];
   const indices = [], deltas = [];
-  for (let j = minJ; j <= maxJ; j++) for (let i = minI; i <= maxI; i++) {
-    const amount = influence[(j - minJ) * width + i - minI];
-    if (amount <= 0) continue;
-    const index = j * TERRAIN_GRID_SIZE + i;
-    const target = strokeTarget(input, sampleHeight, i, j, i - map.half, j - map.half, amount, rampEndpoints);
+  for (let j = field.j0; j <= field.j1; j++) for (let i = field.i0, n = (j - field.j0) * field.width; i <= field.i1; i++, n++) {
+    const index = j * TERRAIN_GRID_SIZE + i, value = field.values[n];
+    if (value <= 0 || share[index] <= 0) continue;
+    const amount = (airbrush ? airbrushInfluence(value, strength, blend) : value) * share[index], current = heights[index];
+    const target = clamp(strokeTarget(input, sampleHeight, i, j, i - map.half, j - map.half, amount, rampEndpoints),
+      Math.min(current, GRID_FLOOR), Math.max(current, GRID_CEILING));
     const delta = Math.round((Math.fround(target) - originalHeight(map, index)) * 1000);
     if (delta !== grid.deltasMm[index]) { indices.push(index); deltas.push(delta); }
   }

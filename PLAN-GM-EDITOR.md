@@ -528,6 +528,24 @@ GM07c malla por tesela con reconstrucción parcial (requisito de los pinceles gr
 **GM07b1 y GM07b2 construidos** (alpha.96, protocolo 68, SQL042; HANDOFF 2026-10-22): teselas MNT1 y documento v5, editor sobre todo el mapa, borradores, publicación y carga del jugador por teselas.
 **GM07c construido** (T-1022-50, 2026-10-22, sin push): una sola malla 561 x 561 con reescritura y subida por región sucia (un trazo de 4 m pasa de 153 ms y 13,8 MB a 0,1 ms y 3,5 KB), textura de altura del agua 561 x 561 en terreno GM, mapa del panel a 168 px; la malla por tesela queda para GM06b si la carga por zonas la pide.
 
+### GM08 Pinceles de gran escala (diseño y GM08a construido el 2026-10-23, T-1023-13, sin push)
+
+Contrato: [GM08](docs/briefs/gm08-large-brushes.md).
+- **Base medida.** Solo el 11 % del mapa es editable, y el 54 % de ese suelo está a menos de 8 m de algo protegido.
+  Antes, un toque de 64 m o más nunca era aceptado, porque cualquier vértice prohibido rechazaba el trazo entero.
+  Además, la vista previa del arrastre reescribía la malla entera en cada paso (185 ms).
+- **GM08a, solo cliente** (sin protocolo ni SQL):
+  - radio de 2 a 128 m en escultura y pintura
+  - recorte suave a la zona editable (4 m) en lugar del rechazo
+  - suelo de 0,75 m y techo de +200 m como límites, no como rechazo
+  - toques espaciados según el radio
+  - flujo aerógrafo acumulativo
+  - vista previa, commit y deshacer por región (la vista previa compara con lo que se ve)
+- **Medido:** un pincel de 128 m arrastrado 300 m hace commit en unos 110 ms y renderiza su región en 60 ms, frente a
+  410 ms de una reescritura completa, con la máquina cargada.
+- **Siguen:** GM08b regiones (rectángulo, lazo, nivelar a una altura con cuentagotas, relleno de pintura), GM08c ruido
+  y erosión, GM08d importar y exportar el mapa de alturas (PNG de 16 bits, R16 de Unreal).
+
 ## 10 Arquitectura de implementación propuesta
 
 | Área | Base existente y cambio necesario |
