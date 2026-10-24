@@ -16,7 +16,7 @@ Los PNG Unreal fijados por `atlas-source.json` (T_FlameUV_2 2048×1024,
 T_Smoke_1 2560×1536, sRGB) pasan a WebP lossless con RGBA idéntico:
 `flame-v1.webp` y `smoke-v1.webp` en `assets/vfx/niagara/native/flame-single-v1/`
 (`build-native-assets.py` rechaza un PNG cuyo SHA-256 difiera del pin y su `--check`
-cubre los cuatro WebP). Escritorio y móvil cargan los mismos dos archivos.
+cubre los cuatro WebP). Escritorio carga estos dos archivos; el móvil carga sus gemelos KTX2 (sección «Variante móvil»).
 
 Ventana de 8 s como BasicHit: `nativeStep` sin cambios (pasos 0–480), la simulación
 se mueve con seek, el tope de 480 pasos y `stopAt` (8 s) no cambian, y el bucle es el
@@ -94,3 +94,52 @@ No se declara equivalencia con UE del DepthFade en perspectiva, de la composici�
 el escenario, del orden llama/humo en perspectiva, de los controles de presentación ni
 de la variante móvil; tampoco FPS físicos ni la aceptación del autor. El bucle reinicia
 toda la vista previa (sin continuidad de la emisión entre vueltas).
+
+## Variante móvil (T-1024-20)
+
+Decisión de Joi (2026-10-24): KTX2 UASTC solo en móvil; el escritorio conserva los WebP sin
+pérdida con sus pins, sin cambio de bytes. Resolución completa (sin reducir), calidad primero.
+Con la calidad «Móvil» del Taller (o puntero grueso, o escenario de menos de 760 px) el efecto
+carga `flame-v1.ktx2` y `smoke-v1.ktx2` (`assets/vfx/niagara/native/flame-single-v1/`) en lugar de los WebP; cambiar el selector recarga el efecto con el otro juego y
+libera las texturas anteriores.
+
+- **Tope de GPU:** 12 MiB = 12.582.912 B por efecto = las texturas del efecto con la cadena
+  completa de mips + la LUT de film (32³ × 4 × 2 B = 262.144 B). Los render targets quedan fuera.
+- **Fórmula:** 16 B por bloque 4×4 en cada nivel hasta 1×1, `sum(ceil(w/4) × ceil(h/4) × 16)`
+  (la misma de `atlas-policy.js`). Flame 2048×1024: 2.796.240 B; Smoke 2560×1536: 5.242.960 B; total 8.039.200 B + LUT = **8.301.344 B** (66,0 % del tope; descarga 1.394.823 B frente a 552.514 B de los WebP).
+  Una prueba del gate (`tests/niagara-native-studio.test.mjs`) lee la cabecera de cada KTX2
+  en `assets/`, calcula esa suma y exige el total ≤ 12.582.912 B; otra fija el juego de escritorio.
+- **Codificador:** `toktx v4.4.2`, receta `ktx2-uastc` de T-1020-66 (`atlas-build.py`):
+  `--t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0
+  --assign_oetf srgb --assign_primaries srgb`, desde los mismos PNG que los WebP. Es
+  reproducible: dos corridas de `python tools/niagara-native-lab/build-native-assets.py --toktx <toktx.exe>`
+  dan los mismos cuatro sha256 (`--check` con el mismo `--toktx` los compara byte a byte).
+  KTX2 (sha256): flame `fc901aae…5f1`, smoke `aa4757a1…347`.
+- **Carga:** `NativeEffect.setEffect(effect, { quality, renderer })`; con `quality: 'mobile'` descarga
+  los `.ktx2`, comprueba su SHA-256 contra el pin y pasa los mismos bytes a `KTX2Loader`
+  (three 0.160, transcoder `basis` del mismo CDN que three) que transcodifica a ASTC, ETC2 o BC7
+  según la GPU y usa la cadena de mips guardada. Origen abajo-izquierda en la codificación, sin
+  voltear en ejecución; sRGB. Si el KTX2 o el transcoder falla, el efecto pasa a su estado de
+  error con el mensaje `KTX2 mobile texture failed: <url>: <causa>`: nunca vuelve en silencio a los WebP.
+- **Evidencia (QA del Taller, Chrome headless con ANGLE):** cuatro corridas 5/5,
+  `t1024-20-flame-desktop` y `t1024-20-flame-mobile` en `.scratch/native-studio/`. En escritorio
+  las URL y los hash descargados son los WebP del registro y las muestras de calidad de
+  escritorio son idénticas a T-1024-14. En móvil descarga los dos `.ktx2` de arriba más
+  `basis_transcoder.js/.wasm`; el formato de GPU que eligió `KTX2Loader` en ese navegador fue
+  `RGBA_BPTC_Format` (BC7), 12 niveles, 16 B por bloque: 2.796.240 B + 5.242.960 B (igual a la fórmula, sin la LUT).
+  Sin errores de página ni peticiones fallidas.
+- **Deriva escritorio-móvil** (mismo paso y semilla; RGB 0-255 por canal; «región» = píxeles que
+  el efecto toca en cualquiera de las dos capturas, «viewport» = toda la vista previa;
+  `compare-native-drift.py`, también en `drift.json` y `drift.md` de la corrida móvil). El control es el
+  paso que ambas corridas capturan en móvil (debe ser idéntico):
+
+| comparison | step | seed | effect px | region MAE | region P95 | region max | viewport MAE | viewport P95 | viewport max |
+|---|---|---|---|---|---|---|---|---|---|
+| desktop vs mobile | 60 | 6371 | 2186 | 0.6296 | 3.0 | 22 | 0.0022 | 0.0 | 22 |
+| desktop vs mobile | 240 | 6371 | 2987 | 0.5504 | 3.0 | 19 | 0.0026 | 0.0 | 19 |
+| desktop vs mobile | 479 | 6371 | 3073 | 0.5324 | 3.0 | 19 | 0.0026 | 0.0 | 19 |
+| control (mobile vs mobile) | 240 | 12345 | 3210 | 0.0 | 0.0 | 0 | 0.0 | 0.0 | 0 |
+
+- **Sin medir:** un teléfono real; el tiempo de decodificación ASTC/ETC2 (aquí BC7 en escritorio); FPS.
+  En una GPU sin ASTC, ETC2 ni BC7 el transcoder cae a RGBA8 sin comprimir (más de 30 MiB para
+  NS_Flame_Single, por encima del tope): ese caso no se midió ni se cubre.

@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { NIAGARA_NATIVE, NATIVE_SIMULATIONS, nativeStep, nativeEndStep } from '../src/editor/niagaraNative.js';
+import { NIAGARA_NATIVE, NATIVE_SIMULATIONS, NATIVE_MOBILE_GPU_CAP, nativeStep, nativeEndStep } from '../src/editor/niagaraNative.js';
 import { buildCatalogEntry, getEffect, effectParameters, defaultEffectDocument, FLIPBOOK_PARAMETERS } from '../src/editor/effectLibrary.js';
 import { cloneSkillDocument, parseSkillDocument, validateSkillDocument, MAX_SKILL_DOCUMENT_BYTES } from '../src/editor/skillDocument.js';
 import { BasicHitSimulation, MAX_STEP } from '../src/render/vfx/niagara/basichit-simulation.js';
@@ -129,4 +129,56 @@ test('every registered recipe has a measured simulation and a render binding, an
   }
   assert.deepEqual(Object.keys(NATIVE_SIMULATIONS), Object.values(NIAGARA_NATIVE).map(item => item.recipe));
   assert.match(read('src/render/vfx/niagara/particles.js').toString(), /setDepth\(texture, camera, width, height, enabled, \{ perspective = false \} = \{\}\)/);
+});
+
+// Header-only KTX2 reader: the formula below is the contract of the mobile 12 MiB cap (it must not trust the registry).
+function ktx2Header(bytes) {
+  assert.equal(bytes.subarray(0, 12).toString('latin1'), '\xabKTX 20\xbb\r\n\x1a\n');
+  const u32 = at => bytes.readUInt32LE(at), dfd = u32(48);
+  return { vkFormat: u32(12), width: u32(20), height: u32(24), depth: u32(28), layers: u32(32), faces: u32(36), levels: u32(40), supercompression: u32(44),
+    model: bytes[dfd + 12], primaries: bytes[dfd + 13], transfer: bytes[dfd + 14] };
+}
+const uastcChainBytes = (w, h, levels) => Array.from({ length: levels }, (_, i) => Math.ceil(Math.max(1, w >> i) / 4) * Math.ceil(Math.max(1, h >> i) / 4) * 16).reduce((a, b) => a + b, 0);
+function webpSize(bytes) { // lossless VP8L: 14-bit width-1 and height-1 right after the 0x2f signature
+  assert.equal(bytes.subarray(8, 16).toString('latin1'), 'WEBPVP8L'); assert.equal(bytes[20], 0x2f);
+  return [1 + (bytes[21] | (bytes[22] & 0x3f) << 8), 1 + (bytes[22] >> 6 | bytes[23] << 2 | (bytes[24] & 0xf) << 10)];
+}
+
+test('mobile KTX2 UASTC set: full resolution, full mip chain, sRGB, at most 12 MiB of GPU memory per effect', () => {
+  assert.equal(NATIVE_MOBILE_GPU_CAP, 12 * 1024 * 1024); assert.equal(NATIVE_MOBILE_GPU_CAP, 12582912);
+  const film = JSON.parse(read(entry.files.film.url)).lut, lut = film.size ** 3 * 4 * 2; // Data3DTexture, RGBA half float
+  assert.equal(lut, 262144);
+  for (const [item, expected] of [[entry, 8650816], [flame, 8301344]]) {
+    assert.deepEqual(Object.keys(item.mobileFiles), Object.keys(item.files).slice(2)); assert.equal(Object.isFrozen(item.mobileFiles), true);
+    let total = lut;
+    for (const key of Object.keys(item.mobileFiles)) {
+      const file = item.mobileFiles[key], bytes = read(file.url), header = ktx2Header(bytes);
+      assert.match(file.url, /\.ktx2$/); assert.equal(hash(bytes), file.sha256, file.url);
+      assert.deepEqual([header.width, header.height], webpSize(read(item.files[key].url)), `${key}: same size as the desktop WebP`);
+      assert.deepEqual([header.vkFormat, header.depth, header.layers, header.faces, header.supercompression], [0, 0, 0, 1, 2]);
+      assert.equal(header.levels, Math.floor(Math.log2(Math.max(header.width, header.height))) + 1, `${key}: full mip chain`);
+      assert.deepEqual([header.model, header.primaries, header.transfer], [166, 1, 2]); // UASTC, BT.709, sRGB
+      total += uastcChainBytes(header.width, header.height, header.levels);
+    }
+    assert.equal(total, expected, item.id); assert.ok(total <= NATIVE_MOBILE_GPU_CAP, `${item.id} ${total}`);
+  }
+});
+
+test('desktop keeps the pinned lossless WebP set, and mobile never falls back to it', () => {
+  assert.deepEqual(Object.values(entry.files).map(f => [f.url, f.sha256]), [
+    ['/src/render/vfx/niagara/basichit-source.json', '6388736b01d507edeeb18db23193be9ba4646185f3362332be2778d62f49950b'],
+    ['/src/render/vfx/niagara/film-source.json', 'df3b1ba15eb364130e0e212ee111c7e97c00f8cbe0f4ee53cb1c71714b7174c0'],
+    ['/assets/vfx/niagara/native/basichit-v1/fireball-v1.webp', 'a936de7a6b489b297893d235892010fa469a6c1f3410eefc3055e2f0cfb3a003'],
+    ['/assets/vfx/niagara/native/basichit-v1/hit-circle-v1.webp', 'ec0c1aa72e55e61f4ef20c2be9f1f0aafa3a78b5341d265e34f61e117935551c']]);
+  assert.deepEqual(Object.values(flame.files).map(f => [f.url, f.sha256]), [
+    ['/src/render/vfx/niagara/pilot-source.json', '85b251ab3c249aed61cd5fd6be16d0ace0229f88bbd7e03c45718d9e41e472a5'],
+    ['/src/render/vfx/niagara/film-source.json', 'df3b1ba15eb364130e0e212ee111c7e97c00f8cbe0f4ee53cb1c71714b7174c0'],
+    ['/assets/vfx/niagara/native/flame-single-v1/flame-v1.webp', 'cc80a1d651f272f13a99f49b85a10415907a6a6b3abb138a42e27ffcba558a0d'],
+    ['/assets/vfx/niagara/native/flame-single-v1/smoke-v1.webp', 'b9890532ed794b80a0501098a3a80c79b3a0da5d7ac885eccd509fdb07e61ec1']]);
+  const code = read('src/render/vfx/niagara/nativeEffect.js').toString();
+  assert.ok(code.includes("const mobile = quality === 'mobile';") && code.includes('if (mobile && !effect.mobileFiles) throw'));
+  assert.ok(code.includes('{ ...effect.files, ...effect.mobileFiles } : effect.files'));
+  // The Studio quality reaches the native effect on load and on every switch.
+  const preview = read('src/render/skillPreview.js').toString();
+  assert.equal(preview.split('{ quality: this.quality, renderer: this.renderer }').length, 3);
 });

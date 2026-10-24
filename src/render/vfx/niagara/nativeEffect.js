@@ -10,6 +10,20 @@ const RECIPES = Object.freeze({
   'flame-single-v1': { textures: 2, counts: 2, particles: (scene, textures) => new PilotParticles(scene, textures) },
 });
 
+// One KTX2Loader for the session (the mobile set): UASTC transcodes to the GPU's own format (ASTC, ETC2, BC7) in a worker; the decoder ships with three, same CDN as the import map.
+let ktx2Loader;
+async function loadKtx2(renderer, buffer, url) {
+  try {
+    if (!renderer) throw new Error('no renderer to detect GPU support');
+    const { KTX2Loader } = await import('three/addons/loaders/KTX2Loader.js');
+    ktx2Loader ||= new KTX2Loader().setTranscoderPath(import.meta.resolve('three/addons/libs/basis/'));
+    ktx2Loader.detectSupport(renderer);
+    // The pinned bytes themselves, through a blob URL (the loader has no public parse in three 0.160).
+    const blob = URL.createObjectURL(new Blob([buffer], { type: 'image/ktx2' }));
+    try { return await ktx2Loader.loadAsync(blob); } finally { URL.revokeObjectURL(blob); }
+  } catch (error) { ktx2Loader = null; /* a failed transcoder fetch must not stick for the session */ throw new Error(`KTX2 mobile texture failed: ${url}: ${error?.message ?? error}`); }
+}
+
 // Keep the transfer math byte-for-byte from the lab, replacing only its inputs/output.
 function replaceOnce(source, anchor, replacement) {
   if (source.split(anchor).length !== 2) throw new Error('Filmic composite anchor changed');
@@ -31,17 +45,21 @@ export class NativeEffect {
     this.counts = [0, 0, 0]; this.drawCalls = 0;
   }
   cancelLoad() { this.epoch++; this.controller?.abort(); this.release(); this.state = 'idle'; }
-  async setEffect(effect) {
+  // options.quality 'mobile' loads the KTX2 UASTC set (needs options.renderer); anything else keeps the lossless WebP set.
+  async setEffect(effect, { quality, renderer } = {}) {
     this.cancelLoad();
     if (this.disposed) return;
     const epoch = this.epoch, controller = this.controller = new AbortController();
     this.state = 'loading'; this.error = '';
-    // Local ownership until the final await: canceled loads cannot publish or leak a bitmap.
+    // Local ownership until the final await: canceled loads cannot publish or leak a bitmap or a compressed texture.
     const bitmaps = [];
     try {
       const recipe = Object.hasOwn(RECIPES, effect.recipe) ? RECIPES[effect.recipe] : null;
       if (!recipe || Object.keys(effect.files).length !== 2 + recipe.textures) throw new Error(`Unknown native recipe: ${effect.recipe}`);
-      const bytes = await Promise.all(Object.values(effect.files).map(async file => {
+      const mobile = quality === 'mobile';
+      if (mobile && !effect.mobileFiles) throw new Error(`No mobile texture set: ${effect.id}`);
+      const files = mobile ? { ...effect.files, ...effect.mobileFiles } : effect.files;
+      const bytes = await Promise.all(Object.values(files).map(async file => {
         const response = await fetch(file.url, { signal: controller.signal });
         if (!response.ok) throw new Error(`HTTP ${response.status}: ${file.url}`);
         const buffer = await response.arrayBuffer();
@@ -49,9 +67,9 @@ export class NativeEffect {
         if (hash !== file.sha256) throw new Error(`Native file hash mismatch: ${file.url}`);
         return buffer;
       }));
-      for (const buffer of bytes.slice(2)) {
-        bitmaps.push(await createImageBitmap(new Blob([buffer], { type: 'image/webp' }),
-          { imageOrientation: 'flipY', premultiplyAlpha: 'none', colorSpaceConversion: 'none' }));
+      for (const [index, buffer] of bytes.slice(2).entries()) {
+        bitmaps.push(mobile ? await loadKtx2(renderer, buffer, Object.values(files)[index + 2].url)
+          : await createImageBitmap(new Blob([buffer], { type: 'image/webp' }), { imageOrientation: 'flipY', premultiplyAlpha: 'none', colorSpaceConversion: 'none' }));
         if (epoch !== this.epoch) return;
       }
       if (epoch !== this.epoch) return;
@@ -60,6 +78,7 @@ export class NativeEffect {
       this.simulation = new NATIVE_SIMULATIONS[effect.recipe](this.source); this.counts = Array(recipe.counts).fill(0);
       const textures = bitmaps.map(bitmap => {
         this.own(bitmap);
+        if (mobile) return bitmap; // KTX2Loader already set sRGB, the stored mip chain and the filters; no runtime flip (encoded lower-left)
         const texture = this.own(new THREE.Texture(bitmap));
         texture.flipY = false; texture.colorSpace = THREE.SRGBColorSpace;
         texture.minFilter = THREE.LinearMipmapLinearFilter; texture.magFilter = THREE.LinearFilter; texture.needsUpdate = true;
@@ -85,7 +104,7 @@ export class NativeEffect {
     } catch (error) {
       if (epoch === this.epoch) { controller.abort(); this.release(); this.state = 'error'; this.error = error.message; }
     } finally {
-      for (const bitmap of bitmaps) if (!this.resources.has(bitmap)) bitmap.close();
+      for (const bitmap of bitmaps) if (!this.resources.has(bitmap)) { bitmap.close?.(); bitmap.dispose?.(); }
     }
   }
   duration(parameters) { return (this.source ? nativeEndStep(this.source, parameters.seed, this.effect.recipe) : 480) / 60 * parameters.duration / parameters.speed; }

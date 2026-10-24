@@ -97,7 +97,7 @@ export class SkillPreview {
     const changed = this.document?.effect !== document.effect;
     this.document = cloneSkillDocument(document);
     this.range.visible = !this.isFlipbook && !this.isNative;
-    if (this.isNative && (changed || this.native.state === 'idle')) void this.native.setEffect(getEffect(document.effect).derivative);
+    if (this.isNative && (changed || this.native.state === 'idle')) void this.native.setEffect(getEffect(document.effect).derivative, { quality: this.quality, renderer: this.renderer });
     else if (!this.isNative) this.native.cancelLoad();
     if (this.isFlipbook && (changed || !this.flipbook.effect)) {
       void this.flipbook.setEffect(getEffect(document.effect).derivative, this.quality);
@@ -111,6 +111,8 @@ export class SkillPreview {
     const next = value === 'mobile' ? 'mobile' : 'desktop', changed = next !== this.quality;
     this.quality = next; this.cap = PREVIEW_PARTICLE_CAP[this.quality];
     if (changed && this.isFlipbook) void this.flipbook.setEffect(getEffect(this.document.effect).derivative, this.quality);
+    // The native effect swaps its texture set (WebP desktop, KTX2 UASTC mobile) and disposes the old textures.
+    else if (changed && this.isNative) void this.native.setEffect(getEffect(this.document.effect).derivative, { quality: this.quality, renderer: this.renderer });
     this.restart();
   }
   setSkin(value) {
