@@ -53,7 +53,9 @@ export const STATS = {
 export const STAT_KEYS = Object.keys(STATS);
 
 // Item bases. slot: weapon | head | chest | boots | ring. weapon: the kit it gives (data/weapons.js). min: the
-// lowest item level it drops at. stats: how the budget is spent. flat: fixed extras.
+// lowest item level it drops at. stats: how the budget is spent. flat: fixed extras. grants: skills it lends while
+// worn (data/grants.js; the rank is fixed on the base in v1, the plan's rarity mapping 1/2/3 comes later). icon: the
+// gear-atlas cell to draw when the base has no cell of its own (ui/kit.js).
 export const BASES = {
   // Cutlasses
   sable: { name: 'Sable de cubierta', slot: 'weapon', weapon: 'sable', min: 1, stats: { atk: 1 }, look: 'sable' },
@@ -75,12 +77,14 @@ export const BASES = {
   botas: { name: 'Botas de cubierta', slot: 'boots', min: 1, stats: { spd: 0.6, def: 0.4 } },
   altas: { name: 'Botas altas', slot: 'boots', min: 1, stats: { def: 0.6, hp: 0.4 } },
   viento: { name: 'Botas de viento', slot: 'boots', min: 5, stats: { spd: 0.6, dash: 0.4 } },
+  alpargatas: { name: 'Alpargatas de pescador', slot: 'boots', min: 1, stats: { spd: 0.5 }, grants: [{ skill: 'swimmer', rank: 1 }], icon: 'botas' },
   // Trinkets
   anillo: { name: 'Anillo de coral', slot: 'ring', min: 1, stats: { crit: 1 } },
   diente: { name: 'Diente de tiburón', slot: 'ring', min: 1, stats: { atk: 0.7 } },
   brujula: { name: 'Brújula rota', slot: 'ring', min: 2, stats: { cdr: 1 } },
   amuleto: { name: 'Amuleto de ron', slot: 'ring', min: 1, stats: { pot: 0.6, hp: 0.4 } },
   moneda: { name: 'Moneda maldita', slot: 'ring', min: 3, stats: { gold: 0.7, xp: 0.3 } },
+  pedernal: { name: 'Pedernal de pistolero', slot: 'ring', min: 2, stats: { atk: 0.5 }, grants: [{ skill: 'blast', rank: 1 }], icon: 'brujula' },
 };
 export const BASE_KINDS = Object.keys(BASES);
 // The starting / rack weapon of each kit (common, level 1).

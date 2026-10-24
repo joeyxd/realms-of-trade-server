@@ -10,6 +10,7 @@ import { PEARLS } from '../../data/pearls.js';
 import { needPenalty } from '../../data/survival.js';
 import { mealEffects } from '../../data/meals.js';
 import { itemStats, emptyStats } from '../items.js';
+import { grantedSkills, pruneLentLoadouts } from '../../data/grants.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 
@@ -43,6 +44,7 @@ export function kitUnlocked(ecs, e, slot) {
 export function applyLoadout(world, e) {
   const ecs = world.ecs, prof = world.profiles ? world.profiles.get(e) : null, k = Math.max(0, ecs.weapon[e] | 0);
   const kind = WEAPON_KINDS[k] || WEAPON_KINDS[0], sk = prof && prof.sk && prof.sk.lo ? prof.sk : null;
+  if (sk) pruneLentLoadouts(sk, grantedSkills(prof.eq)); // a lent art whose item left reverts here, whatever the path
   const lo = (sk && sk.lo[k]) || DEFAULT_LOADOUT[kind];
   SKILL_SLOTS.forEach((slot, i) => {
     const c = SLOT_COLS[slot], id = lo[i] || DEFAULT_LOADOUT[kind][i], has = sk && sk.has ? sk.has[id] : null;

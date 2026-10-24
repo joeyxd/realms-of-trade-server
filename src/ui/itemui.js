@@ -3,6 +3,8 @@ import { RARITIES, BASES, STATS, STAT_KEYS, SLOT_NAMES, slotFits } from '../data
 import { WEAPONS } from '../data/weapons.js';
 import { itemStats, itemName, itemValue, emptyStats } from '../sim/items.js';
 import { dataText, translateData, text as ltext, rich, formatNumber } from '../core/i18n.js';
+import { nodeById } from '../data/skillTree.js';
+import { tr, uiLang } from './kit.js';
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 export const rarityOf = (item) => RARITIES[item.r] || RARITIES[0];
@@ -49,6 +51,16 @@ export function statLines(item) {
   return out;
 }
 
+// The skills the item lends while worn ("Presta: Ráfaga (rango 1)"), named from the node catalog (data/grants.js).
+export function grantLines(item) {
+  const lang = uiLang(), out = [];
+  for (const g of (BASES[item.b] && BASES[item.b].grants) || []) {
+    const node = nodeById(g.skill), name = node ? tr(node.name, lang) : g.skill;
+    out.push(lang === 'en' ? `Lends: ${name} (rank ${g.rank})` : `Presta: ${name} (rango ${g.rank})`);
+  }
+  return out;
+}
+
 // What changes if `item` replaces `worn` (null = an empty slot): [{k, d, text, up}].
 export function compareLines(item, worn) {
   const a = itemStats(item), b = worn ? itemStats(worn) : emptyStats(), out = [];
@@ -74,6 +86,7 @@ export function itemCard(item, o = {}) {
   const R = rarityOf(item), B = BASES[item.b];
   const kind = B.slot === 'weapon' ? WEAPONS[B.weapon].name : SLOT_NAMES[B.slot];
   const lines = statLines(item).map((l) => `<li class="${l.bad ? 'bad' : ''}">${statHtml(l.k, l.v)}</li>`).join('');
+  const grants = grantLines(item).map((l) => `<li class="grant">${esc(l)}</li>`).join('');
   let cmp = '';
   if (o.where === 'bag' || o.where === 'shop') {
     const c = compareLines(item, o.worn || null);
@@ -84,7 +97,7 @@ export function itemCard(item, o = {}) {
   const acts = (o.actions || []).map((a) => `<button class="btn ${a.cls || ''}" data-act="${a.id}">${a.label}</button>`).join('');
   return `<div class="item-card${cmp ? ' two' : ''}" style="--rc:${R.color}">
     <div class="ic-head"><span class="ic-icon">${itemIcon(item)}</span><div><b class="ic-name">${dataText(itemName(item))}</b><small>${dataText(R.name)} · ${dataText(kind)} · ${ltext('adventure.slot_level', { level: formatNumber(item.l) })}</small></div></div>
-    <ul class="ic-stats">${lines || `<li>${ltext('adventure.item_no_stats')}</li>`}</ul>${cmp}${kit}
+    <ul class="ic-stats">${lines || `<li>${ltext('adventure.item_no_stats')}</li>`}${grants}</ul>${cmp}${kit}
     <p class="ic-value">${value > 0 ? rich('adventure.item_worth', { value: formatNumber(value) }) : ltext('adventure.item_practice_worthless')}</p>
     ${acts ? `<div class="ic-acts">${acts}</div>` : ''}
   </div>`;

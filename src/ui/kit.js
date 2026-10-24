@@ -2,6 +2,7 @@
 // line icons. Presentation only; gameplay ids and rules stay in src/data and src/sim.
 
 import { getLocale, onLocaleChange } from '../core/locale.js';
+import { BASES } from '../data/items.js';
 
 export const UI_LANGS = ['es', 'en'];
 /** Resolve interface language from the player's locale source; document.lang can lag on mobile. */
@@ -38,11 +39,13 @@ const CELL = new Map();
 for (const [atlas, { cols, ids }] of Object.entries(ICON_ATLASES))
   ids.forEach((id, i) => { if (!CELL.has(id)) CELL.set(id, { atlas, x: i % cols, y: Math.floor(i / cols) }); });
 const standaloneIcon = id => id === 'resina' || id === 'coco';
-export const hasAtlasIcon = (id) => CELL.has(id) || standaloneIcon(id);
+// A gear base without a cell of its own borrows the one its `icon` names (data/items.js, e.g. pedernal -> brujula).
+const cellOf = (id) => CELL.get(id) || (Object.hasOwn(BASES, id) && BASES[id].icon ? CELL.get(BASES[id].icon) : undefined);
+export const hasAtlasIcon = (id) => !!cellOf(id) || standaloneIcon(id);
 /** A painted icon as a sized span (class `cls`), or '' when the id has no painted art. */
 export function atlasIcon(id, cls = '') {
   if (standaloneIcon(id)) return `<span class="kit-item-art kit-item-art-${id} ${cls}" aria-hidden="true"></span>`;
-  const cell = CELL.get(id);
+  const cell = cellOf(id);
   return cell ? `<span class="kit-ico ${cls}" data-atlas="${cell.atlas}" style="--ix:${cell.x};--iy:${cell.y}" aria-hidden="true"></span>` : '';
 }
 
@@ -57,6 +60,7 @@ export const LINE_ICONS = {
   food: svg('<path fill="currentColor" d="M2 12.2h20c0 4.8-3.8 8.6-8.6 8.6h-2.8C5.8 20.8 2 17 2 12.2zm7.3-6.6c-.8-1-.6-2.2.4-3 0 1 .9 1.4 1 2.4.1.8-.5 1.4-1.4.6zm3.6-1c-.5-.9-.2-1.8.6-2.4 0 .9.8 1.2.8 2 0 .6-.6 1-1.4.4zm2.7 1.6c-.6-.7-.4-1.6.3-2.1 0 .7.7.9.7 1.6 0 .5-.5.9-1 .5zM5.5 11c.3-2.2 2-3.4 4-3.1 1.1-1.6 3.8-1.8 5.1-.2 1.9-.6 3.7.8 3.9 3.3z"/>'),
   backpack: svg('<path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M9 5V3.6C9 2.7 9.7 2 10.6 2h2.8c.9 0 1.6.7 1.6 1.6V5M5.5 21V10.5A5.5 5.5 0 0 1 11 5h2a5.5 5.5 0 0 1 5.5 5.5V21zM8.5 21v-4.5c0-.8.7-1.5 1.5-1.5h4c.8 0 1.5.7 1.5 1.5V21M8.5 10.5h7M12 9.4v2.4"/>'),
   lock: svg('<path fill="currentColor" d="M7 10V7.5a5 5 0 0 1 10 0V10h1.2c.7 0 1.3.6 1.3 1.3v8.9c0 .7-.6 1.3-1.3 1.3H5.8c-.7 0-1.3-.6-1.3-1.3v-8.9c0-.7.6-1.3 1.3-1.3zm2.3 0h5.4V7.5a2.7 2.7 0 0 0-5.4 0zm1.4 4.2v3.6h2.6v-3.6z"/>'),
+  chain: svg('<path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M10.2 13.8a3.6 3.6 0 0 0 5.1 0l3.3-3.3a3.6 3.6 0 0 0-5.1-5.1l-1.1 1.1M13.8 10.2a3.6 3.6 0 0 0-5.1 0l-3.3 3.3a3.6 3.6 0 0 0 5.1 5.1l1.1-1.1"/>'),
   arrow: svg('<path fill="currentColor" d="M2 10.4h4v3.2H2zm5.5 0h3v3.2h-3zm4.6 0h2.4V4.5L23 12l-8.5 7.5v-5.9h-2.4z" opacity=".85"/>'),
   logs: svg('<path fill="currentColor" d="M3 8.5c0-1.4 1.1-2.5 2.5-2.5h12C19.4 6 21 7.6 21 9.5S19.4 13 17.5 13h-12A2.5 2.5 0 0 1 3 10.5zm14.5-.6a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2zM3 15.5C3 14.1 4.1 13 5.5 13h12c1.9 0 3.5 1.6 3.5 3.5S19.4 20 17.5 20h-12A2.5 2.5 0 0 1 3 17.5zm14.5-.6a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2z"/>'),
   hit: svg('<path fill="currentColor" d="m12 1.5 2 6.2 6.1-2.5-3.4 5.6 5.8 3-6.4.9.8 6.5-4.9-4.4-4.9 4.4.8-6.5-6.4-.9 5.8-3-3.4-5.6L10 7.7z"/>'),

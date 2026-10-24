@@ -3,6 +3,11 @@
 // absent-preserving reads (combat practice always comes from weapon mastery), then drawn as three
 // columns: the tree list, the 5x3 node grid and the node detail. The character screen owns selection and clicks.
 import { WEAPON_KINDS } from '../data/weapons.js';
+import { ARTS, DEFAULT_LOADOUT, isArt } from '../data/tattoos.js';
+import { BASES, SLOTS as GEAR_SLOTS } from '../data/items.js';
+import { effectiveRank, grantedSkills } from '../data/grants.js';
+import { itemName } from '../sim/items.js';
+import { translateData } from '../core/i18n.js';
 import {
   CURVES, MAX_NODE_RANK, MAX_TREE_RANK, SKILL_RESET_GOLD, TIERS, TREES, combatPractice, gateState, legacySkills, nodeById, nodeRank,
   nodesByTier, pointsEarned, pointsFree, pointsSpent, practiceOf, practiceToNext, skillGrant, tierOpen, treeRank,
@@ -29,6 +34,7 @@ const COPY = {
     kind: { active: 'Activa', technique: 'Técnica', passive: 'Pasiva' },
     now: 'Ahora', next: 'Siguiente', tbd: 'Efecto por definir', none: 'Ninguno',
     nextRank: 'Siguiente rango', onePoint: '1 punto de {tree}', tierNeed: 'Requiere rango {n} de {tree}', maxed: 'Rango máximo alcanzado',
+    lentBy: 'Prestado por {item}', putSlot: 'Poner en {slot}', onSlot: 'En {slot}',
     requires: 'Requiere', needWeapon: '{weapon} en mano', needMastery: 'Maestría de {lower} {n}', needSepia: 'Aprendido con Doña Sepia', needPearl: 'Perla tragada',
     weapons: { sable: 'Sable', pistolas: 'Pistolas' },
     raise: 'Subir', soon: 'Disponible pronto', locked: 'Bloqueada', tierClosed: 'Nivel cerrado', noPoints: 'Sin puntos libres',
@@ -55,6 +61,7 @@ const COPY = {
     kind: { active: 'Active', technique: 'Technique', passive: 'Passive' },
     now: 'Now', next: 'Next', tbd: 'Effect to be defined', none: 'None',
     nextRank: 'Next rank', onePoint: '1 {tree} point', tierNeed: 'Needs {tree} rank {n}', maxed: 'Max rank reached',
+    lentBy: 'Lent by {item}', putSlot: 'Put in {slot}', onSlot: 'In {slot}',
     requires: 'Requires', needWeapon: '{weapon} in hand', needMastery: '{weapon} mastery {n}', needSepia: 'Learned from Doña Sepia', needPearl: 'Swallowed pearl',
     weapons: { sable: 'Saber', pistolas: 'Pistols' },
     raise: 'Raise', soon: 'Coming soon', locked: 'Locked', tierClosed: 'Tier closed', noPoints: 'No free points',
@@ -101,8 +108,15 @@ export function skillSheetState(profile, weaponIndex = 0) {
 
   const pearl = !!p?.pearls?.swallowed;
   const knows = (id) => !!id && Object.hasOwn(has, id) && !!has[id];
+  // Skills the worn items lend (SK05a): derived from the profile's own equipment and the BASES catalog, never sent by
+  // anyone. `lent[id] = { rank, by: [item names] }`; `skills` and the points below stay OWNED ranks only.
+  const eq = isObj(p?.eq) ? p.eq : {}, lent = {};
+  for (const [id, g] of Object.entries(grantedSkills(eq)))
+    lent[id] = { rank: g.rank, by: g.by.map((b) => { const it = GEAR_SLOTS.map((s) => eq[s]).find((x) => x && x.b === b); return it ? itemName(it) : BASES[b].name; }) };
+  const row = p?.sk?.lo?.[weaponIndex | 0];
   return {
-    practice, skills, weapon, mastery, pearl, progression: progression || undefined,
+    practice, skills, weapon, mastery, pearl, progression: progression || undefined, lent,
+    loadout: Array.isArray(row) ? [...row] : [...(DEFAULT_LOADOUT[weapon] || [])],
     knows, gold: count(p?.gold),
     resets: (treeId) => (Object.hasOwn(progression?.skr ?? {}, treeId) ? count(progression.skr[treeId]) : 0),
     ctxFor: (node) => ({ weapon, mastery: { ...mastery }, knowledge: knows(node?.skill) ? ['tattoo'] : [], pearl }),
@@ -146,12 +160,19 @@ function heroHtml(tree, cls, ico = '') {
 
 /** Cell state of one node: rank, whether its tier is open, the gate result and the classes derived from them. */
 export function nodeView(state, node) {
-  const rank = nodeRank(state.skills, node.id);
+  // `owned` is what Subir, points and tier gates see; `rank` is what the sheet shows: the higher of owned and lent.
+  const owned = nodeRank(state.skills, node.id);
+  const lent = state.lent && Object.hasOwn(state.lent, node.id) ? state.lent[node.id] : null;
+  const rank = Math.min(MAX_NODE_RANK, effectiveRank(owned, lent));
   const open = tierOpen(node.tree, state.practice, node.tier);
   const gate = gateState(node, state.ctxFor(node));
   const locked = !open || !gate.ok;
-  return { rank, open, gate, locked, cls: [locked ? 'is-locked' : rank === 0 ? 'is-open' : '', rank > 0 ? 'is-ranked' : ''].filter(Boolean).join(' ') };
+  const dim = locked && !lent; // a lent node is usable whatever its tier or weapon gate says
+  return { rank, owned, lent, open, gate, locked, cls: [dim ? 'is-locked' : rank === 0 ? 'is-open' : '', rank > 0 ? 'is-ranked' : '', lent ? 'is-lent' : ''].filter(Boolean).join(' ') };
 }
+
+// "Lent by <item name>" for the cell title and the detail (item names are Spanish game data: translateData).
+const lentText = (lent, T) => fill(T.lentBy, { item: lent.by.map((n) => translateData(n)).join(', ') });
 
 // ---- Controls (SK04b) ---------------------------------------------------------------------------------------------------
 
@@ -165,7 +186,7 @@ function raiseWhy(state, node, view, ctl) {
   if (!ctl.enabled || node.draft) return 'soon';
   if (ctl.busy) return 'waiting';
   if (!view.open) return 'tierClosed';
-  if (view.rank >= MAX_NODE_RANK) return 'maxed';
+  if (view.owned >= MAX_NODE_RANK) return 'maxed';
   if (state.points(node.tree).free < 1) return 'noPoints';
   return gateState(node, { ...state.ctxFor(node), weapon: node.gate?.weapon }).ok ? '' : 'locked';
 }
@@ -228,8 +249,8 @@ export function skillCenterHtml(state, sel, lang, controls) {
       if (!node) return '<span class="sk-cell is-empty" aria-hidden="true"></span>';
       const v = nodeView(state, node), name = tr(node.name, lang), on = node.id === sel?.node;
       const pips = Array.from({ length: MAX_NODE_RANK }, (_, n) => `<i${n < v.rank ? ' class="on"' : ''}></i>`).join('');
-      return `<button class="sk-cell ${v.cls}${on ? ' is-selected' : ''}" type="button" data-node="${node.id}" aria-pressed="${on}" aria-label="${esc(name)}" title="${esc(name)}${v.locked ? ` · ${esc(v.open ? T.locked : T.tierClosed)}` : ''}">
-        <span class="sk-cell-ico">${skillGlyph(node.icon, 'sk-ico')}</span><span class="sk-cell-name">${esc(name)}</span><span class="sk-pips">${pips}</span>${v.locked ? `<i class="sk-lock">${I.lock}</i>` : ''}</button>`;
+      return `<button class="sk-cell ${v.cls}${on ? ' is-selected' : ''}" type="button" data-node="${node.id}" aria-pressed="${on}" aria-label="${esc(name)}" title="${esc(name)}${v.lent ? ` · ${esc(lentText(v.lent, T))}` : v.locked ? ` · ${esc(v.open ? T.locked : T.tierClosed)}` : ''}">
+        <span class="sk-cell-ico">${skillGlyph(node.icon, 'sk-ico')}</span><span class="sk-cell-name">${esc(name)}</span><span class="sk-pips">${pips}</span>${v.lent ? `<i class="sk-chain">${I.chain}</i>` : v.locked ? `<i class="sk-lock">${I.lock}</i>` : ''}</button>`;
     }).join('');
   }).join('');
   return `${head}<div class="sk-grid">${cells}</div>`;
@@ -277,6 +298,17 @@ function raiseButtonHtml(state, node, v, ctl, T) {
     : `<button class="btn sk-raise" type="button" data-skill-op="assign" data-tree="${node.tree}" data-node="${node.id}">${esc(T.raise)}</button>`;
 }
 
+// Q / E for a lent art of the OTHER weapon (the owned and native flow lives in the character screen's tattoo card):
+// the buttons carry the art id because no card selected it. The server decides (setLoadout, calm and lent checks).
+function lentUseHtml(state, node, v, T) {
+  const id = node.skill;
+  if (!v.lent || node.kind !== 'active' || !id || !isArt(id) || ARTS[id].weapon === state.weapon) return '';
+  const btn = (slot, i) => (state.loadout[i] === id
+    ? `<button class="btn secondary" type="button" disabled>${esc(fill(T.onSlot, { slot: slot.toUpperCase() }))}</button>`
+    : `<button class="btn" type="button" data-put="${slot}" data-id="${esc(id)}">${esc(fill(T.putSlot, { slot: slot.toUpperCase() }))}</button>`);
+  return `<div class="sk-tt"><div class="tt-actions">${btn('q', 0)}${btn('e', 1)}</div></div>`;
+}
+
 function nodeDetailHtml(state, node, lang, extra, ctl) {
   const T = copy(lang), tree = treeById(node.tree) || TREES.find((t) => t.id === node.tree);
   const v = nodeView(state, node), tierN = TIERS[node.tier - 1];
@@ -289,6 +321,7 @@ function nodeDetailHtml(state, node, lang, extra, ctl) {
     <div class="sk-node-head"><h2>${esc(tr(node.name, lang))}</h2>
       <span class="sk-kind is-${node.kind}">${esc(T.kind[node.kind] || node.kind)}</span><span class="sk-node-rank">${v.rank}/${MAX_NODE_RANK}<span class="sk-pips">${pips}</span></span></div>
     <p class="sk-desc">${esc(tr(node.desc, lang))}</p>
+    ${v.lent ? `<p class="sk-lent"><i class="sk-chain">${I.chain}</i>${esc(lentText(v.lent, T))}</p>` : ''}${lentUseHtml(state, node, v, T)}
     <h3 class="ch-h2">${esc(T.rank)}</h3><div class="sk-fxs">${ranksHtml(node, v.rank, T, lang)}</div>
     <h3 class="ch-h2">${esc(T.nextRank)}</h3><ul class="sk-req">${nextLine}</ul>
     <h3 class="ch-h2">${esc(T.requires)}</h3>${requirementsHtml(node, state.ctxFor(node), T)}

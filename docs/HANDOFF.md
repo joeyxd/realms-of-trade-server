@@ -38,6 +38,25 @@ El sol cruza el cielo con el reloj del juego en lugar de quedarse fijo. Solo src
 - Pendiente de gusto para Joi: los números del arco (latitud, declinación, elevación mínima 22, TOD_PHASE), el color y la fuerza
   del crepúsculo (0,75), el color del disco de la luna y si los pasos de 0,2 grados se notan como un tic. Siguiente: CAM04 (vista
   cercana desde atrás para ver el atardecer; scene.js queda libre para camera-director).
+**SK05, 2026-10-24 — préstamo de habilidades por equipo (T-1022-11, T-1024-32):**
+Sin SQL, sin protocolo, sin versión. Una base de BASES puede llevar `grants: [{ skill, rank }]`; mientras el objeto está
+equipado, Q y E aceptan el arte prestado aunque sea del otro arma. Módulo nuevo `src/data/grants.js`: `grantedSkills(eq)`
+(varios objetos con el mismo nodo: rango máximo, nunca suma), `effectiveRank`, `isLentArt`, `pruneLentLoadouts`. Cliente y
+servidor derivan el préstamo de su propio `profile.eq` + BASES; nada viaja por el cable. `setLoadout` (inventory.js) acepta
+el id prestado solo mientras un objeto equipado lo presta (si no, `weapon` como antes); `sanitizeSk` lo conserva en la carga
+solo con el objeto puesto. Un solo sitio revierte el slot al arte por defecto del arma, en p.sk.lo y en las columnas ECS:
+`applyLoadout` (stats.js) llama a `pruneLentLoadouts` en cada `refreshStats`, así que desequipar, cambiar anillo, derrame
+lawless y arma nueva pasan todos por ahí; volver a equipar no lo restaura. Lo prestado nunca da tinta, maestría ni práctica
+(`tattooXp` solo tinta tatuajes aprendidos; los ARTS no tienen tinta). Objeto piloto `pedernal` ('Pedernal de pistolero',
+abalorio, min 2, atk 0,5, presta Ráfaga rango 1; reutiliza la celda 'brujula' del atlas por el campo `icon` de la base,
+leído en kit.js). Hoja: `skillSheetState` suma `lent` y `loadout`; `nodeView` da `rank` (efectivo), `owned` y `lent`; la
+celda lleva el icono `I.chain` y "Prestado por <objeto>", el detalle ofrece Poner en Q / E (`data-put` + `data-id`, que
+`tattooClick` de charpanel.js lee); Subir, puntos y gates de nivel siguen con el rango propio. Tooltip: "Presta: Ráfaga
+(rango 1)" (`grantLines`, itemui.js). Estilos en styles/character.css (`.sk-chain`, `.sk-lent`). Tests nuevos
+`tests/skill-grants.test.mjs` (13). Segundo objeto piloto `alpargatas` ('Alpargatas de pescador', botas, min 1, spd 0,5,
+icono 'botas'): presta la pasiva de Supervivencia Nadador (`swimmer`) rango 1; la hoja la encadena sin Poner en Q / E y la
+carga no cambia. Los nodos pacíficos aún no tienen efecto: cuando SK06/SK07 les den uno, el código del efecto debe leer
+`effectiveRank(nodeRank(skills, id), grantedSkills(eq)[id])`, no el rango propio. Nombres EN de los dos en src/i18n/data.js.
 
 **GM08c, GM08d y GM11a: ruido, erosión, mapa de alturas y medidor de carga en el editor GM, 2026-10-24 (T-1024-13, T-1024-17, T-1024-24, T-1024-28), versión 0.6.0-alpha.107, sin cambio de protocolo ni SQL:**
 Solo el editor GM (src/editor/terrain*.js, worldLoad.js, editor.js, publicationValidation.js), la preparación de la publicación en el servidor y el actualizador (lista TESTS). Los jugadores no ven nada nuevo.

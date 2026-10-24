@@ -12,7 +12,9 @@ import { skillIcon, ROMAN } from './hud.js';
 import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from '../data/quests.js';
 import { ENCOUNTERS } from '../data/encounters.js';
 import { tuning } from '../data/tuning.js';
-import { itemScore, itemValue } from '../sim/items.js';
+import { itemName, itemScore, itemValue } from '../sim/items.js';
+import { grantedSkills, isLentArt } from '../data/grants.js';
+import { tr as pair, uiLang } from './kit.js';
 import { gearTotals, statsFor } from '../sim/systems/stats.js';
 import { canAccept } from '../sim/systems/quests.js';
 import { esc, itemIcon, slotIcon, itemCard, targetSlot, statText } from './itemui.js';
@@ -313,8 +315,11 @@ export class CharPanel {
     const card = (id, kindCls, note, locked) => `<button class="tt-card ${kindCls}${locked ? ' locked' : ''}${id === sel ? ' sel' : ''}${lo.includes(id) ? ' worn' : ''}" data-tt="${id}">
       <span class="tt-ico">${skillIcon(id)}</span><span class="tt-name"><b>${dataText(nameOf(id))}</b><small>${note}</small></span>
       ${has(id) ? `<i class="rk">${ROMAN[has(id)[0]]}</i>` : ''}${lo.includes(id) ? `<i class="in">${lo[0] === id ? 'Q' : 'E'}</i>` : ''}</button>`;
-    const arts = Object.keys(ARTS).filter((id) => ARTS[id].weapon === kind).map((id) => {
+    const lent = grantedSkills(p.eq);
+    const lender = (id) => { const it = SLOTS.map((s) => p.eq[s]).find((x) => x && lent[id].by.includes(x.b)); return it ? itemName(it) : ''; };
+    const arts = Object.keys(ARTS).filter((id) => ARTS[id].weapon === kind || isLentArt(lent, id)).map((id) => {
       const need = ARTS[id].mastery, locked = mlvl < need;
+      if (ARTS[id].weapon !== kind) return card(id, 'art', pair({ es: `Prestado por ${translateData(lender(id))}`, en: `Lent by ${translateData(lender(id))}` }, uiLang()), locked);
       const note = locked ? ltext('adventure.tattoo_locked_mastery', { level: formatNumber(need) }) : ltext('adventure.tattoo_art', { weapon: dataParam(W.short, 'lower') });
       return card(id, 'art', note, locked);
     }).join('');
@@ -386,7 +391,7 @@ export class CharPanel {
 
   tattooClick(t) {
     const put = t.closest('[data-put]'), learn = t.closest('[data-learn]'), form = t.closest('[data-form]'), pick = t.closest('[data-tt]');
-    if (put && this.ttSel) { this.send({ type: 'loadout', slot: put.dataset.put, id: this.ttSel }); sfx.click(); return true; }
+    if (put && (put.dataset.id || this.ttSel)) { this.send({ type: 'loadout', slot: put.dataset.put, id: put.dataset.id || this.ttSel }); sfx.click(); return true; }
     if (learn) { this.send({ type: 'learn', id: learn.dataset.learn }); sfx.click(); return true; }
     if (form && this.ttSel && !form.disabled) { this.send({ type: 'form', id: this.ttSel, form: +form.dataset.form }); sfx.click(); return true; }
     if (pick) { this.ttSel = pick.dataset.tt; this.render(); sfx.click(); return true; }

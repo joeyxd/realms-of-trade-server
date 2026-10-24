@@ -9,6 +9,7 @@ import { ITEMS, BASES, SLOTS, STARTER, CONSUMABLES, QUEST_ITEMS, slotFits, RARIT
 import { LOOT, DROPS } from '../../data/loot.js';
 import { MASTERY, WEAPON_KINDS, weaponIndex } from '../../data/weapons.js';
 import { ARTS, TATTOO_IDS, TATTOO, DEFAULT_LOADOUT, LOADOUT_SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, isTattoo, formRank, tattooXpToNext } from '../../data/tattoos.js';
+import { grantedSkills, isLentArt } from '../../data/grants.js';
 import { PEARL, newPearls, sanitizePearls } from '../../data/pearls.js';
 import { installPearls, attachPearls, detachPearls, spillPearls, pickPearl, returnPearl, rollPearl, dropRolledPearl } from './pearls.js';
 import { ENEMIES, ENEMY_KINDS } from '../../data/enemies.js';
@@ -133,7 +134,7 @@ export function sanitizeProfile(raw) {
     const m = Array.isArray(raw.mast) && Array.isArray(raw.mast[i]) ? raw.mast[i] : [1, 0];
     return [int(m[0], 1, MASTERY.max, 1), num(m[1], 0, 1e6, 0)];
   });
-  p.sk = sanitizeSk(raw.sk, int, num);
+  p.sk = sanitizeSk(raw.sk, int, num, grantedSkills(p.eq));
   p.pearls = sanitizePearls(raw.pearls);
   p.pirateId = typeof raw.pirateId === 'string' && /^[a-zA-Z0-9:_-]{1,100}$/.test(raw.pirateId) ? raw.pirateId : '';
   const limits = hasCarry ? packLimitsForProfile(p) : null;
@@ -166,9 +167,9 @@ export function sanitizeProfile(raw) {
 }
 
 // Learned tattoos (known ids, rank 1–5, xp ≥ 0, a form the rank allows) and the loadouts: each slot an art of that
-// weapon or a learned tattoo, none twice in a loadout; anything else gets the slot's default (or, if that is taken,
-// another art of the weapon).
-function sanitizeSk(raw, int, num) {
+// weapon, an art an equipped item lends (`granted`, data/grants.js) or a learned tattoo, none twice in a loadout;
+// anything else gets the slot's default (or, if that is taken, another art of the weapon).
+function sanitizeSk(raw, int, num, granted = {}) {
   const r = raw && typeof raw === 'object' ? raw : {}, has = {};
   if (r.has && typeof r.has === 'object') {
     for (const id of TATTOO_IDS) {
@@ -183,7 +184,7 @@ function sanitizeSk(raw, int, num) {
     const arts = Object.keys(ARTS).filter((a) => ARTS[a].weapon === kind);
     SKILL_SLOTS.forEach((_, i) => {
       const id = row[i];
-      const ok = typeof id === 'string' && !out.includes(id) && ((isArt(id) && ARTS[id].weapon === kind) || (isTattoo(id) && has[id]));
+      const ok = typeof id === 'string' && !out.includes(id) && ((isArt(id) && (ARTS[id].weapon === kind || isLentArt(granted, id))) || (isTattoo(id) && has[id]));
       out.push(ok ? id : [DEFAULT_LOADOUT[kind][i], ...arts].find((a) => !out.includes(a)) ?? DEFAULT_LOADOUT[kind][i]);
     });
     return out;
@@ -321,7 +322,7 @@ function putInSlot(world, e, si, id, cd) {
 export function setLoadout(world, e, slot, id) {
   const p = profileOf(world, e), si = SKILL_SLOTS.indexOf(slot);
   if (!p || si < 0 || (!isArt(id) && !isTattoo(id))) return denied(world, e, 'unknown');
-  if (isArt(id) && ARTS[id].weapon !== WEAPON_KINDS[world.ecs.weapon[e] | 0]) return denied(world, e, 'weapon');
+  if (isArt(id) && ARTS[id].weapon !== WEAPON_KINDS[world.ecs.weapon[e] | 0] && !isLentArt(grantedSkills(p.eq), id)) return denied(world, e, 'weapon'); // unless a worn item lends it (SK05a)
   if (isTattoo(id) && !skOf(p).has[id]) return denied(world, e, 'unknown');
   const why = calmDenial(world, e);
   return why ? denied(world, e, why) : putInSlot(world, e, si, id, true);

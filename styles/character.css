@@ -348,6 +348,10 @@ button.ch-good { padding: 0; font: inherit; color: inherit; cursor: pointer; }
 .sk-cell.is-ranked { border-color: var(--kit-orange-d); box-shadow: inset 0 0 calc(16 * var(--u)) #f6a62326, inset 0 0 0 1px #0007; }
 .sk-cell.is-locked .sk-cell-ico, .sk-cell.is-locked .sk-cell-name { filter: grayscale(1); opacity: .5; }
 .sk-cell .sk-lock { position: absolute; right: calc(6 * var(--u)); top: calc(5 * var(--u)); width: calc(16 * var(--u)); height: calc(16 * var(--u)); min-width: 9px; min-height: 9px; color: #9fb4c8; }
+.sk-cell .sk-chain, .sk-lent .sk-chain { display: inline-block; color: var(--kit-orange); }
+.sk-cell .sk-chain { position: absolute; right: calc(6 * var(--u)); top: calc(5 * var(--u)); width: calc(16 * var(--u)); height: calc(16 * var(--u)); min-width: 9px; min-height: 9px; }
+.sk-lent { display: flex; align-items: center; gap: calc(6 * var(--u)); margin: 0; color: var(--kit-orange); font-weight: 700; }
+.sk-lent .sk-chain { width: calc(18 * var(--u)); height: calc(18 * var(--u)); min-width: 10px; min-height: 10px; }
 .sk-cell.is-selected { border: 2px solid var(--kit-orange); box-shadow: 0 0 calc(14 * var(--u)) #f6a62359, inset 0 0 calc(18 * var(--u)) #f6a62322; }
 /* Right: the node detail or the tree summary. */
 .sk-node { display: grid; gap: calc(10 * var(--u)); align-content: start; }
