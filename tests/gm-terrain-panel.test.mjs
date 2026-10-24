@@ -78,7 +78,7 @@ test('tool and paint controls expose shared brush parameters with relevant contr
     const rotationInput = panel.element.children.flatMap(node => node.children).find(node => node.dataset.terrainField === 'rotation');
     rotationInput.value = '45'; panel.element.dispatch('input', rotationInput);
     assert.deepEqual(panel.parameters(), { tool: 'paint', radius: 12.5, strength: 0.5, falloff: 0.5, level: 2.4,
-      material: 'rock', shape: 'ellipse', aspect: 0.35, rotation: 45, flow: 'stroke' });
+      material: 'rock', shape: 'ellipse', aspect: 0.35, rotation: 45, flow: 'stroke', selection: 'brush', feather: 4, amount: 2, passes: 4 });
     assert.equal(panel.element.querySelector('[data-terrain-control="material"]').hidden, false);
     assert.equal(panel.element.querySelector('[data-terrain-control="level"]').hidden, true);
     shape.value = 'circle'; panel.element.dispatch('change', shape);
@@ -89,6 +89,50 @@ test('tool and paint controls expose shared brush parameters with relevant contr
     tool.value = 'ramp'; panel.element.dispatch('change', tool);
     assert.equal(panel.parameters().shape, 'circle', 'ramp parameters force the circular corridor');
     assert.equal(panel.element.querySelector('[data-terrain-control="shape"]').hidden, true);
+  } finally {
+    panel.dispose();
+    globalThis.document = previousDocument;
+  }
+});
+
+test('GM08b: a region hides the brush controls and shows feather, amount, passes and the level eyedropper', () => {
+  const previousDocument = globalThis.document;
+  globalThis.document = { createElement: (tag) => new Element(tag) };
+  const root = new Element('root'), selected = [];
+  const editor = { _t: (en) => en, map: { size: 12, half: 6, mapSpan: 1, landmarks: { spawn: { x: 0, z: 0 }, village: { x: 2, z: 2 } },
+    groundAt: () => 1, masks: () => ({}), onDock: () => false }, draftMap: null };
+  const panel = new TerrainPanel({ root, editor, onTool: (tool) => selected.push(tool) });
+  const hidden = (field) => panel.element.querySelector(`[data-terrain-control="${field}"]`).hidden;
+  try {
+    const tool = panel.element.querySelector('[data-terrain-tool]');
+    tool.value = 'raise'; panel.element.dispatch('change', tool);
+    const area = panel.element.querySelector('[data-terrain-select="selection"]');
+    area.value = 'lasso'; panel.element.dispatch('change', area);
+    assert.deepEqual(selected, ['raise', 'raise'], 'a new area re-selects the tool (cancel and hint)');
+    assert.equal(panel.parameters().selection, 'lasso');
+    for (const field of ['radius', 'falloff', 'flow', 'shape', 'strength', 'passes']) assert.equal(hidden(field), true, field);
+    for (const field of ['feather', 'amount', 'selection']) assert.equal(hidden(field), false, field);
+    assert.equal(panel.element.querySelector('[data-terrain-help="regionHelp"]').hidden, false);
+    const amount = new Element('input'); amount.dataset.terrainField = 'amount'; amount.value = '7.5';
+    panel.element.dispatch('input', amount);
+    assert.equal(panel.parameters().amount, 7.5);
+
+    tool.value = 'smooth'; panel.element.dispatch('change', tool);
+    assert.equal(hidden('passes'), false); assert.equal(hidden('amount'), true);
+    tool.value = 'paint'; panel.element.dispatch('change', tool);
+    assert.equal(hidden('strength'), false, 'paint and erase blend by the strength'); assert.equal(hidden('material'), false);
+    tool.value = 'flatten'; panel.element.dispatch('change', tool);
+    assert.equal(hidden('level'), false); assert.equal(hidden('pick'), false);
+    const pick = panel.element.querySelector('[data-terrain-pick]');
+    panel.element.dispatch('click', pick);
+    assert.equal(panel.picking, true);
+    assert.equal(panel.element.querySelector('[data-terrain-pick]').textContent, 'Click the ground (Escape cancels)');
+    panel.element.dispatch('click', panel.element.querySelector('[data-terrain-pick]'));
+    assert.equal(panel.picking, false);
+
+    tool.value = 'ramp'; panel.element.dispatch('change', tool);
+    assert.equal(panel.parameters().selection, 'brush', 'ramps are brush only');
+    assert.equal(hidden('selection'), true); assert.equal(hidden('feather'), true); assert.equal(hidden('radius'), false);
   } finally {
     panel.dispose();
     globalThis.document = previousDocument;

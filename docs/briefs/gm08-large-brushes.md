@@ -1,6 +1,7 @@
 # GM08 large-scale terrain brushes
 
-Status: GM08a BUILT (T-1023-13, 2026-10-23, not pushed). GM08b, c and d are designed here, not built yet.
+Status: GM08a BUILT (T-1023-13, 2026-10-23, not pushed). GM08b BUILT (T-1024-03, 2026-10-24, not pushed). GM08c and d
+are designed here, not built yet.
 Joi's bar (2026-10-21): every row of the census limits table gets fixed. For brushes that means: 24 m maximum, no
 fill, no region select, no noise or erosion, no heightmap import or export.
 Inputs: [GM07](gm07-terrain-tiles.md) (tiles, the session, GM07c region rendering) and the
@@ -89,12 +90,34 @@ A 128 m raise dragged 300 m (29 points) changes 21,554 vertices in 22 tiles:
 | dab and pointer spacing | 0.5 m | max(0.5, r / 12) | terrainBrush.js `strokeSpacing`, terrainInteraction.js |
 | stroke points / path samples | 256 / 8192 | unchanged | terrainInteraction.js, terrainBrush.js |
 | scatter radius, v3/v4 path radius | 24 m | unchanged | brushParameters default |
+| region select (GM08b) | none | rectangle, or a lasso of up to 256 points | terrainRegion.js `REGION_MAX_POINTS` |
+| region feather, raise/lower amount, smooth passes (GM08b) | none | 0..32 m, 0.1..50 m, 1..16 | terrainRegion.js, terrainPanel.js |
 
 ## Slices
 
 GM08a **built** (T-1023-13): D1 to D7. Client only: no protocol, no SQL, no server change.
 
-GM08b **region tools.**
+GM08b **built** (T-1024-03), decisions R1 to R6 below. Client only: no protocol, no SQL, no server change.
+- R1 **Drawing is applying.** In the panel, Area: Brush, Rectangle or Lasso. A rectangle is dragged corner to corner
+  (axis-aligned in world X/Z); a lasso is dragged around the area, a point every metre, and closes on release. Near
+  256 points every other point goes and the spacing doubles, so a long lasso is never refused. Releasing applies the
+  tool once: one commit, one undo entry. Escape cancels. There is no persistent selection (open for Joi).
+- R2 **Field** (`regionInfluence`, the strokeInfluence format): even-odd inside by row crossings; the feather grows
+  inwards as a smoothstep over the chamfer distance to the nearest vertex outside, so nothing outside the outline
+  changes. Each vertex then takes its `terrainEditWeights` share (the D2 clip).
+- R3 **Operations** (`regionTerrainGrid`): flatten levels to the level (full; the feather blends); raise and lower move
+  by an amount of 0.1 to 50 m; smooth runs 1 to 16 full 3x3 passes; paint and erase blend by the strength (1 fills).
+  The D3 clamps apply, to every smooth pass too. Ramps stay brush only; the airbrush does not apply to regions.
+- R4 **Eyedropper**: the button "Pick level from the ground" under the level; the next ground click sets the level to
+  the centimetre (0.75..200 m). It works for the flatten brush too. Escape ends picking.
+- R5 **Rendering**: the drag previews every 120 ms through the gesture region path (D7); the outline lies on the ground
+  (a vertex every 2 m or less); before the drag a 2 m ring marks the cursor.
+- R6 **Cost** (shared, loaded machine): the whole map as a rectangle with a 32 m feather, smoothed 16 times, commits in
+  115 to 245 ms (operation 96 to 203 ms); levelling the whole map in 25 to 100 ms. A phone is not measured.
+- Tests: `tests/gm-terrain-region-ops.test.mjs` (4, pure, in the deploy gate: 61 files), `tests/gm-terrain-region-
+  gesture.test.mjs` (3, TerrainInteraction against a stub editor; imports three, out of the gate), the panel test (+1).
+
+The design as it stood before the build:
 - Draw a rectangle or a lasso (a polygon of up to 256 points) on the ground, with a feather width of 0 to 32 m.
 - Operations:
   - level to a height, with an eyedropper (pick the level from the ground under the cursor)
@@ -150,3 +173,5 @@ GM08d **heightmap import and export.**
      300 m)
    - per-row circle bounds
    - a Web Worker for the stroke
+5. GM08b: drawing a region applies the tool at once. Joi decides whether a region should stay selected, so that
+   several operations (level, then smooth, then paint) can run on it without drawing it again.

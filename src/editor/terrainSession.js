@@ -10,6 +10,7 @@ import { convertDocumentToV5, decodeTile, encodeTile, isTerrainTilesDocument, ti
   TERRAIN_TILES_VERSION, TILE_SIZE, TILE_VERTICES, TILES_DOCUMENT_VERSION } from './terrainTiles.js';
 import { followGround, sculptTerrainGrid } from './terrainSculpt.js';
 import { paintTerrainGrid } from './terrainPaint.js';
+import { regionTerrainGrid } from './terrainRegion.js';
 
 const HALF = TERRAIN_GRID_SEGMENTS / 2;
 const fail = (code) => { const error = new TypeError(`Terrain session: ${code}`); error.code = code; throw error; };
@@ -118,7 +119,8 @@ const PAINT_TOOLS = new Set(['paint', 'erase']);
 /**
  * The editing state of one document: the grid, its tile references and its compiled map (cached). `lookup(sha256)`
  * returns tile bytes held by the history. edit = { document, tool, points, radius, strength, falloff, shape, aspect,
- * rotation, level, material }: the stroke always starts from edit.document, whatever the grid held before.
+ * rotation, level, material, flow }, or a region operation { document, tool, region, level, amount, passes, strength,
+ * material } (terrainRegion.js): the edit always starts from edit.document, whatever the grid held before.
  */
 export class TerrainSession {
   constructor({ map, baseRevision, grid = createTerrainGrid(), references = [], lookup = () => undefined }) {
@@ -165,6 +167,8 @@ export class TerrainSession {
 
   _patch(edit) {
     const input = { ...edit, map: this.map, grid: this.grid, baseRevision: this.baseRevision };
+    // GM08b: an edit with a region (rectangle or lasso) is one region operation instead of a stroke.
+    if (edit.region) return regionTerrainGrid({ ...input, surface: this.surface() });
     return PAINT_TOOLS.has(edit.tool) ? paintTerrainGrid(input) : sculptTerrainGrid({ ...input, surface: this.surface() });
   }
 

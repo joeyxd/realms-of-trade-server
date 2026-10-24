@@ -1,15 +1,20 @@
 import * as THREE from 'three';
 import { brushOutline, strokeSpacing } from './terrainBrush.js';
+import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
 import { joinRegions } from './terrainPreview.js';
+import { REGION_MAX_POINTS, regionOutline } from './terrainRegion.js';
 import { editorMessage } from './messages.js';
 import { LAYER } from '../render/pipeline.js';
 
 const STROKE_LIMIT = 256;
 // GM08 airbrush: a pointer held still lays one dab on the spot per tick.
 const AIRBRUSH_TICK_MS = 100;
+// GM08b: a lasso point every metre; near REGION_MAX_POINTS every other point goes and the spacing doubles.
+const LASSO_SPACING = 1;
 const blocked = () => editorMessage(
   'Stroke blocked: keep it on dry ground, away from protected places, or reduce its size/height. Nothing was saved.',
   'Trazo bloqueado: mantén suelo seco y distancia de zonas protegidas, o reduce tamaño/altura. No se guardó ningún cambio.');
+const isRegion = parameters => parameters.selection === 'rect' || parameters.selection === 'lasso';
 
 /**
  * A gesture owns a private preview; only its final valid document reaches history. Strokes run on the editor's
@@ -36,8 +41,13 @@ export class TerrainInteraction {
     this.editor.transform.enabled = !tool;
     this.panel.tool = tool; this.panel.render();
     this.cursor.visible = false;
+    const selection = this.panel.parameters().selection;
     if (tool) this.editor._setStatus(tool === 'ramp'
       ? editorMessage('Ramp: click its start, then its end. Escape cancels.', 'Rampa: pulsa el inicio y luego el final. Escape cancela.')
+      : selection === 'rect' ? editorMessage('Rectangle: drag from one corner to the other; releasing applies the tool to the whole area. Escape cancels.',
+        'Rectángulo: arrastra de una esquina a la otra; al soltar se aplica la herramienta a toda el área. Escape cancela.')
+      : selection === 'lasso' ? editorMessage('Lasso: drag around the area; releasing closes it and applies the tool. Escape cancels.',
+        'Lazo: arrastra alrededor del área; al soltar se cierra y se aplica la herramienta. Escape cancela.')
       : editorMessage('Drag on dry ground. Release to keep the stroke; Escape cancels.', 'Arrastra sobre suelo seco. Suelta para conservar el trazo; Escape cancela.'), 'info');
   }
 
@@ -50,8 +60,16 @@ export class TerrainInteraction {
     if (!hit) { this.cursor.visible = false; return; }
     this.point = { x: hit.point.x, z: hit.point.z };
     if (this.stroke) {
-      if ((this.stroke.parameters.tool || this.tool) === 'ramp') this.stroke.points[1] = this.point;
-      else {
+      const { selection } = this.stroke.parameters;
+      if ((this.stroke.parameters.tool || this.tool) === 'ramp' || selection === 'rect') this.stroke.points[1] = this.point;
+      else if (selection === 'lasso') {
+        const stroke = this.stroke, last = stroke.points.at(-1);
+        if (Math.hypot(last.x - this.point.x, last.z - this.point.z) >= stroke.spacing) {
+          // Thin before the 256th point: the gesture's STROKE_LIMIT (256) must never refuse a lasso.
+          if (stroke.points.length >= REGION_MAX_POINTS - 1) { stroke.points = stroke.points.filter((_, n) => n % 2 === 0); stroke.spacing *= 2; }
+          stroke.points.push(this.point);
+        }
+      } else {
         // GM08: points as far apart as the stroke's dabs, so a 128 m brush covers a long drag in 256 points.
         const last = this.stroke.points.at(-1);
         if (Math.hypot(last.x - this.point.x, last.z - this.point.z) >= strokeSpacing(this.stroke.parameters.radius)) {
@@ -68,11 +86,28 @@ export class TerrainInteraction {
     if (!this.point || !this.tool) return;
     const map = this.editor.draftMap || this.editor.map;
     const params = this.stroke?.parameters || this.panel.parameters();
-    const outline = brushOutline({ ...params, shape: params.tool === 'ramp' ? 'circle' : params.shape }, 64);
-    const points = outline.map(({ x: dx, z: dz }) => {
-      const x = this.point.x + dx, z = this.point.z + dz;
-      return new THREE.Vector3(x, map.heightAt(x, z) + .09, z);
-    });
+    let points;
+    if (isRegion(params) && this.stroke) {
+      // GM08b: the region's outline, a vertex every 2 m or less so it lies on the ground.
+      const ring = regionOutline({ shape: params.selection, points: this.stroke.points });
+      points = [];
+      for (let n = 0; n < ring.length; n++) {
+        const a = ring[n], b = ring[(n + 1) % ring.length];
+        const steps = Math.min(64, Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.z - a.z) / 2)));
+        for (let s = 0; s < steps; s++) {
+          const x = a.x + (b.x - a.x) * s / steps, z = a.z + (b.z - a.z) * s / steps;
+          points.push(new THREE.Vector3(x, map.heightAt(x, z) + .09, z));
+        }
+      }
+    } else {
+      // Before a region is drawn (or while picking a level), a small ring marks the point under the cursor.
+      const marker = isRegion(params) || this.panel.picking;
+      const outline = brushOutline(marker ? { radius: 2 } : { ...params, shape: params.tool === 'ramp' ? 'circle' : params.shape }, marker ? 24 : 64);
+      points = outline.map(({ x: dx, z: dz }) => {
+        const x = this.point.x + dx, z = this.point.z + dz;
+        return new THREE.Vector3(x, map.heightAt(x, z) + .09, z);
+      });
+    }
     this.cursor.geometry.setFromPoints(points); this.cursor.geometry.computeBoundingSphere();
     this.cursor.material.color.set(this.stroke?.error ? 0xff6854 : 0x83f2cf);
     this.cursor.visible = true; this.editor.invalidate();
@@ -84,20 +119,37 @@ export class TerrainInteraction {
     // Commits are serialized: never start a stroke on a half-committed terrain.
     if (this.editor.terrainTask) return true;
     this.move(); if (!this.point || !this.cursor.visible) return true;
+    if (this.panel.picking) { this.pickLevel(); return true; }
     if (this.tool === 'ramp' && this.stroke) {
       this.stroke.points[1] = { ...this.point }; this.finish(); return true;
     }
     // region and shown (GM08): the union of the regions this gesture rendered, and the map it showed last.
-    this.stroke = { base: this.editor.history.current(), points: [{ ...this.point }],
-      parameters: this.panel.parameters(), result: null, pending: true, error: null,
-      region: null, shown: null, held: performance.now(), heldPoints: 1 };
+    // A rectangle keeps its two corners in points; a lasso its outline (GM08b).
+    const parameters = this.panel.parameters();
+    this.stroke = { base: this.editor.history.current(),
+      points: parameters.selection === 'rect' ? [{ ...this.point }, { ...this.point }] : [{ ...this.point }],
+      parameters, result: null, pending: true, error: null,
+      region: null, shown: null, held: performance.now(), heldPoints: 1, spacing: LASSO_SPACING };
     this.editor.cameraController.disable();
     this.editor.canvas.focus({ preventScroll: true });
-    if (this.tool !== 'ramp') this.preview();
+    if (this.tool !== 'ramp' && !isRegion(parameters)) this.preview();
     return true;
   }
 
-  _edit(stroke) { return { document: stroke.base, ...stroke.parameters, points: stroke.points }; }
+  // GM08b eyedropper: the level takes the ground height under the cursor, to the centimetre.
+  pickLevel() {
+    const map = this.editor.draftMap || this.editor.map, height = map.heightAt(this.point.x, this.point.z);
+    const level = Math.round(Math.max(TERRAIN_MIN_HEIGHT, Math.min(TERRAIN_GRID_MAX_HEIGHT, height)) * 100) / 100;
+    this.panel.picking = false; this.panel.level = level; this.panel.render();
+    this.editor._setStatus(editorMessage(`Level set to ${level.toFixed(2)} m.`, `Nivel fijado en ${level.toFixed(2)} m.`), 'ok');
+    this.drawCursor();
+  }
+
+  _edit(stroke) {
+    const { selection, feather, ...parameters } = stroke.parameters;
+    return isRegion(stroke.parameters) ? { document: stroke.base, ...parameters, region: { shape: selection, points: stroke.points, feather } }
+      : { document: stroke.base, ...parameters, points: stroke.points };
+  }
 
   // GM08: the region a render needs: the union of the gesture's regions, from the map the gesture showed last (the
   // preview narrows it to the vertices that changed); before the first render, the stroke's own region.
@@ -116,7 +168,8 @@ export class TerrainInteraction {
 
   preview() {
     const stroke = this.stroke;
-    if (!stroke || (this.tool === 'ramp' && stroke.points.length < 2)) return;
+    if (!stroke || (this.tool === 'ramp' && stroke.points.length < 2) ||
+        (stroke.parameters.selection === 'lasso' && stroke.points.length < 3)) return;
     stroke.pending = false;
     try {
       if (stroke.points.length >= STROKE_LIMIT) throw new Error('stroke_limit');
@@ -135,17 +188,27 @@ export class TerrainInteraction {
     if (!this.stroke) return;
     const stroke = this.stroke; this.stroke = null;
     if (this.editor.active && !this.editor.walkPreview?.active) this.editor.cameraController.enable();
+    if (stroke.parameters.selection === 'lasso' && stroke.points.length < 3) {
+      this._showBase(stroke);
+      this.editor._setStatus(editorMessage('Lasso too small: drag around a larger area. Nothing was saved.',
+        'Lazo demasiado pequeño: arrastra alrededor de un área mayor. No se guardó ningún cambio.'), 'error');
+      this.drawCursor();
+      return;
+    }
     if (stroke.points.length >= STROKE_LIMIT || (stroke.parameters.tool === 'ramp' && stroke.points.length < 2)) {
       this.editor.lastError = new Error('stroke_limit');
       this._showBase(stroke); this.editor._setStatus(blocked(), 'error'); this.drawCursor();
       return;
     }
+    const region = isRegion(stroke.parameters);
     const task = this.editor._commitTerrainStroke(this._edit(stroke), stroke).then((committed) => {
       if (!this.editor.active) return committed;
       if (committed) {
         this.lastPoint = { ...stroke.points.at(-1) };
-        this.editor._setStatus(editorMessage('Terrain stroke kept in the private draft. Undo reverses the whole stroke.',
-          'Trazo de terreno conservado en el borrador privado. Deshacer revierte el trazo completo.'), 'ok');
+        this.editor._setStatus(region
+          ? editorMessage('Region kept in the private draft. Undo reverses it whole.', 'Región conservada en el borrador privado. Deshacer la revierte entera.')
+          : editorMessage('Terrain stroke kept in the private draft. Undo reverses the whole stroke.',
+            'Trazo de terreno conservado en el borrador privado. Deshacer revierte el trazo completo.'), 'ok');
       } else this.editor._setStatus(blocked(), 'error');
       this.drawCursor();
       return committed;
@@ -155,11 +218,12 @@ export class TerrainInteraction {
   }
 
   cancel() {
-    const stroke = this.stroke; this.stroke = null;
+    const stroke = this.stroke, picking = this.panel.picking; this.stroke = null;
+    if (picking) { this.panel.picking = false; this.panel.render(); }
     if (stroke && this.editor.active) this._showBase(stroke);
     if (this.editor.active && !this.editor.walkPreview?.active) this.editor.cameraController.enable();
     this.cursor.visible = false; this.editor.invalidate();
-    return !!stroke;
+    return !!stroke || picking;
   }
 
   update() {

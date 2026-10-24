@@ -6,7 +6,7 @@ import { airbrushInfluence, BRUSH_FLOWS, brushParameters, brushWeight, strokeInf
 const fail = code => { throw Object.assign(new TypeError(`Terrain paint failed: ${code}`), { code }); };
 
 // Include the automatic channel in largest-remainder quantization: every blend sums to 255.
-function blendWeights(old, channel, amount) {
+export function blendWeights(old, channel, amount) {
   const values = [...old, 255 - old.reduce((a, b) => a + b, 0)]
     .map((weight, i) => weight * (1 - amount) + (i === channel ? 255 * amount : 0));
   const quantized = values.map(Math.floor);

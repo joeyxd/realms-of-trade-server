@@ -9,7 +9,7 @@ const fail = code => { const error = new TypeError(`Terrain sculpt failed: ${cod
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 // GM08: grid strokes stop 2 mm inside the 0.75 m floor and the +200 m ceiling (millimetre rounding stays inside).
-const GRID_FLOOR = TERRAIN_MIN_HEIGHT + .002, GRID_CEILING = TERRAIN_GRID_MAX_HEIGHT - .002;
+export const GRID_FLOOR = TERRAIN_MIN_HEIGHT + .002, GRID_CEILING = TERRAIN_GRID_MAX_HEIGHT - .002;
 
 function checkedInput({ map, document, baseRevision, tool, points, radius = 6, strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4 },
   maxRadius = 24) {
