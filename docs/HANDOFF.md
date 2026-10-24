@@ -1,5 +1,23 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**VR09 agua y VR10 sombras, 2026-10-24 (T-1023-12, T-1024-08), versión 0.6.0-alpha.103, sin cambio de protocolo ni SQL:**
+Arregla dos reportes de Joi en el playtest R2. Solo src/render/water.js, waterDetail.js, toon.js y lighting.js.
+- VR09 agua: las cáusticas bajan un 40 % (`causticStrength` 0,12 -> 0,072, una constante para SSR y terreno). Resaca en la
+  orilla: cada línea de ola que llega sube por la arena (0,45 u sobre el nivel quieto), frena y se retira (0,35 u por
+  debajo) en un ciclo de 5 s desfasado por ruido a lo largo de la costa; en la playa media el borde recorre unos 1,75 u
+  (antes fijo). En medio y alto la película que sube tiene un frente de espuma y el encaje solo deja sus hilos rotos; en
+  bajo solo se ve la retirada. Líneas de ola `waveK` 4,2 -> 2,6. Ajustable en vivo con
+  `window.__mn.world.water.material.uniforms.mnSwashUp / mnSwashDown / mnWaveK .value`.
+- VR10 sombras: el rayado de cómic solo se dibuja en la cara del objeto que da la espalda al sol (N.L del sol), nunca dentro
+  de una sombra proyectada; las sombras proyectadas pierden el rayado, los puntos de semitono de Ultra y la tinta del borde.
+  Los contornos de objetos y personajes no cambian. Nuevo uniform `U.mnSunDay` (1 de día y en la hora dorada, 0 de noche,
+  de la hora base, no de la zona de La Caldera): apaga la sombra del sol y el rayado de noche (la luna no proyecta sombra) y
+  con 0 se salta el pase de sombras (plaza de noche 350 -> 233 draw calls, 1,71M -> 1,14M triángulos). Al atardecer las
+  sombras se desvanecen entre el 41 y el 73 % de la mezcla dorada -> noche.
+- Pruebas: `tests/cast-shadows.test.mjs` nueva (3/3), tests de render 43/43, gate 386/386 (60 archivos).
+- Pendiente de gusto para Joi: las sombras proyectadas se ven más claras sin el rayado (el tono de la sombra no cambió); el
+  tamaño de la resaca y la separación de las olas. Siguiente: VR11 sol dinámico.
+
 **ST01c BasicHit nativo en el Taller de habilidades, 2026-10-24 (T-1023-14, T-1023-15), versión 0.6.0-alpha.102, sin protocolo ni SQL:**
 - El motor nativo del laboratorio pasa a `src/render/vfx/niagara/` byte a byte (19 archivos, R100; 7cf33b4); el laboratorio lo importa de ahí. Gates idénticos: verify x5, 66/66, BasicHit gate ffd36cdb, píxeles del piloto 2261/2261.
 - El Taller reproduce `NS_BasicHit` de MyProject (`niagara-97a82bae61b29237`) con el adaptador cerrado `niagara-native-v1` (7fbccc9): simulación medida por `seek` en el impacto, pase HDR propio con la profundidad del escenario (DepthFade de la llama, perspectiva sin medir), curva Filmic del laboratorio derivada de `filmFragment`, orden de dibujo del motor. Documento v3: semilla más los controles del flipbook (presentación, sin medir). Texturas WebP sin pérdida idénticas a la exportación de UE; cada archivo se comprueba por sha antes de usarlo.
