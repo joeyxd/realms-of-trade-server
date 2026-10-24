@@ -66,6 +66,28 @@ check(hit["cameras"] == pilot["cameras"] and hit["target"] == (20.0, 0.0, -10.0)
 check(hit["distance"] == 800.0 and hit["ortho_width"] == 850.0 and hit["size"] == 1024, "basichit framing")
 check(hit["textures"] == tuple(TEXTURES + n for n in ("T_FireBall", "T_FlameUV_1", "T_Ground_Crack", "T_Hit_Circle")), "basichit textures")
 
+# The SubUV wrap variant: the BasicHit spec with only the image steps moved to 20-23 (the flame's subImage 33.3 to
+# 38.3, past the 32 cells of its 8x4 grid) and the linear step on the first of them.
+wrap = load(os.path.join(SYSTEMS, "ns-basichit-wrap.json"))
+check(wrap["image_steps"] == (20, 21, 22, 23) and wrap["linear_step"] == 20, "basichit wrap steps")
+with open(os.path.join(SYSTEMS, "ns-basichit.json"), "r", encoding="utf-8") as stream:
+    hit_json = json.load(stream)
+with open(os.path.join(SYSTEMS, "ns-basichit-wrap.json"), "r", encoding="utf-8") as stream:
+    wrap_json = json.load(stream)
+for key in ("imageSteps", "linearStep"):
+    del hit_json["capture"][key], wrap_json["capture"][key]
+check(wrap_json == hit_json, "basichit wrap differs from basichit only in imageSteps and linearStep")
+
+# The depth reference variant: the BasicHit spec with only the image steps cut to 6 and 12 (hit_json is already stripped of
+# imageSteps and linearStep above).
+depth = load(os.path.join(SYSTEMS, "ns-basichit-depth.json"))
+check(depth["image_steps"] == (6, 12) and depth["linear_step"] == 12, "basichit depth steps")
+with open(os.path.join(SYSTEMS, "ns-basichit-depth.json"), "r", encoding="utf-8") as stream:
+    depth_json = json.load(stream)
+for key in ("imageSteps", "linearStep"):
+    del depth_json["capture"][key]
+check(depth_json == hit_json, "basichit depth differs from basichit only in imageSteps and linearStep")
+
 # The names the library users import keep existing, taken from the pilot spec.
 check(LIB["SYSTEM_PATH"] == pilot["system_path"] and LIB["SOURCE_SHA256"] == pilot["source_sha256"], "library constants")
 check(LIB["CAPTURES"] == pilot["cameras"], "library CAPTURES")

@@ -222,3 +222,29 @@ detalle en la [entrega de BasicHit](basichit/RENDER.md).
 | `tools/niagara-native-lab/core/sprite-shader.js` | `fe07b229a45f58ecf9ea156fbb1327fad4bb9c83344d28fd83048437f799e8ca` |
 | `tools/niagara-native-lab/core/subuv-atlas.js` | `cbac2d57264776882c760bc304960132e6cea037149f804862d8c2cc0ae75805` |
 | `tools/niagara-native-lab/render-core.test.mjs` | `fcc19829d19c1b8bdbea72f2245d705cba545b18ebd533f71e5a76cabf730812` |
+
+## 2026-10-23 (T-1023-14): move to src/render/vfx/niagara/
+
+The runtime closure of NS_BasicHit moved with `git mv` (R100: bytes and sha256 unchanged, LF on disk) so the game client can ship it. Old path -> new path:
+
+- `tools/niagara-native-lab/core/burst.js` -> `src/render/vfx/niagara/core/burst.js`
+- `tools/niagara-native-lab/core/curve.js` -> `src/render/vfx/niagara/core/curve.js`
+- `tools/niagara-native-lab/core/depth-fade.js` -> `src/render/vfx/niagara/core/depth-fade.js`
+- `tools/niagara-native-lab/core/frame-spec.js` -> `src/render/vfx/niagara/core/frame-spec.js`
+- `tools/niagara-native-lab/core/particle-state.js` -> `src/render/vfx/niagara/core/particle-state.js`
+- `tools/niagara-native-lab/core/physics.js` -> `src/render/vfx/niagara/core/physics.js`
+- `tools/niagara-native-lab/core/rng.js` -> `src/render/vfx/niagara/core/rng.js`
+- `tools/niagara-native-lab/core/spawn-rate.js` -> `src/render/vfx/niagara/core/spawn-rate.js`
+- `tools/niagara-native-lab/core/sprite-shader.js` -> `src/render/vfx/niagara/core/sprite-shader.js`
+- `tools/niagara-native-lab/core/subuv-atlas.js` -> `src/render/vfx/niagara/core/subuv-atlas.js`
+- `tools/niagara-native-lab/core/subuv.js` -> `src/render/vfx/niagara/core/subuv.js`
+- `tools/niagara-native-lab/basichit-simulation.js` -> `src/render/vfx/niagara/basichit-simulation.js`
+- `tools/niagara-native-lab/basichit-render.js` -> `src/render/vfx/niagara/basichit-render.js`
+- `tools/niagara-native-lab/particles.js` -> `src/render/vfx/niagara/particles.js`
+- `tools/niagara-native-lab/film-color.js` -> `src/render/vfx/niagara/film-color.js`
+- `tools/niagara-native-lab/film-identity.js` -> `src/render/vfx/niagara/film-identity.js`
+- `tools/niagara-native-lab/depth-stage.js` -> `src/render/vfx/niagara/depth-stage.js`
+- `tools/niagara-native-lab/basichit-source.json` -> `src/render/vfx/niagara/basichit-source.json`
+- `tools/niagara-native-lab/film-source.json` -> `src/render/vfx/niagara/film-source.json`
+
+`docs/delivery/st01c/color-checkpoint.json` keeps the old paths as history; the same sha256 holds at the new paths. `docs/delivery/st01c/basichit/simulation-checkpoint.json` was regenerated: only `source.file` and `hashing` changed, every digest is identical.

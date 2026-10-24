@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { random3, random4, uniformRange, uniformSpan, randomUnitVector } from './core/rng.js';
-import { sampleCurve, validateCurve } from './core/curve.js';
-import { rateStep, rateBirthAge, spawnUpdateDt } from './core/spawn-rate.js';
-import { DT, normalizedAge, normalizedAgeByReciprocal, ageParticle, integrateVelocity, scaleColor, scaleSpriteSize } from './core/particle-state.js';
-import { subUVFrame } from './core/subuv.js';
-import { emitterStateOnce, burstWindow, burstBirthAge } from './core/burst.js';
-import { dragVelocity, addVelocityFromPoint, sizeFromMass } from './core/physics.js';
+import { random3, random4, uniformRange, uniformSpan, randomUnitVector } from '../../src/render/vfx/niagara/core/rng.js';
+import { sampleCurve, validateCurve } from '../../src/render/vfx/niagara/core/curve.js';
+import { rateStep, rateBirthAge, spawnUpdateDt } from '../../src/render/vfx/niagara/core/spawn-rate.js';
+import { DT, normalizedAge, normalizedAgeByReciprocal, ageParticle, integrateVelocity, scaleColor, scaleSpriteSize } from '../../src/render/vfx/niagara/core/particle-state.js';
+import { subUVFrame } from '../../src/render/vfx/niagara/core/subuv.js';
+import { emitterStateOnce, burstWindow, burstBirthAge } from '../../src/render/vfx/niagara/core/burst.js';
+import { dragVelocity, addVelocityFromPoint, sizeFromMass } from '../../src/render/vfx/niagara/core/physics.js';
 
 const f32 = Math.fround;
 const curve = (samples, minTime = 0, inverseRange = 1) => ({ minTime, inverseRange, samples });

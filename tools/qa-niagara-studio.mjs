@@ -173,7 +173,8 @@ try {
   });
   await check('all_registered_derivatives_render_both_quality_variants', async () => {
     evidence.derivatives = [];
-    for (const item of library.filter(effect => effect.ready && effect.id !== 'tromba-current-v1')) {
+    // Native ports have their own harness (tools/qa-native-studio.mjs); this check measures flipbook atlases.
+    for (const item of library.filter(effect => effect.ready && effect.adapter === 'flipbook-v1')) {
       await page.evaluate(id => __mn.skillStudio.selectEffect(id), item.id);
       for (const quality of ['desktop', 'mobile']) {
         await page.selectOption('.ss-inspector select[aria-label="Calidad"]', quality);

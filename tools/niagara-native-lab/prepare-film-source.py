@@ -68,12 +68,12 @@ def canonical(value):
     return value
 data = canonical(data)
 matrices, controls, spec = data['matrices'], data['controls'], data['lut']
-path = root/'tools/niagara-native-lab/film-source.json'
+path = root/'src/render/vfx/niagara/film-source.json'
 path.write_bytes((json.dumps(data, indent=2)+'\n').encode('utf8'))
 digest = hashlib.sha256(path.read_bytes()).hexdigest()
 behavior = json.dumps([matrices, controls, spec], separators=(',', ':'))
 identity = '// Exact source constants and supported private color profile.\n'
 identity += 'export const FILM_SOURCE_SHA256 = '+json.dumps(digest)+';\n'
 identity += 'export const FILM_BEHAVIOR = '+behavior+';\n'
-(root/'tools/niagara-native-lab/film-identity.js').write_bytes(identity.encode('utf8'))
+(root/'src/render/vfx/niagara/film-identity.js').write_bytes(identity.encode('utf8'))
 print(json.dumps({'bytes': path.stat().st_size, 'sha256': digest, 'matrices': len(matrices)}))

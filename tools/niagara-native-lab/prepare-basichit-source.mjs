@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
-const OUT = 'tools/niagara-native-lab/basichit-source.json';
+const OUT = 'src/render/vfx/niagara/basichit-source.json';
 const MANIFEST = 'docs/delivery/st01c/basichit/source-export-manifest.json';
 const COMPILED = '.scratch/unreal/basichit-compiled/';
 const T3D = '.scratch/unreal/basichit-source/system.t3d';

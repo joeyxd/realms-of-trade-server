@@ -235,10 +235,16 @@ No establecido:
 
 - Aceptación visual o artística: es del autor.
 - DepthFade de la llama contra una superficie: la referencia no tiene superficie y la llama se dibuja sin DepthFade (caso
-  "none" del piloto).
+  "none" del piloto). Medido después (T-1023-06, [DEPTH.md](DEPTH.md)): contra los 13 planos opacos de
+  `basichit-reference12` (pasos 6 y 12) la llama con DepthFade de 100 cm pasa las 32 filas con IoU >= 0,9939 y MAE <=
+  1,513/255 (2 con la unión visible vacía), y sin DepthFade `t0012_side_wall0` falla; el gate de esta entrega no se ha movido.
 - El SubUV en wrap más allá de la rejilla: los pasos del gate tienen `subImage` 3,33, 10, 20 y 30, sin llama en el 24; la
-  fórmula está fijada solo por tests.
+  fórmula está fijada solo por tests. Medido después (T-1022-35, [WRAP.md](WRAP.md)): en los pasos 20 a 23 (`subImage`
+  33,3 a 38,3) la cadena con `wrap` pasa los 12 encuadres de `basichit-reference10` y la `clamp` del piloto cae a IoU
+  0,74-0,86 y MAE 12-23/255; el gate de esta entrega no se ha movido.
 - El orden de dibujo entre emisores dentro de un mismo componente (ver diagnósticos); el gate usa el de los emisores.
+  Medido después (T-1022-32 y T-1022-33, [DRAW-ORDER.md](DRAW-ORDER.md)): el motor dibuja Flash, SimpleBurst, Flame y ese
+  orden da el menor error en los 9 encuadres donde los tres órdenes difieren; el gate de esta entrega no se ha movido.
 - Los mipmaps: los genera el controlador desde el PNG exportado; los de Unreal no se compararon.
 - Bloom, grading u otro aspecto del juego: el perfil es el de laboratorio. Pasos posteriores al 24, otras semillas, KTX2,
   presupuesto móvil, integración en el juego.

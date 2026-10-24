@@ -5,6 +5,7 @@ import { SkillFx } from './vfx/skillfx.js';
 import { CombatFx } from './vfx/combatfx.js';
 import { ParticlePool } from './vfx/particles.js';
 import { FlipbookEffect } from './vfx/flipbook.js';
+import { NativeEffect } from './vfx/niagara/nativeEffect.js';
 import { getEffect, defaultEffectDocument } from '../editor/effectLibrary.js';
 import { FXU } from './pipeline.js';
 import { U } from './toon.js';
@@ -38,6 +39,7 @@ export class SkillPreview {
     this.range.computeLineDistances(); this.stageObjects.add(this.range);
     this.effectObjects = new THREE.Group(); this.scene.add(this.effectObjects);
     this.flipbook = new FlipbookEffect(this.effectObjects);
+    this.native = new NativeEffect();
     this.pool = new ParticlePool(PREVIEW_PARTICLE_CAP.desktop, { name: 'skill-preview-water', random: () => this.random() });
     // Keep the private preview bounded without consuming the world's visual RNG.
     const spawn = this.pool.spawn.bind(this.pool);
@@ -75,14 +77,16 @@ export class SkillPreview {
   }
 
   get isFlipbook() { return this.document?.version === 2; }
+  get isNative() { return this.document?.version === 3; }
   get parameters() { return this.original ? defaultEffectDocument(this.document.effect).parameters : this.document.parameters; }
   get duration() {
+    if (this.isNative) return impactAt() + this.native.duration(this.parameters) + 0.4;
     return this.isFlipbook ? impactAt() + this.flipbook.duration(this.parameters) + 0.4
       : impactAt() + 0.65 * (this.original ? 1 : this.document.parameters.duration) + 1.6;
   }
   get metrics() { return { particles: this.isFlipbook ? 0 : this.pool.alive.reduce((a, b) => a + b, 0),
     cap: this.isFlipbook ? 0 : this.cap, drawCalls: this.drawCalls || 0,
-    ...(this.isFlipbook ? this.flipbook.metrics : {}) }; }
+    ...(this.isFlipbook ? this.flipbook.metrics : this.isNative ? this.native.metrics : {}) }; }
   random() {
     let n = this.seed += 0x6D2B79F5;
     n = Math.imul(n ^ n >>> 15, n | 1); n ^= n + Math.imul(n ^ n >>> 7, n | 61);
@@ -92,7 +96,9 @@ export class SkillPreview {
     if (!validateSkillDocument(document).ok) throw new Error('Invalid skill presentation');
     const changed = this.document?.effect !== document.effect;
     this.document = cloneSkillDocument(document);
-    this.range.visible = !this.isFlipbook;
+    this.range.visible = !this.isFlipbook && !this.isNative;
+    if (this.isNative && (changed || this.native.state === 'idle')) void this.native.setEffect(getEffect(document.effect).derivative);
+    else if (!this.isNative) this.native.cancelLoad();
     if (this.isFlipbook && (changed || !this.flipbook.effect)) {
       void this.flipbook.setEffect(getEffect(document.effect).derivative, this.quality);
     } else if (!this.isFlipbook) this.flipbook.cancelLoad();
@@ -126,6 +132,7 @@ export class SkillPreview {
     this.time = 0; this.accumulator = 0; this.seed = 6371; this.fired = false;
     this.fx.resetTromba();
     this.flipbook.reset();
+    if (this.isNative) this.native.update(-impactAt(), this.parameters);
     this.pool.alive.fill(0); this.pool.data.fill(0); this.pool.cursor = 0; this.pool.time = 0;
     this.pool.aData.needsUpdate = true;
     for (const ring of this.combat.rings) { ring.active = false; ring.m.visible = false; }
@@ -145,16 +152,18 @@ export class SkillPreview {
     this.character?.update(STEP, this.state(this.time));
     if (!this.fired && this.time + 1e-8 >= impactAt()) {
       this.fired = true;
-      if (!this.isFlipbook) this.fx.spout(0, 0, SKILLS.tromba.r, false, 0, this.original ? undefined : this.document.parameters);
+      if (!this.isFlipbook && !this.isNative) this.fx.spout(0, 0, SKILLS.tromba.r, false, 0, this.original ? undefined : this.document.parameters);
     }
     this.fx.update(STEP, Math.round(this.time / STEP));
     this.combat.update(STEP); this.pool.update(STEP);
     if (this.isFlipbook) this.flipbook.update(this.time - impactAt(), this.parameters);
+    if (this.isNative) this.native.update(this.time - impactAt(), this.parameters);
   }
   seek(value) {
     const target = THREE.MathUtils.clamp(Number(value) || 0, 0, this.duration), playing = this.playing;
     this.restart();
     for (let i = 0, count = Math.floor(target / STEP); i < count; i++) this.step();
+    if (this.isNative) { this.time = target; this.native.update(this.time - impactAt(), this.parameters); }
     this.playing = playing;
   }
   render(dt = 0) {
@@ -170,6 +179,7 @@ export class SkillPreview {
     const rect = this.viewport.getBoundingClientRect();
     // Async texture completion must also become visible while the timeline is paused.
     if (this.isFlipbook) this.flipbook.update(this.time - impactAt(), this.parameters);
+    if (this.isNative) this.native.update(this.time - impactAt(), this.parameters);
     const p = stage.toLocal(stage.rotated ? rect.right : rect.left, rect.top);
     const width = stage.rotated ? rect.height : rect.width, height = stage.rotated ? rect.width : rect.height;
     if (width < 2 || height < 2) return;
@@ -190,6 +200,7 @@ export class SkillPreview {
       const before = r.info.render.calls;
       r.render(this.scene, this.camera);
       this.drawCalls = r.info.autoReset ? r.info.render.calls : r.info.render.calls - before;
+      if (this.isNative) { this.native.render(r, this.scene, this.camera, width * r.getPixelRatio(), height * r.getPixelRatio()); this.drawCalls += this.native.drawCalls || 0; }
     } finally {
       r.setRenderTarget(old.target); r.setViewport(old.viewport); r.setScissor(old.scissor); r.setScissorTest(old.test); r.setClearColor(old.color, old.alpha); r.autoClear = old.autoClear;
       FXU.uUseDepth.value = old.depth; FXU.uFxLight.value.copy(old.light);
@@ -199,7 +210,7 @@ export class SkillPreview {
   dispose() {
     if (this.disposed) return;
     this.disposed = true; this.controller.abort(); this.releaseCharacter();
-    this.fx.dispose(); this.flipbook.dispose();
+    this.fx.dispose(); this.flipbook.dispose(); this.native.dispose();
     const geometries = new Set(), materials = new Set();
     for (const group of [this.stageObjects, this.effectObjects]) group.traverse(o => {
       if (o.geometry) geometries.add(o.geometry);

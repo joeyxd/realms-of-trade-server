@@ -1,0 +1,135 @@
+{
+  "schema": "skill-studio-browser/v1",
+  "at": "2026-10-24T06:21:22.082Z",
+  "version": "0.6.0-alpha.101",
+  "production": false,
+  "simulatedAuth": true,
+  "checks": [],
+  "screenshots": [
+    "failure.png"
+  ],
+  "errors": [],
+  "remoteWrites": [],
+  "gameplayCommands": [],
+  "runtime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.101",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 0,
+    "uptime": 1,
+    "stepMs": 0,
+    "bots": 0,
+    "names": [],
+    "errors": 0,
+    "storage": {
+      "kind": "memory",
+      "durable": false,
+      "accounts": true,
+      "playerCharacters": {
+        "ready": false,
+        "limit": 3
+      },
+      "gmTerrainTiles": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": null,
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": false,
+        "ready": false,
+        "logging": false
+      },
+      "fire": {
+        "enabled": false,
+        "ready": false,
+        "torchRules": 1
+      },
+      "foraging": {
+        "enabled": false,
+        "ready": false
+      },
+      "freshwater": {
+        "enabled": false,
+        "ready": false,
+        "canteen": false,
+        "meals": false
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "workshop": {
+        "enabled": false,
+        "ready": false
+      },
+      "attributes": {
+        "enabled": false,
+        "ready": false
+      },
+      "skills": {
+        "enabled": false,
+        "ready": false
+      },
+      "jump": {
+        "mode": "off"
+      },
+      "chop": {
+        "enabled": false
+      },
+      "companionCreation": {
+        "enabled": false,
+        "ready": false,
+        "pending": 0
+      },
+      "companionPairing": {
+        "enabled": false,
+        "ready": false
+      },
+      "companionPresence": {
+        "enabled": false,
+        "ready": false,
+        "bodies": 0,
+        "pending": 0
+      },
+      "hostedInference": {
+        "enabled": false,
+        "ready": false
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "failure": {
+    "phase": "authorized_private_stage_real_character_and_shared_effect",
+    "error": "page.waitForFunction: Timeout 90000ms exceeded."
+  },
+  "phase": "authorized_private_stage_real_character_and_shared_effect"
+}

@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import { PilotParticles, toScene } from './particles.js';
+import { PilotParticles, toScene } from '../../src/render/vfx/niagara/particles.js';
 import { NativeSimulation } from './native-simulation.js';
 import { SOURCE_PRESET_SHA256 } from './source-identity.js';
-import { FILM_SOURCE_SHA256 } from './film-identity.js';
-import { createFilmLUT, filmFragment } from './film-color.js';
-import { DepthStage } from './depth-stage.js';
+import { FILM_SOURCE_SHA256 } from '../../src/render/vfx/niagara/film-identity.js';
+import { createFilmLUT, filmFragment } from '../../src/render/vfx/niagara/film-color.js';
+import { DepthStage } from '../../src/render/vfx/niagara/depth-stage.js';
 import { selectVariant, texturePlan, validateManifest, mobileBudget, ATLAS_MANIFEST_SHA256, MOBILE_MEMORY_ACCEPTED } from './atlas-policy.js';
 const $ = id => document.getElementById(id);
 // Three format constant -> [name, bits per pixel, bytes per 4x4 block (0 = uncompressed)].
@@ -89,7 +89,7 @@ try {
     URL.revokeObjectURL(url);
   }
   const simulation = new NativeSimulation(await jsonAt('./pilot-source.json', SOURCE_PRESET_SHA256));
-  const film = createFilmLUT(await jsonAt('./film-source.json', FILM_SOURCE_SHA256));
+  const film = createFilmLUT(await jsonAt('../../src/render/vfx/niagara/film-source.json', FILM_SOURCE_SHA256));
   own(film.texture);
   const scene = new THREE.Scene(), camera = new THREE.OrthographicCamera(-2,2,2,-2,.01,100);
   const center = new THREE.Vector3(...toScene([0,0,100]));

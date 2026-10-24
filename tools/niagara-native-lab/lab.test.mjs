@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { PilotParticles, toScene, validateFrame } from './particles.js';
+import { PilotParticles, toScene, validateFrame } from '../../src/render/vfx/niagara/particles.js';
 
 const frame = () => ({ schema: 'st01c-cpu-frame/v1', systemAge: 1,
   emitters: ['NE_Flame_Basic_001', 'NE_Smoke_Basic'].map(name => ({ name, particles: [{

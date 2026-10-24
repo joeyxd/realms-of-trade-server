@@ -229,7 +229,7 @@ runpy.run_path('C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/cap
 ```
 
 ```powershell
-& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -d3d11 -RenderOffscreen -unattended -nop4 -nosplash -nosound '-ExecCmds=Automation RunTests Editor.Python.ST01c_Pilot.test_st01c_reference_profiled' '-TestExit=Automation Test Queue Empty' -CaptureRun=basichit-reference07 '-SystemSpec=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/systems/ns-basichit.json'
+& 'C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe' 'C:/DEV/real of trade/st01c-native/.scratch/unreal/ST01c_Pilot.uproject' -d3d11 -RenderOffscreen -unattended -nop4 -nosplash -nosound '-ExecCmds=Automation RunTests Editor.Python.ST01c_Pilot.test_st01c_reference_profiled' '-TestExit=Automation Test Queue Empty' -CaptureRun=basichit-reference05 '-SystemSpec=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/systems/ns-basichit.json'
 ```
 
 The final pair is `basichit-reference05` and `basichit-reference06` (fresh names only; one Unreal instance at a time). Then:
@@ -249,6 +249,43 @@ report keys) and the particle equality with `basichit-reference03`, and checks t
 LF line endings) and the plugin binary. `transfer-basichit.mjs` measures the transfer precondition offline: the exact
 `film-color.js` Filmic on the Unreal HDR against the Unreal LDR, with the metric of `compare-basichit.py`. Results and limits:
 [the profiled BasicHit reference](../../docs/delivery/st01c/basichit/REFERENCE-PROFILED.md).
+
+### NS_BasicHit SubUV wrap reference (steps 20-23)
+
+`systems/ns-basichit-wrap.json` is `ns-basichit.json` with only `capture.imageSteps` [20, 21, 22, 23] and
+`capture.linearStep` 20 (`capture_spec_test.py` checks that nothing else differs): the Flame's subImage runs from 33.3 to
+38.3 there, past the 32 cells of its 8x4 grid, so the image shows which cell Unreal reads. Same driver, wrapper and
+profile as above, with `-SystemSpec=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/systems/ns-basichit-wrap.json`
+and a fresh `-CaptureRun`. `build_wrap_checkpoint.py` runs `build_profiled_checkpoint.py` as a library with the
+author-recorded facts of this pair (command, wall times, attempts); `check_profiled_checkpoint.py` takes the checkpoint as its
+argument:
+
+```powershell
+python -B tools/unreal-niagara-probe/build_wrap_checkpoint.py --spec tools/unreal-niagara-probe/systems/ns-basichit-wrap.json --a .scratch/unreal/<reference run> --b .scratch/unreal/<repeat run> --base .scratch/unreal/basichit-reference03 --out docs/delivery/st01c/basichit/wrap-reference-checkpoint.json
+python -B tools/unreal-niagara-probe/check_profiled_checkpoint.py docs/delivery/st01c/basichit/wrap-reference-checkpoint.json
+```
+
+Results: [the SubUV wrap past the grid](../../docs/delivery/st01c/basichit/WRAP.md).
+
+### NS_BasicHit depth reference (opaque planes, steps 6 and 12)
+
+`systems/ns-basichit-depth.json` is `ns-basichit.json` with only `capture.imageSteps` [6, 12] and `capture.linearStep` 12.
+The planes live in `systems/ns-basichit-depth-surface.json` (`st01c-surface-spec/v1`, strict loader and pose list in
+`surface_spec.py`, tested by `surface_spec_test.py`), because `load_capture_spec` refuses unknown keys. Per image step and
+camera, `capture_depth_profiled.py` captures the control (no plane; same files as `basichit-reference05`), then a black
+opaque unlit two-sided plane of 3000 cm as a wall through `cameraTarget - s*u` facing the camera for s = -25, 0, 50 and
+150 cm, then the oblique floor at z = -10 (labels `<camera>_wall<s>`, `oblique_floor`). At step 6 every plane pose also
+writes SceneDepth as `frames/t0006_<label>_depth.f32` (little-endian float32, the R channel of an RGBA32F target, cm, top
+row first). One transient actor and material under `/Game/ST01c_DepthTransient`, never saved. Local wrapper
+`.scratch/unreal/Content/Python/test_st01c_depth_profiled.py` (`runpy.run_path` on the driver), test name
+`Editor.Python.ST01c_Pilot.test_st01c_depth_profiled`, extra argument
+`'-SurfaceSpec=C:/DEV/real of trade/st01c-native/tools/unreal-niagara-probe/systems/ns-basichit-depth-surface.json'`.
+UE's PNG export is not byte-stable (same decompressed stream, other zlib bytes), so the checker compares PNGs by pixels:
+
+```powershell
+python -B tools/unreal-niagara-probe/build_depth_checkpoint.py --spec tools/unreal-niagara-probe/systems/ns-basichit-depth.json --surface tools/unreal-niagara-probe/systems/ns-basichit-depth-surface.json --a .scratch/unreal/basichit-reference12 --b .scratch/unreal/basichit-reference14 --base .scratch/unreal/basichit-reference03 --controls .scratch/unreal/basichit-reference05 --out docs/delivery/st01c/basichit/depth-reference-checkpoint.json
+python -B tools/unreal-niagara-probe/check_depth_checkpoint.py docs/delivery/st01c/basichit/depth-reference-checkpoint.json
+```
 
 ## Effective compiled CPU pilot
 

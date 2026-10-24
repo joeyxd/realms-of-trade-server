@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { DepthStage, depthFactor } from './depth-stage.js';
-import { PilotParticles } from './particles.js';
+import { DepthStage, depthFactor } from '../../src/render/vfx/niagara/depth-stage.js';
+import { PilotParticles } from '../../src/render/vfx/niagara/particles.js';
 
 test('linear axial separation saturates at contact and the source 100cm span', () => {
   for (const [gap, expected] of [[-.25, 0], [0, 0], [.25, .25], [.5, .5], [1, 1], [1.5, 1]])

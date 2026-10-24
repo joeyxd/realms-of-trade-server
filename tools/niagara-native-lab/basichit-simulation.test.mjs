@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import test from 'node:test';
-import { BasicHitSimulation, MAX_STEP, NAMES } from './basichit-simulation.js';
-import { DT } from './core/particle-state.js';
-const source = JSON.parse(await fs.readFile(new URL('./basichit-source.json', import.meta.url)));
+import { BasicHitSimulation, MAX_STEP, NAMES } from '../../src/render/vfx/niagara/basichit-simulation.js';
+import { DT } from '../../src/render/vfx/niagara/core/particle-state.js';
+const source = JSON.parse(await fs.readFile(new URL('../../src/render/vfx/niagara/basichit-source.json', import.meta.url)));
 const f32 = Math.fround;
 const counts = frame => frame.emitters.map(e => e.particles.length);
 

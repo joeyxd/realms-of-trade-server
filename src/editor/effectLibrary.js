@@ -1,4 +1,5 @@
 import { NIAGARA_CATALOG } from './niagaraCatalog.js';
+import { NIAGARA_NATIVE } from './niagaraNative.js';
 import { NIAGARA_COMPONENT_ATLASES, NIAGARA_COMPONENT_LIBRARY, NIAGARA_DERIVATIVES } from './niagaraDerivatives.js';
 
 const TROMBA_ID = 'tromba-current-v1';
@@ -37,6 +38,7 @@ export const FLIPBOOK_PARAMETERS = Object.freeze([
   Object.freeze({ key: 'tint', type: 'color', default: '#ffffff' }),
 ]);
 
+const NATIVE_PARAMETERS = Object.freeze([Object.freeze({ key: 'seed', min: 0, max: 65533, step: 1, default: 6371, integer: true }), ...FLIPBOOK_PARAMETERS]);
 function text(value) { return typeof value === 'string' ? value : ''; }
 function sourceProject(source) { return text(source?.project); }
 function sameSourceComponent(a, b) {
@@ -79,6 +81,13 @@ const tromba = Object.freeze({
 });
 
 export function buildCatalogEntry(item, rawDerivative = NIAGARA_DERIVATIVES[item.id]) {
+  const native = NIAGARA_NATIVE[item.id];
+  if (native && item.sources?.length === 1 && item.sources[0].sha256 === native.sourceSha256 && item.sources[0].project === native.project) {
+    return Object.freeze({ ...item, sources: Object.freeze(item.sources.map(s => Object.freeze({ ...s }))),
+      role: 'native', status: 'ready', ready: true, adapter: native.adapter, derivative: native,
+      roleLimitation: 'Native browser port of the Niagara system, measured against UE 5.8 under a controlled color profile; presentation controls, the perspective DepthFade and the mobile variant are not measured.',
+      imported: false, catalogued: true, reason: '' });
+  }
   const derivative = rawDerivative ? Object.freeze({ ...rawDerivative, id: item.id,
     atlas: Object.freeze({ ...rawDerivative.atlas }),
     ...(rawDerivative.component && { component: Object.freeze({ ...rawDerivative.component }) }),
@@ -117,7 +126,7 @@ export function getEffect(id) { return byId.get(id) ?? null; }
 export function effectParameters(effectId) {
   const effect = getEffect(effectId);
   if (!effect?.ready) return Object.freeze([]);
-  return effect.id === TROMBA_ID ? TROMBA_PARAMETERS : FLIPBOOK_PARAMETERS;
+  return effect.id === TROMBA_ID ? TROMBA_PARAMETERS : effect.adapter === 'niagara-native-v1' ? NATIVE_PARAMETERS : FLIPBOOK_PARAMETERS;
 }
 export function defaultEffectDocument(effectId) {
   const effect = getEffect(effectId);
@@ -127,8 +136,8 @@ export function defaultEffectDocument(effectId) {
     parameters: Object.freeze({ scale: 1, height: 1, duration: 1, density: 1, spread: 1, speed: 1, brightness: 1, deep: '#1f86c0', foam: '#dff7ff' }),
   });
   return Object.freeze({
-    schema: 'marea.skill-presentation', version: 2, skill: 'preview', effect: effect.id,
-    parameters: Object.freeze(Object.fromEntries(FLIPBOOK_PARAMETERS.map(({ key, default: value }) => [key, value]))),
+    schema: 'marea.skill-presentation', version: effect.adapter === 'niagara-native-v1' ? 3 : 2, skill: 'preview', effect: effect.id,
+    parameters: Object.freeze(Object.fromEntries(effectParameters(effect.id).map(({ key, default: value }) => [key, value]))),
   });
 }
 

@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import * as THREE from 'three';
-import { createFilmTransform, createFilmLUT } from './film-color.js';
-import { FILM_SOURCE_SHA256 } from './film-identity.js';
-const bytes = fs.readFileSync(new URL('./film-source.json', import.meta.url));
+import { createFilmTransform, createFilmLUT } from '../../src/render/vfx/niagara/film-color.js';
+import { FILM_SOURCE_SHA256 } from '../../src/render/vfx/niagara/film-identity.js';
+const bytes = fs.readFileSync(new URL('../../src/render/vfx/niagara/film-source.json', import.meta.url));
 const source = JSON.parse(bytes);
 
 test('pinned neutral Filmic profile has finite monotone grey and no capture-state input', () => {

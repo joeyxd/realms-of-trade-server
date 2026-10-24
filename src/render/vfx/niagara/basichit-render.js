@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import { toScene } from './particles.js';
 import { BASICHIT_FRAME_SPEC, validateFrame } from './core/frame-spec.js';
 import { spriteLayer, SPRITE_VERTEX_SHADER, SPRITE_FRAGMENT_SHADER } from './core/sprite-shader.js';
+import { SUBUV_POLICIES } from './core/subuv-atlas.js';
+import { DEPTH_FADE_DISTANCE } from './core/depth-fade.js';
 
 const LIMIT = BASICHIT_FRAME_SPEC.limit;
 // Emitter order of the system and of BASICHIT_FRAME_SPEC. Renderer facts (.scratch/unreal/basichit-source/system.t3d):
@@ -27,18 +29,32 @@ export const BASICHIT_LAYERS = Object.freeze([
   Object.freeze({ emitter: 'NE_SimpleBurst', material: 'MI_Radial_2', texture: null, address: null,
     layer: spriteLayer({ grid: [1, 1], texture: false, depthFade: null, opacity: 'radial-gradient-exponential' }) })
 ]);
-// renderOrder per layer. Gate: emitter order (renderers in emitter order, SortOrderHint 0 everywhere,
-// NiagaraSystem.cpp:2466-2486). Reverse: diagnostic only.
-export const DRAW_ORDERS = Object.freeze({ gate: Object.freeze([0, 1, 2]), reverse: Object.freeze([2, 1, 0]) });
+// Layers of the reference set "depth" (DEPTH.md): the Flame keeps its descriptor but gets M_Smoke's DepthFade, whose
+// InOpacity is the clamped opacity (M_Smoke.t3d:31-32), so opacity = saturate(a * tex.r) * fade; the fade distance is
+// MI_Fireball's 100 cm (material-defaults.json), 1 scene unit. Flash and SimpleBurst have no DepthFade. The gate and wrap
+// sets keep BASICHIT_LAYERS.
+export const BASICHIT_DEPTH_LAYERS = Object.freeze(BASICHIT_LAYERS.map((d, index) => index !== 0 ? d : Object.freeze({ ...d,
+  layer: spriteLayer({ grid: [8, 4], texture: true, depthFade: DEPTH_FADE_DISTANCE, facing: 'camera-position', subUV: 'wrap' }) })));
+// renderOrder per layer (Flame, Flash, SimpleBurst). Gate: emitter order, as T-1021-46 read ComputeRenderersDrawOrder
+// (NiagaraSystem.cpp:2466-2486, SortOrderHint 0 everywhere). Engine: what that code yields, because
+// RendererSortInfo.Sort (:2481) is TArray::Sort -> Algo::IntroSort, unstable; its selection branch for Count <= 8
+// (IntroSort.h:63-84) leaves three equal hints as RendererDrawOrder [1, 2, 0] = Flash, SimpleBurst, Flame
+// (docs/delivery/st01c/basichit/DRAW-ORDER.md, T-1022-33). Reverse and engine stay diagnostics until the author
+// moves the gate.
+export const DRAW_ORDERS = Object.freeze({ gate: Object.freeze([0, 1, 2]), reverse: Object.freeze([2, 1, 0]),
+  engine: Object.freeze([2, 0, 1]) });
 
 export class BasicHitParticles {
   // textures: one entry per layer, a THREE.Texture for a textured layer and null otherwise.
-  constructor(scene, textures, order = 'gate') {
+  // layers: BASICHIT_LAYERS (default) or BASICHIT_DEPTH_LAYERS.
+  constructor(scene, textures, order = 'gate', layers = BASICHIT_LAYERS) {
     if (!Array.isArray(textures) || textures.length !== BASICHIT_LAYERS.length) throw new Error('BasicHit textures per layer');
-    BASICHIT_LAYERS.forEach((d, index) => {
+    if (layers.length !== BASICHIT_LAYERS.length) throw new Error('BasicHit textures per layer');
+    this.descriptors = layers;
+    layers.forEach((d, index) => {
       if (d.layer.texture !== (textures[index]?.isTexture === true)) throw new Error('BasicHit layer texture mismatch');
     });
-    this.layers = BASICHIT_LAYERS.map((d, index) => {
+    this.layers = layers.map((d, index) => {
       const texture = textures[index];
       if (texture) {
         // UE TA_WRAP; a wrap SubUV layer needs it to read idx mod 32 past the last row.
@@ -59,6 +75,9 @@ export class BasicHitParticles {
       geometry.instanceCount = 0;
       const uniforms = { grid: { value: new THREE.Vector2(...d.layer.grid) } };
       if (texture) uniforms.atlas = { value: texture };
+      if (d.layer.depthFade !== null) Object.assign(uniforms, { opaqueDepth: { value: null }, depthSize: { value: new THREE.Vector2(1, 1) },
+        nearFar: { value: new THREE.Vector2(.01, 100) }, orthographic: { value: true }, depthFadeEnabled: { value: false },
+        depthFadeDistance: { value: d.layer.depthFade } });
       const material = new THREE.ShaderMaterial({ vertexShader: SPRITE_VERTEX_SHADER, fragmentShader: SPRITE_FRAGMENT_SHADER,
         defines: { ...d.layer.defines }, uniforms,
         transparent: true, toneMapped: false, depthWrite: false, depthTest: true, side: THREE.DoubleSide });
@@ -68,12 +87,37 @@ export class BasicHitParticles {
       return mesh;
     });
     this.counts = [0, 0, 0];
+    this.subUV = 'wrap';
     this.setOrder(order);
   }
   setOrder(order) {
     if (!Object.hasOwn(DRAW_ORDERS, order)) throw new Error('Unknown BasicHit draw order');
     this.layers.forEach((mesh, index) => { mesh.renderOrder = DRAW_ORDERS[order][index]; });
     this.order = order;
+  }
+  // SubUV policy of the wrap layers (the Flame): 'wrap' as BASICHIT_LAYERS binds it, or the pilot's 'clamp' as a
+  // diagnostic past the grid (docs/delivery/st01c/basichit/WRAP.md). Other layers are untouched.
+  setSubUV(policy) {
+    if (!SUBUV_POLICIES.includes(policy)) throw new Error('Invalid SubUV policy');
+    if (policy === this.subUV) return;
+    this.layers.forEach((mesh, index) => {
+      if (this.descriptors[index].layer.subUV !== 'wrap') return;
+      if (policy === 'wrap') mesh.material.defines.SUBUV_WRAP = ''; else delete mesh.material.defines.SUBUV_WRAP;
+      mesh.material.needsUpdate = true;
+    });
+    this.subUV = policy;
+  }
+  // DepthFade input of the layers that have it (the Flame in the depth set): a nearest depth texture of the opaque pass,
+  // never the active framebuffer, and the camera that drew it. Orthographic only, as the pilot's depth lab accepts.
+  setDepth(texture, camera, width, height, enabled, { perspective = false } = {}) {
+    if (camera.isOrthographicCamera !== true && !(perspective && camera.isPerspectiveCamera === true)) throw new Error('DepthFade needs an orthographic camera');
+    this.layers.forEach((mesh, index) => {
+      if (this.descriptors[index].layer.depthFade === null) return;
+      const u = mesh.material.uniforms;
+      u.opaqueDepth.value = texture; u.nearFar.value.set(camera.near, camera.far); u.depthSize.value.set(width, height);
+      u.depthFadeEnabled.value = enabled;
+      u.orthographic.value = camera.isOrthographicCamera === true;
+    });
   }
   update(frame) {
     validateFrame(frame, BASICHIT_FRAME_SPEC);

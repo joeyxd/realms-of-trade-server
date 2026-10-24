@@ -1,5 +1,12 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01c BasicHit nativo en el Taller de habilidades, 2026-10-24 (T-1023-14, T-1023-15), versión 0.6.0-alpha.102, sin protocolo ni SQL:**
+- El motor nativo del laboratorio pasa a `src/render/vfx/niagara/` byte a byte (19 archivos, R100; 7cf33b4); el laboratorio lo importa de ahí. Gates idénticos: verify x5, 66/66, BasicHit gate ffd36cdb, píxeles del piloto 2261/2261.
+- El Taller reproduce `NS_BasicHit` de MyProject (`niagara-97a82bae61b29237`) con el adaptador cerrado `niagara-native-v1` (7fbccc9): simulación medida por `seek` en el impacto, pase HDR propio con la profundidad del escenario (DepthFade de la llama, perspectiva sin medir), curva Filmic del laboratorio derivada de `filmFragment`, orden de dibujo del motor. Documento v3: semilla más los controles del flipbook (presentación, sin medir). Texturas WebP sin pérdida idénticas a la exportación de UE; cada archivo se comprueba por sha antes de usarlo.
+- Decisiones de Joi (2026-10-23): BasicHit primero, color como en Unreal, controles del flipbook más semilla, ST01c dueño de los archivos del Taller, sale en el push normal.
+- Pruebas: 29/29 (nueva `tests/niagara-native-studio.test.mjs`, añadida a TESTS), assets OK, `tools/qa-native-studio.mjs` 5/5 con cero escrituras GM y cero comandos, `tools/qa-niagara-studio.mjs` 9/9 (su bucle ahora filtra por adaptador), depth 292bfcef. `tools/qa-skill-studio.mjs` (Tromba) ya fallaba antes de este corte: el botón del Taller no se habilita en su fixture.
+- Entrega: `docs/delivery/st01c/basichit/STUDIO.md`. Fuera: combate, Flame_Single, móvil/KTX2, partida privada.
+
 **VR08 desenfoque sobre el agua, 2026-10-23 (T-1023-03), versión 0.6.0-alpha.101, sin cambio de protocolo ni SQL:**
 Arregla el reporte de Joi en el playtest R2 (balsa nítida, todo el mar desenfocado). Solo src/render/pipeline.js y
 scene.js. El CoC toma lo más cercano entre la profundidad opaca y el punto donde el rayo de la vista corta el plano del
@@ -249,6 +256,59 @@ cambian; `ACT.SHOOT` sigue mirando el enfriamiento. Lee `cmd.mx/mz` cuantizados 
 Ojo de diseño: moviéndote y machacando, el combo enlaza 1-2-3-1 sin la pausa del tercer golpe; si pega demasiado, la
 palanca es excluir el golpe 3 de la cancelación. Test nuevo tests/combat-recovery.test.mjs (9 tests, fuera del gate).
 Ticket T-1021-54. Pendiente: prueba a mano de Joi en el teléfono.
+
+**ST01c, 2026-10-23 - el DepthFade de la llama contra una superficie opaca, medido contra Unreal:**
+Sin versión, protocolo ni SQL; solo tools/ y docs/. (1) T-1023-01: `capture_depth_profiled.py` captura `NS_BasicHit` con el
+perfil controlado y un plano negro opaco de 3000 cm (`systems/ns-basichit-depth.json`, pasos 6 y 12;
+`systems/ns-basichit-depth-surface.json`, cargador estricto `surface_spec.py`): paredes frente a cada cámara a -25/0/50/150
+cm del objetivo y el suelo oblicuo a z = -10, 26 poses más 6 controles sin plano, y SceneDepth float32 en el paso 6.
+`basichit-reference12`/`-14` iguales (PNG por píxeles: la exportación PNG de UE no es estable en bytes; HDR, profundidad y
+241 estados byte a byte), controles iguales a `basichit-reference05`, profundidades del centro exactas;
+`depth-reference-checkpoint.json`, `check_depth_checkpoint.py` RESULT OK (commit 18a60a9). (2) T-1023-06: conjunto `depth`
+del laboratorio (`basichit.html?reference=depth`, `basichit-depth.js`, `qa-basichit.mjs ... depth`, `compare-basichit.py
+--reference depth`): transferencia 16/16, nativas 32/32 con los umbrales del autor (30 de evidencia, IoU >= 0,9939, MAE <=
+1,513/255; 2 con unión vacía), identidad de profundidad <= 0,0252 cm; sin DepthFade solo `t0012_side_wall0` cae fuera de
+los umbrales. Tres ejecuciones idénticas; gate (49/49, ffd36cdb) y wrap (5e87ea9a) sin cambios. Entrega
+`docs/delivery/st01c/basichit/DEPTH.md`. Falta la palabra del autor; tablero: tarea 09 hecha, sigue 10 (camino al Taller).
+
+**ST01c, 2026-10-22 - el SubUV de la llama más allá de la rejilla, medido contra Unreal:**
+Sin versión, protocolo ni SQL; solo tools/ y docs/. La llama de NS_BasicHit recorre 40 fotogramas sobre una rejilla 8x4
+y en los pasos 20 a 23 su `subImage` vale 33,3 a 38,3. (1) Spec `systems/ns-basichit-wrap.json` (solo cambian
+`imageSteps` [20-23] y `linearStep` 20, lo comprueba `capture_spec_test.py`) y captura con el perfil controlado:
+`basichit-reference10`/`-11` idénticas, 241/241 estados iguales a `basichit-reference03`; checkpoint
+`docs/delivery/st01c/basichit/wrap-reference-checkpoint.json` escrito por `build_wrap_checkpoint.py` (usa
+`build_profiled_checkpoint.py` como biblioteca, sin cambiarlo) y `check_profiled_checkpoint.py` RESULT OK. Intentos
+fallidos registrados: `-07` (el editor a 4-5 FPS mientras otra sesión usaba unos 7 núcleos con SwiftShader; cayó en el
+límite de 540 s) y `-08`/`-09` (hash CRLF de dos archivos del controlador: `.gitattributes` fija ahora `eol=lf` para
+`capture_reference_profiled.py` y `capture_profile.py`). (2) Laboratorio: `basichit.html?reference=wrap`, selector "SubUV
+de la llama" (`clamp` como diagnóstico, `BasicHitParticles.setSubUV`), `qa-basichit.mjs ... wrap` (52 lienzos) y
+`compare-basichit.py ... --reference wrap`; pasos y paso de transferencia salen del checkpoint. Resultado: con `wrap` los 12
+encuadres pasan los umbrales del gate (IoU >= 0,9830, MAE <= 1,679/255); con `clamp` caen a IoU 0,736-0,861 y MAE
+12,4-22,7. Transferencia en el paso 20: MAE <= 0,038, P95 0. Dos ejecuciones idénticas (`t1022-35-wrap-a`/`-b`, 52/52,
+`comparison.json` 5e87ea9a…). El gate no cambia: `t1022-35-gate-a`/`-b` dan 49/49 iguales a `t1022-33-c` y el mismo
+`comparison.json` ffd36cdb…; tests 63/63. Entrega: `docs/delivery/st01c/basichit/WRAP.md` con imagen; RENDER.md y los dos
+README anotados. Ticket T-1022-35. Tablero: tarea 08 hecha; 09 (DepthFade contra superficie) y 10 (camino al Taller de
+habilidades) abiertas.
+
+**ST01c, 2026-10-22 - orden de dibujo de BasicHit leído en el motor y medido; servidor QA con cola 128:**
+Sin versión, protocolo ni SQL; solo tools/ y docs/. (1) `tools/niagara-native-lab/serve.py`: el mismo handler de
+`python -m http.server` (GET y HEAD, 127.0.0.1:5197, raíz del worktree desde cualquier carpeta) con cola de escucha 128:
+las páginas del piloto piden 241 estados a la vez y la cola 5 de `socketserver` rechazaba el exceso (`WinError 10061`),
+por lo que `qa-native.mjs` y `qa-update.mjs` agotaban 30 s; con `serve.py` terminan en 7 s y 6 s y sus píxeles son idénticos
+a `.scratch/render-core/base-a` (12/12, 8/8). README actualizado (también la ruta de Playwright, que ahora es la de
+`visual-revamp`). Ticket T-1022-31. (2) T-1022-32 (explorador sobre la fuente de UE 5.8 instalada, releída por el chef):
+`ComputeRenderersDrawOrder` ordena los renderers por `SortOrderHint` con `TArray::Sort` = `Algo::IntroSort`, inestable;
+con tres hints a 0 su rama de selección deja `RendererDrawOrder = [1, 2, 0]`: Unreal dibuja Flash, SimpleBurst, Flame,
+ni el orden del asset (el del gate) ni el inverso. El orden entre emisores no depende de la cámara (`MeshIdInPrimitive`
+desempata dentro del componente). (3) T-1022-33: tercer orden `engine` `[2, 0, 1]` en `DRAW_ORDERS`, opción del selector,
+15 lienzos más en `qa-basichit.mjs` (49) y filas `engine` en `diagnostics` de `compare-basichit.py`. Medido contra
+`basichit-reference05`: el orden del motor da el menor error en los 9 encuadres donde los tres órdenes difieren (pasos 2,
+6 y 12; `t0002_side` 0,476 -> 0,074), empata con el inverso en el 18 y con todos en el 24; MAE media gate 1,089, inverso
+1,183, motor 0,912. Dos ejecuciones idénticas (`t1022-33-c`/`-d`, 49/49, `comparison.json` ffd36cdb…), transferencia
+byte a byte igual a T-1021-46, tests 63/63. El gate no se mueve: pasar `gate` a `[2, 0, 1]` es decisión del autor e implica
+regenerar `render-checkpoint.json`, las filas nativas de RENDER.md y la portada. Entrega:
+`docs/delivery/st01c/basichit/DRAW-ORDER.md`; RENDER.md y README anotados. Tablero: tareas 06 y 07 hechas; 08 (SubUV en
+wrap, captura con imageSteps 20-23), 09 (DepthFade contra superficie) y 10 (camino al Taller de habilidades) planificadas.
 
 **PT01, 2026-10-21 — el suelo del pueblo ya no tiene escalones invisibles (alpha.92):**
 Sin SQL ni protocolo. Las terrazas del pueblo (2,4 / 6,4 / 10,4) subían 4 unidades en 3 con un smoothstep cúbico: fuera

@@ -2,9 +2,9 @@
   "schema": "st01c-basichit-simulation-checkpoint/v1",
   "scope": "Digests of BasicHitSimulation snapshots, steps 0..480 then seek(12); verify-basichit.mjs also compares basichit-reference03.",
   "source": {
-    "file": "tools/niagara-native-lab/basichit-source.json",
+    "file": "src/render/vfx/niagara/basichit-source.json",
     "sha256": "6388736b01d507edeeb18db23193be9ba4646185f3362332be2778d62f49950b",
-    "hashing": "sha256 of the work-tree bytes, LF (tools/niagara-native-lab/** text eol=lf)"
+    "hashing": "sha256 of the work-tree bytes, LF (src/render/vfx/niagara/** text eol=lf)"
   },
   "steps": 480,
   "replayStep": 12,

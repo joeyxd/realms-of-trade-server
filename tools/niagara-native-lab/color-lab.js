@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import { PilotParticles, toScene } from './particles.js';
+import { PilotParticles, toScene } from '../../src/render/vfx/niagara/particles.js';
 import { NativeSimulation } from './native-simulation.js';
 import { SOURCE_PRESET_SHA256 } from './source-identity.js';
-import { FILM_SOURCE_SHA256 } from './film-identity.js';
-import { createFilmLUT, filmFragment } from './film-color.js';
+import { FILM_SOURCE_SHA256 } from '../../src/render/vfx/niagara/film-identity.js';
+import { createFilmLUT, filmFragment } from '../../src/render/vfx/niagara/film-color.js';
 const $ = id => document.getElementById(id);
 const run = new URLSearchParams(location.search).get('run') || 'color07';
 if (!/^[a-zA-Z0-9_-]{1,40}$/.test(run)) throw new Error('Invalid color run');
@@ -25,7 +25,7 @@ try {
   for (const row of report.images) for (const f of Object.values(row.files))
     if (!/^(pilot|chart)EV[01]_(front|side|oblique)_(ldr\.png|hdr\.hdr|hdr\.rgba16f)$/.test(f.file)) throw new Error('Invalid reference path');
   for (const row of report.chart) if (row.rgb?.length !== 3 || !row.rgb.every(v => Number.isFinite(v) && v >= 0 && v <= 40)) throw new Error('Invalid chart');
-  const film = createFilmLUT(await pinned('./film-source.json', FILM_SOURCE_SHA256));
+  const film = createFilmLUT(await pinned('../../src/render/vfx/niagara/film-source.json', FILM_SOURCE_SHA256));
   const simulation = new NativeSimulation(await pinned('./pilot-source.json', SOURCE_PRESET_SHA256));
   const snapshot = simulation.seek(120);
   const sourceReport = await getJson('/.scratch/unreal/reference11/capture-report.json');

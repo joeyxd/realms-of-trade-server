@@ -16,8 +16,8 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { DataUtils } from 'three';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-import { createFilmTransform } from './film-color.js';
-import { FILM_SOURCE_SHA256 } from './film-identity.js';
+import { createFilmTransform } from '../../src/render/vfx/niagara/film-color.js';
+import { FILM_SOURCE_SHA256 } from '../../src/render/vfx/niagara/film-identity.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..', '..');
@@ -107,7 +107,7 @@ function decodeRgbe(bytes) {
   return { width: image.width, height: image.height, half: image.data };
 }
 
-const filmBytes = fs.readFileSync(path.join(here, 'film-source.json'));
+const filmBytes = fs.readFileSync(path.join(here, '../../src/render/vfx/niagara/film-source.json'));
 if (sha(filmBytes) !== FILM_SOURCE_SHA256) fail('film-source.json hash mismatch');
 const film = createFilmTransform(JSON.parse(filmBytes));
 const MAXH = 65504;

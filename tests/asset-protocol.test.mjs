@@ -30,6 +30,10 @@ async function runtimeRefs() {
   for (const e of readJson('assets/editor/catalog.json').assets) for (const p of filePaths(e)) asset(p, `editor ${e.id}`);
   for (const [id, e] of Object.entries(readJson('assets/editor/thumbnails.json').assets)) for (const p of filePaths(e)) asset(p, `thumbnails ${id}`);
   const niagara = path.join(root, 'src/editor/niagaraCatalog.js');
+  const { NIAGARA_NATIVE } = await import('../src/editor/niagaraNative.js');
+  for (const entry of Object.values(NIAGARA_NATIVE)) for (const file of Object.values(entry.files)) {
+    if (file.url.startsWith('/assets/')) asset(file.url, `native ${entry.id}`);
+  }
   if (existsSync(niagara)) {
     const { NIAGARA_CATALOG } = await import(pathToFileURL(niagara).href);
     for (const fx of NIAGARA_CATALOG) if (fx.thumbnail) asset(fx.thumbnail, `niagara ${fx.id}`);

@@ -27,9 +27,9 @@ Es una base para extraer módulos comunes; aún no interpreta recetas Niagara ge
 | --- | --- | --- |
 | [Simulación nativa](../../tools/niagara-native-lab/native-simulation.js) | RNG entero, redondeo float32, emisión por tasa, activación y nacimientos dentro del tick | Ramas fuego/humo; no hay ejecución de burst ni fuerzas |
 | [Curvas y evolución](../../tools/niagara-native-lab/update-simulation.js) | Muestreo de LUT, edad, movimiento y atributos derivados | El modo histórico parte de nacimientos observados; no usarlo como generador nativo |
-| [Partículas](../../tools/niagara-native-lab/particles.js) | Atributos validados, conversión de coordenadas y sprites instanciados | Formato y dos emisores del piloto; no acredita meshes o ribbons |
-| [Profundidad](../../tools/niagara-native-lab/depth-stage.js) | DepthFade y pase opaco independiente | Perfil de material/cámaras contrastado; no es colisión |
-| [Color](../../tools/niagara-native-lab/film-color.js) | Transformación Filmic SDR y LUT desde fuente | Perfil neutro fijado; bloom/grading libre y otros dispositivos requieren comparación |
+| [Partículas](../../src/render/vfx/niagara/particles.js) | Atributos validados, conversión de coordenadas y sprites instanciados | Formato y dos emisores del piloto; no acredita meshes o ribbons |
+| [Profundidad](../../src/render/vfx/niagara/depth-stage.js) | DepthFade y pase opaco independiente | Perfil de material/cámaras contrastado; no es colisión |
+| [Color](../../src/render/vfx/niagara/film-color.js) | Transformación Filmic SDR y LUT desde fuente | Perfil neutro fijado; bloom/grading libre y otros dispositivos requieren comparación |
 
 La evidencia vigente está en [nacimientos](../delivery/st01c/NATIVE-LAB.md),
 [profundidad](../delivery/st01c/DEPTH-LAB.md) y [color](../delivery/st01c/COLOR-LAB.md).

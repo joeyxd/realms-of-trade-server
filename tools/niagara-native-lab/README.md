@@ -24,7 +24,7 @@ Conserva las referencias/atlas del run para verlos, pero no solicita los 241 est
 node tools/niagara-native-lab/verify-native.mjs reference11
 node tools/niagara-native-lab/verify-native.mjs reference12
 node --test tools/niagara-native-lab/lab.test.mjs tools/niagara-native-lab/update-simulation.test.mjs tools/niagara-native-lab/native-simulation.test.mjs
-node tools/niagara-native-lab/qa-native.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs'
+node tools/niagara-native-lab/qa-native.mjs 'C:/DEV/real of trade/visual-revamp/node_modules/playwright/index.mjs'
 ```
 
 `prepare-native-source.py compiled02` reproduce el preset desde los exports fijados por
@@ -37,11 +37,19 @@ y estados iniciales aún son una fixture de Unreal. [Resultados](../../docs/deli
 
 Primero ejecutar [la captura aislada](../unreal-niagara-probe/README.md). Instalar las
 dependencias existentes con `npm.cmd ci --ignore-scripts --no-audit --no-fund` y servir
-esta carpeta de trabajo solo en localhost:
+la raíz del worktree solo en localhost con el servidor del laboratorio:
 
 ```powershell
-python -m http.server 5197 --bind 127.0.0.1
+python tools/niagara-native-lab/serve.py
 ```
+
+`serve.py` es el mismo `SimpleHTTPRequestHandler` de `python -m http.server` (solo GET y HEAD,
+127.0.0.1:5197, sirve la raíz del worktree desde cualquier carpeta) con cola de escucha 128 en vez
+de la 5 por defecto de `socketserver`. Las páginas del piloto piden 241 estados a la vez al pasar al
+modo observado; con `python -m http.server` el sistema rechaza el exceso (`WinError 10061`) y
+`qa-native.mjs` y `qa-update.mjs` agotan su espera de 30 s (RENDER.md de BasicHit, sección
+"Regresión de píxeles del piloto"). Los bytes servidos no cambian. `--quiet` calla el registro
+por petición; `--port` y `--root` existen para pruebas.
 
 Abrir `http://127.0.0.1:5197/tools/niagara-native-lab/index.html?run=reference11`.
 `run` es el nombre de la captura bajo `.scratch/unreal`; no se aceptan rutas arbitrarias.
@@ -55,7 +63,7 @@ Para el modo de evolución local, preparar una vez la fixture del mismo run y ab
 python tools/niagara-native-lab/prepare-update-fixture.py reference11
 node tools/niagara-native-lab/verify-update.mjs reference11
 node --test tools/niagara-native-lab/lab.test.mjs tools/niagara-native-lab/update-simulation.test.mjs
-node tools/niagara-native-lab/qa-update.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs'
+node tools/niagara-native-lab/qa-update.mjs 'C:/DEV/real of trade/visual-revamp/node_modules/playwright/index.mjs'
 ```
 
 La preparación requiere el export exacto `.scratch/unreal/probe01/system.t3d` para
@@ -80,7 +88,7 @@ ni su ficha descriptiva ejecutan un compositor/agente o habilitan habilidades de
 
 ```powershell
 node --test tools/niagara-native-lab/lab.test.mjs
-node tools/niagara-native-lab/qa.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs'
+node tools/niagara-native-lab/qa.mjs 'C:/DEV/real of trade/visual-revamp/node_modules/playwright/index.mjs'
 python tools/niagara-native-lab/compare.py
 ```
 
@@ -98,6 +106,8 @@ Sigue DepthFade con escena, color final y presupuesto por dispositivo, antes de 
 el piloto al taller. El generador está cotejado para la fixture; otras semillas y otros
 sistemas necesitan sus comparaciones específicas.
 # Núcleo común de simulación, 2026-10-20
+
+**Ruta (T-1023-14):** el cierre de ejecución de `NS_BasicHit` (`core/`, `basichit-simulation.js`, `basichit-render.js`, `particles.js`, `film-color.js`, `film-identity.js`, `depth-stage.js`, `basichit-source.json`, `film-source.json`) vive ahora en `src/render/vfx/niagara/` para que el cliente lo incluya; el laboratorio lo importa desde allí. Los nombres de este README sin ruta se refieren a esa carpeta.
 
 `core/` reúne las primitivas de simulación del piloto para reutilizarlas en la segunda
 familia: `rng.js` (`random3`, `random4`, `uniformRange`), `curve.js` (`sampleCurve`,
@@ -130,8 +140,8 @@ python -B tools/niagara-native-lab/check-pixels.py .scratch/render-core/base-a/d
 Corrida nueva de profundidad contra la base, desde la raíz del worktree en Git Bash (servidor propio, parado por su PID):
 
 ```bash
-PW="C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs"
-python -m http.server 5197 --bind 127.0.0.1 > /dev/null 2>&1 &
+PW="C:/DEV/real of trade/visual-revamp/node_modules/playwright/index.mjs"
+python tools/niagara-native-lab/serve.py --quiet > /dev/null 2>&1 &
 SERVER=$!
 until curl -s -o /dev/null http://127.0.0.1:5197/; do sleep 0.2; done
 node tools/niagara-native-lab/qa-depth.mjs "$PW" depth02
@@ -159,11 +169,13 @@ node --test tools/niagara-native-lab/basichit-simulation.test.mjs
 # Render nativo de NS_BasicHit, 2026-10-22
 
 `basichit.html` dibuja los tres emisores desde `BasicHitSimulation` con la cadena de color del piloto: capas instanciadas
-de `basichit-render.js` (una por emisor, orden de dibujo Flame, Flash, SimpleBurst) -> destino HDR de media precisión ->
+de `basichit-render.js` (una por emisor; orden de dibujo del gate Flame, Flash, SimpleBurst, con los órdenes `reverse` y
+`engine` como diagnóstico: el del motor es Flash, SimpleBurst, Flame, ver
+[DRAW-ORDER.md](../../docs/delivery/st01c/basichit/DRAW-ORDER.md)) -> destino HDR de media precisión ->
 LUT Filmic de `film-color.js` -> lienzo de 1024 px, con las cámaras de `basichit-reference05` (perfil `controlled-sdr/v1`).
 Cada archivo de la referencia se comprueba contra `docs/delivery/st01c/basichit/reference-profiled-checkpoint.json`. La
 casilla "Aislar color" pasa el HDR crudo RGBA16F de Unreal del paso 12 por la misma LUT (precondición de transferencia).
-`qa-basichit.mjs` guarda 34 lienzos en una carpeta nueva de `.scratch/basichit-render/` (se niega si ya existe) y
+`qa-basichit.mjs` guarda 49 lienzos en una carpeta nueva de `.scratch/basichit-render/` (se niega si ya existe) y
 `compare-basichit.py` aplica el gate de `render-sources.json`. Ver [entrega](../../docs/delivery/st01c/basichit/RENDER.md).
 Las opciones nuevas de `core/` (`facing: 'camera-position'`, `subUV: 'wrap'`, `opacity: 'radial-gradient-exponential'` en
 `spriteLayer`) son opt-in: el piloto sigue con sus valores por defecto y sus píxeles
@@ -184,6 +196,22 @@ node --test "$W/tools/niagara-native-lab/basichit-render.test.mjs" "$W/tools/nia
 `--transfer-only` escribe `transfer-check.json` (identidad de la transferencia de la GPU frente a la transformación
 exacta de `film-color.js`, calculada con `node`, y las tres filas de transferencia) sin mirar ningún lienzo nativo; el modo
 completo escribe `comparison.json` y solo calcula las filas nativas si las tres de transferencia pasan.
+
+Conjunto `wrap` (T-1022-35): `basichit.html?reference=wrap` usa `basichit-reference10` y
+`docs/delivery/st01c/basichit/wrap-reference-checkpoint.json` (pasos 20 a 23, la llama más allá de su rejilla 8x4; paso de
+transferencia 20). Los pasos y el paso de transferencia de cada conjunto salen de los `settings` de su checkpoint. El
+selector "SubUV de la llama" cambia la llama a `clamp` como diagnóstico. `qa-basichit.mjs "$PW" <ejecución> wrap` guarda
+52 lienzos (añade los `clamp`) y `compare-basichit.py <ejecución> --reference wrap` los compara; sin argumento, las dos
+herramientas siguen en el gate y su `comparison.json` no cambia. Ver
+[WRAP.md](../../docs/delivery/st01c/basichit/WRAP.md).
+
+Conjunto `depth` (T-1023-06): `basichit.html?reference=depth` usa `basichit-reference12` y
+`docs/delivery/st01c/basichit/depth-reference-checkpoint.json` (pasos 6 y 12; 3 controles y 13 planos opacos negros por
+paso). `basichit-depth.js` construye el plano de cada fila (`planeFromSurface`) y lo dibuja en un destino propio con textura
+de profundidad, luego en el destino HDR para que oculte; la llama usa `BASICHIT_DEPTH_LAYERS` (DepthFade 100 cm) y solo en
+este conjunto. `qa-basichit.mjs "$PW" <ejecución> depth` guarda 75 lienzos (nativos, 26 con el DepthFade apagado como
+diagnóstico y 16 de transferencia) y `compare-basichit.py <ejecución> --reference depth` los compara y comprueba la
+profundidad de Unreal contra el plano analítico. Ver [DEPTH.md](../../docs/delivery/st01c/basichit/DEPTH.md).
 
 # Profundidad del piloto
 
@@ -212,8 +240,8 @@ BC7 medidos; falla el gate: 37/268, solo IoU de máscara). Resultado en la
 
 ```powershell
 python -B tools/niagara-native-lab/atlas-build.py --toktx "C:/DEV/real of trade/realms-of-trade-server/.scratch/tools/ktx-4.4.2/bin/toktx.exe"
-node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs' budget03
-node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs' budget04
+node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/visual-revamp/node_modules/playwright/index.mjs' budget03
+node tools/niagara-native-lab/qa-atlas.mjs 'C:/DEV/real of trade/visual-revamp/node_modules/playwright/index.mjs' budget04
 python -B tools/niagara-native-lab/compare-atlas.py budget03
 python -B tools/niagara-native-lab/check-atlas-repeat.py budget03 budget04
 python -B tools/niagara-native-lab/check-atlas-repeat.py budget01 budget03 --variants source,full,half,quarter

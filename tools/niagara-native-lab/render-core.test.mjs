@@ -2,22 +2,22 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import * as THREE from 'three';
-import * as particlesModule from './particles.js';
+import * as particlesModule from '../../src/render/vfx/niagara/particles.js';
 import { NativeSimulation } from './native-simulation.js';
-import { BasicHitSimulation, NAMES as BASICHIT_NAMES } from './basichit-simulation.js';
-import { depthFactor as stageDepthFactor } from './depth-stage.js';
-import { DEPTH_FADE_DISTANCE, depthFactor, DEPTH_FADE_GLSL } from './core/depth-fade.js';
-import { SUBUV_ATLAS_UV_GLSL, subUVAtlasUv, validateGrid } from './core/subuv-atlas.js';
-import { spriteLayer, SPRITE_FACINGS, SPRITE_FACING_GLSL, SPRITE_CORNER_GLSL, SPRITE_VERTEX_SHADER, SPRITE_FRAGMENT_SHADER } from './core/sprite-shader.js';
-import { frameSpec, validateFrame as validateSpecFrame, BASICHIT_FRAME_SPEC } from './core/frame-spec.js';
+import { BasicHitSimulation, NAMES as BASICHIT_NAMES } from '../../src/render/vfx/niagara/basichit-simulation.js';
+import { depthFactor as stageDepthFactor } from '../../src/render/vfx/niagara/depth-stage.js';
+import { DEPTH_FADE_DISTANCE, depthFactor, DEPTH_FADE_GLSL } from '../../src/render/vfx/niagara/core/depth-fade.js';
+import { SUBUV_ATLAS_UV_GLSL, subUVAtlasUv, validateGrid } from '../../src/render/vfx/niagara/core/subuv-atlas.js';
+import { spriteLayer, SPRITE_FACINGS, SPRITE_FACING_GLSL, SPRITE_CORNER_GLSL, SPRITE_VERTEX_SHADER, SPRITE_FRAGMENT_SHADER } from '../../src/render/vfx/niagara/core/sprite-shader.js';
+import { frameSpec, validateFrame as validateSpecFrame, BASICHIT_FRAME_SPEC } from '../../src/render/vfx/niagara/core/frame-spec.js';
 import { createHash } from 'node:crypto';
-import { SUBUV_POLICIES } from './core/subuv-atlas.js';
+import { SUBUV_POLICIES } from '../../src/render/vfx/niagara/core/subuv-atlas.js';
 import { SPRITE_FACING_MODES, SPRITE_OPACITIES, cameraPositionBasis, RADIAL_GRADIENT_EXPONENTIAL, RADIAL_GRADIENT_EXPONENTIAL_GLSL,
-  radialGradientExponential } from './core/sprite-shader.js';
+  radialGradientExponential } from '../../src/render/vfx/niagara/core/sprite-shader.js';
 
 const { PilotParticles, validateFrame } = particlesModule;
 const pilotSource = JSON.parse(await fs.readFile(new URL('./pilot-source.json', import.meta.url)));
-const basicHitSource = JSON.parse(await fs.readFile(new URL('./basichit-source.json', import.meta.url)));
+const basicHitSource = JSON.parse(await fs.readFile(new URL('../../src/render/vfx/niagara/basichit-source.json', import.meta.url)));
 const particle = (extra = {}) => ({ position: [100, 200, 300], size: [120, 140], color: [40, .7, .2, 1], rotation: 20, subImage: 3, ...extra });
 const pilotFrame = (schema = 'st01c-cpu-frame/v1') => ({ schema, systemAge: 1,
   emitters: ['NE_Flame_Basic_001', 'NE_Smoke_Basic'].map(name => ({ name, particles: [particle()] })) });

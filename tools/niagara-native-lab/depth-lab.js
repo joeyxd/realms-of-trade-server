@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-import { PilotParticles, toScene } from './particles.js';
+import { PilotParticles, toScene } from '../../src/render/vfx/niagara/particles.js';
 import { NativeSimulation } from './native-simulation.js';
 import { SOURCE_PRESET_SHA256 } from './source-identity.js';
-import { DepthStage } from './depth-stage.js';
+import { DepthStage } from '../../src/render/vfx/niagara/depth-stage.js';
 
 const $ = id => document.getElementById(id);
 const run = new URLSearchParams(location.search).get('run') || 'depth02';

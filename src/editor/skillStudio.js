@@ -21,6 +21,10 @@ const labels = {
   capturedRole: ['Extracto de sistema · captura 2D', 'System excerpt · 2D capture'],
   recreatedRole: ['Recreación · adaptador listo', 'Recreation · adapter ready'],
   currentRole: ['Efecto actual del juego', 'Current game effect'],
+  nativeRole: ['Nativo · medido contra UE 5.8', 'Native · measured against UE 5.8'],
+  seed: ['Semilla', 'Seed'],
+  nativeNote: ['Controles de presentación: no medidos contra UE. La semilla da otra distribución repetible.', 'Presentation controls: not measured against UE. The seed gives another repeatable distribution.'],
+  nativeLimit: ['Port nativo del sistema Niagara en el navegador, medido contra UE 5.8 con un perfil de color controlado; los controles de presentación, DepthFade en perspectiva y la variante móvil no están medidos.', 'Native browser port of the Niagara system, measured against UE 5.8 under a controlled color profile; presentation controls, the perspective DepthFade and the mobile variant are not measured.'],
   sourceTextureLimit: ['Se reproduce un componente del atlas fuente con un tiempo inicial del taller. Las otras capas, colores y comportamiento del sistema Niagara completo siguen pendientes.', 'A source-atlas component plays with initial studio timing. Other layers, colors, and full Niagara system behavior remain pending.'],
   capturedLimit: ['Es un extracto animado 2D desde una cámara. No conserva volumen desde otros ángulos ni ejecuta la simulación Niagara en vivo.', 'This is an animated 2D excerpt from one camera. It does not preserve volume from other angles or run live Niagara simulation.'],
   recreatedLimit: ['Es una recreación revisada en el navegador, no el runtime original de Niagara.', 'This is a reviewed browser recreation, not the original Niagara runtime.'],
@@ -168,7 +172,7 @@ export class SkillStudio {
     if (selected) {
       this.selectedName.textContent = selected.name;
       this.selectedRole.textContent = this.effectStatus(selected);
-      if (this.originalInput) this.originalInput.parentElement.lastChild.textContent = `${t(selected.adapter === 'flipbook-v1' ? 'adapterOriginal' : 'original')} / ${t('draft')}`;
+      if (this.originalInput) this.originalInput.parentElement.lastChild.textContent = `${t(['flipbook-v1', 'niagara-native-v1'].includes(selected.adapter) ? 'adapterOriginal' : 'original')} / ${t('draft')}`;
       this.provenance.append(el('summary', '', `${t('source')} · ${this.effectRoleLabel(selected)}`));
       const details = [
         `${t('category')}: ${selected.category || '-'}`,
@@ -214,6 +218,7 @@ export class SkillStudio {
     }
   }
   effectStatus(effect) {
+    if (effect.ready && effect.role === 'native') return t('nativeRole');
     if (effect.status === 'texture') return t('textureStatus');
     if (effect.ready && effect.role === 'system-capture') return t('capturedRole');
     if (effect.ready && effect.role === 'recreated') return t('recreatedRole');
@@ -221,11 +226,11 @@ export class SkillStudio {
     return t(effect.ready ? 'readyStatus' : effect.status === 'candidate' ? 'candidateStatus' : 'referenceStatus');
   }
   effectRoleLabel(effect) {
-    const labelsByRole = { 'source-texture': 'textureStatus', 'system-capture': 'capturedRole', recreated: 'recreatedRole', 'current-effect': 'currentRole' };
+    const labelsByRole = { native: 'nativeRole', 'source-texture': 'textureStatus', 'system-capture': 'capturedRole', recreated: 'recreatedRole', 'current-effect': 'currentRole' };
     return t(labelsByRole[effect.role] || 'referenceStatus');
   }
   effectRoleLimitation(effect) {
-    const key = { 'source-texture': 'sourceTextureLimit', 'system-capture': 'capturedLimit', recreated: 'recreatedLimit' }[effect.role];
+    const key = { native: 'nativeLimit', 'source-texture': 'sourceTextureLimit', 'system-capture': 'capturedLimit', recreated: 'recreatedLimit' }[effect.role];
     return key ? t(key) : effect.roleLimitation || '';
   }
   toggleLibrary() {
@@ -264,6 +269,7 @@ export class SkillStudio {
       this.undoStack = []; this.redoStack = [];
       this.preview?.pause();
       this.preview?.flipbook.cancelLoad();
+      this.preview?.native?.cancelLoad();
     }
     this.renderParameters(); this.renderLibrary(); this.updateEffectState(); this.refreshButtons(); this.updatePreviewStats();
     if (this.libraryOpen) this.toggleLibrary();
@@ -294,6 +300,7 @@ export class SkillStudio {
       }
       this.paramSection.append(label);
     }
+    if (getEffect(this.activeEffect)?.role === 'native') this.paramSection.append(el('p', 'ss-native-note', t('nativeNote')));
   }
 
   async open() {
@@ -601,7 +608,8 @@ export class SkillStudio {
       if (stats.textureState === 'loading') parts.push(t('atlasLoading'));
       else if (stats.textureState === 'error') parts.push(t('atlasFailed'));
       else if (stats.textureState === 'ready' && Number.isFinite(stats.atlasPixels)) parts.push(`${t('atlasReady')}: ${number(stats.atlasPixels, this.lang)} px`);
-      parts.push(t('billboardNote'));
+      if (getEffect(this.activeEffect)?.role === 'native') parts.push(`${t('particles')}: ${number(stats.particles || 0, this.lang)} / 512`);
+      else parts.push(t('billboardNote'));
     } else if (Number.isFinite(stats.particles)) parts.push(`${t('particles')}: ${number(stats.particles, this.lang)}${Number.isFinite(stats.cap) ? ` / ${number(stats.cap, this.lang)}` : ''}`);
     if (Number.isFinite(stats.drawCalls)) parts.push(`DC: ${number(stats.drawCalls, this.lang)}`);
     this.metricsLabel.textContent = parts.join(' · ') || '—';
@@ -752,7 +760,7 @@ export class SkillStudio {
     this.root.querySelector('.ss-stage').setAttribute('aria-label', t('preview'));
     this.root.querySelector('.ss-viewport').setAttribute('aria-label', t('preview'));
     const speedOptions = [...this.speedSelect.options]; ['speedSlow','speedNormal','speedFast'].forEach((key, i) => { speedOptions[i].textContent = t(key); });
-    this.loopInput.parentElement.lastChild.textContent = t('loop'); this.originalInput.parentElement.lastChild.textContent = `${t(getEffect(this.activeEffect)?.adapter === 'flipbook-v1' ? 'adapterOriginal' : 'original')} / ${t('draft')}`;
+    this.loopInput.parentElement.lastChild.textContent = t('loop'); this.originalInput.parentElement.lastChild.textContent = `${t(['flipbook-v1', 'niagara-native-v1'].includes(getEffect(this.activeEffect)?.adapter) ? 'adapterOriginal' : 'original')} / ${t('draft')}`;
     this.speedSelect.setAttribute('aria-label', t('speed')); this.speedSelect.parentElement.firstChild.textContent = `${t('speed')} `;
     this.seekInput.setAttribute('aria-label', t('playback'));
     this.skinSelect.parentElement.firstChild.textContent = `${t('character')} · ${t('skin')}`; this.skinSelect.setAttribute('aria-label', t('skin'));
@@ -760,6 +768,8 @@ export class SkillStudio {
     this.quality.parentElement.firstChild.textContent = t('quality'); this.quality.setAttribute('aria-label', t('quality'));
     [...this.quality.options].forEach((option) => { option.textContent = t(option.value); });
     this.root.querySelector('.ss-inspector h2').textContent = t('visual');
+    const nativeNote = this.root.querySelector('.ss-native-note');
+    if (nativeNote) nativeNote.textContent = t('nativeNote');
     for (const meta of effectParameters(this.activeEffect)) {
       const control = this.parameterControls.get(meta.key), input = control?.tagName === 'INPUT' ? control : control?.input;
       input?.closest('label')?.querySelector('span')?.replaceChildren(document.createTextNode(t(meta.key)));

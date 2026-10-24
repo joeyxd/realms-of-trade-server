@@ -36,7 +36,7 @@ function validateParameters(parameters, metadata) {
     const next = parameters[meta.key];
     if (meta.type === 'color') {
       if (typeof next !== 'string' || !HEX.test(next)) return { ok: false, why: 'color' };
-    } else if (typeof next !== 'number' || !Number.isFinite(next) || next < meta.min || next > meta.max) {
+    } else if (typeof next !== 'number' || !Number.isFinite(next) || next < meta.min || next > meta.max || (meta.integer && !Number.isInteger(next))) {
       return { ok: false, why: 'range' };
     }
   }
@@ -51,9 +51,14 @@ export function validateSkillDocument(value) {
     if (value.schema !== SCHEMA || value.version !== 1 || value.skill !== 'tromba' || value.effect !== 'tromba-current-v1') return { ok: false, why: 'identity' };
     return validateParameters(value.parameters, SKILL_PARAMETERS);
   }
-  if (value.version !== 2) return { ok: false, why: 'version' };
+  if (value.version !== 2 && value.version !== 3) return { ok: false, why: 'version' };
   if (!exactKeys(value, ['schema', 'version', 'skill', 'effect', 'parameters'])) return { ok: false, why: 'shape' };
   const effect = getEffect(value.effect);
+  if (value.version === 3) {
+    if (value.schema !== SCHEMA || value.skill !== 'preview' || typeof value.effect !== 'string') return { ok: false, why: 'identity' };
+    if (!effect?.ready || effect.adapter !== 'niagara-native-v1') return { ok: false, why: 'effect' };
+    return validateParameters(value.parameters, effectParameters(effect.id));
+  }
   return validateFlipbookDocument(value, effect, effect ? effectParameters(effect.id) : FLIPBOOK_PARAMETERS);
 }
 

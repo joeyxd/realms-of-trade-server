@@ -214,3 +214,4 @@
 .skill-studio[data-layout="compact-landscape"] .ss-footer button,
 .skill-studio[data-layout="compact-landscape"] .ss-import span { min-height: 27px; padding: 3px 6px; font-size: 10px; }
 .skill-studio[data-layout="compact-landscape"] .ss-status { flex-basis: 100%; }
+.skill-studio .ss-native-note { grid-column: 1 / -1; }

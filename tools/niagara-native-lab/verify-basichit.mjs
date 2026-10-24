@@ -6,10 +6,10 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { BasicHitSimulation, MAX_STEP, NAMES } from './basichit-simulation.js';
+import { BasicHitSimulation, MAX_STEP, NAMES } from '../../src/render/vfx/niagara/basichit-simulation.js';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
-const SOURCE = 'tools/niagara-native-lab/basichit-source.json';
+const SOURCE = 'src/render/vfx/niagara/basichit-source.json';
 const REFERENCE = 'docs/delivery/st01c/basichit/reference-checkpoint.json';
 const RUN = 'basichit-reference03';
 const SCHEMA = 'st01c-basichit-simulation-checkpoint/v1';
@@ -94,7 +94,7 @@ function digest(options) {
 const digests = Object.fromEntries(Object.entries(CONFIGURATIONS).map(([name, options]) => [name, digest(options)]));
 const expectedCheckpoint = { schema: SCHEMA,
   scope: 'Digests of BasicHitSimulation snapshots, steps 0..480 then seek(12); verify-basichit.mjs also compares basichit-reference03.',
-  source: { file: SOURCE, sha256: sha(sourceBytes), hashing: 'sha256 of the work-tree bytes, LF (tools/niagara-native-lab/** text eol=lf)' },
+  source: { file: SOURCE, sha256: sha(sourceBytes), hashing: 'sha256 of the work-tree bytes, LF (src/render/vfx/niagara/** text eol=lf)' },
   steps: MAX_STEP, replayStep: REPLAY_STEP, configurations: CONFIGURATIONS, digests };
 if (write) {
   check(referencePassed, 'The reference comparison fails; checkpoint not written');

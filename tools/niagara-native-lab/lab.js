@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-import { PilotParticles, toScene, validateFrame } from './particles.js';
+import { PilotParticles, toScene, validateFrame } from '../../src/render/vfx/niagara/particles.js';
 import { UpdateSimulation, CONTROL_SPEC } from './update-simulation.js';
 import { NativeSimulation, CONTROL_SPEC as NATIVE_CONTROLS } from './native-simulation.js';
 import { SOURCE_PRESET_SHA256 } from './source-identity.js';
