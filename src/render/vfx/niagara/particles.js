@@ -46,7 +46,9 @@ export class PilotParticles {
     });
     this.count = 0;
   }
-  setDepth(texture, camera, width, height, enabled) {
+  // Explicit perspective opt-in, as BasicHitParticles: the pilot's lab path (no option) is unchanged.
+  setDepth(texture, camera, width, height, enabled, { perspective = false } = {}) {
+    if (perspective && camera.isPerspectiveCamera !== true) throw new Error('Perspective DepthFade needs a perspective camera');
     for (const mesh of this.layers) {
       const u = mesh.material.uniforms;
       u.opaqueDepth.value = texture;

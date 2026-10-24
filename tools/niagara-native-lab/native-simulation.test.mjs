@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import test from 'node:test';
-import { NativeSimulation, random3, random4 } from './native-simulation.js';
-const source = JSON.parse(await fs.readFile(new URL('./pilot-source.json', import.meta.url)));
+import { NativeSimulation, random3, random4 } from '../../src/render/vfx/niagara/native-simulation.js';
+const source = JSON.parse(await fs.readFile(new URL('../../src/render/vfx/niagara/pilot-source.json', import.meta.url)));
 
 test('source-only births continue beyond the recorded window and seek repeatably', () => {
   const input = structuredClone(source), before = structuredClone(input), sim = new NativeSimulation(input);

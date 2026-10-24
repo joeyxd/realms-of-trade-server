@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { UpdateSimulation, SOURCE_SHA, DT } from './update-simulation.js';
+import { UpdateSimulation, SOURCE_SHA, DT } from '../../src/render/vfx/niagara/update-simulation.js';
 
 const fixture = () => ({ schema: 'st01c-spawn-fixture/v1', sourceSha256: SOURCE_SHA,
   sourceStepCount: 240, sourceStepSeconds: 1 / 60, emitterNames: ['NE_Flame_Basic_001', 'NE_Smoke_Basic'],

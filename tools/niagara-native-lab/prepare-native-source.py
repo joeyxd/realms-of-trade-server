@@ -73,7 +73,7 @@ def prepare(run):
                              'scripts': report['scripts'], 'sourceTextSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
                              'numericScope': 'UE5.8 Win64 VectorVM reciprocal estimates for fixed rates 3/10; original seed mode nondeterministic; fixture seeds only.'}}
     assert result['rates'] == [3, 10] and result['fixtureSeeds'] == [6371, 6372]
-    dest = ROOT / 'tools/niagara-native-lab/pilot-source.json'
+    dest = ROOT / 'src/render/vfx/niagara/pilot-source.json'
     dest.write_bytes((json.dumps(result, ensure_ascii=False, indent=2) + '\n').encode('utf8'))
     print(json.dumps({'bytes': dest.stat().st_size, 'sha256': hashlib.sha256(dest.read_bytes()).hexdigest(), 'particleStatesRead': 0}))
 

@@ -9,9 +9,9 @@
     "allUnchanged": true
   },
   "codeSha256": {
-    "tools/niagara-native-lab/native-simulation.js": "3f376c30bd64aa9d43c6cd3cdadad180aafdb7143d9d55f3764a1f35901734ae",
-    "tools/niagara-native-lab/source-identity.js": "e1f1db686cae0394b3038f95c1c0063d9abc8f75cc8ff93a32758ca7e424df4b",
-    "tools/niagara-native-lab/pilot-source.json": "85b251ab3c249aed61cd5fd6be16d0ace0229f88bbd7e03c45718d9e41e472a5",
+    "src/render/vfx/niagara/native-simulation.js": "3f376c30bd64aa9d43c6cd3cdadad180aafdb7143d9d55f3764a1f35901734ae",
+    "src/render/vfx/niagara/source-identity.js": "e1f1db686cae0394b3038f95c1c0063d9abc8f75cc8ff93a32758ca7e424df4b",
+    "src/render/vfx/niagara/pilot-source.json": "85b251ab3c249aed61cd5fd6be16d0ace0229f88bbd7e03c45718d9e41e472a5",
     "tools/niagara-native-lab/prepare-native-source.py": "c0db462889677f076e5f6da2aa714e72669bb450696aa1b6665b6e819cde1148",
     "tools/niagara-native-lab/verify-native.mjs": "c37d716fb00d7fab2fb05edfcce44180972503d75a2dc7b3c09bd0afd182c693",
     "tools/niagara-native-lab/native-simulation.test.mjs": "b483b598e890e822680182beec3cfb7a9356f1789212da05b8d555817a19a618",
@@ -113,15 +113,15 @@
         "method": "GET"
       },
       {
-        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/update-simulation.js",
+        "url": "http://127.0.0.1:5197/src/render/vfx/niagara/update-simulation.js",
         "method": "GET"
       },
       {
-        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/native-simulation.js",
+        "url": "http://127.0.0.1:5197/src/render/vfx/niagara/native-simulation.js",
         "method": "GET"
       },
       {
-        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/source-identity.js",
+        "url": "http://127.0.0.1:5197/src/render/vfx/niagara/source-identity.js",
         "method": "GET"
       },
       {
@@ -129,7 +129,7 @@
         "method": "GET"
       },
       {
-        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/pilot-source.json",
+        "url": "http://127.0.0.1:5197/src/render/vfx/niagara/pilot-source.json",
         "method": "GET"
       },
       {

@@ -6,8 +6,10 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createGameServer } from '../server/index.mjs';
 const run = process.argv[2];
-if (!/^[A-Za-z0-9_-]{1,40}$/.test(run || '')) throw new Error('Usage: node tools/qa-native-studio.mjs <new-run>');
-const out = resolve('.scratch/native-studio', run), id = 'niagara-97a82bae61b29237';
+const id = process.argv[3] || 'niagara-97a82bae61b29237', flame = id === 'niagara-985a431dc6c0d1ca';
+if (!/^[A-Za-z0-9_-]{1,40}$/.test(run || '') || !['niagara-97a82bae61b29237', 'niagara-985a431dc6c0d1ca'].includes(id))
+  throw new Error('Usage: node tools/qa-native-studio.mjs <new-run> [niagara-97a82bae61b29237 (default) | niagara-985a431dc6c0d1ca]');
+const out = resolve('.scratch/native-studio', run), steps = flame ? [60, 240, 479] : [6, 12], mobileStep = flame ? 240 : 12;
 await mkdir(resolve('.scratch/native-studio'), { recursive: true });
 await mkdir(out); // EEXIST refuses to overwrite any prior evidence.
 const evidence = { checks: [], screenshots: [], errors: [], failedRequests: [], writes: [], gameplay: [], samples: [], release: [] };
@@ -76,11 +78,11 @@ try {
     assert.equal(await page.locator('[data-parameter="seed"]').getAttribute('aria-label'), 'Semilla');
     assert.match(await page.locator('.ss-native-note').textContent(), /Controles de presentación: no medidos contra UE/);
     assert.match(await page.locator('.ss-compare').textContent(), /Base del adaptador/);
+    if (flame) assert.match(await page.locator('.ss-role-limit').textContent(), /Port nativo de NS_Flame_Single.*DepthFade en perspectiva.*no están medidos/);
   });
   async function sample(step) {
     const result = await page.evaluate(async step => {
       const p = __mn.skillStudio.preview, { SKILLS } = await import('/src/data/weapons.js');
-      const { BasicHitSimulation } = await import('/src/render/vfx/niagara/basichit-simulation.js');
       const { Vector3 } = await import('three');
       p.pause(); p.seek(SKILLS.tromba.windup + SKILLS.tromba.delay + step / 60);
       p.document.parameters.opacity = 0; p.render(0);
@@ -91,16 +93,17 @@ try {
       const read = () => { const a = new Uint8Array(side * side * 4); gl.readPixels(x, y, side, side, gl.RGBA, gl.UNSIGNED_BYTE, a); return a; };
       const background = read(); p.document.parameters.opacity = 1; p.render(0); const image = read();
       let changed = 0; for (let i = 0; i < image.length; i += 4) if ([0, 1, 2].some(c => image[i + c] !== background[i + c])) changed++;
-      const simulation = new BasicHitSimulation(p.native.source, { seed: p.parameters.seed });
+      const simulation = new p.native.simulation.constructor(p.native.source, { seed: p.parameters.seed });
       return { step, seed: p.parameters.seed, quality: p.quality, actualStep: p.native.step, changedPixels: changed, counts: p.metrics.counts,
         expected: simulation.seek(step).emitters.map(e => e.particles.length), cap: p.metrics.cap, drawCalls: p.metrics.drawCalls,
         target: [p.native.hdr.width, p.native.hdr.height], viewport: [Math.round(box.width * ratio), Math.round(box.height * ratio)] };
     }, step);
     evidence.samples.push(result); assert.equal(result.actualStep, step); assert.deepEqual(result.counts, result.expected);
-    assert.ok(result.changedPixels > 0); assert.equal(result.cap, 512); assert.ok(result.drawCalls > 0);
+    assert.ok(result.changedPixels > 0); assert.equal(result.cap, 512);
+    if (flame) assert.ok(result.counts.length === 2 && result.counts.every(count => count > 0)); assert.ok(result.drawCalls > 0);
     assert.deepEqual(result.target, result.viewport); await shot(`native-step-${step}-${result.seed}-${result.quality}`);
   }
-  await check('impact_plus_6_and_12_visible_exact_counts', async () => { await sample(6); await sample(12); });
+  await check(flame ? 'flame_steps_60_240_479_both_emitters_visible_exact_counts' : 'impact_plus_6_and_12_visible_exact_counts', async () => { for (const step of steps) await sample(step); });
   await check('switch_flipbook_and_back_releases_every_native_resource', async () => {
     await armRelease();
     await page.evaluate(() => __mn.skillStudio.selectEffect('component-26e09bd0f93cb620-7x7-luma')); await released();
@@ -111,11 +114,12 @@ try {
     await page.evaluate(() => { const s = __mn.skillStudio; s.updateParameter('seed', 12345); s.endGesture(); s.preview.setQuality('mobile'); });
     await page.selectOption('.ss-inspector select[aria-label="Calidad"]', 'mobile');
     assert.equal(await page.evaluate(() => __mn.skillStudio.preview.quality), 'mobile');
-    await sample(12);
+    await sample(mobileStep);
     await page.locator('[data-action="language"]').click();
     assert.match(await page.locator('.ss-selected-role').textContent(), /Native · measured against UE 5.8/);
     assert.equal(await page.locator('[data-parameter="seed"]').getAttribute('aria-label'), 'Seed');
     assert.match(await page.locator('.ss-native-note').textContent(), /Presentation controls: not measured against UE/);
+    if (flame) assert.match(await page.locator('.ss-role-limit').textContent(), /Native browser port of NS_Flame_Single.*perspective DepthFade.*not measured/);
     await shot('native-en-mobile-quality');
   });
   await check('close_releases_resources_zero_gameplay_and_GM_writes', async () => {

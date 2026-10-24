@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { PilotParticles, toScene } from '../../src/render/vfx/niagara/particles.js';
-import { NativeSimulation } from './native-simulation.js';
-import { SOURCE_PRESET_SHA256 } from './source-identity.js';
+import { NativeSimulation } from '../../src/render/vfx/niagara/native-simulation.js';
+import { SOURCE_PRESET_SHA256 } from '../../src/render/vfx/niagara/source-identity.js';
 import { FILM_SOURCE_SHA256 } from '../../src/render/vfx/niagara/film-identity.js';
 import { createFilmLUT, filmFragment } from '../../src/render/vfx/niagara/film-color.js';
 import { DepthStage } from '../../src/render/vfx/niagara/depth-stage.js';
@@ -88,7 +88,7 @@ try {
     reports.push(gpuTextureReport(texture, row));
     URL.revokeObjectURL(url);
   }
-  const simulation = new NativeSimulation(await jsonAt('./pilot-source.json', SOURCE_PRESET_SHA256));
+  const simulation = new NativeSimulation(await jsonAt('../../src/render/vfx/niagara/pilot-source.json', SOURCE_PRESET_SHA256));
   const film = createFilmLUT(await jsonAt('../../src/render/vfx/niagara/film-source.json', FILM_SOURCE_SHA256));
   own(film.texture);
   const scene = new THREE.Scene(), camera = new THREE.OrthographicCamera(-2,2,2,-2,.01,100);

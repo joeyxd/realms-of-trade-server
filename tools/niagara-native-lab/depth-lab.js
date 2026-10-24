@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { PilotParticles, toScene } from '../../src/render/vfx/niagara/particles.js';
-import { NativeSimulation } from './native-simulation.js';
-import { SOURCE_PRESET_SHA256 } from './source-identity.js';
+import { NativeSimulation } from '../../src/render/vfx/niagara/native-simulation.js';
+import { SOURCE_PRESET_SHA256 } from '../../src/render/vfx/niagara/source-identity.js';
 import { DepthStage } from '../../src/render/vfx/niagara/depth-stage.js';
 
 const $ = id => document.getElementById(id);
@@ -19,7 +19,7 @@ try {
       report.source_sha256 !== '985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165')
     throw new Error('Unexpected depth reference');
   for (const row of report.images) if (!/^(none|wall-25|wall0|wall50|wall150|floor|calibration-25|calibration0|calibration25|calibration50|calibration100|calibration150)_(front|side|oblique)\.hdr$/.test(row.file)) throw new Error('Invalid reference path');
-  const r = await fetch('./pilot-source.json'); if (!r.ok) throw new Error('Source preset missing');
+  const r = await fetch('../../src/render/vfx/niagara/pilot-source.json'); if (!r.ok) throw new Error('Source preset missing');
   const bytes = await r.arrayBuffer();
   const digest = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map(v => v.toString(16).padStart(2, '0')).join('');
   if (digest !== SOURCE_PRESET_SHA256) throw new Error('Source preset hash mismatch');

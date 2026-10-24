@@ -24,6 +24,7 @@ const labels = {
   nativeRole: ['Nativo · medido contra UE 5.8', 'Native · measured against UE 5.8'],
   seed: ['Semilla', 'Seed'],
   nativeNote: ['Controles de presentación: no medidos contra UE. La semilla da otra distribución repetible.', 'Presentation controls: not measured against UE. The seed gives another repeatable distribution.'],
+  nativeFlameLimit: ['Port nativo de NS_Flame_Single en el navegador: la simulación, el color Filmic y el DepthFade ortogonal están medidos contra UE 5.8; el DepthFade en perspectiva, la composición sobre el escenario, el orden de dibujo de llama y humo en perspectiva, los controles de presentación y la variante móvil no están medidos.', 'Native browser port of NS_Flame_Single: the simulation, the Filmic color and the orthographic DepthFade are measured against UE 5.8; the perspective DepthFade, the composite over the stage, the flame and smoke draw order in perspective, the presentation controls and the mobile variant are not measured.'],
   nativeLimit: ['Port nativo del sistema Niagara en el navegador, medido contra UE 5.8 con un perfil de color controlado; los controles de presentación, DepthFade en perspectiva y la variante móvil no están medidos.', 'Native browser port of the Niagara system, measured against UE 5.8 under a controlled color profile; presentation controls, the perspective DepthFade and the mobile variant are not measured.'],
   sourceTextureLimit: ['Se reproduce un componente del atlas fuente con un tiempo inicial del taller. Las otras capas, colores y comportamiento del sistema Niagara completo siguen pendientes.', 'A source-atlas component plays with initial studio timing. Other layers, colors, and full Niagara system behavior remain pending.'],
   capturedLimit: ['Es un extracto animado 2D desde una cámara. No conserva volumen desde otros ángulos ni ejecuta la simulación Niagara en vivo.', 'This is an animated 2D excerpt from one camera. It does not preserve volume from other angles or run live Niagara simulation.'],
@@ -230,7 +231,7 @@ export class SkillStudio {
     return t(labelsByRole[effect.role] || 'referenceStatus');
   }
   effectRoleLimitation(effect) {
-    const key = { native: 'nativeLimit', 'source-texture': 'sourceTextureLimit', 'system-capture': 'capturedLimit', recreated: 'recreatedLimit' }[effect.role];
+    const key = effect.role === 'native' && effect.derivative?.limitKey || { native: 'nativeLimit', 'source-texture': 'sourceTextureLimit', 'system-capture': 'capturedLimit', recreated: 'recreatedLimit' }[effect.role];
     return key ? t(key) : effect.roleLimitation || '';
   }
   toggleLibrary() {

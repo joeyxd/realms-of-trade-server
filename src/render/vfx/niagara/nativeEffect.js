@@ -1,8 +1,14 @@
 import * as THREE from 'three';
-import { BasicHitSimulation } from './basichit-simulation.js';
 import { BasicHitParticles, BASICHIT_DEPTH_LAYERS } from './basichit-render.js';
+import { PilotParticles } from './particles.js';
 import { createFilmLUT, filmFragment } from './film-color.js';
-import { nativeEndStep, nativeStep } from '../../../editor/niagaraNative.js';
+import { NATIVE_SIMULATIONS, nativeEndStep, nativeStep } from '../../../editor/niagaraNative.js';
+
+// Per recipe: texture files, per-emitter count slots and the layer set (the simulation class lives in niagaraNative.js).
+const RECIPES = Object.freeze({
+  'basichit-v1': { textures: 2, counts: 3, particles: (scene, textures, effect) => new BasicHitParticles(scene, [...textures, null], effect.drawOrder, BASICHIT_DEPTH_LAYERS) },
+  'flame-single-v1': { textures: 2, counts: 2, particles: (scene, textures) => new PilotParticles(scene, textures) },
+});
 
 // Keep the transfer math byte-for-byte from the lab, replacing only its inputs/output.
 function replaceOnce(source, anchor, replacement) {
@@ -33,6 +39,8 @@ export class NativeEffect {
     // Local ownership until the final await: canceled loads cannot publish or leak a bitmap.
     const bitmaps = [];
     try {
+      const recipe = Object.hasOwn(RECIPES, effect.recipe) ? RECIPES[effect.recipe] : null;
+      if (!recipe || Object.keys(effect.files).length !== 2 + recipe.textures) throw new Error(`Unknown native recipe: ${effect.recipe}`);
       const bytes = await Promise.all(Object.values(effect.files).map(async file => {
         const response = await fetch(file.url, { signal: controller.signal });
         if (!response.ok) throw new Error(`HTTP ${response.status}: ${file.url}`);
@@ -49,7 +57,7 @@ export class NativeEffect {
       if (epoch !== this.epoch) return;
       const decode = buffer => JSON.parse(new TextDecoder().decode(buffer));
       this.source = decode(bytes[0]); this.effect = effect;
-      this.simulation = new BasicHitSimulation(this.source);
+      this.simulation = new NATIVE_SIMULATIONS[effect.recipe](this.source); this.counts = Array(recipe.counts).fill(0);
       const textures = bitmaps.map(bitmap => {
         this.own(bitmap);
         const texture = this.own(new THREE.Texture(bitmap));
@@ -58,7 +66,7 @@ export class NativeEffect {
         return texture;
       });
       this.particleScene = new THREE.Scene();
-      this.particles = new BasicHitParticles(this.particleScene, [...textures, null], effect.drawOrder, BASICHIT_DEPTH_LAYERS);
+      this.particles = recipe.particles(this.particleScene, textures, effect);
       this.hdr = this.own(new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, depthBuffer: true }));
       this.hdr.texture.colorSpace = THREE.LinearSRGBColorSpace;
       this.depth = this.own(new THREE.WebGLRenderTarget(1, 1, { depthBuffer: true }));
@@ -80,7 +88,7 @@ export class NativeEffect {
       for (const bitmap of bitmaps) if (!this.resources.has(bitmap)) bitmap.close();
     }
   }
-  duration(parameters) { return (this.source ? nativeEndStep(this.source, parameters.seed) : 480) / 60 * parameters.duration / parameters.speed; }
+  duration(parameters) { return (this.source ? nativeEndStep(this.source, parameters.seed, this.effect.recipe) : 480) / 60 * parameters.duration / parameters.speed; }
   update(time, parameters) {
     if (this.state !== 'ready') return;
     if (this.simulation.options.seed !== parameters.seed) this.simulation.configure({ seed: parameters.seed });
@@ -97,7 +105,7 @@ export class NativeEffect {
         s.setXY(i, s.getX(i) * parameters.scale, s.getY(i) * parameters.scale * parameters.height);
       }
     }
-    this.counts = this.step < 0 ? [0, 0, 0] : [...this.particles.counts];
+    this.counts = this.step < 0 ? this.counts.map(() => 0) : this.particles.counts ? [...this.particles.counts] : frame.emitters.map(e => e.particles.length);
     this.uniforms.exposure.value = parameters.brightness; this.uniforms.opacity.value = parameters.opacity;
     this.uniforms.tintColor.value.set(parameters.tint);
   }

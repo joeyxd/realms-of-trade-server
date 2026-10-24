@@ -9,7 +9,7 @@
     "allUnchanged": true
   },
   "codeSha256": {
-    "tools/niagara-native-lab/update-simulation.js": "5aa318aff8b217a1f2c6868f9525ed836078d31d8382b92bc095016c5da44f83",
+    "src/render/vfx/niagara/update-simulation.js": "5aa318aff8b217a1f2c6868f9525ed836078d31d8382b92bc095016c5da44f83",
     "tools/niagara-native-lab/prepare-update-fixture.py": "cc7c31cbed87e512795ac89e8bbb0dad1f45b30ce53670c0bfc5fd1ec0b790c0",
     "tools/niagara-native-lab/verify-update.mjs": "8b5e9ddd8171dd9ec587efe4328b3946fdb869966897c1693e9ae79fcbbae5c5",
     "tools/niagara-native-lab/update-simulation.test.mjs": "8c9c6111122b316e17fd80f5aac5eecbfd97ee9e5f2580f13fcafb7348637882",

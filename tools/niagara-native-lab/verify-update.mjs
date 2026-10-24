@@ -2,7 +2,7 @@
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { UpdateSimulation } from './update-simulation.js';
+import { UpdateSimulation } from '../../src/render/vfx/niagara/update-simulation.js';
 const run = process.argv[2] || 'reference11';
 if (!/^[a-zA-Z0-9_-]{1,40}$/.test(run)) throw new Error('Invalid capture run');
 const base = new URL(`../../.scratch/unreal/${run}/`, import.meta.url);

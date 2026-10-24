@@ -2,11 +2,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
-import { NativeSimulation } from './native-simulation.js';
-import { SOURCE_PRESET_SHA256 } from './source-identity.js';
+import { NativeSimulation } from '../../src/render/vfx/niagara/native-simulation.js';
+import { SOURCE_PRESET_SHA256 } from '../../src/render/vfx/niagara/source-identity.js';
 const run = process.argv[2] || 'reference11';
 assert.match(run, /^[A-Za-z0-9_-]{1,40}$/);
-const source = JSON.parse(await fs.readFile(new URL('./pilot-source.json', import.meta.url)));
+const source = JSON.parse(await fs.readFile(new URL('../../src/render/vfx/niagara/pilot-source.json', import.meta.url)));
 const sim = new NativeSimulation(source);
 const base = new URL(`../../.scratch/unreal/${run}/`, import.meta.url);
 const report = JSON.parse(await fs.readFile(new URL('capture-report.json', base)));
@@ -14,7 +14,7 @@ const reserved = JSON.parse(await fs.readFile(new URL('update-fixture.json', bas
 assert.equal(report.status, 'complete');
 assert.equal(report.source_copy_package_sha256, source.sourceSha256);
 const sha = b => crypto.createHash('sha256').update(b).digest('hex');
-assert.equal(sha(await fs.readFile(new URL('./pilot-source.json', import.meta.url))), SOURCE_PRESET_SHA256);
+assert.equal(sha(await fs.readFile(new URL('../../src/render/vfx/niagara/pilot-source.json', import.meta.url))), SOURCE_PRESET_SHA256);
 const max = { positionCm: 0, velocityCmPerSecond: 0, ageSeconds: 0, alpha: 0, rgb: 0, subImage: 0, sizeCm: 0 };
 const limits = { positionCm: .002, velocityCmPerSecond: .001, ageSeconds: .00001, alpha: .00001, rgb: .00001, subImage: .001, sizeCm: .001 };
 let states = 0;
@@ -37,7 +37,7 @@ for (let step = 0; step <= 240; step++) {
     }
   }
 }
-const result = { run, frames: 241, particleStates: states, sourcePresetSha256: sha(await fs.readFile(new URL('./pilot-source.json', import.meta.url))),
+const result = { run, frames: 241, particleStates: states, sourcePresetSha256: sha(await fs.readFile(new URL('../../src/render/vfx/niagara/pilot-source.json', import.meta.url))),
   capturedStatesUsedAsInputs: 0, liveIdsAndOrderMatch: true, maxErrors: max, tolerances: limits,
   passed: Object.keys(max).every(k => max[k] <= limits[k]) };
 await fs.mkdir(new URL('../../.scratch/native-birth/', import.meta.url), { recursive: true });

@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { PilotParticles, toScene, validateFrame } from '../../src/render/vfx/niagara/particles.js';
-import { UpdateSimulation, CONTROL_SPEC } from './update-simulation.js';
-import { NativeSimulation, CONTROL_SPEC as NATIVE_CONTROLS } from './native-simulation.js';
-import { SOURCE_PRESET_SHA256 } from './source-identity.js';
+import { UpdateSimulation, CONTROL_SPEC } from '../../src/render/vfx/niagara/update-simulation.js';
+import { NativeSimulation, CONTROL_SPEC as NATIVE_CONTROLS } from '../../src/render/vfx/niagara/native-simulation.js';
+import { SOURCE_PRESET_SHA256 } from '../../src/render/vfx/niagara/source-identity.js';
 
 const $ = id => document.getElementById(id);
 const run = new URLSearchParams(location.search).get('run') || 'reference11';
@@ -35,7 +35,7 @@ try {
     if (mode === 'observed' && !frames) frames = await readFrames();
     if (mode === 'update' && !simulation) simulation = new UpdateSimulation(await read('update-fixture.json'));
     if (mode === 'native' && !nativeSimulation) {
-      const r = await fetch('./pilot-source.json');
+      const r = await fetch('../../src/render/vfx/niagara/pilot-source.json');
       if (!r.ok) throw new Error(`Native source: HTTP ${r.status}`);
       const bytes = await r.arrayBuffer();
       const digest = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map(v => v.toString(16).padStart(2, '0')).join('');

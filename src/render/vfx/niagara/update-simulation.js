@@ -1,7 +1,7 @@
 // Presentation-only evolution. Initial states are explicit UE spawn fixtures, not a ported RNG.
-import { sampleCurve, validateCurve } from '../../src/render/vfx/niagara/core/curve.js';
-import { DT, normalizedAgeByReciprocal, ageParticle, integrateVelocity } from '../../src/render/vfx/niagara/core/particle-state.js';
-import { subUVFrame } from '../../src/render/vfx/niagara/core/subuv.js';
+import { sampleCurve, validateCurve } from './core/curve.js';
+import { DT, normalizedAgeByReciprocal, ageParticle, integrateVelocity } from './core/particle-state.js';
+import { subUVFrame } from './core/subuv.js';
 const f32 = Math.fround;
 export { DT, sampleCurve };
 export const SOURCE_SHA = '985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165';

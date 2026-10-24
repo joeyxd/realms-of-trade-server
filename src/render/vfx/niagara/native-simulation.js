@@ -1,11 +1,11 @@
 // Bounded presentation port of the exact compiled CPU pilot. No captured births.
 import { SOURCE_SHA, CONTROL_SPEC as UPDATE_CONTROLS } from './update-simulation.js';
 import { SUPPORTED_BEHAVIOR } from './source-identity.js';
-import { random3, random4, uniformRange as range } from '../../src/render/vfx/niagara/core/rng.js';
-import { sampleCurve, validateCurve } from '../../src/render/vfx/niagara/core/curve.js';
-import { rateStep, rateBirthAge } from '../../src/render/vfx/niagara/core/spawn-rate.js';
-import { DT, normalizedAge, ageParticle, integrateVelocity } from '../../src/render/vfx/niagara/core/particle-state.js';
-import { subUVFrame } from '../../src/render/vfx/niagara/core/subuv.js';
+import { random3, random4, uniformRange as range } from './core/rng.js';
+import { sampleCurve, validateCurve } from './core/curve.js';
+import { rateStep, rateBirthAge } from './core/spawn-rate.js';
+import { DT, normalizedAge, ageParticle, integrateVelocity } from './core/particle-state.js';
+import { subUVFrame } from './core/subuv.js';
 const f32 = Math.fround;
 const NAMES = ['NE_Flame_Basic_001', 'NE_Smoke_Basic'];
 export const CONTROL_SPEC = Object.freeze({

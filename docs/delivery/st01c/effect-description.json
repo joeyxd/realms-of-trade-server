@@ -349,7 +349,7 @@
     "privateSequenceSeconds": 8,
     "alternateSeedsComparedWithUnreal": false,
     "originalDeterminism": false,
-    "sourcePreset": "../../../tools/niagara-native-lab/pilot-source.json",
+    "sourcePreset": "../../../src/render/vfx/niagara/pilot-source.json",
     "colorPresentation": {
       "basis": "source-derived-and-measured",
       "profile": "UE5.8 Filmic SDR sRGB; neutral grading; targetGamma2.2; bloom0; AA off",

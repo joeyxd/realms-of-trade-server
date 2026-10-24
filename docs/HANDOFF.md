@@ -1,5 +1,11 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01c Flame_Single nativo en el Taller de habilidades, 2026-10-24 (T-1024-11, T-1024-14), versión 0.6.0-alpha.105, sin protocolo ni SQL:**
+- Decisiones de Joi (2026-10-24): ventana de 8 s como BasicHit (sin precalentar; Repetir reinicia el preview) y WebP sin pérdida ahora; KTX2 entra con el corte móvil.
+- El Taller reproduce `NS_Flame_Single` de MyProject (`niagara-985a431dc6c0d1ca`, receta `flame-single-v1`, adaptador `niagara-native-v1`): la simulación medida del piloto pasa a `src/render/vfx/niagara/` (native-simulation.js y update-simulation.js solo cambian sus imports; source-identity.js y pilot-source.json R100) y el laboratorio la importa de ahí. `NativeEffect` elige simulación, capas y texturas por receta; `PilotParticles.setDepth` gana la opción explícita de perspectiva. Llama y humo en WebP sin pérdida idénticos a los PNG de UE (flame-v1 2048x1024, smoke-v1 2560x1536). Semilla 6371, digest 0d417fde. Texto de límites propio: perspectiva, composición, orden llama/humo, controles y móvil sin medir.
+- Pruebas: assets 4/4 idénticos, pruebas del Taller 41/41, laboratorio 66/66, verify native x2, update, core y basichit idénticos a antes, píxeles del piloto 2261/2261 contra base-a, `qa-native-studio` BasicHit 5/5 (conteos y evidencia idénticos a T-1023-15) y llama 5/5 (pasos 60/240/479, liberación 14/14, cero escrituras GM y comandos), `qa-niagara-studio` 9/9, gate del actualizador 392/392, assets:check 114 heredados.
+- Entrega: `docs/delivery/st01c/flame-single/STUDIO.md`. Fuera: bucle continuo, KTX2, variante móvil, el Flame Single de SimpleMultiplayerSurvival, combate.
+
 **GM07c, GM08a y GM08b: pinceles grandes y regiones en el editor GM, 2026-10-24 (T-1022-49, T-1022-50, T-1023-13, T-1024-03, T-1024-12), versión 0.6.0-alpha.104, sin cambio de protocolo ni SQL:**
 Solo el editor GM (src/editor/terrain*.js, editor.js, editor.css), el render del terreno (src/render/terrain.js, scene.js), el panel del mapa (src/ui/mapCanvas.js) y el actualizador. Los jugadores no ven nada nuevo.
 - Actualizador (T-1022-49): `+refs/heads/...` en los dos fetch de deploy/vps-update.py, así un push de 8 o más commits ya no se atasca. Solo actúa cuando alguien instala el archivo en el VPS (context/ops/push.md, con la palabra de Joi): el VPS sigue con la copia del 2026-10-11.

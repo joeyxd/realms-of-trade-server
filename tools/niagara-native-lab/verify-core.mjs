@@ -1,11 +1,11 @@
 // Proves the pilot simulations are unchanged: digests of every snapshot, steps 0..480 plus a backwards seek.
 import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
-import { NativeSimulation } from './native-simulation.js';
-import { UpdateSimulation } from './update-simulation.js';
+import { NativeSimulation } from '../../src/render/vfx/niagara/native-simulation.js';
+import { UpdateSimulation } from '../../src/render/vfx/niagara/update-simulation.js';
 const read = async url => JSON.parse(await fs.readFile(url, 'utf8'));
 const checkpoint = await read(new URL('../../docs/delivery/st01c/core-checkpoint.json', import.meta.url));
-const source = await read(new URL('./pilot-source.json', import.meta.url));
+const source = await read(new URL('../../src/render/vfx/niagara/pilot-source.json', import.meta.url));
 const fixture = await read(new URL('../../.scratch/unreal/reference11/update-fixture.json', import.meta.url));
 
 function digest(sim) {

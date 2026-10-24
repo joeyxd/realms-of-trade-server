@@ -85,7 +85,7 @@ export function buildCatalogEntry(item, rawDerivative = NIAGARA_DERIVATIVES[item
   if (native && item.sources?.length === 1 && item.sources[0].sha256 === native.sourceSha256 && item.sources[0].project === native.project) {
     return Object.freeze({ ...item, sources: Object.freeze(item.sources.map(s => Object.freeze({ ...s }))),
       role: 'native', status: 'ready', ready: true, adapter: native.adapter, derivative: native,
-      roleLimitation: 'Native browser port of the Niagara system, measured against UE 5.8 under a controlled color profile; presentation controls, the perspective DepthFade and the mobile variant are not measured.',
+      roleLimitation: native.limitation || 'Native browser port of the Niagara system, measured against UE 5.8 under a controlled color profile; presentation controls, the perspective DepthFade and the mobile variant are not measured.',
       imported: false, catalogued: true, reason: '' });
   }
   const derivative = rawDerivative ? Object.freeze({ ...rawDerivative, id: item.id,
