@@ -558,7 +558,14 @@ Contrato: [GM08](docs/briefs/gm08-large-brushes.md).
   (1.000 a 50.000 gotas con semilla) solo sobre una región, sin vista previa al arrastrar. Límite de coste: vértices
   editables x iteraciones hasta 4.000.000; por encima se rechaza con un mensaje. Toda la isla: térmica x100 172 ms de
   CPU, 50.000 gotas 203 ms. Decisiones P1 a P6 en docs/briefs/gm08-large-brushes.md.
-- **Sigue:** GM08d importar y exportar el mapa de alturas (PNG de 16 bits, R16 de Unreal).
+- **GM08d** (2026-10-24, T-1024-28): bloque "Mapa de alturas" del panel, con cualquier herramienta. Exportar descarga
+  el terreno actual como PNG gris de 16 bits (561 x 561, un píxel por metro, columna 0 en x = -280, fila 0 en z = -280,
+  del mínimo al máximo del mapa) y un JSON con su rango, que también va dentro del PNG. Importar lee un PNG (8 o 16
+  bits, gris o color, cualquier filtro) o un .r16 cuadrado de Unreal, lo estira sobre todo el mapa y nivela el suelo
+  editable a él en un commit (dentro de la región seleccionada si hay una), con el recorte y los límites de siempre.
+  Una exportación nuestra trae su rango; otro archivo usa "el negro es" y "el blanco es" del panel. Exportar 32-47 ms,
+  importar todo el mapa 78 ms de CPU; exportar e importar de vuelta cambia como mucho 1 mm. Decisiones H1 a H5 en
+  docs/briefs/gm08-large-brushes.md. GM08 queda completo.
 
 ### GM11 Mundo ampliable, presupuesto de carga y zonas (diseño 2026-10-24, T-1024-13; aprobado por Joi el mismo día; GM11a construido en T-1024-17)
 

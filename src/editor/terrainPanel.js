@@ -1,7 +1,7 @@
 import { onLocaleChange } from '../core/locale.js';
 import { describeMap } from '../ui/cartography.js';
 import { paintTerrain } from '../ui/mapCanvas.js';
-import { TERRAIN_EDIT_FEATHER, TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
+import { TERRAIN_EDIT_FEATHER, TERRAIN_GRID_MAX_HEIGHT, TERRAIN_GRID_MIN_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
 import { TERRAIN_BRUSH_MAX_RADIUS } from './terrainBrush.js';
 import { REGION_MAX_AMOUNT, REGION_MAX_FEATHER, REGION_MAX_PASSES, REGION_ONLY_TOOLS } from './terrainRegion.js';
 import { HYDRAULIC_MAX_DROPLETS, HYDRAULIC_MIN_DROPLETS, NOISE_MAX_AMPLITUDE, NOISE_MAX_OCTAVES, NOISE_MAX_SCALE, NOISE_MIN_AMPLITUDE,
@@ -29,6 +29,12 @@ const labels = {
     'El ruido sube y baja el suelo hasta la amplitud con un patrón natural: la escala es el tamaño de sus bultos mayores y cada octava añade detalle más fino. La misma semilla dibuja el mismo patrón, así que los trazos se unen sin costura; una semilla nueva dibuja otro.'],
   erosionHelp: ['Erosion works on a rectangle or a lasso and applies when you release it. Thermal: ground steeper than the talus angle slides down, a little more each iteration. Hydraulic: raindrops roll downhill, cut channels and leave sediment lower down; more drops cut deeper, so a small area needs few. A very large area with many iterations is refused: draw a smaller one or use fewer iterations.',
     'La erosión trabaja sobre un rectángulo o un lazo y se aplica al soltarlo. Térmica: el suelo más empinado que el ángulo de talud se desliza hacia abajo, un poco más en cada iteración. Hidráulica: las gotas de lluvia ruedan cuesta abajo, abren cauces y dejan sedimento más abajo; más gotas cortan más hondo, así que un área pequeña necesita pocas. Un área muy grande con muchas iteraciones se rechaza: dibuja una menor o usa menos iteraciones.'],
+  heightmap: ['Heightmap', 'Mapa de alturas'],
+  exportHeightmap: ['Export heightmap (16-bit PNG + JSON)', 'Exportar mapa de alturas (PNG 16 bits + JSON)'],
+  importHeightmap: ['Import heightmap (PNG or Unreal .r16)', 'Importar mapa de alturas (PNG o .r16 de Unreal)'],
+  importMin: ['Black is (m)', 'El negro es (m)'], importMax: ['White is (m)', 'El blanco es (m)'],
+  heightmapHelp: ['Export saves the current terrain as a 16-bit grey PNG (one pixel per metre, column 0 at x = -280, row 0 at z = -280) and a JSON with its range. Import reads a PNG or a square Unreal Landscape .r16, stretches it over the whole map and levels the editable ground to it in one step: black and white become the two heights above, unless the file is one of our exports (it carries its own range). With a selected region it applies only inside it. Protected places, the shore and the sea keep their height. Undo reverses it whole.',
+    'Exportar guarda el terreno actual como PNG gris de 16 bits (un píxel por metro, columna 0 en x = -280, fila 0 en z = -280) y un JSON con su rango. Importar lee un PNG o un .r16 cuadrado de un Landscape de Unreal, lo estira sobre todo el mapa y nivela el suelo editable a él de una vez: el negro y el blanco pasan a ser las dos alturas de arriba, salvo si el archivo es una exportación nuestra (lleva su propio rango). Con una región seleccionada se aplica solo dentro. Los lugares protegidos, la costa y el mar conservan su altura. Deshacer lo revierte entero.'],
   load: ['Single load', 'Carga única'], loadVertices: ['Terrain', 'Terreno'], loadTiles: ['Tiles', 'Teselas'],
   loadObjects: ['Objects', 'Objetos'],
   loadNear: ['From 70 % the world is getting close to what one load holds. Above 100 % it cannot be published (drafts still save).',
@@ -61,10 +67,12 @@ const DECIMALS = { level: 2, strength: 2, falloff: 2, aspect: 2, radius: 1, rota
 
 /** Standalone terrain controls; pointer gestures and document edits stay with the editor root. */
 export class TerrainPanel {
-  constructor({ root, editor, onTool = () => {}, onRegion = () => {} } = {}) {
+  constructor({ root, editor, onTool = () => {}, onRegion = () => {}, onHeightmap = () => {} } = {}) {
     if (!root || !editor) throw new TypeError('TerrainPanel requires root and editor');
     this.root = root; this.editor = editor; this.document = root.ownerDocument || document; this.onTool = onTool;
     this.onRegion = onRegion;
+    // GM08d: onHeightmap('export') or onHeightmap('import', files); the range a heightmap without our sidecar maps to.
+    this.onHeightmap = onHeightmap; this.importMin = 0; this.importMax = 40;
     this.tool = null; this.radius = 6; this.strength = 0.5; this.falloff = 0.5; this.level = 2.4;
     this.material = 'grass'; this.shape = 'circle'; this.aspect = 0.5; this.rotation = 0; this.flow = 'stroke';
     // GM08b: brush or a region (rect, lasso); `picking` makes the next ground click set the level (terrainInteraction.js).
@@ -77,6 +85,10 @@ export class TerrainPanel {
     this.element = this.document.createElement('section'); this.element.className = 'gm-terrain-panel';
     this.onChange = (event) => {
       const control = event.target;
+      if (Object.hasOwn(control.dataset || {}, 'terrainImport')) {
+        if (event.type === 'change' && control.files?.length) { const files = [...control.files]; control.value = ''; this.onHeightmap('import', files); }
+        return;
+      }
       if (Object.hasOwn(control.dataset || {}, 'terrainTool')) {
         if (event.type === 'change') this.select(control.value || null);
         return;
@@ -96,6 +108,7 @@ export class TerrainPanel {
     };
     this.onClick = (event) => {
       const dataset = event.target?.dataset || {};
+      if (Object.hasOwn(dataset, 'terrainExport')) { this.onHeightmap('export'); return; }
       if (Object.hasOwn(dataset, 'terrainApply')) { this.onRegion('apply'); return; }
       if (Object.hasOwn(dataset, 'terrainRelease')) { this.onRegion('release'); return; }
       if (Object.hasOwn(dataset, 'terrainReseed')) { this.seed = 1 + Math.floor(Math.random() * 9999); this.render(); return; }
@@ -176,8 +189,27 @@ export class TerrainPanel {
       this._control('shape', this._select('shape', ['circle', 'square', 'ellipse'])),
       this._control('aspect', this._input('aspect', 0.25, 1, 0.05)), this._control('rotation', this._input('rotation', 0, 360, 5)),
       help('dryHelp'), help('regionHelp'), help('strengthHelp'), help('flowHelp'), help('paintHelp'), help('shapeHelp'), help('rampHelp'),
-      help('noiseHelp'), help('erosionHelp'), ...this._loadMeter(), mapLabel, this.mapCanvas);
+      help('noiseHelp'), help('erosionHelp'), ...this._loadMeter(), this._heightmap(), mapLabel, this.mapCanvas);
     this._syncValues(); this._syncControls();
+  }
+  // GM08d: export and import of the whole heightmap, whatever the tool (terrainInteraction.js).
+  _heightmap() {
+    const doc = this.document, block = doc.createElement('div'); block.className = 'gm-terrain-heightmap';
+    const title = doc.createElement('h4'); title.textContent = this.t('heightmap');
+    const exporter = doc.createElement('button'); exporter.type = 'button'; exporter.dataset.terrainExport = '';
+    exporter.textContent = this.t('exportHeightmap');
+    const range = (field) => {
+      const label = doc.createElement('label'), caption = doc.createElement('span'); caption.textContent = this.t(field);
+      const input = doc.createElement('input'); input.type = 'number'; input.min = TERRAIN_GRID_MIN_HEIGHT; input.max = TERRAIN_GRID_MAX_HEIGHT;
+      input.step = 0.1; input.value = this[field]; input.dataset.terrainField = field;
+      label.append(caption, input); return label;
+    };
+    const importer = doc.createElement('label'), caption = doc.createElement('span'); caption.textContent = this.t('importHeightmap');
+    const file = doc.createElement('input'); file.type = 'file'; file.accept = '.png,.r16,.raw,.json'; file.multiple = true;
+    file.dataset.terrainImport = ''; importer.append(caption, file);
+    const help = doc.createElement('p'); help.className = 'gm-terrain-help'; help.textContent = this.t('heightmapHelp');
+    block.append(title, exporter, range('importMin'), range('importMax'), importer, help);
+    return block;
   }
   // GM11a: the single-load meter of the current draft (editor.loadBudget, worldLoad.js), always shown.
   _loadMeter() {

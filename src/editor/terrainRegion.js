@@ -1,7 +1,8 @@
 // GM08b (docs/briefs/gm08-large-brushes.md): region operations on the editor's terrain grid. A rectangle or a lasso
 // drawn on the ground, with an inner feather, becomes a field like a stroke's influence; one operation (level, raise or
 // lower by an amount, smooth n passes, paint or erase) runs over it with the stroke's clip and clamps, and commits once.
-// GM08c adds noise, thermal erosion and hydraulic erosion (terrainNoise.js).
+// GM08c adds noise, thermal erosion and hydraulic erosion (terrainNoise.js); GM08d an imported heightmap
+// (terrainHeightmap.js), flattened towards its target height per vertex.
 // Pure module: no DOM; it runs in the browser and in Node.
 import { validateDocument } from './document.js';
 import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_GRID_SIZE, TERRAIN_MATERIALS, TERRAIN_MIN_HEIGHT, terrainEditWeights } from './terrainData.js';
@@ -17,7 +18,7 @@ export const REGION_MAX_FEATHER = 32;
 /** Raise and lower move the ground by up to 50 m per operation. */
 export const REGION_MAX_AMOUNT = 50;
 export const REGION_MAX_PASSES = 16;
-const REGION_TOOLS = new Set(['raise', 'lower', 'flatten', 'smooth', 'noise', 'thermal', 'hydraulic', 'paint', 'erase']);
+const REGION_TOOLS = new Set(['raise', 'lower', 'flatten', 'smooth', 'noise', 'thermal', 'hydraulic', 'heightmap', 'paint', 'erase']);
 /** GM08c: the erosions run over a region only (no brush). */
 export const REGION_ONLY_TOOLS = Object.freeze(['thermal', 'hydraulic']);
 
@@ -97,13 +98,14 @@ export function regionInfluence(region, half) {
  * - noise adds `amplitude` metres of fbmNoise({ octaves, scale, seed }) at the vertex's world position
  * - thermal runs thermalErosion ({ talus, iterations }; above THERMAL_MAX_WORK it fails with 'cost'); hydraulic runs
  *   hydraulicErosion ({ droplets, seed })
+ * - heightmap levels each vertex to its own height in `targets` (TERRAIN_GRID_SIZE squared metres, heightmapTargets)
  * - paint blends `material` and erase removes paint, both by `strength`
  * Heights keep the 0.75 m floor and +200 m ceiling clamps of a stroke. The grid is not modified; the result is the
  * patch, { indices, deltasMm } or { indices, weights }, in ascending vertex order.
  */
 export function regionTerrainGrid({ map, surface, grid, document, baseRevision, tool, region, level = 2.4, amount = 1,
   passes = 1, strength = .5, material = 'grass', amplitude = 2, octaves = 4, scale = 32, seed = 1, talus = 35, iterations = 50,
-  droplets = 10000 } = {}) {
+  droplets = 10000, targets = null } = {}) {
   const doc = validateDocument(document);
   if (!map || !Number.isSafeInteger(map.seed) || doc.base.seed !== (map.seed >>> 0) ||
       typeof baseRevision !== 'string' || doc.base.revision !== baseRevision) fail('base_mismatch');
@@ -114,7 +116,9 @@ export function regionTerrainGrid({ map, surface, grid, document, baseRevision, 
       !Number.isFinite(strength) || strength <= 0 || strength > 1 ||
       (tool === 'noise' && !validNoise({ amplitude, octaves, scale, seed })) ||
       (tool === 'thermal' && !validThermal({ talus, iterations })) ||
-      (tool === 'hydraulic' && !validHydraulic({ droplets, seed }))) fail('parameters');
+      (tool === 'hydraulic' && !validHydraulic({ droplets, seed })) ||
+      (tool === 'heightmap' && (!(targets instanceof Float64Array || targets instanceof Float32Array) ||
+        targets.length !== TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE || !targets.every(Number.isFinite)))) fail('parameters');
   const paint = tool === 'paint' || tool === 'erase';
   if (paint ? !(grid?.weights instanceof Uint8Array) || grid.weights.length !== TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE * 4
     : !(grid?.deltasMm instanceof Int32Array) || grid.deltasMm.length !== map.heights?.length ||
@@ -166,6 +170,7 @@ export function regionTerrainGrid({ map, surface, grid, document, baseRevision, 
     if (w[n] <= 0) continue;
     const index = j * TERRAIN_GRID_SIZE + i, h = original[n];
     const target = result !== original ? result[n] : limit(tool === 'flatten' ? h + (level - h) * w[n]
+      : tool === 'heightmap' ? h + (targets[index] - h) * w[n]
       : tool === 'noise' ? h + amplitude * fbmNoise(i - map.half, j - map.half, { octaves, scale, seed }) * w[n]
       : h + (tool === 'raise' ? amount : -amount) * w[n], n);
     const delta = Math.round((Math.fround(target) - map.heights[index]) * 1000);

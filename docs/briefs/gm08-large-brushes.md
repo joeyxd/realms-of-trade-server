@@ -1,7 +1,7 @@
 # GM08 large-scale terrain brushes
 
 Status: GM08a BUILT (T-1023-13, 2026-10-23) and GM08b BUILT (T-1024-03, 2026-10-24), live in alpha.104. GM08c BUILT
-(T-1024-24, 2026-10-24, not pushed). GM08d is designed here, not built yet.
+(T-1024-24, 2026-10-24) and GM08d BUILT (T-1024-28, 2026-10-24). GM08 is complete.
 Joi's bar (2026-10-21): every row of the census limits table gets fixed. For brushes that means: 24 m maximum, no
 fill, no region select, no noise or erosion, no heightmap import or export.
 Inputs: [GM07](gm07-terrain-tiles.md) (tiles, the session, GM07c region rendering) and the
@@ -169,14 +169,30 @@ tiles, so the validator stays the authority). Module `src/editor/terrainNoise.js
   preview, one commit, the cost message), the panel test (+1).
 - Open for Joi: the erosion strength on screen (P3 constants), and whether the seed slider should be a number field.
 
-GM08d **heightmap import and export.**
-- Export the compiled 561 x 561 heights as a 16-bit grayscale PNG, with a JSON sidecar: min, max, base revision and
-  metres per unit. The PNG is deflated with `CompressionStream`.
-- Import a 16-bit PNG or an Unreal Landscape `.r16` file (raw little-endian 16-bit, Unreal's Landscape export
-  format), mapped to a [min, max] range the GM chooses and resampled to 561. It applies as a flatten-to-target field
-  with the edit clip and clamps, in one commit.
-- Unreal: Joi to confirm whether the author's projects hold a Landscape. The research census lists Landscape
-  materials, not heightmaps.
+GM08d **built** (T-1024-28), decisions H1 to H5 below. Client only: no protocol, no SQL, no server change (the import
+is a region commit of tiles, so the validator stays the authority). Module `src/editor/terrainHeightmap.js` (pure).
+- H1 **Export** (panel block "Heightmap", shown with any tool or none): the compiled 561 x 561 heights as a 16-bit
+  grayscale PNG, one pixel per metre, column i at x = i - 280 and row j at z = j - 280 (world axes, not the NW-up
+  chart), from the map's own lowest (0) to highest (65535) height: about 0.7 mm per unit on the generated island. Up
+  filter, deflated with `CompressionStream` (146 KB, 32 to 47 ms CPU). The JSON sidecar (format, version, size, min,
+  max, metres per unit and per pixel, origin, row order, seed, base revision) downloads beside it and also rides in
+  the PNG as a tEXt chunk `marea-negra:heightmap`, so the PNG alone imports back.
+- H2 **Import formats**: a PNG by its signature (grey, RGB, grey + alpha or RGBA at 8 or 16 bits, any of the five
+  filters, not interlaced; a colour image gives its first channel; the CRC of every chunk is checked), or by name an
+  Unreal `.r16` / `.raw` (little-endian 16-bit, square: its side is the square root of half its bytes). At most 8,192
+  pixels a side and 4,097 x 4,097 in all. A JSON chosen with the file supplies the range when the PNG carries none.
+- H3 **Range**: our sidecar's min and max when present (they also fill the panel); otherwise the panel's "Black is"
+  and "White is" heights (default 0 and 40 m, each -40 to +200 m, black below white). The panel keeps the last range
+  used. Unreal's own convention (32768 is zero, Z scale / 128 cm per unit) is the GM's to enter.
+- H4 **Resample**: bilinear, the image's corners on the map's corners; a non-square image stretches.
+- H5 **Apply**: tool `heightmap` in regionTerrainGrid, a flatten towards each vertex's own target, over the held region
+  (with the panel feather) or else the whole map, with the D2 clip and the D3 clamps: protected places, the shore and
+  the sea keep their height, and only the 34,547 editable vertices move. One commit, one undo entry; the whole map
+  imports in 78 ms CPU. Export and import back move no vertex by more than 1 mm.
+- Unreal: whether the author's projects hold a Landscape is still Joi's to confirm (the research census lists
+  Landscape materials, not heightmaps); the .r16 path does not depend on it.
+- Tests: `tests/gm-terrain-heightmap.test.mjs` (5, pure, in the deploy gate: 65 files), the panel test (+1), the
+  gesture test (+1).
 
 ## Acceptance (GM08a)
 

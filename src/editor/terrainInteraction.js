@@ -3,6 +3,7 @@ import { brushOutline, strokeSpacing } from './terrainBrush.js';
 import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
 import { joinRegions } from './terrainPreview.js';
 import { REGION_MAX_POINTS, REGION_ONLY_TOOLS, regionOutline } from './terrainRegion.js';
+import { decodeHeightmap, exportHeightmap, HEIGHTMAP_MAX_SIDE, heightmapTargets, sidecarRange } from './terrainHeightmap.js';
 import { editorMessage } from './messages.js';
 import { LAYER } from '../render/pipeline.js';
 
@@ -24,6 +25,22 @@ const HELD_MIN_AREA = 1;
 const regionKept = () => editorMessage(
   'Region kept in the private draft. Undo reverses it whole. The region stays selected: change the tool and press Apply to the region (Enter); Escape drops it.',
   'Región conservada en el borrador privado. Deshacer la revierte entera. La región sigue seleccionada: cambia la herramienta y pulsa Aplicar a la región (Intro); Escape la suelta.');
+// GM08d: heightmap files.
+const unreadable = () => editorMessage(
+  'Heightmap not read: choose a grey PNG (8 or 16 bits, not interlaced) or a square Unreal .r16, optionally with its JSON. Nothing was changed.',
+  'Mapa de alturas no leído: elige un PNG gris (8 o 16 bits, sin entrelazar) o un .r16 cuadrado de Unreal, con su JSON si lo tiene. No se cambió nada.');
+const tooLarge = () => editorMessage(
+  `Heightmap too large: at most ${HEIGHTMAP_MAX_SIDE.toLocaleString('en')} pixels a side and 4097 x 4097 in all. Nothing was changed.`,
+  `Mapa de alturas demasiado grande: como mucho ${HEIGHTMAP_MAX_SIDE.toLocaleString('es')} píxeles de lado y 4097 x 4097 en total. No se cambió nada.`);
+const badRange = () => editorMessage(
+  'Heightmap range not valid: black must be lower than white, both from -40 to 200 m. Nothing was changed.',
+  'Rango del mapa de alturas no válido: el negro debe ser más bajo que el blanco, ambos entre -40 y 200 m. No se cambió nada.');
+function save(data, type, name) {
+  const url = URL.createObjectURL(new Blob([data], { type }));
+  const link = document.createElement('a'); link.href = url; link.download = name; link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+const metres = value => Math.round(value * 100) / 100;
 const polygonArea = (ring) => {
   let twice = 0;
   for (let a = 0, b = ring.length - 1; a < ring.length; b = a++) twice += (ring[b].x - ring[a].x) * (ring[b].z + ring[a].z);
@@ -180,6 +197,63 @@ export class TerrainInteraction {
     if (!held || !this.tool || this.tool === 'ramp' || parameters.selection === 'brush' || this.stroke || this.editor.terrainTask) return null;
     return this._commit({ base: this.editor.history.current(), points: held.points,
       parameters: { ...parameters, selection: held.shape }, region: null, shown: null });
+  }
+
+  /** GM08d: download the current terrain as a 16-bit PNG and its JSON sidecar (terrainHeightmap.js). */
+  async exportHeightmap() {
+    const e = this.editor;
+    try {
+      const { png, sidecar } = await exportHeightmap(e.draftMap || e.map, { baseRevision: e.history.current().base.revision });
+      const name = `${e.worldId}-heightmap`, range = `${metres(sidecar.min)} … ${metres(sidecar.max)} m`;
+      save(png, 'image/png', `${name}.png`); save(JSON.stringify(sidecar, null, 2), 'application/json', `${name}.json`);
+      e._setStatus(editorMessage(`Heightmap exported: ${name}.png (${sidecar.width} x ${sidecar.height}, 16 bits, ${range}) and its JSON.`,
+        `Mapa de alturas exportado: ${name}.png (${sidecar.width} x ${sidecar.height}, 16 bits, ${range}) y su JSON.`), 'ok');
+      return true;
+    } catch (error) {
+      e.lastError = error;
+      e._setStatus(editorMessage('Heightmap export failed. Nothing was saved.', 'Falló la exportación del mapa de alturas. No se guardó nada.'), 'error');
+      return false;
+    }
+  }
+
+  /**
+   * GM08d: level the editable ground to a heightmap file (with an optional JSON sidecar), over the held region or else
+   * the whole map: one commit, one undo entry. Our own exports carry their range; any other file maps black and white
+   * to the panel's two heights.
+   */
+  async importHeightmap(files) {
+    const e = this.editor;
+    if (this.stroke || e.terrainTask || !e.terrain || !e.active) return false;
+    const image = files.find(file => !/\.json$/i.test(file.name)), json = files.find(file => /\.json$/i.test(file.name));
+    let decoded, range;
+    try {
+      if (!image) throw Object.assign(new Error('heightmap_missing'), { code: 'format' });
+      decoded = await decodeHeightmap(new Uint8Array(await image.arrayBuffer()), image.name);
+      range = sidecarRange(decoded.sidecar);
+      if (!range && json) { try { range = sidecarRange(JSON.parse(await json.text())); } catch { range = null; } }
+    } catch (error) {
+      e.lastError = error; e._setStatus(error?.code === 'size' ? tooLarge() : unreadable(), 'error');
+      return false;
+    }
+    if (range) { this.panel.importMin = range.min; this.panel.importMax = range.max; this.panel.render(); }
+    else range = { min: this.panel.importMin, max: this.panel.importMax };
+    let targets;
+    try { targets = heightmapTargets(decoded, range); }
+    catch (error) { e.lastError = error; e._setStatus(badRange(), 'error'); return false; }
+    const held = this.held, half = e.map.half;
+    const region = held ? { shape: held.shape, points: held.points, feather: this.panel.feather }
+      : { shape: 'rect', points: [{ x: -half, z: -half }, { x: half, z: half }], feather: 0 };
+    const committed = await e._commitTerrainStroke({ document: e.history.current(), tool: 'heightmap', targets, region });
+    if (!e.active) return committed;
+    const what = `${image.name} (${decoded.width} x ${decoded.height}, ${metres(range.min)} … ${metres(range.max)} m)`;
+    e._setStatus(!committed ? blocked() : held
+      ? editorMessage(`Heightmap ${what} applied inside the selected region. Protected places, the shore and the sea keep their height. Undo reverses it whole.`,
+        `Mapa de alturas ${what} aplicado dentro de la región seleccionada. Los lugares protegidos, la costa y el mar conservan su altura. Deshacer lo revierte entero.`)
+      : editorMessage(`Heightmap ${what} applied to the whole map. Protected places, the shore and the sea keep their height. Undo reverses it whole.`,
+        `Mapa de alturas ${what} aplicado a todo el mapa. Los lugares protegidos, la costa y el mar conservan su altura. Deshacer lo revierte entero.`),
+    committed ? 'ok' : 'error');
+    this.drawHeld();
+    return committed;
   }
 
   down(event) {

@@ -10,6 +10,7 @@ import { createDocument, createDocumentHistory } from '../src/editor/document.js
 import { terrainEditableMask, TERRAIN_GRID_SIZE } from '../src/editor/terrainData.js';
 import { TerrainSession, openTerrainDocument, tileReferences } from '../src/editor/terrainSession.js';
 import { REGION_MAX_POINTS } from '../src/editor/terrainRegion.js';
+import { exportHeightmap } from '../src/editor/terrainHeightmap.js';
 
 globalThis.window ||= { addEventListener() {}, removeEventListener() {} };
 const { TerrainInteraction } = await import('../src/editor/terrainInteraction.js');
@@ -191,4 +192,48 @@ test('a drawn region stays selected: level, then smooth, then paint run on it wi
   pointer(centre.x - 3, centre.z - 3); interaction.down(event); pointer(centre.x + 3, centre.z + 3); await interaction.finish();
   interaction.select(null);
   assert.equal(interaction.held, null, 'leaving the terrain tools drops the region');
+});
+
+test('GM08d: a heightmap file levels the whole map, or the held region, in one commit; our export carries its range', async () => {
+  const { interaction, panel, history, statuses, editor } = await rig();
+  const k = (centre.z + 280) * 561 + centre.x + 280, far = (centre.z + 280 + 30) * 561 + centre.x + 280 + 30;
+  const file = (name, bytes) => ({ name, arrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+    text: async () => new TextDecoder().decode(bytes) });
+  Object.assign(panel, { feather: 0, importMin: 0, importMax: 12, render() {} });
+
+  // A foreign .r16 maps black and white to the panel's heights; no tool and no region: the whole map.
+  const white = new Uint8Array(18).fill(255);
+  assert.equal(await interaction.importHeightmap([file('Landscape.r16', white)]), true);
+  assert.ok(Math.abs(editor.draftMap.heights[k] - 12) < .002, `levelled to white (${editor.draftMap.heights[k]})`);
+  assert.match(statuses.at(-1)[1], /whole map|todo el mapa/);
+  assert.equal(statuses.at(-1)[0], 'ok');
+
+  // Our export brings its own range (into the panel) and comes back within a millimetre.
+  const { png } = await exportHeightmap(map, { baseRevision: BASE });
+  assert.equal(await interaction.importHeightmap([file('isla-heightmap.png', png)]), true);
+  assert.equal(panel.importMin, -7.5);
+  assert.ok(Math.abs(editor.draftMap.heights[k] - map.heights[k]) <= .001, 'back to the base height');
+  history.undo(); history.undo();
+  assert.equal(history.canUndo(), false, 'one undo entry per import');
+
+  // The panel keeps the last range used (the export's) until the GM changes it; a held region limits the import.
+  assert.equal(await interaction.importHeightmap([file('Landscape.r16', white)]), true);
+  assert.ok(Math.abs(editor.draftMap.heights[k] - Math.min(map.heights.reduce((a, b) => Math.max(a, b)), 199.998)) < .002, 'white is the export\'s highest');
+  history.undo();
+  Object.assign(panel, { importMin: 0, importMax: 12 });
+  interaction._hold('rect', [{ x: centre.x - 5, z: centre.z - 5 }, { x: centre.x + 5, z: centre.z + 5 }]);
+  assert.equal(await interaction.importHeightmap([file('Landscape.r16', white)]), true);
+  assert.ok(Math.abs(editor.draftMap.heights[k] - 12) < .002, 'inside the region it reaches white');
+  assert.equal(editor.draftMap.heights[far], map.heights[far], 'outside the region nothing moves');
+  assert.match(statuses.at(-1)[1], /selected region|región seleccionada/);
+
+  // Refusals change nothing.
+  const current = history.current();
+  assert.equal(await interaction.importHeightmap([file('foto.jpg', white)]), false);
+  assert.match(statuses.at(-1)[1], /not read|no leído/);
+  assert.equal(await interaction.importHeightmap([file('solo.json', white)]), false);
+  panel.importMin = 20; panel.importMax = 10;
+  assert.equal(await interaction.importHeightmap([file('Landscape.r16', white)]), false);
+  assert.match(statuses.at(-1)[1], /range not valid|Rango del mapa/);
+  assert.deepEqual(history.current(), current);
 });

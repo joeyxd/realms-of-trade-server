@@ -130,7 +130,8 @@ export class WorldEditor {
     this.templatePanel = new TemplatePanel(this, this.templateRoot);
     this.terrainPanel = new TerrainPanel({ editor: this, root: this.terrainRoot,
       onTool: tool => this.terrainInteraction.select(tool),
-      onRegion: action => action === 'apply' ? this.terrainInteraction.apply() : this.terrainInteraction.release() });
+      onRegion: action => action === 'apply' ? this.terrainInteraction.apply() : this.terrainInteraction.release(),
+      onHeightmap: (action, files) => action === 'export' ? this.terrainInteraction.exportHeightmap() : this.terrainInteraction.importHeightmap(files) });
     this.terrainInteraction = new TerrainInteraction(this, this.terrainPanel);
     this.scatterPanel = new ScatterPanel({ editor: this, root: this.scatterRoot,
       onTool: enabled => {

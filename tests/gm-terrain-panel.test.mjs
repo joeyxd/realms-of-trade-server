@@ -217,6 +217,40 @@ test('GM08c: noise on a brush or a region; the erosions on a region only, each w
   }
 });
 
+test('GM08d: the heightmap block exports, imports the chosen files and keeps the black and white heights, whatever the tool', () => {
+  const previousDocument = globalThis.document;
+  globalThis.document = { createElement: (tag) => new Element(tag) };
+  const root = new Element('root'), calls = [];
+  const editor = { _t: (en) => en, map: { size: 12, half: 6, mapSpan: 1, landmarks: { spawn: { x: 0, z: 0 }, village: { x: 2, z: 2 } },
+    groundAt: () => 1, masks: () => ({}), onDock: () => false }, draftMap: null };
+  const panel = new TerrainPanel({ root, editor, onHeightmap: (...args) => calls.push(args) });
+  try {
+    assert.equal(panel.tool, null);
+    panel.element.dispatch('click', panel.element.querySelector('[data-terrain-export]'));
+    assert.deepEqual(calls, [['export']]);
+    const black = panel.element.querySelector('[data-terrain-field="importMin"]'), white = panel.element.querySelector('[data-terrain-field="importMax"]');
+    assert.deepEqual([black.type, white.type, Number(black.value), Number(white.value)], ['number', 'number', 0, 40]);
+    black.value = '-12.5'; panel.element.dispatch('input', black);
+    white.value = '60'; panel.element.dispatch('change', white);
+    assert.deepEqual([panel.importMin, panel.importMax], [-12.5, 60]);
+    const file = panel.element.querySelector('[data-terrain-import]');
+    assert.deepEqual([file.type, file.accept, file.multiple], ['file', '.png,.r16,.raw,.json', true]);
+    const chosen = [{ name: 'isla.png' }, { name: 'isla.json' }];
+    file.files = chosen; file.value = 'C:\\fakepath\\isla.png';
+    panel.element.dispatch('input', file);
+    assert.equal(calls.length, 1, 'input alone does not import');
+    panel.element.dispatch('change', file);
+    assert.deepEqual(calls[1], ['import', chosen]);
+    assert.equal(file.value, '', 'the same file can be chosen again');
+    panel.render();
+    assert.equal(Number(panel.element.querySelector('[data-terrain-field="importMin"]').value), -12.5, 'a render keeps the range');
+    assert.match(panel.element.textContent, /16-bit grey PNG/);
+  } finally {
+    panel.dispose();
+    globalThis.document = previousDocument;
+  }
+});
+
 test('GM11a: the single-load meter shows the share, its detail and a note from 70 %', () => {
   const previousDocument = globalThis.document;
   globalThis.document = { createElement: (tag) => new Element(tag) };
