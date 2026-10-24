@@ -94,9 +94,18 @@ try {
               gpuBytes: t.mipmaps.reduce((sum, m) => sum + m.data.byteLength, 0), colorSpace: t.colorSpace, flipY: t.flipY, minFilter: t.minFilter === THREE.LinearMipmapLinearFilter ? 'LinearMipmapLinear' : t.minFilter }
           : { kind: 'bitmap', width: t.image.width, height: t.image.height, colorSpace: t.colorSpace, flipY: t.flipY, mipsGenerated: t.generateMipmaps }) };
     });
+    // The Taller readout (format, GPU bytes against the cap, decode time, FPS) must match what the GPU holds.
+    result.readout = await page.evaluate(() => { const m = __mn.skillStudio.preview.metrics; __mn.skillStudio.updatePreviewStats();
+      return { load: m.load, frameRate: m.frameRate, label: document.querySelector('.ss-metrics span').textContent }; });
     evidence.textures.push({ label, ...result });
     const expected = result.quality === 'mobile' ? 'compressed' : 'bitmap';
     assert.equal(result.textures.length, 2); assert.ok(result.textures.every(t => t.kind === expected), `${label}: ${expected} textures`);
+    const { load } = result.readout, mobile = result.quality === 'mobile';
+    assert.equal(load.gpuFormat, mobile ? [...new Set(result.textures.map(t => ({ RGBA_BPTC_Format: 'BC7', RGBA_ASTC_4x4_Format: 'ASTC 4x4', RGBA_ETC2_EAC_Format: 'ETC2' })[t.format] ?? t.format))].join(' + ') : 'RGBA8');
+    if (mobile) assert.equal(load.gpuBytes, result.textures.reduce((sum, t) => sum + t.gpuBytes, 262144));
+    if (mobile && load.gpuFormat !== 'RGBA8') assert.equal(load.gpuBytes, flame ? 8301344 : 8650816, `${label}: 16-byte blocks equal the pinned cap formula`);
+    assert.equal(load.gpuCap, mobile ? 12582912 : null); assert.ok(load.fetchMs >= 0 && load.decodeMs > 0);
+    assert.match(result.readout.label, new RegExp(`GPU: ${load.gpuFormat} · [\\d,.]+${mobile ? ' / 12' : ''} MiB.*Decodificación: [\\d.]+ ms.*\\d+ FPS · peor cuadro: \\d+ ms`));
   }
   // Native files fetched by one check must be exactly the registry's set for that quality, byte for byte (pins).
   async function assertFetches(check, quality) {

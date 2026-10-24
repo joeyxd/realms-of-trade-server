@@ -40,7 +40,8 @@ const labels = {
   evidenceClass: ['Clase del paquete', 'Package class'], evidenceMethod: ['Método de evidencia', 'Evidence method'],
   sourceCount: ['Fuentes del inventario', 'Inventory sources'],
   atlasLoading: ['Cargando atlas', 'Loading atlas'], atlasFailed: ['No se pudo cargar el atlas; el borrador se conserva.', 'Atlas failed to load; the draft is preserved.'],
-  atlasReady: ['Atlas', 'Atlas'], billboardNote: ['Vista animada 2D desde una c\u00e1mara; no representa simulaci\u00f3n Niagara ni cantidad de part\u00edculas.', 'Animated 2D view from one camera; this is not Niagara simulation or a particle count.'],
+  atlasReady: ['Atlas', 'Atlas'], decodeTime: ['Decodificación', 'Decode'], coldLoad: ['primera carga', 'first load'], worstFrame: ['peor cuadro', 'worst frame'],
+  overGpuCap: ['Sobre el tope de GPU móvil', 'Over the mobile GPU cap'], billboardNote: ['Vista animada 2D desde una c\u00e1mara; no representa simulaci\u00f3n Niagara ni cantidad de part\u00edculas.', 'Animated 2D view from one camera; this is not Niagara simulation or a particle count.'],
   niagara: ['Referencia Niagara', 'Niagara reference'], niagaraPending: ['Pendiente: adaptación verificada', 'Pending: verified adaptation'],
   preview: ['Vista previa 3D', '3D preview'], playback: ['Reproducción', 'Playback'], play: ['Reproducir', 'Play'], pause: ['Pausar', 'Pause'],
   restart: ['Reiniciar', 'Restart'], loop: ['Repetir', 'Loop'], speed: ['Velocidad', 'Speed'], original: ['Original', 'Original'], draft: ['Borrador', 'Draft'],
@@ -609,8 +610,17 @@ export class SkillStudio {
       if (stats.textureState === 'loading') parts.push(t('atlasLoading'));
       else if (stats.textureState === 'error') parts.push(t('atlasFailed'));
       else if (stats.textureState === 'ready' && Number.isFinite(stats.atlasPixels)) parts.push(`${t('atlasReady')}: ${number(stats.atlasPixels, this.lang)} px`);
-      if (getEffect(this.activeEffect)?.role === 'native') parts.push(`${t('particles')}: ${number(stats.particles || 0, this.lang)} / 512`);
-      else parts.push(t('billboardNote'));
+      if (getEffect(this.activeEffect)?.role === 'native') {
+        parts.push(`${t('particles')}: ${number(stats.particles || 0, this.lang)} / 512`);
+        // Device readout for the phone measurement: GPU format and memory against the mobile cap, decode time, frame rate.
+        const load = stats.textureState === 'ready' && stats.load, mib = bytes => number(bytes / 1048576, this.lang);
+        if (load) {
+          parts.push(`GPU: ${load.gpuFormat} · ${mib(load.gpuBytes)}${load.gpuCap ? ` / ${mib(load.gpuCap)}` : ''} MiB`);
+          if (load.gpuCap && load.gpuBytes > load.gpuCap) parts.push(t('overGpuCap'));
+          parts.push(`${t('decodeTime')}: ${number(Math.round(load.decodeMs), this.lang)} ms${load.cold ? ` (${t('coldLoad')})` : ''}`);
+        }
+        if (stats.frameRate) parts.push(`${number(Math.round(stats.frameRate.fps), this.lang)} FPS · ${t('worstFrame')}: ${number(Math.round(stats.frameRate.worstMs), this.lang)} ms`);
+      } else parts.push(t('billboardNote'));
     } else if (Number.isFinite(stats.particles)) parts.push(`${t('particles')}: ${number(stats.particles, this.lang)}${Number.isFinite(stats.cap) ? ` / ${number(stats.cap, this.lang)}` : ''}`);
     if (Number.isFinite(stats.drawCalls)) parts.push(`DC: ${number(stats.drawCalls, this.lang)}`);
     this.metricsLabel.textContent = parts.join(' · ') || '—';

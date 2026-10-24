@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { NIAGARA_NATIVE, NATIVE_SIMULATIONS, NATIVE_MOBILE_GPU_CAP, nativeStep, nativeEndStep } from '../src/editor/niagaraNative.js';
+import { NIAGARA_NATIVE, NATIVE_SIMULATIONS, NATIVE_MOBILE_GPU_CAP, nativeStep, nativeEndStep, nativeTextureBytes } from '../src/editor/niagaraNative.js';
 import { buildCatalogEntry, getEffect, effectParameters, defaultEffectDocument, FLIPBOOK_PARAMETERS } from '../src/editor/effectLibrary.js';
 import { cloneSkillDocument, parseSkillDocument, validateSkillDocument, MAX_SKILL_DOCUMENT_BYTES } from '../src/editor/skillDocument.js';
 import { BasicHitSimulation, MAX_STEP } from '../src/render/vfx/niagara/basichit-simulation.js';
@@ -181,4 +181,16 @@ test('desktop keeps the pinned lossless WebP set, and mobile never falls back to
   // The Studio quality reaches the native effect on load and on every switch.
   const preview = read('src/render/skillPreview.js').toString();
   assert.equal(preview.split('{ quality: this.quality, renderer: this.renderer }').length, 3);
+});
+
+test('the Taller readout counts GPU bytes from the transcoded mip chain, else RGBA8 over the full generated chain', () => {
+  assert.equal(nativeTextureBytes({ mipmaps: [], image: { width: 4, height: 2 } }), (8 + 2 + 1) * 4);
+  assert.equal(nativeTextureBytes({ mipmaps: [], image: { width: 1, height: 1 } }), 4);
+  // A UASTC chain transcoded to a 16-byte-block format (ASTC 4x4, BC7, ETC2 RGBA) is exactly the cap formula of the KTX2 test.
+  const chain = (w, h, levels) => Array.from({ length: levels }, (_, i) => ({ data: { byteLength: uastcChainBytes(Math.max(1, w >> i), Math.max(1, h >> i), 1) } }));
+  assert.equal(nativeTextureBytes({ mipmaps: chain(2048, 1024, 12), image: { width: 2048, height: 1024 } }), uastcChainBytes(2048, 1024, 12));
+  const code = read('src/render/vfx/niagara/nativeEffect.js').toString(), studio = read('src/editor/skillStudio.js').toString();
+  assert.ok(code.includes('gpuBytes: textures.reduce((sum, texture) => sum + nativeTextureBytes(texture), lut.image.data.byteLength)'));
+  assert.ok(code.includes("gpuCap: mobile ? NATIVE_MOBILE_GPU_CAP : null") && code.includes("[THREE.RGBAFormat, 'RGBA8']"));
+  assert.ok(studio.includes("if (load.gpuCap && load.gpuBytes > load.gpuCap) parts.push(t('overGpuCap'));"));
 });

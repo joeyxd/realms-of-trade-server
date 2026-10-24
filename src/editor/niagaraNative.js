@@ -7,6 +7,17 @@ export const NATIVE_SIMULATIONS = Object.freeze({ 'basichit-v1': BasicHitSimulat
 // Mobile GPU cap per effect: its textures over the full mip chain plus the film LUT (render targets stay outside). The mobile set is the
 // KTX2 UASTC twin of each texture (full resolution, sRGB, mip chain in the file), listed in `mobileFiles` and swapped over `files` by quality.
 export const NATIVE_MOBILE_GPU_CAP = 12 * 1024 * 1024;
+// GPU bytes of one loaded texture for the Taller readout: a compressed texture's stored mip chain as transcoded on this device,
+// else RGBA8 over the full chain the renderer generates from the bitmap.
+export function nativeTextureBytes({ mipmaps, image }) {
+  if (mipmaps?.length) return mipmaps.reduce((sum, mip) => sum + mip.data.byteLength, 0);
+  let { width, height } = image, bytes = 0;
+  for (;;) {
+    bytes += width * height * 4;
+    if (width === 1 && height === 1) return bytes;
+    width = Math.max(1, width >> 1); height = Math.max(1, height >> 1);
+  }
+}
 const file = (url, sha256, decodedSha256) => Object.freeze({ url, sha256, ...(decodedSha256 && { decodedSha256 }) });
 export const NIAGARA_NATIVE = Object.freeze({
   'niagara-97a82bae61b29237': Object.freeze({

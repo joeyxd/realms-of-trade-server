@@ -143,3 +143,44 @@ libera las texturas anteriores.
 - **Sin medir:** un teléfono real; el tiempo de decodificación ASTC/ETC2 (aquí BC7 en escritorio); FPS.
   En una GPU sin ASTC, ETC2 ni BC7 el transcoder cae a RGBA8 sin comprimir (más de 30 MiB para
   NS_Flame_Single, por encima del tope): ese caso no se midió ni se cubre.
+
+## Lectura de dispositivo en el Taller (T-1024-30)
+
+Para medir en un teléfono real sin herramientas: con un efecto nativo listo, la línea «Coste
+visual estimado» del Taller muestra lo que este dispositivo tiene en la GPU y cómo corre la página.
+
+- `GPU: <formato> · <MiB>[ / 12 MiB]`: el formato que eligió `KTX2Loader` en este navegador
+  (ASTC 4x4, BC7, ETC2, BC3 o PVRTC; RGBA8 si la GPU no tiene ninguno) o RGBA8 para los WebP de
+  escritorio. La memoria es cada textura con su cadena de mips tal como quedó en este dispositivo
+  (`nativeTextureBytes` en `src/editor/niagaraNative.js`) más la LUT de film (262.144 B). Con la
+  calidad «Móvil» muestra el tope de 12 MiB y, si lo pasa, «Sobre el tope de GPU móvil»: el caso
+  RGBA8 sin compresión ahora se ve, pero sigue sin manejarse.
+- `Decodificación: <ms>`: `createImageBitmap` de los WebP o la transcodificación KTX2 de las dos
+  texturas, desde que llegan los bytes ya verificados. «(primera carga)» incluye cargar el
+  transcoder (`basis_transcoder.js/.wasm`) y arrancar su worker. La descarga con su SHA-256 queda
+  aparte en `metrics.load.fetchMs`.
+- `<n> FPS · peor cuadro: <ms>`: cuadros reales de la página en los últimos 2 s
+  (`SkillPreview.frameRate`); el peor cuadro arrastra el tirón de la carga durante esos 2 s.
+
+Cómo medir en un teléfono: abrir el Taller en el sitio en vivo (https; por http de LAN no existe
+`crypto.subtle` y el efecto queda en error), elegir el efecto, dejarlo en bucle más de 2 s y anotar
+la línea. Para la decodificación en caliente, elegir el otro efecto nativo y volver: la segunda
+carga ya no dice «primera carga».
+
+Evidencia en Chrome headless con ANGLE en esta máquina (no es un teléfono), cuatro corridas 5/5
+`t1024-30-{bh,bh-m,fl,fl-m}` en `.scratch/native-studio/`. `qa-native-studio.mjs` ahora exige que
+la lectura coincida con la GPU: el formato es el de las texturas cargadas, los bytes son la suma
+de los mips transcodificados más la LUT y, con bloques de 16 B, los 8.650.816 / 8.301.344 B fijados
+por la prueba del gate; el tope solo aparece en móvil; el texto muestra formato, MiB,
+decodificación y FPS.
+
+| efecto | calidad | formato | GPU (B) | decodificación primera / en caliente (ms) |
+|---|---|---|---|---|
+| BasicHit | escritorio | RGBA8 | 33.816.576 (32,25 MiB) | 95 / 244 (WebP, sin transcoder) |
+| BasicHit | móvil | BC7 | 8.650.816 (8,25 MiB) | 654 / 328 |
+| Flame | escritorio | RGBA8 | 32.418.468 (30,92 MiB) | 66 / 80 (WebP, sin transcoder) |
+| Flame | móvil | BC7 | 8.301.344 (7,92 MiB) | 286 / 177 |
+
+Los FPS de Chrome headless no significan nada (5 a 135, sin vsync real) y no se reportan como
+medida. Sigue sin medir el teléfono mismo: esta lectura es el instrumento, y sus números van aquí
+cuando Joi los tome.

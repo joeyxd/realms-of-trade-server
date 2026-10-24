@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { BasicHitParticles, BASICHIT_DEPTH_LAYERS } from './basichit-render.js';
 import { PilotParticles } from './particles.js';
 import { createFilmLUT, filmFragment } from './film-color.js';
-import { NATIVE_SIMULATIONS, nativeEndStep, nativeStep } from '../../../editor/niagaraNative.js';
+import { NATIVE_MOBILE_GPU_CAP, NATIVE_SIMULATIONS, nativeEndStep, nativeStep, nativeTextureBytes } from '../../../editor/niagaraNative.js';
 
 // Per recipe: texture files, per-emitter count slots and the layer set (the simulation class lives in niagaraNative.js).
 const RECIPES = Object.freeze({
@@ -23,6 +23,10 @@ async function loadKtx2(renderer, buffer, url) {
     try { return await ktx2Loader.loadAsync(blob); } finally { URL.revokeObjectURL(blob); }
   } catch (error) { ktx2Loader = null; /* a failed transcoder fetch must not stick for the session */ throw new Error(`KTX2 mobile texture failed: ${url}: ${error?.message ?? error}`); }
 }
+// GPU format names for the Taller readout: KTX2Loader picks ASTC, BC7, ETC2, BC3 or PVRTC by GPU support and RGBA8 when none is there.
+const GPU_FORMATS = new Map([[THREE.RGBA_ASTC_4x4_Format, 'ASTC 4x4'], [THREE.RGBA_BPTC_Format, 'BC7'], [THREE.RGBA_ETC2_EAC_Format, 'ETC2'],
+  [THREE.RGB_ETC2_Format, 'ETC2 RGB'], [THREE.RGB_ETC1_Format, 'ETC1'], [THREE.RGBA_S3TC_DXT5_Format, 'BC3'], [THREE.RGB_S3TC_DXT1_Format, 'BC1'],
+  [THREE.RGBA_PVRTC_4BPPV1_Format, 'PVRTC'], [THREE.RGB_PVRTC_4BPPV1_Format, 'PVRTC RGB'], [THREE.RGBAFormat, 'RGBA8']]);
 
 // Keep the transfer math byte-for-byte from the lab, replacing only its inputs/output.
 function replaceOnce(source, anchor, replacement) {
@@ -41,7 +45,7 @@ export class NativeEffect {
   release() {
     for (const resource of this.resources) { resource.dispose?.(); resource.close?.(); }
     this.resources.clear(); this.particles?.dispose();
-    this.particles = this.simulation = this.source = this.effect = this.hdr = this.depth = this.output = null;
+    this.particles = this.simulation = this.source = this.effect = this.hdr = this.depth = this.output = this.load = null;
     this.counts = [0, 0, 0]; this.drawCalls = 0;
   }
   cancelLoad() { this.epoch++; this.controller?.abort(); this.release(); this.state = 'idle'; }
@@ -52,7 +56,7 @@ export class NativeEffect {
     const epoch = this.epoch, controller = this.controller = new AbortController();
     this.state = 'loading'; this.error = '';
     // Local ownership until the final await: canceled loads cannot publish or leak a bitmap or a compressed texture.
-    const bitmaps = [];
+    const bitmaps = [], started = performance.now(), cold = quality === 'mobile' && !ktx2Loader;
     try {
       const recipe = Object.hasOwn(RECIPES, effect.recipe) ? RECIPES[effect.recipe] : null;
       if (!recipe || Object.keys(effect.files).length !== 2 + recipe.textures) throw new Error(`Unknown native recipe: ${effect.recipe}`);
@@ -67,13 +71,14 @@ export class NativeEffect {
         if (hash !== file.sha256) throw new Error(`Native file hash mismatch: ${file.url}`);
         return buffer;
       }));
+      const fetched = performance.now();
       for (const [index, buffer] of bytes.slice(2).entries()) {
         bitmaps.push(mobile ? await loadKtx2(renderer, buffer, Object.values(files)[index + 2].url)
           : await createImageBitmap(new Blob([buffer], { type: 'image/webp' }), { imageOrientation: 'flipY', premultiplyAlpha: 'none', colorSpaceConversion: 'none' }));
         if (epoch !== this.epoch) return;
       }
       if (epoch !== this.epoch) return;
-      const decode = buffer => JSON.parse(new TextDecoder().decode(buffer));
+      const decoded = performance.now(), decode = buffer => JSON.parse(new TextDecoder().decode(buffer));
       this.source = decode(bytes[0]); this.effect = effect;
       this.simulation = new NATIVE_SIMULATIONS[effect.recipe](this.source); this.counts = Array(recipe.counts).fill(0);
       const textures = bitmaps.map(bitmap => {
@@ -92,8 +97,13 @@ export class NativeEffect {
       this.depth.depthTexture = new THREE.DepthTexture(1, 1, THREE.UnsignedIntType);
       this.depth.depthTexture.minFilter = this.depth.depthTexture.magFilter = THREE.NearestFilter;
       this.depthMaterial = this.own(new THREE.MeshDepthMaterial({ side: THREE.DoubleSide, colorWrite: false }));
+      const lut = this.own(createFilmLUT(decode(bytes[1])).texture);
       this.uniforms = { image: { value: this.hdr.texture }, exposure: { value: 1 },
-        filmLUT: { value: this.own(createFilmLUT(decode(bytes[1])).texture) }, tintColor: { value: new THREE.Color() }, opacity: { value: 1 } };
+        filmLUT: { value: lut }, tintColor: { value: new THREE.Color() }, opacity: { value: 1 } };
+      // Measured on this device for the Taller readout: download + SHA-256, then WebP decode or KTX2 transcode (cold = the transcoder loads too).
+      this.load = { fetchMs: fetched - started, decodeMs: decoded - fetched, cold,
+        gpuFormat: [...new Set(textures.map(texture => GPU_FORMATS.get(texture.format) ?? `format ${texture.format}`))].join(' + '),
+        gpuBytes: textures.reduce((sum, texture) => sum + nativeTextureBytes(texture), lut.image.data.byteLength), gpuCap: mobile ? NATIVE_MOBILE_GPU_CAP : null };
       const material = this.own(new THREE.ShaderMaterial({ uniforms: this.uniforms, glslVersion: THREE.GLSL3, toneMapped: false,
         vertexShader: 'out vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}', fragmentShader: nativeCompositeFragment,
         transparent: true, blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor,
@@ -160,6 +170,6 @@ export class NativeEffect {
     }
   }
   get metrics() { return { particles: this.counts.reduce((sum, count) => sum + count, 0), cap: 512,
-    counts: [...this.counts], textureState: this.state, nativeResources: this.resources.size + (this.particles?.layers.length || 0) * 2 }; }
+    counts: [...this.counts], textureState: this.state, nativeResources: this.resources.size + (this.particles?.layers.length || 0) * 2, load: this.load }; }
   dispose() { this.cancelLoad(); this.disposed = true; }
 }

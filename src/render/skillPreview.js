@@ -85,8 +85,16 @@ export class SkillPreview {
       : impactAt() + 0.65 * (this.original ? 1 : this.document.parameters.duration) + 1.6;
   }
   get metrics() { return { particles: this.isFlipbook ? 0 : this.pool.alive.reduce((a, b) => a + b, 0),
-    cap: this.isFlipbook ? 0 : this.cap, drawCalls: this.drawCalls || 0,
+    cap: this.isFlipbook ? 0 : this.cap, drawCalls: this.drawCalls || 0, frameRate: this.frameRate,
     ...(this.isFlipbook ? this.flipbook.metrics : this.isNative ? this.native.metrics : {}) }; }
+  // The page's measured frame rate over the last 2 s of preview frames, and its slowest frame.
+  get frameRate() {
+    const frames = this.frames || [];
+    if (frames.length < 2) return null;
+    let worstMs = 0;
+    for (let i = 1; i < frames.length; i++) worstMs = Math.max(worstMs, frames[i] - frames[i - 1]);
+    return { fps: (frames.length - 1) * 1000 / (frames.at(-1) - frames[0]), worstMs };
+  }
   random() {
     let n = this.seed += 0x6D2B79F5;
     n = Math.imul(n ^ n >>> 15, n | 1); n ^= n + Math.imul(n ^ n >>> 7, n | 61);
@@ -170,6 +178,9 @@ export class SkillPreview {
   }
   render(dt = 0) {
     if (this.disposed) return;
+    const now = performance.now(), frames = this.frames ||= [];
+    frames.push(now);
+    while (now - frames[0] > 2000) frames.shift();
     if (this.playing) {
       this.accumulator += Math.max(0, Math.min(0.1, dt)) * this.speed;
       while (this.accumulator + 1e-8 >= STEP) {
