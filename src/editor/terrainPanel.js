@@ -3,7 +3,9 @@ import { describeMap } from '../ui/cartography.js';
 import { paintTerrain } from '../ui/mapCanvas.js';
 import { TERRAIN_EDIT_FEATHER, TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
 import { TERRAIN_BRUSH_MAX_RADIUS } from './terrainBrush.js';
-import { REGION_MAX_AMOUNT, REGION_MAX_FEATHER, REGION_MAX_PASSES } from './terrainRegion.js';
+import { REGION_MAX_AMOUNT, REGION_MAX_FEATHER, REGION_MAX_PASSES, REGION_ONLY_TOOLS } from './terrainRegion.js';
+import { HYDRAULIC_MAX_DROPLETS, HYDRAULIC_MIN_DROPLETS, NOISE_MAX_AMPLITUDE, NOISE_MAX_OCTAVES, NOISE_MAX_SCALE, NOISE_MIN_AMPLITUDE,
+  NOISE_MIN_SCALE, THERMAL_MAX_ITERATIONS, THERMAL_MAX_TALUS, THERMAL_MIN_ITERATIONS, THERMAL_MIN_TALUS } from './terrainNoise.js';
 import { worldLoadPercent } from './worldLoad.js';
 
 const labels = {
@@ -20,6 +22,13 @@ const labels = {
     'Rectángulo y lazo: arrastra sobre el suelo; al soltar, la herramienta se aplica una vez a toda el área (aplanar al nivel, subir o bajar la cantidad, suavizar con n pasadas, pintar o borrar según la fuerza). El difuminado suaviza el borde interior. Deshacer lo revierte entero. Después la región sigue seleccionada: cambia la herramienta o sus valores y vuelve a aplicarlos sin dibujarla.'],
   held: ['Selected region', 'Región seleccionada'], apply: ['Apply to the region (Enter)', 'Aplicar a la región (Intro)'],
   release: ['Drop the region (Escape)', 'Soltar la región (Escape)'],
+  amplitude: ['Amplitude (m)', 'Amplitud (m)'], octaves: ['Octaves', 'Octavas'], scale: ['Scale (m)', 'Escala (m)'],
+  seed: ['Seed', 'Semilla'], reseed: ['New seed', 'Nueva semilla'], talus: ['Talus angle (°)', 'Ángulo de talud (°)'],
+  iterations: ['Iterations', 'Iteraciones'], droplets: ['Drops', 'Gotas'],
+  noiseHelp: ['Noise raises and lowers the ground by up to the amplitude in a natural pattern: scale is the size of its largest bumps, each octave adds finer detail. The same seed draws the same pattern, so strokes meet without a seam; a new seed draws another.',
+    'El ruido sube y baja el suelo hasta la amplitud con un patrón natural: la escala es el tamaño de sus bultos mayores y cada octava añade detalle más fino. La misma semilla dibuja el mismo patrón, así que los trazos se unen sin costura; una semilla nueva dibuja otro.'],
+  erosionHelp: ['Erosion works on a rectangle or a lasso and applies when you release it. Thermal: ground steeper than the talus angle slides down, a little more each iteration. Hydraulic: raindrops roll downhill, cut channels and leave sediment lower down; more drops cut deeper, so a small area needs few. A very large area with many iterations is refused: draw a smaller one or use fewer iterations.',
+    'La erosión trabaja sobre un rectángulo o un lazo y se aplica al soltarlo. Térmica: el suelo más empinado que el ángulo de talud se desliza hacia abajo, un poco más en cada iteración. Hidráulica: las gotas de lluvia ruedan cuesta abajo, abren cauces y dejan sedimento más abajo; más gotas cortan más hondo, así que un área pequeña necesita pocas. Un área muy grande con muchas iteraciones se rechaza: dibuja una menor o usa menos iteraciones.'],
   load: ['Single load', 'Carga única'], loadVertices: ['Terrain', 'Terreno'], loadTiles: ['Tiles', 'Teselas'],
   loadObjects: ['Objects', 'Objetos'],
   loadNear: ['From 70 % the world is getting close to what one load holds. Above 100 % it cannot be published (drafts still save).',
@@ -39,11 +48,16 @@ const labels = {
   rampHelp: ['Ramp: select Ramp, click the start, move to the end and click again. Escape cancels.',
     'Rampa: elige Rampa, pulsa el inicio, mueve el cursor al final y pulsa otra vez. Escape cancela.'],
   raise: ['Raise', 'Subir'], lower: ['Lower', 'Bajar'], flatten: ['Flatten', 'Aplanar'],
-  smooth: ['Smooth', 'Suavizar'], ramp: ['Ramp', 'Rampa'],
+  smooth: ['Smooth', 'Suavizar'], ramp: ['Ramp', 'Rampa'], noise: ['Noise', 'Ruido'],
+  thermal: ['Thermal erosion', 'Erosión térmica'], hydraulic: ['Hydraulic erosion', 'Erosión hidráulica'],
   paint: ['Paint', 'Pintar'], erase: ['Erase', 'Borrar'], grass: ['Grass', 'Hierba'], dirt: ['Dirt', 'Tierra'],
   sand: ['Sand', 'Arena'], rock: ['Rock', 'Roca'], circle: ['Circle', 'Círculo'], square: ['Square', 'Cuadrado'], ellipse: ['Ellipse', 'Elipse'],
 };
-const tools = ['raise', 'lower', 'flatten', 'smooth', 'ramp', 'paint', 'erase'];
+const tools = ['raise', 'lower', 'flatten', 'smooth', 'ramp', 'noise', 'thermal', 'hydraulic', 'paint', 'erase'];
+const regionOnly = tool => REGION_ONLY_TOOLS.includes(tool);
+const NUMERIC = ['radius', 'strength', 'falloff', 'level', 'aspect', 'rotation', 'feather', 'amount', 'passes',
+  'amplitude', 'octaves', 'scale', 'seed', 'talus', 'iterations', 'droplets'];
+const DECIMALS = { level: 2, strength: 2, falloff: 2, aspect: 2, radius: 1, rotation: 1, amount: 1, amplitude: 1 };
 
 /** Standalone terrain controls; pointer gestures and document edits stay with the editor root. */
 export class TerrainPanel {
@@ -57,6 +71,8 @@ export class TerrainPanel {
     this.selection = 'brush'; this.feather = 4; this.amount = 2; this.passes = 4; this.picking = false;
     // The held region's area in m2 while the interaction keeps one selected (null otherwise); onRegion('apply' | 'release').
     this.held = null;
+    // GM08c: noise and erosion parameters; the seed draws the noise and the hydraulic drops.
+    this.amplitude = 2; this.octaves = 4; this.scale = 32; this.seed = 1; this.talus = 35; this.iterations = 50; this.droplets = 10000;
     this.mapCanvas = null; this.renderedMap = null;
     this.element = this.document.createElement('section'); this.element.className = 'gm-terrain-panel';
     this.onChange = (event) => {
@@ -67,6 +83,8 @@ export class TerrainPanel {
       }
       if (Object.hasOwn(control.dataset || {}, 'terrainSelect')) {
         if (event.type === 'change') this[control.dataset.terrainSelect] = control.value;
+        // GM08c: the erosions work on a region only.
+        if (control.dataset.terrainSelect === 'selection' && regionOnly(this.tool) && this.selection === 'brush') control.value = this.selection = 'rect';
         this._syncControls();
         // A new area cancels the gesture and refreshes the hint.
         if (event.type === 'change' && control.dataset.terrainSelect === 'selection' && this.tool) this.onTool(this.tool);
@@ -80,6 +98,7 @@ export class TerrainPanel {
       const dataset = event.target?.dataset || {};
       if (Object.hasOwn(dataset, 'terrainApply')) { this.onRegion('apply'); return; }
       if (Object.hasOwn(dataset, 'terrainRelease')) { this.onRegion('release'); return; }
+      if (Object.hasOwn(dataset, 'terrainReseed')) { this.seed = 1 + Math.floor(Math.random() * 9999); this.render(); return; }
       if (!Object.hasOwn(dataset, 'terrainPick')) return;
       this.picking = !this.picking; this.render();
     };
@@ -143,6 +162,13 @@ export class TerrainPanel {
       this._control('feather', this._input('feather', 0, REGION_MAX_FEATHER, 1)),
       this._control('amount', this._input('amount', 0.1, REGION_MAX_AMOUNT, 0.1)),
       this._control('passes', this._input('passes', 1, REGION_MAX_PASSES, 1)),
+      this._control('amplitude', this._input('amplitude', NOISE_MIN_AMPLITUDE, NOISE_MAX_AMPLITUDE, 0.1)),
+      this._control('octaves', this._input('octaves', 1, NOISE_MAX_OCTAVES, 1)),
+      this._control('scale', this._input('scale', NOISE_MIN_SCALE, NOISE_MAX_SCALE, 1)),
+      this._control('talus', this._input('talus', THERMAL_MIN_TALUS, THERMAL_MAX_TALUS, 1)),
+      this._control('iterations', this._input('iterations', THERMAL_MIN_ITERATIONS, THERMAL_MAX_ITERATIONS, 5)),
+      this._control('droplets', this._input('droplets', HYDRAULIC_MIN_DROPLETS, HYDRAULIC_MAX_DROPLETS, 1000)),
+      this._control('seed', this._input('seed', 1, 9999, 1)), this._control('reseed', button('reseed')),
       this._control('strength', this._input('strength', 0.05, 1, 0.05)), this._control('falloff', this._input('falloff', 0, 1, 0.05)),
       this._control('flow', this._select('flow', ['stroke', 'airbrush'])),
       this._control('level', this._input('level', TERRAIN_MIN_HEIGHT, TERRAIN_GRID_MAX_HEIGHT, 0.1)), this._control('pick', pick),
@@ -150,7 +176,7 @@ export class TerrainPanel {
       this._control('shape', this._select('shape', ['circle', 'square', 'ellipse'])),
       this._control('aspect', this._input('aspect', 0.25, 1, 0.05)), this._control('rotation', this._input('rotation', 0, 360, 5)),
       help('dryHelp'), help('regionHelp'), help('strengthHelp'), help('flowHelp'), help('paintHelp'), help('shapeHelp'), help('rampHelp'),
-      ...this._loadMeter(), mapLabel, this.mapCanvas);
+      help('noiseHelp'), help('erosionHelp'), ...this._loadMeter(), mapLabel, this.mapCanvas);
     this._syncValues(); this._syncControls();
   }
   // GM11a: the single-load meter of the current draft (editor.loadBudget, worldLoad.js), always shown.
@@ -172,28 +198,31 @@ export class TerrainPanel {
     return [block];
   }
   _syncValues() {
-    for (const field of ['radius', 'strength', 'falloff', 'level', 'aspect', 'rotation', 'feather', 'amount', 'passes']) {
+    for (const field of NUMERIC) {
       const output = this.element.querySelector(`[data-terrain-value="${field}"]`);
-      if (output) output.value = Number(this[field]).toFixed(field === 'level' || field === 'strength' || field === 'falloff' || field === 'aspect' ? 2
-        : field === 'feather' || field === 'passes' ? 0 : 1);
+      if (output) output.value = Number(this[field]).toFixed(DECIMALS[field] ?? 0);
     }
   }
   _syncControls() {
     const paintMode = this.tool === 'paint' || this.tool === 'erase', rampMode = this.tool === 'ramp';
-    const sculptMode = ['raise', 'lower', 'flatten', 'smooth'].includes(this.tool);
+    const sculptMode = ['raise', 'lower', 'flatten', 'smooth', 'noise'].includes(this.tool);
     // GM08b: a region hides the brush controls; ramps are brush only.
     const area = !!this.tool && !rampMode && this.selection !== 'brush', brush = !!this.tool && !area;
     const visibility = { selection: !!this.tool && !rampMode, material: this.tool === 'paint', level: this.tool === 'flatten',
       pick: this.tool === 'flatten', shape: brush && !rampMode, aspect: brush && !rampMode && this.shape === 'ellipse',
       rotation: brush && !rampMode && this.shape !== 'circle', radius: brush, strength: brush || (area && paintMode),
       falloff: brush, flow: brush && (sculptMode || paintMode), feather: area,
-      amount: area && (this.tool === 'raise' || this.tool === 'lower'), passes: area && this.tool === 'smooth', held: area && !!this.held };
+      amount: area && (this.tool === 'raise' || this.tool === 'lower'), passes: area && this.tool === 'smooth', held: area && !!this.held,
+      amplitude: this.tool === 'noise', octaves: this.tool === 'noise', scale: this.tool === 'noise',
+      seed: this.tool === 'noise' || this.tool === 'hydraulic', reseed: this.tool === 'noise' || this.tool === 'hydraulic',
+      talus: this.tool === 'thermal', iterations: this.tool === 'thermal', droplets: this.tool === 'hydraulic' };
     for (const [field, shown] of Object.entries(visibility)) {
       const node = this.element.querySelector(`[data-terrain-control="${field}"]`);
       if (node) node.hidden = !shown;
     }
     const helps = { paintHelp: paintMode, rampHelp: rampMode, regionHelp: area, strengthHelp: brush && (sculptMode || paintMode),
-      flowHelp: brush && (sculptMode || paintMode) && this.flow === 'airbrush', shapeHelp: brush, dryHelp: !!this.tool };
+      flowHelp: brush && (sculptMode || paintMode) && this.flow === 'airbrush', shapeHelp: brush, dryHelp: !!this.tool,
+      noiseHelp: this.tool === 'noise', erosionHelp: regionOnly(this.tool) };
     for (const [key, shown] of Object.entries(helps)) {
       const node = this.element.querySelector(`[data-terrain-help="${key}"]`);
       if (node) node.hidden = !shown;
@@ -201,16 +230,22 @@ export class TerrainPanel {
     this._syncValues();
   }
   parameters() {
-    const rampMode = this.tool === 'ramp', selection = rampMode ? 'brush' : this.selection;
+    const rampMode = this.tool === 'ramp';
+    const selection = rampMode ? 'brush' : regionOnly(this.tool) && this.selection === 'brush' ? 'rect' : this.selection;
     return { tool: this.tool, radius: this.radius, strength: this.strength, falloff: this.falloff, level: this.level,
       material: this.material, shape: rampMode ? 'circle' : this.shape, aspect: this.aspect, rotation: this.rotation,
       flow: rampMode || selection !== 'brush' ? 'stroke' : this.flow, selection, feather: this.feather, amount: this.amount,
-      passes: this.passes };
+      passes: this.passes, amplitude: this.amplitude, octaves: this.octaves, scale: this.scale, seed: this.seed, talus: this.talus,
+      iterations: this.iterations, droplets: this.droplets };
   }
   select(tool) {
     if (tool !== null && !tools.includes(tool)) throw new RangeError('Unknown terrain tool');
     this.tool = tool;
     const control = this.element.querySelector('[data-terrain-tool]'); if (control) control.value = tool || '';
+    if (regionOnly(tool) && this.selection === 'brush') {
+      this.selection = 'rect';
+      const area = this.element.querySelector('[data-terrain-select="selection"]'); if (area) area.value = 'rect';
+    }
     this._syncControls();
     this.onTool(tool);
   }

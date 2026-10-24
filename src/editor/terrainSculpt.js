@@ -4,6 +4,7 @@ import { compileTerrainMap, TERRAIN_GRID_SIZE, TERRAIN_GRID_MAX_HEIGHT, TERRAIN_
 import { gmEditableBaseProps } from './baseIdentity.js';
 import { airbrushInfluence, BRUSH_FLOWS, brushParameters, brushWeight, strokeInfluence, strokePath, strokeSpacing,
   TERRAIN_BRUSH_MAX_RADIUS } from './terrainBrush.js';
+import { fbmNoise, validNoise } from './terrainNoise.js';
 
 const fail = code => { const error = new TypeError(`Terrain sculpt failed: ${code}`); error.code = code; throw error; };
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -11,12 +12,14 @@ const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 // GM08: grid strokes stop 2 mm inside the 0.75 m floor and the +200 m ceiling (millimetre rounding stays inside).
 export const GRID_FLOOR = TERRAIN_MIN_HEIGHT + .002, GRID_CEILING = TERRAIN_GRID_MAX_HEIGHT - .002;
 
-function checkedInput({ map, document, baseRevision, tool, points, radius = 6, strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4 },
-  maxRadius = 24) {
+function checkedInput({ map, document, baseRevision, tool, points, radius = 6, strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4,
+  noise = null }, maxRadius = 24) {
   const doc = validateDocument(document);
   if (!map || !Number.isSafeInteger(map.seed) || doc.base.seed !== (map.seed >>> 0) ||
       doc.base.revision !== baseRevision || typeof baseRevision !== 'string') fail('base_mismatch');
-  if (!['raise', 'lower', 'flatten', 'smooth', 'ramp'].includes(tool)) fail('tool');
+  // GM08c: the noise tool exists on the grid path only (the caller passes its parameters).
+  if (!['raise', 'lower', 'flatten', 'smooth', 'ramp'].includes(tool) && !(tool === 'noise' && noise)) fail('tool');
+  if (tool === 'noise' && !validNoise(noise)) fail('parameters');
   if (!Array.isArray(points) || points.length < (tool === 'ramp' ? 2 : 1) ||
       (tool === 'ramp' && points.length !== 2) ||
       points.some(p => !p || !Number.isFinite(p.x) || !Number.isFinite(p.z) || Math.abs(p.x) > map.half || Math.abs(p.z) > map.half)) fail('points');
@@ -25,7 +28,7 @@ function checkedInput({ map, document, baseRevision, tool, points, radius = 6, s
   // GM07 D4: flatten reaches the [-40, +200] m range; the 0.75 m floor stays.
   if (!Number.isFinite(level) || level < TERRAIN_MIN_HEIGHT || level > TERRAIN_GRID_MAX_HEIGHT) fail('parameters');
   if (tool === 'ramp' && dist(points[0], points[1]) < .25) fail('ramp_length');
-  return { doc, tool, points, radius, strength, falloff, shape, aspect, rotation, level };
+  return { doc, tool, points, radius, strength, falloff, shape, aspect, rotation, level, noise };
 }
 
 function weight(distance, radius, falloff) {
@@ -52,8 +55,9 @@ function originalHeight(map, index) {
 }
 
 // The per-vertex rule of every sculpt tool, shared by the sparse document and the grid entry points.
-function strokeTarget({ tool, strength, level, points }, sampleHeight, i, j, x, z, influence, rampEndpoints) {
+function strokeTarget({ tool, strength, level, points, noise }, sampleHeight, i, j, x, z, influence, rampEndpoints) {
   const current = sampleHeight(i, j);
+  if (tool === 'noise') return current + strength * noise.amplitude * fbmNoise(x, z, noise) * influence;
   if (tool === 'raise') return current + strength * influence;
   if (tool === 'lower') return current - strength * influence;
   if (tool === 'flatten') return current + (level - current) * strength * influence;
@@ -156,11 +160,13 @@ export function sculptTerrainDocument({ map, document, baseRevision, tool, point
  * places, the shore and the outer ring stay untouched instead of refusing the stroke, and no vertex is moved below the
  * 0.75 m floor or above +200 m (one already beyond stays where it is). No 12 m or 20,000-sample cap applies here; the
  * caller validates the patched grid (validateTerrainGridForMap) and owns tiles and history (terrainSession.js).
+ * GM08c: the noise tool adds strength x `amplitude` metres of fbmNoise({ octaves, scale, seed }) per unit of influence.
  */
 export function sculptTerrainGrid({ map, surface, grid, document, baseRevision, tool, points, radius = 6,
-  strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4, flow = 'stroke' } = {}) {
-  const input = checkedInput({ map, document, baseRevision, tool, points, radius, strength, falloff, shape, aspect, rotation, level },
-    TERRAIN_BRUSH_MAX_RADIUS);
+  strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4, flow = 'stroke',
+  amplitude = 2, octaves = 4, scale = 32, seed = 1 } = {}) {
+  const input = checkedInput({ map, document, baseRevision, tool, points, radius, strength, falloff, shape, aspect, rotation, level,
+    noise: { amplitude, octaves, scale, seed } }, TERRAIN_BRUSH_MAX_RADIUS);
   if (!BRUSH_FLOWS.includes(flow)) fail('parameters');
   if (!(grid?.deltasMm instanceof Int32Array) || grid.deltasMm.length !== map.heights?.length ||
       surface?.heights?.length !== map.heights.length) fail('grid');
@@ -178,7 +184,7 @@ export function sculptTerrainGrid({ map, surface, grid, document, baseRevision, 
       values[(j - j0) * width + i - i0] = weight(rampDistance({ x: i - map.half, z: j - map.half }, points[0], points[1]), radius, falloff);
     field = { i0, j0, i1, j1, width, values };
   } else field = strokeInfluence(strokePath(points, strokeSpacing(radius)), brush, { half: map.half, flow });
-  const share = terrainEditWeights(map), airbrush = flow === 'airbrush' && tool !== 'ramp', blend = tool !== 'raise' && tool !== 'lower';
+  const share = terrainEditWeights(map), airbrush = flow === 'airbrush' && tool !== 'ramp', blend = !['raise', 'lower', 'noise'].includes(tool);
   const heights = surface.heights, sampleHeight = (i, j) => heights[j * TERRAIN_GRID_SIZE + i];
   const indices = [], deltas = [];
   for (let j = field.j0; j <= field.j1; j++) for (let i = field.i0, n = (j - field.j0) * field.width; i <= field.i1; i++, n++) {

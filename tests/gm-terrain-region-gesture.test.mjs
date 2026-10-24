@@ -47,9 +47,11 @@ async function rig() {
     _setStatus: (message, kind) => statuses.push([kind, message.en + ' | ' + message.es]), invalidate() {},
     _renderDocument: (document, options = {}) => renders.push(options), _terrainSurface: (document) => terrain.surfaceFor(document),
     async _commitTerrainStroke(edit) {
-      const result = await terrain.commit(edit);
-      history.commit(result.document, { tiles: result.tiles }); editor.draftMap = result.map;
-      return true;
+      try {
+        const result = await terrain.commit(edit);
+        history.commit(result.document, { tiles: result.tiles }); editor.draftMap = result.map;
+        return true;
+      } catch (error) { editor.lastError = error; return false; }
     },
   };
   const panel = { tool: null, picking: false, level: 2.4, values: { selection: 'brush', feather: 0, amount: 3, passes: 2 },
@@ -86,6 +88,30 @@ test('a rectangle drag previews through the gesture, draws its outline on the gr
   assert.match(statuses.at(-1)[1], /Region kept|Región conservada/);
   history.undo();
   assert.equal(history.canUndo(), false, 'one history entry');
+});
+
+test('GM08c: an erosion drag shows only its outline, runs once on release, and says so when its cost is refused', async () => {
+  const { interaction, panel, history, statuses, renders, event, pointer } = await rig();
+  panel.values.selection = 'rect'; panel.values.droplets = 2000; panel.values.seed = 3; interaction.select('hydraulic');
+  pointer(centre.x - 15, centre.z - 15);
+  interaction.down(event);
+  pointer(centre.x + 15, centre.z + 15);
+  interaction.lastPreview = 0; interaction.update();
+  assert.equal(renders.length, 0, 'no preview while dragging an erosion');
+  assert.equal(interaction.cursor.visible, true, 'the outline is drawn');
+  const before = history.current();
+  await interaction.finish();
+  assert.notDeepEqual(history.current(), before, 'one commit on release');
+  assert.match(statuses.at(-1)[1], /Region kept|Región conservada/);
+
+  // The whole map at 200 iterations is over the thermal cost bound: nothing saved, a message that says why.
+  panel.values.talus = 25; panel.values.iterations = 200; interaction.select('thermal');
+  pointer(-280, -280); interaction.down(event); pointer(280, 280);
+  const kept = history.current();
+  await interaction.finish();
+  assert.deepEqual(history.current(), kept, 'nothing saved');
+  assert.equal(statuses.at(-1)[0], 'error');
+  assert.match(statuses.at(-1)[1], /Erosion refused: the area is too large/);
 });
 
 test('a lasso thins itself out past 256 points, and a lasso of fewer than 3 points saves nothing', async () => {

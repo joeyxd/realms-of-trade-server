@@ -1,11 +1,14 @@
 // GM08b (docs/briefs/gm08-large-brushes.md): region operations on the editor's terrain grid. A rectangle or a lasso
 // drawn on the ground, with an inner feather, becomes a field like a stroke's influence; one operation (level, raise or
 // lower by an amount, smooth n passes, paint or erase) runs over it with the stroke's clip and clamps, and commits once.
+// GM08c adds noise, thermal erosion and hydraulic erosion (terrainNoise.js).
 // Pure module: no DOM; it runs in the browser and in Node.
 import { validateDocument } from './document.js';
 import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_GRID_SIZE, TERRAIN_MATERIALS, TERRAIN_MIN_HEIGHT, terrainEditWeights } from './terrainData.js';
 import { GRID_CEILING, GRID_FLOOR } from './terrainSculpt.js';
 import { blendWeights } from './terrainPaint.js';
+import { fbmNoise, hydraulicErosion, THERMAL_MAX_WORK, thermalErosion, thermalWork, validHydraulic, validNoise,
+  validThermal } from './terrainNoise.js';
 
 export const REGION_SHAPES = Object.freeze(['rect', 'lasso']);
 /** A lasso holds 3 to 256 points; the pointer thins it out instead of refusing it (terrainInteraction.js). */
@@ -14,7 +17,9 @@ export const REGION_MAX_FEATHER = 32;
 /** Raise and lower move the ground by up to 50 m per operation. */
 export const REGION_MAX_AMOUNT = 50;
 export const REGION_MAX_PASSES = 16;
-const REGION_TOOLS = new Set(['raise', 'lower', 'flatten', 'smooth', 'paint', 'erase']);
+const REGION_TOOLS = new Set(['raise', 'lower', 'flatten', 'smooth', 'noise', 'thermal', 'hydraulic', 'paint', 'erase']);
+/** GM08c: the erosions run over a region only (no brush). */
+export const REGION_ONLY_TOOLS = Object.freeze(['thermal', 'hydraulic']);
 
 const fail = code => { throw Object.assign(new TypeError(`Terrain region failed: ${code}`), { code }); };
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -86,14 +91,19 @@ export function regionInfluence(region, half) {
 /**
  * One region operation over the grid, beside sculptTerrainGrid and paintTerrainGrid (terrainSession.js picks it when
  * the edit carries `region`). edit = { map, surface, grid, document, baseRevision, tool, region: { shape, points,
- * feather }, level, amount, passes, strength, material }. Per vertex the field times its terrainEditWeights share:
+ * feather }, level, amount, passes, strength, material, amplitude, octaves, scale, seed, talus, iterations, droplets }.
+ * Per vertex the field times its terrainEditWeights share:
  * - flatten levels to `level`; raise and lower move by `amount` metres; smooth runs `passes` full 3x3 passes
+ * - noise adds `amplitude` metres of fbmNoise({ octaves, scale, seed }) at the vertex's world position
+ * - thermal runs thermalErosion ({ talus, iterations }; above THERMAL_MAX_WORK it fails with 'cost'); hydraulic runs
+ *   hydraulicErosion ({ droplets, seed })
  * - paint blends `material` and erase removes paint, both by `strength`
  * Heights keep the 0.75 m floor and +200 m ceiling clamps of a stroke. The grid is not modified; the result is the
  * patch, { indices, deltasMm } or { indices, weights }, in ascending vertex order.
  */
 export function regionTerrainGrid({ map, surface, grid, document, baseRevision, tool, region, level = 2.4, amount = 1,
-  passes = 1, strength = .5, material = 'grass' } = {}) {
+  passes = 1, strength = .5, material = 'grass', amplitude = 2, octaves = 4, scale = 32, seed = 1, talus = 35, iterations = 50,
+  droplets = 10000 } = {}) {
   const doc = validateDocument(document);
   if (!map || !Number.isSafeInteger(map.seed) || doc.base.seed !== (map.seed >>> 0) ||
       typeof baseRevision !== 'string' || doc.base.revision !== baseRevision) fail('base_mismatch');
@@ -101,7 +111,10 @@ export function regionTerrainGrid({ map, surface, grid, document, baseRevision, 
   if (!Number.isFinite(level) || level < TERRAIN_MIN_HEIGHT || level > TERRAIN_GRID_MAX_HEIGHT ||
       !Number.isFinite(amount) || amount <= 0 || amount > REGION_MAX_AMOUNT ||
       !Number.isSafeInteger(passes) || passes < 1 || passes > REGION_MAX_PASSES ||
-      !Number.isFinite(strength) || strength <= 0 || strength > 1) fail('parameters');
+      !Number.isFinite(strength) || strength <= 0 || strength > 1 ||
+      (tool === 'noise' && !validNoise({ amplitude, octaves, scale, seed })) ||
+      (tool === 'thermal' && !validThermal({ talus, iterations })) ||
+      (tool === 'hydraulic' && !validHydraulic({ droplets, seed }))) fail('parameters');
   const paint = tool === 'paint' || tool === 'erase';
   if (paint ? !(grid?.weights instanceof Uint8Array) || grid.weights.length !== TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE * 4
     : !(grid?.deltasMm instanceof Int32Array) || grid.deltasMm.length !== map.heights?.length ||
@@ -141,11 +154,19 @@ export function regionTerrainGrid({ map, surface, grid, document, baseRevision, 
       [current, next] = [next, current === original ? new Float64Array(w.length) : current];
     }
     result = current;
+  } else if (tool === 'thermal' || tool === 'hydraulic') {
+    // GM08c: the erosion moves heights inside the window; each result then takes the clamps.
+    if (tool === 'thermal' && thermalWork(w, iterations) > THERMAL_MAX_WORK) fail('cost');
+    result = Float64Array.from(original);
+    if (tool === 'thermal') thermalErosion(result, w, width, { talus, iterations });
+    else hydraulicErosion(result, w, width, { droplets, seed });
+    for (let n = 0; n < result.length; n++) result[n] = limit(result[n], n);
   }
   for (let j = j0, n = 0; j <= j1; j++) for (let i = i0; i <= i1; i++, n++) {
     if (w[n] <= 0) continue;
     const index = j * TERRAIN_GRID_SIZE + i, h = original[n];
-    const target = tool === 'smooth' ? result[n] : limit(tool === 'flatten' ? h + (level - h) * w[n]
+    const target = result !== original ? result[n] : limit(tool === 'flatten' ? h + (level - h) * w[n]
+      : tool === 'noise' ? h + amplitude * fbmNoise(i - map.half, j - map.half, { octaves, scale, seed }) * w[n]
       : h + (tool === 'raise' ? amount : -amount) * w[n], n);
     const delta = Math.round((Math.fround(target) - map.heights[index]) * 1000);
     if (delta !== grid.deltasMm[index]) { indices.push(index); values.push(delta); }

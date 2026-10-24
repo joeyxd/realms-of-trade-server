@@ -1,7 +1,7 @@
 # GM08 large-scale terrain brushes
 
-Status: GM08a BUILT (T-1023-13, 2026-10-23, not pushed). GM08b BUILT (T-1024-03, 2026-10-24, not pushed). GM08c and d
-are designed here, not built yet.
+Status: GM08a BUILT (T-1023-13, 2026-10-23) and GM08b BUILT (T-1024-03, 2026-10-24), live in alpha.104. GM08c BUILT
+(T-1024-24, 2026-10-24, not pushed). GM08d is designed here, not built yet.
 Joi's bar (2026-10-21): every row of the census limits table gets fixed. For brushes that means: 24 m maximum, no
 fill, no region select, no noise or erosion, no heightmap import or export.
 Inputs: [GM07](gm07-terrain-tiles.md) (tiles, the session, GM07c region rendering) and the
@@ -137,13 +137,37 @@ The design as it stood before the build:
 - The preview shows the region outline and the result through the same gesture region path.
 - About 250 lines across 4 files, plus tests.
 
-GM08c **procedural.**
-- A noise brush and region operation: seeded value-noise fBm (1 to 6 octaves, scale 4 to 256 m, amplitude 0.1 to
-  20 m). It is deterministic, and its seed is a stroke parameter (results are stored as tiles).
-- Erosion over a region:
-  - thermal: talus angle 25 to 45 degrees, 10 to 200 iterations
-  - simple hydraulic: 1,000 to 50,000 seeded droplets
-- A cost bound (iterations x area within about 200 ms). It runs on the session grid and commits like a stroke.
+GM08c **built** (T-1024-24), decisions P1 to P6 below. Client only: no protocol, no SQL, no server change (results are
+tiles, so the validator stays the authority). Module `src/editor/terrainNoise.js` (pure).
+- P1 **Noise** (tool Noise/Ruido, brush and region): seeded value-noise fBm, 1 to 6 octaves, scale 4 to 256 m (the
+  lattice cell of the first octave; each next octave halves the cell and the weight), amplitude 0.1 to 20 m, seed 1 to
+  9,999 in the panel with a "New seed" button (the module takes any 32-bit seed). Signed: it raises and lowers. It is
+  world-anchored, so two strokes with one seed meet without a seam. Brush: strength x amplitude x noise per unit of
+  influence, additive like raise (the airbrush adds, it does not blend). Region: amplitude x noise x the field. The
+  sparse v3/v4 document path has no noise.
+- P2 **Thermal erosion** (region only): each iteration a vertex whose drop to one of its 8 neighbours exceeds tan(talus)
+  per metre moves half its largest excess to its lower neighbours, in proportion, scaled by the smaller edit share of
+  the pair; all vertices move together, so the volume is kept exactly. Talus 25 to 45 degrees, 10 to 200 iterations.
+- P3 **Hydraulic erosion** (region only): Beyer's droplet model in metres. A drop starts on a random editable vertex
+  (seeded), rolls downhill with inertia 0.05 for up to 30 steps of 1 m, erodes from the 3 x 3 vertices around it while
+  under capacity (never more than the step's drop), deposits when overloaded or climbing, and lays its load where it
+  ends; a drop that leaves the window takes its load (into the sea). Capacity 1 and erosion 0.05 instead of his 4 and
+  0.3, measured: 1,000 drops on a 40 m square move 90 % of its vertices by under 0.25 m (at most 1.2 m); 50,000 over
+  the whole island cut channels up to 3.8 m (90 % under 0.48 m). 1,000 to 50,000 drops.
+- P4 **Cost bound**: thermal work = editable vertices x iterations, at most 4,000,000 (the whole island, 34,547
+  vertices, takes up to about 115 iterations); above it the operation fails with the code `cost` and the status says
+  "Erosion refused: the area is too large for that many iterations". Hydraulic is bounded by its parameters (50,000 x
+  30 steps). Measured on the shared machine, whole island: thermal x100 172 ms CPU, 50,000 drops 203 ms CPU, noise
+  about 35 ms.
+- P5 **No drag preview for the erosions**: the drag shows the outline only and the erosion runs once on release (it
+  would cost up to 200 ms every 120 ms). Noise previews like any brush or region. Choosing an erosion switches Brush to
+  Rectangle; Brush cannot be chosen while an erosion is the tool.
+- P6 **Clip and clamps as everywhere**: every change is scaled by the D2 edit share (protected places, the shore and the
+  outer ring never move) and takes the floor and ceiling clamps of D3. One commit and one undo entry per operation; the
+  held region (R7) takes noise and erosions too.
+- Tests: `tests/gm-terrain-procedural.test.mjs` (5, pure, in the deploy gate: 64 files), the gesture test (+1: no
+  preview, one commit, the cost message), the panel test (+1).
+- Open for Joi: the erosion strength on screen (P3 constants), and whether the seed slider should be a number field.
 
 GM08d **heightmap import and export.**
 - Export the compiled 561 x 561 heights as a 16-bit grayscale PNG, with a JSON sidecar: min, max, base revision and

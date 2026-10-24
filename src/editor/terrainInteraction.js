@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { brushOutline, strokeSpacing } from './terrainBrush.js';
 import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
 import { joinRegions } from './terrainPreview.js';
-import { REGION_MAX_POINTS, regionOutline } from './terrainRegion.js';
+import { REGION_MAX_POINTS, REGION_ONLY_TOOLS, regionOutline } from './terrainRegion.js';
 import { editorMessage } from './messages.js';
 import { LAYER } from '../render/pipeline.js';
 
@@ -15,6 +15,10 @@ const blocked = () => editorMessage(
   'Stroke blocked: keep it on dry ground, away from protected places, or reduce its size/height. Nothing was saved.',
   'Trazo bloqueado: mantén suelo seco y distancia de zonas protegidas, o reduce tamaño/altura. No se guardó ningún cambio.');
 const isRegion = parameters => parameters.selection === 'rect' || parameters.selection === 'lasso';
+// GM08c: an erosion over a region is refused above its cost bound (terrainNoise.js THERMAL_MAX_WORK).
+const tooCostly = () => editorMessage(
+  'Erosion refused: the area is too large for that many iterations. Draw a smaller area or use fewer iterations. Nothing was saved.',
+  'Erosión rechazada: el área es demasiado grande para tantas iteraciones. Dibuja un área menor o usa menos iteraciones. No se guardó ningún cambio.');
 // GM08b: a held region smaller than this (a click without a drag) never replaces the one already held.
 const HELD_MIN_AREA = 1;
 const regionKept = () => editorMessage(
@@ -236,6 +240,8 @@ export class TerrainInteraction {
     if (!stroke || (this.tool === 'ramp' && stroke.points.length < 2) ||
         (stroke.parameters.selection === 'lasso' && stroke.points.length < 3)) return;
     stroke.pending = false;
+    // GM08c: an erosion runs once, when the gesture is released (up to about 200 ms); the drag shows its outline only.
+    if (REGION_ONLY_TOOLS.includes(stroke.parameters.tool)) return;
     try {
       if (stroke.points.length >= STROKE_LIMIT) throw new Error('stroke_limit');
       const result = this.editor.terrain.preview(this._edit(stroke));
@@ -278,7 +284,7 @@ export class TerrainInteraction {
         this.editor._setStatus(region ? regionKept()
           : editorMessage('Terrain stroke kept in the private draft. Undo reverses the whole stroke.',
             'Trazo de terreno conservado en el borrador privado. Deshacer revierte el trazo completo.'), 'ok');
-      } else this.editor._setStatus(blocked(), 'error');
+      } else this.editor._setStatus(this.editor.lastError?.code === 'cost' ? tooCostly() : blocked(), 'error');
       this.drawCursor();
       return committed;
     });

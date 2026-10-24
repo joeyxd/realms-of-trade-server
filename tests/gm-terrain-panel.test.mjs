@@ -78,7 +78,8 @@ test('tool and paint controls expose shared brush parameters with relevant contr
     const rotationInput = panel.element.children.flatMap(node => node.children).find(node => node.dataset.terrainField === 'rotation');
     rotationInput.value = '45'; panel.element.dispatch('input', rotationInput);
     assert.deepEqual(panel.parameters(), { tool: 'paint', radius: 12.5, strength: 0.5, falloff: 0.5, level: 2.4,
-      material: 'rock', shape: 'ellipse', aspect: 0.35, rotation: 45, flow: 'stroke', selection: 'brush', feather: 4, amount: 2, passes: 4 });
+      material: 'rock', shape: 'ellipse', aspect: 0.35, rotation: 45, flow: 'stroke', selection: 'brush', feather: 4, amount: 2, passes: 4,
+      amplitude: 2, octaves: 4, scale: 32, seed: 1, talus: 35, iterations: 50, droplets: 10000 });
     assert.equal(panel.element.querySelector('[data-terrain-control="material"]').hidden, false);
     assert.equal(panel.element.querySelector('[data-terrain-control="level"]').hidden, true);
     shape.value = 'circle'; panel.element.dispatch('change', shape);
@@ -160,6 +161,56 @@ test('GM08b: a held region shows its area with Apply and Drop, only in a region 
     assert.equal(hidden(), true, 'ramps are brush only');
     panel.selection = 'brush'; panel.select('raise');
     assert.equal(hidden(), true);
+  } finally {
+    panel.dispose();
+    globalThis.document = previousDocument;
+  }
+});
+
+test('GM08c: noise on a brush or a region; the erosions on a region only, each with its own controls', () => {
+  const previousDocument = globalThis.document;
+  globalThis.document = { createElement: (tag) => new Element(tag) };
+  const root = new Element('root'), selected = [];
+  const editor = { _t: (en) => en, map: { size: 12, half: 6, mapSpan: 1, landmarks: { spawn: { x: 0, z: 0 }, village: { x: 2, z: 2 } },
+    groundAt: () => 1, masks: () => ({}), onDock: () => false }, draftMap: null };
+  const panel = new TerrainPanel({ root, editor, onTool: (tool) => selected.push(tool) });
+  const hidden = (field) => panel.element.querySelector(`[data-terrain-control="${field}"]`).hidden;
+  const help = (key) => panel.element.querySelector(`[data-terrain-help="${key}"]`).hidden;
+  try {
+    const tool = panel.element.querySelector('[data-terrain-tool]');
+    tool.value = 'noise'; panel.element.dispatch('change', tool);
+    assert.equal(panel.parameters().selection, 'brush', 'noise works as a brush');
+    for (const field of ['amplitude', 'octaves', 'scale', 'seed', 'reseed', 'radius', 'strength', 'flow']) assert.equal(hidden(field), false, field);
+    for (const field of ['talus', 'iterations', 'droplets', 'level', 'amount']) assert.equal(hidden(field), true, field);
+    assert.equal(help('noiseHelp'), false); assert.equal(help('erosionHelp'), true);
+    const amplitude = new Element('input'); amplitude.dataset.terrainField = 'amplitude'; amplitude.value = '7.5';
+    panel.element.dispatch('input', amplitude);
+    assert.equal(panel.parameters().amplitude, 7.5);
+    assert.equal(panel.element.querySelector('[data-terrain-value="amplitude"]').value, '7.5');
+    const seed = panel.seed;
+    panel.element.dispatch('click', panel.element.querySelector('[data-terrain-reseed]'));
+    assert.ok(Number.isInteger(panel.seed) && panel.seed >= 1 && panel.seed <= 9999);
+    if (panel.seed === seed) panel.element.dispatch('click', panel.element.querySelector('[data-terrain-reseed]'));
+    assert.notEqual(panel.parameters().seed, seed, 'a new seed');
+
+    // The erosions switch a brush to a rectangle, and a brush cannot be chosen while one is selected.
+    tool.value = 'thermal'; panel.element.dispatch('change', tool);
+    assert.equal(panel.parameters().selection, 'rect');
+    assert.equal(panel.element.querySelector('[data-terrain-select="selection"]').value, 'rect');
+    for (const field of ['talus', 'iterations', 'feather']) assert.equal(hidden(field), false, field);
+    for (const field of ['radius', 'strength', 'amplitude', 'seed', 'droplets']) assert.equal(hidden(field), true, field);
+    assert.equal(help('erosionHelp'), false);
+    const area = panel.element.querySelector('[data-terrain-select="selection"]');
+    area.value = 'brush'; panel.element.dispatch('change', area);
+    assert.equal(panel.parameters().selection, 'rect'); assert.equal(area.value, 'rect');
+    area.value = 'lasso'; panel.element.dispatch('change', area);
+    assert.equal(panel.parameters().selection, 'lasso');
+    tool.value = 'hydraulic'; panel.element.dispatch('change', tool);
+    for (const field of ['droplets', 'seed', 'reseed', 'feather']) assert.equal(hidden(field), false, field);
+    for (const field of ['talus', 'iterations', 'amplitude']) assert.equal(hidden(field), true, field);
+    assert.deepEqual(selected.slice(-1), ['hydraulic']);
+    const { tool: chosen, droplets, talus, iterations } = panel.parameters();
+    assert.deepEqual({ chosen, droplets, talus, iterations }, { chosen: 'hydraulic', droplets: 10000, talus: 35, iterations: 50 });
   } finally {
     panel.dispose();
     globalThis.document = previousDocument;

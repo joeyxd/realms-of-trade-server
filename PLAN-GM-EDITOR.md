@@ -553,7 +553,12 @@ Contrato: [GM08](docs/briefs/gm08-large-brushes.md).
   Todo el mapa suavizado 16 veces hace commit en 115 a 245 ms.
 - **GM08b R7** (2026-10-24, T-1024-12, decisión de Joi): la región dibujada se queda seleccionada para encadenar
   operaciones (nivelar, luego suavizar, luego pintar) con "Aplicar a la región" (Intro); Escape la suelta.
-- **Siguen:** GM08c ruido y erosión, GM08d importar y exportar el mapa de alturas (PNG de 16 bits, R16 de Unreal).
+- **GM08c** (2026-10-24, T-1024-24, sin push): ruido fBm con semilla como pincel y como región (1 a 6 octavas, escala
+  4 a 256 m, amplitud 0,1 a 20 m); erosión térmica (talud 25 a 45 grados, 10 a 200 iteraciones) y erosión hidráulica
+  (1.000 a 50.000 gotas con semilla) solo sobre una región, sin vista previa al arrastrar. Límite de coste: vértices
+  editables x iteraciones hasta 4.000.000; por encima se rechaza con un mensaje. Toda la isla: térmica x100 172 ms de
+  CPU, 50.000 gotas 203 ms. Decisiones P1 a P6 en docs/briefs/gm08-large-brushes.md.
+- **Sigue:** GM08d importar y exportar el mapa de alturas (PNG de 16 bits, R16 de Unreal).
 
 ### GM11 Mundo ampliable, presupuesto de carga y zonas (diseño 2026-10-24, T-1024-13; aprobado por Joi el mismo día; GM11a construido en T-1024-17)
 
