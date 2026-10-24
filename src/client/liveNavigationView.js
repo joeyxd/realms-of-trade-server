@@ -1,6 +1,6 @@
 import { t, text, attr, translateData, messageKey, setText, setAttributeText } from '../core/i18n.js';
 // Live presentation and input adapter for the server-owned coastal voyage.
-import { NavalLabCamera } from '../render/naval/camera.js';
+import { NavalLabCamera, NAVAL_ZOOM_LEVELS } from '../render/naval/camera.js';
 import { NavalLabEffects } from '../render/naval/effects.js';
 import { NavalSpeedFeel } from '../render/naval/speed-feel.js';
 import { NavalLabAudio } from '../audio/naval.js';
@@ -56,6 +56,7 @@ export class LiveNavigationView {
 
     this.root = document.createElement('section');
     this.root.className = `live-navigation is-reference${isTouch ? ' is-touch' : ' is-desktop'}`; this.root.hidden = true;
+    this.root.setAttribute('data-pinch-zoom', ''); // PT05: a pinch over the readouts still zooms the camera
     setAttributeText(this.root, 'aria-label', 'nav.title');
     this.root.innerHTML = `<div class="ln-strip">
       <div class="ln-brand"><span class="ln-mark">MN</span><span><b>${text('nav.voyage')}</b><small class="ln-phase">${text('nav.ready')}</small></span></div>
@@ -109,7 +110,9 @@ export class LiveNavigationView {
       toLocal: stage?.toLocal?.bind(stage), onMove: (value) => { this.axes = { x: value.x, y: -value.y }; },
       onLook: (value) => this.sceneCamera.setLook(value), onGesture: () => { this.sound.unlock(); onClosePanels(); },
       onLever: (value) => { this.sail = clamp(value, 0, 1); this.leverBrake = clamp(-value, 0, 1); },
+      onZoom: (step, options) => { if (this.canAct()) this.zoomStep(step, options); },
       onAction: (id) => this.runAction(id), actions: [] });
+    this.touch.setZoom(this.sceneCamera.zoomIdx, NAVAL_ZOOM_LEVELS.length);
     this.touch.wrapper.classList.toggle('is-desktop', !isTouch);
     setAttributeText(this.touch.wrapper, 'aria-label', isTouch ? 'nav.controls' : 'nav.manoeuvres');
     this.buildTouchGauge();
@@ -159,6 +162,20 @@ export class LiveNavigationView {
   navActive() { const c = this.client(); return !!(c?.naval?.active || c?.deck?.active || this.voyage().active); }
 
   onGesture() { this.sound.unlock(); this.onClosePanels(); }
+
+  // PT05: one zoom step of the chase camera (touch button, pinch, mouse wheel).
+  zoomStep(step, options) {
+    const level = this.sceneCamera.zoomStep(step, options);
+    this.touch?.setZoom(level, NAVAL_ZOOM_LEVELS.length);
+    return level;
+  }
+
+  /** The mouse wheel while the chase camera drives the view; false leaves the wheel to the iso rig. */
+  wheelZoom(step) {
+    if (!this.cameraWasNaval) return false;
+    if (this.canAct()) this.zoomStep(step);
+    return true;
+  }
 
   update(dt, alpha, ps, { paused = false, reducedMotion = false, muted = false } = {}) {
     if (this.disposed) return;

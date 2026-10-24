@@ -2,6 +2,12 @@ import * as THREE from 'three';
 
 const angleDelta = (to, from) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
 
+// PT05 (Joi, R1 and R2: "still too close"): chase distance as a multiple of the pre-PT05 framing. The near step
+// keeps the old view, the default sits 1.7 times farther (R1 asked 1.6 to 1.8). Angles do not change, so the
+// horizon and the hull stay where they were on screen; only their size does.
+export const NAVAL_ZOOM_LEVELS = Object.freeze([1, 1.7, 2.4]);
+export const NAVAL_ZOOM_DEFAULT = 1;
+
 /** Lab-only chase framing. Camera lag never changes helm input or simulated velocity. */
 export class NavalLabCamera {
   constructor(camera, { reducedMotion = false } = {}) {
@@ -9,9 +15,18 @@ export class NavalLabCamera {
     this.anchor = new THREE.Vector3(); this.aim = new THREE.Vector3(); this.desired = new THREE.Vector3();
     this.yaw = 0; this.ready = false; this.mode = 'chase';
     this.orbitYaw = 0; this.orbitPitch = 0; this.look = { x: 0, y: 0 };
+    this.zoomIdx = NAVAL_ZOOM_DEFAULT; this.zoom = NAVAL_ZOOM_LEVELS[this.zoomIdx];
   }
 
+  // The zoom step survives reset(): leaving the helm or the raft keeps the player's choice for the next voyage.
   reset() { this.ready = false; this.recenter(); }
+
+  /** +1 steps farther, -1 closer; `wrap` cycles past the ends (the touch button). Returns the new index. */
+  zoomStep(step, { wrap = false } = {}) {
+    const count = NAVAL_ZOOM_LEVELS.length, next = this.zoomIdx + Math.sign(step || 0);
+    this.zoomIdx = wrap ? (next + count) % count : Math.max(0, Math.min(count - 1, next));
+    return this.zoomIdx;
+  }
 
   setLook({ x = 0, y = 0 } = {}) {
     this.look.x = Number.isFinite(x) ? Math.max(-1, Math.min(1, x)) : 0;
@@ -32,16 +47,19 @@ export class NavalLabCamera {
     const hx = pose.x + rig.hullCx * c + rig.hullCz * s;
     const hz = pose.z - rig.hullCx * s + rig.hullCz * c;
     const desired = this.desired.set(hx, pose.y, hz);
+    const zoomTarget = NAVAL_ZOOM_LEVELS[this.zoomIdx];
     if (!this.ready || mode !== this.mode) {
-      this.anchor.copy(desired); this.yaw = state.yaw; this.ready = true;
+      this.anchor.copy(desired); this.yaw = state.yaw; this.zoom = zoomTarget; this.ready = true;
     } else {
       this.anchor.lerp(desired, follow);
       this.yaw += angleDelta(state.yaw, this.yaw) * heading;
+      // A zoom step glides over about half a second rather than cutting.
+      this.zoom += (zoomTarget - this.zoom) * (step === 0 ? 0 : this.reducedMotion ? 1 : 1 - Math.exp(-step * 6));
     }
     this.mode = mode;
     const hull = Math.max(4, rig.beam, rig.length);
     const narrow = Math.max(1, 1.15 / Math.max(0.35, this.camera.aspect));
-    const frame = hull / 4 * narrow;
+    const frame = hull / 4 * narrow * this.zoom;
     const fov = (mode === 'chase' ? 50 : 35) + (this.reducedMotion ? 0 : fovOffset);
     if (Math.abs(this.camera.fov - fov) > 0.01) {
       this.camera.fov = fov; this.camera.updateProjectionMatrix();
@@ -70,7 +88,7 @@ export class NavalLabCamera {
 
   diagnostics() {
     return { mode: this.mode, yaw: this.yaw, orbitYaw: this.orbitYaw, orbitPitch: this.orbitPitch,
-      look: { ...this.look }, fov: this.camera.fov,
+      look: { ...this.look }, fov: this.camera.fov, zoomIdx: this.zoomIdx, zoom: this.zoom,
       position: this.camera.position.toArray(), target: this.aim.toArray() };
   }
 }

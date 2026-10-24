@@ -195,6 +195,13 @@
 .naval-touch-lever-caption, .naval-touch-lever-brake { position: absolute; left: -10px; right: -10px; text-align: center; color: #f5e4be; font: italic 900 11px/1 Impact, 'Arial Narrow', sans-serif; letter-spacing: .04em; text-shadow: 1px 2px 0 #07181f; pointer-events: none; }
 .naval-touch-lever-caption { top: 0; }
 .naval-touch-lever-brake { bottom: 0; font-size: 9px; color: #f0b49c; }
+/* PT05: camera zoom, centred above the sail lever; the pips show the step (1 near .. 3 far). */
+.naval-touch-zoom { position: absolute; right: calc(var(--nt-right) + var(--nt-cluster-width) + 16px); bottom: calc(var(--nt-bottom) + 158px); width: 40px; height: 40px; padding: 0; margin: 0; display: grid; place-items: center; border: 3px solid var(--nt-ink, #102027); border-radius: 50%; color: #efe4c9; background: radial-gradient(circle at 35% 25%, #5b867dab, #143b3ee8 67%); box-shadow: 0 0 0 2px var(--nt-edge, #c8b48a), 0 4px 8px #0006; appearance: none; -webkit-appearance: none; pointer-events: auto; touch-action: none; }
+.naval-touch-zoom > svg { width: 20px; height: 20px; margin-top: -5px; filter: drop-shadow(1px 2px 0 #081c23); }
+.naval-touch-zoom-pips { position: absolute; bottom: 5px; left: 0; right: 0; display: flex; justify-content: center; gap: 3px; pointer-events: none; }
+.naval-touch-zoom-pips > i { width: 4px; height: 4px; border-radius: 50%; background: #efe4c94d; }
+.naval-touch-zoom-pips > i.is-on { background: #f3d38a; }
+.naval-touch-zoom:active { transform: scale(.96); box-shadow: 0 0 0 2px #ffdb94, inset 0 0 9px #eaba5777; }
 .naval-touch-instrument { position: absolute; right: var(--nt-right); bottom: var(--nt-bottom); width: var(--nt-cluster-width); height: var(--nt-cluster-height); pointer-events: none; }
 .naval-touch-gauge { position: absolute; right: -2px; bottom: 4px; width: var(--nt-gauge); height: var(--nt-gauge); color: #fff1d1; pointer-events: none; }
 .naval-touch-gauge > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 4px #ee7f385e); }
@@ -242,5 +249,5 @@
   .naval-touch-picker { width: 248px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .naval-touch-slot:active { transform: none; }
+  .naval-touch-slot:active, .naval-touch-zoom:active { transform: none; }
 }

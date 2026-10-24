@@ -199,6 +199,7 @@ body.is-naval .ln-touch-hull { display: block; }
 .live-navigation.is-touch .ln-prompt button { min-height: 44px; min-width: 52px; border-radius: 3px; font-size: 10px; }
 /* Aboard on narrow stages the prompt centers in the free band between the helm wheel and the sail lever. */
 @container stage (max-width: 760px) { .live-navigation.is-touch.is-aboard .ln-prompt { left: calc(50% - 44px); } }
+body.is-naval-touch #game, body.is-naval-touch .live-navigation { touch-action: none; } /* PT05: the browser leaves a two-finger pinch to the camera zoom */
 body.is-naval-touch .hud-player { top: 12px; bottom: auto; left: 13px; transform: scale(.8); transform-origin: top left; }
 body.is-naval-touch .hud-player .portrait { width: 59px; height: 68px; border-radius: 3px; border-width: 3px; border-color: #c9bd9d; box-shadow: 0 0 0 2px #14262b, 2px 3px 0 #14262bbf; }
 body.is-naval-touch .hud-player .bars { min-width: 162px; gap: 3px; }
@@ -269,6 +270,7 @@ body.is-naval:not(.is-naval-touch) .ln-touch-hull-value > small { font-size: 9px
 body.is-naval:not(.is-naval-touch) .ln-touch-hull-value > b { font-size: 12px; }
 .naval-touch.is-desktop[data-layout="reference"] { --nt-gauge: 166px; --nt-right: 24px; --nt-bottom: 25px; }
 .naval-touch.is-desktop[data-layout="reference"] .naval-touch-stick { display: none; }
+.naval-touch.is-desktop .naval-touch-zoom { display: none; } /* PT05: the mouse wheel zooms on desktop */
 .naval-touch.is-desktop .naval-touch-lever { right: calc(var(--nt-right) + var(--nt-gauge) + 18px); height: 166px; }
 .naval-touch.is-desktop .naval-touch-instrument { inset: 0; width: auto; height: auto; }
 .naval-touch.is-desktop .naval-touch-slots { inset: auto auto 50px 50%; transform: translateX(-50%); display: flex; gap: 12px; }

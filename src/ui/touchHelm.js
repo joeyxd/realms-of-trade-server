@@ -14,7 +14,10 @@ const ICONS = Object.freeze({
   center: [{ tag: 'circle', attrs: { cx: '12', cy: '12', r: '8' } }, { tag: 'circle', attrs: { cx: '12', cy: '12', r: '2' } },
     { d: 'M12 1v3m0 16v3M1 12h3m16 0h3' }],
   helm: [{ d: 'M3 12a9 9 0 0 1 18 0M12 3v9l6 4M4 16l3-2m13 2-3-2' }],
+  zoom: [{ tag: 'circle', attrs: { cx: '10', cy: '10', r: '6' } }, { d: 'm15 15 6 6' }],
 });
+// A two-finger pinch on the open sea steps the camera once per this change in finger distance.
+const PINCH_STEP = 1.25;
 
 function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
 function makeElement(doc, tag, className) {
@@ -41,7 +44,7 @@ function createIcon(doc, name) {
 /** Reusable, touch-first helm controls. Pointer state is local to this instance. */
 export class TouchHelm {
   constructor(container, { onMove = () => {}, onLook = () => {}, onAction = () => {}, onGesture = () => {}, onLever = null,
-    actions = [], enabled = true, toLocal = null, layout = 'legacy', storageKey = null } = {}) {
+    onZoom = null, actions = [], enabled = true, toLocal = null, layout = 'legacy', storageKey = null } = {}) {
     const doc = container?.ownerDocument;
     if (!container?.appendChild || !doc?.createElement) throw new TypeError('TouchHelm requires a DOM container');
     for (const callback of [onMove, onLook, onAction, onGesture]) if (typeof callback !== 'function')
@@ -59,6 +62,8 @@ export class TouchHelm {
     this.buildStick('move', t('systems.touch.move')); this.buildStick('look', t('systems.touch.camera'));
     this.lever = null;
     if (typeof onLever === 'function') { this.callbacks.onLever = onLever; this.buildLever(); }
+    this.zoom = null; this.pinch = null;
+    if (typeof onZoom === 'function') { this.callbacks.onZoom = onZoom; this.buildZoom(); }
     this.actionRow = makeElement(doc, 'div', 'naval-touch-actions');
     this.actionRow.setAttribute('aria-label', t('systems.touch.navActions')); this.wrapper.appendChild(this.actionRow);
     this.slotButtons = [];
@@ -88,6 +93,7 @@ export class TouchHelm {
       this.lever.caption.textContent = t('systems.touch.sail').toUpperCase();
       this.lever.brake.textContent = t('systems.touch.brake').toUpperCase();
     }
+    if (this.zoom?.count) this.zoom.button.setAttribute('aria-label', t('systems.touch.zoomHelp', { level: this.zoom.level + 1, count: this.zoom.count }));
     for (const record of this.buttons.values()) {
       const label = translateData(record.action.label);
       record.button.setAttribute('aria-label', label); record.button.setAttribute('title', label);
@@ -192,6 +198,55 @@ export class TouchHelm {
     const lever = this.lever; if (!lever) return;
     lever.pointerId = null;
     if (lever.value < 0) { lever.value = 0; this.renderLever(); this.callbacks.onLever(0); }
+  }
+
+  // PT05: the camera zoom. A tap cycles the steps (onZoom(+1, wrap)); a pinch with two fingers on the canvas steps
+  // without wrapping. The owner shows the current step with setZoom.
+  buildZoom() {
+    const button = makeElement(this.doc, 'button', 'naval-touch-zoom'); button.type = 'button';
+    button.setAttribute('data-zoom', '');
+    button.appendChild(createIcon(this.doc, 'zoom'));
+    const pips = makeElement(this.doc, 'span', 'naval-touch-zoom-pips'); pips.setAttribute('aria-hidden', 'true');
+    button.appendChild(pips); this.wrapper.appendChild(button);
+    this.zoom = { button, pips, level: -1, count: 0 };
+    this.listen(button, 'pointerdown', (event) => this.startAction(event, 'zoom', button, 'zoom'));
+    this.listen(button, 'click', (event) => { if (this.enabled && !this.disposed && event.detail === 0) this.callbacks.onZoom(1, { wrap: true }); });
+    this.listen(this.doc, 'pointerdown', (event) => this.startPinch(event));
+    this.listen(this.doc, 'pointermove', (event) => this.movePinch(event));
+  }
+
+  setZoom(level, count) {
+    const zoom = this.zoom; if (!zoom || this.disposed || !Number.isInteger(level) || !Number.isInteger(count) || count < 1) return;
+    if (zoom.level === level && zoom.count === count) return;
+    zoom.level = level; zoom.count = count; zoom.button.setAttribute('data-level', String(level));
+    zoom.button.setAttribute('aria-label', t('systems.touch.zoomHelp', { level: level + 1, count }));
+    zoom.pips.replaceChildren?.();
+    for (let i = 0; i < count; i++) zoom.pips.appendChild(makeElement(this.doc, 'i', i <= level ? 'is-on' : ''));
+  }
+
+  // A pinch finger may land on the 3D canvas or on a read-only overlay its owner marks with data-pinch-zoom
+  // (the naval readouts and cards), never on a control.
+  startPinch(event) {
+    const target = event.target, canvas = String(target?.tagName || '').toUpperCase() === 'CANVAS';
+    if (!this.zoom || !this.enabled || this.disposed || event.pointerType !== 'touch' || this.pointers.has(event.pointerId) ||
+        !(canvas || (target?.closest?.('[data-pinch-zoom]') && !target.closest('button, a, input, select, textarea, [role="slider"]')))) return;
+    const pinch = this.pinch || (this.pinch = new Map());
+    if (pinch.size >= 2) return;
+    pinch.set(event.pointerId, { x: event.clientX || 0, y: event.clientY || 0 });
+    this.pointers.set(event.pointerId, { kind: 'pinch', element: event.target });
+    if (pinch.size === 2) { this.pinchBase = this.pinchDistance(); this.callbacks.onGesture(); }
+  }
+
+  pinchDistance() { const [a, b] = [...this.pinch.values()]; return Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)); }
+
+  movePinch(event) {
+    const point = this.pinch?.get(event.pointerId); if (!point || !this.enabled || this.disposed) return;
+    point.x = event.clientX || 0; point.y = event.clientY || 0;
+    if (this.pinch.size < 2 || !this.pinchBase) return;
+    const distance = this.pinchDistance(), ratio = distance / this.pinchBase;
+    // Fingers together pull the camera back, apart bring it closer (as maps do).
+    if (ratio <= 1 / PINCH_STEP || ratio >= PINCH_STEP) { this.pinchBase = distance; this.callbacks.onZoom(ratio < 1 ? 1 : -1, { wrap: false }); }
+    event.preventDefault?.();
   }
 
   createReferencePadIcon(name) {
@@ -463,10 +518,10 @@ export class TouchHelm {
     event.preventDefault?.();
   }
 
-  startAction(event, id, button) {
+  startAction(event, id, button, kind = 'action') {
     if (!this.enabled || this.disposed || button.disabled || event.pointerId == null ||
         (event.pointerType === 'mouse' && event.button !== 0) || this.pointers.has(event.pointerId)) return;
-    this.pointers.set(event.pointerId, { kind: 'action', id, element: button, cancelled: false });
+    this.pointers.set(event.pointerId, { kind, id, element: button, cancelled: false });
     this.capture(button, event.pointerId); this.callbacks.onGesture(); event.preventDefault?.();
   }
 
@@ -476,6 +531,7 @@ export class TouchHelm {
     const record = this.pointers.get(event.pointerId); if (!record) return;
     this.pointers.delete(event.pointerId);
     if (record.kind === 'lever') { this.releaseLever(); return; }
+    if (record.kind === 'pinch') { this.pinch?.delete(event.pointerId); this.pinchBase = 0; return; }
     if (record.kind === 'slot') {
       clearTimeout(record.timer);
       if (activate && record.longPressed) this.recentLongPressRelease = { ...this.recentLongPressRelease, pointerId: event.pointerId, expiresAt: Date.now() + 500 };
@@ -504,7 +560,8 @@ export class TouchHelm {
       const inside = !hasPosition || !rect || (point && point.x >= Math.min(...corners.map((p) => p.x)) &&
         point.x <= Math.max(...corners.map((p) => p.x)) && point.y >= Math.min(...corners.map((p) => p.y)) &&
         point.y <= Math.max(...corners.map((p) => p.y)));
-      if (inside) this.callbacks.onAction(record.id);
+      if (inside && record.kind === 'zoom') this.callbacks.onZoom(1, { wrap: true });
+      else if (inside) this.callbacks.onAction(record.id);
     }
   }
 
@@ -519,7 +576,7 @@ export class TouchHelm {
     if (this.disposed) return;
     this.cancelActionPointers(); this.closePicker();
     for (const [pointerId, record] of [...this.pointers]) try { record.element.releasePointerCapture?.(pointerId); } catch { /* ignored */ }
-    this.pointers.clear();
+    this.pointers.clear(); this.pinch?.clear(); this.pinchBase = 0;
     for (const stick of this.sticks.values()) {
       stick.pointerId = null; stick.origin = null; stick.value = { x: 0, y: 0 }; stick.puck.style.transform = 'translate(0px, 0px)';
     }
@@ -530,7 +587,7 @@ export class TouchHelm {
   diagnostics() {
     return Object.freeze({ enabled: this.enabled, disposed: this.disposed, pointers: this.pointers.size,
       move: Object.freeze({ ...this.sticks.get('move').value }), look: Object.freeze({ ...this.sticks.get('look').value }),
-      lever: this.lever ? this.lever.value : null,
+      lever: this.lever ? this.lever.value : null, zoom: this.zoom ? this.zoom.level : null,
       actions: this.buttons.size, picker: !!this.picker && !this.picker.hidden, pickerSlot: this.pickerSlot,
       bindings: Object.freeze([...this.bindings]), preferredBindings: Object.freeze([...this.preferredBindings]), layout: this.layout });
   }

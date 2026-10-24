@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { NavalLabCamera } from '../tools/naval-lab/camera.js';
+import { NavalLabCamera, NAVAL_ZOOM_DEFAULT, NAVAL_ZOOM_LEVELS } from '../tools/naval-lab/camera.js';
 import { LAB_FIXTURES, labFixture } from '../tools/naval-lab/fixtures.js';
 import {
   buildNavalRig, jettisonLabCargo, navalPose, newNavalState,
@@ -9,12 +9,13 @@ import {
 
 const ASPECTS = [1.6, 0.76, 2.16];
 
-function frameFor(fixture, aspect, { yaw = 0, reducedMotion = false } = {}) {
+function frameFor(fixture, aspect, { yaw = 0, reducedMotion = false, zoomIdx = null } = {}) {
   const rig = buildNavalRig(fixture.parts, fixture.cargo);
   const state = { ...newNavalState(), yaw };
   const pose = navalPose(state, rig);
   const camera = new THREE.PerspectiveCamera(50, aspect, 0.1, 1400);
   const controller = new NavalLabCamera(camera, { reducedMotion });
+  if (zoomIdx !== null) controller.zoomIdx = zoomIdx;
   controller.update(1 / 60, { state, rig, pose });
   return { camera, controller, fixture, rig, state, pose };
 }
@@ -159,4 +160,58 @@ test('pause freezes camera follow, ballast release preserves the hull view, and 
   assert.deepEqual(state, stateBefore, 'camera follow must not alter simulated state');
   assert.deepEqual(pose, poseBefore, 'camera follow must not alter the render pose input');
   assert.deepEqual(rig, rigBefore, 'camera follow must not alter the handling rig');
+});
+
+// PT05 (Joi, R1 and R2: the chase camera is still too close).
+function hullDistance({ camera, rig, state, pose }) {
+  return camera.position.distanceTo(boatPoint(pose, state.yaw, rig.hullCx, 0, rig.hullCz));
+}
+
+test('PT05 zoom: three chase steps, the default farther than the old framing, horizon and hull kept at every step', () => {
+  assert.equal(NAVAL_ZOOM_LEVELS.length, 3);
+  assert.equal(NAVAL_ZOOM_LEVELS[0], 1, 'the near step is the pre-PT05 framing');
+  const fallback = NAVAL_ZOOM_LEVELS[NAVAL_ZOOM_DEFAULT];
+  assert.ok(fallback >= 1.6 && fallback <= 1.8, `R1: the default sits 1.6 to 1.8 times farther (${fallback})`);
+  assert.equal(new NavalLabCamera(new THREE.PerspectiveCamera()).zoomIdx, NAVAL_ZOOM_DEFAULT);
+  const failures = [];
+  for (const fixtureId of ['empty', 'house']) {
+    for (const aspect of ASPECTS) {
+      const base = hullDistance(frameFor(labFixture(fixtureId), aspect, { zoomIdx: 0 }));
+      NAVAL_ZOOM_LEVELS.forEach((level, zoomIdx) => {
+        const view = frameFor(labFixture(fixtureId), aspect, { zoomIdx });
+        const ratio = hullDistance(view) / base, horizon = horizonScreenY(view.camera);
+        const hull = screenPoint(view.camera, boatPoint(view.pose, view.state.yaw, view.rig.hullCx, 0, view.rig.hullCz));
+        const metrics = JSON.stringify({ fixtureId, aspect, zoomIdx, ratio, horizon, hull });
+        if (Math.abs(ratio - level) > 1e-6) failures.push(`distance ratio: ${metrics}`);
+        if (Math.abs(horizon - 0.25) > 0.05) failures.push(`horizon: ${metrics}`);
+        if (!(hull.x >= 0.2 && hull.x <= 0.8 && hull.y >= 0.5 && hull.y <= 0.84)) failures.push(`hull on screen: ${metrics}`);
+      });
+    }
+  }
+  assert.deepEqual(failures, [], failures.join('\n'));
+});
+
+test('PT05 zoom: steps clamp or wrap, glide without a cut, freeze on pause, snap with reduced motion and survive reset', () => {
+  const fixture = labFixture('empty');
+  const { controller, rig, state, pose } = frameFor(fixture, 2.16);
+  const [near, , far] = NAVAL_ZOOM_LEVELS;
+  assert.equal(controller.zoomStep(1), 2);
+  assert.equal(controller.zoomStep(1), 2, 'the far end clamps');
+  assert.equal(controller.zoomStep(1, { wrap: true }), 0, 'the touch button wraps to near');
+  assert.equal(controller.zoomStep(-1), 0, 'the near end clamps');
+  controller.zoomStep(1); controller.zoomStep(1);
+  const from = controller.diagnostics().zoom;
+  const first = controller.update(1 / 60, { state, rig, pose }).zoom;
+  assert.ok(first > from && first - from < (far - from) * 0.15, `one frame glides a small share (${from} -> ${first})`);
+  assert.equal(controller.update(1, { state, rig, pose, paused: true }).zoom, first, 'pause freezes the zoom');
+  let zoom = first;
+  for (let frame = 0; frame < 60; frame++) zoom = controller.update(1 / 60, { state, rig, pose }).zoom;
+  assert.ok(Math.abs(zoom - far) < 0.01, `the glide settles within a second (${zoom})`);
+  controller.reset();
+  assert.equal(controller.zoomIdx, 2, 'leaving the helm keeps the chosen step');
+  assert.equal(controller.update(1 / 60, { state, rig, pose }).zoom, far);
+
+  const reduced = frameFor(fixture, 2.16, { reducedMotion: true });
+  reduced.controller.zoomStep(-1);
+  assert.equal(reduced.controller.update(1 / 60, { state, rig, pose }).zoom, near, 'reduced motion cuts straight to the step');
 });

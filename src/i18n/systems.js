@@ -406,6 +406,7 @@ export default {
   'systems.touch.brake': ['Freno', 'Brake'],
   'systems.touch.sailHelp': ['Vela: sube para navegar, se queda donde la dejas; abajo del todo frena', 'Sail: slide up to sail, it stays where you leave it; the very bottom brakes'],
   'systems.touch.cameraCue': ['↔ CÁMARA', '↔ CAMERA'],
+  'systems.touch.zoomHelp': ['Zoom de cámara: {level} de {count}. Toca para cambiarlo; también puedes pellizcar', 'Camera zoom: {level} of {count}. Tap to change it; you can also pinch'],
   'systems.touch.instrument': ['Instrumentos y habilidades', 'Instruments and skills'],
   'systems.touch.chooseSkill': ['Elegir habilidad', 'Choose skill'],
   'systems.touch.cancel': ['Cancelar', 'Cancel'],

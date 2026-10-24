@@ -120,3 +120,19 @@ test('the tiller blade trails toward the side the raft turns', () => {
     assert.ok(left.x > straight.x + 0.03, `${left.x} vs ${straight.x}`);
   } finally { layer.dispose?.(); }
 });
+
+test('PT05: the mouse wheel zooms the chase camera only while it drives the view', () => {
+  const { view } = harness(), shown = [];
+  view.sceneCamera = new NavalLabCamera(new THREE.PerspectiveCamera(50, 1.6, 0.1, 1400));
+  view.touch.setZoom = (level, count) => shown.push([level, count]);
+  view.cameraWasNaval = false;
+  assert.equal(view.wheelZoom(1), false, 'on foot the wheel stays with the iso rig');
+  assert.equal(view.sceneCamera.zoomIdx, 1);
+  view.cameraWasNaval = true;
+  assert.equal(view.wheelZoom(1), true);
+  assert.equal(view.sceneCamera.zoomIdx, 2);
+  assert.deepEqual(shown.at(-1), [2, 3], 'the touch button shows the new step');
+  view.paused = true;
+  assert.equal(view.wheelZoom(-1), true, 'paused, the wheel is swallowed');
+  assert.equal(view.sceneCamera.zoomIdx, 2);
+});

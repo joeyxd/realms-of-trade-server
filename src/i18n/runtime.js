@@ -1094,12 +1094,12 @@ export default {
     "Sailing maneuvers"
   ],
   "nav.sailKeys": [
-    "A/D · timón   W/S · vela   Q · ráfaga   E · cubierta   G · amarrar",
-    "A/D · helm   W/S · sail   Q · gust   E · deck   G · dock"
+    "A/D · timón   W/S · vela   Q · ráfaga   E · cubierta   G · amarrar   Rueda · zoom",
+    "A/D · helm   W/S · sail   Q · gust   E · deck   G · dock   Wheel · zoom"
   ],
   "nav.walkKeys": [
-    "WASD · caminar   E · timón   G · amarrar",
-    "WASD · walk   E · helm   G · dock"
+    "WASD · caminar   E · timón   G · amarrar   Rueda · zoom",
+    "WASD · walk   E · helm   G · dock   Wheel · zoom"
   ],
   "nav.reboardPrompt": [
     "Balsa · volver a bordo",

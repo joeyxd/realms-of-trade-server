@@ -1734,7 +1734,7 @@ async function boot() {
           }
         } else world.indicators.hide();
         const zw = input.consumeWheel();
-        if (zw) world.rig.zoom(zw > 0 ? 1 : -1);
+        if (zw && !navigation.wheelZoom(zw > 0 ? 1 : -1)) world.rig.zoom(zw > 0 ? 1 : -1); // PT05: aboard, the chase camera zooms
         hud.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
         hud.setNeeds({ needs: ps.needs, sat: ps.sat, hyd: ps.hyd, needPen: ps.needPen });
         hud.setLoad(ps.load);

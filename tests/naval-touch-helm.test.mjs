@@ -314,3 +314,38 @@ test('startup with an empty catalog and temporary shore actions preserves saved 
   assert.equal(h.helm.slotButtons[1].button.getAttribute('data-action'), 'mode');
   h.helm.dispose();
 });
+
+test('PT05 zoom: a tap cycles the camera step, and a two-finger pinch on the canvas steps once per 1.25 of finger distance', () => {
+  const zooms = [], h = harness({ layout: 'reference', onZoom: (step, options) => zooms.push([step, !!options?.wrap]) });
+  const button = h.helm.zoom.button;
+  h.helm.setZoom(1, 3);
+  assert.equal(button.getAttribute('data-level'), '1');
+  assert.deepEqual(h.helm.zoom.pips.children.map((pip) => pip.className), ['is-on', 'is-on', '']);
+  assert.match(button.getAttribute('aria-label'), /2/);
+  h.send(button, 'pointerdown', { pointerId: 5, pointerType: 'touch', clientX: 10, clientY: 10 });
+  h.end('pointerup', 5);
+  assert.deepEqual(zooms, [[1, true]]);
+
+  const canvas = new FakeElement('canvas', h.document), panel = new FakeElement('div', h.document);
+  const touch = (type, pointerId, x, target = canvas) => h.send(h.document, type, { pointerId, pointerType: 'touch', clientX: x, clientY: 200, target });
+  touch('pointerdown', 7, 100); touch('pointerdown', 8, 300);
+  touch('pointermove', 8, 250);
+  touch('pointermove', 8, 240);
+  touch('pointermove', 8, 290);
+  assert.deepEqual(zooms.slice(1), [[1, false], [-1, false]], 'together pulls back, apart comes closer, no wrap');
+  h.end('pointerup', 7); h.end('pointerup', 8);
+  assert.equal(h.helm.diagnostics().pointers, 0);
+  touch('pointerdown', 9, 100, panel); touch('pointerdown', 10, 300); touch('pointermove', 10, 120);
+  assert.equal(zooms.length, 3, 'a finger outside the canvas never joins a pinch');
+  h.end('pointerup', 10);
+  // The owner marks read-only overlays with data-pinch-zoom; a button inside one still never joins.
+  const readout = Object.assign(new FakeElement('small', h.document), { closest: (selector) => selector === '[data-pinch-zoom]' ? {} : null });
+  const lessonButton = Object.assign(new FakeElement('button', h.document), { closest: () => ({}) });
+  touch('pointerdown', 11, 100, readout); touch('pointerdown', 12, 300); touch('pointermove', 12, 120);
+  assert.deepEqual(zooms.at(-1), [1, false], 'a finger on a readout pinches');
+  h.end('pointerup', 11); h.end('pointerup', 12);
+  touch('pointerdown', 13, 100, lessonButton); touch('pointerdown', 14, 300); touch('pointermove', 14, 120);
+  assert.equal(zooms.length, 4, 'a finger on a button does not');
+  h.end('pointerup', 13); h.end('pointerup', 14);
+  h.helm.dispose();
+});
