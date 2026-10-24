@@ -1,8 +1,11 @@
 // One calibration for refracted water and the cheap terrain-based caustic path.
 export const WATER_DETAIL_DEFAULTS = Object.freeze({
-  causticStrength: 0.12, causticWidth: 0.06, // strength as the terrain (low) path uses it; SSR water applies a gain
+  causticStrength: 0.072, causticWidth: 0.06, // strength as the terrain (low) path uses it; SSR water applies a gain
   foamContactScale: 0.75, foamLaceWidth: 0.45, foamLaceStrength: 0.75, foamWaveStrength: 0.4,
   surfaceLight: 0.035, refraction: 0.028,
+  // Swash: the shore edge runs up to swashUp over the still level and drains to swashDown under it (height, u);
+  // waveK: wave-line crests per u of water depth (rad / u).
+  swashUp: 0.45, swashDown: 0.35, waveK: 2.6,
 });
 
 export const WATER_DETAIL_UNIFORMS = {
@@ -13,6 +16,9 @@ export const WATER_DETAIL_UNIFORMS = {
   mnFoamLaceStrength: { value: WATER_DETAIL_DEFAULTS.foamLaceStrength },
   mnFoamWaveStrength: { value: WATER_DETAIL_DEFAULTS.foamWaveStrength },
   mnWaterSurfaceLight: { value: WATER_DETAIL_DEFAULTS.surfaceLight },
+  mnSwashUp: { value: WATER_DETAIL_DEFAULTS.swashUp },
+  mnSwashDown: { value: WATER_DETAIL_DEFAULTS.swashDown },
+  mnWaveK: { value: WATER_DETAIL_DEFAULTS.waveK },
 };
 
 // G stores normalized cellular edge distance. Antialiased ribbons with a soft shoulder leave the floor readable.

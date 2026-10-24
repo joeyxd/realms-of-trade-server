@@ -21,7 +21,7 @@ test('GM terrain preview reuses the terrain object and material, updates its 561
   const water = createWater(base, simpleHeight);
   const simpleMaterial = water.userData.materials.simple, ssrMaterial = water.userData.materials.ssr;
   assert.strictEqual(simpleMaterial.uniforms.uHeight.value, simpleHeight);
-  assert.equal(ssrMaterial.uniforms.uHeight, undefined);
+  assert.strictEqual(ssrMaterial.uniforms.uHeight, simpleMaterial.uniforms.uHeight, 'SSR shares the height binding (swash shore mask)');
   const scene = new THREE.Scene(); scene.add(original, water);
   let invalidations = 0;
   const preview = createTerrainPreview({ scene, map: base, invalidate: () => invalidations++ });
@@ -45,7 +45,8 @@ test('GM terrain preview reuses the terrain object and material, updates its 561
   water.userData.setMode(false);
   assert.strictEqual(water.material.uniforms.uHeight.value, privateSimple, 'low quality water reads the preview height');
   water.userData.setMode(true);
-  assert.strictEqual(water.material, ssrMaterial, 'SSR water remains on its own mode and has no height sampler');
+  assert.strictEqual(water.material, ssrMaterial, 'SSR water remains on its own mode');
+  assert.strictEqual(water.material.uniforms.uHeight.value, privateSimple, 'SSR water reads the preview height too');
   const second = map({ height: 6, gmTerrain: true });
   second.terrain = { samples: [[2, 100]], materials: [] };
   preview.apply(second);

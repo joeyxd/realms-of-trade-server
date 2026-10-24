@@ -6,10 +6,12 @@
 //    adds seabed caustics, surface light web, sky fresnel, sun sparkles, and foam from the real
 //    depth difference: around rocks, posts, the ship hull and wading characters, lace foam in the
 //    shallows and wave lines pushing to shore. Manual depth test, so anything above the surface
-//    (characters, the dock) occludes it.
-//  Simple (low): same colors/foam from the terrain heightmap, alpha blended, no refraction.
+//    (characters, the dock) occludes it, except the beach under the swash run-up, which it draws.
+//  Simple (low): same colors/foam from the terrain heightmap, alpha blended, no refraction; the swash
+//    only drains (the terrain depth-tests the plane away above the still level).
 //
-// All noise comes from two tileable textures (see noiseTex.js): ~10 fetches per pixel.
+// All noise comes from two tileable textures (see noiseTex.js): ~10 fetches per pixel; both variants
+// read the terrain heightmap once (the swash shore mask).
 import * as THREE from 'three';
 import { GLSL_COMMON, GLSL_BAND, GLSL_LIGHTS, U } from './toon.js';
 import { GLSL_SKY, SKY } from './sky.js';
@@ -68,6 +70,7 @@ ${GLSL_SKY}
 ${GLSL_LIGHTS}
 ${CAUSTIC_PARS}
 uniform float mnFoamContactScale, mnFoamLaceWidth, mnFoamLaceStrength, mnFoamWaveStrength, mnWaterSurfaceLight;
+uniform float mnSwashUp, mnSwashDown, mnWaveK;
 uniform sampler2D tWave;
 uniform vec3 uWaterLight;
 uniform float uSparkle;
@@ -81,12 +84,22 @@ uniform sampler2D tRefract;
 uniform sampler2D tSceneDepth;
 uniform vec2 uSceneRes;
 uniform float uNear, uFar;
-#else
+#endif
 uniform sampler2D uHeight;
 uniform float uWorldHalf;
-#endif
 varying vec3 vWorld;
 varying float vViewZ;
+
+// Swash: every wave line that reaches the shore runs up the beach, slows, and drains back while the next one rolls in.
+// arg is the wave-line phase at the still waterline; q 0 is the crest meeting the drained edge at depth mnSwashDown.
+// Returns the edge height over the still level (+ up the sand, - drained); fresh is 1 on the uprush and fades on the
+// backwash.
+float mnSwash(float arg, out float fresh) {
+  float q = fract((arg - 1.5707963 + mnSwashDown * mnWaveK) / 6.2831853);
+  float up = 1.0 - (1.0 - q / 0.3) * (1.0 - q / 0.3);  // fast uprush that slows near the top (30 % of the period)
+  fresh = smoothstep(0.0, 0.06, q) - smoothstep(0.35, 0.8, q);
+  return q < 0.3 ? mix(-mnSwashDown, mnSwashUp, up) : mix(mnSwashUp, -mnSwashDown, smoothstep(0.3, 1.0, q));
+}
 
 void main() {
   float t = mnTime;
@@ -105,15 +118,28 @@ void main() {
   vec2 slope = (s1 * 0.65 + s2 * 0.45) * uWaves * (1.0 - far * 0.85);
   vec3 n = normalize(vec3(-slope.x, 1.0, -slope.y));
 
+  // ---- Swash ------------------------------------------------------------------------------------
+  // The moving shore edge, only where the terrain itself is near the surface (posts and hulls at sea keep a still edge).
+  vec2 huv = xz / (uWorldHalf * 2.0) + 0.5;
+  float th = (huv.x < 0.0 || huv.y < 0.0 || huv.x > 1.0 || huv.y > 1.0) ? -20.0 : texture2D(uHeight, huv).r;
+  float shore = smoothstep(-1.8, -0.8, th);
+  float nz = texture2D(mnNoiseTex, xz * 0.05 + vec2(t * 0.012, t * 0.009)).b;
+  float fresh;
+  float swash = mnSwash(t * 1.25 + nz * 7.0, fresh) * shore;
+
   // ---- What is under the surface ---------------------------------------------------------------
 #ifdef MN_WATER_SSR
   vec2 suv = gl_FragCoord.xy / uSceneRes;
   float sceneZ = -perspectiveDepthToViewZ(texture2D(tSceneDepth, suv).r, uNear, uFar);
-  if (sceneZ < vViewZ - 0.02) discard;              // something opaque is above the water here
+  bool above = sceneZ < vViewZ - 0.02;               // something opaque is above the still water here
   float tScene = camDist * sceneZ / vViewZ;          // distance along the view ray to the opaque surface
   vec3 bed = cameraPosition - V * tScene;
-  float depth = max(vWorld.y - bed.y, 0.0);          // vertical water depth
-  float path = max(tScene - camDist, 0.0);           // length of the ray inside the water
+  float still = vWorld.y - bed.y;                    // vertical depth under the still level (< 0 above it)
+  // Dry: above the run-up (everything above the still level away from the shore) and the drained shelf on the backwash.
+  if (still + swash < 0.0 && (above || swash < 0.0)) discard;
+  float depth = max(still + swash, 0.0);             // vertical water depth under the moving edge
+  // Length of the ray inside the water; the run-up sheet over the sand is as deep as the edge is above the sand.
+  float path = max(max(tScene - camDist, 0.0) + (swash + min(still, 0.0)) / max(V.y, 0.2), 0.0);
   // Refraction: offset by the wave slope, less at the very edge; never pull in what is above water.
   vec2 ruv = suv + slope * uRefract * clamp(depth * 0.7, 0.0, 1.0) / max(vViewZ * 0.045, 1.0);
   float rz = -perspectiveDepthToViewZ(texture2D(tSceneDepth, ruv).r, uNear, uFar);
@@ -121,9 +147,12 @@ void main() {
   vec3 under = texture2D(tRefract, ruv).rgb;
   vec2 bedXZ = bed.xz;
 #else
-  vec2 huv = xz / (uWorldHalf * 2.0) + 0.5;
-  float th = (huv.x < 0.0 || huv.y < 0.0 || huv.x > 1.0 || huv.y > 1.0) ? -20.0 : texture2D(uHeight, huv).r;
-  float depth = max(vWorld.y - th, 0.0);
+  float still = vWorld.y - th;
+  // The terrain depth-tests the run-up sheet away, so the edge only drains here: on the uprush the still waterline keeps
+  // its foam instead of reading as water already deep.
+  swash = min(swash, 0.0);
+  if (still + swash < 0.0 && swash < 0.0) discard;   // the drained shelf on the backwash
+  float depth = max(still + swash, 0.0);
   float path = depth / max(V.y, 0.25);
   // No refraction: a sand-toned bed lit like the water stands in for what is under it (see the alpha below).
   vec3 under = vec3(0.58, 0.35, 0.115) * (1.0 - 0.68 * smoothstep(0.5, 7.0, depth)) * uWaterLight;
@@ -194,17 +223,19 @@ void main() {
   float glowW = clamp(max(lw.r, max(lw.g, lw.b)) * 0.7 + (spark + glit) * (1.0 - far) * uGlints, 0.0, 1.0);
 
   // ---- Foam --------------------------------------------------------------------------------------
-  float nz = texture2D(mnNoiseTex, xz * 0.05 + vec2(t * 0.012, t * 0.009)).b;
   float nz2 = texture2D(mnNoiseTex, xz * 0.13 - vec2(t * 0.02, -t * 0.015)).b;
-  // Contact foam: around anything that pierces the surface (shore, rocks, posts, legs, hull).
+  // Contact foam: around anything that pierces the surface (shore, rocks, posts, legs, hull). On the shore it rides the
+  // swash edge: a thick bore on the uprush, a thin line on the backwash.
   float pulse = 0.015 * sin(t * 1.7 + nz * 9.0);
-  float edgeW = (0.05 + nz2 * 0.06 + pulse) * mnFoamContactScale;
+  float edgeW = (0.05 + nz2 * 0.06 + pulse) * mnFoamContactScale * mix(1.0, mix(0.8, 1.6, fresh), shore);
   float contactAA = max(fwidth(depth) * 0.7, 0.008);
   float contact = 1.0 - smoothstep(max(0.0, edgeW - contactAA), edgeW + contactAA, depth);
   contact *= mix(0.55, 1.0, smoothstep(0.28, 0.65, nz2));
   // Lace band behind the waterline: its outer edge (in water depth) laps in and out with the swash.
   float reach = mix(0.5, 1.3, 0.5 + 0.5 * sin(t * 0.9 + nz * 6.0));
-  float band = depth / reach; // 0 at the waterline, 1 at the band's outer edge
+  // 0 at the waterline, 1 at the band's outer edge; the run-up sheet over the sand (above the still level) is a thin
+  // film that only carries the broken outer threads behind its foam front.
+  float band = max(depth / reach, shore * smoothstep(0.0, 0.12, -still) * 0.7);
   // Cell walls of the noise, warped by the wave slopes: thick at the waterline (foam with holes), thinning seaward
   // into broken threads.
   float lace = texture2D(mnNoiseTex, xz * 0.3 + vec2(t * 0.03, t * 0.02) + s1 * 0.14 + s2 * 0.08).g;
@@ -223,11 +254,14 @@ void main() {
   laceFoam *= (1.0 - smoothstep(0.75, 1.0, band)) * mix(1.0, 0.55, clamp(band, 0.0, 1.0));
   laceFoam *= 1.0 - smoothstep(0.3, 0.8, band) * (1.0 - smoothstep(0.4, 0.6, thin)); // seaward threads break up
   laceFoam *= smoothstep(0.3, 0.5, nz2 + 0.08); // gaps along the shore, not a uniform band
-  // Wave lines rolling in toward the shore, broken into threads by the lace; fainter further out.
-  float wv = sin(depth * 4.2 + t * 1.25 + nz * 7.0);
+  laceFoam *= mix(1.0, mix(0.85, 1.0, fresh), shore); // the backwash leaves the lace to thin out
+  // Wave lines rolling in toward the shore, broken into threads by the lace; fainter further out. On the shore each
+  // line runs into the drained edge as it turns into the uprush (mnSwash), and none rolls on over the swash sheet.
+  float wv = sin(still * mnWaveK + t * 1.25 + nz * 7.0);
   float waveAA = fwidth(wv) * 0.7 + 0.001;
-  float lines = smoothstep(0.95 - waveAA, 0.985 + waveAA, wv) * (1.0 - smoothstep(1.6, 2.8, depth)) * smoothstep(0.3, 0.55, depth) * smoothstep(0.42, 0.62, nz2);
-  lines *= (1.0 - 0.8 * smoothstep(0.2, 0.45, lace)) * mix(1.0, 0.5, smoothstep(0.9, 2.0, depth));
+  float inner = mix(smoothstep(0.3, 0.55, depth), smoothstep(0.02, 0.15, depth) * smoothstep(mnSwashDown - 0.1, mnSwashDown, still), shore);
+  float lines = smoothstep(0.95 - waveAA, 0.985 + waveAA, wv) * (1.0 - smoothstep(2.6, 4.2, depth)) * inner * smoothstep(0.42, 0.62, nz2);
+  lines *= (1.0 - 0.8 * smoothstep(0.2, 0.45, lace)) * mix(1.0, 0.5, smoothstep(1.2, 3.0, depth));
   float foam = clamp(max(contact * 0.82, max(laceFoam * mnFoamLaceStrength, lines * mnFoamWaveStrength)), 0.0, 1.0);
   // Foam light: the sun-lit term by day. Under the moon the water light is near black, so the foam takes the sky
   // (hemisphere) light that lights the sand (uSkyFill: the water pass renders without the scene lights), at a
@@ -269,9 +303,10 @@ function makeMaterial(map, heightTex, ssr) {
     uCaustic: { value: WATER_LOOK.caustic },
     uWaves: { value: 1 },
     uRefract: { value: WATER_DETAIL_DEFAULTS.refraction },
+    uHeight: { value: heightTex },
+    uWorldHalf: { value: map.size / 2 },
   });
   if (ssr) Object.assign(uniforms, WATERU);
-  else Object.assign(uniforms, { uHeight: { value: heightTex }, uWorldHalf: { value: map.size / 2 } });
   return new THREE.ShaderMaterial({
     uniforms,
     defines: ssr ? { MN_WATER_SSR: '' } : {},
@@ -289,7 +324,7 @@ export function createWater(map, heightTex) {
   const ssr = makeMaterial(map, heightTex, true);
   const simple = makeMaterial(map, heightTex, false);
   // Share the tweakable uniforms so quality switches keep the same look.
-  for (const k of ['uWaves', 'uRefract']) simple.uniforms[k] = ssr.uniforms[k];
+  for (const k of ['uWaves', 'uRefract', 'uHeight', 'uWorldHalf']) simple.uniforms[k] = ssr.uniforms[k];
   const geo = new THREE.PlaneGeometry(2400, 2400, 1, 1);
   geo.rotateX(-Math.PI / 2);
   const mesh = new THREE.Mesh(geo, ssr);

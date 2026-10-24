@@ -32,7 +32,7 @@ function dispose({ height, water, terrain }) {
 
 const sharedDetailKeys = [
   'mnCausticStrength', 'mnCausticWidth', 'mnFoamContactScale', 'mnFoamLaceWidth',
-  'mnFoamLaceStrength', 'mnFoamWaveStrength', 'mnWaterSurfaceLight',
+  'mnFoamLaceStrength', 'mnFoamWaveStrength', 'mnWaterSurfaceLight', 'mnSwashUp', 'mnSwashDown', 'mnWaveK',
 ];
 
 test('water quality modes preserve their depth, alpha, and two-triangle surface contract', () => {
@@ -79,7 +79,7 @@ test('switching water modes retains shared look bindings and only uses their est
     }
 
     assert.strictEqual(simple.uniforms.uHeight.value, f.height);
-    assert.equal(ssr.uniforms.uHeight, undefined);
+    assert.strictEqual(ssr.uniforms.uHeight, simple.uniforms.uHeight, 'both modes read one terrain height (the swash shore mask)');
     assert.equal(simple.uniforms.tRefract, undefined);
     assert.equal(simple.uniforms.tSceneDepth, undefined);
     assert.equal(ssr.uniforms.tRefract.value, null);
