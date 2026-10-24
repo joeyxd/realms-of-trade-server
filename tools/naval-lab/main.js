@@ -345,7 +345,7 @@ async function start() {
   sun.shadow.mapSize.set(mobile ? 512 : 1024, mobile ? 512 : 1024);
   Object.assign(sun.shadow.camera, { left: -18, right: 18, top: 18, bottom: -18, near: 1, far: 120 });
   sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.025; scene.add(sun, sun.target);
-  SKY.sunDir.value.set(-25, 45, 15).normalize();
+  SKY.sunDir.value.set(-25, 45, 15).normalize(); SKY.skySun.value.copy(SKY.sunDir.value);
   const sky = createSky(); sky.name = 'lab-sky'; sky.layers.set(LAYER.NO_OUTLINE); scene.add(sky);
   const heightTex = new THREE.DataTexture(new Float32Array([-8]), 1, 1, THREE.RedFormat, THREE.FloatType); heightTex.needsUpdate = true;
   sea = createWater({ size: 2e9 }, heightTex); sea.layers.set(LAYER.WATER); scene.add(sea);

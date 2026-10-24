@@ -1,4 +1,5 @@
-// Stylized sky dome (gradient + sun or moon + toon clouds + stars at night; the disc and stars glow). The same skyColor() feeds the water fresnel.
+// Stylized sky dome (gradient + twilight glow + sun and moon discs + toon clouds + stars at night; the discs and stars
+// glow). The same skyColor() feeds the water fresnel, twilight included.
 import * as THREE from 'three';
 import { GLSL_COMMON, U } from './toon.js';
 
@@ -6,9 +7,15 @@ export const SKY = {
   skyTop: { value: new THREE.Color(0x3aa0e8) },
   skyHorizon: { value: new THREE.Color(0xc4ecf7) },
   skyBottom: { value: new THREE.Color(0x7fd3e0) },
-  sunDir: { value: new THREE.Vector3(-0.6, 0.75, 0.2).normalize() },
+  sunDir: { value: new THREE.Vector3(-0.6, 0.75, 0.2).normalize() }, // the light: the sun by day, the moon at night (water highlights)
   sunColor: { value: new THREE.Color(0xfff1d8) },
-  sunDisc: { value: 1 }, // 0 = hidden (volcanic smoke); the same disc is the moon at night
+  sunDisc: { value: 1 }, // 0 = hidden (volcanic smoke)
+  skySun: { value: new THREE.Vector3(-0.6, 0.75, 0.2).normalize() }, // where the sun really is: its disc and the twilight (lighting.js)
+  skyMoon: { value: new THREE.Vector3(0, 0.75, 0.66).normalize() },
+  moonDisc: { value: 0 },
+  moonColor: { value: new THREE.Color(0x9fb0d8) },
+  skyTwilight: { value: new THREE.Color(0xffa766) },
+  skyTwilightW: { value: 0 },
   skyCloud: { value: new THREE.Color(0xffffff) },
   skyStars: { value: 0 },
 };
@@ -20,12 +27,24 @@ uniform vec3 skyBottom;
 uniform vec3 sunDir;
 uniform vec3 sunColor;
 uniform float sunDisc;
+uniform vec3 skySun;
+uniform vec3 skyMoon;
+uniform float moonDisc;
+uniform vec3 moonColor;
+uniform vec3 skyTwilight;
+uniform float skyTwilightW;
 vec3 skyColor(vec3 dir, float withSun) {
   float y = dir.y;
   vec3 c = mix(skyHorizon, skyTop, pow(smoothstep(0.0, 0.65, y), 0.75));
+  // Twilight: a low band on the horizon, strongest under the sun's azimuth.
+  vec2 sunH = skySun.xz / max(length(skySun.xz), 1e-3);
+  float toward = 0.5 + 0.5 * dot(dir.xz, sunH) / max(length(dir.xz), 1e-3);
+  c = mix(c, skyTwilight, skyTwilightW * toward * toward * toward * (1.0 - smoothstep(0.0, 0.42, y)));
   c = mix(c, skyBottom, smoothstep(0.0, -0.25, y));
-  float s = max(dot(dir, sunDir), 0.0);
-  c += sunColor * withSun * sunDisc * (smoothstep(0.9993, 0.9996, s) * 1.6 + pow(s, 14.0) * 0.22);
+  float s = max(dot(dir, skySun), 0.0);
+  c += sunColor * withSun * sunDisc * smoothstep(-0.03, 0.01, skySun.y) * (smoothstep(0.9993, 0.9996, s) * 1.6 + pow(s, 14.0) * 0.22);
+  float m = max(dot(dir, skyMoon), 0.0);
+  c += moonColor * withSun * moonDisc * smoothstep(-0.03, 0.01, skyMoon.y) * (smoothstep(0.9994, 0.9997, m) + pow(m, 60.0) * 0.08);
   return c;
 }
 `;
@@ -49,8 +68,9 @@ export function createSky() {
       void main() {
         vec3 d = normalize(vDir);
         vec3 c = skyColor(d, 1.0);
-        // Glow mask (pipeline.js): the sun / moon disc and the stars bloom.
-        float glow = smoothstep(0.9993, 0.9996, max(dot(d, sunDir), 0.0)) * sunDisc * 0.7;
+        // Glow mask (pipeline.js): the sun and moon discs and the stars bloom.
+        float glow = smoothstep(0.9993, 0.9996, max(dot(d, skySun), 0.0)) * sunDisc * smoothstep(-0.03, 0.01, skySun.y) * 0.7
+          + smoothstep(0.9994, 0.9997, max(dot(d, skyMoon), 0.0)) * moonDisc * smoothstep(-0.03, 0.01, skyMoon.y) * 0.7;
         // Stars: one hashed dot per direction cell, twinkling, fading toward the horizon.
         if (skyStars > 0.001) {
           vec3 sd = d * 160.0;

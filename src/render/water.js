@@ -204,9 +204,11 @@ void main() {
 #else
   vec3 nr = n;
 #endif
-  // Sun sparkles: sharp highlight broken into twinkling cells.
+  // Sun sparkles: the broad lobe seeds twinkling cells; the solid glint is only the sharp core on the fine ripples, so a
+  // sun ahead of the camera (the VR11 arc) lays a glitter path instead of painting whole wave faces white.
   vec3 H = normalize(sunDir + V);
   float spec = pow(max(dot(n, H), 0.0), 140.0) * vis;
+  float core = pow(max(dot(nr, H), 0.0), 1200.0) * vis;
   vec4 cell = texture2D(mnNoiseTex, xz * 0.42 + slope * 0.1);
   float twinkle = 0.5 + 0.5 * sin(t * 5.0 + cell.a * 40.0);
   float spark = step(cell.r, 0.1 * clamp(spec * 2.5, 0.0, 1.0)) * step(0.6, twinkle);
@@ -215,7 +217,7 @@ void main() {
   float moonW = 1.0 - smoothstep(0.15, 0.5, max(sunColor.r, max(sunColor.g, sunColor.b)));
   float glit = step(cell.r, 0.35 * smoothstep(0.0, 0.06, dot(nr, sunDir) - sunDir.y)) * step(0.7, cell.a) * step(0.5, twinkle) * moonW * smoothstep(0.8, 2.0, depth);
   // Solid glint patches fade faster than the twinkles (the moon gives a glitter path, not blobs).
-  col += sunColor * (uSparkle * (step(0.55, spec) * 0.45 * uSparkle + spark * 1.1) + glit * 2.5) * (1.0 - far); // the moon glitter keeps its own gain (moonW is 0 outside the night)
+  col += sunColor * (uSparkle * (step(0.55, core) * 0.45 * uSparkle + spark * 1.1) + glit * 2.5) * (1.0 - far); // the moon glitter keeps its own gain (moonW is 0 outside the night)
   // Lanterns, fires and lava reflected in the waves.
   vec3 lw = mnLocalWater(vWorld, nr, V);
   col += lw;
