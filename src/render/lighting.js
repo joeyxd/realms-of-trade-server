@@ -215,6 +215,10 @@ export class Lighting {
     // Keep the Caldera's warm sky/fog and local fire, but let its global fill recede with night.
     // Without this cap its volcanic preset would wash out the intentionally dark world.
     const dayW = 1 - THREE.MathUtils.clamp((2.45 - this.base.sunI) / 2.432, 0, 1);
+    // The time of day, not the zone, decides whether there is a sun: at night its cast shadow and the comic hatching
+    // fade out (the moon casts no hard shadow; toon.js) and the shadow pass is skipped.
+    U.mnSunDay.value = THREE.MathUtils.smoothstep(dayW, 0.15, 0.6);
+    this.sun.shadow.autoUpdate = U.mnSunDay.value > 0;
     const globalZoneW = zoneW * dayW;
     this.cur.sunI = THREE.MathUtils.lerp(this.base.sunI, PRESETS.volcanic.sunI, globalZoneW);
     this.cur.hemiI = THREE.MathUtils.lerp(this.base.hemiI, PRESETS.volcanic.hemiI, globalZoneW);
