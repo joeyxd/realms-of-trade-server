@@ -528,7 +528,7 @@ GM07c malla por tesela con reconstrucción parcial (requisito de los pinceles gr
 **GM07b1 y GM07b2 construidos** (alpha.96, protocolo 68, SQL042; HANDOFF 2026-10-22): teselas MNT1 y documento v5, editor sobre todo el mapa, borradores, publicación y carga del jugador por teselas.
 **GM07c construido** (T-1022-50, 2026-10-22, sin push): una sola malla 561 x 561 con reescritura y subida por región sucia (un trazo de 4 m pasa de 153 ms y 13,8 MB a 0,1 ms y 3,5 KB), textura de altura del agua 561 x 561 en terreno GM, mapa del panel a 168 px; la malla por tesela queda para GM06b si la carga por zonas la pide.
 
-### GM08 Pinceles de gran escala (diseño y GM08a construido el 2026-10-23, T-1023-13; GM08b el 2026-10-24, T-1024-03; sin push)
+### GM08 Pinceles de gran escala (diseño y GM08a construido el 2026-10-23, T-1023-13; GM08b el 2026-10-24, T-1024-03; en vivo en alpha.104)
 
 Contrato: [GM08](docs/briefs/gm08-large-brushes.md).
 - **Base medida.** Solo el 11 % del mapa es editable, y el 54 % de ese suelo está a menos de 8 m de algo protegido.
@@ -551,7 +551,26 @@ Contrato: [GM08](docs/briefs/gm08-large-brushes.md).
   - pintar o borrar según la fuerza
   - difuminado interior de 0 a 32 m, con el mismo recorte y los mismos límites que los pinceles
   Todo el mapa suavizado 16 veces hace commit en 115 a 245 ms.
+- **GM08b R7** (2026-10-24, T-1024-12, decisión de Joi): la región dibujada se queda seleccionada para encadenar
+  operaciones (nivelar, luego suavizar, luego pintar) con "Aplicar a la región" (Intro); Escape la suelta.
 - **Siguen:** GM08c ruido y erosión, GM08d importar y exportar el mapa de alturas (PNG de 16 bits, R16 de Unreal).
+
+### GM11 Mundo ampliable, presupuesto de carga y zonas (diseño 2026-10-24, T-1024-13; espera la aprobación de Joi)
+
+Contrato: [GM11](docs/briefs/gm11-world-growth-zones.md). Hoy el mundo es un cuadrado fijo de 560 m que se carga
+entero de una vez: un pedido de contenido, todas las teselas, una sola malla de terreno, y el servidor manda todas las
+entidades a todos los jugadores. Decidido por Joi el 2026-10-24:
+- **Medidor y bloqueo:** el panel muestra siempre el uso de una sola carga (hoy 31 %), avisa desde el 70 % y al 100 %
+  bloquea la publicación (cliente y servidor), aunque el borrador se sigue guardando.
+- **Zonas con nombre y pantalla de carga, con precarga:** a un 15 % del borde que lleva a otra zona, el juego empieza a
+  cargar esa zona en segundo plano; al cruzar sale una pantalla breve con el nombre de la zona.
+Propuesto por el chef: presupuesto de 1.000.000 de vértices de terreno (unos 980 m de lado; 68 B de GPU por vértice);
+el dominio en teselas de 70 m dentro del documento (las claves de las teselas no cambian al crecer); crecer por filas o
+columnas de teselas por lado, con la parte de GM06b que deja levantar tierra desde el mar en lo nuevo; una simulación
+por zona y red por zona (cada cliente recibe solo su zona); la zona del jugador se guarda con la posición (ausente = la
+isla original).
+Cortes: GM11a medidor y bloqueo (sin protocolo ni SQL), GM11b el tamaño como dato, GM11c crecer la zona, GM11d zonas
+en el servidor, GM11e cruce en el cliente (precarga y pantalla), GM11f zonas en el editor.
 
 ## 10 Arquitectura de implementación propuesta
 
