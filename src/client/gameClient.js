@@ -553,7 +553,8 @@ export class GameClient {
   }
   tickNaval(axes) {
     if (!this.joined) return false;
-    if (this.deck.active) axes = { throttle: 0, brake: axes?.brake || 0, steer: 0 };
+    // PT15: a walker never drives the raft; walking astern must not brake it.
+    if (this.deck.active) axes = { throttle: 0, brake: 0, steer: 0 };
     const command = this.naval.step(axes);
     if (!command) return false;
     this.syncNavalPilot();
@@ -573,10 +574,12 @@ export class GameClient {
   }
   syncNavalDeck() {
     const raft = this.renderRafts().find((r) => r.id === this.deck.shipId), p = raft && this.deck.position(raft);
-    const ecs = this.pred.ecs, e = this.youLocal;
+    const ecs = this.pred.ecs, e = this.youLocal, s = this.deck.state;
     if (!p || !e) return;
     ecs.x[e] = this.cur.x = p.x; ecs.y[e] = this.cur.y = p.y; ecs.z[e] = this.cur.z = p.z; ecs.facing[e] = this.cur.f = p.f;
-    ecs.vx[e] = ecs.vz[e] = 0; ecs.moveMag[e] = this.deck.state.mag;
+    // PT15: the deck-local walk velocity turned by the raft yaw, as the server's walker (pilot.js), so the run cycle plays.
+    const cos = Math.cos(raft.yaw), sin = Math.sin(raft.yaw);
+    ecs.vx[e] = cos * s.vx + sin * s.vz; ecs.vz[e] = -sin * s.vx + cos * s.vz; ecs.moveMag[e] = s.mag;
     this.err.x = this.err.y = this.err.z = 0;
     this.pred.raftDeck.update(this.pred.rafts);
   }

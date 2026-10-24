@@ -282,3 +282,37 @@ test('disabled navigation LocalServer snapshots and commands never activate priv
   assert.equal(Object.hasOwn(latest, 'naval'), false);
   assert.equal(Object.hasOwn(latest, 'deck'), false);
 });
+
+test('PT15: the owner walking astern shows a run speed and leaves the raft coasting', () => {
+  const h = harness(), { server } = h;
+  const { owner, ownerId, raftId } = inviteBoardAndMount(h);
+  for (let i = 0; i < 10; i++) { owner.tickNaval({ throttle: 1, brake: 0, steer: 0 }); advance(h); }
+  owner.walkNaval();
+  advance(h);
+  assert.equal(owner.deck.active, true);
+  assert.equal(owner.naval.active, true);
+
+  const transport = h.transports.get(1), sent = [], send = transport.send.bind(transport);
+  transport.send = (message) => { sent.push(message); send(message); };
+  const start = ownRaft(server, ownerId);
+  for (let i = 0; i < 6; i++) {
+    owner.tickInput({ naval: { throttle: 0, brake: 1, steer: 0 }, deck: { mx: 0, mz: -1 } });
+    advance(h);
+  }
+  const helm = sent.filter((message) => message.t === MSG.SHIP_INPUT);
+  assert.ok(helm.length > 0, 'the voyage stream keeps ticking while the owner walks');
+  for (const message of helm) assert.deepEqual([message.throttle, message.brake, message.steer], [0, 0, 0], 'a walker never brakes or steers');
+  const end = ownRaft(server, ownerId);
+  assert.ok(Math.hypot(end.x - start.x, end.z - start.z) > 0.01, 'the raft coasts on while the owner walks astern');
+
+  const local = owner.localState(1, {}), s = owner.deck.state;
+  const raft = owner.renderRafts().find((record) => record.id === raftId);
+  assert.ok(Math.hypot(local.vx, local.vz) > 0.6, 'the local walker moves fast enough for the stride');
+  const cos = Math.cos(raft.yaw), sin = Math.sin(raft.yaw);
+  close(cos * local.vx - sin * local.vz, s.vx, 'deck-local vx');
+  close(sin * local.vx + cos * local.vz, s.vz, 'deck-local vz');
+
+  for (let i = 0; i < 30; i++) { owner.tickDeck({ mx: 0, mz: 0 }); advance(h); }
+  const still = owner.localState(1, {});
+  assert.ok(Math.hypot(still.vx, still.vz) < 0.6, 'standing on deck stops the stride');
+});
