@@ -165,3 +165,31 @@ test('GM08b: a held region shows its area with Apply and Drop, only in a region 
     globalThis.document = previousDocument;
   }
 });
+
+test('GM11a: the single-load meter shows the share, its detail and a note from 70 %', () => {
+  const previousDocument = globalThis.document;
+  globalThis.document = { createElement: (tag) => new Element(tag) };
+  const root = new Element('root');
+  const limits = { vertices: 1_000_000, tileBytes: 8 * 1048576, objects: 1000 };
+  let budget = { level: 'ok', share: 0.3147, vertices: 314_721, tileBytes: 245_300, objects: 12, limits };
+  const editor = { _t: (en) => en, map: { size: 12, half: 6, mapSpan: 1, landmarks: { spawn: { x: 0, z: 0 }, village: { x: 2, z: 2 } },
+    groundAt: () => 1, masks: () => ({}), onDock: () => false }, draftMap: null, loadBudget: () => budget };
+  const panel = new TerrainPanel({ root, editor });
+  const meter = () => panel.element.querySelector('[data-terrain-load]');
+  try {
+    assert.equal(meter().dataset.terrainLoad, 'ok');
+    assert.match(meter().textContent, /^Single load: 31 %/);
+    assert.match(meter().textContent, /Terrain 314,721 \/ 1,000,000 · Tiles 0\.2 \/ 8\.0 MB · Objects 12 \/ 1,000$/);
+    assert.equal(meter().children.length, 3, 'no note under 70 %');
+    budget = { ...budget, level: 'near', share: 0.72, objects: 720 }; panel.render();
+    assert.equal(meter().dataset.terrainLoad, 'near');
+    assert.match(meter().textContent, /Above 100 % it cannot be published/);
+    budget = { ...budget, level: 'over', share: 1.1 }; panel.render();
+    assert.match(meter().textContent, /^Single load: 110 %/);
+    assert.match(meter().textContent, /no longer fits in one load/);
+    assert.equal(meter().children[1].value, 1, 'the bar is full above 100 %');
+  } finally {
+    panel.dispose();
+    globalThis.document = previousDocument;
+  }
+});

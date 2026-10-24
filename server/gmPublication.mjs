@@ -8,6 +8,7 @@ import { projectGmContent } from '../src/editor/contentProjection.js';
 import { compileAuthoredResources } from '../src/editor/resourceAdapters.js';
 import { TERRAIN_SAMPLE_COUNT } from '../src/editor/terrainData.js';
 import { isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
+import { WORLD_LOAD_LIMITS } from '../src/editor/worldLoad.js';
 
 const sha256 = (value) => createHash('sha256').update(canonicalJson(value)).digest('hex');
 const bytesSha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -52,8 +53,12 @@ function checkTileTerrain(map, document, baseRevision, tiles) {
   catch (error) { throw new GmTerrainInvalidError(error?.code); }
 }
 
-/** Read-only preparation from a confirmed draft. No gameplay or content pointer is written. */
-export function createGmPublicationService({ root, runtimeRoot = root, map, baseRevision, worldId, validateReferences, gameVersion, protocolVersion }) {
+/**
+ * Read-only preparation from a confirmed draft. No gameplay or content pointer is written. `loadLimits` is the GM11a
+ * single-load budget (worldLoad.js WORLD_LOAD_LIMITS by default; tests pass a smaller one).
+ */
+export function createGmPublicationService({ root, runtimeRoot = root, map, baseRevision, worldId, validateReferences, gameVersion, protocolVersion,
+  loadLimits = WORLD_LOAD_LIMITS }) {
   const dependencies = createGmPublicationAssets({ root, runtimeRoot });
   let ready = false, base;
   return {
@@ -74,7 +79,7 @@ export function createGmPublicationService({ root, runtimeRoot = root, map, base
       if (tiled && version !== PREPARATION_VERSION) throw new Error('preparation_version');
       // Draft saves skip the terrain of a v5 (S3): its whole-map rules run here, before any other check.
       if (tiled) checkTileTerrain(map, checked, baseRevision, tiles);
-      const { colliders, ...report } = validateGmPublication({ map, document: checked, baseRevision, ...(tiled ? { tiles } : {}) });
+      const { colliders, ...report } = validateGmPublication({ map, document: checked, baseRevision, loadLimits, ...(tiled ? { tiles } : {}) });
       if (!report.valid) return { report, revision: null };
       const projected = checked.terrain ? projectGmContent(map, checked, baseRevision, tiled ? { tiles } : undefined) : null;
       // A v5 takes the resources its projection compiled on the compiled terrain, which is what the server installs and

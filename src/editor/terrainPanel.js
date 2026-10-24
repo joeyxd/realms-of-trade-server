@@ -4,6 +4,7 @@ import { paintTerrain } from '../ui/mapCanvas.js';
 import { TERRAIN_EDIT_FEATHER, TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
 import { TERRAIN_BRUSH_MAX_RADIUS } from './terrainBrush.js';
 import { REGION_MAX_AMOUNT, REGION_MAX_FEATHER, REGION_MAX_PASSES } from './terrainRegion.js';
+import { worldLoadPercent } from './worldLoad.js';
 
 const labels = {
   title: ['Terrain brushes', 'Pinceles de terreno'],
@@ -19,6 +20,12 @@ const labels = {
     'Rectángulo y lazo: arrastra sobre el suelo; al soltar, la herramienta se aplica una vez a toda el área (aplanar al nivel, subir o bajar la cantidad, suavizar con n pasadas, pintar o borrar según la fuerza). El difuminado suaviza el borde interior. Deshacer lo revierte entero. Después la región sigue seleccionada: cambia la herramienta o sus valores y vuelve a aplicarlos sin dibujarla.'],
   held: ['Selected region', 'Región seleccionada'], apply: ['Apply to the region (Enter)', 'Aplicar a la región (Intro)'],
   release: ['Drop the region (Escape)', 'Soltar la región (Escape)'],
+  load: ['Single load', 'Carga única'], loadVertices: ['Terrain', 'Terreno'], loadTiles: ['Tiles', 'Teselas'],
+  loadObjects: ['Objects', 'Objetos'],
+  loadNear: ['From 70 % the world is getting close to what one load holds. Above 100 % it cannot be published (drafts still save).',
+    'Desde el 70 % el mundo se acerca a lo que cabe en una carga. Por encima del 100 % no se puede publicar (el borrador se guarda).'],
+  loadOver: ['This world no longer fits in one load: it cannot be published. Split it into zones.',
+    'Este mundo ya no cabe en una sola carga: no se puede publicar. Divídelo en zonas.'],
   dryHelp: [`Brushes shape existing dry ground. Docks, paths, services, the shore and protected objects stay as they are: the brush fades out ${TERRAIN_EDIT_FEATHER} m before them.`,
     `Los pinceles modelan el suelo seco existente. Muelles, caminos, servicios, la costa y los objetos protegidos se quedan como están: el pincel se desvanece ${TERRAIN_EDIT_FEATHER} m antes.`],
   flowHelp: ['Airbrush: every pass adds more, and holding the pointer still keeps adding (about the strength per second). Single pass: going over the same ground again in one stroke adds nothing.',
@@ -143,8 +150,26 @@ export class TerrainPanel {
       this._control('shape', this._select('shape', ['circle', 'square', 'ellipse'])),
       this._control('aspect', this._input('aspect', 0.25, 1, 0.05)), this._control('rotation', this._input('rotation', 0, 360, 5)),
       help('dryHelp'), help('regionHelp'), help('strengthHelp'), help('flowHelp'), help('paintHelp'), help('shapeHelp'), help('rampHelp'),
-      mapLabel, this.mapCanvas);
+      ...this._loadMeter(), mapLabel, this.mapCanvas);
     this._syncValues(); this._syncControls();
+  }
+  // GM11a: the single-load meter of the current draft (editor.loadBudget, worldLoad.js), always shown.
+  _loadMeter() {
+    const budget = this.editor.loadBudget?.();
+    if (!budget) return [];
+    const doc = this.document, locale = this.editor._t('en', 'es'), count = value => Math.round(value).toLocaleString(locale);
+    const block = doc.createElement('div'); block.className = 'gm-terrain-load'; block.dataset.terrainLoad = budget.level;
+    const caption = doc.createElement('span'); caption.textContent = `${this.t('load')}: ${worldLoadPercent(budget)} %`;
+    // The bar reads like the number; the browser colours it amber from 70 % and red when full (its high band).
+    const meter = doc.createElement('meter'); meter.min = 0; meter.max = 1; meter.low = 0.7; meter.high = 1 - 1e-9; meter.optimum = 0;
+    meter.value = Math.min(budget.share, 1);
+    const detail = doc.createElement('p'), { limits } = budget;
+    const mb = bytes => (bytes / 1048576).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    detail.textContent = `${this.t('loadVertices')} ${count(budget.vertices)} / ${count(limits.vertices)} · ` +
+      `${this.t('loadTiles')} ${mb(budget.tileBytes)} / ${mb(limits.tileBytes)} MB · ${this.t('loadObjects')} ${count(budget.objects)} / ${count(limits.objects)}`;
+    block.append(caption, meter, detail);
+    if (budget.level !== 'ok') { const note = doc.createElement('p'); note.textContent = this.t(budget.level === 'over' ? 'loadOver' : 'loadNear'); block.append(note); }
+    return [block];
   }
   _syncValues() {
     for (const field of ['radius', 'strength', 'falloff', 'level', 'aspect', 'rotation', 'feather', 'amount', 'passes']) {

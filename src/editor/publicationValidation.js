@@ -5,6 +5,7 @@ import { freshwaterSource } from '../data/freshwater.js';
 import { compileTerrainMap, validateTerrainForMap, validateTerrainGridForMap } from './terrainData.js';
 import { compileTerrainTiles, isTerrainTilesDocument } from './terrainTiles.js';
 import { resourceDescriptor, validateAuthoredResources } from './resourceAdapters.js';
+import { WORLD_LOAD_LIMITS, WORLD_OVER_LOAD_BUDGET, worldLoadBudget, worldLoadDomain } from './worldLoad.js';
 
 const MAX_REPORTED_ISSUES = 200;
 const MAX_PUBLICATION_EDITS = 1000;
@@ -121,8 +122,9 @@ function anchorList(map) {
 /**
  * Return bounded, deterministic warnings/errors for the conservative v1 publication policy. A document v5 needs
  * `tiles` (Map sha256 -> MNT1 bytes): its terrain is compiled and checked before any object or resource rule.
+ * `loadLimits` (worldLoad.js) is the single-load budget; tests pass a smaller one to reach it on today's map.
  */
-export function validateGmPublication({ map, document, baseRevision, tiles = null } = {}) {
+export function validateGmPublication({ map, document, baseRevision, tiles = null, loadLimits = WORLD_LOAD_LIMITS } = {}) {
   if (isTerrainTilesDocument(document) && !(tiles instanceof Map)) {
     throw Object.assign(new TypeError('A document v5 needs its terrain tiles'), { code: 'tile_blobs' });
   }
@@ -149,6 +151,9 @@ export function validateGmPublication({ map, document, baseRevision, tiles = nul
 
   const editCount = doc.baseOverrides.length + doc.objects.length;
   if (editCount > MAX_PUBLICATION_EDITS) issue('error', 'edit_limit');
+  // GM11a: a world over the single-load budget is never prepared, activated or rebuilt; its draft still saves. Under
+  // the budget the report stays as before, so retained revisions keep their identity.
+  if (worldLoadBudget(worldLoadDomain(map, baseRevision), doc, loadLimits).level === 'over') issue('error', WORLD_OVER_LOAD_BUDGET);
   const anchors = anchorList(map), resources = resourceLayout(map);
   const authored = validateAuthoredResources(terrainMap, doc);
   for (const problem of authored.issues) issue('error', `resource_${problem.code}`, problem.objectId);

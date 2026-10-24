@@ -555,7 +555,7 @@ Contrato: [GM08](docs/briefs/gm08-large-brushes.md).
   operaciones (nivelar, luego suavizar, luego pintar) con "Aplicar a la región" (Intro); Escape la suelta.
 - **Siguen:** GM08c ruido y erosión, GM08d importar y exportar el mapa de alturas (PNG de 16 bits, R16 de Unreal).
 
-### GM11 Mundo ampliable, presupuesto de carga y zonas (diseño 2026-10-24, T-1024-13; espera la aprobación de Joi)
+### GM11 Mundo ampliable, presupuesto de carga y zonas (diseño 2026-10-24, T-1024-13; aprobado por Joi el mismo día; GM11a construido en T-1024-17)
 
 Contrato: [GM11](docs/briefs/gm11-world-growth-zones.md). Hoy el mundo es un cuadrado fijo de 560 m que se carga
 entero de una vez: un pedido de contenido, todas las teselas, una sola malla de terreno, y el servidor manda todas las
@@ -568,7 +568,12 @@ Propuesto por el chef: presupuesto de 1.000.000 de vértices de terreno (unos 98
 el dominio en teselas de 70 m dentro del documento (las claves de las teselas no cambian al crecer); crecer por filas o
 columnas de teselas por lado, con la parte de GM06b que deja levantar tierra desde el mar en lo nuevo; una simulación
 por zona y red por zona (cada cliente recibe solo su zona); la zona del jugador se guarda con la posición (ausente = la
-isla original).
+isla original). Joi aprobó estas propuestas y los cuatro puntos abiertos el 2026-10-24: presupuesto de 1.000.000 de
+vértices con aviso desde el 70 %; franja del 15 % guardando solo la zona vecina más cercana; nombres de zona sugeridos
+de una lista y también escritos por el GM (ES y EN); GM11a primero, antes de GM08c.
+GM11a (T-1024-17): src/editor/worldLoad.js mide terreno, bytes de teselas y objetos contra su presupuesto; el panel de
+terreno muestra "Carga única: 31 %", el estado avisa al entrar en ámbar y al pasar del 100 %, y publicar rechaza con
+`world_over_load_budget` en el panel Online y en la preparación del servidor (validateGmPublication).
 Cortes: GM11a medidor y bloqueo (sin protocolo ni SQL), GM11b el tamaño como dato, GM11c crecer la zona, GM11d zonas
 en el servidor, GM11e cruce en el cliente (precarga y pantalla), GM11f zonas en el editor.
 

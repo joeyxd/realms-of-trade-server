@@ -26,6 +26,7 @@ import { ScatterInteraction } from './scatterInteraction.js';
 import { measureModelCost } from './modelCost.js';
 import { ResourcePanel } from './resourcePanel.js';
 import { resourceAdapter, sourceAssetId, compileAuthoredResources } from './resourceAdapters.js';
+import { worldLoadBudget, worldLoadDomain, worldLoadPercent, worldLoadRank } from './worldLoad.js';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 const number = (v) => Number.isFinite(Number(v)) ? Number(v) : 0;
@@ -912,8 +913,14 @@ export class WorldEditor {
     this._setSelectedTransform(t); this._renderInspector();
   }
 
+  /** GM11a: the single-load budget (worldLoad.js) of a document, the current draft by default. */
+  loadBudget(document = this.history?.current()) {
+    return worldLoadBudget(worldLoadDomain(this.map, this.baseRevision), document || null);
+  }
+
   /** Commit a document to history; a terrain stroke also passes its new tiles and its compiled map. */
   _commit(document, { tiles = null, map = null, region = null } = {}) {
+    const loadBefore = this.loadBudget().level;
     try {
       if (document.objects.some(item => resourceAdapter(item.assetId))) {
         const surface = map || this._terrainSurface(document, tiles);
@@ -932,6 +939,16 @@ export class WorldEditor {
     this.dirty = JSON.stringify(this.document) !== this.lastSavedJson;
     this._renderDocument(this.document, map ? { map, region } : {}); this.onChanged({ document: clone(this.document), dirty: this.dirty });
     this._updateButtons(); this._scheduleSave();
+    // GM11a: warn once when an edit enters the amber band or goes over the budget; the meter shows the rest.
+    const load = this.loadBudget();
+    if (worldLoadRank(load.level) > worldLoadRank(loadBefore)) {
+      const pct = worldLoadPercent(load);
+      this._setStatus(load.level === 'over'
+        ? editorMessage(`This world no longer fits in one load (${pct} %): the draft saves, but it cannot be published. Split it into zones.`,
+          `Este mundo ya no cabe en una sola carga (${pct} %): el borrador se guarda, pero no se puede publicar. Divídelo en zonas.`)
+        : editorMessage(`The world uses ${pct} % of a single load. Above 100 % it cannot be published.`,
+          `El mundo ocupa el ${pct} % de una sola carga. Por encima del 100 % no se podrá publicar.`), 'warning');
+    }
     if (this.terrainRoot?.hidden === false) this.terrainPanel.render();
     this.resourcePanel?.render();
   }
@@ -956,8 +973,8 @@ export class WorldEditor {
           this.history.retain?.(saved.document, saved.tiles);
           this.dirty = JSON.stringify(this.history.current()) !== this.lastSavedJson;
           if (!this.dirty) { this.resumeDocument = null; this.resumeTiles = null; await this._clearRecovery(); }
-          // A completed autosave must not hide a newer rejected edit or loading error.
-          if (this.status.kind !== 'error') this._setStatus(editorMessage('Draft saved locally. Not published.', 'Borrador guardado localmente. Sin publicar.'), 'ok');
+          // A completed autosave must not hide a newer rejected edit, loading error or load-budget warning.
+          if (this.status.kind !== 'error' && this.status.kind !== 'warning') this._setStatus(editorMessage('Draft saved locally. Not published.', 'Borrador guardado localmente. Sin publicar.'), 'ok');
         } catch (error) {
           this.dirty = true; this.saveAgain = false;
           this._setError(error, 'save');

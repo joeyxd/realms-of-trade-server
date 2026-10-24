@@ -3,7 +3,7 @@
 Status: DESIGN. Joi decided on 2026-10-24: (1) a world over the single-load budget is blocked from publication, with a
 meter that warns before it; (2) a large map is split into named zones with a loading screen, and the next zone starts
 loading in the background when the player is within about 15 % of the map from that edge, so the screen is short and
-barely noticed. Everything else below is the chef's proposal for Joi to approve before GM11a.
+barely noticed. Joi approved the chef's proposals below and the four open points on the same day (see the end).
 
 ## Why: what is fixed today (explorer T-1024-13, paths in the worktree)
 
@@ -128,9 +128,16 @@ a zone that is not active yet stays closed (the edge behaves like today's world 
 - Two linked zones: the preload starts inside the 15 % band, the crossing screen lasts under 1 s on desktop with a warm
   preload, the raft and its cargo arrive on the mirrored point, and a client in zone A receives no entity of zone B.
 
-## Open for Joi
+## Decided by Joi (2026-10-24)
 
-1. The budget numbers: 1,000,000 terrain vertices (about 980 m square) with amber from 70 %.
-2. The 15 % band and holding only the closest neighbour.
-3. Zone names: the GM types them (ES and EN), or a list of suggested pirate names to pick from.
-4. Order: GM11a now; GM11b-c before or after GM08c (noise and erosion) and GM09 (instancing).
+1. The budget numbers: 1,000,000 terrain vertices (about 980 m square) with amber from 70 %. Yes.
+2. The 15 % band and holding only the closest neighbour. Yes.
+3. Zone names: both. The editor suggests names from a list of pirate names and the GM can type their own (ES and EN).
+4. Order: GM11a now, before GM08c. Built in T-1024-17 (src/editor/worldLoad.js; tests/gm-world-load.test.mjs).
+
+GM11a notes (T-1024-17): over means above 100 %, so exactly 100 % still fits and a 1,000-edit document (the
+edit_limit maximum) stays publishable. The object budget is publicationValidation.js MAX_PUBLICATION_EDITS (1,000)
+until GM09 measures more. Under the budget the publication report is unchanged, so retained revisions keep their
+identity; over it the report gains one error, `world_over_load_budget`. A base without a tile domain (test maps)
+loads its own generated square. Today's world reads 31 %: with the fixed 560 m square only objects (or, in a test,
+smaller limits) can move it until GM11b.

@@ -1,6 +1,7 @@
 import { GmContentClient } from './contentClient.js';
 import { editorErrorMessage, editorMessage } from './messages.js';
 import { TERRAIN_TILES_NOT_READY, convertDocumentToV5, isTerrainTilesDocument } from './terrainTiles.js';
+import { WORLD_OVER_LOAD_BUDGET } from './worldLoad.js';
 import { onLocaleChange, setLocale } from '../core/locale.js';
 
 const text = (value) => String(value).replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
@@ -180,7 +181,7 @@ export class RemoteDraftPanel {
   }
 
   async prepare() {
-    if (this.busy || !this.canPrepare) return;
+    if (this.busy || !this.canPrepare || this.overLoadBudget) return;
     const generation = this.generation, snapshot = this.head.document, revision = this.head.revision;
     this.prepared = null; this.review = null; this.state = 'preparing'; this.error = ''; this.render();
     try {
@@ -194,6 +195,11 @@ export class RemoteDraftPanel {
       this.error = error.code;
       this.state = this.client.pending ? 'pending' : error.code === 'gm_draft_conflict' ? 'conflict' : 'ready';
     } finally { if (generation === this.generation) this.render(); }
+  }
+
+  // GM11a: the client refuses to prepare a head over the single-load budget; the server refuses it again with the same code.
+  get overLoadBudget() {
+    return !!this.head?.document && this.editor.loadBudget?.(this.head.document).level === 'over';
   }
 
   get canPrepare() {
@@ -285,7 +291,8 @@ export class RemoteDraftPanel {
 
   issueText(code) {
     const labels = {
-      edit_limit: ['More than 1,000 edits', 'Más de 1.000 ediciones'], scale_limit: ['Scale exceeds 20', 'La escala supera 20'],
+      edit_limit: ['More than 1,000 edits', 'Más de 1.000 ediciones'],
+      [WORLD_OVER_LOAD_BUDGET]: ['This world no longer fits in one load: split it into zones', 'Este mundo ya no cabe en una sola carga: divídelo en zonas'], scale_limit: ['Scale exceeds 20', 'La escala supera 20'],
       radius_limit: ['Collision radius exceeds 20', 'El radio de colisión supera 20'], map_bounds: ['Outside the playable bounds', 'Fuera de los límites jugables'],
       unsupported_height: ['Too far above or below ground', 'Demasiado lejos del suelo'],
       protected_anchor_collision: ['Blocks a protected access', 'Bloquea un acceso protegido'],
@@ -310,7 +317,8 @@ export class RemoteDraftPanel {
     return `<section class="gm-publication"><h3>${text(this.t('Prepare for publication', 'Preparar para publicar'))}</h3>
       <p>${text(this.t('Validate the saved design and download a revision with its exact models. Review the report before preparing a copy. The active world stays unchanged.', 'Valida el diseño guardado y descarga una revisión con sus modelos exactos. Revisa el informe antes de preparar una copia. El mundo activo se conserva.'))}</p>
       ${!this.canPrepare && this.state !== 'preparing' ? `<p>${text(this.t('Save your current design online before preparing it.', 'Guarda tu diseño actual online antes de prepararlo.'))}</p>` : ''}
-      ${button('prepare', this.state === 'preparing' ? this.t('Validating…', 'Validando…') : this.t('Validate for publication', 'Validar para publicar'), this.busy || !this.canPrepare)}
+      ${button('prepare', this.state === 'preparing' ? this.t('Validating…', 'Validando…') : this.t('Validate for publication', 'Validar para publicar'), this.busy || !this.canPrepare || this.overLoadBudget)}
+      ${this.overLoadBudget ? `<p class="gm-remote-error" role="alert" data-load-budget>${text(this.issueText(WORLD_OVER_LOAD_BUDGET))}</p>` : ''}
       ${report ? `<div class="gm-publication-report" data-valid="${report.valid}" role="status"><b>${text(report.valid ? this.t('Revision prepared · not activated', 'Revisión preparada · sin activar') : this.t('Fix these problems before preparing', 'Corrige estos problemas antes de preparar'))}</b>
         <p>${report.summary.errors} ${text(report.summary.errors === 1 ? this.t('error', 'error') : this.t('errors', 'errores'))} · ${report.summary.warnings} ${text(report.summary.warnings === 1 ? this.t('warning', 'advertencia') : this.t('warnings', 'advertencias'))}</p>
         <ul>${report.issues.map((issue) => `<li data-severity="${issue.severity}">${text(this.issueText(issue.code))}${issue.anchorId ? ` · ${text(issue.anchorId)}` : ''}
