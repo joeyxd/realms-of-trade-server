@@ -122,3 +122,47 @@ test('the eyedropper sets the level from the ground under the cursor; Escape (ca
   assert.equal(interaction.cancel(), true, 'Escape ends picking before it deselects the tool');
   assert.equal(panel.picking, false);
 });
+
+test('a drawn region stays selected: level, then smooth, then paint run on it without drawing it again', async () => {
+  const { interaction, panel, history, statuses, event, pointer, editor } = await rig();
+  const k = (centre.z + 280) * 561 + centre.x + 280;
+  panel.values.selection = 'rect'; interaction.select('flatten'); panel.level = 3.5;
+  pointer(centre.x - 8, centre.z - 8); interaction.down(event); pointer(centre.x + 8, centre.z + 8);
+  await interaction.finish();
+  assert.equal(interaction.held?.shape, 'rect');
+  assert.equal(panel.held, 256, 'the panel shows the held area in m2');
+  assert.match(statuses.at(-1)[1], /stays selected|sigue seleccionada/);
+  assert.ok(interaction.heldLine.visible, 'the held outline stays on the ground');
+  assert.ok(Math.abs(editor.draftMap.heights[k] - 3.5) < .002, 'levelled');
+
+  interaction.select('smooth');
+  assert.ok(interaction.held, 'a change of tool keeps the region');
+  assert.match(statuses.at(-1)[1], /Region selected|Región seleccionada/);
+  panel.values.passes = 2;
+  assert.equal(await interaction.apply(), true);
+  interaction.select('paint');
+  assert.equal(await interaction.apply(), true);
+  assert.ok(editor.terrain.grid.weights[k * 4] > 0, 'the region took the paint');
+  for (let n = 0; n < 3; n++) history.undo();
+  assert.equal(history.canUndo(), false, 'three operations, three undo entries');
+
+  // A click without a drag never replaces the held region; drawing a real one does.
+  const held = interaction.held;
+  pointer(centre.x, centre.z); interaction.down(event); await interaction.finish();
+  assert.equal(interaction.held, held);
+  pointer(centre.x - 3, centre.z - 3); interaction.down(event); pointer(centre.x + 3, centre.z + 2); await interaction.finish();
+  assert.equal(interaction.held.area, 30);
+
+  assert.equal(interaction.release(), true, 'Escape drops the held region');
+  assert.equal(interaction.held, null); assert.equal(panel.held, null); assert.equal(interaction.heldLine.visible, false);
+  assert.equal(interaction.release(), false, 'then Escape leaves the tool');
+  assert.equal(interaction.apply(), null, 'nothing to apply');
+
+  pointer(centre.x - 3, centre.z - 3); interaction.down(event); pointer(centre.x + 3, centre.z + 3); await interaction.finish();
+  panel.values.selection = 'brush'; interaction.select('paint');
+  assert.equal(interaction.held, null, 'the brush area drops the region');
+  panel.values.selection = 'lasso'; interaction.select('raise');
+  pointer(centre.x - 3, centre.z - 3); interaction.down(event); pointer(centre.x + 3, centre.z + 3); await interaction.finish();
+  interaction.select(null);
+  assert.equal(interaction.held, null, 'leaving the terrain tools drops the region');
+});

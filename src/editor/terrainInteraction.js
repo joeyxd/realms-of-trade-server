@@ -15,6 +15,29 @@ const blocked = () => editorMessage(
   'Stroke blocked: keep it on dry ground, away from protected places, or reduce its size/height. Nothing was saved.',
   'Trazo bloqueado: mantén suelo seco y distancia de zonas protegidas, o reduce tamaño/altura. No se guardó ningún cambio.');
 const isRegion = parameters => parameters.selection === 'rect' || parameters.selection === 'lasso';
+// GM08b: a held region smaller than this (a click without a drag) never replaces the one already held.
+const HELD_MIN_AREA = 1;
+const regionKept = () => editorMessage(
+  'Region kept in the private draft. Undo reverses it whole. The region stays selected: change the tool and press Apply to the region (Enter); Escape drops it.',
+  'Región conservada en el borrador privado. Deshacer la revierte entera. La región sigue seleccionada: cambia la herramienta y pulsa Aplicar a la región (Intro); Escape la suelta.');
+const polygonArea = (ring) => {
+  let twice = 0;
+  for (let a = 0, b = ring.length - 1; a < ring.length; b = a++) twice += (ring[b].x - ring[a].x) * (ring[b].z + ring[a].z);
+  return Math.abs(twice) / 2;
+};
+// A closed ring laid on the ground, a vertex every 2 m or less.
+function onGround(ring, map) {
+  const points = [];
+  for (let n = 0; n < ring.length; n++) {
+    const a = ring[n], b = ring[(n + 1) % ring.length];
+    const steps = Math.min(64, Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.z - a.z) / 2)));
+    for (let s = 0; s < steps; s++) {
+      const x = a.x + (b.x - a.x) * s / steps, z = a.z + (b.z - a.z) * s / steps;
+      points.push(new THREE.Vector3(x, map.heightAt(x, z) + .09, z));
+    }
+  }
+  return points;
+}
 
 /**
  * A gesture owns a private preview; only its final valid document reaches history. Strokes run on the editor's
@@ -29,6 +52,12 @@ export class TerrainInteraction {
       new THREE.LineBasicMaterial({ color: 0x83f2cf, depthTest: false, transparent: true, opacity: .95 }));
     this.cursor.name = 'gm-terrain-brush'; this.cursor.layers.set(LAYER.NO_OUTLINE);
     this.cursor.renderOrder = 30; this.cursor.visible = false; editor.scene.add(this.cursor);
+    // GM08b: the held region ({ shape, points, area }) stays selected after its gesture, so several operations run on it.
+    this.held = null; this.heldMap = null;
+    this.heldLine = new THREE.LineLoop(new THREE.BufferGeometry(),
+      new THREE.LineBasicMaterial({ color: 0xffc857, depthTest: false, transparent: true, opacity: .9 }));
+    this.heldLine.name = 'gm-terrain-region'; this.heldLine.layers.set(LAYER.NO_OUTLINE);
+    this.heldLine.renderOrder = 29; this.heldLine.visible = false; editor.scene.add(this.heldLine);
     this.onUp = event => { if (event.button === 0 && this.stroke && this.tool !== 'ramp') this.finish(); };
     this.onCancel = () => this.cancel();
     window.addEventListener('pointerup', this.onUp);
@@ -39,11 +68,16 @@ export class TerrainInteraction {
     this.cancel(); this.editor._clearGhost(); this.editor._cancelTransform();
     this.editor.select(null); this.tool = tool;
     this.editor.transform.enabled = !tool;
-    this.panel.tool = tool; this.panel.render();
-    this.cursor.visible = false;
+    this.panel.tool = tool;
+    // A change of tool keeps the held region (level, then smooth, then paint); leaving the terrain or the brush area drops it.
     const selection = this.panel.parameters().selection;
+    if (!tool || (tool !== 'ramp' && selection === 'brush')) this._drop();
+    this.panel.render();
+    this.cursor.visible = false; this.drawHeld();
     if (tool) this.editor._setStatus(tool === 'ramp'
       ? editorMessage('Ramp: click its start, then its end. Escape cancels.', 'Rampa: pulsa el inicio y luego el final. Escape cancela.')
+      : this.held && isRegion({ selection }) ? editorMessage('Region selected: Apply to the region (Enter) runs this tool on it; drag to draw a new one; Escape drops it.',
+        'Región seleccionada: Aplicar a la región (Intro) le aplica esta herramienta; arrastra para dibujar otra; Escape la suelta.')
       : selection === 'rect' ? editorMessage('Rectangle: drag from one corner to the other; releasing applies the tool to the whole area. Escape cancels.',
         'Rectángulo: arrastra de una esquina a la otra; al soltar se aplica la herramienta a toda el área. Escape cancela.')
       : selection === 'lasso' ? editorMessage('Lasso: drag around the area; releasing closes it and applies the tool. Escape cancels.',
@@ -53,6 +87,7 @@ export class TerrainInteraction {
 
   move() {
     const e = this.editor;
+    this.drawHeld();
     if (!this.tool || !e.active || e.walkPreview?.active || e.remotePanel?.open || !e.pointerInside) {
       this.cursor.visible = false; return;
     }
@@ -88,17 +123,8 @@ export class TerrainInteraction {
     const params = this.stroke?.parameters || this.panel.parameters();
     let points;
     if (isRegion(params) && this.stroke) {
-      // GM08b: the region's outline, a vertex every 2 m or less so it lies on the ground.
-      const ring = regionOutline({ shape: params.selection, points: this.stroke.points });
-      points = [];
-      for (let n = 0; n < ring.length; n++) {
-        const a = ring[n], b = ring[(n + 1) % ring.length];
-        const steps = Math.min(64, Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.z - a.z) / 2)));
-        for (let s = 0; s < steps; s++) {
-          const x = a.x + (b.x - a.x) * s / steps, z = a.z + (b.z - a.z) * s / steps;
-          points.push(new THREE.Vector3(x, map.heightAt(x, z) + .09, z));
-        }
-      }
+      // GM08b: the region's outline lies on the ground.
+      points = onGround(regionOutline({ shape: params.selection, points: this.stroke.points }), map);
     } else {
       // Before a region is drawn (or while picking a level), a small ring marks the point under the cursor.
       const marker = isRegion(params) || this.panel.picking;
@@ -111,6 +137,45 @@ export class TerrainInteraction {
     this.cursor.geometry.setFromPoints(points); this.cursor.geometry.computeBoundingSphere();
     this.cursor.material.color.set(this.stroke?.error ? 0xff6854 : 0x83f2cf);
     this.cursor.visible = true; this.editor.invalidate();
+  }
+
+  // The held region's outline, re-laid when the ground under it changed; hidden outside the terrain tools.
+  drawHeld() {
+    const e = this.editor, map = e.draftMap || e.map;
+    const shown = !!this.held && !!this.tool && e.active && !e.walkPreview?.active;
+    if (this.heldLine.visible !== shown) { this.heldLine.visible = shown; e.invalidate(); }
+    if (!shown || this.heldMap === map) return;
+    this.heldLine.geometry.setFromPoints(onGround(regionOutline(this.held), map));
+    this.heldLine.geometry.computeBoundingSphere(); this.heldMap = map; e.invalidate();
+  }
+
+  // A drawn region becomes the held one unless it encloses (almost) nothing.
+  _hold(shape, points) {
+    const area = polygonArea(regionOutline({ shape, points }));
+    if (area < HELD_MIN_AREA) return;
+    this.held = { shape, points: points.map(({ x, z }) => ({ x, z })), area };
+    this.heldMap = null; this.panel.held = area; this.panel.render(); this.drawHeld();
+  }
+
+  _drop() {
+    if (!this.held) return false;
+    this.held = null; this.heldMap = null; this.panel.held = null; this.heldLine.visible = false; this.editor.invalidate();
+    return true;
+  }
+
+  /** Drop the held region (Escape after any gesture, or the panel button). True when there was one. */
+  release() {
+    const dropped = this._drop();
+    if (dropped) this.panel.render();
+    return dropped;
+  }
+
+  /** Run the current tool and values on the held region again: one commit, one undo entry. */
+  apply() {
+    const held = this.held, parameters = this.panel.parameters();
+    if (!held || !this.tool || this.tool === 'ramp' || parameters.selection === 'brush' || this.stroke || this.editor.terrainTask) return null;
+    return this._commit({ base: this.editor.history.current(), points: held.points,
+      parameters: { ...parameters, selection: held.shape }, region: null, shown: null });
   }
 
   down(event) {
@@ -200,13 +265,17 @@ export class TerrainInteraction {
       this._showBase(stroke); this.editor._setStatus(blocked(), 'error'); this.drawCursor();
       return;
     }
+    if (isRegion(stroke.parameters)) this._hold(stroke.parameters.selection, stroke.points);
+    return this._commit(stroke);
+  }
+
+  _commit(stroke) {
     const region = isRegion(stroke.parameters);
     const task = this.editor._commitTerrainStroke(this._edit(stroke), stroke).then((committed) => {
       if (!this.editor.active) return committed;
       if (committed) {
         this.lastPoint = { ...stroke.points.at(-1) };
-        this.editor._setStatus(region
-          ? editorMessage('Region kept in the private draft. Undo reverses it whole.', 'Región conservada en el borrador privado. Deshacer la revierte entera.')
+        this.editor._setStatus(region ? regionKept()
           : editorMessage('Terrain stroke kept in the private draft. Undo reverses the whole stroke.',
             'Trazo de terreno conservado en el borrador privado. Deshacer revierte el trazo completo.'), 'ok');
       } else this.editor._setStatus(blocked(), 'error');
@@ -244,5 +313,6 @@ export class TerrainInteraction {
   dispose() {
     this.cancel(); window.removeEventListener('pointerup', this.onUp); window.removeEventListener('pointercancel', this.onCancel);
     this.editor.scene.remove(this.cursor); this.cursor.geometry.dispose(); this.cursor.material.dispose();
+    this.editor.scene.remove(this.heldLine); this.heldLine.geometry.dispose(); this.heldLine.material.dispose();
   }
 }

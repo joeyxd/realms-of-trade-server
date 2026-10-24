@@ -128,7 +128,8 @@ export class WorldEditor {
     this.remotePanel = new RemoteDraftPanel(this, remoteClient);
     this.templatePanel = new TemplatePanel(this, this.templateRoot);
     this.terrainPanel = new TerrainPanel({ editor: this, root: this.terrainRoot,
-      onTool: tool => this.terrainInteraction.select(tool) });
+      onTool: tool => this.terrainInteraction.select(tool),
+      onRegion: action => action === 'apply' ? this.terrainInteraction.apply() : this.terrainInteraction.release() });
     this.terrainInteraction = new TerrainInteraction(this, this.terrainPanel);
     this.scatterPanel = new ScatterPanel({ editor: this, root: this.scatterRoot,
       onTool: enabled => {
@@ -1272,10 +1273,15 @@ export class WorldEditor {
     if (this.scatterInteraction?.stroke) return;
     if (event.code === 'Escape' && this.terrainInteraction?.tool && !this.walkPreview?.active && !this.remotePanel?.open) {
       event.preventDefault(); event.stopImmediatePropagation();
-      if (!this.terrainInteraction.cancel()) this.terrainInteraction.select(null);
+      // Escape ends the gesture or the picking first, then drops the held region (GM08b), then leaves the tool.
+      if (!this.terrainInteraction.cancel() && !this.terrainInteraction.release()) this.terrainInteraction.select(null);
       return;
     }
     if (this.terrainInteraction?.stroke) return;
+    if ((event.code === 'Enter' || event.code === 'NumpadEnter') && this.terrainInteraction?.held && this.terrainInteraction.tool &&
+        !typing(event.target) && !this.walkPreview?.active && !this.remotePanel?.open) {
+      event.preventDefault(); event.stopImmediatePropagation(); this.terrainInteraction.apply(); return;
+    }
     if (this.remotePanel?.open) {
       if (event.code === 'Escape') { event.preventDefault(); event.stopImmediatePropagation(); this.remotePanel.hide(); }
       return;

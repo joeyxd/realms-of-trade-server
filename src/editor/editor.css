@@ -194,6 +194,8 @@
 .gm-terrain-panel input { grid-column: 1; width: 100%; accent-color: #80d8bc; }
 .gm-terrain-panel output { grid-column: 2; grid-row: 2; min-width: 38px; }
 .gm-terrain-panel p { margin: 0; font-size: 11px; line-height: 1.5; }
+.gm-terrain-panel [data-terrain-control="held"]:not([hidden]) { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; border: 1px solid #ffc857; border-radius: 5px; font-size: 12px; }
+.gm-terrain-panel [data-terrain-control="held"] span { flex-basis: 100%; color: #ffc857; }
 .gm-terrain-panel canvas { width: min(100%, 168px); height: auto; justify-self: center; border: 1px solid #52645d; border-radius: 5px; }
 .gm-sidebar > [data-role="scatter-panel"] { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .gm-scatter-panel { padding: 12px; display: grid; gap: 10px; color: #c5dad8; }

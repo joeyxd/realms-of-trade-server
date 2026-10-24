@@ -15,8 +15,10 @@ const labels = {
   selection: ['Area', 'Área'], brush: ['Brush', 'Pincel'], rect: ['Rectangle', 'Rectángulo'], lasso: ['Lasso', 'Lazo'],
   feather: ['Feather (m)', 'Difuminado (m)'], amount: ['Amount (m)', 'Cantidad (m)'], passes: ['Passes', 'Pasadas'],
   pick: ['Pick level from the ground', 'Tomar el nivel del suelo'], picking: ['Click the ground (Escape cancels)', 'Pulsa el suelo (Escape cancela)'],
-  regionHelp: ['Rectangle and lasso: drag on the ground; releasing applies the tool once to the whole area (flatten to the level, raise or lower by the amount, smooth with n passes, paint or erase by the strength). Feather softens the inner edge. Undo reverses it whole.',
-    'Rectángulo y lazo: arrastra sobre el suelo; al soltar, la herramienta se aplica una vez a toda el área (aplanar al nivel, subir o bajar la cantidad, suavizar con n pasadas, pintar o borrar según la fuerza). El difuminado suaviza el borde interior. Deshacer lo revierte entero.'],
+  regionHelp: ['Rectangle and lasso: drag on the ground; releasing applies the tool once to the whole area (flatten to the level, raise or lower by the amount, smooth with n passes, paint or erase by the strength). Feather softens the inner edge. Undo reverses it whole. The region then stays selected: change the tool or its values and apply them to it again without drawing it.',
+    'Rectángulo y lazo: arrastra sobre el suelo; al soltar, la herramienta se aplica una vez a toda el área (aplanar al nivel, subir o bajar la cantidad, suavizar con n pasadas, pintar o borrar según la fuerza). El difuminado suaviza el borde interior. Deshacer lo revierte entero. Después la región sigue seleccionada: cambia la herramienta o sus valores y vuelve a aplicarlos sin dibujarla.'],
+  held: ['Selected region', 'Región seleccionada'], apply: ['Apply to the region (Enter)', 'Aplicar a la región (Intro)'],
+  release: ['Drop the region (Escape)', 'Soltar la región (Escape)'],
   dryHelp: [`Brushes shape existing dry ground. Docks, paths, services, the shore and protected objects stay as they are: the brush fades out ${TERRAIN_EDIT_FEATHER} m before them.`,
     `Los pinceles modelan el suelo seco existente. Muelles, caminos, servicios, la costa y los objetos protegidos se quedan como están: el pincel se desvanece ${TERRAIN_EDIT_FEATHER} m antes.`],
   flowHelp: ['Airbrush: every pass adds more, and holding the pointer still keeps adding (about the strength per second). Single pass: going over the same ground again in one stroke adds nothing.',
@@ -38,13 +40,16 @@ const tools = ['raise', 'lower', 'flatten', 'smooth', 'ramp', 'paint', 'erase'];
 
 /** Standalone terrain controls; pointer gestures and document edits stay with the editor root. */
 export class TerrainPanel {
-  constructor({ root, editor, onTool = () => {} } = {}) {
+  constructor({ root, editor, onTool = () => {}, onRegion = () => {} } = {}) {
     if (!root || !editor) throw new TypeError('TerrainPanel requires root and editor');
     this.root = root; this.editor = editor; this.document = root.ownerDocument || document; this.onTool = onTool;
+    this.onRegion = onRegion;
     this.tool = null; this.radius = 6; this.strength = 0.5; this.falloff = 0.5; this.level = 2.4;
     this.material = 'grass'; this.shape = 'circle'; this.aspect = 0.5; this.rotation = 0; this.flow = 'stroke';
     // GM08b: brush or a region (rect, lasso); `picking` makes the next ground click set the level (terrainInteraction.js).
     this.selection = 'brush'; this.feather = 4; this.amount = 2; this.passes = 4; this.picking = false;
+    // The held region's area in m2 while the interaction keeps one selected (null otherwise); onRegion('apply' | 'release').
+    this.held = null;
     this.mapCanvas = null; this.renderedMap = null;
     this.element = this.document.createElement('section'); this.element.className = 'gm-terrain-panel';
     this.onChange = (event) => {
@@ -65,7 +70,10 @@ export class TerrainPanel {
       this._syncValues();
     };
     this.onClick = (event) => {
-      if (!Object.hasOwn(event.target?.dataset || {}, 'terrainPick')) return;
+      const dataset = event.target?.dataset || {};
+      if (Object.hasOwn(dataset, 'terrainApply')) { this.onRegion('apply'); return; }
+      if (Object.hasOwn(dataset, 'terrainRelease')) { this.onRegion('release'); return; }
+      if (!Object.hasOwn(dataset, 'terrainPick')) return;
       this.picking = !this.picking; this.render();
     };
     this.element.addEventListener('change', this.onChange);
@@ -118,7 +126,12 @@ export class TerrainPanel {
     const mapLabel = doc.createElement('h4'); mapLabel.textContent = this.t('map');
     const pick = doc.createElement('button'); pick.type = 'button'; pick.dataset.terrainPick = '';
     pick.textContent = this.t(this.picking ? 'picking' : 'pick');
+    const held = doc.createElement('div'), heldCaption = doc.createElement('span');
+    heldCaption.textContent = this.held ? `${this.t('held')}: ${Math.round(this.held).toLocaleString(this.editor._t('en', 'es'))} m²` : this.t('held');
+    const button = (key) => { const node = doc.createElement('button'); node.type = 'button'; node.textContent = this.t(key); node.dataset[`terrain${key[0].toUpperCase()}${key.slice(1)}`] = ''; return node; };
+    held.append(heldCaption, button('apply'), button('release'));
     this.element.replaceChildren(title, selectLabel, this._control('selection', this._select('selection', ['brush', 'rect', 'lasso'])),
+      this._control('held', held),
       this._control('radius', this._input('radius', 2, TERRAIN_BRUSH_MAX_RADIUS, 0.5)),
       this._control('feather', this._input('feather', 0, REGION_MAX_FEATHER, 1)),
       this._control('amount', this._input('amount', 0.1, REGION_MAX_AMOUNT, 0.1)),
@@ -149,7 +162,7 @@ export class TerrainPanel {
       pick: this.tool === 'flatten', shape: brush && !rampMode, aspect: brush && !rampMode && this.shape === 'ellipse',
       rotation: brush && !rampMode && this.shape !== 'circle', radius: brush, strength: brush || (area && paintMode),
       falloff: brush, flow: brush && (sculptMode || paintMode), feather: area,
-      amount: area && (this.tool === 'raise' || this.tool === 'lower'), passes: area && this.tool === 'smooth' };
+      amount: area && (this.tool === 'raise' || this.tool === 'lower'), passes: area && this.tool === 'smooth', held: area && !!this.held };
     for (const [field, shown] of Object.entries(visibility)) {
       const node = this.element.querySelector(`[data-terrain-control="${field}"]`);
       if (node) node.hidden = !shown;

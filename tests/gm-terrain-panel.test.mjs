@@ -138,3 +138,30 @@ test('GM08b: a region hides the brush controls and shows feather, amount, passes
     globalThis.document = previousDocument;
   }
 });
+
+test('GM08b: a held region shows its area with Apply and Drop, only in a region area', () => {
+  const previousDocument = globalThis.document;
+  globalThis.document = { createElement: (tag) => new Element(tag) };
+  const root = new Element('root'), actions = [];
+  const editor = { _t: (en) => en, map: { size: 12, half: 6, mapSpan: 1, landmarks: { spawn: { x: 0, z: 0 }, village: { x: 2, z: 2 } },
+    groundAt: () => 1, masks: () => ({}), onDock: () => false }, draftMap: null };
+  const panel = new TerrainPanel({ root, editor, onRegion: (action) => actions.push(action) });
+  const hidden = () => panel.element.querySelector('[data-terrain-control="held"]').hidden;
+  try {
+    panel.selection = 'rect'; panel.select('flatten');
+    assert.equal(hidden(), true, 'nothing held yet');
+    panel.held = 1240.4; panel.render();
+    assert.equal(hidden(), false);
+    assert.match(panel.element.querySelector('[data-terrain-control="held"]').textContent, /Selected region: 1,240 m²/);
+    panel.element.dispatch('click', panel.element.querySelector('[data-terrain-apply]'));
+    panel.element.dispatch('click', panel.element.querySelector('[data-terrain-release]'));
+    assert.deepEqual(actions, ['apply', 'release']);
+    panel.select('ramp');
+    assert.equal(hidden(), true, 'ramps are brush only');
+    panel.selection = 'brush'; panel.select('raise');
+    assert.equal(hidden(), true);
+  } finally {
+    panel.dispose();
+    globalThis.document = previousDocument;
+  }
+});

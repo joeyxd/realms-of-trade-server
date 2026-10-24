@@ -101,7 +101,7 @@ GM08b **built** (T-1024-03), decisions R1 to R6 below. Client only: no protocol,
 - R1 **Drawing is applying.** In the panel, Area: Brush, Rectangle or Lasso. A rectangle is dragged corner to corner
   (axis-aligned in world X/Z); a lasso is dragged around the area, a point every metre, and closes on release. Near
   256 points every other point goes and the spacing doubles, so a long lasso is never refused. Releasing applies the
-  tool once: one commit, one undo entry. Escape cancels. There is no persistent selection (open for Joi).
+  tool once: one commit, one undo entry. Escape cancels. The region then stays selected (R7).
 - R2 **Field** (`regionInfluence`, the strokeInfluence format): even-odd inside by row crossings; the feather grows
   inwards as a smoothstep over the chamfer distance to the nearest vertex outside, so nothing outside the outline
   changes. Each vertex then takes its `terrainEditWeights` share (the D2 clip).
@@ -114,8 +114,15 @@ GM08b **built** (T-1024-03), decisions R1 to R6 below. Client only: no protocol,
   (a vertex every 2 m or less); before the drag a 2 m ring marks the cursor.
 - R6 **Cost** (shared, loaded machine): the whole map as a rectangle with a 32 m feather, smoothed 16 times, commits in
   115 to 245 ms (operation 96 to 203 ms); levelling the whole map in 25 to 100 ms. A phone is not measured.
+- R7 **The region stays selected** (Joi, 2026-10-24, T-1024-12). After the gesture applies, the region stays held with an
+  amber outline on the ground and a panel block "Selected region: N m2" with Apply to the region (Enter) and Drop the
+  region (Escape). Apply runs the current tool and values on it again (level, then smooth, then paint): one commit and
+  one undo entry each. A change of tool keeps it; drawing a new region replaces it, but a click without a drag (under
+  1 m2) never does; the Brush area, leaving the terrain tools or Escape (after the gesture and the picking) drops it.
+  Apply does not preview first: undo is the way back.
 - Tests: `tests/gm-terrain-region-ops.test.mjs` (4, pure, in the deploy gate: 61 files), `tests/gm-terrain-region-
-  gesture.test.mjs` (3, TerrainInteraction against a stub editor; imports three, out of the gate), the panel test (+1).
+  gesture.test.mjs` (4 with R7, TerrainInteraction against a stub editor; imports three, out of the gate), the panel
+  test (+2 with R7).
 
 The design as it stood before the build:
 - Draw a rectangle or a lasso (a polygon of up to 256 points) on the ground, with a feather width of 0 to 32 m.
@@ -173,5 +180,4 @@ GM08d **heightmap import and export.**
      300 m)
    - per-row circle bounds
    - a Web Worker for the stroke
-5. GM08b: drawing a region applies the tool at once. Joi decides whether a region should stay selected, so that
-   several operations (level, then smooth, then paint) can run on it without drawing it again.
+5. GM08b: decided by Joi on 2026-10-24: yes, the region stays selected (R7).
