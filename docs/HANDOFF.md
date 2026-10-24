@@ -1,5 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**GM07c, GM08a y GM08b: pinceles grandes y regiones en el editor GM, 2026-10-24 (T-1022-49, T-1022-50, T-1023-13, T-1024-03, T-1024-12), versión 0.6.0-alpha.104, sin cambio de protocolo ni SQL:**
+Solo el editor GM (src/editor/terrain*.js, editor.js, editor.css), el render del terreno (src/render/terrain.js, scene.js), el panel del mapa (src/ui/mapCanvas.js) y el actualizador. Los jugadores no ven nada nuevo.
+- Actualizador (T-1022-49): `+refs/heads/...` en los dos fetch de deploy/vps-update.py, así un push de 8 o más commits ya no se atasca. Solo actúa cuando alguien instala el archivo en el VPS (context/ops/push.md, con la palabra de Joi): el VPS sigue con la copia del 2026-10-11.
+- GM07c (T-1022-50): un trazo reescribe y sube solo la región que cambió (un trazo de 4 m: 153 ms y 13,8 MB -> 0,1 ms y 3,5 KB); textura de agua 561 en terreno GM.
+- GM08a (T-1023-13): pinceles de 2 a 128 m recortados al suelo editable con 4 m de difuminado (antes se rechazaba el trazo entero), topes de suelo y techo, aerógrafo, separación r/12, vista previa por región.
+- GM08b (T-1024-03): rectángulo y lazo con difuminado interior de 0 a 32 m; aplanar a un nivel con cuentagotas ("Tomar el nivel del suelo"), subir o bajar 0,1 a 50 m, suavizar 1 a 16 pasadas, pintar o borrar; una confirmación y un deshacer por región. Todo el mapa suavizado x16 en 115 a 245 ms.
+- GM08b R7 (T-1024-12, decisión de Joi): la región dibujada se queda seleccionada (contorno ámbar en el suelo, bloque "Región seleccionada: N m²" en el panel). "Aplicar a la región" (Intro) aplica la herramienta y valores actuales otra vez: nivelar, luego suavizar, luego pintar sin redibujar, un deshacer por operación. Cambiar de herramienta la conserva; dibujar otra la sustituye (un clic sin arrastre no); Escape, el área Pincel o salir del terreno la sueltan.
+- Pruebas: gm-terrain-region-ops (4, puras) entra en el gate (62 archivos); gm-terrain-region-gesture (4) y gm-terrain-large-brush importan three: fuera del gate. Suites de terreno + i18n 215/216: falla i18n-hardcoded con 112 textos de assetWorkshop/assetReview/assetLibrary/main.js que ya estaban (no es de este cambio).
+- Pendiente para Joi: un pase en navegador (escritorio y móvil) de un trazo de 128 m, el aerógrafo, rectángulo, lazo y la región encadenada; instalar el actualizador en el VPS. Siguiente: GM08c ruido y erosión, y el diseño del mapa ampliable con aviso de carga (GM11).
+
 **VR09 agua y VR10 sombras, 2026-10-24 (T-1023-12, T-1024-08), versión 0.6.0-alpha.103, sin cambio de protocolo ni SQL:**
 Arregla dos reportes de Joi en el playtest R2. Solo src/render/water.js, waterDetail.js, toon.js y lighting.js.
 - VR09 agua: las cáusticas bajan un 40 % (`causticStrength` 0,12 -> 0,072, una constante para SSR y terreno). Resaca en la
