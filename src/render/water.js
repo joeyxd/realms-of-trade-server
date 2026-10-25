@@ -15,9 +15,11 @@
 import * as THREE from 'three';
 import { GLSL_COMMON, GLSL_BAND, GLSL_LIGHTS, U } from './toon.js';
 import { GLSL_SKY, SKY } from './sky.js';
-import { WATERU } from './pipeline.js';
+import { LAYER, WATERU } from './pipeline.js';
 import { getWaveTexture } from './noiseTex.js';
 import { WATER_DETAIL_DEFAULTS, WATER_DETAIL_UNIFORMS, CAUSTIC_PARS } from './waterDetail.js';
+import { NAVAL_SEA } from '../data/navalSea.js';
+import { SEA_SWELL_GLSL, sampleSeaFloor, seaPatchOrigin, setSeaClock, setSeaFloor } from './naval/seaSwell.js';
 
 export const WATER_LOOK = {
   absorb: new THREE.Vector3(1.0, 0.045, 0.1), // per-channel extinction per unit of path (red dies first, clear shelf)
@@ -45,6 +47,38 @@ varying vec3 vWorld;
 varying float vViewZ;
 void main() {
   vec3 transformed = position;
+  vec4 worldPosition = modelMatrix * vec4(transformed, 1.0);
+  vWorld = worldPosition.xyz;
+  vec3 objectNormal = vec3(0.0, 1.0, 0.0);
+  vec3 transformedNormal = normalMatrix * objectNormal;
+  vec4 mvPosition = viewMatrix * worldPosition;
+  vViewZ = -mvPosition.z;
+  gl_Position = projectionMatrix * mvPosition;
+  #include <shadowmap_vertex>
+  #include <fog_vertex>
+}`;
+
+// The swell patch (T-1025-08): position.xz holds grid indices 0 .. cells on whole cells around the camera; each vertex
+// rides Wind Waker's four cosines, faded at the patch rim and by the water depth under it (flat in the shallows).
+const VERT_PATCH = /* glsl */ `
+#include <common>
+#include <fog_pars_vertex>
+#include <shadowmap_pars_vertex>
+uniform float mnTime;
+uniform sampler2D uHeight;
+uniform float uWorldHalf;
+uniform vec2 uSeaOrigin;
+varying vec3 vWorld;
+varying float vViewZ;
+varying vec2 vSwellSlope;
+${SEA_SWELL_GLSL}
+void main() {
+  vec2 xz = uSeaOrigin + position.xz * MN_SEA_CELL;
+  vec2 huv = xz / (uWorldHalf * 2.0) + 0.5;
+  float th = (huv.x < 0.0 || huv.y < 0.0 || huv.x > 1.0 || huv.y > 1.0) ? ${NAVAL_SEA.floorOutside.toFixed(1)} : texture2D(uHeight, huv).r;
+  vec3 sw = mnSeaSwell(xz, mnTime) * (mnSeaEdgeFade(position.xz) * mnSeaDepthFade(-th));
+  vSwellSlope = sw.yz;
+  vec3 transformed = vec3(xz.x, sw.x, xz.y);
   vec4 worldPosition = modelMatrix * vec4(transformed, 1.0);
   vWorld = worldPosition.xyz;
   vec3 objectNormal = vec3(0.0, 1.0, 0.0);
@@ -89,6 +123,13 @@ uniform sampler2D uHeight;
 uniform float uWorldHalf;
 varying vec3 vWorld;
 varying float vViewZ;
+#ifdef MN_SEA_OUTER
+uniform vec2 uSeaOrigin;
+${SEA_SWELL_GLSL}
+#endif
+#ifdef MN_SEA_PATCH
+varying vec2 vSwellSlope;
+#endif
 
 // Swash: every wave line that reaches the shore runs up the beach, slows, and drains back while the next one rolls in.
 // arg is the wave-line phase at the still waterline; q 0 is the crest meeting the drained edge at depth mnSwashDown.
@@ -102,6 +143,11 @@ float mnSwash(float arg, out float fresh) {
 }
 
 void main() {
+#ifdef MN_SEA_OUTER
+  // The swell patch draws this square (its rim lies flat on the still level): nothing under it, nothing blended twice.
+  vec2 sp = vWorld.xz - uSeaOrigin;
+  if (min(sp.x, sp.y) > 0.0 && max(sp.x, sp.y) < MN_SEA_CELLS * MN_SEA_CELL) discard;
+#endif
   float t = mnTime;
   vec2 xz = vWorld.xz;
   vec3 toCam = cameraPosition - vWorld;
@@ -116,7 +162,10 @@ void main() {
   // Distance LOD: calm the normals far away (no moiré on the horizon, cheaper to read).
   float far = smoothstep(45.0, 220.0, camDist);
   vec2 slope = (s1 * 0.65 + s2 * 0.45) * uWaves * (1.0 - far * 0.85);
-  vec3 n = normalize(vec3(-slope.x, 1.0, -slope.y));
+#ifdef MN_SEA_PATCH
+  slope += vSwellSlope; // the swell catches the light (0 where its depth fade is 0)
+#endif
+  vec3 n =normalize(vec3(-slope.x, 1.0, -slope.y));
 
   // ---- Swash ------------------------------------------------------------------------------------
   // The moving shore edge, only where the terrain itself is near the surface (posts and hulls at sea keep a still edge).
@@ -288,7 +337,7 @@ void main() {
 #endif
 }`;
 
-function makeMaterial(map, heightTex, ssr) {
+function makeMaterial(map, heightTex, ssr, patch = false) {
   const uniforms = THREE.UniformsUtils.merge([THREE.UniformsLib.lights, THREE.UniformsLib.fog]);
   Object.assign(uniforms, SKY, {
     mnTime: U.mnTime, mnWind: U.mnWind, mnCloud: U.mnCloud, mnNoiseTex: U.mnNoiseTex,
@@ -309,10 +358,12 @@ function makeMaterial(map, heightTex, ssr) {
     uWorldHalf: { value: map.size / 2 },
   });
   if (ssr) Object.assign(uniforms, WATERU);
+  const defines = patch ? { MN_SEA_PATCH: '' } : { MN_SEA_OUTER: '' };
+  if (ssr) defines.MN_WATER_SSR = '';
   return new THREE.ShaderMaterial({
     uniforms,
-    defines: ssr ? { MN_WATER_SSR: '' } : {},
-    vertexShader: VERT,
+    defines,
+    vertexShader: patch ? VERT_PATCH : VERT,
     fragmentShader: FRAG,
     lights: true,
     fog: true,
@@ -322,11 +373,33 @@ function makeMaterial(map, heightTex, ssr) {
   });
 }
 
+// Swell patch grid: (cells + 1)^2 vertices whose x, z are the grid indices (the vertex shader places them).
+function createPatchGeometry(cells) {
+  const n = cells + 1, pos = new Float32Array(n * n * 3), index = [];
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { pos[(j * n + i) * 3] = i; pos[(j * n + i) * 3 + 2] = j; }
+  for (let j = 0; j < cells; j++) for (let i = 0; i < cells; i++) {
+    const a = j * n + i, b = a + n;
+    index.push(a, b, a + 1, b, b + 1, a + 1); // counter-clockwise seen from above
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setIndex(index);
+  return geo;
+}
+
+const halfToFloat = (v) => THREE.DataUtils.fromHalfFloat(v), asFloat = (v) => v;
+
 export function createWater(map, heightTex) {
   const ssr = makeMaterial(map, heightTex, true);
   const simple = makeMaterial(map, heightTex, false);
-  // Share the tweakable uniforms so quality switches keep the same look.
-  for (const k of ['uWaves', 'uRefract', 'uHeight', 'uWorldHalf']) simple.uniforms[k] = ssr.uniforms[k];
+  const swellSsr = makeMaterial(map, heightTex, true, true);
+  const swellSimple = makeMaterial(map, heightTex, false, true);
+  // Share the tweakable uniforms so quality switches keep the same look; the patch corner is shared by all four.
+  const seaOrigin = { value: new THREE.Vector2() };
+  for (const m of [ssr, simple, swellSsr, swellSimple]) {
+    for (const k of ['uWaves', 'uRefract', 'uHeight', 'uWorldHalf']) m.uniforms[k] = ssr.uniforms[k];
+    m.uniforms.uSeaOrigin = seaOrigin;
+  }
   const geo = new THREE.PlaneGeometry(2400, 2400, 1, 1);
   geo.rotateX(-Math.PI / 2);
   const mesh = new THREE.Mesh(geo, ssr);
@@ -334,7 +407,32 @@ export function createWater(map, heightTex) {
   mesh.renderOrder = 1;
   mesh.name = 'water';
   mesh.frustumCulled = false;
+  // The swell patch rides with the camera on whole cells; the flat quad skips its square (see MN_SEA_OUTER).
+  const swell = new THREE.Mesh(createPatchGeometry(NAVAL_SEA.cells), swellSsr);
+  swell.receiveShadow = true;
+  swell.renderOrder = 1;
+  swell.name = 'water-swell';
+  swell.frustumCulled = false;
+  swell.layers.set(LAYER.WATER);
+  const follow = (renderer, scene, camera) => {
+    const e = camera.matrixWorld.elements;
+    seaPatchOrigin(e[12], e[14], seaOrigin.value);
+  };
+  mesh.onBeforeRender = swell.onBeforeRender = follow; // whichever draws first moves the shared corner
+  mesh.add(swell);
   mesh.userData.materials = { ssr, simple };
-  mesh.userData.setMode = (useSsr) => { mesh.material = useSsr ? ssr : simple; };
+  mesh.userData.swell = swell;
+  mesh.userData.setMode = (useSsr) => {
+    mesh.material = useSsr ? ssr : simple;
+    swell.material = useSsr ? swellSsr : swellSimple;
+  };
+  // Floating things in the client sample the same sea: the shader clock and the seabed this water reads.
+  const heightU = ssr.uniforms.uHeight, halfU = ssr.uniforms.uWorldHalf;
+  setSeaClock(() => U.mnTime.value);
+  setSeaFloor((x, z) => {
+    const tex = heightU.value, img = tex?.image;
+    if (!img?.data) return NAVAL_SEA.floorOutside;
+    return sampleSeaFloor(img.data, img.width, halfU.value, x, z, tex.type === THREE.HalfFloatType ? halfToFloat : asFloat);
+  });
   return mesh;
 }

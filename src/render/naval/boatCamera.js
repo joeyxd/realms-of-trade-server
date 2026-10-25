@@ -4,7 +4,7 @@
 // 30 frames a second from a fixed accumulator and the output is interpolated, so it is the same at 30 or 144 fps.
 import { NAVAL_CAMERA as C } from '../../data/navalCamera.js';
 import { WW_ANGLE, WW_SPEED, WW_UNIT } from '../../data/navalHandling.js';
-import { wwSeaHeight } from './hullMotion.js';
+import { seaSurfaceY } from './seaSwell.js';
 
 const FRAME = 1 / C.frameRate, TAU = Math.PI * 2, D2R = Math.PI / 180;
 const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
@@ -53,7 +53,7 @@ function rideFrame(s, p) {
   if (p.hull) {
     // The camera lifts with the swell coming at the bow: the angle from the hull to the sea 200 ahead.
     const ax = p.shipX + C.waveAhead * Math.sin(p.yaw), az = p.shipZ + C.waveAhead * Math.cos(p.yaw);
-    const wave = wwSeaHeight(ax, az, p.hull.frame, p.hull.waveMax);
+    const wave = seaSurfaceY(ax * WW_UNIT, az * WW_UNIT) / WW_UNIT; // the drawn sea, at the shared clock
     lat += C.wavePitch * sp * Math.atan2(wave - p.hull.y, C.waveAhead);
   }
   const azimuth = p.yaw + Math.PI + p.lookYaw;

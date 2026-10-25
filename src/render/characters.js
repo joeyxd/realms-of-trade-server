@@ -17,6 +17,7 @@ import { stepHarvestPose } from './harvestPose.js';
 import { applySwimPose } from './swimPose.js';
 import { reactionEligible } from './assets/characterReaction.js';
 import { createPistolRecoil, kickPistolRecoil, stepPistolRecoil } from './pistolRecoil.js';
+import { seaSurfaceY } from './naval/seaSwell.js';
 import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
 import { ACT } from '../sim/ecs.js';
@@ -303,6 +304,7 @@ export class CharacterView {
     // Abordaje (ACT.LEAP, M4.7): the body rides the jump's parabola h · 4u(1 − u), render only; the shadow stays down.
     const lift = (s.act | 0) === ACT.LEAP ? this.leapLift(s.actT || 0) : 0;
     this.root.position.y += lift;
+    if (s.st === 2) this.root.position.y += seaSurfaceY(s.x, s.z); // swimmers ride the drawn swell (render only)
     // PT06 jump (s.jmp: JUMP_STAGE, s.gy: the floor under the body): the shadow stays on the floor and shrinks with the
     // height; the vertical speed (s.jmpVy when known, else from y) drives the pose; the takeoff stretches, the landing
     // squashes (the same springs as the dash).

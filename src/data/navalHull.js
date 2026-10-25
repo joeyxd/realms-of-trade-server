@@ -20,18 +20,7 @@ export const NAVAL_HULL = Object.freeze({
   // Sway terms: phases advance (0.5 f + 1) * (min + rnd(min)) per frame; added to the pitch / roll positions.
   pitchSway: Object.freeze({ phaseMin: 800, amp: 100, lift: 30 }), // m03AE, SH:954, 957
   rollSway: Object.freeze({ phaseMin: 600, amp: 115, lift: 35 }), // m03AC, SH:955, 958
-  // Sea (SEA:25-58, 541-547, 623-627): h = sum A_i cos(theta_i), A_i = 2.5 * waveMax, theta = Km * 6.28 * (vx x + vz z)
-  // - 0x10000 * (counter / counterMax - 0.5) + phase. Evaluated directly: no 800-unit grid, no edge fade, no room blend.
-  waveAmp: 2.5, kScale: 6.28,
-  waves: Object.freeze([
-    Object.freeze({ km: 7.352941e-5, phase: 0, vx: 0.98, vz: 0.2, period: 200 }),
-    Object.freeze({ km: 8.928571e-5, phase: 4000, vx: 0.2, vz: 0.98, period: 190 }),
-    Object.freeze({ km: 1.13636364e-4, phase: 8000, vx: -0.98, vz: 0.2, period: 210 }),
-    Object.freeze({ km: 1.5625e-4, phase: 12000, vx: 0.2, vz: -0.98, period: 180 }),
-  ]),
-  // Our knob: the WW default room value is 10 (SEA:83-95; the Great Sea's per-room value lives on the disc), which
-  // lifts a hull up to 1.27 of our units. Our water is a flat plane, so the swell is kept small.
-  waveMax: 1.5,
+  // The sea the hull rides (SEA:25-58, the four cosines and waveMax) lives in navalSea.js, shared with the drawn water.
   // Yaw rate per frame = turnRate * tiller / 64 (SH:1113-1134), full tiller 0x2000; inverted to read the tiller.
   turnBase: 4, turnSlope: 3, turnMin: 0.1, turnMax: 3.6, tillerShift: 64, tillerMax: 0x2000,
   // Pilot's body on the boat (S:181-186, 232-236, HIO ship field_0x4 = 2000).

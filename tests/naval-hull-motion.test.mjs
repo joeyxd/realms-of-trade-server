@@ -1,19 +1,27 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createHullMotion, stepHullMotion, createRiderMotion, stepRiderMotion, wwSeaHeight } from '../src/render/naval/hullMotion.js';
+import { createHullMotion, stepHullMotion, createRiderMotion, stepRiderMotion } from '../src/render/naval/hullMotion.js';
+import { seaSwellHeight, seaSurfaceAt, setSeaClock, setSeaFloor, SEA_AMP, SEA_WAVES } from '../src/render/naval/seaSwell.js';
 import { WW_ANGLE, WW_UNIT } from '../src/data/navalHandling.js';
 
 const DEG = 180 / Math.PI, S16_DEG = WW_ANGLE * DEG;
+const CALM = { sea: () => 0 }; // a flat sea (the old waveMax 0)
+let now = 0;
+setSeaClock(() => now); // the shared sea clock follows the run below
+setSeaFloor(() => -20); // open water everywhere (as off the water's height texture)
 
 // Runs `seconds` at `fps`; pose(t) gives the raft's drawn x, z, yaw. Returns every output.
 function run(hull, seconds, fps, pose = () => ({ x: 0, z: 0, yaw: 0 })) {
   const outs = [], n = Math.round(seconds * fps);
-  for (let i = 0; i <= n; i++) outs.push({ ...stepHullMotion(hull, { dt: i ? 1 / fps : 0, ...pose(i / fps) }) });
+  for (let i = 0; i <= n; i++) {
+    now = i / fps;
+    outs.push({ ...stepHullMotion(hull, { dt: i ? 1 / fps : 0, ...pose(i / fps) }) });
+  }
   return outs;
 }
 
 test('flat sea at rest: the hull settles level and near the water', () => {
-  const outs = run(createHullMotion('flat', { waveMax: 0 }), 10, 60);
+  const outs = run(createHullMotion('flat', CALM), 10, 60);
   // WW's own idle bob (SH:957-958: +30 / +35 s16 a frame against a spring with min-4 damping) rings at +-0.7 degrees
   // around a 0.35 degree offset, so the bound is 1.2 degrees, not the 0.5 the ticket guessed.
   for (const o of outs.slice(-120)) {
@@ -26,7 +34,7 @@ test('flat sea at rest: the hull settles level and near the water', () => {
 test('lean spring: a constant turn overshoots, rings at about 0.94 s and settles at the clamped aim', () => {
   // 300 s16 a frame * 7 = 2100, clamped to 0x600 (8.4 degrees). Yaw grows 300 s16 per WW frame.
   const rate = 300 * WW_ANGLE * 30, fps = 120;
-  const hull = createHullMotion('lean', { waveMax: 0 });
+  const hull = createHullMotion('lean', CALM);
   const outs = run(hull, 8, fps, (t) => ({ x: 0, z: 0, yaw: rate * t }));
   const lean = outs.map((o) => o.roll * DEG);
   const aim = 0x600 * S16_DEG;
@@ -40,20 +48,25 @@ test('lean spring: a constant turn overshoots, rings at about 0.94 s and settles
   const period = (peaks[1] - peaks[0]) / fps;
   assert.ok(Math.abs(period - 0.94) <= 0.15, `period ${period}`);
   assert.ok(outs.at(-1).turn > 0 && outs.at(-1).turn <= 1);
-  const opposite = run(createHullMotion('lean', { waveMax: 0 }), 4, fps, (t) => ({ x: 0, z: 0, yaw: -rate * t }));
+  const opposite = run(createHullMotion('lean', CALM), 4, fps, (t) => ({ x: 0, z: 0, yaw: -rate * t }));
   assert.ok(opposite.at(-1).roll < 0);
 });
 
-test('default swell pitches a moored hull a little', () => {
+test('open-sea swell pitches a moored hull and lifts it with the drawn water', () => {
   // Same seed, so the idle bob is identical in both runs and the difference is the swell alone. Its slope is bounded by
-  // the sum of A * k over the four components (3.9 degrees at WW's default waveMax 10, 0.6 at our 1.5).
+  // the sum of A * k over the four components (11.7 degrees at the Great Sea's waveMax 30).
   const at = () => ({ x: 120, z: -80, yaw: 0.4 });
-  const swell = run(createHullMotion('swell', { waveMax: 10 }), 20, 60, at), calm = run(createHullMotion('swell', { waveMax: 0 }), 20, 60, at);
+  const swell = run(createHullMotion('swell'), 20, 60, at), calm = run(createHullMotion('swell', CALM), 20, 60, at);
+  const bound = SEA_WAVES.reduce((a, w) => a + SEA_AMP * Math.hypot(w.kx, w.kz), 0) * DEG;
   const peak = Math.max(...swell.slice(120).map((o, i) => Math.abs(o.pitch - calm[i + 120].pitch) * DEG));
-  assert.ok(peak > 0.1 && peak < 3.9, `swell pitch ${peak}`);
-  const knob = run(createHullMotion('swell'), 20, 60, at), knobPeak = Math.max(...knob.slice(120).map((o, i) => Math.abs(o.pitch - calm[i + 120].pitch) * DEG));
-  assert.ok(knobPeak > 0 && knobPeak < 1, `our waveMax pitch ${knobPeak}`);
-  assert.ok(wwSeaHeight(0, 0, 0, 10) !== wwSeaHeight(5000, 0, 0, 10));
+  assert.ok(peak > 0.1 && peak < bound, `swell pitch ${peak} (bound ${bound})`);
+  // The hull rides the drawn surface: inside WW's [water - 60, water + 40] band around the shared sea height.
+  swell.slice(120).forEach((o, i) => {
+    const water = seaSurfaceAt(120, -80, (i + 120) / 60);
+    assert.ok(o.y >= water - 61 * WW_UNIT && o.y <= water + 41 * WW_UNIT, `y ${o.y} vs water ${water}`);
+  });
+  assert.ok(Math.max(...swell.map((o) => o.y)) - Math.min(...swell.map((o) => o.y)) > 1, 'the swell lifts the hull');
+  assert.ok(seaSwellHeight(0, 0, 0) !== seaSwellHeight(5000 * WW_UNIT, 0, 0));
 });
 
 test('deterministic and independent of the frame rate', () => {
