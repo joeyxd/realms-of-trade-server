@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PILOTING } from '../src/data/progression.js';
+import { NAVAL_TRIAL } from '../src/data/navalTrial.js';
 import { stepNaval } from '../src/sim/naval/handling.js';
 import { labFixture, LAB_WINDS } from '../tools/naval-lab/fixtures.js';
 import { createTrialBody, damageTrialBody, parkTrialBody, refreshTrialPayload, stepTrialBody } from '../src/sim/naval/trialBody.js';
@@ -40,7 +41,11 @@ test('first-lesson rudder authority improves turning while empty and loaded hull
   }
   assert.ok(results.get('center-loaded').rig.mass > results.get('empty').rig.mass);
   assert.ok(results.get('center-loaded').rig.inertia > results.get('empty').rig.inertia);
-  assert.ok(results.get('center-loaded').trainedYaw < results.get('empty').trainedYaw,
+  // The exact Wind Waker port ignores mass on purpose (Joi 2026-10-24: mass comes later): a load
+  // never helps the turn there; only the force model keeps the loaded-hull penalty.
+  if (NAVAL_TRIAL.handling === 'windwaker') assert.ok(results.get('center-loaded').trainedYaw <= results.get('empty').trainedYaw + 1e-9,
+    'a load never improves the learned turn');
+  else assert.ok(results.get('center-loaded').trainedYaw < results.get('empty').trainedYaw,
     'the learned response does not erase the loaded hull turning penalty');
 });
 

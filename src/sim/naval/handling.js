@@ -1,7 +1,7 @@
 // A deterministic aggregate body for D08's isolated handling bay. Nothing here loads a profile,
 // changes goods, or attaches a raft to the live world. Fixed ticks are independent of render FPS.
 import { RAFT, RAFT_PARTS } from '../../data/raftparts.js';
-import { NAVAL_HANDLING as H, NAVAL_STEP } from '../../data/navalHandling.js';
+import { NAVAL_HANDLING as H, NAVAL_STEP, NAVAL_WW as W, WW_SPEED, WW_ANGLE, WW_FRAME_TICKS } from '../../data/navalHandling.js';
 import { NAVAL_NAVIGATION as N } from '../../data/navalNavigation.js';
 import { PILOTING } from '../../data/progression.js';
 export { NAVAL_STEP };
@@ -60,7 +60,41 @@ export function buildNavalRig(parts, cargo = []) {
     imbalance, stability, flotation, wetted, sail, cells: bases.length });
 }
 
-export function newNavalState() { return { tick: 0, x: 0, z: 0, yaw: 0, vx: 0, vz: 0, omega: 0 }; }
+export function newNavalState() { return { tick: 0, x: 0, z: 0, yaw: 0, vx: 0, vz: 0, omega: 0, helm: 0 }; }
+
+function addCalcTick(value, target, scale, maxStep, minStep) {
+  const diff = target - value;
+  if (diff === 0) return value;
+  const step = Math.abs(diff * scale) >= minStep
+    ? Math.min(Math.abs(diff) * (1 - Math.sqrt(1 - scale)), maxStep / WW_FRAME_TICKS)
+    : Math.min(Math.abs(diff), minStep / WW_FRAME_TICKS);
+  return value + Math.sign(diff) * step;
+}
+
+function stepWindWaker(state, rig, wind, throttle, brake, steer, forward, waterX, waterZ, multiplier, maxSpeed, helmResponse) {
+  const helm = addCalcTick(state.helm ?? 0, steer * W.tillerMax * WW_ANGLE,
+    1 / W.tillerDivisor, W.tillerMaxStep * WW_ANGLE, W.tillerMinStep * WW_ANGLE);
+  const turnRate = clamp(W.turnBase - W.turnSlope * Math.abs(forward) / (W.sailMax * WW_SPEED), W.turnMin, W.turnMax);
+  const turn = turnRate * helm / W.tillerShift / WW_FRAME_TICKS * helmResponse * rig.flotation;
+  const yaw = wrap(state.yaw + turn), a = Math.abs(wrap((finite(wind?.yaw) ? wind.yaw : 0) - yaw)) / WW_ANGLE;
+  const factor = a < W.windBeam ? 1 - a / 65536 : a <= W.windQuarter
+    ? W.factorBeam - (a - W.windBeam) * W.slopeMid : Math.max(0, W.factorQuarter - (a - W.windQuarter) * W.slopeBack);
+  const envelope = W.sailMax * WW_SPEED * maxSpeed / H.maxSpeed;
+  const sailTarget = rig.sail > 0 ? Math.min(envelope, throttle * Math.min(1, clamp(wind?.strength, 0, 1) / W.windNormal)
+    * factor * W.sailMax * WW_SPEED * multiplier * rig.flotation) : 0;
+  const paddleTarget = throttle * W.paddleMax * WW_SPEED * rig.flotation;
+  // Our single lever takes the higher sail/paddle target, so a headwind still permits paddling.
+  const sailing = sailTarget > 0 && sailTarget >= paddleTarget;
+  const target = brake > 0 ? 0 : sailing ? sailTarget : paddleTarget;
+  const params = brake > 0 ? W.stopBrake : sailing && forward < sailTarget ? W.sailAccel : W.coast;
+  const amount = brake > 0 ? brake : 1;
+  const speed = addCalcTick(forward, target, params.scale, params.maxStep * WW_SPEED * amount, params.minStep * WW_SPEED * amount);
+  let vx = speed * Math.sin(yaw) + waterX, vz = speed * Math.cos(yaw) + waterZ;
+  const total = Math.hypot(vx, vz);
+  if (total > envelope) { vx *= envelope / total; vz *= envelope / total; }
+  return { tick: state.tick + 1, x: state.x + vx * NAVAL_STEP, z: state.z + vz * NAVAL_STEP,
+    yaw, vx, vz, omega: turn / NAVAL_STEP, helm };
+}
 
 export function windEfficiency(yaw, wind) {
   const strength = clamp(wind?.strength, 0, 1);
@@ -70,6 +104,7 @@ export function windEfficiency(yaw, wind) {
 
 export function stepNaval(state, input, rig, wind, environment = {}) {
   if (!state || !['x', 'z', 'yaw', 'vx', 'vz', 'omega'].every((k) => finite(state[k])) ||
+    (Object.hasOwn(state, 'helm') && (!finite(state.helm) || Math.abs(state.helm) > Math.PI / 4 + 1e-9)) ||
     !Number.isSafeInteger(state.tick) || state.tick < 0 || state.tick >= Number.MAX_SAFE_INTEGER ||
     Math.abs(state.x) > 1e9 || Math.abs(state.z) > 1e9 || Math.hypot(state.vx, state.vz) > 100 || Math.abs(state.omega) > 10 ||
     !rig || !['mass', 'inertia', 'sail', 'flotation', 'wetted', 'stability', 'cells'].every((k) => finite(rig[k])) ||
@@ -87,6 +122,8 @@ export function stepNaval(state, input, rig, wind, environment = {}) {
   const forward = relativeX * s + relativeZ * c, side = relativeX * c - relativeZ * s;
   const multiplier = clamp(environment.sailMultiplier ?? 1, 1, N.perfectMultiplier);
   const maxSpeed = clamp(environment.maxSpeed ?? H.maxSpeed, H.maxSpeed, N.boostMaxSpeed);
+  if (environment.handling === 'windwaker') return stepWindWaker(state, rig, wind, throttle, brake, steer,
+    forward, waterX, waterZ, multiplier, maxSpeed, helmResponse);
   const force = (H.paddleForce + H.sailForce * rig.sail * windEfficiency(state.yaw, wind) * multiplier) * throttle * (1 - brake) * rig.flotation;
   // Exponential drag cannot overshoot through zero; braking removes momentum, never reverses a sail.
   const dragRate = rig.wetted * (H.forwardDrag + H.quadraticDrag * Math.abs(forward)) / rig.mass;
@@ -105,7 +142,7 @@ export function stepNaval(state, input, rig, wind, environment = {}) {
   const speed = Math.hypot(vx, vz);
   if (speed > maxSpeed) { vx *= maxSpeed / speed; vz *= maxSpeed / speed; }
   return { tick: state.tick + 1, x: state.x + (state.vx + vx) * NAVAL_STEP / 2,
-    z: state.z + (state.vz + vz) * NAVAL_STEP / 2, yaw: wrap(state.yaw + omega * NAVAL_STEP), vx, vz, omega };
+    z: state.z + (state.vz + vz) * NAVAL_STEP / 2, yaw: wrap(state.yaw + omega * NAVAL_STEP), vx, vz, omega, helm: state.helm ?? 0 };
 }
 
 // The simulated position is the centre of mass; renderer blueprints are rooted at grid origin.

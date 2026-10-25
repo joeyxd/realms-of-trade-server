@@ -63,8 +63,10 @@ test('GAME.seed raft sails from dock to real walkable coast, lands, parks, and r
     const distance = Math.hypot(target.x - pose.x, target.z - pose.z);
     const heading = Math.atan2(target.x - pose.x, target.z - pose.z);
     const steer = Math.max(-1, Math.min(1, 2 * wrap(heading - pose.yaw)));
-    const throttle = distance > 7 ? 1 : 0;
-    const brake = distance > 7 ? 0 : 1;
+    // Brake early enough for the speed: the WW stop brake sheds ~11.5 u/s per second.
+    const speed = Math.hypot(client.naval.body.state.vx, client.naval.body.state.vz), stop = 7 + speed * speed / 20;
+    const throttle = distance > stop ? 1 : 0;
+    const brake = distance > stop ? 0 : 1;
     assert.ok(client.tickNaval({ throttle, brake, steer }), 'the fixed-tick helm accepts the route input');
     server.step(); publish();
     if (client.voyage.canLand && Math.hypot(client.naval.body.state.vx, client.naval.body.state.vz) <= 0.8) {

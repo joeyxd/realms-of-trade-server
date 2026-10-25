@@ -9,6 +9,7 @@ import { glowBasic, toon, normalMatFor } from './toon.js';
 import { assets } from './assets/registry.js';
 import { RAFT_ATLAS_ID, surface, materialKey, mapRaftUV } from './raftMaterials.js';
 import { isRaftFireTuple } from './personalLantern.js';
+import { createHullMotion, stepHullMotion, createRiderMotion, stepRiderMotion } from './naval/hullMotion.js';
 
 const WOOD = surface('wood', 0xb5803f), WOOD_DARK = surface('wood', 0x704522, 0xd5bfa5), WOOD_LIGHT = surface('wood', 0xd6a565);
 const IRON = surface('iron', 0x626b72), IRON_LIGHT = surface('iron', 0xb1b9b8, 0xffecd2);
@@ -29,6 +30,8 @@ const cleanNum = (n, fallback = 0) => Number.isFinite(+n) ? +n : fallback;
 const colorHex = (n) => Math.max(0, Math.min(0xffffff, n | 0));
 const wrapAngle = (angle) => ((angle + Math.PI) % TAU + TAU) % TAU - Math.PI;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const RIDE_Y = new THREE.Vector3(0, 1, 0), RIDE_Q = new THREE.Quaternion(), RIDE_T = new THREE.Quaternion(), RIDE_F = new THREE.Quaternion(), RIDE_E = new THREE.Euler();
+const HULL_PIVOT = new THREE.Vector3();
 
 function keyOf(record) {
   // Cargo/work revisions change private state without changing the silhouette or its mobile GPU buffers.
@@ -268,12 +271,13 @@ export class RaftLayer {
     if (helm) {
       helm.visible = active && !!state.pilot && ['x', 'y', 'z', 'f'].every((key) => Number.isFinite(state.pilot[key]));
       if (helm.visible) {
-        view.visual.updateMatrixWorld(true);
+        // The sim pilot point is on the flat deck: read it in the root frame (the hull sway lives on `visual`).
+        view.root.updateMatrixWorld(true);
         const footWorld = new THREE.Vector3(state.pilot.x, state.pilot.y, state.pilot.z);
-        const foot = view.visual.worldToLocal(footWorld.clone());
+        const foot = view.root.worldToLocal(footWorld.clone());
         const aheadWorld = new THREE.Vector3(state.pilot.x + Math.sin(state.pilot.f), state.pilot.y,
           state.pilot.z + Math.cos(state.pilot.f));
-        const ahead = view.visual.worldToLocal(aheadWorld).sub(foot).setY(0).normalize();
+        const ahead = view.root.worldToLocal(aheadWorld).sub(foot).setY(0).normalize();
         const heading = Math.atan2(ahead.x, ahead.z);
         helm.position.set(foot.x + ahead.x * 0.45, foot.y, foot.z + ahead.z * 0.45);
         helm.rotation.y = heading;
@@ -296,6 +300,39 @@ export class RaftLayer {
     }
     const sailAngles = view.sails.map((sail) => wrapAngle(view.root.rotation.y + sail.pivot.rotation.y));
     return { handleWorld, gripWorld, sailAngles, steerAngle };
+  }
+
+  // A rider of raft `id` (the pilot or a deck walker) drawn at its sim state s on the flat deck: its raft-local offset
+  // is carried by the hull sway (pitch about local x, then roll about local z, plus the heave), render only. The pilot
+  // (pilot: true) also inherits the hull tilt with WW's lag and twists into the turn. Returns false when not on a raft.
+  ride(id, node, s, { key = '', pilot = false, dt = 0 } = {}) {
+    const view = this.views.get(String(id));
+    if (!view?.hullMotion?.started || !node || !s) return false;
+    const h = view.hullMotion.out, c = Math.cos(view.yaw), sn = Math.sin(view.yaw);
+    const dx = cleanNum(s.x) - view.x, dz = cleanNum(s.z) - view.z, ly = cleanNum(s.y) - view.y;
+    // Offsets about the hull centre, the visual's sway pivot.
+    const px = view.pivot?.x || 0, pz = view.pivot?.z || 0;
+    const lx = c * dx - sn * dz - px, lz = sn * dx + c * dz - pz;
+    const cr = Math.cos(h.roll), sr = Math.sin(h.roll), cp = Math.cos(h.pitch), sp = Math.sin(h.pitch);
+    const x1 = lx * cr - ly * sr + px, y1 = lx * sr + ly * cr;
+    const y2 = y1 * cp - lz * sp + h.y, z2 = y1 * sp + lz * cp + pz;
+    node.position.set(view.x + c * x1 + sn * z2, view.y + y2, view.z - sn * x1 + c * z2);
+    if (!pilot) return true;
+    const state = view.riders.get(key) || view.riders.set(key, createRiderMotion()).get(key);
+    const r = stepRiderMotion(state, h, h.turn, dt);
+    const face = Math.atan2(Math.sin(cleanNum(s.f) - view.yaw), Math.cos(cleanNum(s.f) - view.yaw)) + r.twist;
+    RIDE_Q.setFromAxisAngle(RIDE_Y, view.yaw).multiply(RIDE_T.setFromEuler(RIDE_E.set(r.pitch, 0, r.roll)))
+      .multiply(RIDE_F.setFromAxisAngle(RIDE_Y, face));
+    node.quaternion.copy(RIDE_Q);
+    node.userData.rideTilt = true;
+    return true;
+  }
+
+  // Undo the pilot tilt once the character leaves the helm (the character view only rewrites its yaw).
+  unride(node) {
+    if (!node?.userData?.rideTilt) return;
+    node.userData.rideTilt = false;
+    node.rotation.x = 0; node.rotation.z = 0;
   }
 
   setSailing(id, { active = false, steer = 0, windYaw = 0, boost = 0, dt = 0, pilot = null } = {}) {
@@ -831,12 +868,18 @@ export class RaftLayer {
       visual.add(mesh);
     }
 
+    // The hull sways about its own centre (WW rotates the ship about its origin), not the grid corner the root sits on.
+    const hullBox = new THREE.Box3();
+    for (const g of ownedGeometries) if (g.boundingBox) hullBox.union(g.boundingBox);
+    const pivot = hullBox.isEmpty() ? { x: 0, z: 0 } : { x: (hullBox.min.x + hullBox.max.x) / 2, z: (hullBox.min.z + hullBox.max.z) / 2 };
     const view = {
-      id: String(record.id), root, visual, revKey: keyOf(record), record,
+      id: String(record.id), root, visual, revKey: keyOf(record), record, pivot,
       ownedGeometries, external, phase: hashPhase(record.id), isLocal: false,
       lanternCores, lanternStateKey: lanternStateKey(record),
       gangplank: null, gangplankPoseKey: '', sails,
       x: NaN, y: NaN, z: NaN, yaw: NaN,
+      // Client-only WW hull motion on `visual`; hullMotion.out is the latest { y, pitch (visual.rotation.x), roll (rotation.z), turn }.
+      hullMotion: createHullMotion(String(record.id)), hullTime: NaN, riders: new Map(),
     };
     if (this.sailingRig) { view.helm = this.buildHelmRig(); visual.add(view.helm); }
     this.updateGangplank(view, record);
@@ -903,10 +946,15 @@ export class RaftLayer {
       if (this.updateGangplank(view, record)) changed = true;
 
       const t = cleanNum(time);
-      const bob = record.pilot ? 0 : Math.sin(t * 0.85 + view.phase) * 0.018;
-      view.visual.position.y = bob;
-      view.visual.rotation.z = record.pilot ? 0 : Math.sin(t * 0.53 + view.phase) * 0.0025;
-      view.visual.rotation.x = record.pilot ? 0 : Math.cos(t * 0.47 + view.phase) * 0.0018;
+      // WW hull motion, piloted or moored: a fixed 30 Hz spring state fed with the drawn pose (render only).
+      const hullDt = Number.isFinite(view.hullTime) ? clamp(t - view.hullTime, 0, 1) : 0;
+      view.hullTime = t;
+      // Feed the hull centre (a turning corner would read as speed) and rotate the visual about it.
+      const px = view.pivot.x, pz = view.pivot.z, hc = Math.cos(yaw), hs = Math.sin(yaw);
+      const hull = stepHullMotion(view.hullMotion, { dt: hullDt, x: x + hc * px + hs * pz, z: z - hs * px + hc * pz, yaw });
+      view.visual.rotation.set(hull.pitch, 0, hull.roll);
+      HULL_PIVOT.set(px, 0, pz).applyEuler(view.visual.rotation);
+      view.visual.position.set(px - HULL_PIVOT.x, hull.y - HULL_PIVOT.y, pz - HULL_PIVOT.z);
     }
 
     for (const [id, view] of this.views) {

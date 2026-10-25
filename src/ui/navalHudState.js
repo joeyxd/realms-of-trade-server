@@ -1,7 +1,11 @@
 import { NAVAL_NAVIGATION as N } from '../data/navalNavigation.js';
-import { NAVAL_STEP } from '../data/navalHandling.js';
+import { NAVAL_HANDLING, NAVAL_STEP, NAVAL_WW, WW_SPEED } from '../data/navalHandling.js';
+import { NAVAL_TRIAL } from '../data/navalTrial.js';
 import { t } from '../core/i18n.js';
 
+// The dial spans the whole speed envelope: the gust headroom over the top speed of the active model.
+export const GAUGE_TOP = NAVAL_TRIAL.handling === 'windwaker'
+  ? NAVAL_WW.sailMax * WW_SPEED * N.boostMaxSpeed / NAVAL_HANDLING.maxSpeed : N.boostMaxSpeed;
 const clamp01 = (value) => Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0));
 const finiteOr = (value, fallback = 0) => Number.isFinite(value) ? value : fallback;
 const normalizeDegrees = (radians) => ((finiteOr(radians) * 180 / Math.PI % 360) + 360) % 360;
@@ -82,7 +86,7 @@ export function navalHudState({ state, rig, wind, gust, activity, current, pause
   }
 
   return {
-    speed, speedText: oneDecimal(speed), speedFraction: clamp01(speed / N.boostMaxSpeed),
+    speed, speedText: oneDecimal(speed), speedFraction: clamp01(speed / GAUGE_TOP),
     heading, headingText: String(heading).padStart(3, '0'), headingDegrees,
     windDegrees, currentDegrees,
     boostSeconds, boostFraction: clamp01(boostTicks / N.boostTicks), boostActive,

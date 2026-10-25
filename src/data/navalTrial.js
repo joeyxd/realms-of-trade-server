@@ -1,5 +1,6 @@
 // Internal D08c.1 authority experiment, not live sailing or progression tuning.
 export const NAVAL_TRIAL = Object.freeze({
+  handling: 'windwaker',
   maxBodies: 32,
   inputTimeoutTicks: 15,
   maxSequence: 2147483647,

@@ -31,9 +31,9 @@ test('compass directions use the boat axes and wrap negative or rounded full tur
 });
 
 test('speed gauge caps its fill while retaining actual speed text', () => {
-  const hud = navalHudState(input({ state: { tick: 0, yaw: 0, vx: 15, vz: 0 } }));
-  assert.equal(hud.speed, 15);
-  assert.equal(hud.speedText, '15.0');
+  const hud = navalHudState(input({ state: { tick: 0, yaw: 0, vx: 40, vz: 0 } }));
+  assert.equal(hud.speed, 40);
+  assert.equal(hud.speedText, '40.0');
   assert.equal(hud.speedFraction, 1);
 });
 

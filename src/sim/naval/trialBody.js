@@ -1,5 +1,6 @@
 // Pure, ephemeral trial body that binds a blueprint, operational damage and fixed-tick handling.
 import { isValidHelmResponse, navalPose, newNavalState, stepNaval } from './handling.js';
+import { NAVAL_TRIAL } from '../../data/navalTrial.js';
 import { operationalNavalRig, rebaseNavalState } from './operational.js';
 import { applyPartDamage, createNavalStructure, hullIntegrity } from './structure.js';
 import { resolveNavalCoast } from './coastContact.js';
@@ -26,6 +27,8 @@ function validateBody(body) {
   validatePose(body.pose);
   validateTick(body.state.tick);
   if (!['x', 'z', 'yaw', 'vx', 'vz', 'omega'].every((key) => finite(body.state[key]))) fail('Invalid trial state');
+  if (Object.hasOwn(body.state, 'helm') && (!finite(body.state.helm) || Math.abs(body.state.helm) > Math.PI / 4 + 1e-9))
+    fail('Invalid trial tiller');
   if (Math.abs(body.state.x) > 1e9 || Math.abs(body.state.z) > 1e9 ||
       Math.hypot(body.state.vx, body.state.vz) > 100 || Math.abs(body.state.omega) > 10 ||
       body.operational.disabled !== hullIntegrity(body.structure).disabled)
@@ -182,17 +185,17 @@ export function stepTrialBody(body, input, wind, coast = null, { parked = body?.
     activity: activityStep.activity || undefined, parked, wind,
     ...(body.navigation ? { helmResponse: body.helmResponse } : {}) };
   if (parked) {
-    const state = { ...body.state, tick: body.state.tick + 1, vx: 0, vz: 0, omega: 0 };
+    const state = { ...body.state, tick: body.state.tick + 1, vx: 0, vz: 0, omega: 0, helm: 0 };
     const frame = navigationFrame(state, body.flowOrigin, activityStep.activity, wind, true);
     return makeBody(body.structure, body.operational, state, body.poseOffsetY, body.pose, [], { ...common, gust: frame.gust });
   }
   if (body.operational.disabled || !body.operational.rig) {
-    const state = { ...body.state, tick: body.state.tick + 1, vx: 0, vz: 0, omega: 0 };
+    const state = { ...body.state, tick: body.state.tick + 1, vx: 0, vz: 0, omega: 0, helm: 0 };
     return makeBody(body.structure, body.operational, state, body.poseOffsetY, body.pose, [], common);
   }
   const frame = body.navigation ? navigationFrame(body.state, body.flowOrigin, activityStep.activity, wind, true) : null;
   const environment = body.navigation ? { ...sailingEnvironment(activityStep.activity, body.state, true),
-    current: frame.flow, rudderMultiplier: body.helmResponse } : {};
+    current: frame.flow, rudderMultiplier: body.helmResponse, handling: NAVAL_TRIAL.handling } : {};
   let state = stepNaval(body.state, input, body.operational.rig, wind, environment);
   const contact = coast ? resolveNavalCoast(body.state, state, body.operational.rig, body.operational.parts, coast) : null;
   if (contact) state = contact.state;
@@ -224,7 +227,7 @@ export function damageTrialBody(body, partId, amount) {
   if (!result.event) return { body, event: null };
   const operational = operationalNavalRig(result.structure, body.cargo || []);
   if (operational.disabled || !operational.rig) {
-    const state = { ...body.state, vx: 0, vz: 0, omega: 0 };
+    const state = { ...body.state, vx: 0, vz: 0, omega: 0, helm: 0 };
     return { body: makeBody(result.structure, operational, state, body.poseOffsetY, body.pose, [], body), event: result.event };
   }
 
@@ -240,7 +243,7 @@ export function parkTrialBody(body, parked) {
   validateBody(body);
   if (!body.navigation || typeof parked !== 'boolean') fail('Invalid parked trial body');
   if (body.parked === parked) return body;
-  const state = { ...body.state, vx: 0, vz: 0, omega: 0 };
+  const state = { ...body.state, vx: 0, vz: 0, omega: 0, helm: 0 };
   return makeBody(body.structure, body.operational, state, body.poseOffsetY, body.pose, [], {
     ...body, parked, activity: body.activity, wind: body.wind,
   });

@@ -5,7 +5,7 @@ import { NavalLabEffects } from '../render/naval/effects.js';
 import { NavalSpeedFeel } from '../render/naval/speed-feel.js';
 import { NavalLabAudio } from '../audio/naval.js';
 import { TouchHelm } from '../ui/touchHelm.js';
-import { navalHudState, confirmedNavalCapacity } from '../ui/navalHudState.js';
+import { navalHudState, confirmedNavalCapacity, GAUGE_TOP } from '../ui/navalHudState.js';
 import { buildNavalRig } from '../sim/naval/handling.js';
 import { currentAt, gustAt } from '../sim/naval/navigation.js';
 import { pilotPoint } from '../sim/naval/pilotGeometry.js';
@@ -60,7 +60,7 @@ export class LiveNavigationView {
     setAttributeText(this.root, 'aria-label', 'nav.title');
     this.root.innerHTML = `<div class="ln-strip">
       <div class="ln-brand"><span class="ln-mark">MN</span><span><b>${text('nav.voyage')}</b><small class="ln-phase">${text('nav.ready')}</small></span></div>
-      <div class="ln-readout ln-speed"><small>${text('nav.speed')}</small><div class="ln-dial" role="meter" data-l10n-aria-label="nav.speedLabel" aria-label="${attr('nav.speedLabel')}" aria-valuemin="0" aria-valuemax="13" aria-valuenow="0"><svg viewBox="0 0 52 52" aria-hidden="true"><defs><linearGradient id="ln-speed-fire"><stop stop-color="#ffd574"/><stop offset=".55" stop-color="#ff9a3d"/><stop offset="1" stop-color="#ed4b39"/></linearGradient></defs><circle class="ln-dial-track" cx="26" cy="26" r="21" pathLength="100"/><circle class="ln-dial-arc" data-speed-arc cx="26" cy="26" r="21" pathLength="100"/></svg><span class="ln-dial-value" data-speed>0.0</span><i>u/s</i></div></div>
+      <div class="ln-readout ln-speed"><small>${text('nav.speed')}</small><div class="ln-dial" role="meter" data-l10n-aria-label="nav.speedLabel" aria-label="${attr('nav.speedLabel')}" aria-valuemin="0" aria-valuemax="${Math.round(GAUGE_TOP)}" aria-valuenow="0"><svg viewBox="0 0 52 52" aria-hidden="true"><defs><linearGradient id="ln-speed-fire"><stop stop-color="#ffd574"/><stop offset=".55" stop-color="#ff9a3d"/><stop offset="1" stop-color="#ed4b39"/></linearGradient></defs><circle class="ln-dial-track" cx="26" cy="26" r="21" pathLength="100"/><circle class="ln-dial-arc" data-speed-arc cx="26" cy="26" r="21" pathLength="100"/></svg><span class="ln-dial-value" data-speed>0.0</span><i>u/s</i></div></div>
       <div class="ln-readout"><small>${text('nav.hull')}</small><div class="ln-hull" role="meter" data-l10n-aria-label="nav.hullLabel" aria-label="${attr('nav.hullLabel')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i data-hull></i></div><b data-hull-text>—</b></div>
       <div class="ln-readout ln-wind"><small>${text('nav.wind')}</small><b data-wind>—</b><span data-gust>${text('nav.sailReady')}</span><div class="ln-gust-track" role="meter" data-l10n-aria-label="nav.gustLabel" aria-label="${attr('nav.gustLabel')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="ln-gust-window"></i><i class="ln-gust-perfect"></i><b data-gust-marker></b></div></div>
       <div class="ln-readout ln-flow"><small>${text('nav.water')}</small><b data-flow>—</b><span data-load>—</span></div>
@@ -327,8 +327,13 @@ export class LiveNavigationView {
   poseCharacter(view, s, id, dt) {
     const c = this.client();
     const records = c?.renderRafts?.(1) || [];
+    const layer = this.world.rafts;
+    let ridden = false;
     for (const raft of records) {
-      const member = raft.crew?.find((entry) => String(entry.entity) === String(id) && entry.mode === 'helm');
+      // Pilot and deck walkers ride the hull sway (render only); the pilot also tilts and twists with the hull.
+      const aboard = raft.crew?.find((entry) => String(entry.entity) === String(id));
+      if (aboard && layer?.ride?.(raft.id, view.root, s, { key: String(id), pilot: aboard.mode === 'helm', dt })) ridden = true;
+      const member = aboard?.mode === 'helm' ? aboard : null;
       const visual = this.helmVisuals.get(String(raft.id));
       if (member && visual?.gripWorld) {
         // Reuse the character's cached empty-hand build while both hands hold the tiller.
@@ -340,6 +345,12 @@ export class LiveNavigationView {
         return view.navalPose = poseNavalHelm(view, { active: true, gripWorld: visual.gripWorld });
       }
     }
+    if (!ridden && String(id) === String(c?.youServer)) {
+      // Your own body may not be in the crew list the frame you step aboard: fall back to the active station.
+      const shipId = c?.deck?.active ? c.deck.shipId : c?.naval?.active ? c.naval.shipId : null;
+      if (shipId != null && layer?.ride?.(shipId, view.root, s, { key: String(id), pilot: !c.deck?.active, dt })) ridden = true;
+    }
+    if (!ridden) layer?.unride?.(view.root);
     if (view.navalWeaponGeometry) {
       // A weapon change can already have restored the correct armed geometry this frame.
       if (view.mesh.geometry === view.navalBareGeometry) view.mesh.geometry = view.navalWeaponGeometry;
@@ -732,7 +743,7 @@ export class LiveNavigationView {
     const gauge = this.root.ownerDocument.createElement('div');
     gauge.className = 'naval-touch-gauge'; gauge.setAttribute('role', 'meter');
     setAttributeText(gauge, 'aria-label', 'nav.speedAria');
-    gauge.setAttribute('aria-valuemin', '0'); gauge.setAttribute('aria-valuemax', '13'); gauge.setAttribute('aria-valuenow', '0');
+    gauge.setAttribute('aria-valuemin', '0'); gauge.setAttribute('aria-valuemax', String(Math.round(GAUGE_TOP))); gauge.setAttribute('aria-valuenow', '0');
     gauge.innerHTML = `<svg viewBox="0 0 120 120" aria-hidden="true"><defs>
       <linearGradient id="nt-speed-fire" x1="0" y1="0" x2="1" y2=".6"><stop stop-color="#ffe79b"/><stop offset=".45" stop-color="#ffab3d"/><stop offset="1" stop-color="#ec4c30"/></linearGradient>
       <radialGradient id="nt-dial-glass"><stop stop-color="#29464c"/><stop offset="1" stop-color="#0b1c23"/></radialGradient></defs>
