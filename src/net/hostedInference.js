@@ -3,6 +3,9 @@
 
 export const HOSTED_LIMITS = Object.freeze({ maxEndpoints: 8, label: 48, baseUrl: 300, apiKey: 400, modelId: 200,
   prompt: 2000, text: 2000 });
+// The owner picks the hosted model calls per 120-minute window when starting; the server applies the default when absent.
+export const HOSTED_CALLS = Object.freeze({ min: 1, max: 60, default: 20, windowMinutes: 120 });
+export const validHostedCalls = value => Number.isInteger(value) && value >= HOSTED_CALLS.min && value <= HOSTED_CALLS.max;
 export const HOSTED_OPS = Object.freeze(['load', 'save', 'delete', 'probe', 'test', 'start', 'stop']);
 export const HOSTED_STATUSES = Object.freeze(['stopped', 'starting', 'running', 'failed']);
 export const HOSTED_REASONS = Object.freeze(['disabled', 'not_allowed', 'misconfigured']);
@@ -51,13 +54,14 @@ const FIELDS = Object.freeze({ load: [], save: ['endpoint'], delete: ['id'], pro
 /** True when a client -> server MSG.HOSTED_INFERENCE message has exactly the contract's keys and values. */
 export function validHostedRequest(message) {
   if (!plain(message) || !HOSTED_OPS.includes(message.op) || !validHostedRequestId(message.requestId) ||
-      !exact(message, ['t', 'requestId', 'op', ...FIELDS[message.op]])) return false;
+      !exact(message, ['t', 'requestId', 'op', ...FIELDS[message.op], ...(message.op === 'start' && Object.hasOwn(message, 'maxCalls') ? ['maxCalls'] : [])])) return false;
   switch (message.op) {
     case 'load': return true;
     case 'save': return validEndpoint(message.endpoint);
     case 'delete': case 'probe': return validEndpointId(message.id);
     case 'test': return validEndpointId(message.id) && validModelId(message.modelId) && validPrompt(message.prompt);
-    case 'start': return validCharacter(message.character) && validEndpointId(message.endpointId) && validModelId(message.modelId);
+    case 'start': return validCharacter(message.character) && validEndpointId(message.endpointId) && validModelId(message.modelId) &&
+      (!Object.hasOwn(message, 'maxCalls') || validHostedCalls(message.maxCalls));
     case 'stop': return validCharacter(message.character);
     default: return false;
   }

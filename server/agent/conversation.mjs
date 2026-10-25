@@ -45,7 +45,7 @@ function validatePolicy(input) {
   if (!Array.isArray(policy.channels) || policy.channels.length > CHANNELS.size ||
       new Set(policy.channels).size !== policy.channels.length || policy.channels.some((channel) => !CHANNELS.has(channel)) ||
       !Number.isSafeInteger(policy.maxTurns) || policy.maxTurns < 1 || policy.maxTurns > 256 ||
-      !Number.isSafeInteger(policy.maxRepliesPerPeer) || policy.maxRepliesPerPeer < 1 || policy.maxRepliesPerPeer > 32 ||
+      !Number.isSafeInteger(policy.maxRepliesPerPeer) || policy.maxRepliesPerPeer < 1 || policy.maxRepliesPerPeer > 256 ||
       !Number.isSafeInteger(policy.cooldownMs) || policy.cooldownMs < 0 || policy.cooldownMs > 3600000 ||
       !Number.isSafeInteger(policy.maxMessageAgeTicks) || policy.maxMessageAgeTicks < 0 || policy.maxMessageAgeTicks > 1000000 ||
       !Array.isArray(policy.blockedPeers) || policy.blockedPeers.length > 256 ||

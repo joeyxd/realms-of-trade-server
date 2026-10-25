@@ -69,7 +69,7 @@ function checkedOptions(options) {
   if (typeof apiKey !== 'string' || apiKey.length > 512 || /[\u0000-\u001f\u007f-\u009f]/.test(apiKey) ||
       typeof record.modelId !== 'string' || !record.modelId.trim() || record.modelId.length > 200 ||
       !['server_default', 'disabled'].includes(thinkingMode) ||
-      !Number.isInteger(record.maxCalls) || record.maxCalls < 1 || record.maxCalls > 8 ||
+      !Number.isInteger(record.maxCalls) || record.maxCalls < 1 || record.maxCalls > 60 ||
       !Number.isInteger(record.maxOutputTokens) || record.maxOutputTokens < 1 || record.maxOutputTokens > 512 ||
       !Number.isInteger(record.timeoutMs) || record.timeoutMs < 100 || record.timeoutMs > 30_000 ||
       !Number.isInteger(maxInputBytes) || maxInputBytes < 1 || maxInputBytes > 65_536 ||

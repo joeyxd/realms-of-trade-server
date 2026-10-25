@@ -61,6 +61,19 @@ test('edit key stays empty, blank preserves, explicit clearing sends empty; save
   } finally { f.restore(); }
 });
 
+test('the owner sets the calls per 2-hour window before starting; invalid values revert and running rows lock it', () => {
+  const f = setup();
+  try {
+    const inputs = () => f.ui.body.querySelectorAll().filter(el => el.tagName === 'input' && el.type === 'number');
+    assert.equal(inputs().length, 2); assert.equal(inputs()[1].value, '20'); assert.equal(inputs()[1].max, '60');
+    assert.equal(inputs()[0].disabled, true); assert.equal(inputs()[1].disabled, false);
+    const calls = inputs()[1]; calls.value = '61'; calls.listeners.change(); assert.equal(calls.value, '20');
+    calls.value = '0'; calls.listeners.change(); assert.equal(calls.value, '20');
+    calls.value = '35'; calls.listeners.change(); click(find(f.ui.body, 'start'));
+    assert.deepEqual(f.calls.at(-1), ['start', 'c2', 'e1', 'small', 35]);
+  } finally { f.restore(); }
+});
+
 test('delete requires two clicks; test, start and stop use the selected identifiers', () => {
   const f = setup();
   try {
@@ -69,7 +82,7 @@ test('delete requires two clicks; test, start and stop use the selected identifi
     click(find(f.ui.body, 'probe')); assert.deepEqual(f.calls.at(-1), ['probe', 'e1']);
     const prompt = f.ui.body.querySelectorAll().find(el => el.tagName === 'textarea'); prompt.value = 'hello'; prompt.listeners.input();
     click(find(f.ui.body, 'test')); assert.deepEqual(f.calls.at(-1), ['test', 'e1', 'small', 'hello']);
-    click(find(f.ui.body, 'start')); assert.deepEqual(f.calls.at(-1), ['start', 'c2', 'e1', 'small']);
+    click(find(f.ui.body, 'start')); assert.deepEqual(f.calls.at(-1), ['start', 'c2', 'e1', 'small', 20]);
     click(find(f.ui.body, 'stop')); assert.deepEqual(f.calls.at(-1), ['stop', 'c1']);
     f.publish({ pendingOps: ['probe', 'start', 'stop', 'delete', 'test', 'save'] });
     for (const key of ['probe', 'start', 'stop', 'remove', 'test', 'edit', 'add']) assert.equal(find(f.ui.body, key).disabled, true);

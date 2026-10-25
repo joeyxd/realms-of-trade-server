@@ -147,6 +147,8 @@ test('gating: misconfigured switches, allowlist, session and exact request shape
     { t: MSG.HOSTED_INFERENCE, requestId: 'x6', op: 'test', id: '0123456789abcdef', modelId: 'm', prompt: '' },
     { t: MSG.HOSTED_INFERENCE, requestId: 'x7', op: 'start', character: 'nope', endpointId: '0123456789abcdef', modelId: 'm' },
     { t: MSG.HOSTED_INFERENCE, requestId: 'x8', op: 'probe', id: 'ZZ' },
+    ...[0, 61, 2.5, '20', null].map((maxCalls, i) => ({ t: MSG.HOSTED_INFERENCE, requestId: `x9${i}`, op: 'start',
+      character: '33333333-3333-4333-8333-333333333333', endpointId: '0123456789abcdef', modelId: 'm', maxCalls })),
   ];
   for (const message of invalid) {
     const result = await hosted(owner, null, {}, message);

@@ -4,7 +4,7 @@
 import { createHash, createCipheriv, createDecipheriv, randomBytes, timingSafeEqual } from 'node:crypto';
 import path from 'node:path';
 import { MSG } from '../src/net/protocol.js';
-import { HOSTED_LIMITS, HOSTED_OPS, HOSTED_RATES, HOSTED_RATE_CLASS, HOSTED_WHY, validHostedRequest,
+import { HOSTED_CALLS, HOSTED_LIMITS, HOSTED_OPS, HOSTED_RATES, HOSTED_RATE_CLASS, HOSTED_WHY, validHostedRequest,
   validHostedRequestId, unavailableHostedState } from '../src/net/hostedInference.js';
 import { parseGmAccountIds } from './gmSession.mjs';
 import { createInferenceCenter } from './agent/inference-center.mjs';
@@ -204,7 +204,7 @@ export class HostedInferenceService {
   port() { const address = this.host.wss?.options?.server?.address?.(); return Number.isInteger(address?.port) ? address.port : null; }
   origin(port) { return this.host.origins?.[0] ?? `http://127.0.0.1:${port}`; }
 
-  async start(sock, owner, { character, endpointId, modelId }) {
+  async start(sock, owner, { character, endpointId, modelId, maxCalls = HOSTED_CALLS.default }) {
     const previous = this.entries.get(owner) ?? null;
     if (previous && ACTIVE.has(previous.status)) return { why: previous.character === character ? 'busy' : 'limit' };
     if (this.active() >= this.maxRunning) return { why: 'limit' };
@@ -229,7 +229,7 @@ export class HostedInferenceService {
       if (this.entries.get(owner) !== entry || entry.status !== 'starting' || this.host.closing) return abort('unavailable', true);
       entry.name = this.nameOf(owner, character);
       entry.controller = new PairedCompanion({ directory: path.join(this.dir, 'owners', sha256(owner), 'companions', sha256(character)),
-        url: `ws://127.0.0.1:${port}/ws`, modelId, maxCalls: 8, maxTokens: 262144,
+        url: `ws://127.0.0.1:${port}/ws`, modelId, maxCalls, maxTokens: Math.max(32_768, Math.min(1_000_000, 16_384 * maxCalls)),
         hosted: { origin: this.origin(port), endpointId, endpoint: { baseUrl: resolved.endpoint.baseUrl, apiKey: resolved.endpoint.apiKey },
           egress: this.egress, socketToken: this.socketToken } });
       void this.push(owner);

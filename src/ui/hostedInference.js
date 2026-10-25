@@ -1,3 +1,5 @@
+import { HOSTED_CALLS, validHostedCalls } from '../net/hostedInference.js';
+
 export const COPY = {
   es: {
     title: 'Centro de inferencia', back: 'Volver', reload: 'Recargar', connections: 'Conexiones', companions: 'Compañeros',
@@ -10,6 +12,7 @@ export const COPY = {
     sessionUsage: (c, m, i, o, s, min) => `Esta sesión: ${c}/${m} llamadas · ${i} tokens de entrada · ${o} de salida · ${s} resúmenes · se renueva en ${min} min`,
     memoryUsage: (e, s, kb, max) => `Memoria: ${e} recuerdos · ${s} resúmenes · ${kb} KB de ${max} KB`,
     summaryBlocked: 'El resumen automático se detuvo en esta sesión.',
+    calls: `Llamadas por 2 h (${HOSTED_CALLS.min}–${HOSTED_CALLS.max})`, windowOver: 'La ventana de 2 h terminó: detén e inicia para renovarla.',
     model: 'Modelo', connection: 'Conexión', choose: 'Elige una conexión', prompt: 'Mensaje de prueba (1–2000 caracteres)', test: 'Probar',
     result: 'Respuesta de prueba', detail: (ms, model) => `${ms} ms · Modelo servido: ${model}`,
     mismatch: 'Aviso: el modelo servido es distinto del solicitado.', companion: n => `Compañero ${n}`,
@@ -39,6 +42,7 @@ export const COPY = {
     sessionUsage: (c, m, i, o, s, min) => `This session: ${c}/${m} calls · ${i} input tokens · ${o} output · ${s} summaries · renews in ${min} min`,
     memoryUsage: (e, s, kb, max) => `Memory: ${e} memories · ${s} summaries · ${kb} KB of ${max} KB`,
     summaryBlocked: 'Automatic summary stopped for this session.',
+    calls: `Calls per 2 h (${HOSTED_CALLS.min}–${HOSTED_CALLS.max})`, windowOver: 'The 2-hour window ended: stop and start to renew it.',
     model: 'Model', connection: 'Connection', choose: 'Choose a connection', prompt: 'Test prompt (1–2000 characters)', test: 'Test',
     result: 'Test reply', detail: (ms, model) => `${ms} ms · Served model: ${model}`,
     mismatch: 'Warning: the served model differs from the requested model.', companion: n => `Companion ${n}`,
@@ -62,6 +66,13 @@ const node = (tag, className = '', text = '') => {
   const el = document.createElement(tag); el.className = className; el.textContent = text; return el;
 };
 const models = endpoint => [...new Set([endpoint?.defaultModel, ...(endpoint?.models || [])].filter(Boolean))];
+// The owner's calls per window is a per-browser convenience; storage may be missing or blocked.
+const CALLS_KEY = 'mn.hosted.maxCalls';
+const storedCalls = () => {
+  try { const value = Number(globalThis.localStorage?.getItem(CALLS_KEY)); return validHostedCalls(value) ? value : HOSTED_CALLS.default; }
+  catch { return HOSTED_CALLS.default; }
+};
+const storeCalls = value => { try { globalThis.localStorage?.setItem(CALLS_KEY, String(value)); } catch {} };
 let sequence = 0;
 
 export class HostedInferenceUI {
@@ -199,22 +210,31 @@ export class HostedInferenceUI {
     if (row.usage) {
       const u = row.usage, minutes = Math.max(0, Math.ceil((u.expiresAtMs - Date.now()) / 60000));
       card.append(node('p', 'mn-hosted-note', copy.sessionUsage(u.calls, u.maxCalls, u.inputTokens, u.outputTokens, u.summaries, minutes)));
+      if (minutes === 0) card.append(node('p', 'mn-hosted-warning', copy.windowOver));
     }
     if (row.memory) {
       const m = row.memory;
       card.append(node('p', 'mn-hosted-note', copy.memoryUsage(m.episodes, m.summaries, Math.ceil(m.bytes / 1024), Math.ceil(m.maxBytes / 1024))));
     }
     if (row.autoSummary === 'blocked') card.append(node('p', 'mn-hosted-note', copy.summaryBlocked));
-    const choice = this.choices.get(row.character) || { endpointId: row.endpointId || this.state.endpoints[0]?.id || '', modelId: row.modelId || '' };
+    const choice = this.choices.get(row.character) || { endpointId: row.endpointId || this.state.endpoints[0]?.id || '', modelId: row.modelId || '',
+      maxCalls: storedCalls() };
     this.choices.set(row.character, choice);
     const endpoint = this.state.endpoints.find(item => item.id === choice.endpointId), availableModels = models(endpoint);
     if (!availableModels.includes(choice.modelId)) choice.modelId = availableModels[0] || '';
     const connection = this.select(card, 'connection', [['', copy.choose], ...this.state.endpoints.map(item => [item.id, item.label])], choice.endpointId,
       value => { choice.endpointId = value; choice.modelId = ''; this.render(); });
     const model = this.select(card, 'model', availableModels.map(id => [id, id]), choice.modelId, value => { choice.modelId = value; this.render(); });
+    const calls = this.field(card, 'calls', node('input')); calls.type = 'number'; calls.min = String(HOSTED_CALLS.min);
+    calls.max = String(HOSTED_CALLS.max); calls.step = '1'; calls.value = String(choice.maxCalls);
+    calls.addEventListener('change', () => {
+      const value = Number(calls.value);
+      if (validHostedCalls(value)) { choice.maxCalls = value; storeCalls(value); } else calls.value = String(choice.maxCalls);
+    });
     const running = ['starting', 'running'].includes(row.status), op = running ? 'stop' : 'start';
-    connection.disabled = model.disabled = running || this.pending('start') || this.pending('stop');
-    const action = this.button(op, () => running ? this.client.stop(row.character) : this.client.start(row.character, choice.endpointId, choice.modelId), op, !running);
+    connection.disabled = model.disabled = calls.disabled = running || this.pending('start') || this.pending('stop');
+    const action = this.button(op, () => running ? this.client.stop(row.character)
+      : this.client.start(row.character, choice.endpointId, choice.modelId, choice.maxCalls), op, !running);
     action.disabled ||= !running && (!endpoint || !choice.modelId); card.append(action);
     if (row.error) card.append(node('p', 'mn-hosted-warning', this.why(row.error)));
     if (['presence_body_required', 'stopped', 'not_created'].includes(row.error)) card.append(node('p', 'mn-hosted-note', copy.controls));

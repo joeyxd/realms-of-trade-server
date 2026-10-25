@@ -60,7 +60,10 @@ export class HostedInferenceClient {
   remove(id) { return this.request('delete', { id }); }
   probe(id) { return this.request('probe', { id }); }
   test(id, modelId, prompt) { return this.request('test', { id, modelId, prompt }); }
-  start(character, endpointId, modelId) { return this.request('start', { character, endpointId, modelId }); }
+  // maxCalls is the owner's calls per 120-minute window; the server applies its default when it is absent.
+  start(character, endpointId, modelId, maxCalls) {
+    return this.request('start', { character, endpointId, modelId, ...(Number.isInteger(maxCalls) ? { maxCalls } : {}) });
+  }
   stop(character) { return this.request('stop', { character }); }
   request(op, fields = {}) {
     if (!this.online()) { this.invalidate(); this.publish(empty(this.authAccount ? 'offline' : 'signed_out')); return false; }

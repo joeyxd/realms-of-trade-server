@@ -1,5 +1,5 @@
 import { constants } from 'node:fs';
-import { mkdir, writeFile, lstat, realpath, open } from 'node:fs/promises';
+import { mkdir, writeFile, lstat, realpath, open, rename, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import WebSocket from 'ws';
@@ -23,6 +23,8 @@ const exact = (value, keys) => value && typeof value === 'object' && !Array.isAr
   Object.getPrototypeOf(value) === Object.prototype && Reflect.ownKeys(value).length === keys.length &&
   keys.every(key => Object.hasOwn(value, key) && Object.hasOwn(Object.getOwnPropertyDescriptor(value, key), 'value'));
 const MAX_MINUTES = 120;
+// Hosted: the owner picks the calls per window in the center (src/net/hostedInference.js HOSTED_CALLS). PC pairing keeps 8.
+const HOSTED_MAX_CALLS = 60, PAIRED_MAX_CALLS = 8;
 const HOSTED_SUMMARY_MIN_EPISODES = 6;
 const MAX_CLOCK_SKEW_MS = 30_000;
 const MAX_TOKEN_TTL_MS = 60 * 60_000 + MAX_CLOCK_SKEW_MS;
@@ -144,7 +146,8 @@ export class PairedCompanion {
     }
     claim ??= claimPairCode; runnerFactory ??= options => new AgentNetworkRunner(options); adapterFactory ??= createLocalOpenAIMind;
     if (typeof directory !== 'string' || !path.isAbsolute(directory) || typeof url !== 'string' ||
-        !(this.#hosted || /^wss:\/\//i.test(url)) || !Number.isInteger(maxCalls) || maxCalls < 1 || maxCalls > 8 ||
+        !(this.#hosted || /^wss:\/\//i.test(url)) || !Number.isInteger(maxCalls) || maxCalls < 1 ||
+        maxCalls > (this.#hosted ? HOSTED_MAX_CALLS : PAIRED_MAX_CALLS) ||
         !Number.isSafeInteger(maxTokens) || maxTokens < 32768 || maxTokens > 1_000_000 ||
         typeof claim !== 'function' || typeof runnerFactory !== 'function' || typeof adapterFactory !== 'function' ||
         typeof onStatus !== 'function' || typeof onFeedback !== 'function' || typeof presenceDriverFactory !== 'function')
@@ -212,10 +215,19 @@ export class PairedCompanion {
     if (existing) {
       if (!exact(existing, ['schema', 'scope', 'creationId', 'configurationRevision', 'personalitySha256', 'objectivesSha256',
         'budgetExpiresAtMs', 'limits', 'policy']) || existing.schema !== 'mn.paired-companion.v1' ||
-          JSON.stringify(existing.scope) !== JSON.stringify(scope) || existing.creationId !== record.creationId ||
-          existing.configurationRevision !== record.configuration.revision || existing.personalitySha256 !== hash(docs.personality) ||
-          existing.objectivesSha256 !== hash(docs.objectives) || JSON.stringify(existing.limits) !== JSON.stringify(this.#limits) ||
-          JSON.stringify(existing.policy) !== JSON.stringify(this.#policy)) throw new Error('paired_identity_or_config_changed');
+          JSON.stringify(existing.scope) !== JSON.stringify(scope) || existing.creationId !== record.creationId) throw new Error('paired_identity_or_config_changed');
+      const changed = existing.configurationRevision !== record.configuration.revision || existing.personalitySha256 !== hash(docs.personality) ||
+        existing.objectivesSha256 !== hash(docs.objectives) || JSON.stringify(existing.limits) !== JSON.stringify(this.#limits) ||
+        JSON.stringify(existing.policy) !== JSON.stringify(this.#policy);
+      // Hosted: a closed window, a new owner setting or an edited companion opens a fresh window over the same memory.
+      if (this.#hosted && (changed || !Number.isSafeInteger(existing.budgetExpiresAtMs) || existing.budgetExpiresAtMs <= Date.now())) {
+        await writeFile(path.join(dir, 'personality.md'), docs.personality, { mode: 0o600 });
+        await writeFile(path.join(dir, 'objectives.json'), docs.objectives, { mode: 0o600 });
+        await this.#writeProviderManifest(dir, scope, record);
+        await rm(path.join(dir, 'resource-budget'), { recursive: true, force: true });
+        return this.#openWindow(dir, scope, record, docs);
+      }
+      if (changed) throw new Error('paired_identity_or_config_changed');
       const loaded = await loadOwnerFiles({ directory: dir, scope });
       if (!loaded.ok || loaded.files.personality.content !== docs.personality || loaded.files.objectives.content !== docs.objectives) throw new Error('paired_documents_changed');
       budget = await LocalResourceBudget.open({ directory: path.join(dir, 'resource-budget'), scope,
@@ -226,22 +238,32 @@ export class PairedCompanion {
       // New directory only: seed the latest owner-authored SQL configuration, preserving the empty journal.
       await writeFile(path.join(dir, 'personality.md'), docs.personality, { mode: 0o600 });
       await writeFile(path.join(dir, 'objectives.json'), docs.objectives, { mode: 0o600 });
-      await writeFile(path.join(dir, 'companion-manifest.json'), JSON.stringify({ schema: 'mn.paired-companion.v1',
-        authority: 'public_world_agent_control', scope, creationId: record.creationId,
-        provider: { kind: this.#hosted ? 'hosted-openai-compatible' : 'loopback-openai-compatible', ...this.#policy, apiKey: null },
-        serverBinding: { ownerId: scope.ownerId, characterId: scope.characterId, worldId: scope.worldId,
-          configurationRevision: record.configuration.revision, controlRevision: record.control.revision },
-        requestedCapabilities: ['chat', 'presence'], activated: true }, null, 2) + '\n', { mode: 0o600 });
-      const budgetExpiresAtMs = Date.now() + MAX_MINUTES * 60_000;
-      await mkdir(path.join(dir, 'resource-budget'));
-      budget = await LocalResourceBudget.initialize({ directory: path.join(dir, 'resource-budget'), scope,
-        limits: { maxCalls: this.#limits.maxCalls, maxTokens: this.#limits.maxTokens,
-          maxCostUnits: this.#limits.maxTokens, maxEntries: 16 }, expiresAtMs: budgetExpiresAtMs, ...this.#policy });
-      const manifest = { schema: 'mn.paired-companion.v1', scope, creationId: record.creationId,
-        configurationRevision: record.configuration.revision, personalitySha256: hash(docs.personality),
-        objectivesSha256: hash(docs.objectives), budgetExpiresAtMs, limits: this.#limits, policy: this.#policy };
-      await writeFile(path.join(dir, 'paired-runtime.json'), JSON.stringify(manifest, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
+      await this.#writeProviderManifest(dir, scope, record);
+      budget = await this.#openWindow(dir, scope, record, docs);
     }
+    return budget;
+  }
+  async #writeProviderManifest(dir, scope, record) {
+    await writeFile(path.join(dir, 'companion-manifest.json'), JSON.stringify({ schema: 'mn.paired-companion.v1',
+      authority: 'public_world_agent_control', scope, creationId: record.creationId,
+      provider: { kind: this.#hosted ? 'hosted-openai-compatible' : 'loopback-openai-compatible', ...this.#policy, apiKey: null },
+      serverBinding: { ownerId: scope.ownerId, characterId: scope.characterId, worldId: scope.worldId,
+        configurationRevision: record.configuration.revision, controlRevision: record.control.revision },
+      requestedCapabilities: ['chat', 'presence'], activated: true }, null, 2) + '\n', { mode: 0o600 });
+  }
+  // One budget window: a fresh resource-budget directory and the runtime manifest that pins it (temp file, then rename).
+  async #openWindow(dir, scope, record, docs) {
+    const budgetExpiresAtMs = Date.now() + MAX_MINUTES * 60_000;
+    await mkdir(path.join(dir, 'resource-budget'));
+    const budget = await LocalResourceBudget.initialize({ directory: path.join(dir, 'resource-budget'), scope,
+      limits: { maxCalls: this.#limits.maxCalls, maxTokens: this.#limits.maxTokens, maxCostUnits: this.#limits.maxTokens,
+        maxEntries: Math.min(256, 2 * this.#limits.maxCalls + 8) }, expiresAtMs: budgetExpiresAtMs, ...this.#policy });
+    const manifest = { schema: 'mn.paired-companion.v1', scope, creationId: record.creationId,
+      configurationRevision: record.configuration.revision, personalitySha256: hash(docs.personality),
+      objectivesSha256: hash(docs.objectives), budgetExpiresAtMs, limits: this.#limits, policy: this.#policy };
+    const temp = path.join(dir, `paired-runtime.${randomUUID()}.tmp`);
+    await writeFile(temp, JSON.stringify(manifest, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
+    await rename(temp, path.join(dir, 'paired-runtime.json'));
     return budget;
   }
 
@@ -289,9 +311,11 @@ export class PairedCompanion {
       mind = new AgentMind({ adapter, budget: this.#budget, readSnapshot,
         readCommitSnapshot: () => this.#snapshot(runner, sessionFiles), appendMemory: createMemoryStore({ directory: this.#directory, scope: bootstrap.scope }).append,
         submitOrder: () => fail('chat_only'), sendChat: order => runner.sendChat(order),
-        conversationPolicy: { channels: ['world', 'local', 'whisper'], maxRepliesPerPeer: 32, maxTurns: 32,
+        conversationPolicy: { channels: ['world', 'local', 'whisper'], maxRepliesPerPeer: Math.min(256, Math.max(32, 2 * this.#limits.maxCalls)),
+          maxTurns: Math.min(256, Math.max(32, 2 * this.#limits.maxCalls)),
           cooldownMs: 5000, maxMessageAgeTicks: 1800 },
-        limits: { timeoutMs: 30000, maxReflectionAgeMs: 30000, maxRequests: 32, maxOutputTokens: 512 },
+        // Each owner turn is a reply, a remembered episode and sometimes a summary, so requests run ahead of calls.
+        limits: { timeoutMs: 30000, maxReflectionAgeMs: 30000, maxRequests: Math.min(256, Math.max(32, 4 * this.#limits.maxCalls)), maxOutputTokens: 512 },
         contextLimits: { maxMemoryUnits: 8192, maxCandidates: 128, maxSelected: 8 } });
       if (!this.#isCurrentPairing(generation)) { disposeAttempt(); return fail('pair_cancelled'); }
       this.#mind = mind;

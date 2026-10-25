@@ -38,12 +38,12 @@ class FakeRunner {
   stop() { this.state = 'stopped'; }
   close() { this.state = 'stopped'; }
 }
-async function setup(t, { hosted = true, maxCalls = 8, summary = 'ok', hold = false } = {}) {
+async function setup(t, { hosted = true, maxCalls = 8, summary = 'ok', hold = false, reuse = null } = {}) {
   let clock = Date.now(), runner, release;
   t.mock.method(Date, 'now', () => clock);
   t.mock.method(performance, 'now', () => clock - performance.timeOrigin);
-  const dir = await mkdtemp(join(tmpdir(), 'hosted-memory-')), directory = join(dir, 'Brisa');
-  t.after(() => rm(dir, { recursive: true, force: true }));
+  const dir = reuse ? null : await mkdtemp(join(tmpdir(), 'hosted-memory-')), directory = reuse ?? join(dir, 'Brisa');
+  if (dir) t.after(() => rm(dir, { recursive: true, force: true }));
   const calls = [], statuses = [], gate = new Promise(resolve => { release = resolve; });
   const preset = companionPreset({ ...DEFAULT_COMPANION_DRAFT, name: 'Brisa' });
   const pair = new PairedCompanion({ directory, url: hosted ? 'ws://127.0.0.1:1234/ws' : 'wss://game.example/ws', maxCalls,
@@ -77,7 +77,7 @@ async function setup(t, { hosted = true, maxCalls = 8, summary = 'ok', hold = fa
     if (hosted) await until(() => pair.memoryLoop.memory.episodes > before);
   };
   const seed = async n => { for (let i = 0; i < n; i++) { clock += 1; runner.tick++; assert.equal((await pair.remember()).ok, true); } };
-  return { pair, calls, statuses, turn, send, seed, release, directory, get runner() { return runner; } };
+  return { pair, calls, statuses, turn, send, seed, release, directory, advance: ms => { clock += ms; }, get runner() { return runner; } };
 }
 
 test('the sixth remembered hosted turn writes exactly one summary over at least two episodes', async t => {
@@ -142,4 +142,31 @@ test('memoryLoop counters match the persisted budget and loaded journal', async 
   assert.deepEqual(loop.memory, { episodes: files.files.memory.journal.report.episodes, summaries: files.files.memory.journal.report.summaries,
     bytes: Buffer.byteLength(files.files.memory.content), maxBytes: 1048576 });
   loop.memory.episodes = 0; assert.equal(f.pair.memoryLoop.memory.episodes, 6);
+});
+
+test('a closed 2-hour window renews on the next start and keeps the memory', async t => {
+  const f = await setup(t); await f.turn(); await f.turn();
+  const first = f.pair.memoryLoop.usage; assert.equal(first.calls, 2);
+  f.pair.stop(); assert.equal((await f.pair.start(CODE)).ok, true);
+  assert.equal(f.pair.memoryLoop.usage.calls, 2, 'a restart inside the window reopens the same allowance');
+  f.pair.stop(); f.advance(121 * 60_000); assert.equal((await f.pair.start(CODE)).ok, true);
+  const renewed = f.pair.memoryLoop;
+  assert.equal(renewed.usage.calls, 0); assert.ok(renewed.usage.expiresAtMs > first.expiresAtMs); assert.equal(renewed.memory.episodes, 2);
+  await f.turn(); await until(() => f.pair.memoryLoop.memory.episodes === 3); assert.equal(f.pair.memoryLoop.usage.calls, 1);
+});
+
+test('a new owner calls setting opens a window with that limit over the same memory', async t => {
+  const f = await setup(t); await f.turn(); f.pair.stop(); f.pair.close();
+  const g = await setup(t, { maxCalls: 20, reuse: f.directory });
+  assert.equal(g.pair.memoryLoop.usage.maxCalls, 20); assert.equal(g.pair.memoryLoop.usage.calls, 0);
+  assert.equal(g.pair.memoryLoop.memory.episodes, 1);
+});
+
+test('hosted companions accept up to 60 calls per window and PC pairing keeps its cap of 8', () => {
+  const base = { directory: join(tmpdir(), 'never-created'), modelId: 'm', claim: async () => null };
+  const hosted = { origin: 'https://game.example', endpointId: 'a'.repeat(16), endpoint: { baseUrl: 'https://api.example/v1' },
+    egress: { vet() {} }, socketToken: CODE };
+  assert.doesNotThrow(() => new PairedCompanion({ ...base, url: 'ws://127.0.0.1:1234/ws', maxCalls: 60, hosted }));
+  assert.throws(() => new PairedCompanion({ ...base, url: 'ws://127.0.0.1:1234/ws', maxCalls: 61, hosted }), /invalid_paired_companion_options/);
+  assert.throws(() => new PairedCompanion({ ...base, url: 'wss://game.example/ws', maxCalls: 9 }), /invalid_paired_companion_options/);
 });
