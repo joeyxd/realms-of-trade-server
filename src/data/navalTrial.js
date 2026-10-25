@@ -2,6 +2,7 @@
 export const NAVAL_TRIAL = Object.freeze({
   handling: 'windwaker',
   camera: 'windwaker', // client only: WW's Boat camera (N5, render/naval/boatCamera.js); anything else keeps the chase framing
+  effects: 'windwaker', // client only: WW's ship water effects (PT20c, render/naval/wake.js); anything else keeps the lab trails
   maxBodies: 32,
   inputTimeoutTicks: 15,
   maxSequence: 2147483647,

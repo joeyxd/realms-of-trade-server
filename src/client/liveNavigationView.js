@@ -89,7 +89,7 @@ export class LiveNavigationView {
     }
     this.prompt = this.$('.ln-prompt');
     this.sceneCamera = new NavalLabCamera(world.camera);
-    this.effects = new NavalLabEffects(world.scene, { mobile: isTouch, reducedMotion: false });
+    this.effects = new NavalLabEffects(world.scene, { mobile: isTouch, reducedMotion: false, wake: NAVAL_TRIAL.effects });
     this.routeRenderer = new NavalRouteRenderer(world.scene, { mobile: isTouch });
     this.routeShotIds = new Set();
     this.routeShotRecords = new Map();
@@ -248,7 +248,8 @@ export class LiveNavigationView {
     const boost = state.tick < (activity.boostUntil || 0) ? clamp((activity.multiplier - 1) / 1.5, 0, 1) : 0;
     this.helmVisual = raft && this.helmVisuals.get(String(raft.id));
     if (body?.flowOrigin) this.effects.setFlowOrigin(body.flowOrigin);
-    this.effects.update(dt, { state, rig, wind, gust, activity, current, currents: true, paused });
+    this.effects.update(dt, { state, rig, wind, gust, activity, current, currents: true, paused,
+      hull: this.world.rafts?.views?.get?.(String(raft?.id ?? (body ? c?.naval?.shipId : c?.deck?.shipId ?? voyage.shipId)))?.hullMotion ?? null });
     this.effectsWasActive = true;
     this.sound.update({ state, rig, gust, activity, current, paused });
     const speed = Math.hypot(finite(state.vx), finite(state.vz));

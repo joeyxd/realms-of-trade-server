@@ -4,6 +4,10 @@ import { navalPose } from '../../sim/naval/handling.js';
 import { ParticlePool } from '../../render/vfx/particles.js';
 import { LAYER, FXU, GLSL_FX_DEPTH } from '../../render/pipeline.js';
 import { U } from '../../render/toon.js';
+import { seaSurfaceY } from './seaSwell.js';
+import { createWake, setWakeRig, stepWake, landing } from './wake.js';
+import { NAVAL_WAKE } from '../../data/navalWake.js';
+import { WW_UNIT } from '../../data/navalHandling.js';
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, Number.isFinite(n) ? n : lo));
 const FOAM_CELL_SIZE = 4;
@@ -332,9 +336,77 @@ function hullCenter(state, rig) {
     z: pose.z - s * (Number(rig.hullCx) || 0) + c * (Number(rig.hullCz) || 0) };
 }
 
+// WW ship water effects (PT20c): the maths is wake.js; these are preallocated meshes it fills in place.
+const WW = NAVAL_WAKE.ours;
+function makeWwMesh(name, vertexCap, order, clock) {
+  const geometry = new THREE.BufferGeometry();
+  const position = new Float32Array(vertexCap * 3), color = new Float32Array(vertexCap * 4), flow = new Float32Array(vertexCap * 2);
+  geometry.setAttribute('position', new THREE.BufferAttribute(position, 3).setUsage(THREE.DynamicDrawUsage));
+  geometry.setAttribute('color', new THREE.BufferAttribute(color, 4).setUsage(THREE.DynamicDrawUsage));
+  geometry.setAttribute('aFlow', new THREE.BufferAttribute(flow, 2).setUsage(THREE.DynamicDrawUsage));
+  geometry.setDrawRange(0, 0);
+  const mesh = new THREE.Mesh(geometry, depthAware(new THREE.MeshBasicMaterial({
+    color: 0xffffff, vertexColors: true, transparent: true, opacity: 0.94,
+    depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
+  }), FLOW_WAKE, clock));
+  mesh.name = name; mesh.layers.set(LAYER.FX); mesh.renderOrder = order; mesh.frustumCulled = false;
+  return { mesh, position, color, flow, v: 0 };
+}
+
+function wwVertex(m, x, y, z, alpha, across, along) {
+  const v = m.v++, c = WW.color;
+  m.position[v * 3] = x; m.position[v * 3 + 1] = y; m.position[v * 3 + 2] = z;
+  m.color[v * 4] = c[0]; m.color[v * 4 + 1] = c[1]; m.color[v * 4 + 2] = c[2]; m.color[v * 4 + 3] = alpha;
+  m.flow[v * 2] = along; m.flow[v * 2 + 1] = across;
+}
+
+function wwFinish(m) {
+  const g = m.mesh.geometry;
+  g.setDrawRange(0, m.v);
+  g.attributes.position.needsUpdate = true; g.attributes.color.needsUpdate = true; g.attributes.aFlow.needsUpdate = true;
+  m.mesh.visible = m.v > 0;
+}
+
+// B2: per side and per anchor a fan of triangles from the hull anchor (uv 0.5, 0) to the crest polyline (uv i/(n-1), 1).
+function writeWwWaves(m, wake) {
+  m.v = 0;
+  for (let side = 0; side < 2; side++) {
+    const e = wake.waves[side], anchors = wake.anchors[side], n = e.n;
+    if (n < 2) continue;
+    for (let a = 0; a < 2; a++) {
+      const ax = anchors[a * 3], ay = anchors[a * 3 + 1], az = anchors[a * 3 + 2];
+      for (let i = 0; i < n - 1; i++) {
+        wwVertex(m, ax, ay, az, WW.waveAlphaAnchor, 0, 0);
+        for (let p = i; p <= i + 1; p++) {
+          const fade = Math.pow(Math.max(0, 1 - e.age[p] / WW.waveLife), 0.8);
+          // Across stays inside FLOW_WAKE's edge band so the sheet does not vanish at its ends.
+          wwVertex(m, e.x[p], e.y[p], e.z[p], WW.waveAlphaCrest * fade, (p / (n - 1) * 2 - 1) * 0.5, WW.flowAlong);
+        }
+      }
+    }
+  }
+  wwFinish(m);
+}
+
+// B3: rows of 3 (u 0, 0.5, 1; v = row / (n - 1)); the second UV (the noise phase) scrolls -0.04 a frame at 4.0 repeats.
+function writeWwTrack(m, wake) {
+  m.v = 0;
+  const t = wake.track, n = t.n, gain = t.alpha / NAVAL_WAKE.trackAlphaMax * WW.trackAlpha;
+  if (n >= 2 && gain > 0) {
+    const along = (r) => (r / (n - 1) * NAVAL_WAKE.trackRepeat + t.scroll) * WW.flowAlong;
+    const alpha = (r) => gain * Math.min(1, (n - 1 - r) / WW.trackTailRows);
+    const vtx = (r, c) => wwVertex(m, t.tx[r * 3 + c], t.ty[r * 3 + c], t.tz[r * 3 + c], alpha(r), c - 1, along(r));
+    for (let r = 0; r < n - 1; r++) for (let c = 0; c < 2; c++) {
+      vtx(r, c); vtx(r + 1, c); vtx(r, c + 1);
+      vtx(r, c + 1); vtx(r + 1, c); vtx(r + 1, c + 1);
+    }
+  }
+  wwFinish(m);
+}
+
 /** Visual-only feedback for the isolated naval lab; no particle state feeds the boat simulation. */
 export class NavalLabEffects {
-  constructor(scene, { mobile = false, reducedMotion = false } = {}) {
+  constructor(scene, { mobile = false, reducedMotion = false, wake = '' } = {}) {
     if (!scene?.add) throw new TypeError('NavalLabEffects requires a Three.js scene');
     this.scene = scene;
     this.mobile = !!mobile;
@@ -352,7 +424,8 @@ export class NavalLabEffects {
     this.currentVisible = false;
     this.gustVisible = false;
     this.trails = [];
-    this.spraySheets = [0, 1].map((side) => makeSpraySheet(side, this.mobile ? 6 : 9));
+    this.ww = wake === 'windwaker' ? { wake: null, rigKey: '', waves: null, track: null } : null;
+    this.spraySheets = this.ww ? [] : [0, 1].map((side) => makeSpraySheet(side, this.mobile ? 6 : 9));
     for (const sheet of this.spraySheets) scene.add(sheet.mesh);
     this.pool = new ParticlePool(this.mobile ? 144 : 288, { name: 'naval-lab-spray' });
     this.pool.budget = this.mobile ? 0.75 : 1;
@@ -383,10 +456,16 @@ export class NavalLabEffects {
     scene.add(this.chevrons.mesh);
     writeChevrons(this.chevrons, CURRENT_LANES, 0, this.reducedMotion);
 
-    for (let side = 0; side < 2; side++) {
+    for (let side = 0; side < 2 && !this.ww; side++) {
       const ribbon = makeRibbon(side, this.wakeCapacity, this.flowClock);
       scene.add(ribbon.mesh);
       this.trails.push(ribbon);
+    }
+    if (this.ww) {
+      const key = this.mobile ? 'mobile' : 'desktop';
+      this.ww.waves = makeWwMesh('naval-ww-waves', 4 * (WW.waveCap[key] - 1) * 3, 6, this.flowClock);
+      this.ww.track = makeWwMesh('naval-ww-track', (WW.trackRows[key] - 1) * 12, 5, this.flowClock);
+      scene.add(this.ww.waves.mesh, this.ww.track.mesh);
     }
     for (const mesh of [this.foam.mesh, this.chevrons.mesh]) depthAware(mesh.material);
     this.reset();
@@ -410,6 +489,10 @@ export class NavalLabEffects {
       trail.mesh.geometry.attributes.position.needsUpdate = true;
     }
     for (const sheet of this.spraySheets) sheet.mesh.visible = false;
+    if (this.ww) {
+      this.ww.wake = null; this.ww.rigKey = '';
+      for (const m of [this.ww.waves, this.ww.track]) { m.v = 0; wwFinish(m); }
+    }
     if (this.pool) {
       this.pool.alive.fill(0); this.pool.data.fill(0); this.pool.update(0);
     }
@@ -429,8 +512,10 @@ export class NavalLabEffects {
   event(kind, state, rig, location = null) {
     if (this.disposed) return false;
     const label = String(kind || '').toLowerCase().replace(/[^a-z]/g, '');
+    // WW landing burst (B4): queues its puffs at the bow point; nothing calls it yet (N3, the hoist and jump).
+    if (label === 'splashdown') { if (!this.ww?.wake) return false; landing(this.ww.wake, location?.vy); return true; }
     let strength = 0, count = 0;
-    const impact = label.includes('impact') || label.includes('destroy');
+    const impact =label.includes('impact') || label.includes('destroy');
     if (impact) { strength = 0.95; count = this.mobile ? (this.reducedMotion ? 5 : 14) : (this.reducedMotion ? 8 : 26); }
     else if (label.includes('perfect')) { strength = 1; count = this.mobile ? (this.reducedMotion ? 6 : 18) : (this.reducedMotion ? 10 : 32); }
     else if (label.includes('captur') || label.includes('success')) { strength = 0.8; count = this.mobile ? (this.reducedMotion ? 5 : 11) : 20; }
@@ -485,7 +570,39 @@ export class NavalLabEffects {
     if (emitted) this.wakeCount++;
   }
 
-  update(dt, { state, rig, wind, gust, activity, current = null, currents = false, paused = false } = {}) {
+  // PT20c: step WW's wake at the hull's WW origin (bow tip aligned with ours), refill the sheets, spawn puffs.
+  updateWw(step, state, rig, x, z, yaw, hull) {
+    const ww = this.ww, length = Number(rig.length) || 4, beam = Number(rig.beam) || 2;
+    const key = length + '|' + beam;
+    if (!ww.wake) { ww.wake = createWake(rig, { mobile: this.mobile }); ww.rigKey = key; }
+    else if (ww.rigKey !== key) { setWakeRig(ww.wake, rig); ww.rigKey = key; }
+    const wake = ww.wake, fx = Math.sin(yaw), fz = Math.cos(yaw);
+    // WW's boat origin sits 150 u behind its bow tip; put the bow tip on the raft's bow.
+    const shift = length * 0.5 - NAVAL_WAKE.bowAhead * wake.k;
+    const live = hull?.started ? hull.out : null;
+    stepWake(wake, { dt: step, x: x + fx * shift, z: z + fz * shift, yaw, vx: state.vx, vz: state.vz,
+      roll: live?.roll || 0, hullY: live ? live.y : undefined, surfaceAt: seaSurfaceY });
+    writeWwWaves(ww.waves, wake);
+    writeWwTrack(ww.track, wake);
+    const sp = wake.splash, burst = Math.min(wake.burst, 60), bow = wake.bow, rnd = this.pool.random;
+    const puffs = Math.min(sp.pending, 24), unit = wake.scale;
+    sp.pending = 0; wake.burst = 0;
+    if (this.reducedMotion) return;
+    const speed = Math.hypot(Number(state.vx) || 0, Number(state.vz) || 0), sideX = Math.cos(yaw), sideZ = -Math.sin(yaw);
+    for (let i = 0; i < puffs; i++) {
+      const lateral = (rnd() * 2 - 1) * 1.3, up = sp.speed * WW_UNIT * NAVAL_WAKE.frameRate * 0.5 + 0.5 + rnd() * 0.8;
+      this.pool.spawn(bow.x, bow.y + 0.06, bow.z, sideX * lateral + fx * speed * 0.5, up, sideZ * lateral + fz * speed * 0.5, {
+        life: WW.puffLife, size: WW.puffSize * (0.5 + 0.5 * sp.scale) * unit, size1: 0.03, color: WW.color, alpha: 0.9,
+        gravity: 9, drag: 1.6 });
+    }
+    for (let i = 0; i < burst; i++) {
+      const angle = i / burst * Math.PI * 2 + rnd() * 0.4, out = 1.2 + rnd() * 2;
+      this.pool.spawn(bow.x, bow.y + 0.06, bow.z, Math.cos(angle) * out, 2.5 + rnd() * 2, Math.sin(angle) * out, {
+        life: WW.puffLife * 1.3, size: WW.puffSize * 1.4 * unit, size1: 0.04, color: WW.color, alpha: 0.95, gravity: 9, drag: 1.4 });
+    }
+  }
+
+  update(dt, { state, rig, wind, gust, activity, current = null, currents = false, paused = false, hull = null } = {}) {
     if (this.disposed) return;
     if (paused) return;
     const step = clamp(dt, 0, 0.05);
@@ -517,7 +634,8 @@ export class NavalLabEffects {
         if (sheet.mesh.visible) updateSpraySheet(sheet, x, z, yaw, Number(rig.length) || 4, Number(rig.beam) || 2,
           clamp((speed - 1.8) / 7, 0, 1), clamp(Number(state.omega) || 0, -1.2, 1.2), boostActive, this.time);
       }
-      if (speed > 0.4 && this.wakeClock >= (this.mobile ? 0.17 : 0.105)) {
+      if (this.ww) this.updateWw(step, state, rig, x, z, yaw, hull);
+      if (!this.ww && speed > 0.4 && this.wakeClock >= (this.mobile ? 0.17 : 0.105)) {
         this.wakeClock = 0;
         const speedFactor = Math.min(1, speed / 4), length = Number(rig.length) || 4, beam = Number(rig.beam) || 2;
         this.pushWake(x, z, yaw, speedFactor, length, beam);
@@ -565,7 +683,10 @@ export class NavalLabEffects {
   diagnostics() {
     let activeParticles = 0;
     for (let i = 0; i < this.pool.alive.length; i++) activeParticles += this.pool.alive[i] ? 1 : 0;
-    return { disposed: this.disposed, poolCapacity: this.pool.cap, activeParticles,
+    const wwWake = this.ww?.wake, ww = this.ww ? {
+      wwWaveParticles: wwWake ? wwWake.waves[0].n + wwWake.waves[1].n : 0, wwTrackRows: wwWake ? wwWake.track.n : 0,
+      wwSplashScale: wwWake ? wwWake.splash.scale : 0 } : null;
+    return { ...ww, disposed: this.disposed, poolCapacity: this.pool.cap, activeParticles,
       wakeSamples: Math.max(0, ...this.trails.map((trail) => trail.history.length)), wakeEmissions: this.wakeCount,
       wakeCapacity: this.wakeCapacity, wakeSeconds: WAKE_SECONDS,
       wakeVertices: this.trails.reduce((n, trail) => n + trail.mesh.geometry.drawRange.count, 0),
@@ -583,6 +704,10 @@ export class NavalLabEffects {
     this.scene.remove(this.pool.points, this.foam.mesh, this.currentBand, this.chevrons.mesh);
     this.scene.remove(...this.trails.map((t) => t.mesh));
     this.scene.remove(...this.spraySheets.map((sheet) => sheet.mesh));
+    if (this.ww) {
+      for (const m of [this.ww.waves, this.ww.track]) { this.scene.remove(m.mesh); m.mesh.geometry.dispose(); m.mesh.material.dispose(); }
+      this.ww.wake = null;
+    }
     this.pool.points.geometry.dispose(); this.pool.mat.dispose();
     this.foam.mesh.geometry.dispose(); this.foam.mesh.material.dispose();
     this.currentBand.geometry.dispose(); this.currentBand.material.dispose();
