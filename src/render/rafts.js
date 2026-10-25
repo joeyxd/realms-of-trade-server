@@ -10,6 +10,7 @@ import { assets } from './assets/registry.js';
 import { RAFT_ATLAS_ID, surface, materialKey, mapRaftUV } from './raftMaterials.js';
 import { isRaftFireTuple } from './personalLantern.js';
 import { createHullMotion, stepHullMotion, createRiderMotion, stepRiderMotion } from './naval/hullMotion.js';
+import { createSailCloth, stepSailCloth } from './naval/sailCloth.js';
 
 const WOOD = surface('wood', 0xb5803f), WOOD_DARK = surface('wood', 0x704522, 0xd5bfa5), WOOD_LIGHT = surface('wood', 0xd6a565);
 const IRON = surface('iron', 0x626b72), IRON_LIGHT = surface('iron', 0xb1b9b8, 0xffecd2);
@@ -258,12 +259,21 @@ export class RaftLayer {
   applySailing(view, state) {
     if (!this.sailingRig || !state) return null;
     const active = !!state.active;
-    const dt = clamp(Math.abs(cleanNum(state.dt)), 0, 0.1);
+    const dt = clamp(Math.abs(cleanNum(state.dt)), 0, 1);
     for (const sail of view.sails) {
-      const target = active ? wrapAngle(cleanNum(state.windYaw) - view.root.rotation.y) : 0;
-      const alpha = dt > 0 ? 1 - Math.exp(-8 * dt) : 0;
-      sail.pivot.rotation.y = wrapAngle(sail.pivot.rotation.y + wrapAngle(target - sail.pivot.rotation.y) * alpha);
-      sail.cloth.scale.z = 1 + (active ? 0.34 * clamp(cleanNum(state.boost), 0, 1) : 0);
+      const input = sail.input;
+      input.dt = dt; input.yaw = view.root.rotation.y; input.windYaw = state.windYaw;
+      input.strength = state.strength; input.sailOn = state.sailOn;
+      const out = stepSailCloth(sail.motion, input), geometry = sail.cloth.geometry;
+      sail.pivot.rotation.y = Math.PI / 2 + out.boomAngle;
+      const p = geometry.attributes.position, normal = geometry.attributes.normal, rest = sail.motion.rest;
+      for (let i = 0; i < p.count; i++) {
+        const j = i * 3;
+        p.setXYZ(i, rest[j] - sail.motion.width / 2 + out.offsets[j], rest[j + 1] + out.offsets[j + 1], out.offsets[j + 2]);
+        normal.setXYZ(i, out.normals[j], out.normals[j + 1], out.normals[j + 2]);
+      }
+      p.needsUpdate = normal.needsUpdate = true;
+      geometry.computeBoundingSphere();
     }
 
     const helm = view.helm;
@@ -335,12 +345,12 @@ export class RaftLayer {
     node.rotation.x = 0; node.rotation.z = 0;
   }
 
-  setSailing(id, { active = false, steer = 0, windYaw = 0, boost = 0, dt = 0, pilot = null } = {}) {
+  setSailing(id, { active = false, sailOn = active, steer = 0, windYaw = 0, strength = 0, boost = 0, dt = 0, pilot = null } = {}) {
     if (!this.sailingRig) return null;
     const view = this.views.get(String(id));
     if (!view) return null;
-    const state = { active: !!active, steer: clamp(cleanNum(steer), -1, 1),
-      windYaw: cleanNum(windYaw), boost: clamp(cleanNum(boost), 0, 1), dt: clamp(Math.abs(cleanNum(dt)), 0, 0.1),
+    const state = { active: !!active, sailOn: !!sailOn, steer: clamp(cleanNum(steer), -1, 1),
+      windYaw: cleanNum(windYaw), strength: clamp(cleanNum(strength), 0, 1), boost: clamp(cleanNum(boost), 0, 1), dt: clamp(Math.abs(cleanNum(dt)), 0, 1),
       pilot: pilot && ['x', 'y', 'z', 'f'].every((key) => Number.isFinite(pilot[key])) ? { ...pilot } : null };
     return this.applySailing(view, state);
   }
@@ -604,12 +614,25 @@ export class RaftLayer {
             const pivot = new THREE.Group();
             pivot.name = `raft:sail-yaw:${x}:${z}:${level}`;
             pivot.position.set(mastX, sailY, cz);
-            const clothGeometry = sail.clone();
+            pivot.rotation.y = Math.PI / 2;
+            const motion = createSailCloth(sailW, sailH), indices = [], uv = new Float32Array(84 * 2);
+            const positions = motion.rest.slice();
+            for (let r = 0; r < 12; r++) for (let c = 0; c < 7; c++) {
+              const i = r * 7 + c;
+              positions[i * 3] -= sailW / 2;
+              uv[i * 2] = c / 6; uv[i * 2 + 1] = r / 11;
+              if (r < 11 && c < 6) indices.push(i, i + 1, i + 7, i + 1, i + 8, i + 7);
+            }
+            const clothGeometry = new THREE.BufferGeometry();
+            clothGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+            clothGeometry.setAttribute('normal', new THREE.BufferAttribute(motion.out.normals.slice(), 3).setUsage(THREE.DynamicDrawUsage));
+            clothGeometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+            clothGeometry.setIndex(indices);
             this.mapSurfaceUV(clothGeometry, 'cloth', { grain: 'raw', variant: Math.round(x + z * 11) });
             ownedGeometries.push(clothGeometry);
             const cloth = new THREE.Mesh(clothGeometry, this.material(CLOTH));
             cloth.name = 'raft:sail-cloth-moving';
-            cloth.position.set(sailW * 0.48, 0, 0.02);
+            cloth.position.set(sailW / 2, 0, 0.02);
             cloth.castShadow = true; cloth.receiveShadow = true;
             cloth.userData.nm = this.clothNm; cloth.userData.raftSurface = 'cloth';
             pivot.add(cloth);
@@ -670,7 +693,7 @@ export class RaftLayer {
             eyeletMesh.userData.nm = this.nm; eyeletMesh.userData.raftSurface = 'iron';
             pivot.add(eyeletMesh);
             visual.add(pivot);
-            sails.push({ pivot, cloth });
+            sails.push({ pivot, cloth, motion, input: { dt: 0, yaw: 0, windYaw: 0, strength: 0, sailOn: false } });
           }
           for (const yy of [0.26, mastH * 0.61, mastH - 0.1]) {
             for (const off of [-0.035, 0.035]) ring(ROPE, 0.115, 0.025, mastX, y + yy + off, cz, 0, Math.PI / 2);

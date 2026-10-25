@@ -61,10 +61,14 @@ test('opt-in raft sailing rigs animate wind, boost and tiller while normal layer
       'the rudder must reach the water below the deck rather than stop on its planks');
     assert.ok(Math.abs(Math.hypot(first.gripWorld.left.x - first.gripWorld.right.x,
       first.gripWorld.left.y - first.gripWorld.right.y, first.gripWorld.left.z - first.gripWorld.right.z) - 0.08) < 1e-6);
-    const second = layer.setSailing(record.id, { active: true, steer: 1, windYaw: -Math.PI / 2, boost: 1, dt: 0.1, pilot });
+    // WW boom (T-1025-09): it settles at +-30 degrees on the side the wind blows toward, smoothed over about a second.
+    let settled = first;
+    for (let i = 0; i < 30; i++) settled = layer.setSailing(record.id, { active: true, steer: 0, windYaw: Math.PI / 2, boost: 0.5, dt: 0.1, pilot });
+    let second = settled;
+    for (let i = 0; i < 30; i++) second = layer.setSailing(record.id, { active: true, steer: 1, windYaw: -Math.PI / 2, boost: 1, dt: 0.1, pilot });
     assert.ok(Math.abs(second.steerAngle) > Math.abs(first.steerAngle));
-    assert.ok(Math.abs(THREE.MathUtils.euclideanModulo(second.sailAngles[0] - first.sailAngles[0] + Math.PI,
-      Math.PI * 2) - Math.PI) > 0.1);
+    assert.ok(Math.abs(Math.abs(THREE.MathUtils.euclideanModulo(second.sailAngles[0] - settled.sailAngles[0] + Math.PI,
+      Math.PI * 2) - Math.PI) - Math.PI / 3) < 0.05, 'the boom crosses from one 30-degree side to the other');
     const stopped = layer.setSailing(record.id, { active: false, windYaw: 0, dt: 0.1, pilot });
     assert.equal(view.helm.visible, false);
     assert.equal(stopped.steerAngle, 0);

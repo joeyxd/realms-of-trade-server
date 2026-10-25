@@ -362,6 +362,8 @@ export class LiveNavigationView {
 
   updateAllHelms(records, dt, body, c) {
     this.helmVisuals.clear();
+    const samples = this.sailSamples ||= new Map();
+    for (const id of samples.keys()) if (!records.some((r) => String(r.id) === id)) samples.delete(id);
     for (const raft of records) {
       if (!raft?.helm) continue;
       const ownActive = !!(body && String(c.naval.shipId) === String(raft.id));
@@ -371,9 +373,18 @@ export class LiveNavigationView {
       const anchor = raft.helm;
       let pilot = null;
       try { pilot = pilotPoint(pose, anchor); } catch { /* Ignore an incomplete public anchor. */ }
-      const visual = this.world.rafts?.setSailing?.(raft.id, { active: true,
+      // Public records carry pose, not velocity or sail lever. Measure each remote hull independently.
+      const id = String(raft.id), last = samples.get(id);
+      const speed = last && dt > 0 ? Math.hypot(raft.x - last.x, raft.z - last.z) / dt : 0;
+      if (last) { last.x = raft.x; last.z = raft.z; } else samples.set(id, { x: raft.x, z: raft.z });
+      const atHelm = Array.isArray(raft.crew) ? raft.crew.some((m) => m.mode === 'helm') : !!raft.pilot;
+      const local = String(c.naval?.shipId) === id || (c.deck?.active && String(c.deck.shipId) === id);
+      const sailOn = local ? ownActive && !c.deck?.active && this.sail > 0 && !activeBody?.parked
+        : atHelm && speed > 0.3;
+      const visual = this.world.rafts?.setSailing?.(raft.id, { active: true, sailOn,
         steer: ownActive && !c.deck?.active ? this.lastAxes?.steer || 0 : 0,
-        windYaw: activeBody?.wind?.yaw || c.naval?.wind?.yaw || 0,
+        windYaw: activeBody?.wind?.yaw ?? c.naval?.wind?.yaw ?? 0,
+        strength: activeBody?.wind?.strength ?? c.naval?.wind?.strength ?? 0,
         boost: activeBody && activeBody.state.tick < activeBody.activity?.boostUntil
           ? clamp((activeBody.activity.multiplier - 1) / 1.5, 0, 1) : 0, dt, pilot });
       if (visual) this.helmVisuals.set(String(raft.id), visual);
