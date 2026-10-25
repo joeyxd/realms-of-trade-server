@@ -16,12 +16,14 @@ import { createLocalOpenAIMind, createEndpointOpenAIMind } from './local-openai-
 import { WsTransport } from '../../src/net/wsTransport.js';
 import { PresenceDriver } from './presence-driver.mjs';
 import { PRESENCE_ORDERS } from './contract.mjs';
+import { summaryCandidates, automaticSummarySources, journalUsage } from './companion-continuity.mjs';
 
 const fail = why => ({ ok: false, why });
 const exact = (value, keys) => value && typeof value === 'object' && !Array.isArray(value) &&
   Object.getPrototypeOf(value) === Object.prototype && Reflect.ownKeys(value).length === keys.length &&
   keys.every(key => Object.hasOwn(value, key) && Object.hasOwn(Object.getOwnPropertyDescriptor(value, key), 'value'));
 const MAX_MINUTES = 120;
+const HOSTED_SUMMARY_MIN_EPISODES = 6;
 const MAX_CLOCK_SKEW_MS = 30_000;
 const MAX_TOKEN_TTL_MS = 60 * 60_000 + MAX_CLOCK_SKEW_MS;
 const DEFAULTS = Object.freeze({ baseUrl: 'http://127.0.0.1:8080/v1', modelId: 'qwen3.8-flash-next-coder-iq1_m', thinkingMode: 'server_default' });
@@ -116,7 +118,7 @@ export class PairedCompanion {
   #onStatus; #onFeedback; #hosted = false;
   #runner = null; #mind = null; #driver = null; #budget = null; #scope = null; #record = null; #ownerPeer = null; #latestFiles = null; #contextRevision = 0; #state = 'stopped';
   #closed = false; #generation = 0; #queue = Promise.resolve(); #prepareTail = Promise.resolve(); #seen = new Set(); #waiters = new Set();
-  #stopWaiters = new Set();
+  #stopWaiters = new Set(); #summaryBlocked = false; #lastSummary = null;
   constructor({ directory, url, baseUrl = DEFAULTS.baseUrl, modelId = DEFAULTS.modelId, thinkingMode = DEFAULTS.thinkingMode,
     maxCalls = 8, maxTokens = 1_000_000, claim, runnerFactory, adapterFactory, onStatus = () => {}, onFeedback = () => {},
     presenceDriverFactory = options => new PresenceDriver(options), hosted = null } = {}) {
@@ -162,6 +164,18 @@ export class PairedCompanion {
   get state() { return this.#state; }
   get scope() { return this.#scope && structuredClone(this.#scope); }
   get budget() { return this.#budget?.snapshot ?? null; }
+  get memoryLoop() {
+    if (this.#state !== 'ready') return null;
+    const budget = this.#budget.snapshot, entries = budget.entries.filter(entry => entry.state !== 'cancelled');
+    const settled = entries.filter(entry => entry.state === 'settled');
+    const { episodes, summaries, bytes, maxBytes } = journalUsage(this.#latestFiles);
+    return { usage: { calls: entries.length, maxCalls: budget.limits.maxCalls,
+      inputTokens: settled.reduce((sum, entry) => sum + (entry.usage?.inputTokens ?? 0), 0),
+      outputTokens: settled.reduce((sum, entry) => sum + (entry.usage?.outputTokens ?? 0), 0),
+      summaries: entries.filter(entry => entry.kind === 'compaction').length, expiresAtMs: budget.persistence.expiresAtMs },
+      memory: { episodes, summaries, bytes, maxBytes }, lastSummary: this.#lastSummary && { ...this.#lastSummary },
+      autoSummary: this.#summaryBlocked ? 'blocked' : 'ready' };
+  }
   get diagnostics() { return { state: this.#state, scope: this.scope, sessionId: this.#runner?.grant?.scope?.sessionId ?? null,
     mind: this.#mind?.state ?? null, budget: this.budget }; }
   waitForStop() { return this.#state !== 'ready' ? Promise.resolve() : new Promise(resolve => this.#stopWaiters.add(resolve)); }
@@ -235,6 +249,7 @@ export class PairedCompanion {
     if (this.#closed) return fail('paired_companion_closed');
     if (this.#state !== 'stopped' || this.#runner) return fail('session_active');
     if (!/^[a-f0-9]{64}$/.test(code ?? '')) return fail('invalid_pair_code');
+    this.#summaryBlocked = false; this.#lastSummary = null;
     this.#state = 'pairing'; const generation = ++this.#generation;
     let runner = null, mind = null, driver = null;
     const disposeAttempt = () => {
@@ -379,8 +394,39 @@ export class PairedCompanion {
       try {
         const remembered = await this.#mind.remember();
         if (!remembered?.ok) this.#status('memory', 'failed');
+        else if (this.#hosted) await this.#automaticSummary(generation);
       } catch { this.#status('memory', 'failed'); }
     }
+  }
+  async #automaticSummary(generation) {
+    const current = () => generation === this.#generation && this.#state === 'ready';
+    if (!current()) return;
+    const latest = await loadOwnerFiles({ directory: this.#directory, scope: this.#scope });
+    if (!current() || !latest.ok) return;
+    this.#latestFiles = latest;
+    const budget = this.#budget.snapshot, nowMs = Date.now();
+    if (this.#summaryBlocked || budget.persistence.admissionWhy || budget.persistence.lastError ||
+        budget.entries.some(entry => ['reserved', 'inflight', 'unknown'].includes(entry.state)) ||
+        budget.limits.maxCalls - budget.entries.filter(entry => entry.state !== 'cancelled').length < 2 ||
+        summaryCandidates(latest.files.memory.journal, nowMs).filter(entry => !entry.summarized).length < HOSTED_SUMMARY_MIN_EPISODES) return;
+    const sourceIds = automaticSummarySources(this.#snapshot(), nowMs);
+    if (sourceIds.length < 2) return;
+    let result, written = false;
+    try {
+      result = await this.#mind.compactMemory({ sourceIds });
+      if (!current()) return;
+      const refreshed = await loadOwnerFiles({ directory: this.#directory, scope: this.#scope });
+      if (!current()) return;
+      if (refreshed.ok) {
+        this.#latestFiles = refreshed;
+        written = result?.memory?.entryKind === 'summary' && refreshed.files.memory.journal.entries.some(entry =>
+          entry.kind === 'summary' && entry.id === result.memory.entryId);
+      }
+    } catch { result = fail('summary_failed'); }
+    if (!current()) return;
+    const ok = result?.ok === true && written;
+    this.#lastSummary = { ok, atMs: Date.now(), reason: 'context_size', ...(!ok ? { why: result?.why ?? 'summary_not_written' } : {}) };
+    if (!ok) { this.#summaryBlocked = true; this.#status('memory', 'summary_failed'); }
   }
   // The body order rides on the accepted reply of this owner turn. Not awaited: the driver paces,
   // supersedes and reports it, and the server validates and executes it.

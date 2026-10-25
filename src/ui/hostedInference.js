@@ -7,6 +7,9 @@ export const COPY = {
     probe: 'Probar modelos', edit: 'Editar', remove: 'Borrar', confirm: 'Confirmar borrado', noKey: 'sin clave', keyHint: hint => `•••• ${hint}`,
     catalog: (count, date) => `${count} modelos · Catálogo: ${date}`, noCatalog: 'sin consultar',
     usage: (r, i, o) => `${r} solicitudes · ${i} tokens de entrada · ${o} tokens de salida`,
+    sessionUsage: (c, m, i, o, s, min) => `Esta sesión: ${c}/${m} llamadas · ${i} tokens de entrada · ${o} de salida · ${s} resúmenes · se renueva en ${min} min`,
+    memoryUsage: (e, s, kb, max) => `Memoria: ${e} recuerdos · ${s} resúmenes · ${kb} KB de ${max} KB`,
+    summaryBlocked: 'El resumen automático se detuvo en esta sesión.',
     model: 'Modelo', connection: 'Conexión', choose: 'Elige una conexión', prompt: 'Mensaje de prueba (1–2000 caracteres)', test: 'Probar',
     result: 'Respuesta de prueba', detail: (ms, model) => `${ms} ms · Modelo servido: ${model}`,
     mismatch: 'Aviso: el modelo servido es distinto del solicitado.', companion: n => `Compañero ${n}`,
@@ -33,6 +36,9 @@ export const COPY = {
     probe: 'List models', edit: 'Edit', remove: 'Delete', confirm: 'Confirm deletion', noKey: 'no key', keyHint: hint => `•••• ${hint}`,
     catalog: (count, date) => `${count} models · Catalog: ${date}`, noCatalog: 'not queried',
     usage: (r, i, o) => `${r} requests · ${i} input tokens · ${o} output tokens`,
+    sessionUsage: (c, m, i, o, s, min) => `This session: ${c}/${m} calls · ${i} input tokens · ${o} output · ${s} summaries · renews in ${min} min`,
+    memoryUsage: (e, s, kb, max) => `Memory: ${e} memories · ${s} summaries · ${kb} KB of ${max} KB`,
+    summaryBlocked: 'Automatic summary stopped for this session.',
     model: 'Model', connection: 'Connection', choose: 'Choose a connection', prompt: 'Test prompt (1–2000 characters)', test: 'Test',
     result: 'Test reply', detail: (ms, model) => `${ms} ms · Served model: ${model}`,
     mismatch: 'Warning: the served model differs from the requested model.', companion: n => `Companion ${n}`,
@@ -190,6 +196,15 @@ export class HostedInferenceUI {
   companionNode(row, index) {
     const copy = this.text(), card = node('article', 'mn-hosted-card'); card.dataset.character = row.character;
     card.append(node('h4', '', row.name || copy.companion(index + 1)), node('span', 'mn-hosted-badge', copy[row.status === 'stopped' ? 'stoppedStatus' : row.status] || copy.failed));
+    if (row.usage) {
+      const u = row.usage, minutes = Math.max(0, Math.ceil((u.expiresAtMs - Date.now()) / 60000));
+      card.append(node('p', 'mn-hosted-note', copy.sessionUsage(u.calls, u.maxCalls, u.inputTokens, u.outputTokens, u.summaries, minutes)));
+    }
+    if (row.memory) {
+      const m = row.memory;
+      card.append(node('p', 'mn-hosted-note', copy.memoryUsage(m.episodes, m.summaries, Math.ceil(m.bytes / 1024), Math.ceil(m.maxBytes / 1024))));
+    }
+    if (row.autoSummary === 'blocked') card.append(node('p', 'mn-hosted-note', copy.summaryBlocked));
     const choice = this.choices.get(row.character) || { endpointId: row.endpointId || this.state.endpoints[0]?.id || '', modelId: row.modelId || '' };
     this.choices.set(row.character, choice);
     const endpoint = this.state.endpoints.find(item => item.id === choice.endpointId), availableModels = models(endpoint);

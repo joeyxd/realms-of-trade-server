@@ -131,10 +131,13 @@ export class HostedInferenceService {
     const view = (await this.center(owner)).view();
     const companions = new Map();
     for (const row of this.host.agentControl?.listOwned(owner) ?? []) companions.set(row.characterKey, { character: row.characterKey,
-      name: this.nameOf(owner, row.characterKey), status: 'stopped', endpointId: null, modelId: null, error: null });
+      name: this.nameOf(owner, row.characterKey), status: 'stopped', endpointId: null, modelId: null, error: null,
+      usage: null, memory: null, lastSummary: null, autoSummary: null });
     const entry = this.entries.get(owner);
+    const loop = entry?.status === 'running' ? entry.controller?.memoryLoop : null;
     if (entry) companions.set(entry.character, { character: entry.character, name: entry.name ?? this.nameOf(owner, entry.character),
-      status: entry.status, endpointId: entry.endpointId, modelId: entry.modelId, error: entry.error });
+      status: entry.status, endpointId: entry.endpointId, modelId: entry.modelId, error: entry.error,
+      usage: loop?.usage ?? null, memory: loop?.memory ?? null, lastSummary: loop?.lastSummary ?? null, autoSummary: loop?.autoSummary ?? null });
     return { available: true, reason: null,
       endpoints: view.endpoints.map(item => ({ id: item.id, label: item.label, baseUrl: item.baseUrl, keyHint: item.keyHint,
         defaultModel: item.defaultModel, models: item.models, catalogUpdatedAt: item.catalogUpdatedAt, catalogError: item.catalogError,

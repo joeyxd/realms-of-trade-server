@@ -95,3 +95,26 @@ test('the game opens the hosted editor and wires its authenticated lifecycle', (
   assert.match(source, /hostedInference\.disconnect\(\)/);
   assert.doesNotMatch(source, /new InferenceConfigUI/);
 });
+
+
+test('companion session usage, memory and blocked automation render in Spanish and English', () => {
+  const f = setup(), now = Date.now();
+  try {
+    f.publish({ companions: [{ ...ready.companions[0],
+      usage: { calls: 7, maxCalls: 8, inputTokens: 700, outputTokens: 140, summaries: 1, expiresAtMs: now + 61000 },
+      memory: { episodes: 6, summaries: 1, bytes: 2049, maxBytes: 1048576 }, autoSummary: 'blocked' }] });
+    assert.ok(f.ui.body.textContent.includes('Esta sesión: 7/8 llamadas · 700 tokens de entrada · 140 de salida · 1 resúmenes · se renueva en 2 min'));
+    assert.ok(f.ui.body.textContent.includes('Memoria: 6 recuerdos · 1 resúmenes · 3 KB de 1024 KB'));
+    assert.ok(f.ui.body.textContent.includes('El resumen automático se detuvo en esta sesión.'));
+    f.ui.setLanguage('en');
+    assert.ok(f.ui.body.textContent.includes('This session: 7/8 calls · 700 input tokens · 140 output · 1 summaries · renews in 2 min'));
+    assert.ok(f.ui.body.textContent.includes('Memory: 6 memories · 1 summaries · 3 KB of 1024 KB'));
+    assert.ok(f.ui.body.textContent.includes('Automatic summary stopped for this session.'));
+    const notes = f.ui.body.querySelectorAll().filter(el => el.className === 'mn-hosted-note');
+    assert.ok(notes.some(el => el.textContent.startsWith('This session:')));
+    f.publish({ companions: [{ ...ready.companions[0], usage: { calls: 0, maxCalls: 8, inputTokens: 0,
+      outputTokens: 0, summaries: 0, expiresAtMs: now - 1 }, autoSummary: 'ready' }] });
+    assert.match(f.ui.body.textContent, /renews in 0 min/); assert.doesNotMatch(f.ui.body.textContent, /Memory:|Automatic summary stopped/);
+    f.publish({ companions: [ready.companions[0]] }); assert.doesNotMatch(f.ui.body.textContent, /This session:|Memory:/);
+  } finally { f.restore(); }
+});

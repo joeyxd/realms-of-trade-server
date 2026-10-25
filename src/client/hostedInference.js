@@ -4,6 +4,11 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const empty = (status = 'offline') => ({ status, available: false, reason: null, endpoints: [],
   companions: [], limits: { maxEndpoints: 0, maxRunning: 0 }, pendingOps: [], message: '', test: null });
 const pick = (value, keys) => Object.fromEntries(keys.map(key => [key, structuredClone(value?.[key] ?? null)]));
+const numericBlock = (value, keys) => value && keys.every(key => Number.isSafeInteger(value[key]) &&
+  (key === 'expiresAtMs' || value[key] >= 0)) ? pick(value, keys) : null;
+const lastSummary = value => value && typeof value.ok === 'boolean' && Number.isSafeInteger(value.atMs) && value.atMs >= 0 &&
+  typeof value.reason === 'string' && (value.ok || typeof value.why === 'string')
+  ? pick(value, ['ok', 'atMs', 'reason', ...(value.ok ? [] : ['why'])]) : null;
 // Project only public wire fields; never retain endpoint credentials, including unexpected server fields.
 function project(value) {
   if (!value || typeof value.available !== 'boolean' || !Array.isArray(value.endpoints) || !Array.isArray(value.companions)) return null;
@@ -11,7 +16,10 @@ function project(value) {
     endpoints: value.endpoints.map(row => ({ ...pick(row, ['id', 'label', 'baseUrl', 'keyHint', 'defaultModel', 'catalogUpdatedAt', 'catalogError']),
       models: Array.isArray(row.models) ? row.models.filter(id => typeof id === 'string') : [],
       usage: pick(row.usage, ['requests', 'failures', 'promptTokens', 'completionTokens']) })),
-    companions: value.companions.map(row => pick(row, ['character', 'name', 'status', 'endpointId', 'modelId', 'error'])),
+    companions: value.companions.map(row => ({ ...pick(row, ['character', 'name', 'status', 'endpointId', 'modelId', 'error']),
+      usage: numericBlock(row.usage, ['calls', 'maxCalls', 'inputTokens', 'outputTokens', 'summaries', 'expiresAtMs']),
+      memory: numericBlock(row.memory, ['episodes', 'summaries', 'bytes', 'maxBytes']), lastSummary: lastSummary(row.lastSummary),
+      autoSummary: ['ready', 'blocked'].includes(row.autoSummary) ? row.autoSummary : null })),
     limits: pick(value.limits, ['maxEndpoints', 'maxRunning']) };
 }
 

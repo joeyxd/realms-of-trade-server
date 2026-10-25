@@ -255,3 +255,20 @@ test('follow-ups: the /status flag, the hosted socket token, 200-character model
   assert.deepEqual(revoked, [OWNER], 'a code this start issued is revoked');
   assert.equal(lone.entries.size, 0);
 });
+
+
+test('state exposes memory loop only on the running controller and null on stopped rows', async t => {
+  const dir = await tempDir(t), host = { log() {}, agentControl: { listOwned: () => [{ characterKey: 'c1' }, { characterKey: 'c2' }] } };
+  const service = new HostedInferenceService(host, { enabled: true, key: KEY, accounts: OWNER, dir });
+  const loop = { usage: { calls: 2, maxCalls: 8, inputTokens: 200, outputTokens: 40, summaries: 1, expiresAtMs: 1900000000000 },
+    memory: { episodes: 6, summaries: 1, bytes: 4096, maxBytes: 1048576 },
+    lastSummary: { ok: true, atMs: 1800000000000, reason: 'context_size' }, autoSummary: 'ready' };
+  const entry = { character: 'c1', status: 'running', name: 'Brisa', endpointId: 'e1', modelId: 'm1', error: null, controller: { memoryLoop: loop } };
+  service.entries.set(OWNER, entry);
+  const rows = (await service.state(OWNER)).companions;
+  for (const key of Object.keys(loop)) { assert.deepEqual(rows[0][key], loop[key]); assert.equal(rows[1][key], null); }
+  entry.status = 'stopped';
+  for (const key of Object.keys(loop)) assert.equal((await service.state(OWNER)).companions[0][key], null);
+  entry.status = 'running'; entry.controller = null;
+  for (const key of Object.keys(loop)) assert.equal((await service.state(OWNER)).companions[0][key], null);
+});

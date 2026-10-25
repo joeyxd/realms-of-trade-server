@@ -67,3 +67,29 @@ test('timeouts are uncertain and late replies cannot confirm a result; offline r
     assert.equal(f.client.start('c', 'e', 'm'), false);
   } finally { f.client.destroy(); }
 });
+
+
+test('companion memory loop projects valid blocks and nulls invalid or older missing blocks', () => {
+  const f = setup(), usage = { calls: 7, maxCalls: 8, inputTokens: 700, outputTokens: 140, summaries: 1, expiresAtMs: 1900000000000 },
+    memory = { episodes: 6, summaries: 1, bytes: 2049, maxBytes: 1048576 },
+    lastSummary = { ok: false, atMs: 1800000000000, reason: 'context_size', why: 'invalid_decision' };
+  const push = row => { f.receive({ t: 'hosted_inference_result', requestId: null, op: 'status', ok: true,
+    state: { ...state, companions: [{ character: 'c1', ...row }] } }); return f.client.snapshot().companions[0]; };
+  try {
+    const valid = { usage, memory, lastSummary, autoSummary: 'blocked' };
+    const row = push({ ...valid, apiKey: 'private', usage: { ...usage, apiKey: 'private' } });
+    for (const key of Object.keys(valid)) assert.deepEqual(row[key], valid[key]);
+    assert.ok(!JSON.stringify(row).includes('private'));
+    for (const key of ['usage', 'memory', 'lastSummary', 'autoSummary']) assert.equal(push({})[key], null);
+    for (const [block, fields] of [['usage', Object.keys(usage)], ['memory', Object.keys(memory)], ['lastSummary', ['atMs']]]) {
+      for (const key of fields) for (const value of [1.5, '1', NaN, Infinity, Number.MAX_SAFE_INTEGER + 1, ...(key === 'expiresAtMs' ? [] : [-1])]) {
+        assert.equal(push({ ...valid, [block]: { ...valid[block], [key]: value } })[block], null, `${block}.${key}:${value}`);
+      }
+    }
+    assert.equal(push({ ...valid, autoSummary: 'other' }).autoSummary, null);
+    assert.equal(push({ ...valid, lastSummary: { ...lastSummary, ok: 'yes' } }).lastSummary, null);
+    assert.equal(push({ ...valid, lastSummary: { ...lastSummary, why: null } }).lastSummary, null);
+    assert.deepEqual(push({ ...valid, lastSummary: { ...lastSummary, ok: true } }).lastSummary,
+      { ok: true, atMs: lastSummary.atMs, reason: 'context_size' });
+  } finally { f.client.destroy(); }
+});
