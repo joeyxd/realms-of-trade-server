@@ -97,7 +97,8 @@ function exactEnvelope(value, keys) {
 }
 
 const slotLabels = { campfire: ['Hoguera', 'Campfire'], brazier: ['Braseros y antorchas', 'Braziers and torches'],
-  meleeHit: ['Golpe cuerpo a cuerpo', 'Melee hit'], damageHit: ['Golpe confirmado', 'Confirmed hit'] };
+  meleeHit: ['Golpe cuerpo a cuerpo', 'Melee hit'], damageHit: ['Golpe confirmado', 'Confirmed hit'],
+  trombaImpact: ['Impacto de Tromba', 'Tromba impact'] };
 
 /** Visual drafts remain local; GM presentation publishing is a separate operation. */
 export class SkillStudio {

@@ -18,6 +18,7 @@ export const PRESENTATION_SLOTS = Object.freeze({
   brazier: Object.freeze({ mode: 'loop' }), // braziers and the gate-post torches
   meleeHit: Object.freeze({ mode: 'burst' }), // your blade lands on an enemy (mhit)
   damageHit: Object.freeze({ mode: 'burst' }), // a confirmed shot or skill hit on an enemy (damage, not melee, not burn)
+  trombaImpact: Object.freeze({ mode: 'burst' }), // a Tromba column lands (trombaHit), on top of the water column
 });
 
 // Same keys and ranges as the Taller's native parameters (effectLibrary.js NATIVE_PARAMETERS; a test keeps them equal).

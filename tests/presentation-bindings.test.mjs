@@ -12,6 +12,7 @@ const FLAME = 'niagara-985a431dc6c0d1ca', HIT = 'niagara-97a82bae61b29237';
 const full = () => ({ ...emptyPresentationBindings(), bindings: {
   campfire: defaultPresentationBinding('campfire', FLAME), brazier: defaultPresentationBinding('brazier', FLAME),
   meleeHit: defaultPresentationBinding('meleeHit', HIT), damageHit: defaultPresentationBinding('damageHit', HIT),
+  trombaImpact: defaultPresentationBinding('trombaImpact', HIT),
 } });
 
 test('every bindable effect is a registered native effect with the Taller parameter ranges', () => {
@@ -38,6 +39,8 @@ test('slot and effect must agree on loop or burst', () => {
   assert.equal(slotAcceptsEffect('campfire', FLAME), true);
   assert.equal(slotAcceptsEffect('campfire', HIT), false);
   assert.equal(slotAcceptsEffect('meleeHit', FLAME), false);
+  assert.equal(slotAcceptsEffect('trombaImpact', HIT), true);
+  assert.equal(slotAcceptsEffect('trombaImpact', FLAME), false);
   assert.equal(defaultPresentationBinding('meleeHit', FLAME), null);
   const doc = full(); doc.bindings.meleeHit = { effect: FLAME, parameters: defaultPresentationBinding('campfire', FLAME).parameters };
   assert.equal(validatePresentationBindings(doc).why, 'mode');

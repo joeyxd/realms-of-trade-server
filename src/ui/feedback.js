@@ -401,6 +401,8 @@ export class Feedback {
       case 'trombaHit': {
         const twin = ev.n === 1, vol = me ? 1 : this.vol(ev.x, ev.z);
         W.skillFx.spout(ev.x, ev.z, ev.r, twin, ev.elem);
+        // A bound native impact plays at the column's foot on top of it: the column itself shows the area, so it stays.
+        W.nativeFx?.burst('trombaImpact', ev.x, this.y(ev.x, ev.z) + 0.4, ev.z);
         if (ev.form === 1 && !twin) W.skillFx.vortex(ev.id, ev.x, ev.z, ev.r, formed('tromba', 1).linger, ev.elem);
         sfx.waterSpout(vol);
         if (me) {
