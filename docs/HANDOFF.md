@@ -1,5 +1,29 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**VR11 sol dinámico, 2026-10-24 (T-1024-16), versión 0.6.0-alpha.108, sin cambio de protocolo ni SQL:**
+El sol cruza el cielo con el reloj del juego en lugar de quedarse fijo. Solo src/render/lighting.js, sky.js, water.js y tools/naval-lab/main.js.
+- Arco real: la fase del reloj mueve el sol por un círculo máximo (latitud 35, declinación 11; norte -z, este +x): sale por el
+  ENE, a mediodía está al sur a 66 grados y se pone por el ONO; está arriba de la fase 0,9 a la 0,6 (los extremos del preset de
+  noche). `arcDir()` se exporta. La luna recorre el mismo arco medio día después (declinación -5; a medianoche al sur, 50 arriba).
+  Las horas fijas quedan en una fase (TOD_PHASE): día 0,385 (la luz de día de antes, 54 arriba), atardecer 0,53, noche 0,75.
+- La elevación de la luz es la del arco comprimida a 22..66 grados (el suelo plano no salta a la banda media del toon con el sol
+  bajo); las sombras llegan a unas 2,5 veces la altura. La luz gira en pasos de 0,2 grados (un paso por segundo en juego).
+- Cambio sol -> luna sin salto: cuando dayW < 0,1 la luz baja por (1 - 2 moonW)^2 y solo gira con moonW 0,3..0,7, así que el giro
+  de 90 grados ocurre con intensidad bajo 0,05 en unos 4 s.
+- Cielo: discos del sol y de la luna en su posición real (se hunden bajo el horizonte), color de luna 0x9fb0d8, y un brillo de
+  crepúsculo en el horizonte hacia el sol bajo (oro -> rojo, se forma mientras el sol baja de 16 a 3 grados, desaparece en -14;
+  0 en La Caldera). El agua lo refleja.
+- Caja de sombras ajustada en el espacio de la luz y recalculada en cada paso: con el sol bajo mide 31 u de fondo en vez de 60
+  (texels unas 2 veces más densos).
+- Agua: con el sol de frente el destello sólido pintaba caras de ola enteras de blanco; ahora el destello sólido es el núcleo fino
+  en las ondas pequeñas y el lóbulo ancho solo siembra chispas.
+- Móvil (plaza zoom 1, renderer.info): el pase de sombras cuesta igual o menos (low al atardecer 166 -> 136 draw calls; high
+  160 -> 145); de noche sigue sin pase de sombras.
+- Pruebas: `tests/dynamic-sun.test.mjs` nueva (5/5); cast-shadows, night-lighting, water-clarity y naval-lab-look pasan.
+- Pendiente de gusto para Joi: los números del arco (latitud, declinación, elevación mínima 22, TOD_PHASE), el color y la fuerza
+  del crepúsculo (0,75), el color del disco de la luna y si los pasos de 0,2 grados se notan como un tic. Siguiente: CAM04 (vista
+  cercana desde atrás para ver el atardecer; scene.js queda libre para camera-director).
+
 **GM08c, GM08d y GM11a: ruido, erosión, mapa de alturas y medidor de carga en el editor GM, 2026-10-24 (T-1024-13, T-1024-17, T-1024-24, T-1024-28), versión 0.6.0-alpha.107, sin cambio de protocolo ni SQL:**
 Solo el editor GM (src/editor/terrain*.js, worldLoad.js, editor.js, publicationValidation.js), la preparación de la publicación en el servidor y el actualizador (lista TESTS). Los jugadores no ven nada nuevo.
 - GM11 diseño (T-1024-13, aprobado por Joi): mundo ampliable con presupuesto de una sola carga, aviso desde el 70 %, bloqueo de la publicación al 100 % y zonas con nombre con precarga en segundo plano. `docs/briefs/gm11-world-growth-zones.md` y la sección GM11 de PLAN-GM-EDITOR.md (cortes GM11a-f).
