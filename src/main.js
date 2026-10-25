@@ -465,7 +465,10 @@ async function boot() {
   touch.onCrit = () => safe('chop crit', () => chop.crit()); // TA03: the crit button next to ACT
   // PT06: the server's jump mode (WELCOME.jump) decides the controls: on, Space / A / the touch button jump and Shift / B
   // dash; off keeps today's Space = dash and no button.
-  bus.on('you:welcome', () => { const on = client.pred.jumpMode !== 'off'; input.setJump(on); touch.setJump(on); setMeleeView(client.pred.meleeVersion); });
+  bus.on('you:welcome', () => {
+    const on = client.pred.jumpMode !== 'off'; input.setJump(on); touch.setJump(on); hud.setJumpKeys(on); setMeleeView(client.pred.meleeVersion);
+    if (settings.jumpOn !== on) { settings.jumpOn = on; saveSettings(); } // the next title screen's keyboard hint follows
+  });
   const freshwaterTouchButton = document.createElement('button');
   freshwaterTouchButton.type = 'button'; freshwaterTouchButton.className = 'tbtn t-water';
   freshwaterTouchButton.hidden = !isTouch;

@@ -14,6 +14,7 @@ export default {
   'title.controls': ['Controles', 'Controls'],
   'title.touchHint': ['Joystick a la izquierda para moverte · DASH para esquivar', 'Left joystick to move · DASH to dodge'],
   'title.keyboardHint': ['WASD para moverte · ESPACIO para hacer dash · rueda para zoom', 'WASD to move · SPACE to dash · wheel to zoom'],
+  'title.keyboardHintJump': ['WASD para moverte · ESPACIO para saltar · SHIFT para hacer dash · rueda para zoom', 'WASD to move · SPACE to jump · SHIFT to dash · wheel to zoom'],
   'title.online.one': ['EN LÍNEA · {players}/{max} pirata a bordo', 'ONLINE · {players}/{max} pirate aboard'],
   'title.online.many': ['EN LÍNEA · {players}/{max} piratas a bordo', 'ONLINE · {players}/{max} pirates aboard'],
   'title.solo': ['SOLO · tu propia isla', 'SOLO · your own island'],

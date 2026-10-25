@@ -7,6 +7,7 @@ export default {
   'hud.needThirst': ['Sed {value}', 'Thirst {value}'],
   'hud.needs': ['Necesidades · {value}%', 'Needs · {value}%'],
   'hud.spaceKey': ['ESP', 'SPC'],
+  'hud.shiftKey': ['SHIFT', 'SHIFT'],
   'systems.freshwater.touch': ['Agua', 'Water'],
   'systems.freshwater.touchLabel': ['Agua dulce', 'Fresh water'],
   'systems.workshop.trigger': ['Taller y mochila', 'Workshop and backpack'],

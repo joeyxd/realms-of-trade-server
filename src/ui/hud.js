@@ -606,6 +606,12 @@ export class Hud {
   }
 
   // Inside the Cala Calavera: the chip and the red edges.
+  // PT06: with the jump on, Space jumps and the dash moves to Shift; the dash slot's key label follows.
+  setJumpKeys(on) {
+    const k = this.dashSlot.querySelector('.kbd');
+    if (k) k.innerHTML = ltext(on ? 'hud.shiftKey' : 'hud.spaceKey'); // ltext returns the live-translated span
+  }
+
   setLawless(on) {
     if (on === this.lawOn) return;
     this.lawOn = on;

@@ -40,7 +40,7 @@ export class TitleScreen {
             <button id="btn-settings" class="btn secondary interactive">${text('title.settings')}</button>
             <button id="btn-controls" class="btn secondary interactive">${text('title.controls')}</button>
           </div>
-          <div class="title-hint">${text(document.body.classList.contains('touch') ? 'title.touchHint' : 'title.keyboardHint')}</div>
+          <div class="title-hint">${text(document.body.classList.contains('touch') ? 'title.touchHint' : settings.jumpOn ? 'title.keyboardHintJump' : 'title.keyboardHint')}</div>
           <div class="title-language"></div>
         </div>
       </div>
