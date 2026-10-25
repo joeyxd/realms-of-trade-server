@@ -4,10 +4,12 @@ import * as THREE from 'three';
 import { NAVAL_SEA } from '../src/data/navalSea.js';
 import { WW_UNIT } from '../src/data/navalHandling.js';
 import {
-  SEA_AMP, SEA_CELL, SEA_SWELL_GLSL, sampleSeaFloor, seaDepthFade, seaEdgeFade, seaPatchOrigin, seaSurfaceY,
-  seaSwellHeight, seaSwellSlope, setSeaClock, setSeaFloor,
+  SEA_AMP, SEA_CELL, SEA_SWELL_GLSL, sampleSeaFloor, seaCalmAt, seaDepthFade, seaEdgeFade, seaPatchOrigin, seaSurfaceY,
+  seaSwellHeight, seaSwellSlope, setSeaCalm, setSeaClock, setSeaFloor,
 } from '../src/render/naval/seaSwell.js';
 import { createWater } from '../src/render/water.js';
+import { createHeightTexture } from '../src/render/terrain.js';
+import { generateWorld } from '../src/sim/worldgen.js';
 import { U } from '../src/render/toon.js';
 import { LAYER } from '../src/render/pipeline.js';
 
@@ -150,7 +152,7 @@ test('createWater: a swell patch child on the water layer, both modes switch, un
     assert.equal(swell.material.uniforms[k], water.material.uniforms[k], k);
     assert.equal(simple[1].uniforms[k], water.material.uniforms[k], k);
   }
-  assert.match(swell.material.vertexShader, /mnSeaSwell\(xz, mnTime\) \* \(mnSeaEdgeFade\(position\.xz\) \* mnSeaDepthFade\(-th\)\)/);
+  assert.match(swell.material.vertexShader, /mnSeaSwell\(xz, mnTime\) \* \(mnSeaEdgeFade\(position\.xz\) \* mnSeaDepthFade\(-th\) \* calm\)/);
   // The camera moves the shared patch corner before either mesh draws.
   const cam = new THREE.PerspectiveCamera();
   cam.position.set(100, 30, -50); cam.updateMatrixWorld();
@@ -162,4 +164,41 @@ test('createWater: a swell patch child on the water layer, both modes switch, un
   assert.equal(Math.abs(seaSurfaceY(-5, 5)), 0);
   height.dispose(); water.geometry.dispose(); swell.geometry.dispose();
   for (const m of [...simple, water.material, swell.material]) m.dispose();
+});
+
+test('the real island: calm at the dock and beside it, full swell again within 120 units offshore, inside the map', () => {
+  const map = generateWorld(99282957);
+  const water = createWater(map, createHeightTexture(map, 256)), calm = water.userData.calm;
+  assert.ok(calm.data && calm.res === 256 && calm.tex.image.width === 256);
+  const d = map.dock, end = d.end;
+  assert.equal(seaCalmAt(end.x, end.z), 0, 'dock end');
+  assert.equal(seaCalmAt(d.base.x, d.base.z), 0, 'dock base');
+  assert.equal(seaCalmAt(end.x - d.dir.z * 3, end.z + d.dir.x * 3), 0, 'three units abeam of the dock end');
+  assert.equal(seaCalmAt(end.x + d.dir.x * 8, end.z + d.dir.z * 8), 0, 'eight units past the dock end');
+  let reach = null;
+  for (let s = 0; s <= 200; s += 1) {
+    const x = end.x + d.dir.x * s, z = end.z + d.dir.z * s;
+    if (Math.abs(x) > map.half || Math.abs(z) > map.half) break;
+    if (seaCalmAt(x, z) >= 1) { reach = s; break; }
+  }
+  assert.ok(reach !== null && reach >= 40 && reach <= 120, `full swell ${reach} units past the dock end`);
+  // The GPU reads the same bytes: every material binds the mask texture.
+  for (const m of [water.material, water.userData.materials.simple, water.userData.swell.material]) assert.equal(m.uniforms.uCalm.value, calm.tex);
+  assert.equal(calm.tex.format, THREE.RedFormat); assert.equal(calm.tex.type, THREE.UnsignedByteType);
+});
+
+test('the calm mask rebakes when the height texture changes, throttled by the shader clock', () => {
+  const height = new THREE.DataTexture(new Float32Array(16 * 16).fill(-10), 16, 16, THREE.RedFormat, THREE.FloatType);
+  const water = createWater({ size: 32 }, height), calm = water.userData.calm;
+  assert.ok(calm.data.every((v) => v === 255), 'deep water everywhere: full swell');
+  assert.equal(seaCalmAt(0, 0), 1);
+  assert.equal(calm.refresh(0.1), false, 'same texture version: nothing to do');
+  height.image.data.fill(5, 0, 16); // the first row (z = -15) becomes land
+  height.needsUpdate = true;
+  assert.equal(calm.refresh(0.1), false, 'throttled: half a second between bakes');
+  assert.equal(calm.refresh(0.6), true);
+  assert.equal(seaCalmAt(0, -15.9), 0, 'next to the new land');
+  assert.ok(seaCalmAt(0, 15) > 0.5 && seaCalmAt(0, 15) < 1, 'thirty units away: on the ramp');
+  assert.equal(calm.refresh(1.2), false);
+  setSeaCalm(null);
 });

@@ -19,7 +19,8 @@ import { LAYER, WATERU } from './pipeline.js';
 import { getWaveTexture } from './noiseTex.js';
 import { WATER_DETAIL_DEFAULTS, WATER_DETAIL_UNIFORMS, CAUSTIC_PARS } from './waterDetail.js';
 import { NAVAL_SEA } from '../data/navalSea.js';
-import { SEA_SWELL_GLSL, sampleSeaFloor, seaPatchOrigin, setSeaClock, setSeaFloor } from './naval/seaSwell.js';
+import { SEA_SWELL_GLSL, sampleSeaFloor, seaPatchOrigin, setSeaCalm, setSeaClock, setSeaFloor } from './naval/seaSwell.js';
+import { buildCalmMask, calmByteToUnit, dockSeed } from './naval/seaCalm.js';
 
 export const WATER_LOOK = {
   absorb: new THREE.Vector3(1.0, 0.045, 0.1), // per-channel extinction per unit of path (red dies first, clear shelf)
@@ -66,6 +67,7 @@ const VERT_PATCH = /* glsl */ `
 #include <shadowmap_pars_vertex>
 uniform float mnTime;
 uniform sampler2D uHeight;
+uniform sampler2D uCalm;
 uniform float uWorldHalf;
 uniform vec2 uSeaOrigin;
 varying vec3 vWorld;
@@ -75,8 +77,10 @@ ${SEA_SWELL_GLSL}
 void main() {
   vec2 xz = uSeaOrigin + position.xz * MN_SEA_CELL;
   vec2 huv = xz / (uWorldHalf * 2.0) + 0.5;
-  float th = (huv.x < 0.0 || huv.y < 0.0 || huv.x > 1.0 || huv.y > 1.0) ? ${NAVAL_SEA.floorOutside.toFixed(1)} : texture2D(uHeight, huv).r;
-  vec3 sw = mnSeaSwell(xz, mnTime) * (mnSeaEdgeFade(position.xz) * mnSeaDepthFade(-th));
+  bool onMap = huv.x >= 0.0 && huv.y >= 0.0 && huv.x <= 1.0 && huv.y <= 1.0;
+  float th = onMap ? texture2D(uHeight, huv).r : ${NAVAL_SEA.floorOutside.toFixed(1)};
+  float calm = onMap ? texture2D(uCalm, huv).r : 1.0; // 0 near land and the dock, 1 in the open sea (seaCalm.js)
+  vec3 sw = mnSeaSwell(xz, mnTime) * (mnSeaEdgeFade(position.xz) * mnSeaDepthFade(-th) * calm);
   vSwellSlope = sw.yz;
   vec3 transformed = vec3(xz.x, sw.x, xz.y);
   vec4 worldPosition = modelMatrix * vec4(transformed, 1.0);
@@ -355,6 +359,7 @@ function makeMaterial(map, heightTex, ssr, patch = false) {
     uWaves: { value: 1 },
     uRefract: { value: WATER_DETAIL_DEFAULTS.refraction },
     uHeight: { value: heightTex },
+    uCalm: { value: null },
     uWorldHalf: { value: map.size / 2 },
   });
   if (ssr) Object.assign(uniforms, WATERU);
@@ -389,6 +394,39 @@ function createPatchGeometry(cells) {
 
 const halfToFloat = (v) => THREE.DataUtils.fromHalfFloat(v), asFloat = (v) => v;
 
+// The swell's calm mask (seaCalm.js) baked from the height texture the water reads, as an R8 texture for the patch
+// shader and the same bytes for the CPU sampler. It is rebuilt when that texture's data changes (GM strokes, the
+// editor's preview texture), at most every CALM_REBUILD_SECONDS of the shader clock.
+const CALM_REBUILD_SECONDS = 0.5;
+function createCalmMask(map, heightU, halfU, calmU) {
+  const calm = { tex: null, data: null, res: 0, key: '', builtAt: -Infinity };
+  const seedAt = dockSeed(map.dock);
+  calm.refresh = (now = 0) => {
+    const tex = heightU.value, img = tex?.image;
+    if (!img?.data || img.width !== img.height) return false;
+    const key = `${tex.uuid}:${tex.version}`;
+    if (key === calm.key || now - calm.builtAt < CALM_REBUILD_SECONDS) return false;
+    const decode = tex.type === THREE.HalfFloatType ? halfToFloat : asFloat;
+    const data = buildCalmMask(img.data, img.width, halfU.value, { decode, seedAt });
+    if (!calm.tex || calm.res !== img.width) {
+      calm.tex?.dispose();
+      calm.tex = new THREE.DataTexture(data, img.width, img.width, THREE.RedFormat, THREE.UnsignedByteType);
+      calm.tex.magFilter = calm.tex.minFilter = THREE.LinearFilter;
+      calm.tex.wrapS = calm.tex.wrapT = THREE.ClampToEdgeWrapping;
+      calm.tex.name = 'sea-calm';
+      calm.res = img.width;
+    } else calm.tex.image.data.set(data);
+    calm.tex.needsUpdate = true;
+    calm.data = calm.tex.image.data; calm.key = key; calm.builtAt = now;
+    calmU.value = calm.tex;
+    return true;
+  };
+  // The factor at world x, z as the GPU interpolates it; 1 off the map (open sea).
+  calm.sample = (x, z) => (calm.data ? sampleSeaFloor(calm.data, calm.res, halfU.value, x, z, calmByteToUnit, 1) : 1);
+  calm.refresh(0);
+  return calm;
+}
+
 export function createWater(map, heightTex) {
   const ssr = makeMaterial(map, heightTex, true);
   const simple = makeMaterial(map, heightTex, false);
@@ -397,9 +435,11 @@ export function createWater(map, heightTex) {
   // Share the tweakable uniforms so quality switches keep the same look; the patch corner is shared by all four.
   const seaOrigin = { value: new THREE.Vector2() };
   for (const m of [ssr, simple, swellSsr, swellSimple]) {
-    for (const k of ['uWaves', 'uRefract', 'uHeight', 'uWorldHalf']) m.uniforms[k] = ssr.uniforms[k];
+    for (const k of ['uWaves', 'uRefract', 'uHeight', 'uCalm', 'uWorldHalf']) m.uniforms[k] = ssr.uniforms[k];
     m.uniforms.uSeaOrigin = seaOrigin;
   }
+  const heightU = ssr.uniforms.uHeight, halfU = ssr.uniforms.uWorldHalf;
+  const calm = createCalmMask(map, heightU, halfU, ssr.uniforms.uCalm);
   const geo = new THREE.PlaneGeometry(2400, 2400, 1, 1);
   geo.rotateX(-Math.PI / 2);
   const mesh = new THREE.Mesh(geo, ssr);
@@ -417,18 +457,20 @@ export function createWater(map, heightTex) {
   const follow = (renderer, scene, camera) => {
     const e = camera.matrixWorld.elements;
     seaPatchOrigin(e[12], e[14], seaOrigin.value);
+    calm.refresh(U.mnTime.value); // a reshaped terrain (GM strokes, preview) rebakes the calm mask
   };
   mesh.onBeforeRender = swell.onBeforeRender = follow; // whichever draws first moves the shared corner
   mesh.add(swell);
   mesh.userData.materials = { ssr, simple };
   mesh.userData.swell = swell;
+  mesh.userData.calm = calm;
   mesh.userData.setMode = (useSsr) => {
     mesh.material = useSsr ? ssr : simple;
     swell.material = useSsr ? swellSsr : swellSimple;
   };
-  // Floating things in the client sample the same sea: the shader clock and the seabed this water reads.
-  const heightU = ssr.uniforms.uHeight, halfU = ssr.uniforms.uWorldHalf;
+  // Floating things in the client sample the same sea: the shader clock, the seabed this water reads and its calm mask.
   setSeaClock(() => U.mnTime.value);
+  setSeaCalm(calm.sample);
   setSeaFloor((x, z) => {
     const tex = heightU.value, img = tex?.image;
     if (!img?.data) return NAVAL_SEA.floorOutside;

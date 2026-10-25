@@ -19,5 +19,9 @@ export const NAVAL_SEA = Object.freeze({
   // Our change (WW fades by distance to calm rooms instead): the amplitude rises with the water depth under the point,
   // smoothstep(d0, d1, depth), in our units. The island's shelf reaches its 7.5 floor about 5 units off the waterline.
   depthFade: Object.freeze({ d0: 2, d1: 8 }),
+  // Our change too (WW fades by the distance to calm rooms, 163 + 163 units, 05 section C1; our island is small): the
+  // swell is 0 within `near` units of land (height >= seaLevel) or of the dock deck and full beyond `far`, baked per
+  // texel of the water height grid (render/naval/seaCalm.js) and rebuilt when the GM reshapes the terrain.
+  calm: Object.freeze({ near: 15, far: 40, seaLevel: 0 }),
   floorOutside: -20, // seabed height off the height texture (water.js reads the same)
 });

@@ -1,7 +1,8 @@
 // The open sea's swell after Wind Waker's Great Sea (research/wind-waker 01 section 5, 05 section C; T-1025-08). Pure
 // maths, no three.js: the four travelling cosines in our units and seconds, their slope, the depth and patch-edge fades,
-// a shared clock (water.js registers the shader clock) and seabed sampler, and the same function as GLSL for the water.
-// Everything that floats in the client (hulls, the boat camera, swimmers) reads seaSurfaceY; the sim keeps y 0.
+// a shared clock (water.js registers the shader clock), seabed and calm-mask samplers (seaCalm.js bakes the mask), and
+// the same function as GLSL for the water. Everything that floats in the client (hulls, the boat camera, swimmers)
+// reads seaSurfaceY; the sim keeps y 0.
 import { NAVAL_SEA as S } from '../../data/navalSea.js';
 import { WW_ANGLE, WW_UNIT } from '../../data/navalHandling.js';
 
@@ -56,11 +57,12 @@ export function seaPatchOrigin(x, z, out = { x: 0, y: 0 }) {
 }
 
 // The seabed as the water shader sees it: a res x res single-channel grid over [-half, half]^2 read with linear
-// filtering and clamp-to-edge (texel centres at (i + 0.5) / res), floorOutside off the texture. decode maps a stored
-// value to a height (half floats for the water texture).
-export function sampleSeaFloor(data, res, half, x, z, decode = (v) => v) {
+// filtering and clamp-to-edge (texel centres at (i + 0.5) / res), `outside` (the seabed's floorOutside) off the
+// texture. decode maps a stored value to a height (half floats for the water texture); the calm mask reads its bytes
+// with the same sampler.
+export function sampleSeaFloor(data, res, half, x, z, decode = (v) => v, outside = S.floorOutside) {
   const u = x / (half * 2) + 0.5, v = z / (half * 2) + 0.5;
-  if (!(u >= 0 && v >= 0 && u <= 1 && v <= 1)) return S.floorOutside;
+  if (!(u >= 0 && v >= 0 && u <= 1 && v <= 1)) return outside;
   const fx = Math.min(Math.max(u * res - 0.5, 0), res - 1), fz = Math.min(Math.max(v * res - 0.5, 0), res - 1);
   const i = Math.floor(fx), j = Math.floor(fz), i1 = Math.min(i + 1, res - 1), j1 = Math.min(j + 1, res - 1);
   const tx = fx - i, tz = fz - j;
@@ -68,18 +70,21 @@ export function sampleSeaFloor(data, res, half, x, z, decode = (v) => v) {
   return (a + (b - a) * tx) * (1 - tz) + (c + (d - c) * tx) * tz;
 }
 
-// Shared clock (seconds; water.js registers the shader's mnTime) and seabed height sampler (our units). Until a water
-// registers its seabed the floor is the still level: no sea drawn, no swell.
-const noClock = () => 0, noFloor = () => 0;
-let clock = noClock, floor = noFloor;
+// Shared clock (seconds; water.js registers the shader's mnTime), seabed height sampler (our units) and calm-mask
+// sampler (0 calm .. 1 full swell). Until a water registers its seabed the floor is the still level: no sea drawn, no
+// swell; without a calm mask the swell is full everywhere the depth allows.
+const noClock = () => 0, noFloor = () => 0, noCalm = () => 1;
+let clock = noClock, floor = noFloor, calm = noCalm;
 export function setSeaClock(fn) { clock = typeof fn === 'function' ? fn : noClock; }
 export function setSeaFloor(fn) { floor = typeof fn === 'function' ? fn : noFloor; }
+export function setSeaCalm(fn) { calm = typeof fn === 'function' ? fn : noCalm; }
 export function seaTime() { const t = clock(); return Number.isFinite(t) ? t : 0; }
 export function seaFloorAt(x, z) { const h = floor(x, z); return Number.isFinite(h) ? h : 0; }
+export function seaCalmAt(x, z) { const c = calm(x, z); return Number.isFinite(c) ? Math.min(Math.max(c, 0), 1) : 1; }
 
-// The drawn sea surface's height over the still level at time t: the swell times the depth fade (the patch edge fade
-// is left out: it only touches cells 270+ units from the camera).
-export const seaSurfaceAt = (x, z, t) => seaSwellHeight(x, z, t) * seaDepthFade(-seaFloorAt(x, z));
+// The drawn sea surface's height over the still level at time t: the swell times the depth fade times the calm mask
+// (the patch edge fade is left out: it only touches cells 270+ units from the camera).
+export const seaSurfaceAt = (x, z, t) => seaSwellHeight(x, z, t) * seaDepthFade(-seaFloorAt(x, z)) * seaCalmAt(x, z);
 export const seaSurfaceY = (x, z) => seaSurfaceAt(x, z, seaTime());
 
 const glf = (v) => { const s = Number(v).toPrecision(10); return /[.e]/.test(s) ? s : `${s}.0`; };
