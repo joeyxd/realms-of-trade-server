@@ -33,11 +33,12 @@ function validBody(body) {
 }
 
 function validAxes(axes) {
-  return axes && !Array.isArray(axes) && (Object.keys(axes).length === 3 ||
-    (Object.keys(axes).length === 4 && Object.hasOwn(axes, 'capture'))) &&
+  return axes && !Array.isArray(axes) &&
+    Object.keys(axes).length === 3 + ['capture', 'jump'].filter((key) => Object.hasOwn(axes, key)).length &&
     ['throttle', 'brake', 'steer'].every((key) => finite(axes[key])) &&
     axes.throttle >= 0 && axes.throttle <= 1 && axes.brake >= 0 && axes.brake <= 1 &&
-    axes.steer >= -1 && axes.steer <= 1 && (!Object.hasOwn(axes, 'capture') || typeof axes.capture === 'boolean');
+    axes.steer >= -1 && axes.steer <= 1 && (!Object.hasOwn(axes, 'capture') || typeof axes.capture === 'boolean') &&
+    (!Object.hasOwn(axes, 'jump') || axes.jump === 0 || axes.jump === 1);
 }
 
 function wrapPose(pose) {
@@ -140,7 +141,8 @@ export class NavalPilotPrediction {
     if (!this.active || !this.body || !validAxes(axes) || this.seq >= NAVAL_TRIAL.maxSequence) return null;
     const command = Object.freeze({ epoch: this.epoch, seq: this.seq + 1,
       throttle: axes.throttle, brake: axes.brake, steer: axes.steer,
-      ...(Object.hasOwn(axes, 'capture') ? { capture: axes.capture } : {}) });
+      ...(Object.hasOwn(axes, 'capture') ? { capture: axes.capture } : {}),
+      ...(Object.hasOwn(axes, 'jump') ? { jump: axes.jump } : {}) });
     let next;
     try { next = stepTrialBody(this.body, command, this.wind, this.coast); } catch { return null; }
     this.prevPose = wrapPose(this.body.pose);
@@ -180,7 +182,7 @@ export class NavalPilotPrediction {
     if (!this.active || !this.body) return records.slice();
     const pose = this.pose(alpha);
     return records.map((record) => record && record.id === this.shipId
-      ? { ...record, x: pose.x, y: pose.y, z: pose.z, yaw: pose.yaw,
+      ? { ...record, x: pose.x, y: pose.y, z: pose.z, yaw: pose.yaw, lift: this.body.state.y || 0, // render-only jump height
         parts: this.body.operational.parts.map((p) => [...p]), hull: { ...hullIntegrity(this.body.structure) },
         partHealth: this.body.structure.entries.map((p) => ({ id: p.id, part: [...p.part], hp: p.hp, maxHp: p.maxHp })) }
       : record);

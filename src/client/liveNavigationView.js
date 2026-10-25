@@ -194,6 +194,10 @@ export class LiveNavigationView {
     const raftId = body && c.naval.shipId || (c?.deck?.active ? c.deck.shipId : voyage.shipId);
     const records = c?.renderRafts?.(alpha) || c?.pred?.rafts || [];
     const raft = raftId ? records.find((r) => String(r.id) === String(raftId)) : null;
+    // PT21a: the sim clears fly on the landing tick; the burst uses the vy of the frame before it.
+    const before = this.lastBody?.state;
+    if (before?.fly === 1 && body?.state && body.state.fly !== 1)
+      this.effects.event('splashdown', body.state, body.operational?.rig, { vy: before.vy });
     this.lastBody = body; this.lastRaft = raft;
     const interaction = this.interaction();
     const routeSummary = !!(route?.available && ['complete', 'aborted'].includes(route.status) && route.home &&
@@ -290,7 +294,9 @@ export class LiveNavigationView {
     const capture = !!(this.captureHeld || this.input.slotHeld?.('q') || keys?.has?.('KeyQ') || pad.prev?.[5]);
     const throttle = helm ? clamp(this.sail, 0, 1) : 0;
     const brake = helm ? Math.max(clamp(this.leverBrake, 0, 1), this.keyBrake ? 1 : 0) : 0;
-    return { naval: { throttle, brake, steer, capture }, deck: { mx: x ? -x : 0, mz: y } };
+    // PT21a: the land jump key (Space), the pad's A button and the touch jump button; the sim jumps once per press.
+    const jump = helm && (this.jumpHeld || keys?.has?.('Space') || pad.prev?.[0]) ? 1 : 0;
+    return { naval: { throttle, brake, steer, capture, jump }, deck: { mx: x ? -x : 0, mz: y } };
   }
 
   // W/S, the arrows and the pad stick step the lever on each press; S at zero brakes while it is held.
@@ -323,6 +329,7 @@ export class LiveNavigationView {
   fixedInput() {
     const axes = this.fixedAxes();
     if (axes?.naval && this.captureHeld) this.captureHeld = false;
+    if (axes?.naval && this.jumpHeld) this.jumpHeld = false;
     return axes;
   }
 
@@ -504,7 +511,7 @@ export class LiveNavigationView {
   }
 
   clearInput(sendNeutral = false) {
-    this.axes = { ...axesNeutral }; this.captureHeld = false;
+    this.axes = { ...axesNeutral }; this.captureHeld = false; this.jumpHeld = false;
     this.sail = 0; this.leverBrake = 0; this.keyBrake = false;
     this.touch?.clear();
     if (!sendNeutral) return;
@@ -642,6 +649,10 @@ export class LiveNavigationView {
       if (!this.client()?.naval?.active || this.client()?.deck?.active) return false;
       this.captureHeld = true; return true;
     }
+    if (id === 'jump') {
+      if (!this.client()?.naval?.active || this.client()?.deck?.active) return false;
+      this.jumpHeld = true; return true;
+    }
     if (id === 'context') { this.interaction()?.run?.(); return; }
     if (id === 'door' || id === 'lantern') { this.keyAction('V')?.run?.(); return; }
     if (id === 'land' || id === 'dock' || id === 'recall') { this.keyAction('G')?.run?.(); return; }
@@ -658,6 +669,8 @@ export class LiveNavigationView {
     if (context) actions.push({ id: context.lantern ? 'lantern' : 'door', label: context.verb, icon: 'crew', kind: 'action', shortcut: 'V' });
     if (c?.naval?.active && !c?.deck?.active && c.voyage?.phase === 'sailing')
       actions.push({ id: 'capture', label: t('nav.gust'), icon: 'wind', kind: 'skill', disabled: !!this.lastHud?.captureDisabled });
+    if (c?.naval?.active && !c?.deck?.active)
+      actions.push({ id: 'jump', label: t('nav.jump'), icon: 'jump', kind: 'action', shortcut: 'Space' });
     actions.push({ id: 'bag', label: t('nav.bag'), icon: 'cargo', kind: 'item' });
     if (c?.naval?.active || c?.deck?.active)
       actions.push({ id: 'mode', label: c?.deck?.active ? t('nav.helm') : t('nav.deck'), icon: c?.deck?.active ? 'helm' : 'crew', kind: 'action', disabled: !i?.actions?.some(a => a.key === 'E') });

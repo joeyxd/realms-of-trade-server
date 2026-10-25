@@ -40,7 +40,7 @@ test('stick, keys and pad steer the mirror of their x at the helm and on deck', 
 
 test('the sail lever stays where W and S leave it and S at zero brakes only while held', () => {
   const { view, levers, frame, press } = harness();
-  assert.deepEqual(frame().naval, { throttle: 0, brake: 0, steer: 0, capture: false });
+  assert.deepEqual(frame().naval, { throttle: 0, brake: 0, steer: 0, capture: false, jump: 0 });
   assert.equal(press('KeyW').naval.throttle, 0.25);
   assert.equal(frame().naval.throttle, 0.25, 'the sail stays after W is released');
   press('KeyW'); press('ArrowUp'); press('KeyW'); press('KeyW');
@@ -54,9 +54,9 @@ test('the sail lever stays where W and S leave it and S at zero brakes only whil
   view.leverKey('KeyS');
   assert.equal(frame().naval.throttle, 0.5, 'a tap shorter than a frame still steps');
   press('ArrowDown'); press('KeyS');
-  assert.deepEqual(frame().naval, { throttle: 0, brake: 0, steer: 0, capture: false });
+  assert.deepEqual(frame().naval, { throttle: 0, brake: 0, steer: 0, capture: false, jump: 0 });
   view.leverKey('KeyS'); view.input.keys.add('KeyS');
-  assert.deepEqual(frame().naval, { throttle: 0, brake: 1, steer: 0, capture: false });
+  assert.deepEqual(frame().naval, { throttle: 0, brake: 1, steer: 0, capture: false, jump: 0 });
   assert.equal(levers.at(-1).value, -1);
   view.input.keys.delete('KeyS');
   assert.equal(frame().naval.brake, 0);
@@ -71,10 +71,10 @@ test('the touch lever sails and brakes, and taking the helm or losing focus rese
   view.sail = 0.6; view.leverBrake = 0;
   assert.equal(frame().naval.throttle, 0.6);
   view.sail = 0; view.leverBrake = 0.5;
-  assert.deepEqual(frame().naval, { throttle: 0, brake: 0.5, steer: 0, capture: false });
+  assert.deepEqual(frame().naval, { throttle: 0, brake: 0.5, steer: 0, capture: false, jump: 0 });
   view.sail = 0.75; view.leverBrake = 0;
   client.deck.active = true;
-  assert.deepEqual(frame().naval, { throttle: 0, brake: 0, steer: 0, capture: false }, 'on deck neither the sail nor the walk stick reaches the raft');
+  assert.deepEqual(frame().naval, { throttle: 0, brake: 0, steer: 0, capture: false, jump: 0 }, 'on deck neither the sail nor the walk stick reaches the raft');
   assert.equal(levers.at(-1).visible, false);
   view.leverKey('KeyS'); view.input.keys.add('KeyS');
   assert.equal(frame().naval.brake, 0, 'walking astern does not brake');

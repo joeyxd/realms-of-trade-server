@@ -1114,8 +1114,8 @@ export default {
     "Sailing maneuvers"
   ],
   "nav.sailKeys": [
-    "A/D · timón   W/S · vela   Q · ráfaga   E · cubierta   G · amarrar   Rueda · zoom",
-    "A/D · helm   W/S · sail   Q · gust   E · deck   G · dock   Wheel · zoom"
+    "A/D · timón   W/S · vela   Espacio · salto   Q · ráfaga   E · cubierta   G · amarrar   Rueda · zoom",
+    "A/D · helm   W/S · sail   Space · jump   Q · gust   E · deck   G · dock   Wheel · zoom"
   ],
   "nav.walkKeys": [
     "WASD · caminar   E · timón   G · amarrar   Rueda · zoom",
@@ -1200,6 +1200,10 @@ export default {
   "nav.gust": [
     "Ráfaga",
     "Gust"
+  ],
+  "nav.jump": [
+    "Salto",
+    "Jump"
   ],
   "nav.bag": [
     "Mochila",

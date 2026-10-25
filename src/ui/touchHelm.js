@@ -15,6 +15,7 @@ const ICONS = Object.freeze({
     { d: 'M12 1v3m0 16v3M1 12h3m16 0h3' }],
   helm: [{ d: 'M3 12a9 9 0 0 1 18 0M12 3v9l6 4M4 16l3-2m13 2-3-2' }],
   zoom: [{ tag: 'circle', attrs: { cx: '10', cy: '10', r: '6' } }, { d: 'm15 15 6 6' }],
+  jump: [{ d: 'M12 20V5m-6 6 6-6 6 6' }, { d: 'M5 20h14' }],
 });
 // A two-finger pinch on the open sea steps the camera once per this change in finger distance.
 const PINCH_STEP = 1.25;

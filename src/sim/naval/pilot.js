@@ -351,9 +351,10 @@ export class NavalPilot {
     const r = this.#records.get(owner);
     const keys = command && Object.keys(command);
     if (!r || r.ashore || !r.helm || !command || command.epoch !== r.epoch ||
-        (this.#liveVoyages ? ![5, 6].includes(keys.length) : keys.length !== 5) ||
-        keys.some((key) => !['epoch', 'seq', 'throttle', 'brake', 'steer', ...(this.#liveVoyages ? ['capture'] : [])].includes(key)) ||
-        (this.#liveVoyages && Object.hasOwn(command, 'capture') && typeof command.capture !== 'boolean')) return false;
+        (this.#liveVoyages ? ![5, 6, 7].includes(keys.length) : keys.length !== 5) ||
+        keys.some((key) => !['epoch', 'seq', 'throttle', 'brake', 'steer', ...(this.#liveVoyages ? ['capture', 'jump'] : [])].includes(key)) ||
+        (this.#liveVoyages && Object.hasOwn(command, 'capture') && typeof command.capture !== 'boolean') ||
+        (Object.hasOwn(command, 'jump') && command.jump !== 0 && command.jump !== 1)) return false;
     if (!r.helm && (command.throttle !== 0 || command.steer !== 0)) return false;
     const { epoch, ...axes } = command;
     if (this.#liveVoyages && !Object.hasOwn(axes, 'capture')) axes.capture = false;

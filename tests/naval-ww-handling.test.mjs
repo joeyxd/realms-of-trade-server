@@ -40,7 +40,8 @@ function reference(s, { throttle = 0, brake = 0, steer = 0 }, w = wind) {
 }
 
 test('tailwind speed follows the 30 Hz reference for twenty seconds at the WW proportion', () => {
-  let s = newNavalState(), ref = { speed: 0, helm: 0, yaw: 0 }, reached = 0;
+  // The sail starts hoisted: the hoist delay and burst (PT21a) have their own tests in naval-ww-jump.test.mjs.
+  let s = { ...newNavalState(), mast: 30 }, ref = { speed: 0, helm: 0, yaw: 0 }, reached = 0;
   for (let tick = 1; tick <= 1200; tick++) {
     s = stepNaval(s, { throttle: 1 }, rig, wind, env);
     if (!reached && forward(s) >= 50 * WW_SPEED) reached = tick;

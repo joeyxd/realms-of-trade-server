@@ -41,4 +41,15 @@ export const NAVAL_WW = Object.freeze({
   tillerMax: 0x2000, tillerDivisor: 4, tillerMaxStep: 700, tillerMinStep: 0x100,
   // Yaw per frame = turnRate * (tiller >> 6), turnRate = clamp(4 - 3 * |speed| / 55, 0.1, 3.6) (SH:1113-1134).
   turnBase: 4, turnSlope: 3, turnMin: 0.1, turnMax: 3.6, tillerShift: 64,
+  // Sail hoist (PT21a): the mast anim FN_MAST_ON2 plays 3 frames per WW frame (SH:1299) and the sail counts as ON from
+  // frame 7 (SH:1591). The anim's end frame lives in the Ship archive, not in SH: 30 is an assumed cap.
+  mastRate: 3, mastSailOn: 7, mastEnd: 30,
+  // Hoist burst (SH:1616-1628): speed jumps to min(2 * target, 80) once, then firstDecrementShipSpeed brings it down.
+  burstFactor: 2, burstMax: 80,
+  firstDecrement: Object.freeze({ scale: 0.1, maxStep: 5.0, minStep: 1.0 }), // SH:1095-1099; the burst ends below gap 3 (SH:1096)
+  burstGap: 3,
+  // Jump (SH:1638-1659): sail up, forward speed above 16.5, sail target of 11 or more; vy = clamp(target, 15, 40).
+  jumpSpeed: 16.5, jumpTarget: 11, jumpVyMin: 15, jumpVyMax: 40,
+  // Flight and landing (SH:4612-4613, 900-917): gravity per WW frame^2, max fall, landing vy floor, speed loss, turn boost frames.
+  gravity: 2.5, maxFall: 150, landVy: 15, landSpeed: 0.85, landFrames: 30, landFull: 15, // landFull: SH:1124
 });

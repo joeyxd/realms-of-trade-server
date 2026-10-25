@@ -325,7 +325,7 @@ export class RaftLayer {
     const lx = c * dx - sn * dz - px, lz = sn * dx + c * dz - pz;
     const cr = Math.cos(h.roll), sr = Math.sin(h.roll), cp = Math.cos(h.pitch), sp = Math.sin(h.pitch);
     const x1 = lx * cr - ly * sr + px, y1 = lx * sr + ly * cr;
-    const y2 = y1 * cp - lz * sp + h.y, z2 = y1 * sp + lz * cp + pz;
+    const y2 = y1 * cp - lz * sp + h.y + (view.lift || 0), z2 = y1 * sp + lz * cp + pz;
     node.position.set(view.x + c * x1 + sn * z2, view.y + y2, view.z - sn * x1 + c * z2);
     if (!pilot) return true;
     const state = view.riders.get(key) || view.riders.set(key, createRiderMotion()).get(key);
@@ -977,7 +977,9 @@ export class RaftLayer {
       const hull = stepHullMotion(view.hullMotion, { dt: hullDt, x: x + hc * px + hs * pz, z: z - hs * px + hc * pz, yaw });
       view.visual.rotation.set(hull.pitch, 0, hull.roll);
       HULL_PIVOT.set(px, 0, pz).applyEuler(view.visual.rotation);
-      view.visual.position.set(px - HULL_PIVOT.x, hull.y - HULL_PIVOT.y, pz - HULL_PIVOT.z);
+      // PT21a: the pilot's jump height rides on top of the hull motion (render only; riders add it in ride()).
+      view.lift = cleanNum(record.lift);
+      view.visual.position.set(px - HULL_PIVOT.x, hull.y - HULL_PIVOT.y + view.lift, pz - HULL_PIVOT.z);
     }
 
     for (const [id, view] of this.views) {
