@@ -136,3 +136,16 @@ test('PT05: the mouse wheel zooms the chase camera only while it drives the view
   assert.equal(view.wheelZoom(-1), true, 'paused, the wheel is swallowed');
   assert.equal(view.sceneCamera.zoomIdx, 2);
 });
+
+test('D6: the deck prompt takes the nearby helm before offering swim', () => {
+  const {view,client}=harness({deck:true}), calls=[];
+  const raft={id:'raft',x:0,y:.72,z:0,yaw:0,helm:{x:1,y:0,z:1,f:0}};
+  Object.assign(client,{joined:true,youServer:1,cur:{x:1,z:1},renderRafts:()=>[raft],
+    voyage:{active:true,phase:'sailing',shipId:'raft',canSwim:true},helmNaval:()=>calls.push('helm')});
+  view.command=op=>calls.push(op);
+  const action=view.navigationInteraction();
+  assert.equal(action.key,'E'); assert.deepEqual(action.actions.map(a=>a.key),['E','G']);
+  action.run(); assert.deepEqual(calls,['helm']);
+  client.cur.x=5;
+  assert.equal(view.navigationInteraction().key,'G');
+});

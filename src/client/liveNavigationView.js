@@ -428,7 +428,7 @@ export class LiveNavigationView {
         const raft = (c.renderRafts?.(1) || c.pred?.rafts || []).find((r) => String(r.id) === String(voyage.shipId));
         const helm = raft?.helm && pilotPoint(raft, raft.helm);
         if (player && helm && distance(player, helm) <= 2)
-          options.push({ key: 'E', prompt: t('nav.helmPrompt'), verb: t('nav.helm'), run: () => c.helmNaval?.() });
+          options.unshift({ key: 'E', prompt: t('nav.helmPrompt'), verb: t('nav.helm'), run: () => c.helmNaval?.() });
       }
       else if (c.naval?.active) options.push({ key: 'E', prompt: t('nav.walkPrompt'), verb: t('nav.walk'), run: () => c.walkNaval?.() });
       else if (voyage.canLand) options.push({ id: 'land', key: 'G', prompt: t('nav.landPrompt'), verb: t('nav.land'), run: () => this.command('land') });

@@ -274,31 +274,30 @@ export class NavalPilot {
   #supported(c) {
     if (this.#onDeck(c.e, c.shipId)) return true;
     const w = this.#world, ecs = w.ecs;
-    const floor = w.raftDeck.surface(ecs.x[c.e], ecs.z[c.e]);
-    const air = airborne(ecs, c.e) || ecs.castK[c.e] > 0 && ecs.act[c.e] === ACT.LEAP;
-    return air && floor?.id === c.shipId && floor.kind === 'deck' && ecs.y[c.e] >= floor.y;
+    return airborne(ecs, c.e) || ecs.castK[c.e] > 0 && ecs.act[c.e] === ACT.LEAP;
   }
 
   #overboard(c) {
     const w = this.#world, r = this.#records.get(c.e);
     this.#removeWalker(c, 'overboard', false);
+    const wet = refreshSwimming(w, c.e), ecs = w.ecs;
     if (r && !r.helm) {
       if (!w.navalTrial.park(r.handle, true)) { this.#release(r, 'support'); return; }
       const parked = w.navalTrial.snapshot(r.handle);
       r.body = parked.body; r.ack = parked.ack;
-      r.ashore = true; r.waterExit = true; r.landing = null;
+      r.ashore = true; r.helm = false; r.waterExit = !!wet;
+      r.landing = wet ? null : Object.freeze({ x: ecs.x[c.e], y: ecs.y[c.e], z: ecs.z[c.e] });
       r.epoch = this.#nextEpoch++; this.#epochs.set(c.e, r.epoch);
       w.navalRoute?.end(c.e, 'swim'); w.navalLesson?.end(c.e, 'swim');
       this.persist(c.e); w.profileDirty?.add(c.e);
       w.emit({ type: 'navalPilot', to: c.e, active: false, epoch: r.epoch - 1, why: 'swim' });
     }
-    refreshSwimming(w, c.e);
   }
 
-  deckSnapshot(e) {
+  deckSnapshot(e, ack) {
     const c = this.#walkers.get(e), r = c && this.#records.get(c.source.owner);
     return c ? Object.freeze({ active: true, epoch: c.epoch, shipId: c.shipId, mode: 'walk', tick: this.#world.tick,
-      ack: c.ack, state: c.state, player: this.#world.playerState(e), params: { ...c.params, openDoors: openDoorParts(c.source) },
+      ack: ack ?? c.ack, state: c.state, player: this.#world.playerState(e), params: { ...c.params, openDoors: openDoorParts(c.source) },
       parts: (r?.shipId === c.shipId ? r.body.operational.parts : activeRaftParts(c.source)).map((p) => [...p]) }) :
       Object.freeze({ active: false, epoch: this.#deckEpochs.get(e) || 0 });
   }
@@ -643,7 +642,10 @@ export class NavalPilot {
     }
     for (const c of this.#walkers.values()) {
       const pose = this.#pose(c.shipId); if (!pose) continue;
+      const prior = w.raftDeck.entries.get(c.shipId)?.record;
+      if (prior) c.state = readDeckState(ecs, c.e, prior);
       poseDeckState(ecs, c.e, pose, c.state);
+      const own = this.#records.get(c.e); if (own) own.anchor = c.state;
     }
     const priorParts = new Map([...w.raftDeck.entries].map(([id, g]) => [id, JSON.stringify(g.record.parts)]));
     w.raftDeck.update(publicRafts(w));
@@ -687,6 +689,7 @@ export class NavalPilot {
     ecs.x[e] = d.base.x + d.dir.x * Math.max(0, d.len - 10);
     ecs.z[e] = d.base.z + d.dir.z * Math.max(0, d.len - 10);
     ecs.y[e] = w.map.groundAt(ecs.x[e], ecs.z[e]);
+    ecs.jmpAct[e] = ecs.jmpVy[e] = 0; ecs.jmpPeak[e] = ecs.y[e];
     ecs.vx[e] = ecs.vz[e] = ecs.kbx[e] = ecs.kbz[e] = 0;
     ecs.dashT[e] = -1;
     ecs.castK[e] = ecs.castT[e] = ecs.castLock[e] = ecs.chg[e] = 0;

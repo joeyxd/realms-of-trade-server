@@ -580,6 +580,7 @@ export class GameClient {
   applyPredictedCommand(e, cmd) {
     if (!this.deck.active) { this.pred.applyCommand(e, cmd); return; }
     const pose = this.renderRafts().find((r) => r.id === this.deck.shipId);
+    this.deck.seq = cmd.seq;
     if (!pose) return;
     // Pose, integrate and capture against exactly one deck pose, including during ACK replay.
     this.pred.raftDeck.update(this.pred.rafts.map(r => r.id === pose.id ? { ...r, ...pose } : r));
@@ -587,7 +588,6 @@ export class GameClient {
     this.pred.applyCommand(e, cmd);
     this.deck.prevState = this.deck.state;
     this.deck.state = readDeckState(this.pred.ecs, e, pose);
-    this.deck.seq = cmd.seq;
   }
 
   renderRafts(alpha = 1) {

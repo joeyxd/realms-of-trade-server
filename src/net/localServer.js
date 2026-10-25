@@ -890,7 +890,7 @@ export class LocalServer {
         fire: c.entity ? fireStatus(w, c.entity) : null,
         freshwater: c.entity ? freshwaterStatus(w, c.entity) : null,
         capacity: c.entity ? ownerRaftCapacity(w, c.entity, rafts) : null,
-        ...(w.navalPilot ? { naval: w.navalPilot.snapshot(c.entity), deck: w.navalPilot.deckSnapshot(c.entity),
+        ...(w.navalPilot ? { naval: w.navalPilot.snapshot(c.entity), deck: w.navalPilot.deckSnapshot(c.entity, c.ack),
           voyage: w.navalPilot.voyageSnapshot?.(c.entity) || { active: false }, route: w.navalRoute?.snapshot(c.entity) || null,
           lesson: w.navalLesson?.snapshot(c.entity, this.progressionPersistence?.(id, PILOTING.milestone) || 'local') || null } : {}) });
       c.resourceSignature = resourceSignature;

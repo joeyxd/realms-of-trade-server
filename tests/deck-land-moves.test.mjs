@@ -16,14 +16,25 @@ import { setWeapon } from '../src/sim/systems/skills.js';
 import { findRaftWaterExit, SWIM_BOARDING_RANGE } from '../src/sim/naval/swimBoarding.js';
 import { GameClient } from '../src/client/gameClient.js';
 import { LocalServer } from '../src/net/localServer.js';
+import { NavalPilotServer } from '../src/net/navalPilotServer.js';
+import { hurtPlayer } from '../src/sim/systems/combat.js';
+import { LiveNavigationView } from '../src/client/liveNavigationView.js';
 
-function fixture() {
+function fixture({ notch = false } = {}) {
   const sea = { ...map, heights: new Float32Array(map.heights.length).fill(-2), groundAt: () => -2, onDock: () => false, queryColliders: () => [], colliders: [] };
   const w = new World(map.seed, { map: sea, server: true }); w.jumpMode = 'lab';
   installInventory(w, 'deck-moves'); installTrade(w); installRafts(w, 'deck-moves');
   const add = id => {
     const e = w.spawnPlayer({ clientId: id }), p = newProfile();
-    prepareRaftProfile(w,p); attachProfile(w,e,p); attachRafts(w,e,p); return e;
+    prepareRaftProfile(w,p);
+    if(notch && id===1) {
+      const ship=p.eco.ships.find(s=>s.kind==='raft');
+      ship.grid.parts=ship.grid.parts.filter(p=>p[0]!=='foundation' || p[1]!==1 || p[2]!==1);
+      ship.grid.parts.push(['foundation',2,0,0,0],['foundation',2,1,0,0],['foundation',3,0,0,0],['foundation',3,1,0,0]);
+      ship.grid.parts.find(p=>p[0]==='crate')[1]=2;
+      ship.grid.parts.sort((a,b)=>(b[0]==='foundation')-(a[0]==='foundation'));
+    }
+    attachProfile(w,e,p); attachRafts(w,e,p); return e;
   };
   const owner = add(1), guest = add(2), source = [...w.rafts.values()].find(r => r.owner === owner);
   w.ecs.x[source.entity] = 0; w.ecs.z[source.entity] = 0;
@@ -131,8 +142,8 @@ test('helm parks ordinary jump and sword commands; DECK_INPUT is retired at prot
   assert.equal(pilot.helm(owner,pilot.snapshot(owner).epoch),false);
 });
 
-test('GameClient replays normal jump and stick inputs in the turning raft frame through delayed ACKs', () => {
-  const messages=[], server=new LocalServer({seed:map.seed,navigation:true,jump:'lab',bots:0,enemies:false,send:(id,m)=>messages.push([id,structuredClone(m)])});
+function clientFixture(Server = LocalServer) {
+  const messages=[], server=new Server({seed:map.seed,navigation:true,jump:'lab',bots:0,enemies:false,send:(id,m)=>messages.push([id,structuredClone(m)])});
   const callbacks=[],snapshots=[];
   server.connect(1);server.connect(2);
   const transport={ start(){},onMessage:f=>callbacks.push(f),onSnapshot:f=>snapshots.push(f),
@@ -147,6 +158,11 @@ test('GameClient replays normal jump and stick inputs in the turning raft frame 
   }
   assert.ok(w.navalPilot.invite(owner,raft.id,guest));assert.ok(w.navalPilot.board(guest,raft.id));assert.ok(w.navalPilot.mount(owner,raft.id));
   server.broadcastSnapshot();deliver();assert.ok(client.deck.active);
+  return { server, client, deliver, w, owner, guest, raft };
+}
+
+test('GameClient replays normal jump and stick inputs in the turning raft frame through delayed ACKs', () => {
+  const {server,client,deliver,w,owner,guest}=clientFixture();
   for(let i=0;i<30;i++) {
     w.navalPilot.input(owner,{epoch:w.navalPilot.snapshot(owner).epoch,seq:i+1,throttle:1,brake:0,steer:.5});
     client.tickInput({mx:.05,mz:0,ax:client.cur.x+5,az:client.cur.z,prs:i===0?BTN.JUMP:0,btn:BTN.JUMP});
@@ -155,4 +171,108 @@ test('GameClient replays normal jump and stick inputs in the turning raft frame 
   deliver();const a=client.deck.state,b=w.navalPilot.deckSnapshot(guest).state;
   assert.ok(Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z)<.05);
   assert.ok(w.ecs.jmpAct[guest]>0);assert.equal(client.pending.length,0);
+});
+
+test('D1: an external hit survives a commandless sync and displaces a walker like land', () => {
+  const run = deck => {
+    const f=fixture(),{w,guest,pilot}=f, s=w.ecs;
+    if(!deck) { w.navalPilot=null; w.raftDeck.update([]); w.map={...w.map,groundAt:()=>f.raft().y}; }
+    const start={x:s.x[guest],z:s.z[guest]};
+    hurtPlayer(w,guest,1,{x:start.x,z:start.z-1,knock:3,kind:'melee',seq:0});
+    s.vx[guest]=.2;
+    if(deck) {
+      pilot.sync();
+      assert.ok(Math.abs(s.kbz[guest]-3)<1e-5);
+      assert.ok(Math.abs(s.vx[guest]-.2)<1e-5);
+    }
+    for(let i=0;i<15;i++) {
+      w.applyCommand(guest,{seq:i+1,mx:0,mz:0,btn:0,prs:0,ax:start.x,az:start.z+5,pt:w.tick});
+      w.stepWorld();
+    }
+    return {x:s.x[guest]-start.x,z:s.z[guest]-start.z};
+  };
+  const deck=run(true),land=run(false);
+  assert.ok(land.z>.1); assert.ok(Math.hypot(deck.x-land.x,deck.z-land.z)<.1);
+});
+
+for(const Server of [LocalServer,NavalPilotServer]) test(`D2: ${Server.name} late command advances deck ACK with land ACK`, () => {
+  const {server,client,deliver}=clientFixture(Server),c=server.clients.get(2);
+  c.fillPt=server.world.tick+10;
+  client.tickInput({mx:0,mz:0});
+  const seq=client.seq;
+  assert.equal(c.queue.length,1);
+  server.step(); server.broadcastSnapshot(); deliver();
+  assert.equal(server.stats.late,1); assert.equal(c.ack,seq);
+  assert.equal(client.deck.ack,c.ack); assert.equal(client.ackSeq,c.ack);
+  assert.equal(client.pending.length,0);
+});
+
+test('D3: a guest crosses a deck notch in flight without releasing the voyage', () => {
+  const f=fixture({notch:true}),{w,guest,owner,pilot,step}=f;
+  for(let i=0;i<30 && pilot.deckSnapshot(guest).state.x<1.7;i++) {
+    const yaw=f.raft().yaw; step(guest,{mx:Math.cos(yaw),mz:-Math.sin(yaw)},0);
+  }
+  let crossed=false,landed=false;
+  for(let i=0;i<160;i++) {
+    const local=pilot.deckSnapshot(guest).state;
+    const mx=local.x<4.6?1:-1;
+    const yaw=f.raft().yaw;
+    step(guest,{mx:mx*Math.cos(yaw),mz:-mx*Math.sin(yaw),btn:BTN.JUMP,prs:i===0?BTN.JUMP:0},0);
+    assert.ok(pilot.walking(guest),`seat retained at tick ${i}, local x ${local.x}`);
+    assert.ok(pilot.snapshot(owner).active,'owner retains the voyage');
+    if(airborne(w.ecs,guest) && !w.raftDeck.surface(w.ecs.x[guest],w.ecs.z[guest])) crossed=true;
+    if(i>0 && !airborne(w.ecs,guest)) { landed=true; break; }
+  }
+  assert.ok(crossed,'flew over the missing footprint cell'); assert.ok(landed);
+});
+
+test('D3: a jump past the rail keeps its raft frame until it reaches the water', () => {
+  const f=fixture(),{w,guest,pilot,step}=f;
+  let outside=false;
+  for(let i=0;i<180 && pilot.walking(guest);i++) {
+    step(guest,{mx:1,btn:BTN.JUMP,prs:i===0?BTN.JUMP:0},0);
+    if(airborne(w.ecs,guest)) {
+      assert.ok(pilot.walking(guest));
+      outside ||= !w.raftDeck.surface(w.ecs.x[guest],w.ecs.z[guest]);
+    }
+  }
+  assert.ok(outside); assert.equal(pilot.walking(guest),false);
+  assert.equal(w.ecs.swim[guest],1); assert.equal(airborne(w.ecs,guest),false);
+});
+
+test('D4: the owner jumps onto a dry dock, parks the voyage and uses F to reboard', () => {
+  const f=fixture(),{w,owner,guest,pilot,step}=f, s=w.ecs;
+  const edge=4, height=f.raft().y;
+  w.map={...w.map,groundAt:x=>x>=edge?height:-2,onDock:x=>x>=edge}; w.raftDeck.map=w.map;
+  assert.ok(pilot.walk(owner,pilot.snapshot(owner).epoch));
+  for(let i=0;i<180 && pilot.walking(owner);i++)
+    step(owner,{mx:1,btn:BTN.JUMP,prs:i===0?BTN.JUMP:0},0);
+  assert.equal(pilot.walking(owner),false); assert.equal(s.swim[owner],0);
+  const voyage=pilot.voyageSnapshot(owner);
+  assert.equal(voyage.phase,'shore'); assert.equal(voyage.shoreService,true); assert.ok(voyage.landing);
+  assert.ok(pilot.walking(guest));
+  const parked=f.raft();
+  for(let i=0;i<60;i++) step(owner,{},0);
+  assert.ok(Math.hypot(f.raft().x-parked.x,f.raft().z-parked.z)<.05);
+  const view=Object.create(LiveNavigationView.prototype),client={joined:true,youServer:owner,
+    cur:{x:s.x[owner],z:s.z[owner]},voyage};
+  Object.assign(view,{getClient:()=>client,isActive:()=>true,input:{enabled:true},world:w,
+    command:(op,id)=>{assert.equal(op,'reboard');return pilot.reboard(owner,id);}});
+  const action=view.navigationInteraction(); assert.equal(action.key,'F'); assert.ok(action.run());
+  assert.equal(pilot.voyageSnapshot(owner).phase,'sailing'); assert.ok(pilot.snapshot(owner).active);
+});
+
+test('D5: rescuing an airborne walker clears jump height and velocity', () => {
+  const {w,guest,pilot,step}=fixture(); step(guest,{btn:BTN.JUMP,prs:BTN.JUMP});
+  assert.ok(airborne(w.ecs,guest)); assert.ok(pilot.leaveDeck(guest,pilot.deckSnapshot(guest).epoch));
+  assert.equal(w.ecs.jmpAct[guest],0); assert.equal(w.ecs.jmpVy[guest],0);
+  assert.equal(w.ecs.jmpPeak[guest],w.ecs.y[guest]);
+});
+
+test('D5: missing raft pose still tracks sent sequences and accepts their later ACK', () => {
+  const {server,client,deliver}=clientFixture(),render=client.renderRafts;
+  client.renderRafts=()=>[]; client.tickInput({mx:0,mz:0}); client.renderRafts=render;
+  assert.equal(client.deck.seq,client.seq);
+  server.step(); server.broadcastSnapshot(); deliver();
+  assert.equal(client.deck.ack,client.seq); assert.equal(client.pending.length,0);
 });
