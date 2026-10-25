@@ -13,7 +13,7 @@ const DATA_ES_EN = {
   'Aldea Coralina':'Coral Village','Puerto de pescadores y piratas retirados':'Harbor of fishermen and retired pirates',
   'Sendero del Humo':'Smoke Trail','Sigue el humo hasta el volcán':'Follow the smoke to the volcano',
   'Selva Esmeralda':'Emerald Jungle','Algo se mueve entre las palmas':'Something moves among the palms',
-  'Solo los valientes salen con el cofre':'Only the brave leave with the chest',
+  'Sin PvP: solo los valientes salen con el cofre':'No PvP: only the brave leave with the chest',
   'Cala Calavera':'Skull Cove','Sin ley: fuego amigo y botín completo':'No law: friendly fire and full loot',
   'Mar Turquesa':'Turquoise Sea',
   'Corsario':'Corsair','Exploradora':'Explorer','Bucanero':'Buccaneer','Brasa':'Ember',

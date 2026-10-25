@@ -16,7 +16,7 @@ import { ENEMIES, ENEMY_KINDS } from '../../data/enemies.js';
 import { mulberry32 } from '../../core/rng.js';
 import { rollItem, itemValue, itemScore, sanitizeItem } from '../items.js';
 import { refreshStats, masteryXpToNext } from './stats.js';
-import { setWeapon } from './skills.js';
+import { setWeapon, castBusy } from './skills.js';
 import { C } from '../ecs.js';
 import { LAWLESS } from '../../data/lawless.js';
 import { newEco, sanitizeEco } from './trade.js';
@@ -635,6 +635,8 @@ export function equipItem(world, e, uid, slot) {
   const item = p.bag[i], B = BASES[item.b];
   let s = slot && slotFits(B.slot, slot) ? slot : B.slot;
   if (B.slot === 'ring' && !(slot && slotFits('ring', slot))) s = !p.eq.ring1 ? 'ring1' : !p.eq.ring2 ? 'ring2' : 'ring1';
+  // PT13: a weapon swap never cuts a swing or a cast short (the quick bar makes swapping a tap).
+  if (s === 'weapon' && (ecs.atkStage[e] > 0 || castBusy(ecs, e))) return denied(world, e, 'busy');
   const old = p.eq[s];
   p.eq[s] = item;
   if (old) p.bag[i] = old; else p.bag.splice(i, 1);

@@ -1,6 +1,8 @@
-import { t, getLocale } from '../core/i18n.js';
+import { t, getLocale, translateData } from '../core/i18n.js';
 import { BTN } from '../sim/systems/movement.js';
+import { BASES } from '../data/items.js';
 import { atlasIcon, escHtml } from './kit.js';
+import { itemIcon } from './itemui.js';
 
 const GOODS = ['pescado', 'galleta', 'fruta', 'agua', 'ron', 'coco'];
 const SKILLS = ['q', 'e', 'r', 'g'];
@@ -15,6 +17,8 @@ export function sanitizeSlots(raw) {
       if (entry?.k === 'potion' || entry?.k === 'drink') return { k: entry.k };
       if (entry?.k === 'eat' && GOODS.includes(entry.good)) return { k: 'eat', good: entry.good };
       if (entry?.k === 'skill' && SKILLS.includes(entry.slot)) return { k: 'skill', slot: entry.slot };
+      // PT13: a weapon slot holds a bag weapon by its uid; the profile resolves it again on every update.
+      if (entry?.k === 'weapon' && Number.isInteger(entry.uid) && entry.uid >= 0) return { k: 'weapon', uid: entry.uid };
       throw new Error('slot');
     });
   } catch { return defaults(); }
@@ -22,14 +26,14 @@ export function sanitizeSlots(raw) {
 export function quickOptions(state = {}) {
   return [{ k: 'potion' }, ...(state.canteen != null ? [{ k: 'drink' }] : []),
     ...GOODS.filter(good => state.goods?.[good] >= 1).map(good => ({ k: 'eat', good })),
+    ...(state.weapons || []).map(w => ({ k: 'weapon', uid: w.uid })),
     ...SKILLS.filter(slot => slot !== 'g' || state.pearl).map(slot => ({ k: 'skill', slot }))];
 }
 const entryKey = entry => entry ? entry.good || entry.slot || entry.k : 'empty';
-const label = entry => t('touch.quick.' + entryKey(entry));
 
 export class QuickBar {
-  constructor(root, { input, touch, freshwater, enabled = () => true }) {
-    Object.assign(this, { input, touch, freshwater, enabled, state: {}, picking: null });
+  constructor(root, { input, touch, freshwater, equip, enabled = () => true }) {
+    Object.assign(this, { input, touch, freshwater, equip, enabled, state: {}, picking: null });
     this.doc = root.ownerDocument;
     this.root = this.doc.createElement('div'); this.root.className = 'touch-quick';
     this.root.innerHTML = '<div class="quick-row"></div><div class="quick-picker" hidden></div>';
@@ -62,7 +66,17 @@ export class QuickBar {
     const b = this.touch.btns[entry.slot];
     return { icon: b.querySelector('.ico').innerHTML, locked: b.hidden || b.classList.contains('locked'), kind: this.touch.kinds[entry.slot] };
   }
+  // PT13: the weapon a slot points at ({ uid, item, worn }) from the profile's hand and bag, or null once it is gone.
+  weapon(entry) {
+    return entry?.k === 'weapon' ? (this.state.weapons || []).find(w => w.uid === entry.uid) || null : null;
+  }
+  label(entry) {
+    if (entry?.k !== 'weapon') return t('touch.quick.' + entryKey(entry));
+    const w = this.weapon(entry);
+    return w ? translateData(BASES[w.item.b].name) + (w.worn ? ' · ' + t('touch.quick.worn') : '') : t('touch.quick.weaponGone');
+  }
   icon(entry) {
+    if (entry?.k === 'weapon') { const w = this.weapon(entry); return w ? itemIcon(w.item) : ''; }
     return entry?.k === 'skill' ? this.skill(entry).icon : entry ? atlasIcon(entry.k === 'eat' ? entry.good : entry.k === 'drink' ? 'agua' : 'potion') : '';
   }
   bind(b, i) {
@@ -94,6 +108,7 @@ export class QuickBar {
         else if (g.entry.k === 'potion') this.input.press(BTN.POTION);
         else if (g.entry.k === 'drink') this.freshwater.quickDrink();
         else if (g.entry.k === 'eat') this.freshwater.quickEat(g.entry.good);
+        else if (g.entry.k === 'weapon') { const w = this.weapon(g.entry); if (w && !w.worn && this.equip) this.equip(g.entry.uid); }
         else { this.input.aimDevice = 'touch'; this.input.press(BTN[g.entry.slot.toUpperCase()]); }
       }
       this.cancel();
@@ -112,14 +127,14 @@ export class QuickBar {
   openPicker(i) { this.picking = i; this.pickerKey = null; this.renderPicker(); }
   renderPicker() {
     if (this.picking == null) return;
-    const options = quickOptions(this.state), key = JSON.stringify([getLocale(), options.map(e => [e, this.icon(e)]), !!this.slots[this.picking]]);
+    const options = quickOptions(this.state), key = JSON.stringify([getLocale(), options.map(e => [e, this.icon(e), this.label(e)]), !!this.slots[this.picking]]);
     if (key === this.pickerKey) return;
     this.pickerKey = key; this.picker.hidden = false;
     this.picker.setAttribute('aria-label', t('touch.quick.picker'));
     this.picker.replaceChildren();
     for (const entry of [...options, ...(this.slots[this.picking] ? [null] : [])]) {
       const b = this.doc.createElement('button'); b.type = 'button';
-      b.innerHTML = `<span class="ico">${this.icon(entry)}</span><span>${escHtml(entry ? label(entry) : t('touch.quick.clear'))}</span>`;
+      b.innerHTML = `<span class="ico">${this.icon(entry)}</span><span>${escHtml(entry ? this.label(entry) : t('touch.quick.clear'))}</span>`;
       b.addEventListener('click', () => { this.slots[this.picking] = entry; this.closePicker(); this.save(); this.refresh(); });
       this.picker.appendChild(b);
     }
@@ -129,15 +144,16 @@ export class QuickBar {
     this.state = state;
     if (!this.enabled()) { this.cancel(); if (this.picking != null) this.closePicker(); }
     const views = this.slots.map(entry => {
-      const skill = this.skill(entry), count = !entry || skill ? null : entry.k === 'potion' ? state.potions || 0 : entry.k === 'drink' ? state.canteen || 0 : state.goods?.[entry.good] || 0;
-      return { icon: this.icon(entry), count, dim: skill ? skill.locked : entry && count < 1, label: label(entry) };
+      const skill = this.skill(entry), w = this.weapon(entry), weapon = entry?.k === 'weapon';
+      const count = !entry || skill || weapon ? null : entry.k === 'potion' ? state.potions || 0 : entry.k === 'drink' ? state.canteen || 0 : state.goods?.[entry.good] || 0;
+      return { icon: this.icon(entry), count, dim: skill ? skill.locked : weapon ? !w : entry && count < 1, worn: !!w?.worn, label: this.label(entry) };
     });
     const key = JSON.stringify([getLocale(), this.open, views]);
     if (key !== this.renderKey) {
       this.renderKey = key; this.root.classList.toggle('expanded', this.open);
       this.row.setAttribute('aria-label', t('touch.quick.bar'));
       this.buttons.forEach((b, i) => {
-        const v = views[i]; b.hidden = !this.open && i >= 4; b.classList.toggle('empty', !!v.dim);
+        const v = views[i]; b.hidden = !this.open && i >= 4; b.classList.toggle('empty', !!v.dim); b.classList.toggle('worn', v.worn);
         b.setAttribute('aria-label', v.label);
         b.innerHTML = `<span class="ico">${v.icon}</span>${this.slots[i]?.k === 'skill' ? `<span class="lbl">${escHtml(v.label)}</span>` : ''}${v.count == null ? '' : `<b class="cnt">${v.count}</b>`}`;
       });

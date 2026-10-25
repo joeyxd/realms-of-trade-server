@@ -17,7 +17,7 @@ export const ZONES = {
   aldea: { name: 'Aldea Coralina', sub: 'Puerto de pescadores y piratas retirados' },
   camino: { name: 'Sendero del Humo', sub: 'Sigue el humo hasta el volcán' },
   selva: { name: 'Selva Esmeralda', sub: 'Algo se mueve entre las palmas' },
-  caldera: { name: 'La Caldera', sub: 'Solo los valientes salen con el cofre' },
+  caldera: { name: 'La Caldera', sub: 'Sin PvP: solo los valientes salen con el cofre' }, // PT07: the law holds here
   // M4.5: no law inside the ring of skulls (friendly fire, public loot, you drop what you carry).
   calavera: { name: 'Cala Calavera', sub: 'Sin ley: fuego amigo y botín completo', lawless: true },
   mar: { name: 'Mar Turquesa', sub: '' },

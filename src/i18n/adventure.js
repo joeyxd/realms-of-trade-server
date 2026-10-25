@@ -299,6 +299,7 @@ export default {
   'reward.denied.combat': ['Fuera de combate para cambiar (3 s sin recibir daño).', 'Out of combat to switch (3 s without taking damage).'],
   'reward.denied.lawless': ['En la Cala sin ley no se cambia de tatuaje.', 'You cannot change tattoos in the lawless Cove.'],
   'reward.denied.weapon': ['Ese arte es de otra arma.', 'That art belongs to another weapon.'],
+  'reward.denied.busy': ['No cambias de arma en mitad de un golpe.', 'No weapon swap in the middle of a blow.'],
   'reward.denied.gold': ['Te falta oro.', 'You do not have enough gold.'],
   'reward.denied.far': ['Acércate a Doña Sepia.', 'Move closer to Doña Sepia.'],
   'reward.denied.rank': ['Esa forma pide más rango.', 'That form requires a higher rank.'],

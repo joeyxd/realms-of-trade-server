@@ -800,6 +800,7 @@ body.touch #hud .hud-top-right > .icon-btn:active, body.touch #hud .hud-top-righ
 #touch .touch-quick .tbtn.on { transform: scale(.92); opacity: 1; }
 #touch .touch-quick .tbtn.empty { opacity: .35; }
 #touch .touch-quick .tbtn.empty.on { opacity: 1; }
+#touch .touch-quick .tbtn.worn { box-shadow: 0 0 0 2px rgb(250 204 21 / .85), 0 0 10px rgb(250 204 21 / .4); }
 #touch .touch-quick .tbtn[hidden], #touch .quick-picker[hidden], body.is-naval #touch .touch-quick { display: none; }
 #touch .touch-quick .ico { width: 58%; }
 #touch .touch-quick .kit-ico, #touch .touch-quick .kit-item-art { display: block; width: 100%; height: 100%; }

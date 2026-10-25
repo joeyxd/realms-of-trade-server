@@ -14,7 +14,7 @@ import { PEARLS } from '../data/pearls.js';
 import { dataText, dataParam, rich, text as ltext, formatNumber } from '../core/i18n.js';
 
 // Why a tattoo change was refused (skillDenied, M4.7).
-const DENY = { combat: 'reward.denied.combat', lawless: 'reward.denied.lawless', weapon: 'reward.denied.weapon', gold: 'reward.denied.gold', far: 'reward.denied.far', rank: 'reward.denied.rank', unknown: 'reward.denied.unknown' };
+const DENY = { combat: 'reward.denied.combat', lawless: 'reward.denied.lawless', weapon: 'reward.denied.weapon', gold: 'reward.denied.gold', far: 'reward.denied.far', rank: 'reward.denied.rank', busy: 'reward.denied.busy', unknown: 'reward.denied.unknown' };
 const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V'];
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);

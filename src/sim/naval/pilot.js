@@ -351,10 +351,11 @@ export class NavalPilot {
     const r = this.#records.get(owner);
     const keys = command && Object.keys(command);
     if (!r || r.ashore || !r.helm || !command || command.epoch !== r.epoch ||
-        (this.#liveVoyages ? ![5, 6, 7].includes(keys.length) : keys.length !== 5) ||
-        keys.some((key) => !['epoch', 'seq', 'throttle', 'brake', 'steer', ...(this.#liveVoyages ? ['capture', 'jump'] : [])].includes(key)) ||
+        (this.#liveVoyages ? ![5, 6, 7, 8].includes(keys.length) : keys.length !== 5) ||
+        keys.some((key) => !['epoch', 'seq', 'throttle', 'brake', 'steer', ...(this.#liveVoyages ? ['capture', 'jump', 'canto'] : [])].includes(key)) ||
         (this.#liveVoyages && Object.hasOwn(command, 'capture') && typeof command.capture !== 'boolean') ||
-        (Object.hasOwn(command, 'jump') && command.jump !== 0 && command.jump !== 1)) return false;
+        (Object.hasOwn(command, 'jump') && command.jump !== 0 && command.jump !== 1) ||
+        (Object.hasOwn(command, 'canto') && command.canto !== 0 && command.canto !== 1)) return false;
     if (!r.helm && (command.throttle !== 0 || command.steer !== 0)) return false;
     const { epoch, ...axes } = command;
     if (this.#liveVoyages && !Object.hasOwn(axes, 'capture')) axes.capture = false;
@@ -586,6 +587,7 @@ export class NavalPilot {
       if (r.helm) crew.push({ entity: r.owner, epoch: r.epoch, mode: 'helm', anchor: { ...r.anchor }, mag: 0 });
       return { ...record, ...r.body.pose, parts: r.body.operational.parts.map((p) => [...p]), crew,
         voyage: true,
+        ...(r.body.state.tick < r.body.canto?.until ? { canto: { yaw: r.body.canto.yaw } } : {}),
         hull: { ...hullIntegrity(r.body.structure) }, partHealth: r.body.structure.entries.map((p) =>
           ({ id: p.id, part: [...p.part], hp: p.hp, maxHp: p.maxHp })),
         pilot: { owner: r.owner, epoch: r.epoch, anchor: { ...r.anchor } } };

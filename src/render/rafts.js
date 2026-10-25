@@ -345,14 +345,40 @@ export class RaftLayer {
     node.rotation.x = 0; node.rotation.z = 0;
   }
 
-  setSailing(id, { active = false, sailOn = active, steer = 0, windYaw = 0, strength = 0, boost = 0, dt = 0, pilot = null } = {}) {
+  setSailing(id, { active = false, sailOn = active, steer = 0, windYaw = 0, strength = 0, boost = 0, canto = false, dt = 0, pilot = null } = {}) {
     if (!this.sailingRig) return null;
     const view = this.views.get(String(id));
     if (!view) return null;
+    this.updateCanto(view, !!canto, view.hullTime || 0);
     const state = { active: !!active, sailOn: !!sailOn, steer: clamp(cleanNum(steer), -1, 1),
       windYaw: cleanNum(windYaw), strength: clamp(cleanNum(strength), 0, 1), boost: clamp(cleanNum(boost), 0, 1), dt: clamp(Math.abs(cleanNum(dt)), 0, 1),
       pilot: pilot && ['x', 'y', 'z', 'f'].every((key) => Number.isFinite(pilot[key])) ? { ...pilot } : null };
     return this.applySailing(view, state);
+  }
+
+  // Our marker: eight white wind streaks above the hull, one orbit every four seconds.
+  updateCanto(view, active, time) {
+    if (active && !view.cantoMarker) {
+      const marker = new THREE.Group();
+      marker.name = 'raft:canto';
+      marker.position.set(view.pivot.x, 3.2, view.pivot.z);
+      const geometry = this.boxShape(0.045, 0.045, 0.55);
+      if (!this.materials.has('canto-streak'))
+        this.materials.set('canto-streak', glowBasic({ color: 0xffffff }, 1));
+      for (let i = 0; i < 8; i++) {
+        const angle = i * Math.PI / 4;
+        const streak = new THREE.Mesh(geometry, this.materials.get('canto-streak'));
+        streak.position.set(Math.cos(angle) * 1.15, 0, Math.sin(angle) * 1.15);
+        streak.rotation.y = -angle;
+        marker.add(streak);
+      }
+      view.visual.add(marker);
+      view.cantoMarker = marker;
+    }
+    if (view.cantoMarker) {
+      view.cantoMarker.visible = active;
+      view.cantoMarker.rotation.y = cleanNum(time) * Math.PI / 2;
+    }
   }
 
   cylinderShape(rt, rb, h, segments = 8) {
@@ -972,6 +998,7 @@ export class RaftLayer {
       // WW hull motion, piloted or moored: a fixed 30 Hz spring state fed with the drawn pose (render only).
       const hullDt = Number.isFinite(view.hullTime) ? clamp(t - view.hullTime, 0, 1) : 0;
       view.hullTime = t;
+      this.updateCanto(view, !!record.canto, t);
       // Feed the hull centre (a turning corner would read as speed) and rotate the visual about it.
       const px = view.pivot.x, pz = view.pivot.z, hc = Math.cos(yaw), hs = Math.sin(yaw);
       const hull = stepHullMotion(view.hullMotion, { dt: hullDt, x: x + hc * px + hs * pz, z: z - hs * px + hc * pz, yaw });

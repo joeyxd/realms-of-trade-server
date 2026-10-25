@@ -1,7 +1,7 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
 import { jumpStage } from '../sim/systems/jump.js';
-export const PROTOCOL_VERSION = 75; // CMB P3c roll and shield-stick player fields, ACT 32-33 (74: SHIP_INPUT may carry jump:0|1; 73: CMB Melee port behind MN_MELEE, grab and shield player fields, ACT 22-31; 72: deck walkers on land INPUTS)
+export const PROTOCOL_VERSION = 76; // SHIP_INPUT may carry canto:0|1 (75: CMB P3c roll and shield-stick player fields, ACT 32-33; 74: SHIP_INPUT may carry jump:0|1; 73: CMB Melee port behind MN_MELEE, grab and shield player fields, ACT 22-31; 72: deck walkers on land INPUTS)
 
 export const MSG = {
   // client -> server
@@ -54,7 +54,7 @@ export const MSG = {
   SAVE: 'save',       // {blob}: keep this and send it back in your next hello (M4, P3)
   // Session-owned helm and relative deck input; the remaining naval/trade messages stay reserved.
   SHIP_SPAWN: 'ship_spawn',
-  SHIP_INPUT: 'ship_input', // {epoch, seq, throttle, brake, steer, capture?:boolean, jump?:0|1}; session owns pilot
+  SHIP_INPUT: 'ship_input', // {epoch, seq, throttle, brake, steer, capture?:boolean, jump?:0|1, canto?:0|1}; session owns pilot
   SHIP_STATE: 'ship_state',
   BOARD: 'board',
   DOCK: 'dock',

@@ -81,7 +81,7 @@ import { MSG, PROTOCOL_VERSION } from './net/protocol.js';
 import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from './data/quests.js';
 import { ENCOUNTERS } from './data/encounters.js';
 import { MASTERY } from './data/weapons.js';
-import { CONSUMABLES } from './data/items.js';
+import { BASES, CONSUMABLES } from './data/items.js';
 import { phaseAt } from './data/clock.js';
 import { elementVisual } from './data/elements.js';
 import { audio } from './audio/engine.js';
@@ -491,7 +491,13 @@ async function boot() {
     onNewGame: () => { location.reload(); },
     gpu: () => st.gpu,
   });
-  const quickBar = isTouch ? new QuickBar(touch.root, { input, touch, freshwater: freshwaterPanel,
+  // PT13: the weapons a quick slot may hold: the one in hand first, then the bag's (uid, item, worn).
+  const quickWeapons = () => {
+    const p = client?.profile; if (!p) return [];
+    return [...(p.eq?.weapon ? [{ uid: p.eq.weapon.u, item: p.eq.weapon, worn: true }] : []),
+      ...(p.bag || []).filter((it) => BASES[it.b]?.slot === 'weapon').map((it) => ({ uid: it.u, item: it, worn: false }))];
+  };
+  const quickBar = isTouch ? new QuickBar(touch.root, { input, touch, freshwater: freshwaterPanel, equip: (uid) => sendCmd({ type: 'equip', uid }),
     enabled: () => st.mode === 'playing' && !pause.open && input.enabled && !ps.dead && client.joined
       && !document.body.classList.contains('is-naval'),
   }) : null;
@@ -1131,6 +1137,11 @@ async function boot() {
         settings.calaTaught = true; saveSettings();
         hud.toast(rich('runtime.lawlessHint'), 11000);
       }
+    }
+    // PT07: the first visit to La Caldera says the law holds there (pirate duels only in the Cala).
+    if (z === 'caldera' && st.mode === 'playing' && !settings.calderaTaught) {
+      settings.calderaTaught = true; saveSettings();
+      hud.toast(rich('runtime.calderaHint'), 9000);
     }
     ambience.setZone(z);
     world.lighting.setZone(z === 'caldera', 2);
@@ -1799,7 +1810,7 @@ async function boot() {
           touch.setPearl(sd.g.id, ps.cdG / ((sd.g.S.cd || 1) * (1 - (ps.cdr || 0))));
           touch.kinds = slotIn.kinds;
           quickBar.update({ potions: ps.potions | 0, canteen: freshwaterPanel.canteen()?.water ?? null,
-            goods: freshwaterPanel.pack()?.goods || {}, pearl: sd.g.id !== 'none' });
+            goods: freshwaterPanel.pack()?.goods || {}, pearl: sd.g.id !== 'none', weapons: quickWeapons() });
           touch.setCooldowns(ps.cdQ / cdQ, ps.cdE / cdE, ps.riposte >= tuning.parry.riposte.max);
         }
         encounterUi();

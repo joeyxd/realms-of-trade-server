@@ -20,6 +20,8 @@ export default {
   'touch.quick.e': ['E', 'E'],
   'touch.quick.r': ['R', 'R'],
   'touch.quick.g': ['G', 'G'],
+  'touch.quick.worn': ['En la mano', 'In hand'],
+  'touch.quick.weaponGone': ['Arma que ya no llevas', 'A weapon you no longer carry'],
   "runtime.contentChanged": ["El mapa publicado cambió", "The published map changed"],
   "runtime.contentChangedHint": ["Recarga para ver la nueva revisión compartida. Tu progreso se conserva.", "Reload to see the new shared revision. Your progress is preserved."],
   "runtime.contentReload": ["Recargar", "Reload"],
@@ -223,6 +225,10 @@ export default {
   "runtime.safe": [
     "<b>A salvo.</b> Fuera de la Cala vuelve la ley: nadie de la tripulación te hiere y lo tuyo es tuyo.",
     "<b>Safe.</b> Outside the cove, the law returns: your crew cannot hurt you and your belongings stay yours."
+  ],
+  "runtime.calderaHint": [
+    "<b>La Caldera: aquí rige la ley.</b> Ningún pirata hiere a otro, ni tu tripulación a ti. Los duelos entre piratas, solo en <b>Cala Calavera</b>.",
+    "<b>La Caldera: the law holds here.</b> No pirate can hurt another, nor your crew you. Pirate duels happen only in <b>Skull Cove</b>."
   ],
   "runtime.lawlessHint": [
     "<b>☠ Cala Calavera: aquí no hay ley.</b> Tus golpes hieren a cualquier pirata de dentro (tu tripulación también) y los suyos a ti. Los mobs se pelean entre ellos y los <b>Desalmados</b> cazan a todos. El botín es de quien lo pisa primero. <b>Si caes aquí, sueltas todo lo que llevas</b> (el oro no).",
@@ -1114,8 +1120,8 @@ export default {
     "Sailing maneuvers"
   ],
   "nav.sailKeys": [
-    "A/D · timón   W/S · vela   Espacio · salto   Q · ráfaga   E · cubierta   G · amarrar   Rueda · zoom",
-    "A/D · helm   W/S · sail   Space · jump   Q · gust   E · deck   G · dock   Wheel · zoom"
+    "A/D · timón   W/S · vela   Espacio · salto   R · canto   Q · ráfaga   E · cubierta   G · amarrar   Rueda · zoom",
+    "A/D · helm   W/S · sail   Space · jump   R · song   Q · gust   E · deck   G · dock   Wheel · zoom"
   ],
   "nav.walkKeys": [
     "WASD · caminar   E · timón   G · amarrar   Rueda · zoom",
@@ -1201,6 +1207,10 @@ export default {
     "Ráfaga",
     "Gust"
   ],
+  "nav.canto": ["Canto del viento", "Wind song"],
+  "nav.cantoActive": ["Canto · {s} s", "Wind song · {s} s"],
+  "nav.cantoCooling": ["Canto enfría · {s} s", "Wind song cooling · {s} s"],
+  "nav.cantoReady": ["Canto listo · R", "Wind song ready · R"],
   "nav.jump": [
     "Salto",
     "Jump"

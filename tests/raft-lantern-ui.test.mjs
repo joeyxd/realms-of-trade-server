@@ -127,7 +127,7 @@ test('LiveNavigationView selects the nearest V context, routes touch action thro
   assert.equal(view.keyAction('E').run(), 'E');
   assert.equal(view.keyAction('G').run(), 'G');
   view.updateActions();
-  assert.deepEqual(touchActions.map((action) => action.id), ['lantern', 'bag', 'mode', 'center', 'map', 'reboard', 'land']);
+  assert.deepEqual(touchActions.map((action) => action.id), ['lantern', 'jump', 'canto', 'bag', 'mode', 'center', 'map', 'reboard', 'land']);
   assert.equal(touchActions[0].shortcut, 'V');
   assert.equal(touchActions.find((action) => action.id === 'center').shortcut, 'Y');
 });

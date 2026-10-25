@@ -30,20 +30,25 @@ test('quick circles fit the safe bottom band and clear every existing circle in 
 test('sanitizeSlots rejects malformed storage and returns independent defaults', () => {
   const defaults = [{ k: 'potion' }, { k: 'drink' }, ...Array(6).fill(null)];
   for (const raw of [null, '{bad', [], Array(7).fill(null), [{ k: 'tool' }, ...Array(7).fill(null)],
-    [{ k: 'eat', good: 'madera' }, ...Array(7).fill(null)], [{ k: 'skill', slot: 'w' }, ...Array(7).fill(null)]]) {
+    [{ k: 'eat', good: 'madera' }, ...Array(7).fill(null)], [{ k: 'skill', slot: 'w' }, ...Array(7).fill(null)],
+    [{ k: 'weapon', uid: 1.5 }, ...Array(7).fill(null)], [{ k: 'weapon', uid: -1 }, ...Array(7).fill(null)], [{ k: 'weapon' }, ...Array(7).fill(null)]]) {
     assert.deepEqual(sanitizeSlots(raw), defaults);
   }
   const valid = [{ k: 'potion' }, { k: 'drink' }, { k: 'eat', good: 'coco' }, { k: 'skill', slot: 'q' },
-    { k: 'skill', slot: 'e' }, { k: 'skill', slot: 'r' }, { k: 'skill', slot: 'g' }, null];
+    { k: 'skill', slot: 'e' }, { k: 'skill', slot: 'r' }, { k: 'skill', slot: 'g' }, { k: 'weapon', uid: 7 }];
   assert.deepEqual(sanitizeSlots(JSON.stringify({ slots: valid, open: true })), valid);
+  assert.deepEqual(sanitizeSlots([{ k: 'weapon', uid: 7, item: { b: 'sable' } }, ...Array(7).fill(null)])[0], { k: 'weapon', uid: 7 });
   assert.deepEqual(sanitizeSlots(valid), valid);
   const a = sanitizeSlots(null); a[0].k = 'drink'; assert.deepEqual(sanitizeSlots(null), defaults);
 });
 test('picker options follow goods, canteen presence and pearl availability', () => {
   const empty = quickOptions({ canteen: null, goods: { pescado: 0, fruta: 0.5, ron: -2 }, pearl: false });
   assert.deepEqual(empty, [{ k: 'potion' }, ...['q', 'e', 'r'].map(slot => ({ k: 'skill', slot }))]);
-  const all = quickOptions({ canteen: 0, goods: { pescado: 1, galleta: 2, fruta: 1, agua: 1, ron: 1, coco: 1, madera: 3 }, pearl: true });
+  const all = quickOptions({ canteen: 0, goods: { pescado: 1, galleta: 2, fruta: 1, agua: 1, ron: 1, coco: 1, madera: 3 }, pearl: true,
+    weapons: [{ uid: 3, worn: true }, { uid: 9, worn: false }] });
   assert.ok(all.some(e => e.k === 'drink'));
+  assert.deepEqual(all.filter(e => e.k === 'weapon'), [{ k: 'weapon', uid: 3 }, { k: 'weapon', uid: 9 }]);
+  assert.ok(all.findIndex(e => e.k === 'weapon') < all.findIndex(e => e.k === 'skill'), 'weapons sit before the skills');
   assert.deepEqual(all.filter(e => e.k === 'eat').map(e => e.good), ['pescado', 'galleta', 'fruta', 'agua', 'ron', 'coco']);
   assert.deepEqual(all.filter(e => e.k === 'skill').map(e => e.slot), ['q', 'e', 'r', 'g']);
 });
@@ -75,6 +80,7 @@ function gestureHarness(entry, kind = 'dir') {
     classList: { add: name => classes.add(name), remove: name => classes.delete(name) } };
   const bar = Object.assign(Object.create(QuickBar.prototype), {
     slots: [entry], enabled: () => true, skill: e => e?.k === 'skill' ? { kind, locked: bar.locked } : null,
+    state: { weapons: [{ uid: 5, worn: false }, { uid: 6, worn: true }] }, equip: uid => calls.push(['equip', uid]),
     input: { press: bit => calls.push(['press', bit]), slotDown: slot => calls.push(['down', slot]),
       slotUp: slot => calls.push(['up', slot]), cancelAim: () => calls.push(['cancel']) },
     freshwater: { quickDrink: () => calls.push(['drink']), quickEat: good => calls.push(['eat', good]) },
@@ -93,6 +99,10 @@ test('taps use consumables, empty slots pick, and motion/cancellation never acti
     assert.deepEqual(h.calls, []);
   }
   const h = gestureHarness({ k: 'potion' }); h.emit('pointerdown'); h.emit('pointerup'); assert.equal(h.calls[0][0], 'press');
+});
+test('a weapon slot equips from the bag; the weapon in hand or one gone stays silent', () => {
+  const h = gestureHarness({ k: 'weapon', uid: 5 }); h.emit('pointerdown'); h.emit('pointerup'); assert.deepEqual(h.calls, [['equip', 5]]);
+  for (const uid of [6, 7]) { const g = gestureHarness({ k: 'weapon', uid }); g.emit('pointerdown'); g.emit('pointerup'); assert.deepEqual(g.calls, []); }
 });
 test('skills use tap input semantics and locked skills stay silent', () => {
   for (const kind of ['ground', 'charge']) {

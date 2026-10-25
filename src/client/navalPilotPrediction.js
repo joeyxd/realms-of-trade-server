@@ -34,11 +34,12 @@ function validBody(body) {
 
 function validAxes(axes) {
   return axes && !Array.isArray(axes) &&
-    Object.keys(axes).length === 3 + ['capture', 'jump'].filter((key) => Object.hasOwn(axes, key)).length &&
+    Object.keys(axes).length === 3 + ['capture', 'jump', 'canto'].filter((key) => Object.hasOwn(axes, key)).length &&
     ['throttle', 'brake', 'steer'].every((key) => finite(axes[key])) &&
     axes.throttle >= 0 && axes.throttle <= 1 && axes.brake >= 0 && axes.brake <= 1 &&
     axes.steer >= -1 && axes.steer <= 1 && (!Object.hasOwn(axes, 'capture') || typeof axes.capture === 'boolean') &&
-    (!Object.hasOwn(axes, 'jump') || axes.jump === 0 || axes.jump === 1);
+    (!Object.hasOwn(axes, 'jump') || axes.jump === 0 || axes.jump === 1) &&
+    (!Object.hasOwn(axes, 'canto') || axes.canto === 0 || axes.canto === 1);
 }
 
 function wrapPose(pose) {
@@ -142,7 +143,8 @@ export class NavalPilotPrediction {
     const command = Object.freeze({ epoch: this.epoch, seq: this.seq + 1,
       throttle: axes.throttle, brake: axes.brake, steer: axes.steer,
       ...(Object.hasOwn(axes, 'capture') ? { capture: axes.capture } : {}),
-      ...(Object.hasOwn(axes, 'jump') ? { jump: axes.jump } : {}) });
+      ...(Object.hasOwn(axes, 'jump') ? { jump: axes.jump } : {}),
+      ...(Object.hasOwn(axes, 'canto') ? { canto: axes.canto } : {}) });
     let next;
     try { next = stepTrialBody(this.body, command, this.wind, this.coast); } catch { return null; }
     this.prevPose = wrapPose(this.body.pose);

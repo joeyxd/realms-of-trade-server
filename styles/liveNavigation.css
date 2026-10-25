@@ -171,6 +171,7 @@ body.is-naval #zone-banner { display: none; }
 .ln-touch-wind-value > b > span { font-size: 13px; margin-left: 1px; }
 .ln-touch-wind-value > i { display: inline-block; font: 900 17px/1 system-ui, sans-serif; color: #acead9; }
 .ln-touch-wind .ln-gust-track { height: 5px; margin-top: 4px; border-color: #a7c6b765; background: #10242c55; box-shadow: 0 1px 2px #081b2380; }
+.ln-touch-wind[data-canto="active"] { color: #fff8e6; border-color: #fff8e6; box-shadow: 0 0 12px #c5f4ed99; }
 .ln-touch-wind .ln-gust-track b { left: var(--ln-gust-progress, 0%); }
 .ln-touch-wind > small { display: block; margin-top: 4px; text-align: right; font: italic 800 10px/1 'Arial Narrow', system-ui, sans-serif; color: #d9e3cb; }
 .ln-touch-wind[data-ready="true"] { color: #ffe0a0; }

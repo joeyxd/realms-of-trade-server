@@ -270,7 +270,7 @@ export class LocalServer {
         if (!pilot || !c.entity || c.paused || this.tickBlocked ||
             !this.commandAllowed(c, { world: true, target: null })) return;
         // Identity is the authenticated connection. Reject unknown keys before projecting axes.
-        const keys = ['t', 'epoch', 'seq', 'throttle', 'brake', 'steer', 'capture', 'jump'];
+        const keys = ['t', 'epoch', 'seq', 'throttle', 'brake', 'steer', 'capture', 'jump', 'canto'];
         if (Object.keys(msg).some((key) => !keys.includes(key))) return;
         const { t, ...command } = msg;
         pilot.input(c.entity, command);

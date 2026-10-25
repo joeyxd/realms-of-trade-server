@@ -67,7 +67,7 @@ export function setWeapon(world, e, w, seq = 0) {
   ecs.atkStage[e] = 0; ecs.atkBuf[e] = 0; ecs.lastStage[e] = 0;
   ecs.guardT[e] = -1;
   cancelCast(ecs, e);
-  ecs.qBuf[e] = ecs.eBuf[e] = 0; ecs.shotCd[e] = 0; ecs.shotN[e] = 0;
+  ecs.qBuf[e] = ecs.eBuf[e] = 0; ecs.shotN[e] = 0; // PT13: shotCd / shotAltCd survive the swap, so swapping skips no cooldown
   applyLoadout(world, e); // each weapon keeps its own loadout (a profile-less player: the weapon's arts)
   world.emit({ type: 'equip', e, weapon: w, seq, x: ecs.x[e], z: ecs.z[e] });
 }

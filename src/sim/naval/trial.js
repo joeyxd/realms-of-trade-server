@@ -16,7 +16,7 @@ import { pilotingStatus } from '../systems/progression.js';
 
 const NEUTRAL = Object.freeze({ throttle: 0, brake: 1, steer: 0 });
 const finite = (n) => typeof n === 'number' && Number.isFinite(n);
-const extras = (cmd) => ['capture', 'jump'].filter((key) => Object.hasOwn(cmd, key)).length;
+const extras = (cmd) => ['capture', 'jump', 'canto'].filter((key) => Object.hasOwn(cmd, key)).length;
 const validCommand = (cmd, navigation = false) => cmd && !Array.isArray(cmd) &&
   Object.keys(cmd).length === 4 + extras(cmd) && (navigation || extras(cmd) === 0) &&
   ['seq', 'throttle', 'brake', 'steer'].every((key) => Object.hasOwn(cmd, key)) &&
@@ -24,7 +24,8 @@ const validCommand = (cmd, navigation = false) => cmd && !Array.isArray(cmd) &&
   ['throttle', 'brake', 'steer'].every((key) => finite(cmd[key])) &&
   cmd.throttle >= 0 && cmd.throttle <= 1 && cmd.brake >= 0 && cmd.brake <= 1 && Math.abs(cmd.steer) <= 1 &&
   (!Object.hasOwn(cmd, 'capture') || (navigation && typeof cmd.capture === 'boolean')) &&
-  (!Object.hasOwn(cmd, 'jump') || cmd.jump === 0 || cmd.jump === 1);
+  (!Object.hasOwn(cmd, 'jump') || cmd.jump === 0 || cmd.jump === 1) &&
+  (!Object.hasOwn(cmd, 'canto') || cmd.canto === 0 || cmd.canto === 1);
 
 function sameParts(parts, original) {
   return Array.isArray(parts) && parts.length === original.length && parts.every((part, i) =>
@@ -208,7 +209,8 @@ export class NavalTrial {
     if (!r || r.parked || r.body.operational.disabled || !validCommand(command, this.#navigation) || command.seq <= r.lastSeq) return false;
     r.input = Object.freeze({ throttle: command.throttle, brake: command.brake, steer: command.steer,
       ...(Object.hasOwn(command, 'capture') ? { capture: command.capture } : {}),
-      ...(Object.hasOwn(command, 'jump') ? { jump: command.jump } : {}) });
+      ...(Object.hasOwn(command, 'jump') ? { jump: command.jump } : {}),
+      ...(Object.hasOwn(command, 'canto') ? { canto: command.canto } : {}) });
     r.lastSeq = command.seq;
     r.inputTick = this.#world.tick;
     return true;

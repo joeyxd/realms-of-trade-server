@@ -5,7 +5,7 @@ import { NavalLabEffects } from '../render/naval/effects.js';
 import { NavalSpeedFeel } from '../render/naval/speed-feel.js';
 import { NavalLabAudio } from '../audio/naval.js';
 import { TouchHelm } from '../ui/touchHelm.js';
-import { navalHudState, confirmedNavalCapacity, GAUGE_TOP } from '../ui/navalHudState.js';
+import { navalHudState, confirmedNavalCapacity, cantoHud, GAUGE_TOP } from '../ui/navalHudState.js';
 import { buildNavalRig } from '../sim/naval/handling.js';
 import { currentAt, gustAt } from '../sim/naval/navigation.js';
 import { pilotPoint } from '../sim/naval/pilotGeometry.js';
@@ -22,7 +22,7 @@ const finite = (v, fallback = 0) => Number.isFinite(v) ? v : fallback;
 const distance = (a, b) => Math.hypot((a?.x || 0) - (b?.x || 0), (a?.z || 0) - (b?.z || 0));
 const axesNeutral = Object.freeze({ x: 0, y: 0 });
 const SAIL_STEP = 0.25; // one W/S press moves the sticky sail lever a quarter
-export const NAVAL_SHORTCUTS = Object.freeze({ capture: 'Q', bag: 'I', mode: 'E', center: 'Y', map: 'M',
+export const NAVAL_SHORTCUTS = Object.freeze({ canto: 'R', capture: 'Q', bag: 'I', mode: 'E', center: 'Y', map: 'M',
   land: 'G', dock: 'G', recall: 'G', reboard: 'F', mount: 'F', leave: 'E', lantern: 'V' });
 
 export function shoreRouteTarget(voyage, raft, dock) {
@@ -63,7 +63,7 @@ export class LiveNavigationView {
       <div class="ln-brand"><span class="ln-mark">MN</span><span><b>${text('nav.voyage')}</b><small class="ln-phase">${text('nav.ready')}</small></span></div>
       <div class="ln-readout ln-speed"><small>${text('nav.speed')}</small><div class="ln-dial" role="meter" data-l10n-aria-label="nav.speedLabel" aria-label="${attr('nav.speedLabel')}" aria-valuemin="0" aria-valuemax="${Math.round(GAUGE_TOP)}" aria-valuenow="0"><svg viewBox="0 0 52 52" aria-hidden="true"><defs><linearGradient id="ln-speed-fire"><stop stop-color="#ffd574"/><stop offset=".55" stop-color="#ff9a3d"/><stop offset="1" stop-color="#ed4b39"/></linearGradient></defs><circle class="ln-dial-track" cx="26" cy="26" r="21" pathLength="100"/><circle class="ln-dial-arc" data-speed-arc cx="26" cy="26" r="21" pathLength="100"/></svg><span class="ln-dial-value" data-speed>0.0</span><i>u/s</i></div></div>
       <div class="ln-readout"><small>${text('nav.hull')}</small><div class="ln-hull" role="meter" data-l10n-aria-label="nav.hullLabel" aria-label="${attr('nav.hullLabel')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i data-hull></i></div><b data-hull-text>—</b></div>
-      <div class="ln-readout ln-wind"><small>${text('nav.wind')}</small><b data-wind>—</b><span data-gust>${text('nav.sailReady')}</span><div class="ln-gust-track" role="meter" data-l10n-aria-label="nav.gustLabel" aria-label="${attr('nav.gustLabel')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="ln-gust-window"></i><i class="ln-gust-perfect"></i><b data-gust-marker></b></div></div>
+      <div class="ln-readout ln-wind"><small>${text('nav.wind')}</small><b data-wind>—</b><span data-canto hidden></span><span data-gust>${text('nav.sailReady')}</span><div class="ln-gust-track" role="meter" data-l10n-aria-label="nav.gustLabel" aria-label="${attr('nav.gustLabel')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="ln-gust-window"></i><i class="ln-gust-perfect"></i><b data-gust-marker></b></div></div>
       <div class="ln-readout ln-flow"><small>${text('nav.water')}</small><b data-flow>—</b><span data-load>—</span></div>
       <div class="ln-route"><span class="ln-route-arrow" aria-hidden="true">↑</span><span><small data-target-label>${text('nav.route')}</small><b data-target>${text('nav.port')}</b><i><span data-heading>000°</span> · <span data-distance>—</span></i></span></div>
       <button class="ln-center" type="button" data-action="center" data-l10n-aria-label="nav.centerCamera" aria-label="${attr('nav.centerCamera')}">${text('nav.center')}</button>
@@ -296,7 +296,8 @@ export class LiveNavigationView {
     const brake = helm ? Math.max(clamp(this.leverBrake, 0, 1), this.keyBrake ? 1 : 0) : 0;
     // PT21a: the land jump key (Space), the pad's A button and the touch jump button; the sim jumps once per press.
     const jump = helm && (this.jumpHeld || keys?.has?.('Space') || pad.prev?.[0]) ? 1 : 0;
-    return { naval: { throttle, brake, steer, capture, jump }, deck: { mx: x ? -x : 0, mz: y } };
+    const canto = helm && (this.cantoHeld || keys?.has?.('KeyR') || pad.prev?.[2]) ? 1 : 0;
+    return { naval: { throttle, brake, steer, capture, jump, canto }, deck: { mx: x ? -x : 0, mz: y } };
   }
 
   // W/S, the arrows and the pad stick step the lever on each press; S at zero brakes while it is held.
@@ -330,6 +331,7 @@ export class LiveNavigationView {
     const axes = this.fixedAxes();
     if (axes?.naval && this.captureHeld) this.captureHeld = false;
     if (axes?.naval && this.jumpHeld) this.jumpHeld = false;
+    if (axes?.naval && this.cantoHeld) this.cantoHeld = false;
     return axes;
   }
 
@@ -391,7 +393,7 @@ export class LiveNavigationView {
         : atHelm && speed > 0.3;
       const visual = this.world.rafts?.setSailing?.(raft.id, { active: true, sailOn,
         steer: ownActive && !c.deck?.active ? this.lastAxes?.steer || 0 : 0,
-        windYaw: activeBody?.wind?.yaw ?? c.naval?.wind?.yaw ?? 0,
+        windYaw: raft.canto?.yaw ?? activeBody?.wind?.yaw ?? c.naval?.wind?.yaw ?? 0, canto: !!raft.canto,
         strength: activeBody?.wind?.strength ?? c.naval?.wind?.strength ?? 0,
         boost: activeBody && activeBody.state.tick < activeBody.activity?.boostUntil
           ? clamp((activeBody.activity.multiplier - 1) / 1.5, 0, 1) : 0, dt, pilot });
@@ -511,7 +513,7 @@ export class LiveNavigationView {
   }
 
   clearInput(sendNeutral = false) {
-    this.axes = { ...axesNeutral }; this.captureHeld = false; this.jumpHeld = false;
+    this.axes = { ...axesNeutral }; this.captureHeld = false; this.jumpHeld = false; this.cantoHeld = false;
     this.sail = 0; this.leverBrake = 0; this.keyBrake = false;
     this.touch?.clear();
     if (!sendNeutral) return;
@@ -653,6 +655,10 @@ export class LiveNavigationView {
       if (!this.client()?.naval?.active || this.client()?.deck?.active) return false;
       this.jumpHeld = true; return true;
     }
+    if (id === 'canto') {
+      if (!this.client()?.naval?.active || this.client()?.deck?.active) return false;
+      this.cantoHeld = true; return true;
+    }
     if (id === 'context') { this.interaction()?.run?.(); return; }
     if (id === 'door' || id === 'lantern') { this.keyAction('V')?.run?.(); return; }
     if (id === 'land' || id === 'dock' || id === 'recall') { this.keyAction('G')?.run?.(); return; }
@@ -671,6 +677,9 @@ export class LiveNavigationView {
       actions.push({ id: 'capture', label: t('nav.gust'), icon: 'wind', kind: 'skill', disabled: !!this.lastHud?.captureDisabled });
     if (c?.naval?.active && !c?.deck?.active)
       actions.push({ id: 'jump', label: t('nav.jump'), icon: 'jump', kind: 'action', shortcut: 'Space' });
+    if (c?.naval?.active && !c?.deck?.active)
+      actions.push({ id: 'canto', label: t('nav.canto'), icon: 'wind', kind: 'skill',
+        disabled: ['active', 'cooling'].includes(this.lastHud?.canto?.phase) });
     actions.push({ id: 'bag', label: t('nav.bag'), icon: 'cargo', kind: 'item' });
     if (c?.naval?.active || c?.deck?.active)
       actions.push({ id: 'mode', label: c?.deck?.active ? t('nav.helm') : t('nav.deck'), icon: c?.deck?.active ? 'helm' : 'crew', kind: 'action', disabled: !i?.actions?.some(a => a.key === 'E') });
@@ -694,7 +703,13 @@ export class LiveNavigationView {
     const pct = clamp((hull?.fraction ?? 1) * 100, 0, 100);
     const $ = this.$;
     const stateHud = navalHudState({ state, rig, wind, gust, activity, current, paused: this.paused });
+    stateHud.canto = cantoHud(body?.canto, state.tick);
     this.lastHud = stateHud;
+    const song = stateHud.canto, songText = song.phase === 'active' ? t('nav.cantoActive', { s: song.remaining })
+      : song.phase === 'cooling' ? t('nav.cantoCooling', { s: song.remaining }) : t('nav.cantoReady');
+    $('[data-canto]').hidden = song.phase === 'off';
+    $('[data-canto]').textContent = songText;
+    $('.ln-touch-wind').dataset.canto = song.phase;
     $('[data-speed]').textContent = speed.toFixed(1);
     $('[data-speed-arc]').setAttribute('stroke-dasharray', `${stateHud.speedFraction * 75} 100`);
     $('.ln-dial').setAttribute('aria-valuenow', String(Math.round(speed * 10) / 10));

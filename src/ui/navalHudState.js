@@ -12,6 +12,13 @@ const normalizeDegrees = (radians) => ((finiteOr(radians) * 180 / Math.PI % 360)
 const directionDegrees = (x, z) => normalizeDegrees(Math.atan2(x, z));
 const oneDecimal = (value) => finiteOr(value).toFixed(1);
 
+export function cantoHud(canto, tick) {
+  if (canto == null) return { phase: 'off', remaining: 0 };
+  const phase = tick < canto.until ? 'active' : tick < canto.readyAt ? 'cooling' : 'ready';
+  const end = phase === 'active' ? canto.until : phase === 'cooling' ? canto.readyAt : tick;
+  return { phase, remaining: Math.ceil(Math.max(0, end - tick) * NAVAL_STEP) };
+}
+
 /** Only label the owner's capacity as current when plan, profile and voyage agree. */
 export function confirmedNavalCapacity(client, raft, voyage = client?.voyage || {}) {
   const capacity = client?.capacity, eco = client?.profile?.eco;
