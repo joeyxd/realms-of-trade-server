@@ -113,5 +113,26 @@ export function touchLayout({ w, h, safe = {}, user = 1 }) {
   const keep = Math.min(tb, FIT_FLOOR);
   while (!fits(L, w, h, s, true) && tb - STEP >= keep - 1e-9) { tb = round(tb - STEP); L = place(w, h, s, tb); }
   while (!fits(L, w, h, s, false) && tb - STEP >= HARD_FLOOR) { tb = round(tb - STEP); L = place(w, h, s, tb); }
-  return { ...L, target, fitted: tb < round(target) };
+  const quick = {};
+  for (const [n, floor] of [[4, 32], [8, 28]]) {
+    let d = Math.max(floor, 44 * tb);
+    for (;;) {
+      const y = h - s.b - MARGIN - d / 2;
+      let left = s.l + MARGIN + d / 2, right = w - s.r - MARGIN - d / 2;
+      // At this row height, reserve the exact circle clearance rather than their bounding boxes.
+      for (const [name, c] of [['joy', L.joy], ...Object.entries(L.buttons)]) {
+        const r = (d + c.d) / 2 + 4, dy = Math.abs(y - c.y);
+        if (dy >= r) continue;
+        const dx = Math.sqrt(r * r - dy * dy);
+        if (name === 'joy') left = Math.max(left, c.x + dx);
+        else right = Math.min(right, c.x - dx);
+      }
+      if ((right - left >= n * (d + 2) && y - d / 2 >= 0.8 * h) || d === floor) {
+        Object.assign(quick, { ['d' + n]: d, ['gap' + n]: 2, ['x' + n]: (left + right) / 2, ['y' + n]: y });
+        break;
+      }
+      d = Math.max(floor, d - 0.05);
+    }
+  }
+  return { ...L, target, fitted: tb < round(target), quick };
 }

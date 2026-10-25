@@ -784,3 +784,31 @@ body.touch #hud .hud-top-right .mn-companions-toggle::before {
 }
 body.touch #hud .hud-top-right > :is(.icon-btn, .net-chip), body.touch #hud .hud-top-right .mn-companions-toggle { opacity: 0.78; transition: opacity 0.15s; }
 body.touch #hud .hud-top-right > .icon-btn:active, body.touch #hud .hud-top-right .mn-companions-toggle:is(:active, [aria-expanded="true"]) { opacity: 1; }
+
+/* PT12: the quick row uses stage-pixel geometry without changing the combat cluster. */
+#touch .touch-quick {
+  --qb-d: var(--l-qb-d4); --qb-gap: var(--l-qb-gap4); --qb-x: var(--l-qb-x4); --qb-y: var(--l-qb-y4);
+  position: absolute; left: calc(var(--qb-x) * 1px); top: calc(var(--qb-y) * 1px);
+  transform: translate(-50%, -50%); z-index: 12; pointer-events: auto;
+}
+#touch .touch-quick.expanded { --qb-d: var(--l-qb-d8); --qb-gap: var(--l-qb-gap8); --qb-x: var(--l-qb-x8); --qb-y: var(--l-qb-y8); }
+#touch .quick-row { display: flex; align-items: center; gap: calc(var(--qb-gap) * 1px); }
+#touch .touch-quick .tbtn {
+  position: relative; left: auto; top: auto; flex: none; width: calc(var(--qb-d) * 1px); height: calc(var(--qb-d) * 1px);
+  transform: none; opacity: .7; padding: 0; font-size: 9px; border-width: 1.5px;
+}
+#touch .touch-quick .tbtn.on { transform: scale(.92); opacity: 1; }
+#touch .touch-quick .tbtn.empty { opacity: .35; }
+#touch .touch-quick .tbtn.empty.on { opacity: 1; }
+#touch .touch-quick .tbtn[hidden], #touch .quick-picker[hidden], body.is-naval #touch .touch-quick { display: none; }
+#touch .touch-quick .ico { width: 58%; }
+#touch .touch-quick .kit-ico, #touch .touch-quick .kit-item-art { display: block; width: 100%; height: 100%; }
+#touch .touch-quick .cnt { position: absolute; top: -3px; right: -2px; font-size: 10px; text-shadow: 0 1px 3px #000; }
+#touch .touch-quick .quick-toggle { font-size: 22px; }
+#touch .quick-picker {
+  position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 7px; width: 250px;
+  max-height: 50cqh; overflow-y: auto; border-radius: 10px; background: rgb(12 18 30 / .94); border: 1px solid #8898aa;
+}
+#touch .quick-picker button { display: flex; align-items: center; gap: 5px; min-height: 32px; color: #fff; background: rgb(255 255 255 / .1); border: 1px solid #64748b; border-radius: 6px; font-size: 11px; touch-action: manipulation; }
+#touch .quick-picker .ico { flex: none; width: 22px; height: 22px; }

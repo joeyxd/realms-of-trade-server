@@ -216,7 +216,11 @@ export class FreshwaterPanel {
     return Object.freeze({ t: 'cmd', type: 'freshwater', op, opId: opId(), expectedRev: rev, source, ship, part, n });
   }
   send(op, data = {}) {
-    const c = this.client?.(); if (!this.active || !this.currentSession() || this.pending || this.busy() || !this.status()?.enabled || !c?.send
+    if (!this.active) return false;
+    return this.sendCommand(op, data);
+  }
+  sendCommand(op, data = {}) {
+    const c = this.client?.(); if (!this.currentSession() || this.pending || this.busy() || !this.status()?.enabled || !c?.send
       || this.barrelActionBlocked(op, data.source)) return false;
     const command = this.makeCommand(op, data); if (!command) return false;
     this.pending = { command, sentAt: this.now(), retried: false, expired: false };
@@ -268,6 +272,18 @@ export class FreshwaterPanel {
       || finite(this.pack()?.goods?.[good]) < 1 || !needs || !food
       || ((food.sat <= 0 || needs.sat >= 100) && (food.hyd <= 0 || needs.hyd >= 100))) return false;
     return this.send('eat', { source: good, n: 1 });
+  }
+  quickDrink() {
+    const canteen = this.canteen(), needs = this.needs();
+    if (!this.canteenEnabled() || finite(canteen?.water) < 1 || !needs || needs.hyd >= 100) return false;
+    return this.sendCommand('drink', { source: '', n: 1 });
+  }
+  quickEat(good) {
+    const needs = this.needs(), food = FOODS[good];
+    if (!['pescado', 'galleta', 'fruta', 'agua', 'ron', 'coco'].includes(good) || !this.canteenEnabled()
+      || finite(this.pack()?.goods?.[good]) < 1 || !needs || !food
+      || ((food.sat <= 0 || needs.sat >= 100) && (food.hyd <= 0 || needs.hyd >= 100))) return false;
+    return this.sendCommand('eat', { source: good, n: 1 });
   }
   transfer(op, ship, part, n) { return n > 0 && !this.barrelActionBlocked(op) && this.send(op, { ship, part, n }); }
   acknowledge(ev) {

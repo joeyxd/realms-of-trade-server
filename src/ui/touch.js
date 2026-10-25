@@ -247,6 +247,7 @@ export class TouchControls {
     this.tb = L.tb;
     this.root.style.setProperty('--tb', L.tb.toFixed(3));
     set('--l-joy-x', L.joy.x); set('--l-joy-y', L.joy.y);
+    for (const [k, v] of Object.entries(L.quick)) this.root.style.setProperty('--l-qb-' + k, String(v));
     // The jump slot (L.buttons.jump) is reserved: PT06 places the jump button there.
     for (const k of SLOTS) { set(`--l-${k}-x`, L.buttons[k].x); set(`--l-${k}-y`, L.buttons[k].y); }
   }

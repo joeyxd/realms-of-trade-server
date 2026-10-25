@@ -51,6 +51,7 @@ import { Hud, drawPortrait } from './ui/hud.js';
 import { WorldUI } from './ui/worldui.js';
 import { PauseMenu } from './ui/pause.js';
 import { TouchControls } from './ui/touch.js';
+import { QuickBar } from './ui/quickBar.js';
 import { Feedback } from './ui/feedback.js';
 import { comic } from './ui/comic.js';
 import { DevPanel } from './ui/devpanel.js';
@@ -490,6 +491,10 @@ async function boot() {
     onNewGame: () => { location.reload(); },
     gpu: () => st.gpu,
   });
+  const quickBar = isTouch ? new QuickBar(touch.root, { input, touch, freshwater: freshwaterPanel,
+    enabled: () => st.mode === 'playing' && !pause.open && input.enabled && !ps.dead && client.joined
+      && !document.body.classList.contains('is-naval'),
+  }) : null;
   const chatPanel = new ChatPanel($('#chat'), {
     send: (payload) => client.send({ t: MSG.CHAT_SEND, ...payload }),
     enabled: () => st.mode === 'playing' && !!client?.joined && !pause.open && !client.t.closed,
@@ -1229,6 +1234,7 @@ async function boot() {
       const identity = st.online && !accountAuth.state.guestChoice ? await accountAuth.sessionIdentity() : null;
       if (identity && characterRoster?.mode !== 'account' || !identity && characterRoster?.mode === 'account') throw new Error('character_scope');
       const account = identity ? { token: identity.token, characterId: selected.id } : null;
+      quickBar?.setCharacter(selected.id);
       joiningCompanionAccount = identity?.accountId ?? null;
       const saved = account ? '' : playerCharacters.selectedSave();
       if (st.online) {
@@ -1792,6 +1798,8 @@ async function boot() {
           touch.setSlots(sd.q.id, sd.e.id, ps.fmQ | 0, ps.fmE | 0);
           touch.setPearl(sd.g.id, ps.cdG / ((sd.g.S.cd || 1) * (1 - (ps.cdr || 0))));
           touch.kinds = slotIn.kinds;
+          quickBar.update({ potions: ps.potions | 0, canteen: freshwaterPanel.canteen()?.water ?? null,
+            goods: freshwaterPanel.pack()?.goods || {}, pearl: sd.g.id !== 'none' });
           touch.setCooldowns(ps.cdQ / cdQ, ps.cdE / cdE, ps.riposte >= tuning.parry.riposte.max);
         }
         encounterUi();
