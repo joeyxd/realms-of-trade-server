@@ -59,6 +59,13 @@
   Confirmar revisión activa, salud pública y entrada real antes de declarar un cambio publicado.
   SQL, secretos y activaciones opcionales de M5 conservan sus verificaciones específicas; el actualizador
   no los aplica ni crea otra autoridad de guardado.
+- El gate real del deploy es la copia del actualizador instalada a mano en el VPS
+  (`/opt/marea-negra/ops/vps-update.py`), no la del repo: desde 2026-10-25 es la de `6268d0d` (72 archivos);
+  antes corría la del 2026-10-11 (28 archivos). Su lista `TESTS` corre dentro de la imagen de release (solo
+  dependencias de producción: sin three, sin `docs/` ni `tools/`) y un fallo revierte el deploy. Antes de cada
+  push correr exactamente esa lista. Añadir un archivo a `TESTS` o cambiar el actualizador no llega al VPS con el
+  push: la sesión que hace el push lo reinstala con la receta de `docs/DEPLOY-VPS.md` o lo deja escrito en el
+  traspaso como pendiente.
 
 - Simulación determinista y autoritativa en `src/sim/**`: sin reloj ni `Math.random`; usar RNG del mundo.
 - Todo campo nuevo de perfil requiere valores por defecto y saneado. Cambios de snapshots/`you` requieren revisar

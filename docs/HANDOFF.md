@@ -23,6 +23,10 @@
 - companion-continuity.mjs pasa a server/agent (tools/agent lo reexporta).
 - Pruebas: hosted-memory-loop 7/7, alojado + emparejado + continuidad + centro 80/80, gate del updater 72 archivos en verde.
 - Siguiente: presupuesto alojado ajustable por el dueño (20 llamadas por 2 h para pruebas) e IC06b poda y memoria entre sesiones.
+**Actualizador del VPS: el gate real es la copia instalada, 2026-10-25, solo documentación (sin versión, protocolo ni SQL):**
+- El VPS corrió hasta el 2026-10-25 la copia del actualizador del 2026-10-11 (28 archivos), no la del repo: las listas `TESTS` añadidas entre esas fechas nunca corrieron en producción. T-1025-24 instaló la de `6268d0d` (72 archivos) después de pasar los 72 dentro de la imagen viva (455 pasan, 4 se saltan, 0 fallan).
+- Desde ahora los 72 archivos son gate de verdad: un test que solo pasa con dependencias de desarrollo (three, `docs/`, `tools/`) revierte el deploy. Correr la lista exacta antes de cada push.
+- Regla nueva en `AGENTS.md` y receta en `docs/DEPLOY-VPS.md`: quien hace un push que cambia `deploy/vps-update.py` lo reinstala en el VPS o lo deja escrito aquí como pendiente (T-1025-32).
 
 **PT20: vela, oleaje y estela de Wind Waker en la balsa, 2026-10-25, versión 0.6.0-alpha.114, protocolo 72 (sin cambio), sin SQL:**
 Port exacto de Wind Waker (research/wind-waker, fichas 05 y siguientes). Área playtest. Solo cliente: el sim, el servidor y el protocolo no cambian.

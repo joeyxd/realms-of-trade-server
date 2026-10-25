@@ -21,6 +21,22 @@ construir, comprueba CPU ocupada, espera de disco, memoria disponible y espacio 
 El enlace `/opt/marea-negra/current` identifica la release aceptada. El código del actualizador instalado
 en `/opt/marea-negra/ops/vps-update.py` no se sustituye a sí mismo desde Git. Para actualizar el propio
 actualizador, revisar/copiar su nueva versión y unidades; el runtime sí se actualiza en cada imagen.
+Su lista `TESTS` es el gate real: un cambio en ella no corre en el VPS hasta reinstalar la copia. Instalada:
+`6268d0d` (72 archivos, fetch con `+refs`), desde 2026-10-25; antes, la del 2026-10-11 (28 archivos).
+La sesión que publica un push que cambia `deploy/vps-update.py` lo reinstala cuando `/status` ya muestra
+la nueva versión:
+
+1. `git diff <sha instalado> <sha nuevo> -- deploy/systemd` vacío; si no, las unidades cambian y se
+   instalan aparte con el autor.
+2. Correr la nueva lista dentro de la imagen activa: `docker run --rm --network none --cpus 1 --memory 1g
+   --volume /opt/marea-negra/releases/<sha>/tests:/app/tests:ro --workdir /app <GAME_IMAGE> node --test
+   --test-concurrency=1 <TESTS>` (`GAME_IMAGE` en `ops/compose-<sha>.env`, unos 8 minutos, 0 fallos).
+3. Bajo `flock -w 120 /opt/marea-negra/update.lock`: copiar `releases/<sha>/deploy/vps-update.py` a
+   `ops/vps-update.py.new` (no `git show` sobre el clon sin blobs), comparar su sha256 con el del commit,
+   comprobar sintaxis con `compile()` (py_compile deja un `.pyc`), guardar `ops/vps-update.py.bak-<fecha>`,
+   modo 755 y `mv` al sitio.
+4. `python3 /opt/marea-negra/ops/vps-update.py --check` con actual = remoto, y un ciclo del timer en
+   `journalctl -u marea-negra-update.service` sin errores.
 
 ```bash
 systemctl status marea-negra-update.timer --no-pager
