@@ -1,6 +1,7 @@
 // Internal D08c.1 authority experiment, not live sailing or progression tuning.
 export const NAVAL_TRIAL = Object.freeze({
   handling: 'windwaker',
+  camera: 'windwaker', // client only: WW's Boat camera (N5, render/naval/boatCamera.js); anything else keeps the chase framing
   maxBodies: 32,
   inputTimeoutTicks: 15,
   maxSequence: 2147483647,

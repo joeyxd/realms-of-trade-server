@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { createBoatCamera, stepBoatCamera } from './boatCamera.js';
+import { NAVAL_CAMERA } from '../../data/navalCamera.js';
 
 const angleDelta = (to, from) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
 
@@ -16,10 +18,11 @@ export class NavalLabCamera {
     this.yaw = 0; this.ready = false; this.mode = 'chase';
     this.orbitYaw = 0; this.orbitPitch = 0; this.look = { x: 0, y: 0 };
     this.zoomIdx = NAVAL_ZOOM_DEFAULT; this.zoom = NAVAL_ZOOM_LEVELS[this.zoomIdx];
+    this.boat = createBoatCamera(); this.boatOut = null;
   }
 
   // The zoom step survives reset(): leaving the helm or the raft keeps the player's choice for the next voyage.
-  reset() { this.ready = false; this.recenter(); }
+  reset() { this.ready = false; this.boat = createBoatCamera(); this.recenter(); }
 
   /** +1 steps farther, -1 closer; `wrap` cycles past the ends (the touch button). Returns the new index. */
   zoomStep(step, { wrap = false } = {}) {
@@ -86,9 +89,42 @@ export class NavalLabCamera {
     return this.diagnostics();
   }
 
+  /**
+   * Wind Waker's Boat camera (N5, boatCamera.js). The default zoom step is WW's exact distance, the other steps scale it;
+   * the look input offsets its targets. `from` ({ eye, center, fov }) is the view to blend from when it starts.
+   */
+  updateBoat(dt, { pilot, yaw = 0, windYaw = 0, stickX = 0, hull = null, ship = pilot, speed = NaN, from = null, paused = false }) {
+    const step = paused || !Number.isFinite(dt) ? 0 : Math.min(0.1, Math.max(0, dt));
+    this.orbitYaw = angleDelta(this.orbitYaw + this.look.x * step * 1.9, 0);
+    this.orbitPitch = THREE.MathUtils.clamp(this.orbitPitch + this.look.y * step * 0.85, -0.18, 0.68);
+    if (this.mode !== 'boat' || !this.boat.started) {
+      // Coming from the chase framing, blend from it; otherwise from the caller's view (the land camera).
+      if (this.mode !== 'boat' && this.ready) from = { eye: this.camera.position.clone(), center: this.aim.clone(), fov: this.camera.fov };
+      this.boat = createBoatCamera(); this.ready = false;
+    }
+    this.mode = 'boat';
+    const out = this.boatOut = stepBoatCamera(this.boat, { dt: step, x: pilot.x, y: pilot.y, z: pilot.z, yaw, windYaw, stickX, hull,
+      shipX: ship.x, shipZ: ship.z, from, speed, zoom: NAVAL_ZOOM_LEVELS[this.zoomIdx] / NAVAL_ZOOM_LEVELS[NAVAL_ZOOM_DEFAULT],
+      lookYaw: this.orbitYaw, lookPitch: this.orbitPitch });
+    // WW's FOV is vertical; wider than 16:9 keeps the 16:9 horizontal angle instead of stretching sideways.
+    const aspect = Math.max(0.1, this.camera.aspect || 16 / 9), wide = 16 / 9;
+    let fov = this.reducedMotion ? NAVAL_CAMERA.fov : out.fov;
+    if (aspect > wide) fov = 2 * Math.atan(Math.tan(fov * Math.PI / 360) * wide / aspect) * 180 / Math.PI;
+    if (Math.abs(this.camera.fov - fov) > 0.01) { this.camera.fov = fov; this.camera.updateProjectionMatrix(); }
+    this.camera.position.set(out.eye.x, out.eye.y, out.eye.z);
+    this.aim.set(out.center.x, out.center.y, out.center.z);
+    this.camera.up.set(0, 1, 0);
+    this.camera.lookAt(this.aim);
+    // WW banks the view matrix: a positive bank turns the image counter-clockwise, which is three.js's negative roll.
+    if (!this.reducedMotion) this.camera.rotateZ(-out.bank);
+    this.camera.updateMatrixWorld();
+    return this.diagnostics();
+  }
+
   diagnostics() {
     return { mode: this.mode, yaw: this.yaw, orbitYaw: this.orbitYaw, orbitPitch: this.orbitPitch,
       look: { ...this.look }, fov: this.camera.fov, zoomIdx: this.zoomIdx, zoom: this.zoom,
-      position: this.camera.position.toArray(), target: this.aim.toArray() };
+      position: this.camera.position.toArray(), target: this.aim.toArray(),
+      ...(this.mode === 'boat' && this.boatOut ? { speed: this.boatOut.speed, bank: this.boatOut.bank, steady: this.boat.steady } : {}) };
   }
 }

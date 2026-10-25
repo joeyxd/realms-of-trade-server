@@ -15,6 +15,7 @@ import { assets } from '../render/assets/registry.js';
 import { NavalRouteRenderer, routePresentation, routeTarget, routeCommand } from '../render/naval/route.js';
 import { lessonPresentation, lessonCommand } from '../ui/navalLessonState.js';
 import { DT } from '../data/tuning.js';
+import { NAVAL_TRIAL } from '../data/navalTrial.js';
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, Number.isFinite(v) ? v : lo));
 const finite = (v, fallback = 0) => Number.isFinite(v) ? v : fallback;
@@ -390,7 +391,19 @@ export class LiveNavigationView {
     if (!pose || !state || !rig) return false;
     const boost = body && state.tick < body.activity?.boostUntil;
     const feel = this.lastFeel;
-    this.sceneCamera.update(dt, { state, rig, pose, mode: 'chase', fovOffset: feel.fov - 35, roll: feel.roll });
+    if (NAVAL_TRIAL.camera === 'windwaker') {
+      // WW Boat camera (N5): it follows the pilot's head as drawn (the sim position plus the hull heave) behind the heading.
+      const hull = this.world.rafts?.views?.get?.(String(raft?.id ?? (body ? c.naval.shipId : c?.deck?.shipId ?? voyage.shipId)))?.hullMotion;
+      const heave = hull?.started ? hull.out?.y || 0 : 0;
+      const pilot = Number.isFinite(ps?.x) && Number.isFinite(ps?.z) ? { x: ps.x, y: (Number.isFinite(ps.y) ? ps.y : pose.y) + heave, z: ps.z }
+        : { x: pose.x, y: pose.y + heave, z: pose.z };
+      const rigCenter = this.world.rig?.center;
+      this.sceneCamera.updateBoat(dt, { pilot, ship: pose, speed: Math.hypot(state.vx, state.vz), yaw: Number.isFinite(state.yaw) ? state.yaw : pose.yaw || 0,
+        windYaw: body?.wind?.yaw ?? c?.naval?.wind?.yaw ?? NAVAL_TRIAL.wind.yaw, hull,
+        // The rudder takes the mirrored stick (fixedAxes), so the stick's own x is -steer.
+        stickX: c?.naval?.active && !c?.deck?.active ? -(this.lastAxes?.steer || 0) : 0,
+        from: rigCenter ? { eye: this.world.camera.position, center: rigCenter, fov: this.world.camera.fov } : null });
+    } else this.sceneCamera.update(dt, { state, rig, pose, mode: 'chase', fovOffset: feel.fov - 35, roll: feel.roll });
     this.cameraWasNaval = true;
     return true;
   }
