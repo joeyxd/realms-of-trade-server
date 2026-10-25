@@ -17,10 +17,11 @@
 // moon and stars, light glints on the water, additive particles and dash afterimages lower it.
 // Alpha-blended FX (smoke, dust) raise it back, so smoke in front of a fire hides its glow.
 import * as THREE from 'three';
+import { WorldFilm } from './vfx/niagara/worldFilm.js';
 import { tuning } from '../data/tuning.js';
 import { worldNormalMat } from './toon.js';
 
-export const LAYER = { WORLD: 0, FX: 1, NO_OUTLINE: 2, WATER: 3 };
+export const LAYER = { WORLD: 0, FX: 1, NO_OUTLINE: 2, WATER: 3, NATIVE: 4 };
 
 // Depth of field: the HD-2D diorama look (high and ultra; quality.js `dof` is the tier strength). The circle of confusion
 // comes from the scene depth relative to the focus distance (the camera rig's distance; scene.js sets pipeline.dof.focus
@@ -408,6 +409,8 @@ export class Pipeline {
     this.casters = [];
     this.castersDirty = true;
     this.frame = 0;
+    this.nativeFx = null; this.nativeFilm = new WorldFilm();
+    this.filmWorld = false; this.filmWorldExposure = 0.927; // Preserve linear 0.18 after the LUT display gain (1.05).
     this.water = null; // { setMode(ssr) } provided by the scene
     this.grading = {
       vignette: 0.22, sat: 1.07, chroma: 0, danger: 0, flash: 0, flashColor: new THREE.Color(1, 1, 1),
@@ -453,6 +456,7 @@ export class Pipeline {
     // Bloom chain: ½, ¼, ⅛, 1/16 of the screen. Half float when the GPU can render to it (no banding).
     const ext = renderer.extensions;
     const half = renderer.capabilities.isWebGL2 && (ext.has('EXT_color_buffer_float') || ext.has('EXT_color_buffer_half_float'));
+    this.nativeHalf = !!half;
     this.bloomRT = Array.from({ length: 4 }, () => new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false, type: half ? THREE.HalfFloatType : THREE.UnsignedByteType }));
     const bm = (frag, uniforms, extra = {}) => new THREE.ShaderMaterial({ uniforms, vertexShader: FS_QUAD_VERT, fragmentShader: frag, depthTest: false, depthWrite: false, ...extra });
     this.bloomExtract = bm(BLOOM_EXTRACT, { tInput: { value: this.rtPost.texture }, uOff: { value: new THREE.Vector2() } });
@@ -615,6 +619,7 @@ export class Pipeline {
     this.castersDirty = false;
   }
 
+  prepareNative() { this.nativeFilm.size(FXU.uRes.value.x, FXU.uRes.value.y); }
   render() {
     const r = this.renderer, cam = this.camera, scene = this.scene;
     this.frame++;
@@ -691,6 +696,9 @@ export class Pipeline {
     r.render(scene, cam);
     r.autoClear = true;
 
+    // Native HDR accumulation, source Filmic transfer, then glow mask (no work without visible native meshes).
+    if (this.nativeFx?.hdrActive && this.nativeFx.drawCalls) this.nativeFilm.render(r, scene, cam, this.rtPost, this.quadCam, LAYER.NATIVE);
+
     // 6b) Depth of field (high / ultra) into rtDof; rtPost is left as it is. Bloom and the final pass read rtDof.
     this.dofActive = !!this.rtDof && this.dof.enabled;
     if (this.dofActive) this.renderDof();
@@ -715,6 +723,8 @@ export class Pipeline {
     fu.uImpact.value = hit.frames > 0 ? 1 : 0;
     fu.uLines.value = hit.linesT > 0 ? hit.linesK * (hit.linesT / 0.3) : 0;
     if (hit.frames > 0) hit.frames--;
+    if (this.filmWorld && !this.nativeFilm.lut) this.nativeFilm.load();
+    this.finalQuad.mesh.material = this.filmWorld && this.nativeFilm.lut ? this.nativeFilm.finalMaterial(this.final, this.filmWorldExposure) : this.final;
     r.setRenderTarget(null);
     r.render(this.finalQuad.scene, this.quadCam);
     worldLayers();

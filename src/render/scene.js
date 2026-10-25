@@ -115,7 +115,10 @@ export class GameScene {
     this.effects = new Effects(this.scene, map);
     // Native Niagara effects bound by the presentation bindings (main.js calls nativeFx.setBindings); unbound slots stay procedural.
     this.nativeFx = new NativeWorldFx(this.scene, { renderer: r, layer: LAYER.FX, depth: () => this.pipeline.rtNormal?.depthTexture ?? null, res: FXU.uRes.value,
+      nativeLayer: LAYER.NATIVE, hdrAvailable: () => this.pipeline.q.outlines && this.pipeline.nativeHalf && !!this.pipeline.nativeFilm.lut,
+      hdrRes: this.pipeline.nativeFilm.res, onFilm: film => this.pipeline.nativeFilm.setFilm(film),
       premultiplied: { blending: THREE.CustomBlending, src: THREE.OneFactor, dst: THREE.OneMinusSrcAlphaFactor } });
+    this.pipeline.nativeFx = this.nativeFx;
     this.nativeFx.setAnchors(this.effects.fires);
     this.effects.nativeLoop = (slot) => this.nativeFx.loopReady(slot);
     this.projectiles = new ProjectileView(this.scene, map);
@@ -348,6 +351,7 @@ export class GameScene {
     const sim = ctx.simDt ?? dt;
     this.footprints.update(sim, ctx.playing);
     this.effects.update(dt, ctx.focus);
+    this.pipeline.prepareNative();
     this.nativeFx.update(dt, ctx.focus, this.camera);
     this.after.update(sim);
     this.ambient.update(dt, ctx.focus, this.camera.position);
@@ -434,6 +438,7 @@ export class GameScene {
     }
     FXU.uFxLight.value.copy(p.fxLight);
     this.effects.setNight((p.fire - 0.3) / 0.7);
+    this.nativeFx.setNight((p.fire - 0.3) / 0.7);
     const g = this.pipeline.grading;
     g.contrast = p.contrast; g.sat = p.sat; g.vignette = p.vignette; g.split = p.split;
     g.splitShadow.copy(p.splitShadow); g.splitHigh.copy(p.splitHigh);
@@ -445,7 +450,7 @@ export class GameScene {
     this.pipeline.render(this.time);
   }
 
-  dispose() { this.nativeFx.dispose(); }
+  dispose() { this.nativeFx.dispose(); this.pipeline.nativeFilm.dispose(); }
 }
 
 export { tuning };

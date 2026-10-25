@@ -14,6 +14,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 if (process.env.MN_QA_ALLOW_BROWSER !== '1') throw new Error('Set MN_QA_ALLOW_BROWSER=1 to launch this local browser harness.');
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const out = resolve(repo, process.env.MN_QA_OUT || '.scratch/qa-native-world/run');
+if (fs.existsSync(out)) throw new Error(`QA run already exists: ${out}`);
 await mkdir(out, { recursive: true });
 const { chromium } = await import(pathToFileURL(resolve(process.env.MN_PLAYWRIGHT || resolve(repo, '../visual-revamp/node_modules/playwright/index.mjs'))).href);
 const threeRoot = resolve(repo, 'node_modules/three');
@@ -22,7 +23,7 @@ const FLAME = 'niagara-985a431dc6c0d1ca', HIT = 'niagara-97a82bae61b29237';
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css',
   '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.ktx2': 'image/ktx2', '.wasm': 'application/wasm', '.glb': 'model/gltf-binary' };
 const check = (value, message) => { if (!value) throw new Error(message); };
-const summary = { ticket: 'T-1024-38', at: new Date().toISOString(), mode: 'solo', quality: 'high', viewport: [1280, 720], steps: {}, screenshots: [], consoleErrors: [], status: 'running' };
+const summary = { ticket: 'T-1025-33', at: new Date().toISOString(), mode: 'solo', quality: 'high', viewport: [1280, 720], steps: {}, screenshots: [], consoleErrors: [], status: 'running' };
 
 const server = http.createServer((req, res) => {
   const pathname = decodeURIComponent(new URL(req.url, 'http://local').pathname);
@@ -190,6 +191,88 @@ try {
   check(after.proceduralSpawns.campfire > 0, '(d) the procedural campfire is back');
   summary.steps.d = { rebound, unbound, baseline, procedural: after.proceduralSpawns,
     gpuDelta: { geometries: unbound.gpu.geometries - baseline.gpu.geometries, textures: unbound.gpu.textures - baseline.gpu.textures } };
+
+  // (f) Close, identical framing: source HDR vs the original FX fallback, day and night.
+  check(await page.evaluate(() => window.__mn.world.pipeline.nativeHalf), 'STOPPED: no half-float render target; fallback remains available');
+  await goTo({ x: target.campfire.x + 1, z: target.campfire.z + 2 });
+  await page.evaluate(() => {
+    const w = window.__mn.world, lighting = w.lighting, set = lighting.setGameplay.bind(lighting);
+    lighting.setGameplay = () => set(false); lighting.setGameplay(false);
+    w.rig.distTarget = 10;
+  });
+  const tod = async mode => { await page.evaluate(m => window.__mn.world.lighting.setTimeOfDay(m, 0), mode); await frames(30); };
+  await setBindings({ campfire: binding(FLAME, { count: 1 }) });
+  await page.waitForFunction(() => window.__mn.world.nativeFx.loopReady('campfire'), null, { timeout: 60000, polling: 'raf' });
+  summary.steps.f = {}; summary.steps.g = {};
+  for (const mode of ['day', 'night']) {
+    await tod(mode);
+    for (const hdr of [true, false]) {
+      await page.evaluate(v => { window.__mn.world.nativeFx.hdr = v; }, hdr); await frames(2);
+      summary.steps.f[`${mode}-${hdr ? 'hdr' : 'fallback'}`] = await fxState();
+      await shot(`f-campfire-${mode}-${hdr ? 'hdr' : 'fallback'}`);
+    }
+    summary.steps.g[mode] = (await fxState()).loopGain;
+  }
+  check(Math.abs(summary.steps.g.day - 1) < 1e-6 && Math.abs(summary.steps.g.night - 1.6) < 1e-6, `(g) night gain: ${JSON.stringify(summary.steps.g)}`);
+  await page.evaluate(() => { window.__mn.world.nativeFx.hdr = true; }); await frames(2);
+
+  // (j) Frozen frame, pre-bloom readback: pick the corner farthest from every live flame, then compare all RGBA bytes.
+  summary.steps.j = await page.evaluate(() => {
+    const w = window.__mn.world, p = w.pipeline, fx = w.nativeFx, r = w.renderer, rt = p.rtPost, size = 24;
+    const points = [...fx.loops.values()].flat().map(a => w.camera.position.clone().set(a.x, a.y + 1, a.z).project(w.camera));
+    const corners = [[4, 4], [rt.width-size-4, 4], [4, rt.height-size-4], [rt.width-size-4, rt.height-size-4]];
+    const distance = ([x,y]) => Math.min(...points.map(v => Math.hypot((v.x+1)*rt.width/2-x-size/2,(v.y+1)*rt.height/2-y-size/2)));
+    corners.sort((a,b) => distance(b)-distance(a)); const [x,y] = corners[0];
+    const read = hdr => { fx.hdr = hdr; fx.update(0, window.__mn.ps, w.camera); p.render();
+      const bytes = new Uint8Array(size*size*4); r.readRenderTargetPixels(rt,x,y,size,size,bytes); return bytes; };
+    const a = read(true), b = read(false); let changed = 0;
+    for (let i=0;i<a.length;i++) if(a[i]!==b[i]) changed++;
+    fx.hdr = true; fx.update(0, window.__mn.ps, w.camera);
+    return { x,y,width:size,height:size,flameDistance:distance([x,y]),bytes:a.length,changed };
+  });
+  check(summary.steps.j.flameDistance > 200 && summary.steps.j.changed === 0, `(j) empty pixels changed: ${JSON.stringify(summary.steps.j)}`);
+
+  // (h) Whole-world experiment without bindings. Returning OFF restores the original material and every output byte.
+  await setBindings(null); summary.steps.h = {};
+  for (const mode of ['day', 'dusk', 'night']) {
+    await tod(mode);
+    await page.evaluate(() => { const p = window.__mn.world.pipeline; p.filmWorld = true; p.nativeFilm.load(); });
+    await page.waitForFunction(() => !!window.__mn.world.pipeline.nativeFilm.lut, null, { timeout: 60000, polling: 'raf' });
+    summary.steps.h[mode] = await page.evaluate(() => {
+      const w = window.__mn.world, p = w.pipeline, r = w.renderer, gl = r.getContext();
+      const read = on => { p.filmWorld = on; p.render(); const bytes = new Uint8Array(gl.drawingBufferWidth*gl.drawingBufferHeight*4);
+        gl.readPixels(0,0,gl.drawingBufferWidth,gl.drawingBufferHeight,gl.RGBA,gl.UNSIGNED_BYTE,bytes); return bytes; };
+      const a = read(false), b = read(true), c = read(false); let restored = 0, graded = 0;
+      for (let i=0;i<a.length;i++) { if(a[i]!==c[i]) restored++; if(a[i]!==b[i]) graded++; }
+      return { restoredDifferences:restored,gradedDifferences:graded,originalMaterial:p.finalQuad.mesh.material===p.final,exposure:p.filmWorldExposure };
+    });
+    check(summary.steps.h[mode].restoredDifferences === 0 && summary.steps.h[mode].gradedDifferences > 0 && summary.steps.h[mode].originalMaterial, `(h) Filmic toggle: ${JSON.stringify(summary.steps.h[mode])}`);
+    for (const on of [false,true]) { await page.evaluate(v => { window.__mn.world.pipeline.filmWorld = v; }, on); await frames(2); await shot(`h-world-${mode}-${on ? 'filmic' : 'original'}`); }
+  }
+  await page.evaluate(() => { window.__mn.world.pipeline.filmWorld = false; }); await tod('day');
+
+  // (i) Measure full and half FX resolution with exactly 0, 1 and 10 native loops (same view and anchors).
+  summary.steps.i = {};
+  const savedAnchors = await page.evaluate(() => window.__mn.world.nativeFx.anchors.map(a => ({ ...a, kind:a.slot })));
+  for (const scale of [1, 0.5]) {
+    await page.evaluate(v => { window.__mn.world.pipeline.nativeFilm.scale = v; }, scale);
+    const measurements = {};
+    for (const count of [0,1,10]) {
+      await setBindings(count ? { [count === 1 ? 'campfire' : 'brazier']: binding(FLAME,{ count:1 }) } : null);
+      await page.evaluate(count => { const { world:w,ps } = window.__mn;
+        w.nativeFx.setAnchors(Array.from({length:count},(_,i) => ({ x:ps.x+(i%5-2)*2,y:window.__mn.map.heightAt(ps.x,ps.z)+0.3,z:ps.z+Math.floor(i/5)*2,kind:count===1?'campfire':'brazier' }))); }, count);
+      if (count) await page.waitForFunction(() => window.__mn.world.nativeFx.metrics.effects.every(e => e.state==='ready'), null, {timeout:60000,polling:'raf'});
+      await frames(30); measurements[count] = await window_(120);
+      check((await fxState()).loops === count, `(i) expected ${count} loops`);
+    }
+    summary.steps.i[scale] = measurements;
+  }
+  const full = summary.steps.i[1], half = summary.steps.i[0.5];
+  summary.steps.i.selectedScale = Math.max(full[1].frameMs-half[1].frameMs,full[10].frameMs-half[10].frameMs)>0.5 ? 0.5 : 1;
+  await setBindings(null);
+  await page.evaluate(({ anchors,scale }) => { const w=window.__mn.world; w.nativeFx.setAnchors(anchors); w.pipeline.nativeFilm.scale=scale; }, { anchors:savedAnchors,scale:summary.steps.i.selectedScale });
+  summary.steps.k = {consoleErrors:summary.consoleErrors};
+  check(!summary.consoleErrors.length, `(k) console errors: ${summary.consoleErrors.join(' | ')}`);
 
   // (e) Console.
   check(!summary.consoleErrors.length, `(e) console errors: ${summary.consoleErrors.join(' | ')}`);

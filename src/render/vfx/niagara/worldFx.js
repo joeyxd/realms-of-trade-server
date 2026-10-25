@@ -1,8 +1,5 @@
-// Native Niagara effects in the game world (ST01d): the presentation bindings (src/data/presentationBindings.js) choose which
-// native effect plays for a campfire, a brazier or a hit. Particles render inside the game's own FX pass (LAYER.FX): no extra
-// scene pass, no own HDR target and no film-LUT composite, so the game's grading applies. A slot that is unbound, still
-// loading or failed keeps the procedural look. No static three import: the render runtime (nativeEffect.js) loads on demand,
-// so the bookkeeping below runs in Node tests.
+// Native world particles: source HDR + Filmic on supported outlined tiers; the original 8-bit FX fallback otherwise.
+// No static three import: the render runtime loads on demand so bookkeeping stays testable in Node.
 import { PRESENTATION_SLOTS, validatePresentationBindings } from '../../../data/presentationBindings.js';
 import { NATIVE_MOBILE_GPU_CAP, NATIVE_SIMULATIONS, NIAGARA_NATIVE, nativeEndStep, nativeTextureBytes } from '../../../editor/niagaraNative.js';
 
@@ -23,6 +20,7 @@ export const WORLD_BASE = Object.freeze({ 'flame-single-v1': 1.2, 'basichit-v1':
 // then runs from a deep orange rim to a saturated yellow core over the background, as the HDR look does. Other layers (smoke)
 // keep their blend and colors.
 export const HDR_FIT = 3;
+export const NIGHT_GAIN = 0.6;
 
 // Seed of loop instance `index`: neighbouring flames differ, and the value stays in the bindings' 0..65533 range.
 export const loopSeed = (seed, index) => (seed + index) % 65534;
@@ -59,8 +57,9 @@ export class NativeWorldFx {
   // res its size (pipeline rtNormal.depthTexture and FXU.uRes); runtime(): the three-side module (tests inject a fake).
   // premultiplied: the three blend constants { blending: CustomBlending, src: OneFactor, dst: OneMinusSrcAlphaFactor }.
   constructor(scene, { renderer = null, layer = 1, depth = () => null, res = { x: 1, y: 1 }, coarse = coarsePointer(),
-    premultiplied = null, runtime = () => import('./nativeEffect.js') } = {}) {
-    Object.assign(this, { scene, renderer, layer, depth, res, runtime, premultiplied });
+    nativeLayer = 4, hdrAvailable = () => false, hdrRes = res, onFilm = () => {}, premultiplied = null, runtime = () => import('./nativeEffect.js') } = {}) {
+    Object.assign(this, { scene, renderer, layer, nativeLayer, depth, res, hdrRes, hdrAvailable, onFilm, runtime, premultiplied });
+    this.hdr = true; this.night = 0;
     this.quality = coarse ? 'mobile' : 'desktop';
     this.bindings = {}; this.entries = new Map(); this.anchors = []; this.loops = new Map(); this.bursts = [];
     this.depthOn = false; this.warned = new Set(); this.drawCalls = 0; this.particles = 0; this.dropped = 0;
@@ -68,7 +67,9 @@ export class NativeWorldFx {
   warn(key, message) { if (!this.warned.has(key)) { this.warned.add(key); console.warn(message); } }
   // The fire anchors of effects.js ({ x, y, z, kind } with kind 'campfire' or 'brazier', the slot names).
   setAnchors(fires) { this.anchors = fires.map(f => ({ x: f.x, y: f.y, z: f.z, slot: f.kind })); this.loops.clear(); }
-  setQuality({ outlines } = {}) { this.depthOn = !!outlines; } // DepthFade needs the opaque depth target (medium and above)
+  get hdrActive() { return this.hdr && this.depthOn && this.hdrAvailable(); }
+  setNight(n) { this.night = Math.min(1, Math.max(0, Number(n) || 0)); }
+  setQuality({ outlines } = {}) { this.depthOn = !!outlines; this.setMode(); } // DepthFade needs the opaque depth target (medium and above)
   // Any time: bind, rebind with new parameters, unbind (null or an invalid document = no bindings). A changed slot drops its
   // instances (loops respawn next frame with the new parameters); an effect no slot uses any more is released.
   setBindings(doc) {
@@ -116,16 +117,29 @@ export class NativeWorldFx {
       // A mobile GPU without a compressed format gets RGBA8 from the transcoder: over the cap, keep the procedural look.
       const bytes = assets.textures.reduce((sum, texture) => sum + nativeTextureBytes(texture), 0);
       if (assets.mobile && bytes > NATIVE_MOBILE_GPU_CAP) throw new Error(`textures need ${bytes} GPU bytes, over the mobile cap`);
-      entry.source = assets.source; entry.emissive = [];
+      this.onFilm(assets.film);
+      entry.source = assets.source; entry.emissive = []; entry.blends = [];
       entry.particles = runtime.createNativeParticles(entry.effect, this.scene, assets.textures);
       for (const mesh of entry.particles.layers) {
-        mesh.layers.set(this.layer); mesh.visible = false; mesh.geometry.instanceCount = 0;
+        entry.blends.push(Object.fromEntries(['blending', 'blendSrc', 'blendDst', 'blendSrcAlpha', 'blendDstAlpha'].map(k => [k, mesh.material?.[k]])));
+        mesh.layers.set(this.hdrActive ? this.nativeLayer : this.layer); mesh.visible = false; mesh.geometry.instanceCount = 0;
         // DepthFade over the source's 100 cm in the effect's own world size (a uniform; the shader source is the core one).
         const fade = mesh.material?.uniforms?.depthFadeDistance;
         if (fade) fade.value *= WORLD_BASE[entry.effect.recipe];
       }
-      entry.state = 'ready';
+      entry.state = 'ready'; this.setMode();
     } catch (error) { if (entry.alive) this.fail(entry, error); }
+  }
+  setMode() {
+    const hdr = this.hdrActive;
+    for (const entry of this.entries.values()) entry.particles?.layers.forEach((mesh, i) => {
+      mesh.layers.set(hdr ? this.nativeLayer : this.layer);
+      const m = mesh.material;
+      if (!m) return;
+      if (hdr || !entry.emissive[i] || !this.premultiplied) Object.assign(m, entry.blends[i]);
+      else { const { blending, src, dst } = this.premultiplied;
+        Object.assign(m, { blending, blendSrc: src, blendDst: dst, blendSrcAlpha: null, blendDstAlpha: null }); }
+    });
   }
   // Load error, hash mismatch or a frame exception: that effect's slots go back to the procedural look until the effect is unbound and bound again.
   fail(entry, error) {
@@ -152,6 +166,7 @@ export class NativeWorldFx {
   }
   update(dt, focus, camera) {
     if (this.disposed) return;
+    this.setMode();
     dt = Number.isFinite(dt) ? Math.max(0, dt) : 0;
     const fx = focus?.x ?? 0, fz = focus?.z ?? 0;
     this.anchors.forEach((anchor, index) => {
@@ -196,7 +211,7 @@ export class NativeWorldFx {
       if (entry.emissive[index] || !e.particles.some(q => Math.max(q.color[0], q.color[1], q.color[2]) > 1)) return;
       entry.emissive[index] = true;
       const material = layers[index]?.material;
-      if (material && this.premultiplied) {
+      if (!this.hdrActive && material && this.premultiplied) {
         const { blending, src, dst } = this.premultiplied;
         Object.assign(material, { blending, blendSrc: src, blendDst: dst, blendSrcAlpha: null, blendDstAlpha: null });
       }
@@ -204,7 +219,7 @@ export class NativeWorldFx {
     list.forEach((inst, n) => {
       if (!ranges[n]) return;
       const p = inst.params, k = WORLD_BASE[entry.effect.recipe] * p.scale, kh = k * p.height;
-      const [tr, tg, tb] = linearTint(p.tint), gain = p.brightness;
+      const [tr, tg, tb] = linearTint(p.tint), gain = p.brightness * (PRESENTATION_SLOTS[inst.slot].mode === 'loop' ? 1 + NIGHT_GAIN * this.night : 1);
       ranges[n].forEach(([start, count], index) => {
         const a = layers[index]?.geometry.attributes;
         if (!a) return;
@@ -213,13 +228,13 @@ export class NativeWorldFx {
           pos[i * 3] = inst.x + pos[i * 3] * k; pos[i * 3 + 1] = inst.y + pos[i * 3 + 1] * kh; pos[i * 3 + 2] = inst.z + pos[i * 3 + 2] * k;
           size[i * 2] *= k; size[i * 2 + 1] *= kh;
           const alpha = color[i * 4 + 3] * p.opacity, r = color[i * 4] * gain * tr, g = color[i * 4 + 1] * gain * tg, b = color[i * 4 + 2] * gain * tb;
-          const fit = emissive ? Math.min(1, HDR_FIT / Math.max(r, g, b, 1e-6)) * Math.min(1, Math.max(0, alpha)) : 1;
+          const fit = emissive && !this.hdrActive ? Math.min(1, HDR_FIT / Math.max(r, g, b, 1e-6)) * Math.min(1, Math.max(0, alpha)) : 1;
           color[i * 4] = r * fit; color[i * 4 + 1] = g * fit; color[i * 4 + 2] = b * fit; color[i * 4 + 3] = alpha;
         }
       });
     });
-    const depth = this.depth();
-    if (camera?.isPerspectiveCamera) entry.particles.setDepth(depth, camera, this.res.x, this.res.y, this.depthOn && !!depth, { perspective: true });
+    const depth = this.depth(), res = this.hdrActive ? this.hdrRes : this.res;
+    if (camera?.isPerspectiveCamera) entry.particles.setDepth(depth, camera, res.x, res.y, this.depthOn && !!depth, { perspective: true });
     for (const mesh of layers) {
       mesh.visible = mesh.geometry.instanceCount > 0;
       if (mesh.visible) { this.drawCalls++; this.particles += mesh.geometry.instanceCount; }
@@ -230,7 +245,7 @@ export class NativeWorldFx {
     for (const entry of this.entries.values()) resources += 1 + (entry.owned?.length || 0) + (entry.particles?.layers.length || 0) * 2;
     const loops = [...this.loops.values()].reduce((sum, list) => sum + list.length, 0);
     return { loops, bursts: this.bursts.length, instances: loops + this.bursts.length, particles: this.particles, drawCalls: this.drawCalls,
-      dropped: this.dropped, resources, quality: this.quality, effects: [...this.entries.values()].map(e => ({ id: e.id, state: e.state })),
+      hdr: this.hdrActive, night: this.night, loopGain: 1 + NIGHT_GAIN * this.night, dropped: this.dropped, resources, quality: this.quality, effects: [...this.entries.values()].map(e => ({ id: e.id, state: e.state })),
       slots: Object.keys(this.bindings) };
   }
   dispose() {

@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { NativeSimulation } from '../src/render/vfx/niagara/native-simulation.js';
 import { NIAGARA_NATIVE, nativeEndStep } from '../src/editor/niagaraNative.js';
 import { defaultPresentationBinding, emptyPresentationBindings } from '../src/data/presentationBindings.js';
-import { NativeWorldFx, MAX_BURSTS, MAX_STEPS, PREWARM_STEPS, WORLD_BASE, fixedSteps, linearTint, loopSeed, mergeFrames, ringOffsets }
+import { NativeWorldFx, MAX_BURSTS, MAX_STEPS, PREWARM_STEPS, WORLD_BASE, NIGHT_GAIN, HDR_FIT, fixedSteps, linearTint, loopSeed, mergeFrames, ringOffsets }
   from '../src/render/vfx/niagara/worldFx.js';
 
 const FLAME = 'niagara-985a431dc6c0d1ca', HIT = 'niagara-97a82bae61b29237';
@@ -62,7 +62,7 @@ function fakeRuntime({ fail = null } = {}) {
     },
     createNativeParticles(effect) {
       live.sets++;
-      const layers = Array.from({ length: effect.recipe === 'basichit-v1' ? 3 : 2 }, () => ({ visible: false, layers: { set() {} },
+      const layers = Array.from({ length: effect.recipe === 'basichit-v1' ? 3 : 2 }, () => ({ visible: false, layers: { set(n) { this.mask = 1 << n; } }, material: { blending: 1, blendSrc: 204, blendDst: 205, blendSrcAlpha: null, blendDstAlpha: null },
         geometry: { instanceCount: 0, attributes: { particlePosition: { array: new Float32Array(512 * 3) },
           particleSize: { array: new Float32Array(512 * 2) }, particleColor: { array: new Float32Array(512 * 4) } } } }));
       return { layers, setDepth() {}, dispose() { live.sets--; },
@@ -154,4 +154,45 @@ test('failures fall back to the procedural look and warn once; invalid documents
     fx.dispose(); fx.update(1 / 60, { x: 0, z: 0 }, camera);
     assert.equal(runtime.live.owned + runtime.live.sets, 0);
   } finally { console.warn = warn; }
+});
+
+
+test('HDR and fallback restore layers, source blends, uncapped colors and clamped loop-only night gain', async () => {
+  const runtime = fakeRuntime(), fx = new NativeWorldFx({}, { runtime: async () => runtime, coarse: false,
+    hdrAvailable: () => true, premultiplied: { blending: 5, src: 201, dst: 205 } });
+  fx.setQuality({ outlines: true }); fx.setAnchors(anchors.slice(0, 1));
+  fx.setBindings(doc({ campfire: bind('campfire', FLAME), meleeHit: bind('meleeHit', HIT) }));
+  await settle(); fx.burst('meleeHit', 1, 1, 1); fx.update(6 / 60, { x: 0, z: 0 }, camera);
+  const flame = fx.entryOf('campfire').particles.layers[0], hit = fx.entryOf('meleeHit').particles.layers;
+  const colors = mesh => Array.from(mesh.geometry.attributes.particleColor.array.slice(0, mesh.geometry.instanceCount * 4));
+  const day = colors(flame), hitDay = hit.map(colors);
+  assert.equal(flame.layers.mask, 1 << 4); assert.equal(flame.material.blending, 1);
+  assert.ok(Math.max(...day) > HDR_FIT, 'source HDR is not capped');
+  fx.setNight(1); fx.update(0, { x: 0, z: 0 }, camera);
+  const night = colors(flame);
+  day.forEach((v, i) => assert.ok(Math.abs(night[i] - v * (i % 4 === 3 ? 1 : 1 + NIGHT_GAIN)) < 1e-4));
+  assert.deepEqual(hit.map(colors), hitDay, 'bursts do not get the night boost');
+  fx.setNight(2); assert.equal(fx.metrics.loopGain, 1 + NIGHT_GAIN);
+  fx.setNight(Infinity); assert.equal(fx.metrics.loopGain, 1 + NIGHT_GAIN);
+  fx.setNight(-Infinity); assert.equal(fx.metrics.loopGain, 1);
+  fx.setNight(-1); assert.equal(fx.metrics.loopGain, 1); fx.setNight(NaN); assert.equal(fx.night, 0);
+  fx.hdr = false; fx.update(0, { x: 0, z: 0 }, camera);
+  assert.equal(flame.layers.mask, 1 << 1); assert.equal(flame.material.blending, 5); assert.equal(flame.material.blendSrc, 201);
+  assert.ok(Math.max(...colors(flame)) <= HDR_FIT, 'fallback retains the HDR fit');
+  fx.hdr = true; fx.update(0, { x: 0, z: 0 }, camera);
+  assert.equal(flame.layers.mask, 1 << 4); assert.equal(flame.material.blending, 1); assert.equal(flame.material.blendSrc, 204);
+  assert.deepEqual(colors(flame), day, 'HDR source restored after fallback');
+  fx.setQuality({ outlines: false }); fx.update(0, { x: 0, z: 0 }, camera);
+  assert.equal(flame.layers.mask, 1 << 1); assert.equal(flame.material.blending, 5);
+  fx.dispose();
+});
+
+test('no half float keeps the original FX path even on outlined tiers', async () => {
+  const runtime = fakeRuntime(), fx = new NativeWorldFx({}, { runtime: async () => runtime, hdrAvailable: () => false,
+    premultiplied: { blending: 5, src: 201, dst: 205 } });
+  fx.setQuality({ outlines: true }); fx.setAnchors(anchors);
+  fx.setBindings(doc({ campfire: bind('campfire', FLAME) })); await settle(); fx.update(0, {}, camera);
+  assert.equal(fx.metrics.hdr, false);
+  assert.equal(fx.entryOf('campfire').particles.layers[0].layers.mask, 1 << 1);
+  assert.equal(fx.entryOf('campfire').particles.layers[0].material.blending, 5); fx.dispose();
 });
