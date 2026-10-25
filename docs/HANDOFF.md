@@ -1,5 +1,12 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Presupuesto alojado ajustable por el dueño y renovación de la ventana de 2 h, 2026-10-25, versión 0.6.0-alpha.117, protocolo 72 (sin cambio), sin SQL:**
+Área AREA17 (area17-market, T-1025-36). Diseño de IC06b en [briefs/ic06b-memory-continuity.md](briefs/ic06b-memory-continuity.md) (T-1025-38).
+- El Centro de inferencia tiene «Llamadas por 2 h (1–60)» junto a «Iniciar en el servidor»; por defecto 20 (antes 8 fijo). El navegador recuerda la elección. El servidor aplica 20 si el cliente no lo manda. El emparejamiento del PC sigue con 8.
+- Arreglo: la ventana de 2 h no se renovaba nunca (el directorio del compañero fijaba su fecha de fin y sus límites): pasadas las 2 h el compañero quedaba mudo para siempre, y cambiar el tope o editar su personalidad hacía fallar el arranque. Ahora una ventana cerrada, un tope nuevo o un compañero editado abren una ventana nueva en el siguiente arranque, con la misma memoria.
+- Topes internos escalan con las llamadas (peticiones de la mente 4x, turnos y respuestas por jugador 2x, tokens 16 384 por llamada).
+- Pruebas: alojado + compañero + conversación + presupuesto 341/341 (renovación a las 2 h, tope nuevo sobre la misma memoria, techo 60 alojado y 8 en PC, campo del panel), gate del updater 72 archivos en verde.
+
 **GM11b: el tamaño del mundo como dato (límites del mapa, rejilla del editor y dominio del documento), 2026-10-25, versión 0.6.0-alpha.116, protocolo 72 (sin cambio), SQL044 opcional:**
 Área GM Constructor de mundos (asset-workshop, T-1024-35, T-1024-44, T-1024-45, T-1025-22/23; integración T-1025-34). El mundo de hoy queda idéntico bit a bit: mismos borradores, ids de revisión y hashes; ningún jugador recibe todavía un mundo crecido.
 - GM11b1 (c0ec8f6): el mapa lleva sus límites (`map.bounds`, `src/sim/mapBounds.js`); generador, sim, movimiento, guardas de perlas, render (terreno, agua, fondo marino, luces, vegetación) y minimapa los leen en vez de `map.half`.
