@@ -257,6 +257,9 @@ export class NavalPilot {
       r.anchor = Object.freeze({ ...station });
     } else r.anchor = Object.freeze({ x: c.state.x, y: c.state.y, z: c.state.z, f: c.state.f });
     this.#removeWalker(c, 'helm', false);
+    // Seat the owner exactly: prepare() releases a pilot more than 0.05 from the pilot point (a walker reaches the helm
+    // within 2 units, never onto the seat).
+    this.#placePlayer(owner, pilotPoint(r.body.pose, r.anchor));
     r.helm = true;
     this.#world.raftDeck.update(publicRafts(this.#world));
     return true;

@@ -100,6 +100,21 @@ test('walking away from helm blocks reacquisition until the owner returns to the
   assert.deepEqual(pilot.snapshot(owner).anchor, station, 'resumed helm uses its fixed anchor');
 });
 
+test('reclaiming the helm from a step away seats the owner, so the next tick keeps the pilot', () => {
+  const f = liveFixture(), { w, owner, ship, pilot } = f;
+  const raft = publicRafts(w).find((r) => r.owner === owner), stationPoint = pilotPoint(raft, raft.helm);
+  assert.equal(pilot.mount(owner, ship.id), true);
+  const epoch = pilot.snapshot(owner).epoch;
+  assert.equal(pilot.walk(owner, epoch), true);
+  // A walker reaches the helm prompt within 2 units, never onto the seat itself (PT16 touch QA, T-1025-07).
+  w.ecs.x[owner] = stationPoint.x + 1; w.ecs.z[owner] = stationPoint.z; w.ecs.facing[owner] = stationPoint.f + 1;
+  assert.equal(pilot.helm(owner, epoch), true);
+  assert.ok(Math.hypot(w.ecs.x[owner] - stationPoint.x, w.ecs.z[owner] - stationPoint.z) < 1e-9, 'owner is seated on the pilot point');
+  assert.ok(Math.abs(w.ecs.facing[owner] - stationPoint.f) < 1e-9, 'owner faces the helm heading');
+  pilot.prepare();
+  assert.equal(pilot.snapshot(owner).active, true, 'the seat check keeps the resumed pilot');
+});
+
 test('coastal landing keeps the boat live while ashore, then reboards and returns without changing profile custody', () => {
   const f = liveFixture(), { w, owner, pilot, ship, profile, initialPose } = f;
   const originalShip = structuredClone(ship), originalProfile = structuredClone(profile);
