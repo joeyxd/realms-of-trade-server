@@ -23,7 +23,7 @@ const FLAME = 'niagara-985a431dc6c0d1ca', HIT = 'niagara-97a82bae61b29237';
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css',
   '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.ktx2': 'image/ktx2', '.wasm': 'application/wasm', '.glb': 'model/gltf-binary' };
 const check = (value, message) => { if (!value) throw new Error(message); };
-const summary = { ticket: 'T-1025-33', at: new Date().toISOString(), mode: 'solo', quality: 'high', viewport: [1280, 720], steps: {}, screenshots: [], consoleErrors: [], status: 'running' };
+const summary = { ticket: 'T-1025-41', at: new Date().toISOString(), mode: 'solo', quality: 'high', viewport: [1280, 720], steps: {}, screenshots: [], consoleErrors: [], status: 'running' };
 
 const server = http.createServer((req, res) => {
   const pathname = decodeURIComponent(new URL(req.url, 'http://local').pathname);
@@ -216,6 +216,25 @@ try {
   check(Math.abs(summary.steps.g.day - 1) < 1e-6 && Math.abs(summary.steps.g.night - 1.6) < 1e-6, `(g) night gain: ${JSON.stringify(summary.steps.g)}`);
   await page.evaluate(() => { window.__mn.world.nativeFx.hdr = true; }); await frames(2);
 
+  // (l) Night lift with the world Filmic on (the default): local lights x(1 + nightGain) at full night, none by day or
+  // without the Filmic. Same framing as (f), the flame still bound.
+  check(await page.evaluate(() => window.__mn.world.pipeline.filmWorld), '(l) the world Filmic is on by default');
+  await page.waitForFunction(() => !!window.__mn.world.pipeline.nativeFilm.lut, null, { timeout: 60000, polling: 'raf' });
+  const dark = () => page.evaluate(() => window.__mn.world.lights.knobs.dark);
+  const gain = await page.evaluate(() => window.__mn.world.lights.nightGain);
+  summary.steps.l = { gain, darkNight: await dark() };
+  for (const lift of [false, true]) {
+    await page.evaluate(v => { window.__mn.world.lights.nightGain = v; }, lift ? gain : 0); await frames(2);
+    await shot(`l-night-lights-${lift ? 'lifted' : 'before'}`);
+  }
+  await page.evaluate(() => { window.__mn.world.pipeline.filmWorld = false; }); await frames(2);
+  summary.steps.l.darkNoFilm = await dark();
+  await page.evaluate(() => { window.__mn.world.pipeline.filmWorld = true; }); await tod('day');
+  summary.steps.l.darkDay = await dark();
+  check(gain > 0 && Math.abs(summary.steps.l.darkNight - 1) < 1e-6 && summary.steps.l.darkNoFilm === 0 && summary.steps.l.darkDay === 0,
+    `(l) night lift: ${JSON.stringify(summary.steps.l)}`);
+  await tod('night');
+
   // (j) Frozen frame, pre-bloom readback: pick the corner farthest from every live flame, then compare all RGBA bytes.
   summary.steps.j = await page.evaluate(() => {
     const w = window.__mn.world, p = w.pipeline, fx = w.nativeFx, r = w.renderer, rt = p.rtPost, size = 24;
@@ -249,7 +268,7 @@ try {
     check(summary.steps.h[mode].restoredDifferences === 0 && summary.steps.h[mode].gradedDifferences > 0 && summary.steps.h[mode].originalMaterial, `(h) Filmic toggle: ${JSON.stringify(summary.steps.h[mode])}`);
     for (const on of [false,true]) { await page.evaluate(v => { window.__mn.world.pipeline.filmWorld = v; }, on); await frames(2); await shot(`h-world-${mode}-${on ? 'filmic' : 'original'}`); }
   }
-  await page.evaluate(() => { window.__mn.world.pipeline.filmWorld = false; }); await tod('day');
+  await page.evaluate(() => { window.__mn.world.pipeline.filmWorld = true; }); await tod('day'); // back to the default
 
   // (i) Measure full and half FX resolution with exactly 0, 1 and 10 native loops (same view and anchors).
   summary.steps.i = {};

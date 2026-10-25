@@ -415,6 +415,9 @@ export class GameScene {
   applyPreset(p) {
     const k = this.lights.knobs;
     k.fire = p.fire; k.lava = p.lavaLight; k.night = p.windows; k.eyes = 0.4 + 0.6 * p.fire;
+    // Night lift for local lights, only where the world Filmic draws (outlined tiers); low keeps its old levels.
+    const film = this.pipeline.filmWorld && this.pipeline.q.outlines;
+    k.dark = film ? Math.min(1, Math.max(0, (p.fire - 0.3) / 0.7)) : 0;
     U.mnLightSoft.value = p.lightSoft;
     U.mnLightBounce.value = p.lightBounce;
     WATER_LIGHT.uWaterLight.value.copy(p.water);

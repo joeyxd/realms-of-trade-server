@@ -32,6 +32,9 @@ const KINDS = {
 // and intensity at full night; by day they keep about half, where the sun drowns them anyway.
 const SHOT_LIGHT = [{ r: 6, i: 2.6 }, { r: 6, i: 2.4 }, { r: 5, i: 2 }, { r: 7, i: 2.8 }];
 const SHOT_MAX = 4;
+// Night lift (ST01e): the world Filmic darkens the night, so ranked local lights gain up to 1 + NIGHT_LIGHT_GAIN as the
+// `dark` knob goes 0 -> 1 (the scene sets it only while the Filmic is on). Flashes and shots keep their own levels.
+export const NIGHT_LIGHT_GAIN = 0.3;
 
 // Points on the lava river and crater: greedy picks on a 3 u grid, at least 9 u apart (also used
 // by the lava bubbles in effects.js).
@@ -67,7 +70,8 @@ export class LocalLights {
     this.shotColor = new THREE.Color();
     this.max = 8;
     this.time = 0;
-    this.knobs = { fire: 1, lava: 1, night: 0, eyes: 1, portable: 1 };
+    this.knobs = { fire: 1, lava: 1, night: 0, eyes: 1, portable: 1, dark: 0 };
+    this.nightGain = NIGHT_LIGHT_GAIN;
     this.picked = [];
     const add = (kind, x, y, z, extra = {}) => {
       const k = KINDS[kind];
@@ -220,6 +224,7 @@ export class LocalLights {
     }
     list.sort((a, b) => (b.priority || 0) - (a.priority || 0) || a.d - b.d);
     const cut = list.length > slots ? list[slots].d : 40;
+    const lift = 1 + this.nightGain * Math.min(1, Math.max(0, K.dark || 0));
     for (let i = 0; i < Math.min(slots, list.length); i++) {
       const s = list[i];
       const fade = s.priority >= 2 ? 1 : Math.max(s.priority ? 0.65 : 0, Math.min(1, (cut - s.d) / 6)) *
@@ -228,7 +233,7 @@ export class LocalLights {
       s.w = fade;
       // Flicker: two incommensurate sines + a faster jitter, never below 1 - 2*amount.
       const fl = 1 + s.flicker * (Math.sin(t * s.speed * 3.1 + s.seed * 7) * 0.6 + Math.sin(t * s.speed * 7.3 + s.seed * 3) * 0.4 + Math.sin(t * s.speed * 17 + s.seed) * 0.3);
-      put(s.x, s.y + (s.flicker > 0.15 ? Math.sin(t * 9 + s.seed) * 0.08 : 0), s.z, s.r, s.color, s.i * fl * fade * K[s.knob], s.wrap);
+      put(s.x, s.y + (s.flicker > 0.15 ? Math.sin(t * 9 + s.seed) * 0.08 : 0), s.z, s.r, s.color, s.i * fl * fade * K[s.knob] * lift, s.wrap);
     }
     // Flashes use the remaining reserved slot; portable lights are ordinary ranked sources above.
     for (const f of this.flashes) {

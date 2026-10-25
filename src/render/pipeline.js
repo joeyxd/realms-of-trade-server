@@ -410,7 +410,7 @@ export class Pipeline {
     this.castersDirty = true;
     this.frame = 0;
     this.nativeFx = null; this.nativeFilm = new WorldFilm();
-    this.filmWorld = false; this.filmWorldExposure = 0.927; // Preserve linear 0.18 after the LUT display gain (1.05).
+    this.filmWorld = true; this.filmWorldExposure = 0.927; // Preserve linear 0.18 after the LUT display gain (1.05).
     this.water = null; // { setMode(ssr) } provided by the scene
     this.grading = {
       vignette: 0.22, sat: 1.07, chroma: 0, danger: 0, flash: 0, flashColor: new THREE.Color(1, 1, 1),

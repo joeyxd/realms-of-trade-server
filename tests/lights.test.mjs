@@ -105,3 +105,19 @@ test('preset knobs switch light groups off', opts, () => {
   lights.update(1 / 60, v, v);
   assert.ok(lights.sources.some((s) => s.kind === 'window' && s.w > 0), 'hut windows at night');
 });
+
+test('night lift: the dark knob raises ranked local lights up to 1 + nightGain, off by default', opts, () => {
+  const lights = new mod.LocalLights(map);
+  lights.max = 8;
+  Object.assign(lights.knobs, { fire: 1, lava: 1, night: 1, eyes: 1, portable: 1 });
+  const v = map.landmarks.village, col = mod.U.mnLightCol.value;
+  const read = () => { lights.time = 0; lights.update(0, v, v); return Array.from({ length: mod.U.mnLightCount.value }, (_, i) => col[i].x); };
+  assert.equal(lights.knobs.dark, 0, 'no lift unless the scene sets it');
+  const base = read();
+  lights.knobs.dark = 1;
+  const lit = read();
+  assert.equal(lit.length, base.length, 'same lights picked');
+  lit.forEach((r, i) => assert.ok(Math.abs(r - base[i] * (1 + lights.nightGain)) < 1e-6, `light ${i} lifted by ${(r / base[i]).toFixed(3)}`));
+  lights.knobs.dark = 0.5;
+  read().forEach((r, i) => assert.ok(Math.abs(r - base[i] * (1 + lights.nightGain / 2)) < 1e-6));
+});
