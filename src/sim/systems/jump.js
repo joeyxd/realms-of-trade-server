@@ -28,10 +28,9 @@ export function jumpStage(ecs, e) {
 const A_JUMP = 1, A_DOUBLE = 2, A_TRIPLE = 3, A_FREE = 4;
 const gate = (world, e, locked, heavy, swimming) => {
   const ecs = world.ecs;
-  // The dash press gate, plus: never on a raft deck (the deck carries its own rules).
+  // The same press gate on land and on a raft deck.
   if (swimming || locked || heavy || ecs.dashT[e] >= 0 || ecs.castLock[e] > 0) return false;
   if (ecs.castK[e] > 0 && ecs.act[e] === ACT.LEAP) return false; // the Abordaje leap
-  if (world.raftDeck?.surface(ecs.x[e], ecs.z[e], ecs.y[e])) return false;
   return ecs.dashCharges[e] >= (world.jumpMode === 'game' ? J.game.cost : J.lab.cost);
 };
 

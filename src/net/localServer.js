@@ -264,18 +264,15 @@ export class LocalServer {
         if (c.queue.length > MAX_QUEUE) for (const d of c.queue.splice(0, c.queue.length - MAX_QUEUE)) { c.carry |= d.prs; this.stats.trimmed++; }
         break;
       }
-      case MSG.SHIP_INPUT:
-      case MSG.DECK_INPUT: {
+      case MSG.SHIP_INPUT: {
         const pilot = this.world.navalPilot;
         if (!pilot || !c.entity || c.paused || this.tickBlocked ||
             !this.commandAllowed(c, { world: true, target: null })) return;
         // Identity is the authenticated connection. Reject unknown keys before projecting axes.
-        const keys = msg.t === MSG.SHIP_INPUT ? ['t', 'epoch', 'seq', 'throttle', 'brake', 'steer', 'capture'] :
-          ['t', 'epoch', 'seq', 'mx', 'mz'];
+        const keys = ['t', 'epoch', 'seq', 'throttle', 'brake', 'steer', 'capture'];
         if (Object.keys(msg).some((key) => !keys.includes(key))) return;
         const { t, ...command } = msg;
-        if (t === MSG.SHIP_INPUT) pilot.input(c.entity, command);
-        else pilot.deckInput(c.entity, command);
+        pilot.input(c.entity, command);
         break;
       }
       case MSG.CMD: {

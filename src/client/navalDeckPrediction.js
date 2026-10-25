@@ -1,4 +1,5 @@
 // Bounded client prediction for walking on a moving raft. No transport or UI ownership.
+import { PLAYER_FIELDS } from '../sim/ecs.js';
 import { NAVAL_TRIAL } from '../data/navalTrial.js';
 import { DeckWalkEngine } from '../sim/naval/deckWalk.js';
 import { pilotPoint } from '../sim/naval/pilotGeometry.js';
@@ -37,8 +38,8 @@ function validShipId(id) {
 }
 
 export class NavalDeckPrediction {
-  constructor(engine = new DeckWalkEngine()) {
-    if (!engine || typeof engine.step !== 'function') throw new TypeError('Deck walk engine is required');
+  constructor(engine = null) {
+    if (engine && typeof engine.step !== 'function') throw new TypeError('Deck walk engine is required');
     this.engine = engine;
     this.epoch = 0;
     this.active = false;
@@ -53,7 +54,33 @@ export class NavalDeckPrediction {
     this.prevState = null;
   }
 
+  // Geometry-only callers retain their old adapter; live deck bodies use the real land replay.
+  acceptLandSnapshot(s) {
+    if (!s || !Number.isSafeInteger(s.epoch) || s.epoch < this.epoch || typeof s.active !== 'boolean') return 'rejected';
+    if (!s.active) {
+      if (s.epoch === this.epoch && !this.active) return 'duplicate';
+      Object.assign(this, new NavalDeckPrediction(), { epoch: s.epoch }); return 'accepted';
+    }
+    const fresh = s.epoch > this.epoch;
+    if (!s.epoch || s.mode !== 'walk' || !s.shipId || !Number.isSafeInteger(s.ack) || s.ack < 0 ||
+        !Number.isSafeInteger(s.tick) || s.tick < 0 || !s.state ||
+        !['x','y','z','f','vx','vz','mag','kbx','kbz','dashDirX','dashDirZ'].every(k => Number.isFinite(s.state[k])) ||
+        Math.abs(s.state.x) > 256 || Math.abs(s.state.z) > 256 ||
+        !Array.isArray(s.player) || s.player.length !== PLAYER_FIELDS.length || !s.player.every(Number.isFinite) ||
+        !Array.isArray(s.parts) || !s.params ||
+        (!fresh && (!this.active || s.ack < this.ack || s.tick < this.authorityTick || s.ack > this.seq))) return 'rejected';
+    if (!fresh && s.ack === this.ack && s.tick === this.authorityTick &&
+        JSON.stringify(s.parts) === JSON.stringify(this.parts) && JSON.stringify(s.params) === JSON.stringify(this.params)) return 'duplicate';
+    this.prevState = fresh ? s.state : this.state;
+    this.state = Object.freeze(structuredClone(s.state));
+    this.player = [...s.player]; this.parts = structuredClone(s.parts); this.params = structuredClone(s.params);
+    this.epoch = s.epoch; this.active = true; this.shipId = s.shipId;
+    this.ack = s.ack; this.seq = fresh ? s.ack : Math.max(this.seq, s.ack); this.authorityTick = s.tick;
+    return 'accepted';
+  }
   acceptSnapshot(snapshot) {
+    if (snapshot?.player || this.player) return this.acceptLandSnapshot(snapshot);
+    this.engine ||= new DeckWalkEngine();
     if (!snapshot || !Number.isSafeInteger(snapshot.epoch) || snapshot.epoch < 0 ||
         typeof snapshot.active !== 'boolean' || snapshot.epoch < this.epoch) return 'rejected';
 
@@ -137,6 +164,7 @@ export class NavalDeckPrediction {
 
   #clear(epoch) {
     this.epoch = epoch;
+    this.player = null;
     this.active = false;
     this.seq = 0;
     this.ack = 0;

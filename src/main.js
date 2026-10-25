@@ -1372,9 +1372,9 @@ async function boot() {
   function groundTarget(d, out = gTarget) {
     let dx = Math.sin(ps.f), dz = Math.cos(ps.f), dist = 4;
     const ta = input.touchAim;
-    if (ta) { world.rig.moveBasis(ta.x, ta.y, padDir); dx = padDir.x; dz = padDir.z; dist = d.min + ta.k * (d.range - d.min); }
+    if (ta) { playerMoveBasis(ta.x, ta.y, padDir); dx = padDir.x; dz = padDir.z; dist = d.min + ta.k * (d.range - d.min); }
     else if (padAiming()) {
-      world.rig.moveBasis(input.pad.ax, input.pad.ay, padDir); dx = padDir.x; dz = padDir.z;
+      playerMoveBasis(input.pad.ax, input.pad.ay, padDir); dx = padDir.x; dz = padDir.z;
       dist = d.min + Math.min(1, Math.hypot(input.pad.ax, input.pad.ay)) * (d.range - d.min);
     } else if (mouseAiming()) { dx = aim.x - ps.x; dz = aim.z - ps.z; dist = Math.hypot(dx, dz); }
     else { const t = enemyWithin(d.range); if (t) { dx = t.r.x - ps.x; dz = t.r.z - ps.z; dist = Math.hypot(dx, dz); } }
@@ -1433,12 +1433,20 @@ async function boot() {
     D.end(true);
   }
 
+  function playerMoveBasis(ix, iy, out) {
+    if (!client.deck.active) return world.rig.moveBasis(ix, iy, out);
+    const m = world.camera.matrixWorld.elements, len = Math.hypot(m[8], m[10]) || 1;
+    const fx = -m[8] / len, fz = -m[10] / len;
+    out.x = -fz * ix + fx * iy; out.z = fx * ix + fz * iy;
+    return out;
+  }
+
   // ---- Loop --------------------------------------------------------------------------------------
   loop = new Loop({
     fixed: () => safe('fixed', () => {
       if (st.mode !== 'playing' || !client.joined || st.paused) return;
       const navalInput = navigation.fixedInput();
-      if (navalInput) {
+      if (navalInput && !client.deck.active) {
         input.consumePresses(); aimCtl.reset(); st.wantWeapon = 0;
         client.tickInput(chatPanel.typing || pause.open || firePanel.active || freshwaterPanel.active || !input.enabled
           ? { naval: { throttle: 0, brake: 0, steer: 0, capture: false }, deck: { mx: 0, mz: 0 } }
@@ -1450,7 +1458,7 @@ async function boot() {
         return;
       }
       input.axes(axes);
-      world.rig.moveBasis(axes.x, axes.y, move);
+      playerMoveBasis(axes.x, axes.y, move);
       const prs = input.consumePresses();
       if (artisan.active || community.active || firePanel.active || freshwaterPanel.active) {
         client.tickInput({ mx: 0, mz: 0, ax: ps.x, az: ps.z, btn: 0, prs: 0, w: 0 });
@@ -1466,12 +1474,12 @@ async function boot() {
       const ta = input.touchAim;
       if (ta) {
         // Dragging a touch skill button: aim that way, up to 9 u out (the drag length).
-        world.rig.moveBasis(ta.x, ta.y, padDir);
+        playerMoveBasis(ta.x, ta.y, padDir);
         const l = Math.hypot(padDir.x, padDir.z) || 1, d = 1.5 + ta.k * 7.5;
         aim.set(ps.x + (padDir.x / l) * d, ps.y, ps.z + (padDir.z / l) * d);
         aimBit = BTN.AIM;
       } else if (padAiming()) {
-        world.rig.moveBasis(input.pad.ax, input.pad.ay, padDir);
+        playerMoveBasis(input.pad.ax, input.pad.ay, padDir);
         const l = Math.hypot(padDir.x, padDir.z) || 1;
         aim.set(ps.x + (padDir.x / l) * 4, ps.y, ps.z + (padDir.z / l) * 4);
         aimBit = BTN.AIM;
@@ -1544,6 +1552,11 @@ async function boot() {
         paused: pause.open || chatPanel.typing || !input.enabled,
         reducedMotion: settings.reducedMotion, quality: quality.current, muted: settings.muted,
       }));
+      // Deck walkers use the existing land buttons and joystick for the normal INPUTS stream.
+      if (isTouch && client.deck.active) {
+        touch.root.style.setProperty('display', 'block', 'important');
+        navigation.touch?.setEnabled(false);
+      } else touch.root.style.removeProperty('display');
       safe('personalLantern', () => personalLantern.update());
       safe('firePanel', () => { if (ps.dead || pause.open) firePanel.close(); firePanel.update(); });
       safe('freshwaterPanel', () => {

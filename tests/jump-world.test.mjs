@@ -153,7 +153,7 @@ test('game mode spends one dash charge per jump and with none the press does not
   assert.equal(l.w.ecs.dashCharges[l.e], 1);
 });
 
-test('the jump is refused while swimming and on a raft deck; in the air dash and attack presses are ignored', () => {
+test('the jump is refused while swimming, allowed on a raft deck; in the air dash and attack presses are ignored', () => {
   const sea = arena({ jump: 'lab', map: world(() => -6), x: 0, z: 0 });
   sea.step({});
   assert.equal(sea.w.ecs.swim[sea.e], 1);
@@ -162,7 +162,9 @@ test('the jump is refused while swimming and on a raft deck; in the air dash and
   const deck = arena({ jump: 'lab', map: flat, x: 0, z: 0 });
   deck.w.raftDeck = { size: 0, surface: () => ({ y: FLOOR, kind: 'deck', id: 1 }), blocked: () => false, update() {} }; // a stand-in deck under the feet
   deck.step({ prs: J });
-  assert.ok(!air(deck), 'no jump from a raft deck');
+  assert.ok(air(deck), 'jump starts on a raft deck');
+  while (air(deck)) deck.step({ btn: J });
+  near(deck.w.ecs.y[deck.e], FLOOR, 1e-9, 'lands on the deck');
   const a = arena({ jump: 'lab', map: flat, x: 0, z: 0 });
   a.step({ prs: BTN.ATTACK });
   assert.ok(a.w.ecs.atkStage[a.e] > 0, 'a swing started');

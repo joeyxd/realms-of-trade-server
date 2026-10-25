@@ -1,7 +1,7 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
 import { jumpStage } from '../sim/systems/jump.js';
-export const PROTOCOL_VERSION = 71; // TA02: hold-to-chop resource ops chop, crit, pickup (70: IC08 hosted inference)
+export const PROTOCOL_VERSION = 72; // Deck walkers use normal land INPUTS and reconciliation (71: TA02 chop ops)
 
 export const MSG = {
   // client -> server
@@ -55,7 +55,6 @@ export const MSG = {
   // Session-owned helm and relative deck input; the remaining naval/trade messages stay reserved.
   SHIP_SPAWN: 'ship_spawn',
   SHIP_INPUT: 'ship_input', // {epoch, seq, throttle, brake, steer, capture?:boolean}; session owns pilot
-  DECK_INPUT: 'deck_input', // private local crew: {epoch, seq, mx, mz}; axes in the raft's local frame
   SHIP_STATE: 'ship_state',
   BOARD: 'board',
   DOCK: 'dock',

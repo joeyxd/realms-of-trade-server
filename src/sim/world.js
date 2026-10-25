@@ -199,7 +199,7 @@ export class World {
     if (profile && (this.isServer || hadComfortMeal && this.ecs.mealTicks[e] === 0))
       this.ecs.load[e] = packLoadTier(profile, mealEffects(this.ecs.mealKind[e], this.ecs.mealTicks[e]).comfort);
     // The bounded helm parks land locomotion/combat. They cannot become a second pose authority.
-    if (this.navalPilot?.aboard(e)) {
+    if (this.navalPilot?.aboard(e) && !this.navalPilot.walking?.(e)) {
       if (!this.ecs.dead[e]) recoverSwimming(this.ecs, e, DT);
       this.ecs.lastSeq[e] = cmd.seq >>> 0; return;
     }
@@ -208,6 +208,7 @@ export class World {
     if (this.ecs.mask[e] & C.HEALTH) stepPlayerCombat(this, e, cmd, DT);
     this.flushFeel(e);
     this.ecs.lastSeq[e] = cmd.seq >>> 0;
+    this.navalPilot?.capture?.(e, this.ecs.lastSeq[e]);
   }
 
   // Hitstop / slow-mo requests from one command, merged (several reflects in a tick = one hitstop).

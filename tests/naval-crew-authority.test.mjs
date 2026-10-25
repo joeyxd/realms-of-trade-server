@@ -12,6 +12,13 @@ import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { pilotPoint } from '../src/sim/naval/pilotGeometry.js';
 import { newRaft } from '../src/sim/economy/raft.js';
 
+function landInput(w, e, c) {
+  const raft = w.raftDeck.entries.get(w.navalPilot.deckSnapshot(e).shipId).record;
+  const cos = Math.cos(raft.yaw), sin = Math.sin(raft.yaw);
+  w.applyCommand(e, { ...c, mx: cos*c.mx + sin*c.mz, mz: -sin*c.mx + cos*c.mz,
+    ax: w.ecs.x[e], az: w.ecs.z[e], btn: 0, prs: 0, pt: w.tick });
+}
+
 function addOwner(world, clientId, name = `Crew ${clientId}`) {
   const owner = world.spawnPlayer({ name, clientId }), profile = newProfile();
   assert.equal(prepareRaftProfile(world, profile), true);
@@ -77,13 +84,9 @@ test('boarding requires an owner invite, passenger consent, live deck support, a
   const deck = w.navalPilot.deckSnapshot(guest.owner);
   assert.equal(deck.active, true);
   assert.equal(w.navalPilot.board(guest.owner, shipId), false, 'the invite is consumed');
-  assert.equal(w.navalPilot.deckInput(guest.owner, { epoch: deck.epoch - 1, seq: 1, mx: 1, mz: 0 }), false);
-  assert.equal(w.navalPilot.deckInput(guest.owner, { epoch: deck.epoch, seq: 1, mx: 1, mz: 0 }), true);
-  assert.equal(w.navalPilot.deckInput(guest.owner, { epoch: deck.epoch, seq: 1, mx: 0, mz: 1 }), false, 'duplicate frame sequence is stale');
+  landInput(w, guest.owner, { epoch: deck.epoch, seq: 1, mx: 1, mz: 0 });
   assert.equal(w.navalPilot.leaveDeck(guest.owner, deck.epoch + 1), false);
   assert.equal(w.navalPilot.leaveDeck(guest.owner, deck.epoch), true);
-  assert.equal(w.navalPilot.deckInput(guest.owner, { epoch: deck.epoch, seq: 2, mx: 0, mz: 1 }), false,
-    'a released frame lease cannot be replayed');
 
   placeOnDeck(w, guest.owner, shipId, 1);
   placeOnDeck(w, stranger.owner, shipId, 2);
@@ -106,7 +109,7 @@ test('a turning helm carries a walking passenger in the same local frame without
   const previousYaw = helm.body.pose.yaw;
   for (let seq = 1; seq <= 6; seq++) {
     assert.equal(w.navalPilot.input(f.owner, shipInput(helm.epoch, seq, 1, 0, 0.7)), true);
-    assert.equal(w.navalPilot.deckInput(guest.owner, { epoch: initialDeck.epoch, seq, mx: 0, mz: 1 }), true);
+    landInput(w, guest.owner, { epoch: initialDeck.epoch, seq, mx: 0, mz: 1 });
     w.stepWorld();
   }
   const currentHelm = w.navalPilot.snapshot(f.owner), currentDeck = w.navalPilot.deckSnapshot(guest.owner);
@@ -129,7 +132,7 @@ test('owner can leave helm to walk, retains naval authority, and takes helm at t
   assert.equal(w.navalPilot.aboard(f.owner), true);
   assert.equal(w.navalPilot.input(f.owner, shipInput(helm.epoch, 1, 1, 0, 0.5)), false,
     'walking mode cannot apply thrust or steering');
-  assert.equal(w.navalPilot.deckInput(f.owner, { epoch: walk.epoch, seq: 1, mx: 1, mz: 0 }), true);
+  landInput(w, f.owner, { epoch: walk.epoch, seq: 1, mx: 1, mz: 0 });
   w.stepWorld();
   const walked = w.navalPilot.deckSnapshot(f.owner).state;
   assert.ok(walked.x > walk.state.x, 'owner can move on deck between controls');
@@ -138,37 +141,8 @@ test('owner can leave helm to walk, retains naval authority, and takes helm at t
   const resumed = w.navalPilot.snapshot(f.owner);
   assert.equal(resumed.active, true);
   assert.deepEqual(resumed.anchor, { x: walked.x, y: walked.y, z: walked.z, f: walked.f });
-  assert.equal(w.navalPilot.deckInput(f.owner, { epoch: walk.epoch, seq: 2, mx: 0, mz: 1 }), false,
-    'old walk lease cannot move the helm seat');
   assert.equal(w.navalPilot.input(f.owner, shipInput(helm.epoch, 1, 0.5, 0, 0)), true,
     'helm accepts movement again after the owner retakes it');
-});
-
-test('packet floods coalesce to one committed walk step and stale controls time out safely', () => {
-  const f = makeWorld(), w = f.world, shipId = f.ship.id;
-  placeOnDeck(w, f.owner, shipId);
-  assert.equal(w.navalPilot.mount(f.owner, shipId), true);
-  const helm = w.navalPilot.snapshot(f.owner);
-  assert.equal(w.navalPilot.walk(f.owner, helm.epoch), true);
-  const before = w.navalPilot.deckSnapshot(f.owner), start = { x: before.state.x, z: before.state.z };
-  for (let seq = 1; seq <= 100; seq++)
-    assert.equal(w.navalPilot.deckInput(f.owner, { epoch: before.epoch, seq, mx: 0, mz: 1 }), true);
-  w.stepWorld();
-  const applied = w.navalPilot.deckSnapshot(f.owner);
-  assert.equal(applied.ack, 100);
-  assert.ok(Math.hypot(applied.state.x - start.x, applied.state.z - start.z) <= w.ecs.speed[f.owner] / 60 + 1e-8,
-    'all queued packets produce at most one fixed walk step');
-  for (let i = 0; i < NAVAL_TRIAL.inputTimeoutTicks + 3; i++) w.stepWorld();
-  const timedOut = w.navalPilot.deckSnapshot(f.owner);
-  assert.equal(timedOut.ack, 100, 'timeout does not invent a newer acknowledged command');
-  for (let i = 0; i < 20; i++) w.stepWorld();
-  const coasted = w.navalPilot.deckSnapshot(f.owner);
-  assert.equal(coasted.state.vx, 0); assert.equal(coasted.state.vz, 0);
-  assert.ok(coasted.state.z > timedOut.state.z, 'the bounded residual velocity coasts after timeout');
-  const settled = { x: coasted.state.x, z: coasted.state.z };
-  for (let i = 20; i < 40; i++) w.stepWorld();
-  const still = w.navalPilot.deckSnapshot(f.owner);
-  assert.deepEqual({ x: still.state.x, z: still.state.z }, settled, 'timed out control stops without replay');
 });
 
 test('death, disconnect, source edits, and owner detach release only live leases without reviving anyone', () => {
@@ -182,7 +156,6 @@ test('death, disconnect, source edits, and owner detach release only live leases
     w.stepWorld();
     assert.equal(w.navalPilot.deckSnapshot(guest.owner).active, false);
     assert.equal(w.ecs.hp[guest.owner], 0); assert.equal(w.ecs.dead[guest.owner], 1);
-    assert.equal(w.navalPilot.deckInput(guest.owner, { epoch, seq: 1, mx: 1, mz: 0 }), false);
   }
   {
     const { server, join } = pilotServer(), owner = join(1), guest = join(2), shipId = raftForOwner(server.world, owner).id;
@@ -193,7 +166,6 @@ test('death, disconnect, source edits, and owner detach release only live leases
     server.disconnect(2);
     assert.equal(server.world.navalPilot.deckSnapshot(guest).active, false);
     assert.equal(server.world.ecs.alive[guest], 0, 'server disconnect destroys the entity after lease cleanup');
-    assert.equal(server.world.navalPilot.deckInput(guest, { epoch: lease, seq: 1, mx: 0, mz: 1 }), false);
   }
   {
     const f = makeWorld(), guest = addOwner(f.world, 72), w = f.world, shipId = f.ship.id;
@@ -204,7 +176,6 @@ test('death, disconnect, source edits, and owner detach release only live leases
     f.ship.rev++;
     w.stepWorld();
     assert.equal(w.navalPilot.deckSnapshot(guest.owner).active, false, 'source revision invalidates the passenger lease');
-    assert.equal(w.navalPilot.deckInput(guest.owner, { epoch: lease, seq: 1, mx: 0, mz: 1 }), false);
   }
   {
     const f = makeWorld(), guest = addOwner(f.world, 72), w = f.world, shipId = f.ship.id;
@@ -216,7 +187,6 @@ test('death, disconnect, source edits, and owner detach release only live leases
     detachRafts(w, f.owner);
     assert.equal(w.navalPilot.deckSnapshot(guest.owner).active, false);
     assert.equal(w.navalPilot.snapshot(f.owner).active, false);
-    assert.equal(w.navalPilot.deckInput(guest.owner, { epoch: lease, seq: 1, mx: 0, mz: 1 }), false);
     assert.ok(w.ecs.alive[guest.owner] && w.ecs.hp[guest.owner] > 0, 'unaffected passenger stays alive');
     assert.equal(w.raftDeck.surface(w.ecs.x[guest.owner], w.ecs.z[guest.owner], w.ecs.y[guest.owner]), null,
       'passenger is rescued after source removal');
@@ -231,7 +201,7 @@ test('M5-held ticks publish cached crew frames without applying movement or ACKs
   assert.equal(w.navalPilot.invite(owner, shipId, guest), true);
   assert.equal(w.navalPilot.board(guest, shipId), true);
   const before = w.navalPilot.deckSnapshot(guest), standing = position(w, guest), tick = w.tick;
-  assert.equal(w.navalPilot.deckInput(guest, { epoch: before.epoch, seq: 1, mx: 1, mz: 0 }), true);
+  server.receive(2, { t: MSG.INPUTS, cmds: [{ seq: 1, mx: 1, mz: 0, pt: w.tick }] });
   admitted = false;
   assert.equal(server.step(), false);
   server.broadcastSnapshot(); server.broadcastSnapshot();
@@ -268,8 +238,8 @@ test('returning to walk accepts a position inside an internally destroyed wall w
 
   assert.equal(w.navalPilot.walk(f.owner, helm.epoch), true);
   let deck = w.navalPilot.deckSnapshot(f.owner);
-  for (let seq = 1; seq <= 30; seq++) {
-    assert.equal(w.navalPilot.deckInput(f.owner, { epoch: deck.epoch, seq, mx: 1, mz: 0 }), true);
+  for (let seq = 1; seq <= 30 && w.navalPilot.deckSnapshot(f.owner).state.x < 3.6; seq++) {
+    landInput(w, f.owner, { epoch: deck.epoch, seq, mx: 1, mz: 0 });
     w.stepWorld();
   }
   deck = w.navalPilot.deckSnapshot(f.owner);

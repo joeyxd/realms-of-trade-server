@@ -90,3 +90,23 @@ export class DeckWalkEngine {
       f: ecs.facing[e], vx: ecs.vx[e], vz: ecs.vz[e], mag: ecs.moveMag[e] });
   }
 }
+
+// The land body is authoritative; only its moving frame is stored on the raft.
+import { pilotLocal, pilotPoint } from './pilotGeometry.js';
+
+const vectors = [['vx', 'vz'], ['kbx', 'kbz'], ['dashDirX', 'dashDirZ']];
+export function readDeckState(ecs, e, pose) {
+  const state = { ...pilotLocal(pose, { x: ecs.x[e], y: ecs.y[e], z: ecs.z[e], f: ecs.facing[e] }), mag: ecs.moveMag[e] };
+  const c = Math.cos(pose.yaw), s = Math.sin(pose.yaw);
+  for (const [x, z] of vectors) { state[x] = c * ecs[x][e] - s * ecs[z][e]; state[z] = s * ecs[x][e] + c * ecs[z][e]; }
+  return Object.freeze(state);
+}
+
+export function poseDeckState(ecs, e, pose, state) {
+  const p = pilotPoint(pose, state), c = Math.cos(pose.yaw), s = Math.sin(pose.yaw);
+  // The jump peak is an absolute height on the real body, not a second jump machine.
+  ecs.jmpPeak[e] += p.y - ecs.y[e];
+  ecs.x[e] = p.x; ecs.y[e] = p.y; ecs.z[e] = p.z; ecs.facing[e] = p.f;
+  for (const [x, z] of vectors) { ecs[x][e] = c * state[x] + s * state[z]; ecs[z][e] = -s * state[x] + c * state[z]; }
+  ecs.moveMag[e] = state.mag;
+}

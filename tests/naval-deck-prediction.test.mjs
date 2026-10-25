@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NavalDeckPrediction } from '../src/client/navalDeckPrediction.js';
 import { DeckWalkEngine } from '../src/sim/naval/deckWalk.js';
+import { World } from '../src/sim/world.js';
+import { map } from './helpers.mjs';
 import { NAVAL_TRIAL } from '../src/data/navalTrial.js';
 
 const parts = Array.from({ length: 16 }, (_, i) => ['foundation', Math.floor(i / 4), i % 4, 0]);
@@ -133,4 +135,23 @@ test('local heading interpolates across the short angle and transforms through o
   near(half.z, expected.z, 'rigid z');
   assert.equal(client.position(pose, -1).x, client.position(pose, 0).x, 'alpha clamps low');
   assert.equal(client.position(pose, 2).x, client.position(pose, 1).x, 'alpha clamps high');
+});
+
+const w = new World(map.seed, { map }), e = w.spawnPlayer({ clientId: 1 });
+const landSnapshot = () => ({ active: true, epoch: 1, shipId: 'raft', mode: 'walk', ack: 0, tick: 1,
+  state: { x: 1, y: 0, z: 1, f: 0, vx: 0, vz: 0, mag: 0, kbx: 0, kbz: 0, dashDirX: 0, dashDirZ: 0 },
+  player: w.playerState(e), parts: [['foundation',0,0,0]], params: { speed: 4, radius: .3 } });
+test('deck metadata fences stale epochs, ACKs and malformed real player state atomically', () => {
+  const d = new NavalDeckPrediction(), s = landSnapshot();
+  assert.equal(d.acceptSnapshot(s), 'accepted');
+  const state = d.state;
+  assert.equal(d.acceptSnapshot(s), 'duplicate');
+  assert.equal(d.state, state);
+  assert.equal(d.acceptSnapshot({ ...s, ack: 2 }), 'rejected');
+  assert.equal(d.acceptSnapshot({ ...s, player: [] }), 'rejected');
+  assert.equal(d.acceptSnapshot({ active: false, epoch: 1 }), 'accepted');
+  assert.equal(d.acceptSnapshot(s), 'rejected');
+  assert.equal(d.acceptSnapshot({ ...s, epoch: 2 }), 'accepted');
+  s.state.x = 99;
+  assert.equal(d.state.x, 1);
 });

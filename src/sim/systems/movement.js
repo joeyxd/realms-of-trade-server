@@ -18,7 +18,7 @@ export function standingHeight(world, x, z, referenceY) {
   return world.raftDeck?.surface(x, z, referenceY)?.y ?? world.map.groundAt(x, z);
 }
 
-function walkStep(world, x0, z0, x1, z1, y0, r, waterAllowed = false) {
+function walkStep(world, x0, z0, x1, z1, y0, r, waterAllowed = false, walker = false) {
   const map = world.map;
   const W = tuning.world;
   const lim = map.half - 2;
@@ -35,6 +35,7 @@ function walkStep(world, x0, z0, x1, z1, y0, r, waterAllowed = false) {
   const d = Math.hypot(x1 - x0, z1 - z0);
   if (d < 1e-9) return true;
   const dh = g1 - g0;
+  if (walker && raft0 && wet1 && waterAllowed) return true;
   if (deck0 || deck1) return Math.abs(dh) < 0.6;
   // Water follows its surface rather than the seabed. A shallow shore is reachable without
   // treating the small float-to-wade height change as a vertical cliff.
@@ -75,13 +76,14 @@ function moveOnce(world, e, dx, dz) {
   let nx = x + dx, nz = z + dz;
   const y = ecs.y[e];
   const waterAllowed = canSwim(ecs, e) && !ecs.dead[e];
+  const walker = world.navalPilot?.walking?.(e) || world.deckWalker === e;
   // A jump or fall (jump.js): free flight inside the map and the colliders; y belongs to the jump.
   const air = jumpOn(world) && airborne(ecs, e);
   const lim = map.half - 2;
   if (air) { nx = Math.max(-lim, Math.min(lim, nx)); nz = Math.max(-lim, Math.min(lim, nz)); }
-  else if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed)) {
-    if (walkStep(world, x, z, nx, z, y, r, waterAllowed)) nz = z;
-    else if (walkStep(world, x, z, x, nz, y, r, waterAllowed)) nx = x;
+  else if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed, walker)) {
+    if (walkStep(world, x, z, nx, z, y, r, waterAllowed, walker)) nz = z;
+    else if (walkStep(world, x, z, x, nz, y, r, waterAllowed, walker)) nx = x;
     else { nx = x; nz = z; }
   }
   for (let iter = 0; iter < 2; iter++) {
@@ -100,7 +102,7 @@ function moveOnce(world, e, dx, dz) {
     }
   }
   if (air) { nx = Math.max(-lim, Math.min(lim, nx)); nz = Math.max(-lim, Math.min(lim, nz)); }
-  else if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed)) { nx = x; nz = z; }
+  else if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed, walker)) { nx = x; nz = z; }
   ecs.x[e] = nx;
   ecs.z[e] = nz;
   if (air) return Math.hypot(nx - x, nz - z);

@@ -1,12 +1,12 @@
 // Authoritative coastal piloting. Recovery preserves committed position and damage with fresh controls.
-import { C, KIND } from '../ecs.js';
+import { C, KIND, ACT, airborne } from '../ecs.js';
 import { RAFT, RAFT_LOAD } from '../../data/raftparts.js';
 import { holdMass } from '../economy/cargo.js';
 import { raftCapacity } from '../economy/raftCapacity.js';
 import { NAVAL_TRIAL } from '../../data/navalTrial.js';
 import { liveHelmAnchor, pilotLocal, pilotPoint } from './pilotGeometry.js';
 import { publicRafts } from '../systems/rafts.js';
-import { DeckWalkEngine } from './deckWalk.js';
+import { readDeckState, poseDeckState } from './deckWalk.js';
 import { hullIntegrity } from './structure.js';
 import { activeRaftParts } from './condition.js';
 import { openDoorParts } from './shelter.js';
@@ -25,8 +25,6 @@ export class NavalPilot {
   #deckEpochs = new Map();
   #nextDeckEpoch = 1;
   #invites = new Map();
-  #walker = new DeckWalkEngine();
-  #walkTick = -1;
   #liveVoyages;
   #recoveries = new Map();
 
@@ -120,8 +118,6 @@ export class NavalPilot {
     const r = this.#records.get(owner);
     if (!r) return false;
     this.#world.navalTrial.releaseControl(r.handle);
-    const c = this.#walkers.get(owner);
-    if (c) { c.input = Object.freeze({ mx: 0, mz: 0 }); c.inputTick = -Infinity; }
     return true;
   }
 
@@ -150,7 +146,7 @@ export class NavalPilot {
       !!findRaftWaterExit(this.#world, { shipId: r.shipId, pose, parts: r.body.operational.parts,
         from: { x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner] }, radius: ecs.radius[owner] });
     const canReboard = this.#liveVoyages && r.ashore && !!r.waterExit && swimming && this.#idle(owner) &&
-      !this.#guests(r.shipId, owner).length && !!findRaftBoardingPoint(this.#world, { shipId: r.shipId, pose,
+      !this.#guests(r.shipId, owner).some((e) => this.#walkers.get(e)?.shipId !== r.shipId) && !!findRaftBoardingPoint(this.#world, { shipId: r.shipId, pose,
         parts: r.body.operational.parts, from: { x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner] },
         radius: ecs.radius[owner], maxDistance: SWIM_BOARDING_RANGE });
     return Object.freeze({ active: true, shipId: r.shipId, phase: r.ashore ? 'shore' : 'sailing',
@@ -170,7 +166,7 @@ export class NavalPilot {
 
   #idle(e) {
     const ecs = this.#world.ecs;
-    return this.#live(e) && ecs.dashT[e] < 0 && !ecs.castK[e] && !ecs.atkStage[e];
+    return this.#live(e) && ecs.dashT[e] < 0 && !ecs.castK[e] && !ecs.atkStage[e] && !airborne(ecs, e);
   }
 
   #onDeck(e, shipId) {
@@ -214,15 +210,12 @@ export class NavalPilot {
   #addWalker(e, shipId) {
     const w = this.#world, source = w.rafts.get(shipId), pose = this.#pose(shipId), ecs = w.ecs;
     if (this.#nextDeckEpoch >= Number.MAX_SAFE_INTEGER || !pose || !source) return false;
-    const anchor = pilotLocal(pose, { x: ecs.x[e], y: ecs.y[e], z: ecs.z[e], f: ecs.facing[e] });
-    const state = Object.freeze({ ...anchor, vx: 0, vz: 0, mag: 0 });
+    if (!this.#onDeck(e, shipId) || !Number.isFinite(ecs.speed[e]) || ecs.speed[e] < 0 ||
+        !Number.isFinite(ecs.radius[e]) || ecs.radius[e] <= 0) return false;
+    const state = readDeckState(ecs, e, pose);
     const params = Object.freeze({ speed: ecs.speed[e], radius: ecs.radius[e], openDoors: openDoorParts(source) });
-    const r = this.#records.get(source.owner);
-    const parts = r?.shipId === shipId ? r.body.operational.parts : activeRaftParts(source);
-    try { this.#walker.step(state, { mx: 0, mz: 0 }, parts, params); } catch { return false; }
     const epoch = this.#nextDeckEpoch++;
-    this.#walkers.set(e, { e, shipId, epoch, state, params, ack: 0, lastSeq: 0, input: { mx: 0, mz: 0 },
-      inputTick: -Infinity, client: ecs.clientId[e], source, ship: source.ship, rev: source.ship.rev,
+    this.#walkers.set(e, { e, shipId, epoch, state, params, ack: ecs.lastSeq[e], client: ecs.clientId[e], source, ship: source.ship, rev: source.ship.rev,
       blueprint: JSON.stringify(source.ship.grid.parts), ownerClient: ecs.clientId[source.owner] });
     this.#deckEpochs.set(e, epoch);
     ecs.vx[e] = ecs.vz[e] = ecs.kbx[e] = ecs.kbz[e] = ecs.moveMag[e] = 0;
@@ -269,21 +262,43 @@ export class NavalPilot {
     return true;
   }
 
-  deckInput(e, command) {
-    const c = this.#walkers.get(e);
-    if (!c || !command || Array.isArray(command) || Object.keys(command).length !== 4 ||
-        command.epoch !== c.epoch || !Number.isInteger(command.seq) || command.seq <= c.lastSeq ||
-        command.seq > NAVAL_TRIAL.maxSequence || !Number.isFinite(command.mx) || Math.abs(command.mx) > 1 ||
-        !Number.isFinite(command.mz) || Math.abs(command.mz) > 1) return false;
-    c.input = Object.freeze({ mx: command.mx, mz: command.mz });
-    c.inputTick = this.#world.tick; c.lastSeq = command.seq;
-    return true;
+  capture(e, ack) {
+    const c = this.#walkers.get(e), w = this.#world;
+    const pose = c && w.raftDeck.entries.get(c.shipId)?.record;
+    if (!pose) return;
+    c.state = readDeckState(w.ecs, e, pose); c.ack = ack;
+    const own = this.#records.get(e); if (own) own.anchor = c.state;
+    if (!this.#supported(c)) this.#overboard(c);
+  }
+
+  #supported(c) {
+    if (this.#onDeck(c.e, c.shipId)) return true;
+    const w = this.#world, ecs = w.ecs;
+    const floor = w.raftDeck.surface(ecs.x[c.e], ecs.z[c.e]);
+    const air = airborne(ecs, c.e) || ecs.castK[c.e] > 0 && ecs.act[c.e] === ACT.LEAP;
+    return air && floor?.id === c.shipId && floor.kind === 'deck' && ecs.y[c.e] >= floor.y;
+  }
+
+  #overboard(c) {
+    const w = this.#world, r = this.#records.get(c.e);
+    this.#removeWalker(c, 'overboard', false);
+    if (r && !r.helm) {
+      if (!w.navalTrial.park(r.handle, true)) { this.#release(r, 'support'); return; }
+      const parked = w.navalTrial.snapshot(r.handle);
+      r.body = parked.body; r.ack = parked.ack;
+      r.ashore = true; r.waterExit = true; r.landing = null;
+      r.epoch = this.#nextEpoch++; this.#epochs.set(c.e, r.epoch);
+      w.navalRoute?.end(c.e, 'swim'); w.navalLesson?.end(c.e, 'swim');
+      this.persist(c.e); w.profileDirty?.add(c.e);
+      w.emit({ type: 'navalPilot', to: c.e, active: false, epoch: r.epoch - 1, why: 'swim' });
+    }
+    refreshSwimming(w, c.e);
   }
 
   deckSnapshot(e) {
     const c = this.#walkers.get(e), r = c && this.#records.get(c.source.owner);
     return c ? Object.freeze({ active: true, epoch: c.epoch, shipId: c.shipId, mode: 'walk', tick: this.#world.tick,
-      ack: c.ack, state: c.state, params: { ...c.params, openDoors: openDoorParts(c.source) },
+      ack: c.ack, state: c.state, player: this.#world.playerState(e), params: { ...c.params, openDoors: openDoorParts(c.source) },
       parts: (r?.shipId === c.shipId ? r.body.operational.parts : activeRaftParts(c.source)).map((p) => [...p]) }) :
       Object.freeze({ active: false, epoch: this.#deckEpochs.get(e) || 0 });
   }
@@ -297,7 +312,7 @@ export class NavalPilot {
   mount(owner, shipId) {
     const w = this.#world, ecs = w.ecs, source = w.rafts?.get(shipId);
     if (this.#closed || this.#records.size >= 4 || this.has(owner) || this.#recoveries.has(owner) || !source || source.owner !== owner ||
-        ecs.dashT[owner] >= 0 || ecs.castK[owner] || ecs.atkStage[owner] ||
+        !this.#idle(owner) ||
         w.raftDeck.surface(ecs.x[owner], ecs.z[owner], ecs.y[owner])?.id !== shipId ||
         w.raftDeck.surface(ecs.x[owner], ecs.z[owner], ecs.y[owner])?.kind !== 'deck' ||
         this.#guests(shipId, owner).some((e) => this.#walkers.get(e)?.shipId !== shipId) ||
@@ -475,7 +490,7 @@ export class NavalPilot {
   #reboardFromWater(r, owner, shipId) {
     const w = this.#world, ecs = w.ecs, source = w.rafts.get(shipId);
     if (!this.#liveVoyages || r.shipId !== shipId || !this.#idle(owner) || !ecs.swim?.[owner] ||
-        !swimmingAt(w, ecs.x[owner], ecs.z[owner], ecs.y[owner]) || this.#guests(shipId, owner).length ||
+        !swimmingAt(w, ecs.x[owner], ecs.z[owner], ecs.y[owner]) || this.#guests(shipId, owner).some((e) => this.#walkers.get(e)?.shipId !== shipId) ||
         this.#walkers.has(owner) || this.#nextEpoch >= Number.MAX_SAFE_INTEGER || !this.#live(owner) ||
         ecs.clientId[owner] !== r.clientId || !source || source.owner !== owner || source.ship !== r.ship ||
         source.ship.rev !== r.shipRev || JSON.stringify(source.ship.grid.parts) !== r.blueprint ||
@@ -574,8 +589,7 @@ export class NavalPilot {
     });
   }
 
-  // Walk inputs advance once per admitted tick in the ship frame. Ordinary land inputs stay parked;
-  // foreign position changes invalidate support rather than becoming a second pose authority.
+  // Validate retained seats and source identity before advancing the vessel.
   prepare() {
     const w = this.#world, ecs = w.ecs;
     for (const r of this.#records.values()) this.#refreshPayload(r);
@@ -594,7 +608,6 @@ export class NavalPilot {
           Math.abs(Math.atan2(Math.sin(ecs.facing[r.owner] - p.f), Math.cos(ecs.facing[r.owner] - p.f))) > 0.05)
         this.#release(r, 'seat');
     }
-    const next = [];
     for (const c of [...this.#walkers.values()]) {
       const source = w.rafts.get(c.shipId), pose = this.#pose(c.shipId), expected = pose && pilotPoint(pose, c.state);
       if (!this.#live(c.e) || ecs.clientId[c.e] !== c.client || source !== c.source || source.ship !== c.ship ||
@@ -607,22 +620,11 @@ export class NavalPilot {
         if (r) this.#release(r, 'support'); else this.#removeWalker(c, 'support', true);
         continue;
       }
-      if (this.#walkTick === w.tick) continue;
-      const params = Object.freeze({ speed: ecs.speed[c.e], radius: ecs.radius[c.e], openDoors: openDoorParts(source) });
-      const active = w.tick - c.inputTick < NAVAL_TRIAL.inputTimeoutTicks;
-      const r = this.#records.get(source.owner), parts = r?.shipId === c.shipId ? r.body.operational.parts : activeRaftParts(source);
-      try { next.push({ c, params, state: this.#walker.step(c.state, active ? c.input : { mx: 0, mz: 0 }, parts, params), ack: active ? c.lastSeq : c.ack }); }
-      catch { const own = this.#records.get(c.e); if (own) this.#release(own, 'support'); else this.#removeWalker(c, 'support', true); }
-    }
-    for (const n of next) if (this.#walkers.get(n.c.e) === n.c) {
-      n.c.state = n.state; n.c.params = n.params; n.c.ack = n.ack;
-      const own = this.#records.get(n.c.e); if (own) own.anchor = n.state;
     }
     for (const r of this.#records.values()) {
       const distance = Math.hypot(r.body.pose.x - r.home.x, r.body.pose.z - r.home.z);
       if (distance >= 20) r.visited = true;
     }
-    this.#walkTick = w.tick;
   }
 
   sync() {
@@ -633,7 +635,7 @@ export class NavalPilot {
       r.body = s.body;
       r.ack = s.ack;
       this.persist(r.owner); w.profileDirty?.add(r.owner);
-      if (r.ashore) continue;
+      if (r.ashore || this.#walkers.has(r.owner)) continue;
       const p = pilotPoint(r.body.pose, r.anchor);
       ecs.x[r.owner] = p.x; ecs.y[r.owner] = p.y; ecs.z[r.owner] = p.z; ecs.facing[r.owner] = p.f;
       ecs.vx[r.owner] = ecs.vz[r.owner] = ecs.kbx[r.owner] = ecs.kbz[r.owner] = 0;
@@ -641,18 +643,19 @@ export class NavalPilot {
     }
     for (const c of this.#walkers.values()) {
       const pose = this.#pose(c.shipId); if (!pose) continue;
-      const p = pilotPoint(pose, c.state), cos = Math.cos(pose.yaw), sin = Math.sin(pose.yaw);
-      ecs.x[c.e] = p.x; ecs.y[c.e] = p.y; ecs.z[c.e] = p.z; ecs.facing[c.e] = p.f;
-      ecs.vx[c.e] = cos * c.state.vx + sin * c.state.vz; ecs.vz[c.e] = -sin * c.state.vx + cos * c.state.vz;
-      ecs.kbx[c.e] = ecs.kbz[c.e] = 0; ecs.moveMag[c.e] = c.state.mag;
+      poseDeckState(ecs, c.e, pose, c.state);
     }
+    const priorParts = new Map([...w.raftDeck.entries].map(([id, g]) => [id, JSON.stringify(g.record.parts)]));
     w.raftDeck.update(publicRafts(w));
     for (const r of [...this.#records.values()]) {
-      if (!r.ashore && w.raftDeck.surface(ecs.x[r.owner], ecs.z[r.owner], ecs.y[r.owner])?.id !== r.shipId)
+      if (!r.ashore && !this.#walkers.has(r.owner) && w.raftDeck.surface(ecs.x[r.owner], ecs.z[r.owner], ecs.y[r.owner])?.id !== r.shipId)
         this.#release(r, 'support');
     }
-    for (const c of [...this.#walkers.values()]) if (!this.#onDeck(c.e, c.shipId)) {
-      const r = this.#records.get(c.e); if (r) this.#release(r, 'support'); else this.#removeWalker(c, 'support', true);
+    for (const c of [...this.#walkers.values()]) if (!this.#supported(c)) {
+      if (priorParts.get(c.shipId) !== JSON.stringify(w.raftDeck.entries.get(c.shipId)?.record.parts)) {
+        const own = this.#records.get(c.e);
+        if (own) this.#release(own, 'support'); else this.#removeWalker(c, 'support', true);
+      } else this.#overboard(c);
     }
   }
 

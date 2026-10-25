@@ -32,14 +32,9 @@ export class NavalPilotServer extends LocalServer {
   }
 
   receive(id, msg) {
-    if (msg?.t !== MSG.SHIP_INPUT && msg?.t !== MSG.DECK_INPUT) return super.receive(id, msg);
+    if (msg?.t !== MSG.SHIP_INPUT) return super.receive(id, msg);
     const c = this.clients.get(id);
     if (!c?.entity || this.navalFault) return;
-    if (msg.t === MSG.DECK_INPUT) {
-      const { epoch, seq, mx, mz } = msg;
-      this.world.navalPilot.deckInput(c.entity, { epoch, seq, mx, mz });
-      return;
-    }
     const { epoch, seq, throttle, brake, steer } = msg;
     this.world.navalPilot.input(c.entity, { epoch, seq, throttle, brake, steer });
   }

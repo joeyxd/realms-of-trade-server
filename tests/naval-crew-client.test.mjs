@@ -21,7 +21,7 @@ class QueuedTransport {
   onSnapshot(cb) { this.snapCbs.push(cb); }
   onMessage(cb) { this.msgCbs.push(cb); }
   send(message) { this.server.receive(this.id, copy(message)); }
-  sendInput(_seq, _command) {}
+  sendInput(_seq, command) { this.send({ t: MSG.INPUTS, cmds: [command] }); }
   start() {}
   deliver() {
     const messages = this.inbox.get(this.id) || [];
@@ -296,7 +296,7 @@ test('PT15: the owner walking astern shows a run speed and leaves the raft coast
   transport.send = (message) => { sent.push(message); send(message); };
   const start = ownRaft(server, ownerId);
   for (let i = 0; i < 6; i++) {
-    owner.tickInput({ naval: { throttle: 0, brake: 1, steer: 0 }, deck: { mx: 0, mz: -1 } });
+    owner.tickInput({ naval: { throttle: 0, brake: 1, steer: 0 }, mx: 0, mz: -1 });
     advance(h);
   }
   const helm = sent.filter((message) => message.t === MSG.SHIP_INPUT);
