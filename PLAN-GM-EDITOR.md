@@ -588,6 +588,9 @@ terreno muestra "Carga única: 31 %", el estado avisa al entrar en ámbar y al p
 `world_over_load_budget` en el panel Online y en la preparación del servidor (validateGmPublication).
 Cortes: GM11a medidor y bloqueo (sin protocolo ni SQL), GM11b el tamaño como dato, GM11c crecer la zona, GM11d zonas
 en el servidor, GM11e cruce en el cliente (precarga y pantalla), GM11f zonas en el editor.
+GM11b va en tres sesiones (decisiones B1-B6 en el brief, T-1024-35): GM11b1 extensión en tiempo de ejecución (el mapa
+lleva sus límites y la simulación, las guardas de perlas, el render y el minimapa los leen; el mundo de hoy idéntico bit a
+bit; construido en T-1024-35), GM11b2 la rejilla del editor, GM11b3 el dominio como dato (documento v6, SQL044, protocolo).
 
 ## 10 Arquitectura de implementación propuesta
 
