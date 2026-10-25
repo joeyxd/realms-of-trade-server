@@ -4,12 +4,14 @@
 // Enemies root while they wind up and fire, so what you see leaving the bow is where it really left.
 import { ENEMIES, ENEMY_KINDS } from '../../data/enemies.js';
 import { tuning, DT } from '../../data/tuning.js';
-import { ACT, C } from '../ecs.js';
+import { ACT, C, resetGrab } from '../ecs.js';
 import { moveWithCollision } from './movement.js';
 import { patternSpan } from '../projectiles.js';
 import { bossBrain, stepBoss, summonMinions, bossFire } from './boss.js';
 import { dampAngle, angleDelta } from '../../core/math.js';
-import { LAWLESS } from '../../data/lawless.js';
+import { stepGrab, endGrab } from './combat.js';
+import { LAWLESS, MELEE, MELEE_GRAB } from '../../data/lawless.js';
+import { knockback as meleeKnockback, hitlagFrames, hitstunFrames, launchSpeed, launchDecay, meleePercent, meleeStun } from '../meleeHit.js';
 import { inkHidden, inkTargetPoint } from './ink.js';
 import { PEARL } from '../../data/pearls.js';
 
@@ -135,11 +137,18 @@ export function steer(world, e, def, vx, vz, dt) {
 
 function knockback(world, e, dt) {
   const ecs = world.ecs;
-  if (ecs.kbx[e] === 0 && ecs.kbz[e] === 0) return;
-  moveWithCollision(world, e, ecs.kbx[e] * dt, ecs.kbz[e] * dt);
-  const k = Math.exp(-10 * dt);
-  ecs.kbx[e] *= k; ecs.kbz[e] *= k;
-  if (Math.abs(ecs.kbx[e]) + Math.abs(ecs.kbz[e]) < 0.05) ecs.kbx[e] = ecs.kbz[e] = 0;
+  if (ecs.kbx[e] !== 0 || ecs.kbz[e] !== 0) {
+    moveWithCollision(world, e, ecs.kbx[e] * dt, ecs.kbz[e] * dt);
+    const k = Math.exp(-10 * dt);
+    ecs.kbx[e] *= k; ecs.kbz[e] *= k;
+    if (Math.abs(ecs.kbx[e]) + Math.abs(ecs.kbz[e]) < 0.05) ecs.kbx[e] = ecs.kbz[e] = 0;
+  }
+  const speed = Math.hypot(ecs.lvx[e], ecs.lvz[e]);
+  if (speed > 0) {
+    moveWithCollision(world, e, ecs.lvx[e] * dt, ecs.lvz[e] * dt);
+    const k = Math.max(0, speed - launchDecay(LAWLESS.meleeUnit)) / speed;
+    ecs.lvx[e] *= k; ecs.lvz[e] *= k;
+  }
 }
 
 function chooseAttack(def, b, d) {
@@ -162,11 +171,29 @@ export function stepEnemy(world, e, dt) {
     setAct(ecs, e, ACT.STAGGER);
     return;
   }
+  if (world.meleeVersion === 1 && ecs.hitlag[e] > 0) {
+    ecs.hitlag[e]--;
+    ecs.vx[e] = ecs.vz[e] = ecs.moveMag[e] = 0;
+    return;
+  }
+  if (world.meleeVersion === 1 && def.practice) {
+    if (ecs.grabSt[e] === ACT.CAPTURE_CUT) knockback(world, e, dt);
+    if (ecs.grabSt[e]) ecs.actT[e] += dt;
+    if (stepGrab(world, e, { prs: 0, seq: 0 })) return;
+  }
   ecs.actT[e] += dt;
   b.t += dt; b.sinceHit += dt; b.gcd -= dt;
   if (b.foeT > 0) b.foeT -= dt;
   for (let i = 0; i < b.every.length; i++) b.every[i] -= dt;
-  if (def.regen && b.sinceHit > def.regen && ecs.hp[e] < ecs.maxHp[e]) ecs.hp[e] = ecs.maxHp[e];
+  if (def.regen && b.sinceHit > def.regen && ecs.hp[e] < ecs.maxHp[e]) {
+    ecs.hp[e] = ecs.maxHp[e];
+    if (world.meleeVersion === 1 && def.practice) {
+      if (ecs.grabSt[e]) endGrab(world, e);
+      resetGrab(ecs, e);
+      ecs.x[e] = b.homeX; ecs.z[e] = b.homeZ; ecs.facing[e] = b.homeF;
+      ecs.lvx[e] = ecs.lvz[e] = ecs.kbx[e] = ecs.kbz[e] = ecs.hitlag[e] = 0;
+    }
+  }
   knockback(world, e, dt);
 
   if (b.state === 'dormant') {
@@ -404,9 +431,52 @@ export function damageEnemy(world, e, raw, o) {
   const roll = !o.noCrit && world.rng() < tuning.stats.crit + ecs.critAdd[by];
   const crit = roll || !!o.crit; // o.crit: an empowered blow (a Parpadeo's next attack) crits whatever the roll
   const raw2 = raw * (crit ? tuning.stats.critMult + ecs.critDAdd[by] : 1);
-  const dmg = Math.max(1, Math.round(raw2 * (1 - (o.pierce ? 0 : ecs.def[e]) / ((o.pierce ? 0 : ecs.def[e]) + tuning.stats.defK))));
+  const held = world.meleeVersion === 1 && (ecs.grabSt[e] === ACT.CAPTURE || ecs.grabSt[e] === ACT.THROWN);
+  const dmg = Math.max(1, Math.round(raw2 * (1 - (o.pierce ? 0 : ecs.def[e]) / ((o.pierce ? 0 : ecs.def[e]) + tuning.stats.defK)))) * (held && !o.pummel ? MELEE_GRAB.external : 1);
   ecs.hp[e] -= dmg;
-  if (!def.fixed) {
+  if (held && !o.pummel) {
+    ecs.grabDmg[e] += meleePercent(dmg, def.meleeHp ?? ecs.maxHp[e], LAWLESS.meleeStamina);
+    ecs.grabFlinch[e] = MELEE_GRAB.flinch;
+    if (ecs.grabSt[e] !== ACT.THROWN && ecs.grabDmg[e] >= MELEE_GRAB.free) endGrab(world, e);
+  }
+  let meleeData;
+  if (world.meleeVersion === 1 && (ecs.mask[o.by] & C.PLAYER)) {
+    const skill = o.kind === 'melee' ? `melee${o.stage}` : o.kind === 'wave' ? 'storm' : o.skill || o.kind;
+    const row = MELEE[skill] || MELEE.default;
+    const S = LAWLESS.meleeStamina, mhp = def.meleeHp ?? ecs.maxHp[e];
+    const percent = meleePercent(ecs.maxHp[e] - Math.max(0, ecs.hp[e]), mhp, S);
+    meleeData = { kb: 0, hl: 0, hs: 0, p: Math.round(percent * 10) / 10 };
+    if (held || o.pummel) {
+      meleeData.hl = hitlagFrames(meleePercent(dmg, mhp, S));
+      ecs.hitlag[e] = ecs.hitlag[o.by] = meleeData.hl;
+    } else if (!row.noKb) {
+      const damage = meleePercent(dmg, mhp, S), weight = row.weight ?? def.weight ?? Math.round(87 / (def.light || 1));
+      const kb = meleeKnockback(percent, damage, weight, row.bkb, row.kbg) * (armor ? 0.3 : 1);
+      const hl = row.throw ? 0 : hitlagFrames(damage), hs = hitstunFrames(kb); // Melee ordinary throw release: no hitlag
+      meleeData.kb = Math.round(kb * 10) / 10; meleeData.hl = hl; meleeData.hs = hs;
+      ecs.hitlag[e] = hl;
+      if (!row.proj) ecs.hitlag[o.by] = hl;
+      const windup = b.state === 'windup' || b.state === 'fire';
+      if (!def.boss && !(windup && kb < (def.armorKb ?? LAWLESS.meleeArmorKb))) {
+        if (!def.fixed || def.practice) {
+          let dx = row.proj || row.throw ? o.dx || 0 : Math.sin(ecs.facing[o.by]);
+          let dz = row.proj || row.throw ? o.dz || 0 : Math.cos(ecs.facing[o.by]);
+          if (!row.proj && !row.throw && dx * (ecs.x[e] - o.x) + dz * (ecs.z[e] - o.z) < 0) { dx = -dx; dz = -dz; }
+          if (Math.hypot(dx, dz) < 1e-6) { dx = ecs.x[e] - o.x; dz = ecs.z[e] - o.z; }
+          const len = Math.hypot(dx, dz), speed = launchSpeed(kb, LAWLESS.meleeUnit);
+          ecs.lvx[e] = len > 0 ? dx / len * speed : 0; ecs.lvz[e] = len > 0 ? dz / len * speed : 0;
+          if (len > 0) {
+            o.meleeHit = true; meleeData.la = Math.round(Math.atan2(dz, dx) * 1000) / 1000; // the view throws it this way
+            if (kb >= LAWLESS.meleeTumble) meleeData.kd = 1;
+          }
+        }
+        ecs.grabDown[e] = meleeData.kd ? 1 : 0;
+        ecs.stagger[e] = Math.max(ecs.stagger[e], meleeData.kd ? meleeStun(kb, hs, LAWLESS.meleeTumble, LAWLESS.meleeDown) : hs / 60);
+        if (hs > 0) o.meleeHit = true;
+        if (windup) { world.cancelEmitter(e); b.state = 'chase'; b.gcd = 0.8; }
+      }
+    }
+  } else if (!def.fixed) {
     const kx = ecs.x[e] - o.x, kz = ecs.z[e] - o.z, kl = Math.hypot(kx, kz);
     const k = (o.knock ?? M.knock) * (def.light || 1) * (armor ? 0.3 : 1);
     if (kl > 1e-6) { ecs.kbx[e] += (kx / kl) * k; ecs.kbz[e] += (kz / kl) * k; }
@@ -418,7 +488,7 @@ export function damageEnemy(world, e, raw, o) {
       }
     }
   }
-  world.emit({ type: 'damage', id: e, dmg, by: o.by, kind: o.kind, crit: crit ? 1 : 0, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], heavy: o.heavy ? 1 : 0, shielded, armor });
+  world.emit({ type: 'damage', id: e, dmg, by: o.by, kind: o.kind, crit: crit ? 1 : 0, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], heavy: o.heavy ? 1 : 0, shielded, armor, ...meleeData });
   if (def.regen && ecs.hp[e] < 1) ecs.hp[e] = 1;
   if (ecs.hp[e] <= 0) world.killEnemy(e, o.by);
   return dmg;

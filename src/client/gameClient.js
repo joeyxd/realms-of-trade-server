@@ -20,6 +20,7 @@ import { NavalDeckPrediction } from './navalDeckPrediction.js';
 import { interpolatePilotPose, pilotPoint } from '../sim/naval/pilotGeometry.js';
 import { swimLoadOf } from '../sim/systems/swimming.js';
 import { jumpModeOf, jumpStage, airStage } from '../sim/systems/jump.js';
+import { swingStages, swingOn } from '../data/meleeFrames.js';
 import { readDeckState, poseDeckState } from '../sim/naval/deckWalk.js';
 import { standingHeight } from '../sim/systems/movement.js';
 
@@ -133,6 +134,7 @@ export class GameClient {
         }
         this.attributes = { enabled: m.attributes?.enabled === true };
         this.skills = { enabled: m.skills?.enabled === true };
+        this.pred.meleeVersion = m.melee === 1 ? 1 : 0;
         this.pred.jumpMode = jumpModeOf(m.jump); // PT06: prediction runs the server's jump rules
         this.personalLantern = false;
     this.fire = null;
@@ -744,9 +746,8 @@ export class GameClient {
   predictMelee(seq) {
     const ecs = this.pred.ecs, e = this.youLocal, stage = ecs.atkStage[e];
     if (!stage) return;
-    const st = tuning.melee.stages[stage - 1];
-    const t = ecs.atkT[e];
-    if (t <= st.windup || t - DT >= st.windup + st.active) return;
+    const st = swingStages(this.pred.meleeVersion)[stage - 1];
+    if (!swingOn(st, ecs.atkT[e])) return;
     const key = ecs.swingId[e];
     const fx = Math.sin(ecs.facing[e]), fz = Math.cos(ecs.facing[e]);
     const half = Math.cos((st.arc / 2) * Math.PI / 180);

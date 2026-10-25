@@ -2,9 +2,13 @@
 // cannon that lobs parryable balls. Same view API as CharacterView (root, height, update, flash, hit),
 // same toon material (rim, hit flash, glow), so they light and outline like everything else.
 import * as THREE from 'three';
+import { ACT } from '../sim/ecs.js';
 import { part, merge, cyl, sphere, rbox, torus, lumpy } from './geo.js';
 import { characterMaterial } from './characters.js';
 import { damp, spring } from '../core/math.js';
+import { startLaunch, stepLaunch, tiltAxis } from './launchPose.js';
+
+const tiltV = new THREE.Vector3(), tiltQ = new THREE.Quaternion();
 
 const WOOD = 0x8a5a2e, WOOD_D = 0x5e3a1c, STRAW = 0xe2b45a, STRAW_D = 0xb98a34, IRON = 0x34363e, IRON_L = 0x4a4d57, BRASS = 0xc9a24a, SACK = 0xc8a878, RED = 0xc0392b;
 
@@ -104,12 +108,18 @@ export class DummyView extends PracticeView {
     const lx = fx * Math.cos(f) - fz * Math.sin(f), lz = fx * Math.sin(f) + fz * Math.cos(f);
     this.wx.v += lz * 3.2 * k; this.wz.v -= lx * 3.2 * k;
   }
+  // The Sandbag (MN_MELEE): shakes through the hitlag, slides led by the draw delay, tips over on a tumble.
+  launch(ev, lead = 0) { this.launchL = startLaunch(ev, lead); }
   update(dt, s) {
-    this.root.position.set(s.x, s.y, s.z);
+    const lo = this.launchL ? stepLaunch(this.launchL, dt, this.launchO || (this.launchO = {})) : null;
+    if (!lo) this.launchL = null;
+    this.root.position.set(s.x + (lo ? lo.ox : 0), s.y + (lo ? lo.lift : 0), s.z + (lo ? lo.oz : 0));
     this.root.rotation.y = s.f;
     spring(this.wx, 0, 70, 5, dt);
     spring(this.wz, 0, 70, 5, dt);
-    this.pivot.rotation.set(this.wx.x * 0.35, 0, this.wz.x * 0.35);
+    const held = (s.act === ACT.CAPTURE || s.act === ACT.THROWN), cut = s.act === ACT.CAPTURE_CUT;
+    this.pivot.rotation.set(held ? -0.25 : cut ? 0.18 : this.wx.x * 0.35, 0, this.wz.x * 0.35);
+    if (lo && lo.tilt) this.pivot.quaternion.premultiply(tiltQ.setFromAxisAngle(tiltAxis(s.f, lo.dx, lo.dz, tiltV), lo.tilt));
     this.tickFlash(dt);
   }
 }

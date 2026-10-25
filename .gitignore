@@ -11,3 +11,5 @@ URL-PARA-AMIGOS.txt
 __pycache__/
 # Generated asset index (npm run assets:index / ARTE-Y-MODELOS.cmd)
 ARTE-Y-MODELOS.html
+# Nintendo-derived reference files (CMB, Joi 2026-10-24): local only, never pushed; see docs/research/melee/README.md
+*nintendo*

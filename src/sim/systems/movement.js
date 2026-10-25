@@ -2,6 +2,8 @@ import { insetMapBounds, insideMapBounds } from '../mapBounds.js';
 // Player/bot locomotion: acceleration, dash (with buffered input, charges, i-frames), static collision.
 // Pure and deterministic: runs identically in the worker (authoritative) and the client (prediction).
 import { tuning } from '../../data/tuning.js';
+import { LAWLESS } from '../../data/lawless.js';
+import { launchDecay } from '../meleeHit.js';
 import { STATE, airborne } from '../ecs.js';
 import { dampAngle } from '../../core/math.js';
 import { canSwim, refreshSwimming } from './swimming.js';
@@ -121,6 +123,12 @@ function knockStep(world, e, dt) {
     const k = Math.exp(-10 * dt);
     ecs.kbx[e] *= k; ecs.kbz[e] *= k;
     if (Math.abs(ecs.kbx[e]) + Math.abs(ecs.kbz[e]) < 0.05) { ecs.kbx[e] = 0; ecs.kbz[e] = 0; }
+  }
+  const speed = Math.hypot(ecs.lvx[e], ecs.lvz[e]);
+  if (speed > 0) {
+    moveWithCollision(world, e, ecs.lvx[e] * dt, ecs.lvz[e] * dt);
+    const k = Math.max(0, speed - launchDecay(LAWLESS.meleeUnit)) / speed;
+    ecs.lvx[e] *= k; ecs.lvz[e] *= k;
   }
 }
 

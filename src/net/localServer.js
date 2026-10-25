@@ -66,7 +66,7 @@ export class LocalServer {
   #ownsTickPublication = false;
   #afterWorld = false; #holdingPublication = false;
 
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, residentStep = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false, survival = false, meals = false, harvestLoot = false, jump = 'off', chop = false }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, residentStep = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false, survival = false, meals = false, harvestLoot = false, jump = 'off', chop = false, melee = false }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -107,6 +107,7 @@ export class LocalServer {
     installResources(this.world);
     this.world.fireEnabled = fire;
     this.world.harvestLootEnabled = harvestLoot === true;
+    this.world.meleeVersion = melee === true ? 1 : 0;
     this.world.chopVersion = chop === true ? 1 : 0; // TA02: MN_CHOP hold-to-chop
     this.world.freshwaterEnabled = freshwater;
     this.world.survivalEnabled = survival === true;
@@ -243,7 +244,7 @@ export class LocalServer {
         // Admission must resend the catalogue even when the world has not changed.
         c.resourceSignature = null;
         if (this.world.fireEnabled) hideHandFire(this.world, c.entity);
-        this.send(clientId, { t: MSG.WELCOME, v: PROTOCOL_VERSION, you: c.entity, tick: this.world.tick, seed: this.world.seed, jump: this.world.jumpMode });
+        this.send(clientId, { t: MSG.WELCOME, v: PROTOCOL_VERSION, you: c.entity, tick: this.world.tick, seed: this.world.seed, jump: this.world.jumpMode, melee: this.world.meleeVersion });
         this.flushEvents(); // Private events and already circulating pearls now know who "you" is.
         this.sendProfile(clientId, c);
         this.chat.join(clientId);

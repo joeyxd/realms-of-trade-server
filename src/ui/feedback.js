@@ -4,6 +4,7 @@
 // telegraph timeline of enemy attacks. On the Ultra tier your big moments (and the boss's) also get a comic word, an
 // impact frame and speed lines (comic.js). Gameplay never lives here.
 import { tuning, DT, INTERP_DELAY } from '../data/tuning.js';
+import { swingStages } from '../data/meleeFrames.js';
 import { ENEMIES } from '../data/enemies.js';
 import { sfx } from '../audio/sfx.js';
 import { audio } from '../audio/engine.js';
@@ -51,6 +52,15 @@ export class Feedback {
   }
   me() { return this.world.views.get(this.client.youServer); }
   viewOf(id) { return this.world.views.get(id); }
+  // P2b: a shield break throws the body up, lays it down and stands it up (launchPose.js), falling away from the blow, or
+  // onto its back when nothing struck it (a drained shield). Your own body has no lead; the others are drawn late.
+  breakFall(ev, me) {
+    const at = me ? this.ps : this.client.entities.get(ev.e)?.r, v = me ? this.me() : this.viewOf(ev.e);
+    if (!at || !v?.launch) return;
+    const dx = at.x - ev.x, dz = at.z - ev.z;
+    const la = Math.hypot(dx, dz) > 0.05 ? Math.atan2(dz, dx) : Math.atan2(-Math.cos(at.f), -Math.sin(at.f));
+    v.launch({ ...ev, brk: 1, la }, me ? 0 : INTERP_DELAY);
+  }
   vol(x, z) { const d = Math.hypot(x - this.ps.x, z - this.ps.z); return Math.max(0, Math.min(1, 1 - (d - 6) / 30)); }
   shake(a) { this.world.rig.addTrauma(a); }
   screen(amount, rgb = [1, 1, 1]) { if (amount > this.flash) { this.flash = amount; this.flashColor = rgb; } }
@@ -96,7 +106,7 @@ export class Feedback {
         break;
       }
       case 'swing': {
-        const st = tuning.melee.stages[ev.stage - 1];
+        const st = swingStages(this.client.pred.meleeVersion)[ev.stage - 1];
         if (!me) {
           // Another pirate's cutlass (humans and bots): the same arc in their colour, sound by distance.
           // (Drawn 100 ms late like their body, so the arc waits for the wind-up as they show it.)
@@ -110,6 +120,9 @@ export class Feedback {
         sfx.elemental(ev.elem, 0.28);
         break;
       }
+      case 'duel':
+        if (ev.kb > 0 && (ev.out === 'hit' || ev.out === 'crit')) this.viewOf(ev.e)?.launch?.(ev, ev.e === this.client.youServer ? 0 : INTERP_DELAY);
+        break;
       case 'mhit': {
         const v = this.viewOf(ev.id), rec = this.client.entities.get(ev.id);
         const y = (rec ? rec.r.y : this.y(ev.x, ev.z)) + 1.1;
@@ -118,7 +131,7 @@ export class Feedback {
         if (v) { v.flash(0xffffff, 1); this.flinch(v, ev.x, ev.z); }
         sfx.hit(this.material(rec), false);
         if (ev.stage === 3) comic.hit(ev.x, y + 0.5, ev.z, { word: t('feedback.comic.zas'), color: 0xfff1c8 });
-        this.loop.addHitstop(F.hitstopMelee);
+        if (this.client.pred.meleeVersion !== 1) this.loop.addHitstop(F.hitstopMelee);
         this.shake(ev.stage === 3 ? 0.22 : 0.12);
         W.rig.punchIn(ev.stage === 3 ? 0.4 : 0.2);
         break;
@@ -135,6 +148,7 @@ export class Feedback {
           break;
         }
         this.float(x, z, h, ev.crit ? `${rich('feedback.call.critical')} ${ev.dmg}` : String(ev.dmg), ev.crit ? 'crit' : 'dmg');
+        if (ev.p !== undefined && rec?.enemy === 'dummy') this.float(x, z, h + 0.45, `${ev.p}%`, 'dmg');
         if (ev.crit && ev.by === this.client.youServer) this.comicAt(x, z, h * 0.7, { word: t('feedback.comic.crac'), color: 0xffe14d });
         if (ev.armor) {
           // The crab's iron plate: show it, and teach the flank once.
@@ -144,6 +158,7 @@ export class Feedback {
         }
         const hitPalette = this.palette(ev.elem);
         if (v) { v.flash(elementVisual(ev.elem)?.accent ?? 0xffffff, 1); if (!ev.predictedHit) this.flinch(v, ps.x, ps.z, ev.heavy ? 1.4 : 1); }
+        if (ev.kb > 0) v?.launch?.(ev, INTERP_DELAY); // MN_MELEE: shake, led launch, tumble (drawn 100 ms late)
         if (!ev.predictedHit) {
           sfx.hit(this.material(rec), !!ev.crit, this.vol(x, z));
           if (ev.elem === 4) sfx.inkHit(this.vol(x, z));
@@ -225,6 +240,7 @@ export class Feedback {
       case 'guard': {
         if (!me) {
           if (ev.st === 'block' || ev.st === 'perfect') { sfx.block(this.vol(ev.x, ev.z) * 0.6); this.sparks(ev.x, this.y(ev.x, ev.z) + 1.1, ev.z, 6, CYAN, CYAN1); }
+          else if (ev.st === 'break') this.breakFall(ev, false);
           break;
         }
         const v = this.me(), y = ps.y + 1.1;
@@ -253,6 +269,7 @@ export class Feedback {
           this.teach('block', rich('feedback.block'), 5200);
         } else if (ev.st === 'break') {
           sfx.guardBreak();
+          this.breakFall(ev, true);
           this.overMe(rich('feedback.call.guard_broken'), 'hurt', { life: 1.1 });
           this.shake(0.45);
           this.screen(0.25, [1, 0.45, 0.2]);
@@ -451,6 +468,10 @@ export class Feedback {
         if (me) sfx.equip();
         break;
       }
+      case 'clank': // P2: two sabre blows met
+        sfx.block(this.vol(ev.x, ev.z));
+        this.sparks(ev.x, this.y(ev.x, ev.z) + 1.1, ev.z, 10, AMBER, AMBER1, { up: 2, spread: 3 });
+        break;
       case 'clunk':
         if (!me) break;
         sfx.clunk();
@@ -465,6 +486,7 @@ export class Feedback {
         if (!me) {
           const v = this.viewOf(ev.e);
           if (v) { v.flash(0xff4d5e, 1); v.hit(0.8); }
+          if (ev.kb > 0) v?.launch?.(ev, INTERP_DELAY);
           // Your blow on another pirate (the Cala Calavera, M4.5): its number, like an enemy's.
           if (ev.by === this.client.youServer && ev.dmg > 0) {
             const rec = this.client.entities.get(ev.e), x = rec && rec.ready ? rec.r.x : ev.x, z = rec && rec.ready ? rec.r.z : ev.z;
@@ -487,6 +509,7 @@ export class Feedback {
         sfx.hurt(ev.kind === 'aoe' || ev.dmg >= 18);
         this.overMe(ev.crit ? `${rich('feedback.call.critical')} -${ev.dmg}` : `-${ev.dmg}`, 'hurt', { life: 0.9, spread: 24 });
         if (v) { v.flash(0xff4d5e, 1); v.hit(1); }
+        if (ev.kb > 0) v?.launch?.(ev, 0); // predicted body: no lead
         this.shake(Math.min(0.55, 0.22 + ev.dmg / 60));
         this.screen(0.28, [1, 0.25, 0.25]);
         if (ev.kind === 'punish') {

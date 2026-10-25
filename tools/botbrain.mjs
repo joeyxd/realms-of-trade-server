@@ -8,6 +8,8 @@
 //
 // view = { px, pz, pt, tick, H, me: {dashCharges, cdQ, cdE, riposte, catchN}, enemies: [{x, z}], enc: {cx, cz},
 //          boss: {x, z} | null }  →  {mx, mz, ax, az, btn, prs}
+import { ACT } from '../src/sim/ecs.js';
+import { DT } from '../src/data/tuning.js';
 import { PTYPE, beamSeg, segDist, lavaR } from '../src/sim/projectiles.js';
 
 export function makeBrain({ weapon = 'sable', skill = 0.8, seed = 12345 } = {}) {
@@ -16,6 +18,8 @@ export function makeBrain({ weapon = 'sable', skill = 0.8, seed = 12345 } = {}) 
   const rand = () => ((rnd = (rnd * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
   const decided = new Set();
   const SG = {};
+  let swingAct = 0, swingT = -1, reactAt = -1, guardEnemy = null, answered = false;
+  const reactTicks = Math.round((0.2 + (1 - SKILL) * 0.25) / DT);
 
   return function policy(v) {
     const { px, pz, pt, H, me, enc } = v;
@@ -58,7 +62,6 @@ export function makeBrain({ weapon = 'sable', skill = 0.8, seed = 12345 } = {}) 
       }
     }
     if (decided.size > 100000) decided.clear();
-    if (guardHold > 0) { guardHold--; btn |= 4; prs &= ~2; }
     // M3 hazards: a beam about to sweep over you → dash through it; a circle about to burst → step out.
     if (!(prs & 1)) for (const b of H.beams) {
       if (b.cancel || pt + 14 < b.tAct || pt > b.tEnd) continue;
@@ -85,6 +88,25 @@ export function makeBrain({ weapon = 'sable', skill = 0.8, seed = 12345 } = {}) 
     // melee nearest grunt, otherwise drift toward the centre / around the boss
     let ne = null, nd = 99;
     for (const o of v.enemies) { const d = Math.hypot(o.x - px, o.z - pz); if (d < nd) { nd = d; ne = o; } }
+    let pirate = null, pd = Infinity;
+    for (const o of v.enemies) if (o.pirate) { const d = Math.hypot(o.x - px, o.z - pz); if (d <= pd) { pirate = o; pd = d; } }
+    const attacking = pirate && [ACT.SWING1, ACT.SWING2, ACT.SWING3, ACT.LUNGE].includes(pirate.act);
+    if (!attacking || pirate.act !== swingAct || (pirate.actT < swingT && pirate.actT <= 2 * DT)) answered = false;
+    if (attacking && pd <= 3.2 && !answered) { reactAt = v.tick + reactTicks; answered = true; }
+    swingAct = attacking ? pirate.act : 0; swingT = attacking ? pirate.actT : -1;
+    let meleeDash = false;
+    if (reactAt >= 0 && v.tick >= reactAt) {
+      reactAt = -1;
+      if (pirate) {
+        // The pistol kit has no guard (its RMB fires the steel gun): it answers a blade with a dash or Paso de humo.
+        if (!PIST && rand() < SKILL) { guardHold = 18; guardEnemy = pirate; }
+        else if (me.dashCharges >= 1) { const d = pd || 1; prs |= 1; mx = -(pirate.z - pz) / d; mz = (pirate.x - px) / d; meleeDash = true; }
+        else if (PIST && me.cdE <= 0) { const d = pd || 1; prs |= 16; mx = -(pirate.z - pz) / d; mz = (pirate.x - px) / d; meleeDash = true; }
+      }
+    }
+    if (guardHold > 0) { guardHold--; btn |= 4; prs &= ~2; }
+    if (guardEnemy && (btn & 4)) { btn |= 4; prs &= ~2; ax = (pirate || guardEnemy).x; az = (pirate || guardEnemy).z; }
+    else guardEnemy = null;
     // Caught bullets: throw them at the nearest enemy.
     if (!btn && me.catchN > 0 && ne) { prs |= 2; ax = ne.x; az = ne.z; }
     if (PIST && ne) {
@@ -99,7 +121,8 @@ export function makeBrain({ weapon = 'sable', skill = 0.8, seed = 12345 } = {}) 
         if (cd > 12) { mx = mx * 0.3 + (cx / cd) * 0.9; mz = mz * 0.3 + (cz / cd) * 0.9; }
       }
       if (nd < 3.5 && me.cdQ <= 0 && !(guardHold > 0)) { prs |= 8; ax = ne.x; az = ne.z; }
-      if (me.riposte >= 100) { prs |= 32; const t = v.boss || ne; ax = t.x; az = t.z; }
+      if (!guardEnemy && !meleeDash && me.riposte >= 100) { prs |= 32; const t = v.boss || ne; ax = t.x; az = t.z; }
+      if (guardEnemy) { ax = (pirate || guardEnemy).x; az = (pirate || guardEnemy).z; prs &= ~(2 | 8 | 16 | 32); }
       return { mx, mz, ax, az, btn, prs };
     }
     // Cutlass skills: lunge into what is close, throw the crescent at what is farther.
@@ -112,7 +135,7 @@ export function makeBrain({ weapon = 'sable', skill = 0.8, seed = 12345 } = {}) 
       else if (ne && nd < 9) { const dx = ne.x - px, dz = ne.z - pz; mx = dx / nd; mz = dz / nd; ax = ne.x; az = ne.z; }
       else { const dx = enc.cx - px, dz = enc.cz - pz, d = Math.hypot(dx, dz); if (d > 4) { mx = dx / d; mz = dz / d; } }
     }
-    if (me.riposte >= 100 && best >= 0) prs |= 32;
+    if (me.riposte >= 100 && best >= 0 && !guardEnemy && !meleeDash) prs |= 32;
     return { mx, mz, ax, az, btn, prs };
   };
 }

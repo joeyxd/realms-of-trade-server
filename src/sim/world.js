@@ -2,13 +2,15 @@
 // The same class runs the server (isServer: enemies, shots, hits on enemies) and the client's
 // prediction of its own player (movement + combat against the projectiles the client knows about).
 import { tuning, DT } from '../data/tuning.js';
+import { di, hitlagFrames, meleePercent } from './meleeHit.js';
+import { swingStages, swingOn } from '../data/meleeFrames.js';
 import { ENEMIES, ENEMY_KINDS as ENEMY_KINDS_LIST, enemyIndex } from '../data/enemies.js';
 import { mulberry32 } from '../core/rng.js';
-import { ECS, C, KIND, TEAM, ACT, PLAYER_FIELDS } from './ecs.js';
+import { ECS, C, KIND, TEAM, ACT, PLAYER_FIELDS, airborne, intangible } from './ecs.js';
 import { generateWorld } from './worldgen.js';
-import { stepMover, moveWithCollision } from './systems/movement.js';
+import { stepMover, moveWithCollision, BTN } from './systems/movement.js';
 import { makeBotBrain, botCommand } from './systems/bots.js';
-import { stepPlayerCombat, applyLevel, gainXp, stormRadius, hurtByPlayer, hurtPlayer } from './systems/combat.js';
+import { stepPlayerCombat, applyLevel, gainXp, stormRadius, hurtByPlayer, hurtPlayer, beginGrab, endGrab, syncGrabs, grabCollisions, releaseThrows } from './systems/combat.js';
 import { jumpOn } from './systems/jump.js';
 import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf, newHistory } from './systems/enemies.js';
 import { Hazards, Shots, emitPattern, patternCount, PTYPE, KILL, NEVER, SHOT } from './projectiles.js';
@@ -20,7 +22,7 @@ import { createEncounter, stepEncounter, encounterKilled } from './systems/encou
 import { lootOnKill, stepDrops } from './systems/inventory.js';
 import { questKill, zoneSweep } from './systems/quests.js';
 import { stepInfighting } from './systems/lawless.js';
-import { LAWLESS } from '../data/lawless.js';
+import { LAWLESS, MELEE_GUARD } from '../data/lawless.js';
 import { burnOnHit, chillOnHit, lightningOnHit, enemyChillMul, stepBurns, stepChills } from './systems/pearlcombat.js';
 import { PEARL } from '../data/pearls.js';
 import { CLOCK, hourOfDay, nightAt } from '../data/clock.js';
@@ -43,6 +45,8 @@ export class World {
     this.map = map || generateWorld(this.seed);
     this.raftDeck = new RaftDeck(this.map);
     this.ecs = new ECS(2048);
+    this.grabHits = [];
+    this.grabAttempts = new Map();
     this.events = [];
     this.isServer = server;
     if ([navalTrial, navalPilot].some((v) => typeof v !== 'boolean') || ((navalTrial || navalPilot) && !server))
@@ -166,6 +170,7 @@ export class World {
   }
 
   despawn(e) {
+    if (this.meleeVersion === 1 && this.ecs.grabSt[e]) endGrab(this, e, true);
     this.residentPlayers?.delete(e);
     this.burns?.delete(e);
     this.chills.delete(e);
@@ -187,6 +192,20 @@ export class World {
 
   applyCommand(e, cmd) {
     if (!this.ecs.alive[e]) return;
+    const ecs = this.ecs;
+    if (this.meleeVersion === 1 && (ecs.grabSt[e] === ACT.CAPTURE || ecs.grabSt[e] === ACT.THROWN)) {
+      ecs.grabX[e] = cmd.mx || 0; ecs.grabZ[e] = cmd.mz || 0;
+    }
+    syncGrabs(this);
+    if (ecs.hitlag[e] > 0) {
+      if ((cmd.prs & BTN.ATTACK) && ecs.atkStage[e] > 0) ecs.atkLatch[e] = 1; // Melee keeps the presses made in hitlag
+      if (--ecs.hitlag[e] === 0) {
+        const v = di(ecs.lvx[e], ecs.lvz[e], cmd.mx || 0, cmd.mz || 0);
+        ecs.lvx[e] = v.vx; ecs.lvz[e] = v.vz;
+      }
+      ecs.lastSeq[e] = cmd.seq >>> 0;
+      return;
+    }
     if (this.isServer) {
       const profile = this.profiles?.get(e);
       this.ecs.swimLoad[e] = swimLoadOf(profile);
@@ -203,7 +222,13 @@ export class World {
       if (!this.ecs.dead[e]) recoverSwimming(this.ecs, e, DT);
       this.ecs.lastSeq[e] = cmd.seq >>> 0; return;
     }
-    stepMover(this, e, cmd, DT);
+    beginGrab(this, e, cmd);
+    const grab = this.meleeVersion === 1 && ecs.grabSt[e];
+    if (!grab) stepMover(this, e, cmd, DT);
+    else if (grab === ACT.GRAB_CUT || grab === ACT.CAPTURE_CUT) {
+      const f = ecs.facing[e];
+      stepMover(this, e, { ...cmd, mx: 0, mz: 0, btn: 0, prs: 0 }, DT); ecs.facing[e] = f;
+    }
     if (this.falls.length) this.applyFalls();
     if (this.ecs.mask[e] & C.HEALTH) stepPlayerCombat(this, e, cmd, DT);
     this.flushFeel(e);
@@ -316,7 +341,7 @@ export class World {
     const Cb = tuning.combat;
     const lag = o.lag ?? (this.isServer && o.pt ? Math.max(0, Math.min(Cb.rewind, this.tick - o.pt)) + Cb.interpTicks : Cb.interpTicks);
     const elem = o.elem ?? this.ecs.elem[owner] ?? 0;
-    this.shots.spawn(sid, { ...o, elem, owner, lag, pred: this.isServer ? 0 : o.seq });
+    this.shots.spawn(sid, { ...o, born: this.tick, elem, owner, lag, pred: this.isServer ? 0 : o.seq });
     if (this.isServer) {
       const S = this.shots, s = S.slot.get(sid);
       const ev = { type: 'shot', sid, pid: o.pid, key: o.key || 0, owner, elem, x: o.x, y: o.y, z: o.z, dx: o.dx, dy: o.dy || 0, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq, homing: S.homing[s], cone: S.cone[s] };
@@ -496,14 +521,18 @@ export class World {
       if (!ended) continue;
       const at = pointOnSegment(from, to, stopT), x = at.x, z = at.z;
       const o = { type: S.type[s], y: at.y, speed: S.speed[s], r: S.r[s], lag, kind, elem };
-      const knock = S.knock[s] || undefined;
+      const knock = S.knock[s] || undefined, age = (this.tick - S.born[s]) * DT;
       S.free(s);
       this.emit({ type: 'shotEnd', sid, owner, elem, x, y: at.y, z, hit });
       if (hit) {
         // Reflects and released catches ignore armour, shields and DEF; pistol bullets and pellets do not.
         const bullet = kind === SHOT.BULLET || kind === SHOT.PELLET;
-        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - shotVx * 0.1, z: z - shotVz * 0.1, heavy: !!heavy, pierce: !bullet, knock, crit, elem, pt: this.tick });
-        if (bounce > 0) deferred.push({ type: 'bounce', args: [sid, owner, hit, x, z, dmg, bounce, o] });
+        const so = { by: owner, shot: true, kind: bullet ? 'bullet' : 'shot', skill: kind === SHOT.PELLET ? 'pellet' : kind === SHOT.BULLET ? (heavy ? 'gun_r' : 'gun_l') : 'shot', age, dx: shotVx, dz: shotVz, x: x - shotVx * 0.1, z: z - shotVz * 0.1, heavy: !!heavy, pierce: !bullet, knock, crit, elem, pt: this.tick };
+        this.strike(hit, dmg, so);
+        // P2: a powershielded pirate shot goes back at its shooter, the defender's now, at reflectMul of its damage.
+        if (so.reflected) deferred.push({ type: 'reflect', owner: hit, pid: 0, seq: 0, shotType, point: { x, y: at.y, z }, dx: -shotVx, dy: 0, dz: -shotVz,
+          speed: shotSpeed, dmg: Math.max(1, Math.round(dmg * MELEE_GUARD.reflectMul)), r: shotRadius, heavy: !!heavy });
+        else if (bounce > 0) deferred.push({ type: 'bounce', args: [sid, owner, hit, x, z, dmg, bounce, o] });
       }
     }
     // Defer newly returned and bounced shots until all pre-existing shots have been stepped once.
@@ -541,6 +570,7 @@ export class World {
     const ecs = this.ecs;
     if (!ecs.alive[o] || ecs.dead[o] > 0 || o === e) return false;
     if (ecs.mask[o] & C.ENEMY) return true;
+    if (intangible(ecs, o)) return false; // P2b: a pirate in the shield-break flight, fall and stand-up
     return (ecs.mask[o] & C.PLAYER) !== 0 && !(ecs.mask[o] & C.BOT) && this.lawless(o) && this.lawless(e);
   }
   // Once-per-attack bookkeeping of a target: an enemy's brain, a pirate's history record.
@@ -569,6 +599,16 @@ export class World {
   }
 
   // ---- Server-only combat hooks (called from systems/combat.js) ----------------------------------
+  grabHp(e) { return this.isSandbag(e) ? ENEMIES[ENEMY_KINDS_LIST[this.ecs.enemy[e]]].meleeHp : this.ecs.maxHp[e]; }
+  isSandbag(e) { return !!(this.ecs.mask[e] & C.ENEMY) && ENEMIES[ENEMY_KINDS_LIST[this.ecs.enemy[e]]]?.practice === true; }
+
+  // Hold blade collision until every command in a grabbing tick has advanced: grab collision precedes attack collision.
+  queueMeleeHits(e, st, pt, seq) {
+    if (this.meleeVersion === 1 && this.ecs.grabSt.some((s) => s === ACT.GRAB))
+      this.grabHits.push({ e, st, pt, seq, swing: this.ecs.swingId[e], stage: this.ecs.atkStage[e] });
+    else this.meleeHits(e, st, pt, seq);
+  }
+
   // Melee against enemies where the attacker saw them: interpTicks behind the command's projectile tick.
   meleeHits(e, st, pt, seq) {
     const ecs = this.ecs, tmp = this.tmp, M = tuning.melee;
@@ -584,11 +624,75 @@ export class World {
       const dx = tmp.x - ecs.x[e], dz = tmp.z - ecs.z[e], d = Math.hypot(dx, dz);
       if (d > st.range + ecs.hurtR[o]) continue;
       if (st.arc < 360 && d > 0.6 && (dx * fx + dz * fz) / d < half) continue;
+      if (this.meleeVersion === 1 && (ecs.mask[o] & C.PLAYER) && this.clank(e, o, st) && !ecs.atkStage[e]) return;
       b.hitBy.set(e, key);
       const stage = ecs.atkStage[e], emp = ecs.empK[e]; // empowered: the first swing after a Parpadeo (× empK, a crit)
-      this.strike(o, ecs.atk[e] * st.mult * (emp > 0 ? emp : 1), { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, crit: emp > 0, elem: ecs.elem[e], pt });
-      this.feel(e, seq, tuning.feel.hitstopMelee, 0);
+      this.strike(o, ecs.atk[e] * st.mult * (emp > 0 ? emp : 1), { by: e, kind: 'melee', stage, seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, crit: emp > 0, elem: ecs.elem[e], pt });
+      if (this.meleeVersion !== 1) this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
+  }
+
+  // P2 (MN_MELEE): pirate o is mid-swing with its hitbox out and e is inside its reach and arc, while e's own blow reaches
+  // o: the two sabre blows meet. A side is cancelled when its Melee damage minus `clank` is under the other's: its swing
+  // ends, it freezes (hitlag) and rebounds (cannot act), and its blow is spent against the other. The survivor carries on.
+  // True when e's blow was cancelled.
+  clank(e, o, st) {
+    const ecs = this.ecs, mg = MELEE_GUARD;
+    if (!ecs.atkStage[o] || airborne(ecs, e) || airborne(ecs, o)) return false;
+    const so = swingStages(1)[ecs.atkStage[o] - 1];
+    if (!swingOn(so, ecs.atkT[o])) return false;
+    if (this.hitState(e).hitBy.get(o) === o * 65536 + ecs.swingId[o]) return false; // o's blow already landed on e
+    if (!this.inBlow(o, so, ecs.x[e], ecs.z[e], ecs.hurtR[e])) return false;
+    const dmg = (a, v, s) => Math.floor(meleePercent(ecs.atk[a] * s.mult * LAWLESS.pvpDmg, ecs.maxHp[v], LAWLESS.meleeStamina));
+    const dE = dmg(e, o, st), dO = dmg(o, e, so);
+    const cutE = dE - mg.clank < dO, cutO = dO - mg.clank < dE;
+    const mx = (ecs.x[e] + ecs.x[o]) / 2, mz = (ecs.z[e] + ecs.z[o]) / 2;
+    // x's blow (stage s, damage d) is cancelled against y.
+    const cancel = (x, y, s, d) => {
+      const stage = ecs.atkStage[x];
+      this.emit({ type: 'duel', e: y, by: x, skill: 'melee' + stage, heavy: stage === 3 ? 1 : 0, tele: Math.round(s.windup * 1000) / 1000, win: Math.round(ecs.atkT[x] * 1000) / 1000, x: mx, z: mz, out: 'clank', dmg: 0, hp: ecs.hp[y] });
+      ecs.atkStage[x] = 0; ecs.atkBuf[x] = ecs.atkLatch[x] = 0;
+      this.hitState(y).hitBy.set(x, x * 65536 + ecs.swingId[x]);
+      return this.rebound(x, d, ecs.x[y], ecs.z[y]);
+    };
+    const ra = cutE ? cancel(e, o, st, dE) : 0, rb = cutO ? cancel(o, e, so, dO) : 0;
+    this.emit({ type: 'clank', a: e, b: o, x: mx, z: mz, ra, rb });
+    return cutE;
+  }
+
+  // P2b: is the point (x, z) of radius r inside pirate o's blow `so`: its reach, and its arc from o's facing?
+  inBlow(o, so, x, z, r) {
+    const ecs = this.ecs, dx = x - ecs.x[o], dz = z - ecs.z[o], dist = Math.hypot(dx, dz);
+    if (dist > so.range + r) return false;
+    return !(so.arc < 360 && dist > 0.6 && (dx * Math.sin(ecs.facing[o]) + dz * Math.cos(ecs.facing[o])) / dist < Math.cos((so.arc / 2) * D2R));
+  }
+
+  // P2b: x's blow of Melee damage d was cancelled against whoever stands at (fx, fz): it freezes (hitlag), rebounds (cannot
+  // act) and slides away at reboundPush (the slide the shield uses; hitlag holds it still first). Returns the rebound frames.
+  rebound(x, d, fx, fz) {
+    const ecs = this.ecs, mg = MELEE_GUARD, rb = Math.ceil(mg.rebound[0] * (d + mg.rebound[1])), kx = ecs.x[x] - fx, kz = ecs.z[x] - fz, kl = Math.hypot(kx, kz);
+    ecs.hitlag[x] = hitlagFrames(d); ecs.stagger[x] = Math.max(ecs.stagger[x], rb * DT);
+    if (kl > 1e-6) { const v = mg.reboundPush * LAWLESS.meleeUnit * 60 / kl; ecs.lvx[x] = kx * v; ecs.lvz[x] = kz * v; }
+    return rb;
+  }
+
+  // P2b (MN_MELEE): a mob's melee circle `a` bursts on pirate e while e's sabre blow has its hitbox out and the mob stands in
+  // its reach and arc: the blows meet by clank's 9 rule (PvE, so no pvpDmg). A cancelled mob's circle hits nobody (a.cancel);
+  // a cancelled pirate's blow ends, is spent on the mob, and the circle still lands on e. Bosses do not clank.
+  clankMob(e, a) {
+    const ecs = this.ecs, mg = MELEE_GUARD, o = a.owner;
+    if (!ecs.atkStage[e] || airborne(ecs, e) || !o || !ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0 || defOf(ecs, o)?.boss) return;
+    const st = swingStages(1)[ecs.atkStage[e] - 1], key = e * 65536 + ecs.swingId[e];
+    if (!swingOn(st, ecs.atkT[e]) || this.hitState(o).hitBy.get(e) === key || !this.inBlow(e, st, ecs.x[o], ecs.z[o], ecs.hurtR[o])) return;
+    const dP = Math.floor(meleePercent(ecs.atk[e] * st.mult, ecs.maxHp[o], LAWLESS.meleeStamina)), dM = Math.floor(meleePercent(a.dmg, ecs.maxHp[e], LAWLESS.meleeStamina));
+    let ra = 0, rb = 0;
+    if (dM - mg.clank < dP) { a.cancel = true; rb = this.rebound(o, dM, ecs.x[e], ecs.z[e]); }
+    if (dP - mg.clank < dM) {
+      ecs.atkStage[e] = 0; ecs.atkBuf[e] = ecs.atkLatch[e] = 0;
+      this.hitState(o).hitBy.set(e, key);
+      ra = this.rebound(e, dP, ecs.x[o], ecs.z[o]);
+    }
+    this.emit({ type: 'clank', a: e, b: o, x: (ecs.x[e] + ecs.x[o]) / 2, z: (ecs.z[e] + ecs.z[o]) / 2, ra, rb });
   }
 
   // The cutlass lunge: enemies (where the attacker saw them) within reach of this step of its path, once
@@ -605,7 +709,7 @@ export class World {
       if (skillSegDist(tmp.x, tmp.z, x0, z0, x1, z1) > L.width + ecs.hurtR[o]) continue;
       b.hitBy.set(e, key);
       this.strike(o, ecs.atk[e] * L.mult, { by: e, kind: 'skill', skill: 'lunge', seq, x: x0, z: z0, heavy: true, knock: tuning.melee.knock, elem: ecs.elem[e], pt });
-      this.feel(e, seq, tuning.feel.hitstopMelee, 0);
+      if (this.meleeVersion !== 1) this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
   }
 
@@ -624,7 +728,7 @@ export class World {
       const a = rx * dx + rz * dz, l = Math.abs(rx * dz - rz * dx);
       if (a < f0 - W.depth - hr || a > f1 + hr || l > W.half + hr) continue;
       b.waveBy.set(e, id);
-      this.strike(o, ecs.atk[e] * W.mult, { by: e, kind: 'skill', skill: 'wave', seq, x: tmp.x - dx, z: tmp.z - dz, knock: 6, elem: ecs.elem[e], pt });
+      this.strike(o, ecs.atk[e] * W.mult, { by: e, kind: 'skill', skill: 'wave', seq, dx, dz, x: tmp.x - dx, z: tmp.z - dz, knock: 6, elem: ecs.elem[e], pt });
     }
   }
 
@@ -687,8 +791,10 @@ export class World {
   // o: {skill, knock, stun, heavy, kind}.
   skillStrike(e, t, mult, o, x, z, seq, pt) {
     const ecs = this.ecs;
-    const dmg = this.strike(t, ecs.atk[e] * mult, { by: e, kind: o.kind || 'skill', skill: o.skill, seq, x, z, knock: o.knock, heavy: o.heavy, elem: ecs.elem[e], fire: o.fire, pt });
-    if (o.stun > 0) this.stun(e, t, o.stun, seq, dmg);
+    const hit = { by: e, kind: o.kind || 'skill', skill: o.skill, seq, x, z, knock: o.knock, heavy: o.heavy, elem: ecs.elem[e], fire: o.fire, pt };
+    const dmg = this.strike(t, ecs.atk[e] * mult, hit);
+    // Melee armor and chip hits must not fall back to the tattoo stun.
+    if (o.stun > 0 && !hit.meleeHit && !(this.meleeVersion === 1 && (ecs.mask[t] & C.ENEMY))) this.stun(e, t, o.stun, seq, dmg);
     return dmg;
   }
 
@@ -832,6 +938,12 @@ export class World {
   // World systems that are not driven by player commands.
   stepWorld() {
     const ecs = this.ecs;
+    grabCollisions(this);
+    const hits = this.grabHits; this.grabHits = [];
+    for (const h of hits) if (ecs.alive[h.e] && !ecs.dead[h.e] && ecs.atkStage[h.e] === h.stage && ecs.swingId[h.e] === h.swing)
+      this.meleeHits(h.e, h.st, h.pt, h.seq);
+    syncGrabs(this);
+    releaseThrows(this);
     // Trial preparation can fail before any World system consumes this fixed tick.
     this.navalPilot?.prepare();
     if (this.isServer) this.navalTrial?.step();

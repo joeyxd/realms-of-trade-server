@@ -17,14 +17,20 @@ import { stepHarvestPose } from './harvestPose.js';
 import { applySwimPose } from './swimPose.js';
 import { reactionEligible } from './assets/characterReaction.js';
 import { createPistolRecoil, kickPistolRecoil, stepPistolRecoil } from './pistolRecoil.js';
+import { startLaunch, stepLaunch, tiltAxis } from './launchPose.js';
 import { seaSurfaceY } from './naval/seaSwell.js';
 import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
+import { swingStages } from '../data/meleeFrames.js';
+import { MELEE_GRAB } from '../data/lawless.js';
 import { ACT } from '../sim/ecs.js';
 import { JUMP_STAGE, airStage } from '../sim/systems/jump.js';
 import { SKILLS } from '../data/weapons.js';
 
 export const SKINS = LOOKS;
+// P1b: the server's swing rule (WELCOME melee), so a swing's pose is keyed to the frames it runs on.
+let meleeRule = 0;
+export const setMeleeView = (v) => { meleeRule = v === 1 ? 1 : 0; };
 export const SENTINEL = LOOKS.findIndex((l) => l.enemy && l.body === 'brute');
 export const ARCHER = LOOKS.findIndex((l) => l.archer);
 // Enemy kind → look index (sim kinds in data/enemies.js).
@@ -61,6 +67,7 @@ export function characterMaterial(kind = 'base') {
 }
 
 let blobGeo = null, blobMat = null;
+const tiltV = new THREE.Vector3();
 let lanternHandleGeo = null, lanternWrapGeo = null, lanternCoreGeo = null, lanternFlameGeo = null;
 let lanternHandleMat = null, lanternWrapMat = null, lanternCoreMat = null, lanternFlameMat = null;
 
@@ -231,6 +238,9 @@ export class CharacterView {
     return u > 0 && u < 1 ? (this.leapH || L.h) * 4 * u * (1 - u) : 0;
   }
 
+  // A Melee hit (MN_MELEE): the event's kb, hl, la and kd; lead: s this body is drawn late (launchPose.js).
+  launch(ev, lead = 0) { this.launchL = startLaunch(ev, lead); }
+
   // Short white (or tinted) flash: hits taken, perfect parries.
   flash(color = 0xffffff, amount = 1) { this.flashCol.set(color); this.flashA = Math.max(this.flashA, amount); }
   // Flinch away from a hit (dir: +1 hit from the front).
@@ -301,8 +311,12 @@ export class CharacterView {
     this.t += dt;
     if (this.look.hover) this.mesh.position.y = 0.32 + Math.sin(this.t * 2.6 + this.seed) * 0.08;
     this.root.position.set(s.x, s.y, s.z);
+    // A Melee hit: the hitlag shake, the led launch, the tumble's hop and fall (launchPose.js); it ends itself.
+    const lo = this.launchL && !s.dead ? stepLaunch(this.launchL, dt, this.launchO || (this.launchO = {})) : null;
+    if (!lo) this.launchL = null;
+    else { this.root.position.x += lo.ox; this.root.position.z += lo.oz; }
     // Abordaje (ACT.LEAP, M4.7): the body rides the jump's parabola h · 4u(1 − u), render only; the shadow stays down.
-    const lift = (s.act | 0) === ACT.LEAP ? this.leapLift(s.actT || 0) : 0;
+    const lift = ((s.act | 0) === ACT.LEAP ? this.leapLift(s.actT || 0) : 0) + (lo ? lo.lift : 0);
     this.root.position.y += lift;
     if (s.st === 2) this.root.position.y += seaSurfaceY(s.x, s.z); // swimmers ride the drawn swell (render only)
     // PT06 jump (s.jmp: JUMP_STAGE, s.gy: the floor under the body): the shadow stays on the floor and shrinks with the
@@ -323,6 +337,10 @@ export class CharacterView {
     const turnRate = angleDelta(this.lastF, s.f) / Math.max(dt, 1e-4);
     this.lastF = s.f;
     this.root.rotation.y = s.f;
+    // The whole body tips about the feet toward the launch (the shadow and the lantern stay level).
+    if (lo && lo.tilt) this.mesh.quaternion.setFromAxisAngle(tiltAxis(s.f, lo.dx, lo.dz, tiltV), lo.tilt);
+    else if (this.tilted) this.mesh.quaternion.identity();
+    this.tilted = !!(lo && lo.tilt);
 
     const speed = Math.hypot(s.vx, s.vz);
     const swimming = s.st === 2;
@@ -434,7 +452,7 @@ export class CharacterView {
 
   // ---- Combat layer --------------------------------------------------------------------------------------
   combat(dt, s) {
-    const act = s.act | 0, t = s.actT || 0, M = tuning.melee;
+    const act = s.act | 0, t = s.actT || 0;
     const T = { cx: 0, cy: 0, sx: 0, sy: 0, hx: 0, hy: 0 };
     const limbs = this._limbs || (this._limbs = {});
     for (const kk in limbs) limbs[kk] = null;
@@ -442,7 +460,7 @@ export class CharacterView {
     const set = (name, x, z, y) => { limbs[name] = [x, z, y]; };
 
     if (act >= ACT.SWING1 && act <= ACT.SWING3) {
-      const stage = act - ACT.SWING1 + 1, st = M.stages[stage - 1];
+      const stage = act - ACT.SWING1 + 1, st = swingStages(meleeRule)[stage - 1];
       const tw = st.windup, ta = st.active, tr = st.recover;
       let p;
       if (t < tw) { p = 0; w = sm(t / tw); }
@@ -514,8 +532,19 @@ export class CharacterView {
       set('armL', -0.9 * fly + 0.4 * land, 0.6 * fly + 0.3); set('foreL', -0.5);
       if (land > 0 && !this.landed) { this.landed = true; this.sy.v -= 2.4; this.sz.v += 1.2; }
       if (u < 1) this.landed = false;
-    } else if (act === ACT.STAGGER) {
-      w = Math.max(0, 1 - t / 0.35);
+    } else if (act === ACT.GRAB_THROW_F || act === ACT.GRAB_THROW_B) {
+      const back = act === ACT.GRAB_THROW_B, release = back ? MELEE_GRAB.bthrow.release : MELEE_GRAB.fthrow.release;
+      const fling = Math.sin(Math.min(1, t * 60 / release) * Math.PI / 2); // ours: free-arm fling, no new assets
+      w = 1; T.cx = 0.12 + 0.3 * fling; T.cy = back ? -0.7 * fling : 0;
+      set('armL', -1.45 - fling, 0.15 + 0.5 * fling); set('foreL', -0.15 + 0.1 * fling);
+      set('armR', -0.4, -0.3); set('foreR', -0.45);
+    } else if (act >= ACT.GRAB && act <= ACT.GRAB_PUMMEL) {
+      const bump = act === ACT.GRAB_PUMMEL ? Math.sin(Math.min(1, t * 60 / 7) * Math.PI) : 0; // ours: short jab-like bump
+      w = 1; T.cx = 0.12 + 0.12 * bump;
+      set('armL', -1.45, 0.15); set('foreL', -0.15);
+      set('armR', -0.4 - bump, -0.3); set('foreR', -0.45);
+    } else if (act === ACT.STAGGER || act === ACT.CAPTURE || act === ACT.THROWN || act === ACT.GRAB_CUT || act === ACT.CAPTURE_CUT) {
+      w = act === ACT.CAPTURE || act === ACT.THROWN ? 1 : Math.max(0, 1 - t / 0.35);
       T.sx = -0.3; T.cx = -0.2; T.hx = -0.25; T.hy = -0.06;
       set('armR', 0.35, -0.6); set('armL', 0.35, 0.6);
     } else if (act === ACT.DEAD && !this.look.enemy) {
@@ -652,6 +681,17 @@ export class CharacterView {
     if (hk) {
       this.spine.rotation.x -= 0.22 * hk; this.chest.rotation.x -= 0.15 * hk; this.head.rotation.x -= 0.2 * hk;
       this.armL.rotation.z += 0.25 * Math.abs(hk); this.armR.rotation.z -= 0.25 * Math.abs(hk);
+    }
+
+    // Thrown (a Melee tumble): arms and legs flung toward the blow, head tucked, while the body flies and lies.
+    const th = this.launchL?.kd ? clamp(this.launchO.tilt / 1.45, 0, 1) : 0;
+    if (th > 0.01) {
+      this.armL.rotation.x += (-1.35 - this.armL.rotation.x) * th; this.armR.rotation.x += (-1.15 - this.armR.rotation.x) * th;
+      this.armL.rotation.z += 0.45 * th; this.armR.rotation.z -= 0.45 * th;
+      this.foreL.rotation.x += (-0.6 - this.foreL.rotation.x) * th; this.foreR.rotation.x += (-0.5 - this.foreR.rotation.x) * th;
+      this.thighL.rotation.x += (-1.0 - this.thighL.rotation.x) * th; this.thighR.rotation.x += (-0.55 - this.thighR.rotation.x) * th;
+      this.shinL.rotation.x += (1.15 - this.shinL.rotation.x) * th; this.shinR.rotation.x += (0.7 - this.shinR.rotation.x) * th;
+      this.spine.rotation.x += 0.2 * th; this.head.rotation.x += 0.3 * th;
     }
 
     // Down (players at 0 HP): kneel and slump.

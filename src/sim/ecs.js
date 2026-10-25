@@ -1,6 +1,7 @@
 // ECS-lite: entities are indices, components are typed-array columns + a bitmask.
 // Float64 columns so the client's prediction and the server produce bit-identical results.
 import { tuning } from '../data/tuning.js';
+import { MELEE_GUARD } from '../data/lawless.js';
 
 export const C = {
   POS: 1 << 0,
@@ -26,6 +27,8 @@ export const ACT = {
   LUNGE: 15, THROW: 16, SHOOT: 17, BLAST: 18, CAST: 19,
   // Tattoos (M4.7): a held charge (the wheel) and the boarding leap (the render takes the height from actT).
   CHARGE: 20, LEAP: 21,
+  GRAB: 22, GRAB_PULL: 23, GRAB_WAIT: 24, GRAB_PUMMEL: 25, CAPTURE: 26, GRAB_CUT: 27, CAPTURE_CUT: 28,
+  GRAB_THROW_F: 29, GRAB_THROW_B: 30, THROWN: 31,
 };
 
 // The columns of tattoo effects in flight (all 0 = nothing going on).
@@ -40,12 +43,16 @@ const TATTOO_STATE = [
 export const JUMP_STATE = ['jmpAct', 'jmpPh', 'jmpVy', 'jmpFwd', 'jmpSide', 'jmpPeak', 'jmpTimer', 'jmpLT', 'jmpA', 'jmpSq', 'jmpSteep'];
 const PEARL_STATE = ['skG', 'fmG', 'rkG', 'cdG', 'gBuf', 'waterT', 'icX', 'icZ', 'icT0', 'icEnd', 'icSeq', 'inkX', 'inkZ', 'inkT0', 'inkEnd', 'inkSeq'];
 
+export const GRAB_FIELDS = ['grabSt', 'grabT', 'grabWho', 'grabGen', 'grabHold', 'grabImm', 'grabIn', 'grabDmg', 'grabFlinch', 'grabDown', 'grabAt', 'grabX', 'grabZ'];
+export const resetGrab = (ecs, e) => { for (const k of GRAB_FIELDS) ecs[k][e] = 0; };
+
 export class ECS {
   constructor(cap = 2048) {
     this.cap = cap;
     this.mask = new Uint32Array(cap);
     this.kind = new Uint8Array(cap);
     this.alive = new Uint8Array(cap);
+    this.generation = new Uint32Array(cap);
     this.free = [];
     for (let i = cap - 1; i >= 1; i--) this.free.push(i); // 0 = null entity
     const f = () => new Float64Array(cap);
@@ -70,8 +77,14 @@ export class ECS {
     this.team = new Uint8Array(cap);
     this.stagger = f(); this.hurtInv = f(); this.regenT = f(); this.dead = f(); this.deadT = f();
     this.act = new Uint8Array(cap); this.actT = f();
+    this.hitlag = new Uint8Array(cap); this.lvx = f(); this.lvz = f();
+    // P2 (MN_MELEE) shield: drop-lag and shieldstun frames left, dizzy frames left, the sticks held while dizzy (4 bits).
+    this.guardLag = f(); this.guardStun = f(); this.dizzy = f(); this.dizzyIn = f();
+    for (const k of GRAB_FIELDS) this[k] = f();
+    this.brk = f(); // P2b: frames of the shield-break flight, fall and stand-up left (before the dizzy)
     // PLAYER combat (predicted by the client: see PLAYER_FIELDS)
     this.atkStage = f(); this.atkT = f(); this.atkBuf = f(); this.lastStage = f(); this.comboT = f(); this.swingId = f();
+    this.atkLatch = new Uint8Array(cap); // P1b: an attack press made during the swing (Melee's jab latch)
     // Guard (RMB held): time up (−1 down), perfect window armed, re-arm timer, stamina, time since the
     // last block; caught bullets (count, heavy ones, max damage, age).
     this.guardT = f(); this.guardP = f(); this.guardRe = f(); this.guardSt = f(); this.guardRegT = f();
@@ -131,6 +144,8 @@ export class ECS {
     const id = this.free.pop();
     if (id === undefined) throw new Error('ECS full');
     this.alive[id] = 1;
+    this.generation[id]++;
+    resetGrab(this, id);
     this.kind[id] = kind;
     this.mask[id] = mask;
     this.x[id] = this.y[id] = this.z[id] = this.facing[id] = 0;
@@ -150,7 +165,9 @@ export class ECS {
     this.team[id] = 0;
     this.stagger[id] = this.hurtInv[id] = this.regenT[id] = this.dead[id] = this.deadT[id] = 0;
     this.act[id] = 0; this.actT[id] = 0;
-    this.atkStage[id] = this.atkT[id] = this.atkBuf[id] = this.lastStage[id] = this.swingId[id] = 0;
+    this.hitlag[id] = this.lvx[id] = this.lvz[id] = 0;
+    this.guardLag[id] = this.guardStun[id] = this.dizzy[id] = this.dizzyIn[id] = this.brk[id] = 0;
+    this.atkStage[id] = this.atkT[id] = this.atkBuf[id] = this.lastStage[id] = this.swingId[id] = this.atkLatch[id] = 0;
     this.comboT[id] = 99;
     this.guardT[id] = -1; this.guardP[id] = this.guardRe[id] = this.guardRegT[id] = 0; this.guardSt[id] = 60;
     this.catchN[id] = this.catchHv[id] = this.catchDmg[id] = this.catchT[id] = 0;
@@ -179,6 +196,7 @@ export class ECS {
 
   destroy(id) {
     if (!this.alive[id]) return;
+    resetGrab(this, id);
     this.alive[id] = 0;
     this.mask[id] = 0;
     this.kind[id] = 0;
@@ -202,11 +220,14 @@ export const MOVER_FIELDS = [
 export const resetJump = (ecs, id) => { for (const k of JUMP_STATE) ecs[k][id] = 0; };
 // Airborne in a jump / freefall (jmpAct 1-4): the body integrates its own y.
 export const airborne = (ecs, e) => ecs.jmpAct[e] >= 1 && ecs.jmpAct[e] <= 4;
+// P2b (MN_MELEE): a pirate in the shield-break flight, fall and the start of the stand-up cannot be hit at all.
+export const intangible = (ecs, e) => ecs.brk[e] > MELEE_GUARD.breakStand - MELEE_GUARD.breakStandXlu;
 // Everything the local player predicts (movement + combat). The server sends these at the acked command.
 export const PLAYER_FIELDS = [
-  ...MOVER_FIELDS,
+  ...MOVER_FIELDS, ...GRAB_FIELDS,
   'hp', 'maxHp', 'atk', 'def', 'stagger', 'hurtInv', 'regenT', 'dead', 'deadT', 'act', 'actT',
-  'atkStage', 'atkT', 'atkBuf', 'lastStage', 'comboT', 'swingId',
+  'hitlag', 'lvx', 'lvz', 'guardLag', 'guardStun', 'dizzy', 'dizzyIn', 'brk',
+  'atkStage', 'atkT', 'atkBuf', 'lastStage', 'comboT', 'swingId', 'atkLatch',
   'guardT', 'guardP', 'guardRe', 'guardSt', 'guardRegT', 'catchN', 'catchHv', 'catchDmg', 'catchT',
   'chain', 'chainT', 'riposte', 'rBuf', 'pend0', 'pend0T', 'pend0D', 'pend1', 'pend1T', 'pend1D',
   'lastPt', 'xp', 'cpX', 'cpZ', 'god', 'level',

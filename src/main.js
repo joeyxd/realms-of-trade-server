@@ -43,7 +43,7 @@ import { CompanionPairingUI } from './ui/companionPairing.js';
 import { CompanionPresenceClient } from './client/companionPresence.js';
 import { CompanionPresenceUI } from './ui/companionPresence.js';
 import { GameScene } from './render/scene.js';
-import { SKINS, CharacterView, PortraitStudio } from './render/characters.js';
+import { SKINS, CharacterView, PortraitStudio, setMeleeView } from './render/characters.js';
 import { Quality } from './render/quality.js';
 import { gpuInfo } from './render/gpu.js';
 import { TitleScreen } from './ui/title.js';
@@ -141,7 +141,7 @@ async function boot() {
   // ?lag=&jitter= add artificial latency per direction (testing).
   const transportP = createTransport({
     seed: GAME.seed, bots: 5, preferWorker: params.get('worker') !== '0', debug,
-    server: params.get('server'), solo: params.has('solo'), lagMs: +params.get('lag') || 0, jitterMs: +params.get('jitter') || 0, chop: params.get('chop') === '1', // TA03: solo hold-to-chop
+    server: params.get('server'), solo: params.has('solo'), lagMs: +params.get('lag') || 0, jitterMs: +params.get('jitter') || 0, chop: params.get('chop') === '1', melee: params.get('melee') === '1', // TA03: solo hold-to-chop
   });
   const canvas = $('#game');
   await assetsP;
@@ -465,7 +465,7 @@ async function boot() {
   touch.onCrit = () => safe('chop crit', () => chop.crit()); // TA03: the crit button next to ACT
   // PT06: the server's jump mode (WELCOME.jump) decides the controls: on, Space / A / the touch button jump and Shift / B
   // dash; off keeps today's Space = dash and no button.
-  bus.on('you:welcome', () => { const on = client.pred.jumpMode !== 'off'; input.setJump(on); touch.setJump(on); });
+  bus.on('you:welcome', () => { const on = client.pred.jumpMode !== 'off'; input.setJump(on); touch.setJump(on); setMeleeView(client.pred.meleeVersion); });
   const freshwaterTouchButton = document.createElement('button');
   freshwaterTouchButton.type = 'button'; freshwaterTouchButton.className = 'tbtn t-water';
   freshwaterTouchButton.hidden = !isTouch;

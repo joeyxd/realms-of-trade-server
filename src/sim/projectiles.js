@@ -471,7 +471,7 @@ export class Shots {
     this.owner = new Int32Array(cap);
     this.target = new Int32Array(cap);
     this.x = F(); this.y = F(); this.z = F(); this.vx = F(); this.vy = F(); this.vz = F(); this.speed = F();
-    this.life = F(); this.dmg = F(); this.r = F();
+    this.life = F(); this.dmg = F(); this.r = F(); this.born = F();
     this.heavy = new Uint8Array(cap);
     this.pid = new Int32Array(cap); // the hostile projectile it came from (0: a bounce, a released catch)
     // Prediction key: the client adopts the server's copy of a shot it predicted by this (reflects: the
@@ -501,6 +501,7 @@ export class Shots {
     if (s < 0) return -1;
     this.cursor = (s + 1) % this.cap;
     this.id[s] = id; this.type[s] = o.type; this.owner[s] = o.owner; this.target[s] = o.target || 0;
+    this.born[s] = o.born || 0;
     this.x[s] = o.x; this.y[s] = o.y; this.z[s] = o.z;
     const speed = Math.max(0, o.speed || 0), dy = Number.isFinite(o.dy) ? o.dy : 0;
     const dirLen = Math.hypot(o.dx || 0, dy, o.dz || 0);

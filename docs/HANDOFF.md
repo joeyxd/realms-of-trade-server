@@ -1,5 +1,16 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Combate: el port de Melee detrás de MN_MELEE (golpe, combo de sable, escudo, agarre y lanzamientos) y la telemetría del duelo, 2026-10-25, versión 0.6.0-alpha.119, protocolo 73, sin SQL:**
+Área CMB combate (claude/combate; T-1023-11, T-1024-01..38, T-1025-02, T-1025-30, T-1025-31; push T-1025-42). Fichas y plan P1..P6 en [research/melee/README.md](research/melee/README.md).
+- Todo el port va detrás de `MN_MELEE`, apagado en producción: sin la bandera el combate es el de alpha.118. Para probarlo en local: `?solo&melee=1`.
+- CMB01: cada golpe de pirata a pirata en la Cala emite un evento `duel` (habilidad, anuncio, ventana visible, resultado); tools/lawless.mjs suma columnas exch/tele%/win/use, modo RTT y bots que responden al cuerpo a cuerpo a tiempo humano.
+- P1a y P1c: hitlag en los dos luchadores, hitstun 0,4 KB, knockback sobre el porcentaje perdido (suelo de 100 PV), lanzamiento en el plano del suelo, DI al salir del hitlag; lo mismo en PvE (armadura 45 en los wind-ups de mobs, jefes solo hitlag) y el maniquí como Sandbag. Vista: src/render/launchPose.js (temblor, tumbo, caída y levantarse).
+- P1b: el combo de sable con los frames de Marth (jab 1, jab 2, tilt adelante; src/data/meleeFrames.js), latch del jab y puertas IASA.
+- P2 y P2b: el escudo de Melee (drenaje y regeneración por frame, shieldstun, powershield de 4 frames que devuelve balas a 0,5x), rotura con vuelo, caída, levantarse intangible y mareo con mash; clank de sable por la regla del 9 con rebote, también contra los círculos de mobs (jefes no).
+- P3a y P3b: guardia + ataque agarra (Marth, 30 frames, activo 7-8), sujetar floor(76 + 1,6 p) con mash, pummel 3 %, soltar 29 frames; el stick lanza adelante (14 de 31) o atrás (16 de 44), 4 %, BKB 70, KBG 45 o 60 sobre peso 100, DI de lanzamiento; Cala y Sandbag.
+- Protocolo 73: PLAYER_FIELDS crece (hitlag, lvx, lvz, atkLatch, guardLag, guardStun, dizzy, dizzyIn, brk y los 13 GRAB_FIELDS) y ACT gana 22-31. PT21a (claude/playtest) pensaba tomar el 73: pasa al 74.
+- Gate del updater: +7 archivos (duel-telemetry, melee-hit, launch-pose, melee-frames, melee-shield, melee-grab, melee-throw), 85 en total, en verde sin three, tools/ ni docs/. Cambia TESTS: la sesión del push reinstala el updater del VPS (ops/push.md paso 6).
+
 **ST01e: la llama nativa con calidad de Taller en el mundo, Filmic en todo el mundo, luces de noche más vivas y el impacto de Tromba, 2026-10-25, versión 0.6.0-alpha.118, protocolo 72 (sin cambio), sin SQL:**
 Área ST01c Niagara nativo (st01c-native, T-1025-33, T-1025-41). Solo cliente.
 - Efectos nativos en HDR (7157e2e): en los tiers con contorno y half float, las mallas nativas van a LAYER.NATIVE, se acumulan en un target half float a resolución completa después del pase de FX y se componen sobre rtPost con el LUT Filmic del laboratorio (decodificado a lineal exacto: rtPost es SRGB8), más un segundo pase que baja la máscara de glow por la emisión. Los píxeles vacíos se descartan. Tier bajo o sin half float: la ruta 8 bits HDR_FIT de antes. De noche los loops de llama suben x1,6 (NIGHT_GAIN 0,6); las ráfagas no cambian.

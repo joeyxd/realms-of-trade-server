@@ -86,7 +86,7 @@ export function tattooMul(ecs, e, id) {
 }
 
 // Seconds a cast takes: [windup, active, recover]. S: the numbers in the form in use.
-function phases(id, S = SKILLS[id]) {
+export function phases(id, S = SKILLS[id]) {
   if (id === 'lunge' || id === 'comet') return [S.windup, S.time, S.recover];
   if (id === 'wave') return [S.windup, 0, S.recover];
   if (id === 'blast') return [S.windup, 0, S.root];

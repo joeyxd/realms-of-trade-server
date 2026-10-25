@@ -121,6 +121,7 @@ export const ENEMIES = {
   dummy: {
     name: 'Muñeco de práctica', look: 'dummy', title: '',
     hp: 300, def: 0, speed: 0, radius: 0.4, hurt: 0.5, height: 1.75, fixed: true, practice: true, regen: 2.5,
+    meleeHp: 100, // MN_MELEE Sandbag: its percent climbs as a 100-HP pirate's (the 300 HP only outlast the combo lesson)
     range: [0, 0], aggro: 0, leash: 0, xp: 0, attacks: [],
   },
 };
