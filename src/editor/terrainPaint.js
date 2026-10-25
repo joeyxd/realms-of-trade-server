@@ -1,5 +1,6 @@
+import { insideMapBounds } from '../sim/mapBounds.js';
 import { validateDocument } from './document.js';
-import { TERRAIN_GRID_SIZE, TERRAIN_MAX_SAMPLES, TERRAIN_MATERIALS, terrainEditWeights, validateTerrainForMap } from './terrainData.js';
+import { terrainGridOf, TERRAIN_MAX_SAMPLES, TERRAIN_MATERIALS, terrainEditWeights, validateTerrainForMap } from './terrainData.js';
 import { airbrushInfluence, BRUSH_FLOWS, brushParameters, brushWeight, strokeInfluence, strokePath, strokeSpacing,
   TERRAIN_BRUSH_MAX_RADIUS } from './terrainBrush.js';
 
@@ -22,19 +23,20 @@ function checkedStroke(map, doc, baseRevision, points, tool, material) {
       typeof baseRevision !== 'string' || doc.base.revision !== baseRevision) fail('base_mismatch');
   if (!['paint', 'erase'].includes(tool) || !TERRAIN_MATERIALS.includes(material)) fail('tool');
   if (!Array.isArray(points) || points.some(p => !p || !Number.isFinite(p.x) || !Number.isFinite(p.z) ||
-      Math.abs(p.x) > map.half || Math.abs(p.z) > map.half)) fail('points');
+      !insideMapBounds(map, p.x, p.z))) fail('points');
 }
 
 // Strongest brush weight per vertex over the stroke path; `skip(index)` leaves a vertex out (erase on bare ground).
 function documentInfluence(map, path, brush, skip, limit = Infinity) {
   const influence = new Map(), reach = brush.radius * (brush.shape === 'square' ? Math.SQRT2 : 1);
+  const { minX, minZ, Nx, Nz } = terrainGridOf(map);
   for (const center of path) {
-    const minI = Math.max(0, Math.ceil(center.x + map.half - reach)), maxI = Math.min(560, Math.floor(center.x + map.half + reach));
-    const minJ = Math.max(0, Math.ceil(center.z + map.half - reach)), maxJ = Math.min(560, Math.floor(center.z + map.half + reach));
+    const minI = Math.max(0, Math.ceil(center.x - minX - reach)), maxI = Math.min(Nx - 1, Math.floor(center.x - minX + reach));
+    const minJ = Math.max(0, Math.ceil(center.z - minZ - reach)), maxJ = Math.min(Nz - 1, Math.floor(center.z - minZ + reach));
     for (let j = minJ; j <= maxJ; j++) for (let i = minI; i <= maxI; i++) {
-      const index = j * TERRAIN_GRID_SIZE + i;
+      const index = j * Nx + i;
       if (skip(index)) continue;
-      const weight = brushWeight(i - map.half - center.x, j - map.half - center.z, brush);
+      const weight = brushWeight(minX + i - center.x, minZ + j - center.z, brush);
       if (weight > (influence.get(index) || 0)) influence.set(index, weight);
       if (influence.size > limit) fail('material_limit');
     }
@@ -73,12 +75,13 @@ export function paintTerrainGrid({ map, grid, document, baseRevision, points, to
   const doc = validateDocument(document), brush = brushParameters(options, { maxRadius: TERRAIN_BRUSH_MAX_RADIUS });
   checkedStroke(map, doc, baseRevision, points, tool, material);
   if (!BRUSH_FLOWS.includes(flow)) fail('parameters');
-  if (!(grid?.weights instanceof Uint8Array) || grid.weights.length !== TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE * 4) fail('grid');
+  const shapeGrid = terrainGridOf(map), { Nx, count } = shapeGrid;
+  if (!(grid?.weights instanceof Uint8Array) || grid.weights.length !== count * 4) fail('grid');
   const weights = grid.weights, share = terrainEditWeights(map);
-  const field = strokeInfluence(strokePath(points, strokeSpacing(brush.radius)), brush, { half: map.half, flow });
+  const field = strokeInfluence(strokePath(points, strokeSpacing(brush.radius)), brush, { half: shapeGrid, flow });
   const channel = tool === 'erase' ? 4 : TERRAIN_MATERIALS.indexOf(material), indices = [], values = [];
   for (let j = field.j0; j <= field.j1; j++) for (let i = field.i0, n = (j - field.j0) * field.width; i <= field.i1; i++, n++) {
-    const index = j * TERRAIN_GRID_SIZE + i, value = field.values[n];
+    const index = j * Nx + i, value = field.values[n];
     if (value <= 0 || share[index] <= 0) continue;
     const w = index * 4, old = [weights[w], weights[w + 1], weights[w + 2], weights[w + 3]];
     if (tool === 'erase' && !(old[0] || old[1] || old[2] || old[3])) continue;

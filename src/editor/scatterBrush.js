@@ -1,3 +1,4 @@
+import { mapBounds } from '../sim/mapBounds.js';
 import { brushParameters, brushOutline, brushWeight, strokePath } from './terrainBrush.js';
 import { createDecoration, validateDocument } from './document.js';
 import { OBJECT_MAX_Y } from './terrainData.js';
@@ -88,15 +89,17 @@ export function planScatter({ map, document, assetId, points, parameters, metric
   const priorCost = checkedExistingCost(existingCost);
   if (priorCost.triangles > MAX_AUTHORED_TRIANGLES) fail('authored_triangle_limit');
   if (priorCost.primitives > MAX_AUTHORED_PRIMITIVES) fail('authored_primitive_limit');
-  if (!map || !finite(map.half) || map.half <= 0 || typeof map.groundAt !== 'function') fail('map');
+  let edge;
+  try { edge = mapBounds(map); } catch { fail('map'); }
+  if (typeof map.groundAt !== 'function') fail('map');
   if (typeof assetId !== 'string' || !/^(?:model|prop):[A-Za-z0-9][A-Za-z0-9._:-]{0,156}$/.test(assetId)) fail('asset');
   if (!Array.isArray(points) || points.length < 1 || points.length > MAX_SCATTER_POINTS ||
       points.some((point) => !point || !finite(point.x) || !finite(point.z))) fail('points');
   if (typeof isAllowed !== 'function') fail('policy');
 
   const footprint = model.radius * params.scaleMax;
-  const minX = Math.max(-map.half + footprint, -280 + footprint), maxX = Math.min(map.half - footprint, 280 - footprint);
-  const minZ = minX, maxZ = maxX;
+  const minX = edge.minX + footprint, maxX = edge.maxX - footprint;
+  const minZ = edge.minZ + footprint, maxZ = edge.maxZ - footprint;
   let path;
   try { path = strokePath(points); }
   catch { fail('path_limit'); }

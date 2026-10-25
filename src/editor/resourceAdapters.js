@@ -1,3 +1,4 @@
+import { mapBounds } from '../sim/mapBounds.js';
 import { canScatterAt } from './terrainData.js';
 import { resourceLayout } from '../data/resources.js';
 
@@ -55,7 +56,8 @@ function slope(map, x, z) {
 
 /** Compile resource aliases into the exact stable node layout used by simulation. */
 export function compileAuthoredResources(map, document) {
-  if (!map || typeof map.groundAt !== 'function' || !Number.isFinite(map.half) || !document ||
+  try { mapBounds(map); } catch { fail('map'); }
+  if (!map || typeof map.groundAt !== 'function' || !document ||
       !Array.isArray(document.objects)) fail('map');
   const objects = document.objects.filter(authoredObject);
   if (objects.length > RESOURCE_LIMIT) fail('limit');

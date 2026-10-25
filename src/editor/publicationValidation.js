@@ -1,3 +1,4 @@
+import { insetMapBounds } from '../sim/mapBounds.js';
 import { validateDocument } from './document.js';
 import { gmEditableBaseProps } from './baseIdentity.js';
 import { resourceLayout } from '../data/resources.js';
@@ -159,13 +160,13 @@ export function validateGmPublication({ map, document, baseRevision, tiles = nul
   for (const problem of authored.issues) issue('error', `resource_${problem.code}`, problem.objectId);
   resources.nodes.push(...authored.resources);
   let visualOnlyCount = 0, rotatedCircleCount = 0;
-  const circles = [];
+  const circles = [], edge = insetMapBounds(map, 2);
   for (const item of changed) {
     const { id, transform } = item, { x, y, z } = transform.position;
     const radius = item.collider === 'none' ? 0 : item.collider.radius * transform.scale;
     if (transform.scale > MAX_PUBLICATION_SCALE) issue('error', 'scale_limit', id);
     if (radius > MAX_PUBLICATION_RADIUS) issue('error', 'radius_limit', id);
-    if (Math.abs(x) + radius > map.half - 2 || Math.abs(z) + radius > map.half - 2)
+    if (x - radius < edge.minX || x + radius > edge.maxX || z - radius < edge.minZ || z + radius > edge.maxZ)
       issue('error', 'map_bounds', id);
     const ground = terrainMap.groundAt(x, z);
     if (!Number.isFinite(ground) || y - ground < -2 || y - ground > 20)

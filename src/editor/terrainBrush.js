@@ -60,29 +60,34 @@ export function brushWeight(dx, dz, params = {}) {
 export function strokeSpacing(radius) { return Math.max(.5, radius / 12); }
 
 /**
- * GM08: the influence of a resampled stroke over the grid window its dabs reach (column i = x + half, row j = z + half,
- * clamped to 0..2 half). Per vertex: the strongest dab weight ('stroke'), or the sum of each dab weight times its flow
+ * GM08: the influence of a resampled stroke over the grid window its dabs reach (`half` is a grid shape, or a legacy numeric
+ * half for a centered square). Per vertex: the strongest dab weight ('stroke'), or the sum of each dab weight times its flow
  * ('airbrush': the distance the dab moved over the radius, AIRBRUSH_HOLD_FLOW for a dab on the spot or the first).
  * Returns { i0, j0, i1, j1, width, values } with values row-major over the window.
  */
 export function strokeInfluence(path, params, { half, flow = 'stroke' } = {}) {
   const p = params && validatedParams.has(params) ? params : brushParameters(params, { maxRadius: TERRAIN_BRUSH_MAX_RADIUS });
-  if (!Array.isArray(path) || !path.length || !Number.isSafeInteger(half) || half <= 0 || !BRUSH_FLOWS.includes(flow))
+  const grid = typeof half === 'number' ? { minX: -half, minZ: -half, Nx: 2 * half + 1, Nz: 2 * half + 1 } : half;
+  if (!Array.isArray(path) || !path.length || !grid || ![grid.minX, grid.minZ, grid.Nx, grid.Nz].every(Number.isSafeInteger) ||
+      grid.Nx < 3 || grid.Nz < 3 || !BRUSH_FLOWS.includes(flow))
     throw new TypeError('Invalid terrain stroke influence');
-  const weight = kernel(p), last = 2 * half, angle = p.rotation * Math.PI / 180, airbrush = flow === 'airbrush';
+  const { minX, minZ, Nx, Nz } = grid;
+  const weight = kernel(p), angle = p.rotation * Math.PI / 180, airbrush = flow === 'airbrush';
   const reach = p.shape === 'square' ? p.radius * (Math.abs(Math.cos(angle)) + Math.abs(Math.sin(angle))) : p.radius;
-  const low = (v) => clamp(Math.floor(v + half - reach - 1), 0, last), high = (v) => clamp(Math.ceil(v + half + reach + 1), 0, last);
-  let i0 = last, j0 = last, i1 = 0, j1 = 0;
-  for (const c of path) { i0 = Math.min(i0, low(c.x)); i1 = Math.max(i1, high(c.x)); j0 = Math.min(j0, low(c.z)); j1 = Math.max(j1, high(c.z)); }
+  const low = (v, min, count) => clamp(Math.floor(v - min - reach - 1), 0, count - 1);
+  const high = (v, min, count) => clamp(Math.ceil(v - min + reach + 1), 0, count - 1);
+  let i0 = Nx - 1, j0 = Nz - 1, i1 = 0, j1 = 0;
+  for (const c of path) { i0 = Math.min(i0, low(c.x, minX, Nx)); i1 = Math.max(i1, high(c.x, minX, Nx));
+    j0 = Math.min(j0, low(c.z, minZ, Nz)); j1 = Math.max(j1, high(c.z, minZ, Nz)); }
   const width = i1 - i0 + 1, values = new Float64Array(width * (j1 - j0 + 1));
   let previous = null;
   for (const c of path) {
     const moved = previous ? Math.hypot(c.x - previous.x, c.z - previous.z) : 0;
     const gain = moved > 0 ? moved / p.radius : AIRBRUSH_HOLD_FLOW;
     previous = c;
-    for (let j = low(c.z), b1 = high(c.z), a0 = low(c.x), a1 = high(c.x); j <= b1; j++) {
+    for (let j = low(c.z, minZ, Nz), b1 = high(c.z, minZ, Nz), a0 = low(c.x, minX, Nx), a1 = high(c.x, minX, Nx); j <= b1; j++) {
       for (let i = a0, n = (j - j0) * width + a0 - i0; i <= a1; i++, n++) {
-        const value = weight(i - half - c.x, j - half - c.z);
+        const value = weight(minX + i - c.x, minZ + j - c.z);
         if (value <= 0) continue;
         if (airbrush) values[n] += value * gain;
         else if (value > values[n]) values[n] = value;

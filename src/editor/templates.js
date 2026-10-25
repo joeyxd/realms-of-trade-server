@@ -22,6 +22,8 @@ const BASE_ID = /^base:(rock|flower|pebble):\d+:[a-f0-9]+$/;
 const finite = (value) => typeof value === 'number' && Number.isFinite(value);
 // Member heights are relative to the lowest member, so they span the whole document object range (GM07 D4: 320 m).
 const MAX_RELATIVE_Y = OBJECT_MAX_Y - OBJECT_MIN_Y;
+// Template-local offsets keep their own cap, independent of the base map grid.
+const MAX_RELATIVE_XZ = 560;
 
 function baseValue(raw) {
   if (!exact(raw, ['seed', 'revision']) || !Number.isSafeInteger(raw.seed) || raw.seed < 0 || raw.seed > 0xffffffff ||
@@ -36,7 +38,7 @@ function localObject(raw) {
   const { position, rotation, scale } = raw.transform;
   if (!exact(position, ['x', 'y', 'z']) || !exact(rotation, ['x', 'y', 'z']) ||
       !['x', 'y', 'z'].every((axis) => finite(position[axis]) && finite(rotation[axis])) ||
-      Math.abs(position.x) > 560 || Math.abs(position.z) > 560 || position.y < 0 || position.y > MAX_RELATIVE_Y ||
+      Math.abs(position.x) > MAX_RELATIVE_XZ || Math.abs(position.z) > MAX_RELATIVE_XZ || position.y < 0 || position.y > MAX_RELATIVE_Y ||
       !finite(scale) || scale <= 0) fail('transform');
   let collider = raw.collider;
   if (!(collider === 'none' || exact(collider, ['type', 'radius']) && collider.type === 'circle' && finite(collider.radius))) fail('collider');

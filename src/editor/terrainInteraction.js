@@ -1,6 +1,7 @@
+import { mapBounds } from '../sim/mapBounds.js';
 import * as THREE from 'three';
 import { brushOutline, strokeSpacing } from './terrainBrush.js';
-import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT } from './terrainData.js';
+import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MIN_HEIGHT, terrainGridOf } from './terrainData.js';
 import { joinRegions } from './terrainPreview.js';
 import { REGION_MAX_POINTS, REGION_ONLY_TOOLS, regionOutline } from './terrainRegion.js';
 import { decodeHeightmap, exportHeightmap, HEIGHTMAP_MAX_SIDE, heightmapTargets, sidecarRange } from './terrainHeightmap.js';
@@ -238,11 +239,11 @@ export class TerrainInteraction {
     if (range) { this.panel.importMin = range.min; this.panel.importMax = range.max; this.panel.render(); }
     else range = { min: this.panel.importMin, max: this.panel.importMax };
     let targets;
-    try { targets = heightmapTargets(decoded, range); }
+    try { targets = heightmapTargets(decoded, range, terrainGridOf(e.map)); }
     catch (error) { e.lastError = error; e._setStatus(badRange(), 'error'); return false; }
-    const held = this.held, half = e.map.half;
+    const held = this.held, bounds = mapBounds(e.map);
     const region = held ? { shape: held.shape, points: held.points, feather: this.panel.feather }
-      : { shape: 'rect', points: [{ x: -half, z: -half }, { x: half, z: half }], feather: 0 };
+      : { shape: 'rect', points: [{ x: bounds.minX, z: bounds.minZ }, { x: bounds.maxX, z: bounds.maxZ }], feather: 0 };
     const committed = await e._commitTerrainStroke({ document: e.history.current(), tool: 'heightmap', targets, region });
     if (!e.active) return committed;
     const what = `${image.name} (${decoded.width} x ${decoded.height}, ${metres(range.min)} … ${metres(range.max)} m)`;

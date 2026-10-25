@@ -1,3 +1,4 @@
+import { terrainGridOf } from './terrainData.js';
 import { createTerrain, createHeightTexture, updateTerrainGeometry, updateHeightTexture } from '../render/terrain.js';
 
 // A map compiled from a grid (GM07) holds the grid itself as `terrain`, mutated in place by the editor: its compiled
@@ -12,13 +13,14 @@ function sameHeights(a, b) {
   return true;
 }
 
-// GM08: the bounds of the vertices of `region` (561 grid) whose height or paint differ between two compiled maps, or
+// GM08: the bounds of the vertices of `region` whose height or paint differ between two compiled maps, or
 // null. A gesture's region is the union of its strokes, mostly unchanged since the last frame: the rewrite and upload
 // follow what moved, and the commit after a preview finds almost nothing left to change.
 function changedBounds(a, b, { i0, j0, i1, j1 }) {
+  const { Nx } = terrainGridOf(b);
   const ha = a.heights, hb = b.heights, pa = a.terrainPaint || null, pb = b.terrainPaint || null;
   let x0 = Infinity, y0 = Infinity, x1 = -1, y1 = -1;
-  for (let j = j0; j <= j1; j++) for (let i = i0, k = j * 561 + i0; i <= i1; i++, k++) {
+  for (let j = j0; j <= j1; j++) for (let i = i0, k = j * Nx + i0; i <= i1; i++, k++) {
     let differs = ha !== hb && ha[k] !== hb[k];
     if (!differs && pa !== pb) for (let c = k * 4; c < k * 4 + 4; c++) if ((pa ? pa[c] : 0) !== (pb ? pb[c] : 0)) { differs = true; break; }
     if (!differs) continue;
@@ -83,6 +85,7 @@ export function createTerrainPreview({ scene, map, invalidate = () => {} } = {})
       if (!changed) { currentMap = projectedMap; return; }
       dirty = { ...changed, from: region.from };
     }
+    // Render counts are per 560 m: 560 segments and 561 texels keep one metre per cell on either map.
     if (!activeGeometry) {
       const temporary = createTerrain(projectedMap, { segments: 560 });
       activeGeometry = temporary.geometry;

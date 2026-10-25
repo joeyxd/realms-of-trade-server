@@ -1,3 +1,4 @@
+import { mapBounds } from '../sim/mapBounds.js';
 import * as THREE from 'three';
 import { createEditorTransformControls } from './transformControls.js';
 import { addDecoration, createDecoration, createDocument, createDocumentHistory, updateDecoration, setBaseOverride, removeBaseOverride } from './document.js';
@@ -705,8 +706,9 @@ export class WorldEditor {
     }
     const entry = this.pendingEntry; if (!entry || !this.ghost?.visible) return;
     point = this._placementPoint(point);
+    const bounds = mapBounds(this.map); // a draft map shares its base map's bounds
     const decoration = createDecoration({ id: uid(), assetId: entry.id, position: {
-      x: clamp(point.x, -280, 280), y: clamp(this.draftMap.groundAt(point.x, point.z), OBJECT_MIN_Y, OBJECT_MAX_Y), z: clamp(point.z, -280, 280),
+      x: clamp(point.x, bounds.minX, bounds.maxX), y: clamp(this.draftMap.groundAt(point.x, point.z), OBJECT_MIN_Y, OBJECT_MAX_Y), z: clamp(point.z, bounds.minZ, bounds.maxZ),
     }, collider: 'none' });
     try {
       this._commit(addDecoration(this.history.current(), decoration)); this.select(decoration.id);
@@ -812,7 +814,8 @@ export class WorldEditor {
       this._updateSelectionBounds(); this.invalidate(); this._renderInspector(); return;
     }
     const root = this.records.get(this.selectedId)?.root; if (!root) return;
-    root.position.x = clamp(root.position.x, -280, 280); root.position.y = clamp(root.position.y, OBJECT_MIN_Y, OBJECT_MAX_Y); root.position.z = clamp(root.position.z, -280, 280);
+    const bounds = mapBounds(this.map);
+    root.position.x = clamp(root.position.x, bounds.minX, bounds.maxX); root.position.y = clamp(root.position.y, OBJECT_MIN_Y, OBJECT_MAX_Y); root.position.z = clamp(root.position.z, bounds.minZ, bounds.maxZ);
     const limit = Math.PI * 200;
     root.rotation.x = clamp(root.rotation.x, -limit, limit); root.rotation.y = clamp(root.rotation.y, -limit, limit); root.rotation.z = clamp(root.rotation.z, -limit, limit);
     root.scale.setScalar(clamp((root.scale.x + root.scale.y + root.scale.z) / 3, 0.001, 1000));
@@ -1245,7 +1248,7 @@ export class WorldEditor {
     const doc = this.history[kind](); this.document = doc; this.dirty = JSON.stringify(doc) !== this.lastSavedJson;
     const shown = this.terrainPreview?.map;
     const rewritten = this.terrain && (isTerrainTilesDocument(doc) || doc.terrain === undefined) ? this.terrain.sync(doc) : [];
-    this._renderDocument(doc, rewritten.length ? { map: this.terrain.surface(), region: { ...tileKeysRegion(rewritten), from: shown } } : {});
+    this._renderDocument(doc, rewritten.length ? { map: this.terrain.surface(), region: { ...tileKeysRegion(rewritten, this.map), from: shown } } : {});
     this.onChanged({ document: clone(doc), dirty: this.dirty }); this._scheduleSave();
     if (this.terrainRoot?.hidden === false) this.terrainPanel.render();
     this.resourcePanel?.render();
@@ -1375,8 +1378,9 @@ export class WorldEditor {
   }
 
   _placementPoint(point) {
-    const snap = (value) => clamp(this.snapEnabled ? Math.round(value / this.snapStep) * this.snapStep : value, -280, 280);
-    const x = snap(point.x), z = snap(point.z);
+    const bounds = mapBounds(this.map);
+    const snap = (value, min, max) => clamp(this.snapEnabled ? Math.round(value / this.snapStep) * this.snapStep : value, min, max);
+    const x = snap(point.x, bounds.minX, bounds.maxX), z = snap(point.z, bounds.minZ, bounds.maxZ);
     return new THREE.Vector3(x, clamp((this.draftMap || this.map).groundAt(x, z), OBJECT_MIN_Y, OBJECT_MAX_Y), z);
   }
 

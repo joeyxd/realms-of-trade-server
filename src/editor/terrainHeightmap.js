@@ -1,10 +1,11 @@
-// GM08d (docs/briefs/gm08-large-brushes.md): heightmap export and import. Export writes the compiled 561 x 561
+// GM08d (docs/briefs/gm08-large-brushes.md): heightmap export and import. Export writes the compiled Nx x Nz
 // heights as a 16-bit grayscale PNG with a JSON sidecar (also inside the PNG as a tEXt chunk, so the PNG alone imports
 // back to its heights). Import reads a 16-bit (or 8-bit) PNG or an Unreal Landscape .r16 (raw little-endian 16-bit,
 // square), maps it to the [min, max] range the GM chooses and resamples it to the grid; terrainRegion.js applies the
 // result as a flatten-to-target field with the edit clip and clamps, in one commit.
 // Pure module: no DOM; it runs in the browser and in Node (CompressionStream and DecompressionStream).
-import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_GRID_MIN_HEIGHT, TERRAIN_GRID_SIZE } from './terrainData.js';
+import { centeredSquare } from '../sim/mapBounds.js';
+import { TERRAIN_GRID_MAX_HEIGHT, TERRAIN_GRID_MIN_HEIGHT, TERRAIN_GRID_SIZE, terrainGridOf } from './terrainData.js';
 
 export const HEIGHTMAP_FORMAT = 'marea-negra-heightmap';
 export const HEIGHTMAP_VERSION = 1;
@@ -48,26 +49,28 @@ function chunk(type, data) {
 const latin1 = text => Uint8Array.from(text, c => c.charCodeAt(0) & 255);
 
 /**
- * The heights of a compiled map as a 16-bit grayscale PNG and its sidecar. Column i is x = i - half and row j is
- * z = j - half (row 0 is the z = -half edge), one pixel per metre. A value maps linearly from min (0) to max (65535),
+ * The heights of a compiled map as a 16-bit grayscale PNG and its sidecar. Column i is x = minX + i and row j is
+ * z = minZ + j (row 0 is the minZ edge), one pixel per metre. A value maps linearly from min (0) to max (65535),
  * the map's own lowest and highest heights. Returns { png: Uint8Array, sidecar }.
  */
 export async function exportHeightmap(map, { baseRevision = null } = {}) {
-  const heights = map?.heights, size = TERRAIN_GRID_SIZE;
-  if (!heights || heights.length !== size * size) fail('map');
+  let shape;
+  try { shape = terrainGridOf(map); } catch { fail('map'); }
+  const { minX, minZ, Nx, Nz } = shape, heights = map.heights;
   let min = Infinity, max = -Infinity;
   for (const h of heights) { min = Math.min(min, h); max = Math.max(max, h); }
   if (!(max - min >= .001)) max = min + 1;
   const unit = (max - min) / 65535;
-  const sidecar = { format: HEIGHTMAP_FORMAT, version: HEIGHTMAP_VERSION, width: size, height: size, min, max,
-    metresPerUnit: unit, metresPerPixel: map.res ?? 1, origin: { x: -map.half, z: -map.half },
-    rows: 'row 0 is z = -half, column 0 is x = -half', seed: map.seed ?? null, baseRevision };
+  const sidecar = { format: HEIGHTMAP_FORMAT, version: HEIGHTMAP_VERSION, width: Nx, height: Nz, min, max,
+    metresPerUnit: unit, metresPerPixel: map.res ?? 1, origin: { x: minX, z: minZ },
+    rows: centeredSquare(shape) ? 'row 0 is z = -half, column 0 is x = -half'
+      : 'row 0 is the z = minZ edge, column 0 is the x = minX edge', seed: map.seed ?? null, baseRevision };
   // Scanlines with the Up filter (2): heightmaps change slowly from row to row, so the differences deflate well.
-  const stride = size * 2, raw = new Uint8Array(size * (stride + 1));
+  const stride = Nx * 2, raw = new Uint8Array(Nz * (stride + 1));
   let prior = new Uint8Array(stride), row = new Uint8Array(stride);
-  for (let j = 0; j < size; j++) {
-    for (let i = 0; i < size; i++) {
-      const value = Math.round((heights[j * size + i] - min) / unit);
+  for (let j = 0; j < Nz; j++) {
+    for (let i = 0; i < Nx; i++) {
+      const value = Math.round((heights[j * Nx + i] - min) / unit);
       row[i * 2] = value >>> 8; row[i * 2 + 1] = value & 255;
     }
     const at = j * (stride + 1);
@@ -76,7 +79,7 @@ export async function exportHeightmap(map, { baseRevision = null } = {}) {
     [prior, row] = [row, prior];
   }
   const header = new Uint8Array(13), view = new DataView(header.buffer);
-  view.setUint32(0, size); view.setUint32(4, size); header[8] = 16; header[9] = 0;
+  view.setUint32(0, Nx); view.setUint32(4, Nz); header[8] = 16; header[9] = 0;
   const parts = [SIGNATURE, chunk('IHDR', header), chunk('tEXt', latin1(`${SIDECAR_KEY}\0${JSON.stringify(sidecar)}`)),
     chunk('IDAT', await pipe(raw, new CompressionStream('deflate'))), chunk('IEND', new Uint8Array(0))];
   const png = new Uint8Array(parts.reduce((sum, part) => sum + part.length, 0));
@@ -167,22 +170,24 @@ export async function decodeHeightmap(bytes, name = '') {
 /**
  * The target heights of an image over the editor grid: 0 maps to min and 65535 to max (metres, from -40 to +200),
  * resampled bilinearly so the image's corners land on the map's corners (a non-square image stretches).
- * Returns a Float64Array of TERRAIN_GRID_SIZE squared heights, row j = z + half. Fails with 'range' or 'size'.
+ * Returns a Float64Array of Nx * Nz heights, row 0 at minZ. Fails with 'range' or 'size'.
  */
-export function heightmapTargets({ width, height, values } = {}, { min, max } = {}) {
+export function heightmapTargets({ width, height, values } = {}, { min, max } = {},
+  { Nx = TERRAIN_GRID_SIZE, Nz = TERRAIN_GRID_SIZE } = {}) {
   checkSize(width, height);
   if (!(values instanceof Uint16Array) || values.length !== width * height) fail('size');
   if (!Number.isFinite(min) || !Number.isFinite(max) || min >= max ||
       min < TERRAIN_GRID_MIN_HEIGHT || max > TERRAIN_GRID_MAX_HEIGHT) fail('range');
-  const size = TERRAIN_GRID_SIZE, targets = new Float64Array(size * size), scale = (max - min) / 65535;
-  const sx = (width - 1) / (size - 1), sy = (height - 1) / (size - 1);
-  for (let j = 0; j < size; j++) {
+  checkSize(Nx, Nz);
+  const targets = new Float64Array(Nx * Nz), scale = (max - min) / 65535;
+  const sx = (width - 1) / (Nx - 1), sy = (height - 1) / (Nz - 1);
+  for (let j = 0; j < Nz; j++) {
     const y = j * sy, y0 = Math.min(Math.floor(y), height - 2), fy = y - y0;
-    for (let i = 0; i < size; i++) {
+    for (let i = 0; i < Nx; i++) {
       const x = i * sx, x0 = Math.min(Math.floor(x), width - 2), fx = x - x0, k = y0 * width + x0;
       const top = values[k] + (values[k + 1] - values[k]) * fx;
       const bottom = values[k + width] + (values[k + width + 1] - values[k + width]) * fx;
-      targets[j * size + i] = min + (top + (bottom - top) * fy) * scale;
+      targets[j * Nx + i] = min + (top + (bottom - top) * fy) * scale;
     }
   }
   return targets;
