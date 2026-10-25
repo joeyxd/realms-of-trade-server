@@ -2,11 +2,12 @@ import { insetMapBounds, insideMapBounds } from '../mapBounds.js';
 // Player/bot locomotion: acceleration, dash (with buffered input, charges, i-frames), static collision.
 // Pure and deterministic: runs identically in the worker (authoritative) and the client (prediction).
 import { tuning } from '../../data/tuning.js';
-import { LAWLESS } from '../../data/lawless.js';
+import { LAWLESS, MELEE_ROLL } from '../../data/lawless.js';
 import { launchDecay } from '../meleeHit.js';
-import { STATE, airborne } from '../ecs.js';
+import { STATE, ACT, airborne } from '../ecs.js';
 import { dampAngle } from '../../core/math.js';
 import { canSwim, refreshSwimming } from './swimming.js';
+import { WEAPON } from '../../data/weapons.js';
 import { LOAD } from '../../data/carry.js';
 import { jumpOn, jumpTick, groundCliff } from './jump.js';
 
@@ -147,9 +148,33 @@ export function stepMover(world, e, cmd, dt) {
   if (len > 1) { mx /= len; mz /= len; len = 1; }
   ecs.moveMag[e] = len;
 
+  // P3c: shield IASA runs before the ordinary dash/jump. The stick edge and roll are predicted state.
+  const melee = world.meleeVersion === 1;
+  if (melee) {
+    const flick = len >= MELEE_ROLL.stick && !ecs.shieldStick[e];
+    ecs.shieldStick[e] = len >= MELEE_ROLL.stick ? 1 : 0;
+    if (locked || swimming || airborne(ecs, e)) ecs.rollT[e] = 0;
+    if (ecs.rollT[e] >= MELEE_ROLL.total) {
+      ecs.rollT[e] = 0; ecs.moveMul[e] = 1;
+      if ((cmd.btn & BTN.DASH) || ((cmd.btn & BTN.GUARD) && ecs.weapon[e] !== WEAPON.PISTOLAS)) ecs.guardT[e] = 0;
+    }
+    if (ecs.guardT[e] >= 0 && !locked && !swimming && !ecs.guardStun[e] && !ecs.castLock[e]) {
+      if (jm && (cmd.prs & BTN.JUMP)) {
+        ecs.guardT[e] = -1; ecs.guardP[e] = ecs.guardLag[e] = 0; ecs.moveMul[e] = 1;
+      } else if (flick) {
+        ecs.rollBack[e] = mx * Math.sin(ecs.facing[e]) + mz * Math.cos(ecs.facing[e]) < 0 ? 1 : 0;
+        ecs.rollX[e] = mx / len; ecs.rollZ[e] = mz / len;
+        ecs.rollT[e] = 1; // one-based frame, facing kept (ours, until lock-on)
+        ecs.guardT[e] = -1; ecs.guardP[e] = ecs.guardLag[e] = ecs.atkBuf[e] = ecs.atkLatch[e] = ecs.dashBuffer[e] = 0;
+        ecs.atkStage[e] = ecs.qBuf[e] = ecs.eBuf[e] = ecs.gBuf[e] = ecs.rBuf[e] = 0;
+        ecs.act[e] = ecs.rollBack[e] ? ACT.ROLL_B : ACT.ROLL_F; ecs.actT[e] = 0;
+      }
+    } else if (ecs.rollT[e] > 0) ecs.rollT[e]++;
+  }
+
   // A heavy pack (load tier 1+, PLAN-PROGRESSION §15.3) forbids the dash.
   const heavy = ecs.load[e] > 0;
-  if (!swimming && !heavy && cmd.prs & BTN.DASH && !(jm && airborne(ecs, e))) ecs.dashBuffer[e] = P.inputBuffer;
+  if (!swimming && !heavy && (cmd.prs & BTN.DASH) && (!melee || (!ecs.rollT[e] && len >= MELEE_ROLL.stick)) && !(jm && airborne(ecs, e))) ecs.dashBuffer[e] = P.inputBuffer;
 
   // Charges recharge sequentially.
   if (ecs.dashCharges[e] < ecs.dashMax[e]) {
@@ -161,6 +186,13 @@ export function stepMover(world, e, cmd, dt) {
     }
   }
   if (ecs.iframes[e] > 0) ecs.iframes[e] = Math.max(0, ecs.iframes[e] - dt);
+
+  if (melee && ecs.rollT[e] > 0) {
+    const distance = MELEE_ROLL.distance * LAWLESS.meleeUnit / MELEE_ROLL.total;
+    moveWithCollision(world, e, ecs.rollX[e] * distance, ecs.rollZ[e] * distance);
+    ecs.vx[e] = ecs.vz[e] = ecs.moveMag[e] = ecs.moveMul[e] = 0;
+    return;
+  }
 
   // A jump or fall owns the whole tick while the body is in the air (dash, steering and the swim snap are off).
   if (jm && jumpTick(world, e, cmd, dt, mx, mz, len, locked, heavy, swimming)) { knockStep(world, e, dt); return; }

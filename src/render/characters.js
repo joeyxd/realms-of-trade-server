@@ -22,7 +22,7 @@ import { seaSurfaceY } from './naval/seaSwell.js';
 import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
 import { swingStages } from '../data/meleeFrames.js';
-import { MELEE_GRAB } from '../data/lawless.js';
+import { MELEE_GRAB, MELEE_ROLL } from '../data/lawless.js';
 import { ACT } from '../sim/ecs.js';
 import { JUMP_STAGE, airStage } from '../sim/systems/jump.js';
 import { SKILLS } from '../data/weapons.js';
@@ -669,7 +669,16 @@ export class CharacterView {
     this.body.rotation.y = spin;
     // The triple's somersault: one forward turn over the first 0.9 s in the air, about the body's centre (the body bone
     // pivots at its own origin: translate so the centre stays put). Everything else keeps the bone at rest.
-    const fa = air && jmp === JUMP_STAGE.TRIPLE ? TAU * sm(this.airT / 0.9) : 0;
+    const rolling = s.act === ACT.ROLL_F || s.act === ACT.ROLL_B;
+    // Ours: tuck and one body turn over the roll; its facing stays fixed.
+    if (rolling) {
+      this.thighL.rotation.x = this.thighR.rotation.x = -1.3;
+      this.shinL.rotation.x = this.shinR.rotation.x = 2;
+      this.armL.rotation.x = this.armR.rotation.x = -1;
+      this.foreL.rotation.x = this.foreR.rotation.x = -1.4;
+    }
+    const fa = rolling ? (s.act === ACT.ROLL_B ? -1 : 1) * TAU * clamp(s.actT * 60 / MELEE_ROLL.total, 0, 1)
+      : air && jmp === JUMP_STAGE.TRIPLE ? TAU * sm(this.airT / 0.9) : 0;
     const rb = this.restBody, dy = this.height / this.scale * 0.5 - rb.y;
     this.body.rotation.x += fa;
     this.body.position.set(rb.x, rb.y + dy * (1 - Math.cos(fa)), rb.z - dy * Math.sin(fa));

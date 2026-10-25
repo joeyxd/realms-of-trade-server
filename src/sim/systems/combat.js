@@ -26,7 +26,7 @@ import { ACT, C as COMP, airborne, intangible, resetJump, resetGrab } from '../e
 import { hash01 } from '../../core/rng.js';
 import { SKILLS } from '../../data/weapons.js';
 import { CONSUMABLES } from '../../data/items.js';
-import { LAWLESS, MELEE, MELEE_GUARD, MELEE_GRAB } from '../../data/lawless.js';
+import { LAWLESS, MELEE, MELEE_GUARD, MELEE_GRAB, MELEE_ROLL } from '../../data/lawless.js';
 import { swingStages, swingFrame, swingBusy } from '../../data/meleeFrames.js';
 import { knockback, hitlagFrames, hitstunFrames, launchSpeed, di, meleePercent, meleeStun } from '../meleeHit.js';
 import { statsFor, refreshStats, kitUnlocked, passive, guardMax } from './stats.js';
@@ -108,9 +108,11 @@ function grabPose(ecs, e, st) {
 
 export function beginGrab(world, e, cmd) {
   const ecs = world.ecs;
-  // The pistol kit has no guard; its grab input remains open for Joi.
-  if (world.meleeVersion !== 1 || ecs.grabSt[e] || !(cmd.prs & BTN.ATTACK) || !((cmd.btn | cmd.prs) & BTN.GUARD)
-    || skillOf(ecs, e, 'basic') === 'pistol' || ecs.dead[e] || ecs.swim[e] || airborne(ecs, e) || ecs.dashT[e] >= 0
+  if (world.meleeVersion !== 1) return;
+  const shield = (skillOf(ecs, e, 'basic') !== 'pistol' && ((cmd.btn | cmd.prs) & BTN.GUARD))
+    || (((cmd.btn | cmd.prs) & BTN.DASH) && (ecs.guardT[e] >= 0 || Math.hypot(cmd.mx || 0, cmd.mz || 0) < MELEE_ROLL.stick));
+  if (ecs.rollT[e] || ecs.grabSt[e] || !(cmd.prs & BTN.ATTACK) || !shield
+    || ecs.dead[e] || ecs.swim[e] || airborne(ecs, e) || ecs.dashT[e] >= 0
     || ecs.hitlag[e] || ecs.stagger[e] > 0 || ecs.guardLag[e] || ecs.guardStun[e] || ecs.dizzy[e] || ecs.brk[e]
     || ecs.atkStage[e] || castBusy(ecs, e)) return;
   faceAim(ecs, e, cmd); grabPose(ecs, e, ACT.GRAB);
@@ -300,6 +302,7 @@ export function killPlayer(world, e, seq, by = 0) {
   if (world.meleeVersion === 1 && ecs.grabSt[e]) endGrab(world, e, true);
   resetGrab(ecs, e);
   ecs.hp[e] = 0;
+  ecs.rollT[e] = 0;
   ecs.dead[e] = 1;
   ecs.hitlag[e] = ecs.lvx[e] = ecs.lvz[e] = 0;
   ecs.lantern[e] = 0;
@@ -423,6 +426,7 @@ export function hurtByPlayer(world, e, raw, o) {
 function respawnPlayer(world, e, seq) {
   const ecs = world.ecs, map = world.map;
   resetGrab(ecs, e);
+  ecs.rollT[e] = ecs.rollBack[e] = ecs.rollX[e] = ecs.rollZ[e] = ecs.shieldStick[e] = 0;
   ecs.dead[e] = 0; ecs.deadT[e] = 0;
   ecs.hitlag[e] = ecs.lvx[e] = ecs.lvz[e] = 0;
   respawnNeeds(world, e);
@@ -609,6 +613,7 @@ const shieldAge = (ecs, e) => Math.round(ecs.guardT[e] / DT); // frames the shie
 
 // A hit that staggers or launches ends the break sequence, the dizzy and the shield's lag and stun.
 function launched(ecs, e) {
+  ecs.rollT[e] = 0;
   if (ecs.dizzy[e] > 0 || ecs.brk[e] > 0) { ecs.dizzy[e] = ecs.brk[e] = 0; ecs.stagger[e] = 0; }
   ecs.guardLag[e] = ecs.guardStun[e] = 0;
 }
@@ -980,6 +985,11 @@ export function stepPlayerCombat(world, e, cmd, dt) {
     world.emit({ type: 'guard', st: 'lost', e, seq, x: ecs.x[e], z: ecs.z[e] });
   }
   if (world.isServer && world.checkpoint) world.checkpoint(e);
+  if (melee && ecs.rollT[e] > 0) {
+    ecs.guardT[e] = -1; ecs.moveMul[e] = 0;
+    ecs.act[e] = ecs.rollBack[e] ? ACT.ROLL_B : ACT.ROLL_F; ecs.actT[e] = ecs.rollT[e] * dt;
+    contacts(world, e, prev, pt, seq); return;
+  }
   // P2: the dizzy and the shield's timers tick on commands that run. lagging / stunned: this command is inside the
   // drop lag / shieldstun (no attack, guard, skill or potion). A shield up or dropping ignores attack presses.
   if (melee && (ecs.dizzy[e] > 0 || ecs.brk[e] > 0)) stepDizzy(ecs, e, cmd);
@@ -993,11 +1003,13 @@ export function stepPlayerCombat(world, e, cmd, dt) {
 
   const atkPress = (cmd.prs & BTN.ATTACK) !== 0, guardPress = (cmd.prs & BTN.GUARD) !== 0;
   const pistol = skillOf(ecs, e, 'basic') === 'pistol';
-  const trigger = pistol && (atkPress || (cmd.btn & BTN.ATTACK) !== 0); // held LMB keeps the left gun firing
-  const triggerSecondary = pistol && (guardPress || (cmd.btn & BTN.GUARD) !== 0); // RMB/K/LT/touch fires the right gun
-  const guardHeld = !pistol && (guardPress || (cmd.btn & BTN.GUARD) !== 0);
-  if (pistol && ecs.guardT[e] >= 0) ecs.guardT[e] = -1; // the pistol kit has no guard action
-  if (atkPress && !shielding) ecs.atkBuf[e] = T.player.inputBuffer;
+  const dashShield = melee && ((cmd.btn | cmd.prs) & BTN.DASH) && (ecs.guardT[e] >= 0 || Math.hypot(cmd.mx || 0, cmd.mz || 0) < MELEE_ROLL.stick);
+  const bodyShield = melee && (ecs.guardT[e] >= 0 || dashShield);
+  const trigger = pistol && !bodyShield && (atkPress || (cmd.btn & BTN.ATTACK) !== 0); // held LMB keeps the left gun firing
+  const triggerSecondary = pistol && !bodyShield && (guardPress || (cmd.btn & BTN.GUARD) !== 0); // RMB/K/LT/touch fires the right gun
+  const guardHeld = dashShield || (!pistol && (guardPress || (cmd.btn & BTN.GUARD) !== 0));
+  if (pistol && !melee && ecs.guardT[e] >= 0) ecs.guardT[e] = -1; // the pistol kit has no guard action
+  if (atkPress && !shielding && !dashShield) ecs.atkBuf[e] = T.player.inputBuffer;
   if (atkPress && !shielding && ecs.atkStage[e] > 0) ecs.atkLatch[e] = 1; // P1b: links the next blow under Melee (meleeSwing)
   if (cmd.prs & BTN.R) {
     if (kitUnlocked(ecs, e, 'r')) ecs.rBuf[e] = T.player.inputBuffer;
@@ -1090,8 +1102,8 @@ export function stepPlayerCombat(world, e, cmd, dt) {
 
   // Pistol triggers are independent and may both fire on the same command. Old catches are released once,
   // on the first shot, for profiles that entered this kit with a guard catch already stored.
-  const firePrimary = pistol && canAct && !castBusy(ecs, e) && (trigger || ecs.atkBuf[e] > 0) && ecs.shotCd[e] <= 0;
-  const fireSecondary = pistol && canAct && !castBusy(ecs, e) && triggerSecondary && ecs.shotAltCd[e] <= 0;
+  const firePrimary = pistol && !bodyShield && canAct && !castBusy(ecs, e) && (trigger || ecs.atkBuf[e] > 0) && ecs.shotCd[e] <= 0;
+  const fireSecondary = pistol && !bodyShield && canAct && !castBusy(ecs, e) && triggerSecondary && ecs.shotAltCd[e] <= 0;
   if (firePrimary || fireSecondary) {
     ecs.guardT[e] = -1;
     faceAim(ecs, e, cmd);

@@ -60,7 +60,7 @@ test('a released shield holds 8 frames, then the 15-frame drop lag blocks an att
   }
   step(S, b, { btn: BTN.ATTACK, prs: BTN.ATTACK }); assert.equal(ecs.atkStage[b], 1, 'the swing starts after the lag');
   const D = duel(); step(D, D.b, RAISE); run(D, D.b, 8); assert.ok(D.ecs.guardT[D.b] < 0);
-  step(D, D.b, { prs: BTN.DASH, btn: BTN.DASH });
+  step(D, D.b, { mx: 1, prs: BTN.DASH, btn: BTN.DASH });
   assert.ok(D.ecs.dashT[D.b] >= 0, 'a dash works inside the lag'); assert.equal(D.ecs.guardLag[D.b], 0);
 });
 

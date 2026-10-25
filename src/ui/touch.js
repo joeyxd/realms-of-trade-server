@@ -129,7 +129,9 @@ export class TouchControls {
     };
     zone.addEventListener('pointerup', end);
     zone.addEventListener('pointercancel', end);
-    root.querySelector('.t-dash').addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressDash(); });
+    const dash = root.querySelector('.t-dash');
+    dash.addEventListener('pointerdown', (e) => { e.preventDefault(); dash.setPointerCapture(e.pointerId); input.pressDash(); });
+    for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) dash.addEventListener(ev, () => input.releaseDash());
     // PT06: the jump button in the reserved `jump` slot, hidden until WELCOME says the jump is on (setJump): the press on
     // the touch, held until the finger lifts (the variable height), like Space / A.
     this.jumpBtn = root.querySelector('.t-jump');

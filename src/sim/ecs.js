@@ -1,7 +1,7 @@
 // ECS-lite: entities are indices, components are typed-array columns + a bitmask.
 // Float64 columns so the client's prediction and the server produce bit-identical results.
 import { tuning } from '../data/tuning.js';
-import { MELEE_GUARD } from '../data/lawless.js';
+import { MELEE_GUARD, MELEE_ROLL } from '../data/lawless.js';
 
 export const C = {
   POS: 1 << 0,
@@ -29,6 +29,7 @@ export const ACT = {
   CHARGE: 20, LEAP: 21,
   GRAB: 22, GRAB_PULL: 23, GRAB_WAIT: 24, GRAB_PUMMEL: 25, CAPTURE: 26, GRAB_CUT: 27, CAPTURE_CUT: 28,
   GRAB_THROW_F: 29, GRAB_THROW_B: 30, THROWN: 31,
+  ROLL_F: 32, ROLL_B: 33,
 };
 
 // The columns of tattoo effects in flight (all 0 = nothing going on).
@@ -81,6 +82,7 @@ export class ECS {
     // P2 (MN_MELEE) shield: drop-lag and shieldstun frames left, dizzy frames left, the sticks held while dizzy (4 bits).
     this.guardLag = f(); this.guardStun = f(); this.dizzy = f(); this.dizzyIn = f();
     for (const k of GRAB_FIELDS) this[k] = f();
+    this.rollT = f(); this.rollBack = f(); this.rollX = f(); this.rollZ = f(); this.shieldStick = f();
     this.brk = f(); // P2b: frames of the shield-break flight, fall and stand-up left (before the dizzy)
     // PLAYER combat (predicted by the client: see PLAYER_FIELDS)
     this.atkStage = f(); this.atkT = f(); this.atkBuf = f(); this.lastStage = f(); this.comboT = f(); this.swingId = f();
@@ -155,6 +157,7 @@ export class ECS {
     this.swim[id] = this.swimDrown[id] = this.swimLoad[id] = 0; this.swimStamina[id] = tuning.swim.stamina;
     this.load[id] = 0;
     resetJump(this, id);
+    this.rollT[id] = this.rollBack[id] = this.rollX[id] = this.rollZ[id] = this.shieldStick[id] = 0;
     this.needs[id] = this.sat[id] = this.hyd[id] = this.needPen[id] = 0;
     this.dashT[id] = -1;
     this.dashDirX[id] = this.dashDirZ[id] = this.dashCovered[id] = 0;
@@ -221,7 +224,8 @@ export const resetJump = (ecs, id) => { for (const k of JUMP_STATE) ecs[k][id] =
 // Airborne in a jump / freefall (jmpAct 1-4): the body integrates its own y.
 export const airborne = (ecs, e) => ecs.jmpAct[e] >= 1 && ecs.jmpAct[e] <= 4;
 // P2b (MN_MELEE): a pirate in the shield-break flight, fall and the start of the stand-up cannot be hit at all.
-export const intangible = (ecs, e) => ecs.brk[e] > MELEE_GUARD.breakStand - MELEE_GUARD.breakStandXlu;
+export const intangible = (ecs, e) => ecs.brk[e] > MELEE_GUARD.breakStand - MELEE_GUARD.breakStandXlu
+  || (ecs.rollT[e] >= MELEE_ROLL.start && ecs.rollT[e] <= (ecs.rollBack[e] ? MELEE_ROLL.backEnd : MELEE_ROLL.forwardEnd));
 // Everything the local player predicts (movement + combat). The server sends these at the acked command.
 export const PLAYER_FIELDS = [
   ...MOVER_FIELDS, ...GRAB_FIELDS,
@@ -243,4 +247,5 @@ export const PLAYER_FIELDS = [
   'speed', 'cdr', 'ripMul', 'reflMul', 'guardAdd', 'dashRec', 'winBonus', 'fireMul', 'potHeal', 'xpMul', 'mastery', 'potions', 'potCd',
   // SRV01: profile-backed satiety, hydration and their shared prediction penalty.
   'needs', 'sat', 'hyd', 'needPen',
+  'rollT', 'rollBack', 'rollX', 'rollZ', 'shieldStick',
 ];

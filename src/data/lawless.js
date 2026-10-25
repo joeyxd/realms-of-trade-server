@@ -92,6 +92,13 @@ export const MELEE_GUARD = {
   reboundPush: 0.55, // slide of a cancelled blow, Melee units per frame (Ultimate attack_100_rebound_speed and attack_lw3_rebound_speed; Melee's own is disc data)
 };
 
+// P3c (MN_MELEE): Marth rolls, sim ticks at 60 Hz.
+export const MELEE_ROLL = {
+  stick: 0.5, // ours: same threshold as P3b throws; crossing edge (no stick recency timer here)
+  total: 35, start: 4, forwardEnd: 19, backEnd: 23, // Melee SmashWiki via ficha 06 C2, Marth rolls
+  distance: 30, // ours, Melee units: Marth's Ultimate params have no ground-roll speed/distance; root motion is animation data
+};
+
 // P3 (MN_MELEE). Frames at 60 Hz; throw animation rate 1 (weight coefficient is DATA; pirates weigh 87).
 export const MELEE_GRAB = {
   throwStick: 0.5, // ours: Melee CatchWait uses unnamed DATA x98; its numerical value is unavailable

@@ -21,9 +21,9 @@ const SLOT_KEYS = { KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyG: 'g' };
 const PAD_SLOTS = [[5, 'q'], [4, 'e'], [3, 'r'], [13, 'g']]; // D-pad down: pearl power.
 const SRC = ['key', 'pad', 'touch'];
 // Standard gamepad buttons → command bits (held ones also count as held).
-const PAD_PRESS = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.DASH, false], [2, BTN.INTERACT, false], [12, BTN.POTION, false]];
+const PAD_PRESS = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.DASH, true], [2, BTN.INTERACT, false], [12, BTN.POTION, false]];
 // PT06, jump on: A jumps (held, for the height), B dashes (while an area is being aimed B still cancels it instead).
-const PAD_PRESS_JUMP = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.JUMP, true], [1, BTN.DASH, false], [2, BTN.INTERACT, false], [12, BTN.POTION, false]];
+const PAD_PRESS_JUMP = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.JUMP, true], [1, BTN.DASH, true], [2, BTN.INTERACT, false], [12, BTN.POTION, false]];
 const PAD_DEAD = 0.18;
 const BLOCK_DEFAULT = new Set(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab', 'F3', 'F4']);
 
@@ -132,7 +132,10 @@ export class Input {
   }
 
   // Buttons held right now (mouse, J/K, gamepad triggers, touch secondary action), as command bits.
-  get held() { return this.enabled && !this.buildContext ? this.mouseHeld | this.keyHeld | this.padHeld | this.touchHeld : 0; }
+  get held() {
+    const dash = this.jump ? this.keys.has('ShiftLeft') || this.keys.has('ShiftRight') : this.keys.has('Space');
+    return this.enabled && !this.buildContext ? this.mouseHeld | this.keyHeld | this.padHeld | this.touchHeld | (dash ? BTN.DASH : 0) : 0;
+  }
 
   // TA03: F, the touch action button or pad X is down right now (hold-to-chop; the edge still goes through consumeInteract).
   get interactHeld() { return this.enabled && !this.buildContext && (this.keys.has('KeyF') || this.touchAct || this.padAct); }
@@ -192,7 +195,7 @@ export class Input {
     if (bCancel) this.cancelEdge = true;
     for (const [i, bit, hold] of (this.jump ? PAD_PRESS_JUMP : PAD_PRESS)) {
       const d = down(i);
-      if (d) { any = true; if (hold && !this.buildContext) held |= bit; }
+      if (d) { any = true; if (hold && !this.buildContext && !(i === 1 && this.previewing)) held |= bit; }
       if (bit === BTN.INTERACT) this.padAct = d;
       if (d && !P.prev[i] && this.enabled && !this.buildContext && !(i === 1 && bCancel)) { this.pressed |= bit; if (bit === BTN.INTERACT) this.interactEdge = true; }
       P.prev[i] = d;
@@ -229,7 +232,8 @@ export class Input {
     return out;
   }
 
-  pressDash() { if (this.enabled && !this.buildContext) this.pressed |= BTN.DASH; }
+  pressDash() { if (this.enabled && !this.buildContext) { this.pressed |= BTN.DASH; this.touchHeld |= BTN.DASH; } }
+  releaseDash() { this.touchHeld &= ~BTN.DASH; }
   // PT06 touch jump button: the press, and the held bit until the finger lifts (the variable height).
   pressJump() { if (this.enabled && !this.buildContext) { this.pressed |= BTN.JUMP; this.touchHeld |= BTN.JUMP; this.lastDevice = 'touch'; this.aimDevice = 'touch'; } }
   releaseJump() { this.touchHeld &= ~BTN.JUMP; }

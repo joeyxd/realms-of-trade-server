@@ -63,7 +63,7 @@ test('a latched press links jab 2 on frame 20 and the forward tilt on jab 2 fram
 });
 
 test('before its first actable frame a jab holds the dash and the guard; the flag off lets the dash cut it', () => {
-  const dash = run(duel(), 30, (f) => f === 1 ? { prs: BTN.ATTACK } : { prs: BTN.DASH }).rows;
+  const dash = run(duel(), 30, (f) => f === 1 ? { prs: BTN.ATTACK } : { mx: 1, prs: BTN.DASH }).rows;
   assert.equal(dash.findIndex((r) => r && r.dash), 26); assert.equal(dash[26].stage, 0);
   const guard = run(duel(), 30, (f) => f === 1 ? { prs: BTN.ATTACK } : { btn: BTN.GUARD }).rows;
   assert.equal(guard.findIndex((r) => r && r.guard), 26); assert.equal(guard[26].stage, 0);
