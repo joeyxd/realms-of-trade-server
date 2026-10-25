@@ -1,3 +1,4 @@
+import { mapBounds } from '../sim/mapBounds.js';
 // Stylized water, two variants that share every look parameter:
 //
 //  SSR (medium/high): drawn after the outline composite. Reads the opaque scene depth, rebuilds the
@@ -68,7 +69,8 @@ const VERT_PATCH = /* glsl */ `
 uniform float mnTime;
 uniform sampler2D uHeight;
 uniform sampler2D uCalm;
-uniform float uWorldHalf;
+uniform vec2 uWorldMin;
+uniform vec2 uWorldSize;
 uniform vec2 uSeaOrigin;
 varying vec3 vWorld;
 varying float vViewZ;
@@ -76,7 +78,7 @@ varying vec2 vSwellSlope;
 ${SEA_SWELL_GLSL}
 void main() {
   vec2 xz = uSeaOrigin + position.xz * MN_SEA_CELL;
-  vec2 huv = xz / (uWorldHalf * 2.0) + 0.5;
+  vec2 huv = (xz - uWorldMin) / uWorldSize;
   bool onMap = huv.x >= 0.0 && huv.y >= 0.0 && huv.x <= 1.0 && huv.y <= 1.0;
   float th = onMap ? texture2D(uHeight, huv).r : ${NAVAL_SEA.floorOutside.toFixed(1)};
   float calm = onMap ? texture2D(uCalm, huv).r : 1.0; // 0 near land and the dock, 1 in the open sea (seaCalm.js)
@@ -124,7 +126,8 @@ uniform vec2 uSceneRes;
 uniform float uNear, uFar;
 #endif
 uniform sampler2D uHeight;
-uniform float uWorldHalf;
+uniform vec2 uWorldMin;
+uniform vec2 uWorldSize;
 varying vec3 vWorld;
 varying float vViewZ;
 #ifdef MN_SEA_OUTER
@@ -173,7 +176,7 @@ void main() {
 
   // ---- Swash ------------------------------------------------------------------------------------
   // The moving shore edge, only where the terrain itself is near the surface (posts and hulls at sea keep a still edge).
-  vec2 huv = xz / (uWorldHalf * 2.0) + 0.5;
+  vec2 huv = (xz - uWorldMin) / uWorldSize;
   float th = (huv.x < 0.0 || huv.y < 0.0 || huv.x > 1.0 || huv.y > 1.0) ? -20.0 : texture2D(uHeight, huv).r;
   float shore = smoothstep(-1.8, -0.8, th);
   float nz = texture2D(mnNoiseTex, xz * 0.05 + vec2(t * 0.012, t * 0.009)).b;
@@ -342,6 +345,7 @@ void main() {
 }`;
 
 function makeMaterial(map, heightTex, ssr, patch = false) {
+  const b = mapBounds(map);
   const uniforms = THREE.UniformsUtils.merge([THREE.UniformsLib.lights, THREE.UniformsLib.fog]);
   Object.assign(uniforms, SKY, {
     mnTime: U.mnTime, mnWind: U.mnWind, mnCloud: U.mnCloud, mnNoiseTex: U.mnNoiseTex,
@@ -360,7 +364,8 @@ function makeMaterial(map, heightTex, ssr, patch = false) {
     uRefract: { value: WATER_DETAIL_DEFAULTS.refraction },
     uHeight: { value: heightTex },
     uCalm: { value: null },
-    uWorldHalf: { value: map.size / 2 },
+    uWorldMin: { value: new THREE.Vector2(b.minX, b.minZ) },
+    uWorldSize: { value: new THREE.Vector2(b.maxX - b.minX, b.maxZ - b.minZ) },
   });
   if (ssr) Object.assign(uniforms, WATERU);
   const defines = patch ? { MN_SEA_PATCH: '' } : { MN_SEA_OUTER: '' };
@@ -398,7 +403,7 @@ const halfToFloat = (v) => THREE.DataUtils.fromHalfFloat(v), asFloat = (v) => v;
 // shader and the same bytes for the CPU sampler. It is rebuilt when that texture's data changes (GM strokes, the
 // editor's preview texture), at most every CALM_REBUILD_SECONDS of the shader clock.
 const CALM_REBUILD_SECONDS = 0.5;
-function createCalmMask(map, heightU, halfU, calmU) {
+function createCalmMask(map, heightU, half, calmU) {
   const calm = { tex: null, data: null, res: 0, key: '', builtAt: -Infinity };
   const seedAt = dockSeed(map.dock);
   calm.refresh = (now = 0) => {
@@ -407,7 +412,7 @@ function createCalmMask(map, heightU, halfU, calmU) {
     const key = `${tex.uuid}:${tex.version}`;
     if (key === calm.key || now - calm.builtAt < CALM_REBUILD_SECONDS) return false;
     const decode = tex.type === THREE.HalfFloatType ? halfToFloat : asFloat;
-    const data = buildCalmMask(img.data, img.width, halfU.value, { decode, seedAt });
+    const data = buildCalmMask(img.data, img.width, half, { decode, seedAt });
     if (!calm.tex || calm.res !== img.width) {
       calm.tex?.dispose();
       calm.tex = new THREE.DataTexture(data, img.width, img.width, THREE.RedFormat, THREE.UnsignedByteType);
@@ -422,7 +427,7 @@ function createCalmMask(map, heightU, halfU, calmU) {
     return true;
   };
   // The factor at world x, z as the GPU interpolates it; 1 off the map (open sea).
-  calm.sample = (x, z) => (calm.data ? sampleSeaFloor(calm.data, calm.res, halfU.value, x, z, calmByteToUnit, 1) : 1);
+  calm.sample = (x, z) => (calm.data ? sampleSeaFloor(calm.data, calm.res, half, x, z, calmByteToUnit, 1) : 1);
   calm.refresh(0);
   return calm;
 }
@@ -435,13 +440,18 @@ export function createWater(map, heightTex) {
   // Share the tweakable uniforms so quality switches keep the same look; the patch corner is shared by all four.
   const seaOrigin = { value: new THREE.Vector2() };
   for (const m of [ssr, simple, swellSsr, swellSimple]) {
-    for (const k of ['uWaves', 'uRefract', 'uHeight', 'uCalm', 'uWorldHalf']) m.uniforms[k] = ssr.uniforms[k];
+    for (const k of ['uWaves', 'uRefract', 'uHeight', 'uCalm', 'uWorldMin', 'uWorldSize']) m.uniforms[k] = ssr.uniforms[k];
     m.uniforms.uSeaOrigin = seaOrigin;
   }
-  const heightU = ssr.uniforms.uHeight, halfU = ssr.uniforms.uWorldHalf;
-  const calm = createCalmMask(map, heightU, halfU, ssr.uniforms.uCalm);
-  const geo = new THREE.PlaneGeometry(2400, 2400, 1, 1);
-  geo.rotateX(-Math.PI / 2);
+  // The CPU samplers (seaCalm.js, seaSwell.js) take a centered square: today's world. A grown world (GM11c) moves them
+  // to the bounds; until then a non-square height texture leaves the calm mask unbuilt (full swell).
+  const b = mapBounds(map), half = (b.maxX - b.minX) / 2;
+  const heightU = ssr.uniforms.uHeight;
+  const calm = createCalmMask(map, heightU, half, ssr.uniforms.uCalm);
+  const side = Math.max(2400, Math.max(b.maxX - b.minX, b.maxZ - b.minZ) + 1840);
+  const geo = new THREE.PlaneGeometry(side, side, 1, 1);
+  // Centered in the geometry, not by the mesh position: the swell patch child places itself in world coordinates.
+  geo.rotateX(-Math.PI / 2).translate((b.minX + b.maxX) / 2, 0, (b.minZ + b.maxZ) / 2);
   const mesh = new THREE.Mesh(geo, ssr);
   mesh.receiveShadow = true;
   mesh.renderOrder = 1;
@@ -474,7 +484,7 @@ export function createWater(map, heightTex) {
   setSeaFloor((x, z) => {
     const tex = heightU.value, img = tex?.image;
     if (!img?.data) return NAVAL_SEA.floorOutside;
-    return sampleSeaFloor(img.data, img.width, halfU.value, x, z, tex.type === THREE.HalfFloatType ? halfToFloat : asFloat);
+    return sampleSeaFloor(img.data, img.width, half, x, z, tex.type === THREE.HalfFloatType ? halfToFloat : asFloat);
   });
   return mesh;
 }

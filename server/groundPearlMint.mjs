@@ -71,7 +71,7 @@ export function prepareGroundPearlMint(raw) {
   const originalDirty = [...Set.prototype.values.call(dirty)], eventRefs = [...events], eventData = snapshotDropData(events);
   for (const p of Map.prototype.values.call(profiles)) if (profilePearlUids(p).includes(c.pearl.uid)) fail('ownership');
   for (const [, d] of originalDrops) if (snapshotDropData(d)?.pearl?.uid === c.pearl.uid) fail('ownership');
-  const geometry = [map.groundAt, map.onDock, map.queryColliders, map.zoneAt, map.half, map.colliders, map.landmarks];
+  const geometry = [map.groundAt, map.onDock, map.queryColliders, map.zoneAt, map.bounds, map.colliders, map.landmarks];
   const worldTuning = snapshotDropData(tuning.world), eventCount = events.length;
   const view = { tick: c.tick, map, raftDeck, ecs, nextDrop, drops: new Map(), pearlLedger: new Map(), events: [],
     emit(event) { this.events.push(clone(event)); } };
@@ -99,7 +99,7 @@ export function prepareGroundPearlMint(raw) {
         pe.length !== originalProfiles.length || pe.some(([id, v], i) => id !== originalProfiles[i][0] || v !== originalProfiles[i][1] || !same(snapshotDropData(v), profileData[i][1]))) fail('cancelled');
     const ds = [...Set.prototype.values.call(dirty)];
     if (ds.length !== originalDirty.length || ds.some((v, i) => v !== originalDirty[i])) fail('cancelled');
-    const now = [map.groundAt, map.onDock, map.queryColliders, map.zoneAt, map.half, map.colliders, map.landmarks];
+    const now = [map.groundAt, map.onDock, map.queryColliders, map.zoneAt, map.bounds, map.colliders, map.landmarks];
     if (now.some((v, i) => v !== geometry[i]) || !same(footprintAt(w, targetDrop), footprint)) fail('cancelled');
     for (const p of Map.prototype.values.call(profiles)) if (profilePearlUids(p).includes(c.pearl.uid)) fail('ownership');
     for (const [, d] of de) if (snapshotDropData(d)?.pearl?.uid === c.pearl.uid) fail('ownership');

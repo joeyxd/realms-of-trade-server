@@ -1,3 +1,4 @@
+import { mapBounds } from '../sim/mapBounds.js';
 // Pure display adapter for world maps. Keep world geometry separate from map UI and rendering.
 import { toUV, toWorld, ZONES } from '../sim/worldgen.js';
 import { t } from '../core/i18n.js';
@@ -75,12 +76,12 @@ export function describeMap(map) {
   if (!frame) {
     if (!explicit && finite(map?.mapSpan) && map.mapSpan > 0) frame = { centerU: 0, centerV: 0, span: map.mapSpan };
     else {
-      const half = finite(map?.half) && map.half > 0 ? map.half
-        : finite(map?.size) && map.size > 0 ? map.size / 2 : 0;
+      let bounds;
+      try { bounds = mapBounds(map); } catch {}
       // With no explicit bounds, include available terrain bounds and declared feature extents.
       const extents = [...points, ...regions].flatMap(p => [{ x: p.x - (p.r || 0), z: p.z - (p.r || 0) },
         { x: p.x + (p.r || 0), z: p.z + (p.r || 0) }]);
-      if (half > 0) extents.push({ x: -half, z: -half }, { x: half, z: half });
+      if (bounds) extents.push({ x: bounds.minX, z: bounds.minZ }, { x: bounds.maxX, z: bounds.maxZ });
       frame = extents.length ? frameForBounds({ minX: Math.min(...extents.map(p => p.x)), maxX: Math.max(...extents.map(p => p.x)),
         minZ: Math.min(...extents.map(p => p.z)), maxZ: Math.max(...extents.map(p => p.z)) }) : { centerU: 0, centerV: 0, span: 1 };
     }

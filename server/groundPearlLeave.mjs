@@ -53,8 +53,8 @@ function matchesEcsSnapshot(ecs, snapshot) {
 
 function geometrySnapshot(map) {
   const refs = [map?.groundAt, map?.onDock, map?.queryColliders, map?.zoneAt,
-    map?.half, map?.colliders, map?.landmarks];
-  const data = snapshotDropData({ half: map?.half, colliders: map?.colliders, landmarks: map?.landmarks });
+    map?.bounds, map?.colliders, map?.landmarks];
+  const data = snapshotDropData({ bounds: map?.bounds, colliders: map?.colliders, landmarks: map?.landmarks });
   return { refs, data };
 }
 

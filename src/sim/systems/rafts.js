@@ -1,3 +1,4 @@
+import { insetMapBounds } from '../mapBounds.js';
 // Moored player rafts (M6 P1). Saved ships stay private; only their visible blueprint and a server-selected
 // berth are replicated. Active vessels are ECS vehicles, never character spawns. Their shared walk geometry
 // accepts edits only through the authoritative raft editor, not client-owned blueprints or poses.
@@ -63,11 +64,11 @@ function mooring(map, ship, berth) {
 }
 
 function insideMap(map, ship, pose) {
-  const c = Math.cos(pose.yaw), s = Math.sin(pose.yaw), limit = map.half - 0.5;
+  const c = Math.cos(pose.yaw), s = Math.sin(pose.yaw), bounds = insetMapBounds(map, 0.5);
   return ship.grid.parts.every((p) => {
     for (const dx of [0, RAFT.cell]) for (const dz of [0, RAFT.cell]) {
       const lx = p[1] * RAFT.cell + dx, lz = p[2] * RAFT.cell + dz;
-      if (Math.abs(pose.x + c * lx + s * lz) > limit || Math.abs(pose.z - s * lx + c * lz) > limit) return false;
+      if (pose.x + c * lx + s * lz < bounds.minX || pose.x + c * lx + s * lz > bounds.maxX || pose.z - s * lx + c * lz < bounds.minZ || pose.z - s * lx + c * lz > bounds.maxZ) return false;
     }
     return true;
   });

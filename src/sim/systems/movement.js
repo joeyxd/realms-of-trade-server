@@ -1,3 +1,4 @@
+import { insetMapBounds, insideMapBounds } from '../mapBounds.js';
 // Player/bot locomotion: acceleration, dash (with buffered input, charges, i-frames), static collision.
 // Pure and deterministic: runs identically in the worker (authoritative) and the client (prediction).
 import { tuning } from '../../data/tuning.js';
@@ -21,8 +22,7 @@ export function standingHeight(world, x, z, referenceY) {
 function walkStep(world, x0, z0, x1, z1, y0, r, waterAllowed = false, walker = false) {
   const map = world.map;
   const W = tuning.world;
-  const lim = map.half - 2;
-  if (x1 < -lim || x1 > lim || z1 < -lim || z1 > lim) return false;
+  if (!insideMapBounds(map, x1, z1, 2)) return false;
   const raft0 = world.raftDeck?.surface(x0, z0, y0), raft1 = world.raftDeck?.surface(x1, z1, y0);
   const deck1 = map.onDock(x1, z1) || raft1, deck0 = map.onDock(x0, z0) || raft0;
   const terrain1 = map.groundAt(x1, z1), terrain0 = map.groundAt(x0, z0);
@@ -47,8 +47,8 @@ function walkStep(world, x0, z0, x1, z1, y0, r, waterAllowed = false, walker = f
 // Could a body of radius r stand at (x, z)? The rules moveWithCollision applies to where you end up: inside the map,
 // not in deep water (a dock is dry), not inside a collider. (Landing spots of a leap.)
 export function canStand(world, x, z, r = tuning.player.radius, referenceY) {
-  const map = world.map, W = tuning.world, lim = map.half - 2;
-  if (x < -lim || x > lim || z < -lim || z > lim) return false;
+  const map = world.map, W = tuning.world;
+  if (!insideMapBounds(map, x, z, 2)) return false;
   const surface = world.raftDeck?.surface(x, z, referenceY), y = surface?.y ?? map.groundAt(x, z);
   if (!surface && !map.onDock(x, z) && W.waterLevel - y > W.wadeMax) return false;
   if (world.raftDeck?.blocked(x, z, y, r)) return false;
@@ -79,8 +79,8 @@ function moveOnce(world, e, dx, dz) {
   const walker = world.navalPilot?.walking?.(e) || world.deckWalker === e;
   // A jump or fall (jump.js): free flight inside the map and the colliders; y belongs to the jump.
   const air = jumpOn(world) && airborne(ecs, e);
-  const lim = map.half - 2;
-  if (air) { nx = Math.max(-lim, Math.min(lim, nx)); nz = Math.max(-lim, Math.min(lim, nz)); }
+  const bounds = insetMapBounds(map, 2);
+  if (air) { nx = Math.max(bounds.minX, Math.min(bounds.maxX, nx)); nz = Math.max(bounds.minZ, Math.min(bounds.maxZ, nz)); }
   else if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed, walker)) {
     if (walkStep(world, x, z, nx, z, y, r, waterAllowed, walker)) nz = z;
     else if (walkStep(world, x, z, x, nz, y, r, waterAllowed, walker)) nx = x;
@@ -101,7 +101,7 @@ function moveOnce(world, e, dx, dz) {
       }
     }
   }
-  if (air) { nx = Math.max(-lim, Math.min(lim, nx)); nz = Math.max(-lim, Math.min(lim, nz)); }
+  if (air) { nx = Math.max(bounds.minX, Math.min(bounds.maxX, nx)); nz = Math.max(bounds.minZ, Math.min(bounds.maxZ, nz)); }
   else if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed, walker)) { nx = x; nz = z; }
   ecs.x[e] = nx;
   ecs.z[e] = nz;

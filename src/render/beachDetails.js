@@ -1,3 +1,4 @@
+import { nearestMapEdge } from '../sim/mapBounds.js';
 // Small, painted coastal props. Placement is render-only and never consumes the world's RNG.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -111,7 +112,7 @@ export function beachDetailEligible(map, x, z, radius = 0.6) {
 
 export function buildBeachDetails(map) {
   const candidates = [], seed = map.seed | 0, step = 4;
-  const half = Math.min(map.half || 190, 190);
+  const half = Math.min(nearestMapEdge(map, 190), 190);
   for (let iz = Math.ceil(-half / step); iz <= Math.floor(half / step); iz++) {
     for (let ix = Math.ceil(-half / step); ix <= Math.floor(half / step); ix++) {
       const rank = hash(ix, iz, seed, 139);

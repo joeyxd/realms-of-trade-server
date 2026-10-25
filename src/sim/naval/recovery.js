@@ -1,3 +1,4 @@
+import { insetMapBounds } from '../mapBounds.js';
 // Trusted voyage saves restore only a stationary vessel in the same generated island.
 // Input, velocity, seats, invitations, cooldowns and world ticks never survive a reconnect.
 import { createNavalCoast } from './coastGeometry.js';
@@ -23,11 +24,11 @@ export function encodeRaftVoyage(world, pose) {
 export function restoredRaftPose(world, ship, structure) {
   const saved = sanitizeRaftVoyage(ship.voyage);
   if (!saved || saved.seed !== world.seed || hullIntegrity(structure).disabled) return null;
-  const [x, z, yaw] = saved.pose, c = Math.cos(yaw), s = Math.sin(yaw), limit = world.map.half - 2;
+  const [x, z, yaw] = saved.pose, c = Math.cos(yaw), s = Math.sin(yaw), bounds = insetMapBounds(world.map, 2);
   // Validate the whole conserved blueprint, not just the remaining flotation.
   if (!ship.grid.parts.every((p) => [0, RAFT.cell].every((dx) => [0, RAFT.cell].every((dz) => {
     const lx = p[1] * RAFT.cell + dx, lz = p[2] * RAFT.cell + dz;
-    return Math.abs(x + c * lx + s * lz) < limit && Math.abs(z - s * lx + c * lz) < limit;
+    return x + c * lx + s * lz > bounds.minX && x + c * lx + s * lz < bounds.maxX && z - s * lx + c * lz > bounds.minZ && z - s * lx + c * lz < bounds.maxZ;
   })))) return null;
   const pose = { x, y: 0.72, z, yaw };
   if (navalCoastOverlaps(pose, liveStructureParts(structure), createNavalCoast(world.map))) return null;

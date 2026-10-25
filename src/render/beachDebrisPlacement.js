@@ -1,3 +1,4 @@
+import { nearestMapEdge } from '../sim/mapBounds.js';
 // Driftwood is a sparse cosmetic layer: placement never changes world props, RNG or colliders.
 import { beachDetailEligible, buildBeachDetails } from './beachDetails.js';
 
@@ -44,7 +45,7 @@ export function buildBeachDebris(map, { shrubs = [], grass = [], limit = DEBRIS_
   const seed = map.seed | 0, candidates = [], detail = buildBeachDetails(map);
   const occupied = [...shrubs, ...grass, ...detail.shells.map((p) => ({ ...p, radius: 0.45 * p.scale })),
     ...detail.pebbles.map((p) => ({ ...p, radius: 0.55 * p.scale }))];
-  const half = Math.max(0, Math.min(190, Number.isFinite(map.half) ? map.half : 165));
+  const half = Math.max(0, Math.min(190, nearestMapEdge(map, 165)));
   for (let x = -half + 3; x < half - 3; x += 7) for (let z = -half + 3; z < half - 3; z += 7) {
     if (hash(x, z, seed, 907) > 0.65) continue;
     const px = x + (hash(x, z, seed, 911) - 0.5) * 4, pz = z + (hash(x, z, seed, 919) - 0.5) * 4;

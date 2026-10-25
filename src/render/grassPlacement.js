@@ -1,3 +1,4 @@
+import { nearestMapEdge } from '../sim/mapBounds.js';
 // Small cosmetic clusters share the shrub clearance checks without touching world RNG or colliders.
 // Pure module: no THREE, no DOM, so Node tests can import it directly.
 import { PLANT_R, shrubSite, shrubSiteContext } from './shrubPlacement.js';
@@ -138,7 +139,7 @@ export function buildGrassPatches(map, { shrubs = [], limit = GRASS_LIMIT } = {}
   const cap = Number.isFinite(limit) ? Math.max(0, Math.min(GRASS_LIMIT, Math.floor(limit))) : GRASS_LIMIT;
   if (!cap) return [];
   const ctx = shrubSiteContext(map), seed = map.seed | 0, candidates = [], clear = clearance(map);
-  const half = Math.max(0, Math.min(200, Number.isFinite(map.half) ? map.half : 165));
+  const half = Math.max(0, Math.min(200, nearestMapEdge(map, 165)));
   const props = map.props || [];
   const occupied = [...shrubs, ...props.filter((p) => p.kind === 'bush').map((p) =>
     ({ x: p.x, z: p.z, radius: Math.max(0.6, (p.scale || 1) * 1.2) })),

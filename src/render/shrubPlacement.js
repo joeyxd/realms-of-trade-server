@@ -1,3 +1,4 @@
+import { nearestMapEdge } from '../sim/mapBounds.js';
 // Cosmetic foliage uses coordinate hashes, never the simulation RNG or collider list.
 export const SHRUB_LIMIT = 900;
 // The village plants (worldgen.js VILLAGE_VEGETATION) have no collider (r 0); as obstacles they count about half their
@@ -72,7 +73,7 @@ export function buildShrubs(map, { limit = SHRUB_LIMIT } = {}) {
       source, original, rank: rank(x, z, seed, 89) });
   };
   for (const p of existing) add(p.x, p.z, Math.max(0.55, Math.min(1.05, p.scale * 0.8)), 'existing', p);
-  const half = Math.min(200, Number.isFinite(map.half) ? map.half : 165);
+  const half = Math.min(200, nearestMapEdge(map, 165));
   // A jittered grid plus a coarser patch hash gives dense pockets separated by open ground.
   for (let x = -half + 3; x < half - 3; x += 5) for (let z = -half + 3; z < half - 3; z += 5) {
     const patch = rank(Math.floor(x / 18), Math.floor(z / 18), seed, 103);

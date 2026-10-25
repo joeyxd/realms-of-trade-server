@@ -1,3 +1,4 @@
+import { mapBounds, mapAxisCounts } from '../sim/mapBounds.js';
 // Terrain mesh from the shared heightfield + splat shading in a patched MeshToonMaterial
 // (same light bands as everything else). Deep-ocean cells are culled.
 import * as THREE from 'three';
@@ -10,23 +11,23 @@ import { WATER_DETAIL_UNIFORMS, CAUSTIC_PARS } from './waterDetail.js';
 import { TERRAIN_PAINT_COLOR } from './terrainPaintMaterials.js';
 
 export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrainRevision ? 320 : 250, assetRegistry = assets } = {}) {
-  const size = map.size, half = size / 2;
-  const n = segments + 1;
-  const step = size / segments;
-  const pos = new Float32Array(n * n * 3);
-  const nrm = new Float32Array(n * n * 3);
-  const msk = new Float32Array(n * n * 4);
-  const paint = new Uint8Array(n * n * 4), paintWeights = [0, 0, 0, 0];
-  const keep = new Uint8Array(n * n);
-  for (let j = 0; j < n; j++) {
+  const bounds = mapBounds(map), counts = mapAxisCounts(map, segments);
+  const n = counts.x + 1, rows = counts.z + 1;
+  const step = (bounds.maxX - bounds.minX) / counts.x, stepZ = (bounds.maxZ - bounds.minZ) / counts.z;
+  const pos = new Float32Array(n * rows * 3);
+  const nrm = new Float32Array(n * rows * 3);
+  const msk = new Float32Array(n * rows * 4);
+  const paint = new Uint8Array(n * rows * 4), paintWeights = [0, 0, 0, 0];
+  const keep = new Uint8Array(n * rows);
+  for (let j = 0; j < rows; j++) {
     for (let i = 0; i < n; i++) {
       const k = j * n + i;
-      const x = -half + i * step, z = -half + j * step;
+      const x = bounds.minX + i * step, z = bounds.minZ + j * stepZ;
       const h = map.heightAt(x, z);
       pos[k * 3] = x; pos[k * 3 + 1] = h; pos[k * 3 + 2] = z;
-      const e = step * 0.5;
+      const e = step * 0.5, ez = stepZ * 0.5;
       const nx = map.heightAt(x - e, z) - map.heightAt(x + e, z);
-      const nz = map.heightAt(x, z - e) - map.heightAt(x, z + e);
+      const nz = (map.heightAt(x, z - ez) - map.heightAt(x, z + ez)) * (e / ez);
       const l = Math.hypot(nx, 2 * e, nz);
       nrm[k * 3] = nx / l; nrm[k * 3 + 1] = (2 * e) / l; nrm[k * 3 + 2] = nz / l;
       const m = map.masks(x, z);
@@ -39,8 +40,8 @@ export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrai
     }
   }
   const idx = [];
-  for (let j = 0; j < segments; j++) {
-    for (let i = 0; i < segments; i++) {
+  for (let j = 0; j < counts.z; j++) {
+    for (let i = 0; i < counts.x; i++) {
       const a = j * n + i, b = a + 1, c = a + n, d = c + 1;
       if (!(keep[a] | keep[b] | keep[c] | keep[d])) continue;
       // Alternate the diagonal to avoid directional artifacts.
@@ -267,11 +268,11 @@ export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrai
 const wholeUploads = new WeakSet();
 
 // Grid vertex bounds of a changed region grown by one vertex (normals and the water texels read the neighbours).
-function regionBounds(region, segments) {
-  if (!region) return { i0: 0, j0: 0, i1: segments, j1: segments };
+function regionBounds(region, segmentsX, segmentsZ = segmentsX) {
+  if (!region) return { i0: 0, j0: 0, i1: segmentsX, j1: segmentsZ };
   const { i0, j0, i1, j1 } = region;
   if (![i0, j0, i1, j1].every(Number.isInteger) || i0 > i1 || j0 > j1) throw new RangeError('Terrain region is invalid');
-  return { i0: Math.max(0, i0 - 1), j0: Math.max(0, j0 - 1), i1: Math.min(segments, i1 + 1), j1: Math.min(segments, j1 + 1) };
+  return { i0: Math.max(0, i0 - 1), j0: Math.max(0, j0 - 1), i1: Math.min(segmentsX, i1 + 1), j1: Math.min(segmentsZ, j1 + 1) };
 }
 
 /**
@@ -285,14 +286,14 @@ export function updateTerrainGeometry(mesh, map, { segments = 560, paintOnly = f
   const normal = geometry?.getAttribute('normal');
   const masks = geometry?.getAttribute('aMask');
   const paint = geometry?.getAttribute('aPaint');
-  const n = segments + 1;
-  if (!position || position.count !== n * n || !normal || !masks || !paint) {
+  const bounds = mapBounds(map), counts = mapAxisCounts(map, segments), n = counts.x + 1, rows = counts.z + 1;
+  if (!position || position.count !== n * rows || !normal || !masks || !paint) {
     throw new RangeError('Terrain geometry does not match the canonical grid');
   }
-  const size = map.size, half = size / 2, step = size / segments;
+  const step = (bounds.maxX - bounds.minX) / counts.x, stepZ = (bounds.maxZ - bounds.minZ) / counts.z;
   const p = position.array, nr = normal.array, ms = masks.array;
   const weights = [0, 0, 0, 0];
-  const { i0, j0, i1, j1 } = regionBounds(region, segments);
+  const { i0, j0, i1, j1 } = regionBounds(region, counts.x, counts.z);
   // Masks come from the base map: a region against a map with the same masks function keeps them (half the cost).
   const keepMasks = paintOnly || (!!region?.from && region.from.masks === map.masks);
   const attributes = paintOnly ? [paint] : keepMasks ? [paint, position, normal] : [paint, position, normal, masks];
@@ -308,15 +309,15 @@ export function updateTerrainGeometry(mesh, map, { segments = 560, paintOnly = f
   }
   let low = Infinity, high = -Infinity;
   for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
-    const k = j * n + i, x = -half + i * step, z = -half + j * step;
+    const k = j * n + i, x = bounds.minX + i * step, z = bounds.minZ + j * stepZ;
     weights.fill(0); map.materialWeightsAt?.(x, z, weights);
     for (let c = 0; c < 4; c++) paint.array[k * 4 + c] = Math.round(weights[c] * 255);
     if (paintOnly) continue;
     p[k * 3] = x; p[k * 3 + 1] = map.heightAt(x, z); p[k * 3 + 2] = z;
     low = Math.min(low, p[k * 3 + 1]); high = Math.max(high, p[k * 3 + 1]);
-    const e = step * 0.5;
+    const e = step * 0.5, ez = stepZ * 0.5;
     const nx = map.heightAt(x - e, z) - map.heightAt(x + e, z);
-    const nz = map.heightAt(x, z - e) - map.heightAt(x, z + e);
+    const nz = (map.heightAt(x, z - ez) - map.heightAt(x, z + ez)) * (e / ez);
     const l = Math.hypot(nx, 2 * e, nz);
     nr[k * 3] = nx / l; nr[k * 3 + 1] = (2 * e) / l; nr[k * 3 + 2] = nz / l;
     if (keepMasks) continue;
@@ -337,12 +338,13 @@ export function updateTerrainGeometry(mesh, map, { segments = 560, paintOnly = f
 // Flat seabed under everything beyond the culled deep-ocean cells, so the water always has an
 // opaque floor to measure depth against (no jagged edge where the terrain mesh stops).
 export function createSeabed(map) {
-  const geo = new THREE.PlaneGeometry(2400, 2400, 1, 1);
+  const b = mapBounds(map), side = Math.max(2400, Math.max(b.maxX - b.minX, b.maxZ - b.minZ) + 1840);
+  const geo = new THREE.PlaneGeometry(side, side, 1, 1);
   geo.rotateX(-Math.PI / 2);
   // Same toon lighting and sand tone as the deep terrain so the seam is invisible through the water.
   const mesh = toonMesh(geo, { color: new THREE.Color(0xf2dba0).multiplyScalar(0.32) }, { key: 'seabed', comic: false });
   mesh.receiveShadow = false;
-  mesh.position.y = -7.56;
+  mesh.position.set((b.minX + b.maxX) / 2, -7.56, (b.minZ + b.maxZ) / 2);
   mesh.name = 'seabed';
   mesh.frustumCulled = false;
   return mesh;
@@ -350,9 +352,10 @@ export function createSeabed(map) {
 
 // Height texture for the water shader (depth / foam), half-float red channel.
 export function createHeightTexture(map, res = 256) {
-  const data = new Uint16Array(res * res);
-  fillHeightData(map, data, res);
-  const tex = new THREE.DataTexture(data, res, res, THREE.RedFormat, THREE.HalfFloatType);
+  const counts = mapAxisCounts(map, res, true), width = counts.x, height = counts.z;
+  const data = new Uint16Array(width * height);
+  fillHeightData(map, data, width, height);
+  const tex = new THREE.DataTexture(data, width, height, THREE.RedFormat, THREE.HalfFloatType);
   tex.magFilter = THREE.LinearFilter;
   tex.minFilter = THREE.LinearFilter;
   tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
@@ -364,22 +367,23 @@ export function createHeightTexture(map, res = 256) {
 export function updateHeightTexture(map, texture, { region = null, segments = 560 } = {}) {
   if (!texture?.image?.data) throw new TypeError('Height texture is unavailable');
   const { data, width, height } = texture.image;
-  if (width !== height || data.length !== width * height) throw new RangeError('Height texture must be square single-channel data');
+  if (data.length !== width * height) throw new RangeError('Height texture must be single-channel data');
   let texels;
   if (region) {
-    const bounds = regionBounds(region, segments), scale = (width - 1) / segments;
-    texels = { i0: Math.floor(bounds.i0 * scale), j0: Math.floor(bounds.j0 * scale),
-      i1: Math.min(width - 1, Math.ceil(bounds.i1 * scale)), j1: Math.min(width - 1, Math.ceil(bounds.j1 * scale)) };
+    const counts = mapAxisCounts(map, segments), bounds = regionBounds(region, counts.x, counts.z);
+    const scaleX = (width - 1) / counts.x, scaleZ = (height - 1) / counts.z;
+    texels = { i0: Math.floor(bounds.i0 * scaleX), j0: Math.floor(bounds.j0 * scaleZ),
+      i1: Math.min(width - 1, Math.ceil(bounds.i1 * scaleX)), j1: Math.min(height - 1, Math.ceil(bounds.j1 * scaleZ)) };
   }
-  fillHeightData(map, data, width, texels);
+  fillHeightData(map, data, width, height, texels);
   texture.needsUpdate = true;
   return texture;
 }
 
-function fillHeightData(map, data, res, { i0 = 0, j0 = 0, i1 = res - 1, j1 = res - 1 } = {}) {
-  const size = map.size, half = size / 2;
+function fillHeightData(map, data, width, height, { i0 = 0, j0 = 0, i1 = width - 1, j1 = height - 1 } = {}) {
+  const bounds = mapBounds(map);
   for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
-    const x = -half + (i / (res - 1)) * size, z = -half + (j / (res - 1)) * size;
-    data[j * res + i] = THREE.DataUtils.toHalfFloat(map.heightAt(x, z));
+    const x = bounds.minX + (i / (width - 1)) * (bounds.maxX - bounds.minX), z = bounds.minZ + (j / (height - 1)) * (bounds.maxZ - bounds.minZ);
+    data[j * width + i] = THREE.DataUtils.toHalfFloat(map.heightAt(x, z));
   }
 }

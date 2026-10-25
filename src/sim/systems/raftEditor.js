@@ -1,3 +1,4 @@
+import { insetMapBounds } from '../mapBounds.js';
 // Server authority for the small, explicit raft construction palette.
 import { C } from '../ecs.js';
 import { SLOTS, slotSkill } from '../../data/tattoos.js';
@@ -87,8 +88,8 @@ function worldBounds(parts, pose) {
 
 function fitsLayout(w, r, parts) {
   const ecs = w.ecs, entity = r.entity, pose = { x: ecs.x[entity], z: ecs.z[entity], yaw: ecs.facing[entity] };
-  const world = worldBounds(parts, pose), limit = w.map.half - 0.5;
-  if (world.minX < -limit || world.maxX > limit || world.minZ < -limit || world.maxZ > limit) return false;
+  const world = worldBounds(parts, pose), limits = insetMapBounds(w.map, 0.5);
+  if (world.minX < limits.minX || world.maxX > limits.maxX || world.minZ < limits.minZ || world.maxZ > limits.maxZ) return false;
   const d = w.map.dock, bounds = footprint(parts);
   // Test each occupied cell in dock-local space, with a small clearance around the dock platform.
   for (const [, x, z] of parts) {

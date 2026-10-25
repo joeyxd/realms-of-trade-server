@@ -83,7 +83,7 @@ export class PearlReturnStaging {
     if (!same(ledgerBefore, { owner: '', entity: 0, place: 'ground', drop: dropId })) throw new StoreError('ownership');
     this.gate.assertAvailable({ uids: [pearl.uid] });
     const captured = { at: w.tick, map: w.map, raftDeck: w.raftDeck, ecs: w.ecs,
-      geometry: [w.map.groundAt, w.map.onDock, w.map.queryColliders, w.map.zoneAt, w.map.half, w.map.colliders, w.map.landmarks],
+      geometry: [w.map.groundAt, w.map.onDock, w.map.queryColliders, w.map.zoneAt, w.map.bounds, w.map.colliders, w.map.landmarks],
       worldTuning: freeze(snapshotDropData(tuning.world)), profiles: w.profiles, drops: w.drops, ledgerMap: w.pearlLedger,
       dirty: w.profileDirty, eventBuffer: w.events, eventCount: w.events.length, dropEntries: [...w.drops] };
     const localDrop = clone(source); delete localDrop.groundClock;
@@ -161,7 +161,7 @@ export class PearlReturnStaging {
         !same(snapshotDropData(tuning.world), b.worldTuning)) throw new StoreError('cancelled');
     const entries = [...w.drops];
     if (entries.length !== b.dropEntries.length || entries.some(([id, d], i) => id !== b.dropEntries[i][0] || d !== b.dropEntries[i][1])) throw new StoreError('cancelled');
-    const geometry = [w.map.groundAt, w.map.onDock, w.map.queryColliders, w.map.zoneAt, w.map.half, w.map.colliders, w.map.landmarks];
+    const geometry = [w.map.groundAt, w.map.onDock, w.map.queryColliders, w.map.zoneAt, w.map.bounds, w.map.colliders, w.map.landmarks];
     if (geometry.some((q, i) => q !== b.geometry[i])) throw new StoreError('cancelled');
     for (const profile of w.profiles.values()) if (profilePearls(snapshotDropData(profile)).some(q => q.uid === b.source.pearl.uid)) throw new StoreError('ownership');
     for (const [id, d] of w.drops) {

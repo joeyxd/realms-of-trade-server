@@ -1,3 +1,4 @@
+import { insetMapBounds } from '../mapBounds.js';
 // Server-owned pearl circulation. The in-memory ledger remembers a UID's current owner/location, so an
 // old signed browser save cannot reclaim a pearl after a death, release or transfer in this server session.
 // This is deliberately not durable across restarts; M5 moves these claims into the database.
@@ -116,9 +117,9 @@ export function returnPearl(w, d) {
   // Deterministic coastal search. Only accept standable beach points, never the dock or deep water.
   const map = w.map, spawn = map.landmarks.spawn;
   let x = spawn.x, z = spawn.z;
-  const rng = w.lootRng, half = map.half - 3;
+  const rng = w.lootRng, bounds = insetMapBounds(map, 3);
   for (let i = 0; i < 256; i++) {
-    const tx = rng.range(-half, half), tz = rng.range(-half, half), h = map.groundAt(tx, tz);
+    const tx = rng.range(bounds.minX, bounds.maxX), tz = rng.range(bounds.minZ, bounds.maxZ), h = map.groundAt(tx, tz);
     if (h < tuning.world.waterLevel + 0.15 || h > tuning.world.waterLevel + 1.1 || map.onDock(tx, tz) || !canStand(w, tx, tz, 0.2)) continue;
     x = tx; z = tz; break;
   }

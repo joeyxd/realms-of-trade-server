@@ -1,3 +1,4 @@
+import { mapBounds } from '../sim/mapBounds.js';
 // Local lights: lanterns, braziers, the campfire, lava, hut windows at night, sentinel eyes, the
 // player's light radius, short flashes (dash, muzzle, loot) and projectiles in flight. No three.js lights: the nearest few
 // go into two uniform arrays and every lit shader evaluates them in the same banded style as the
@@ -38,9 +39,10 @@ const lavaCache = new WeakMap();
 export function lavaPoints(map) {
   if (lavaCache.has(map)) return lavaCache.get(map);
   const picks = [];
-  const half = map.size / 2;
-  for (let z = -half; z < half; z += 3) {
-    for (let x = -half; x < half; x += 3) {
+  // A map with no extent (prop studio maps) has no lava, as before bounds.
+  let bounds; try { bounds = mapBounds(map); } catch { bounds = { minX: 0, maxX: 0, minZ: 0, maxZ: 0 }; }
+  for (let z = bounds.minZ; z < bounds.maxZ; z += 3) {
+    for (let x = bounds.minX; x < bounds.maxX; x += 3) {
       if (map.masks(x, z).lava < 0.75) continue;
       if (picks.some((q) => (q.x - x) ** 2 + (q.z - z) ** 2 < 81)) continue;
       picks.push({ x, y: map.heightAt(x, z), z });

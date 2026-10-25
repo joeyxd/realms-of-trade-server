@@ -82,7 +82,7 @@ export function prepareGroundPearlReturn(raw) {
     if (detached?.pearl?.uid === uid) fail('ownership');
   }
 
-  const geometry = [map.groundAt, map.onDock, map.queryColliders, map.zoneAt, map.half, map.colliders, map.landmarks];
+  const geometry = [map.groundAt, map.onDock, map.queryColliders, map.zoneAt, map.bounds, map.colliders, map.landmarks];
   const worldTuning = snapshotDropData(tuning.world);
   const eventCount = events.length;
   const localDrop = clone(source);
@@ -131,7 +131,7 @@ export function prepareGroundPearlReturn(raw) {
       !same(snapshotDropData(profile), originalProfileData[i][1]))) fail('cancelled');
     const dirtyEntries = [...Set.prototype.values.call(dirty)];
     if (dirtyEntries.length !== originalDirty.length || dirtyEntries.some((entity, i) => entity !== originalDirty[i])) fail('cancelled');
-    const currentGeometry = [map.groundAt, map.onDock, map.queryColliders, map.zoneAt, map.half, map.colliders, map.landmarks];
+    const currentGeometry = [map.groundAt, map.onDock, map.queryColliders, map.zoneAt, map.bounds, map.colliders, map.landmarks];
     if (currentGeometry.some((value, i) => value !== geometry[i]) || !same(footprintAt(w, targetDrop), footprint)) fail('cancelled');
     for (const profile of Map.prototype.values.call(profiles)) if (profilePearlUids(profile).includes(uid)) fail('ownership');
     for (const [id, item] of entries) if (id !== dropId && snapshotDropData(item)?.pearl?.uid === uid) fail('ownership');

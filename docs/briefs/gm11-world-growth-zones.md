@@ -141,3 +141,39 @@ until GM09 measures more. Under the budget the publication report is unchanged, 
 identity; over it the report gains one error, `world_over_load_budget`. A base without a tile domain (test maps)
 loads its own generated square. Today's world reads 31 %: with the fixed 560 m square only objects (or, in a test,
 smaller limits) can move it until GM11b.
+
+## GM11b design (chef, T-1024-35)
+
+GM11b is three sessions, each its own commit, so every step keeps today's world bit-identical:
+
+- **GM11b1 runtime extent** (no protocol, no SQL, no document change): the map carries its bounds, the generator
+  builds any tile-aligned bounds, and every runtime reader (sim, server, render, minimap) reads them.
+- **GM11b2 editor grid**: the editor's grid, brushes, regions, previews, heightmap, tiles and clamps read the base
+  map's bounds; no 561 or +/-280 literal left in src/editor or server/gmPublication.mjs. Documents stay the square.
+- **GM11b3 domain as data**: document v6 `terrain.domain { minTx, maxTx, minTz, maxTz }` (v5 converted with
+  today's square), the base map generated for the document's domain on the client and the server, publication content
+  carrying the domain instead of `gridSize: 561`, SQL044 domain check with a readiness RPC and a host check, protocol
+  bump.
+
+B1 **Map bounds.** Every terrain map carries `bounds`, a frozen `{ minX, maxX, minZ, maxZ }` in metres, plus `res`
+(vertices per metre), `Nx` and `Nz` (vertices per axis, `(maxX - minX) * res + 1`); `heights[j * Nx + i]` is the vertex
+at `x = minX + i / res`, `z = minZ + j / res`. `size`, `half` and `N` stay only on a centered square (today's world,
+the test maps); after GM11b1 no runtime reader uses them. src/sim/mapBounds.js (pure) is where readers go.
+
+B2 **Generator.** `revampTerrain(source, { bounds })`, default the centered square of `max(560, source.size)`. A base
+height is a function of (x, z) and the seed, so a grown map equals today's map on today's square, vertex for vertex.
+Bounds are whole metres and contain the default square.
+
+B3 **Gameplay limits** keep today's margins against each side: movement 2 m, rafts and the raft editor 0.5 m, the
+naval route and recovery 2 m, pearl loot 3 m, the coast boundary walls 2 m.
+
+B4 **Render.** Terrain segments per axis keep today's cell (GM terrain 1 m, the revamped island 560/320 m); the water
+height texture keeps one texel per vertex (GM) or 256 texels per 560 m, per axis; the water shader takes the bounds'
+min and size instead of `uWorldHalf`; seabed and horizon planes center on the bounds with side
+`max(2400, longest side + 1840)` (2400 today). Grass, shrub and beach caps stay on the island: the smaller of their cap
+and the nearest edge.
+
+B5 **Minimap.** `mapSpan` 255 frames today's square; any other bounds frame `map.bounds`.
+
+B6 **Server pearl guards.** The geometry identity arrays and the drop snapshot carry `map.bounds` where they carried
+`map.half`.

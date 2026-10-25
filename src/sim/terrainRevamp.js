@@ -1,3 +1,4 @@
+import { mapBounds, centeredSquare } from './mapBounds.js';
 // Reshape the ground only after legacy placement/RNG has finished. Shared by client and server.
 import { smoothstep, lerp } from '../core/math.js';
 import { makeNoise2D } from './noise.js';
@@ -9,19 +10,22 @@ const TOWN_SLOPE = .68; // design slope of the town embankments, under the sim's
 export const TOWN_PALM_FLATS = [[-108.95, -11.35], [-90.02, 12.02]]; // (u, v) footing flats of two village palms, see townHeight
 export const TERRAIN_SIZE = 560;
 
-function sampler(heights, size, res, N) {
-  const half = size / 2;
+function sampler(heights, bounds, res, Nx, Nz) {
   return (x, z) => {
-    const fx = Math.max(0, Math.min(N - 1.001, (x + half) * res));
-    const fz = Math.max(0, Math.min(N - 1.001, (z + half) * res));
-    const i = Math.floor(fx), j = Math.floor(fz), tx = fx - i, tz = fz - j, k = j * N + i;
-    return lerp(lerp(heights[k], heights[k + 1], tx), lerp(heights[k + N], heights[k + N + 1], tx), tz);
+    const fx = Math.max(0, Math.min(Nx - 1.001, (x - bounds.minX) * res));
+    const fz = Math.max(0, Math.min(Nz - 1.001, (z - bounds.minZ) * res));
+    const i = Math.floor(fx), j = Math.floor(fz), tx = fx - i, tz = fz - j, k = j * Nx + i;
+    return lerp(lerp(heights[k], heights[k + 1], tx), lerp(heights[k + Nx], heights[k + Nx + 1], tx), tz);
   };
 }
 
-export function revampTerrain(source) {
+export function revampTerrain(source, { bounds } = {}) {
   const size = Math.max(TERRAIN_SIZE, source.size), half = size / 2, res = source.res;
-  const N = Math.round(size * res) + 1, heights = new Float32Array(N * N);
+  bounds = mapBounds({ bounds: bounds === undefined ? { minX: -half, maxX: half, minZ: -half, maxZ: half } : bounds });
+  if (!Object.values(bounds).every(Number.isInteger) || bounds.minX > -half || bounds.maxX < half || bounds.minZ > -half || bounds.maxZ < half)
+    throw new TypeError('Terrain bounds must be whole metres and contain the default square');
+  const Nx = (bounds.maxX - bounds.minX) * res + 1, Nz = (bounds.maxZ - bounds.minZ) * res + 1;
+  const heights = new Float32Array(Nx * Nz);
   const { fbm } = makeNoise2D(source.seed ^ 0x743e91);
   const resources = resourceLayout(source), L = source.landmarks;
   const dist = (x, z, p) => Math.hypot(x - p.x, z - p.z);
@@ -88,8 +92,8 @@ export function revampTerrain(source) {
     pads.push({ u, v, y: Math.min(hi, Math.max(lo, natural(u, v))), r: .8 });
   }
   const townHeight = heightOver(pads);
-  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
-    const x = -half + i / res, z = -half + j / res, { u, v } = source.toUV(x, z), was = oldHeight(x, z);
+  for (let j = 0; j < Nz; j++) for (let i = 0; i < Nx; i++) {
+    const x = bounds.minX + i / res, z = bounds.minZ + j / res, { u, v } = source.toUV(x, z), was = oldHeight(x, z);
     const coastNoise = fbm(x * .014 + 3, z * .014 - 2, 3) * .035;
     const a = Math.hypot((u - 145) / 83, (v + 48) / 102) + coastNoise;
     const b = Math.hypot((u + 20) / 106, (v + 133) / 61) + coastNoise;
@@ -117,9 +121,9 @@ export function revampTerrain(source) {
     if (tw > 0 && was > .25) {
       h = lerp(h, townHeight(u, v), tw);
     }
-    heights[j * N + i] = h;
+    heights[j * Nx + i] = h;
   }
-  const heightAt = sampler(heights, size, res, N);
+  const heightAt = sampler(heights, bounds, res, Nx, Nz);
   const groundAt = (x, z) => source.onDock(x, z) ? Math.max(heightAt(x, z), source.dock.deckY) : heightAt(x, z);
   const props = source.props.map(p => {
     if (['ship', 'float', 'dockPost'].includes(p.kind) || source.onDock(p.x, p.z) || p.y === source.dock.deckY + .62) return { ...p };
@@ -143,10 +147,12 @@ export function revampTerrain(source) {
     return groundAt(x, z) < 1.6 ? 'playa' : 'selva';
   };
   const projectResource = p => ({ ...p, y: p.y + groundAt(p.x, p.z) - source.groundAt(p.x, p.z) });
-  return { ...source, size, half, N, heights, heightAt, groundAt, masks, materialAt, zoneAt, props,
+  const { size: _size, half: _half, N: _N, mapSpan: _mapSpan, ...rest } = source;
+  const square = centeredSquare(bounds), defaultBounds = bounds.minX === -half && bounds.maxX === half && bounds.minZ === -half && bounds.maxZ === half;
+  return { ...rest, bounds, res, Nx, Nz, ...(square ? { size: bounds.maxX * 2, half: bounds.maxX, N: Nx } : {}), heights, heightAt, groundAt, masks, materialAt, zoneAt, props,
     terrainSource: source,
     terrainResources: { nodes: resources.nodes.map(projectResource), bench: resources.bench ? projectResource(resources.bench) : null },
-    terrainRevision: TERRAIN_REVISION, mapSpan: 255,
+    terrainRevision: TERRAIN_REVISION, ...(defaultBounds ? { mapSpan: 255 } : {}),
     terrainLayout: { terraces: [2.4, 6.4, 10.4], town: { u: -102, v: -6, radiusU: 43, radiusV: 39 },
       expansions: [{ u: 145, v: -48, radiusU: 83, radiusV: 102 }, { u: -20, v: -133, radiusU: 106, radiusV: 61 }],
       connections } };

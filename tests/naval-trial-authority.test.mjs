@@ -79,7 +79,7 @@ test('opaque handles bind owner and ship; forged handles and invalid control axe
 });
 
 test('the authority accepts at most 32 independently moored trial bodies', () => {
-  const largeMap = { ...map, half: 2000 };
+  const largeMap = { ...map, half: 2000, bounds: Object.freeze({ minX: -2000, maxX: 2000, minZ: -2000, maxZ: 2000 }) };
   const first = makeTrialWorld(largeMap.seed, 1, largeMap);
   assert.ok(start(first));
   for (let clientId = 2; clientId <= NAVAL_TRIAL.maxBodies; clientId++) {

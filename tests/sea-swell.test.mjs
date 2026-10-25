@@ -148,7 +148,7 @@ test('createWater: a swell patch child on the water layer, both modes switch, un
   water.userData.setMode(true);
   assert.notEqual(water.material, simple[0]); assert.notEqual(swell.material, simple[1]);
   assert.equal(swell.material.defines.MN_SEA_PATCH, ''); assert.equal(water.material.defines.MN_SEA_OUTER, '');
-  for (const k of ['uWaves', 'uRefract', 'uHeight', 'uWorldHalf', 'uSeaOrigin', 'mnTime']) {
+  for (const k of ['uWaves', 'uRefract', 'uHeight', 'uWorldMin', 'uWorldSize', 'uSeaOrigin', 'mnTime']) {
     assert.equal(swell.material.uniforms[k], water.material.uniforms[k], k);
     assert.equal(simple[1].uniforms[k], water.material.uniforms[k], k);
   }

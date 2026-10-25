@@ -1,3 +1,4 @@
+import { mapBounds, insideMapBounds } from '../mapBounds.js';
 // A bounded optional PvE circuit. Plans are pure until the entire naval fleet commits its tick.
 import { NAVAL_ROUTE as R } from '../../data/navalRoute.js';
 import { RAFT, RAFT_PARTS } from '../../data/raftparts.js';
@@ -8,7 +9,7 @@ const active = (s) => s === 'outbound' || s === 'returning';
 const clone = (s) => ({ ...s, shots: s.shots.map((p) => ({ ...p, from: { ...p.from } })) });
 
 function openWater(map, p, pad = 4) {
-  if (Math.abs(p.x) + pad > map.half - 2 || Math.abs(p.z) + pad > map.half - 2) return false;
+  if (!insideMapBounds(map, p.x, p.z, pad + 2)) return false;
   for (const [x, z] of [[0, 0], [pad, 0], [-pad, 0], [0, pad], [0, -pad]])
     if (map.groundAt(p.x + x, p.z + z) >= 0.1 || map.onDock(p.x + x, p.z + z)) return false;
   return true;
@@ -16,7 +17,8 @@ function openWater(map, p, pad = 4) {
 
 export function navalRouteLayout(map) {
   const d = map?.dock;
-  if (!d?.end || !d?.dir || !Number.isFinite(map.half)) return null;
+  if (!d?.end || !d?.dir) return null;
+  try { mapBounds(map); } catch { return null; }
   const across = { x: -d.dir.z, z: d.dir.x };
   // The island is rotated by its seed. Try both flanks and shorter circuits before declining.
   for (const scale of [1, 0.85, 0.7]) for (const side of [1, -1]) {

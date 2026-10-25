@@ -1,3 +1,4 @@
+import { mapBounds, mapGrid, insetMapBounds, centeredSquare } from '../mapBounds.js';
 // Deterministic collision polygons for shoreline, dock, and map boundary queries.
 const cache = new WeakMap();
 const WATERLINE = 0.15;
@@ -37,12 +38,13 @@ function clippedTriangle(points, threshold) {
 }
 
 function validateMap(map) {
-  if (!map || typeof map !== 'object' || !Number.isSafeInteger(map.N) || map.N < 2 || map.N > 4097 ||
-      !finite(map.half) || map.half <= 2 || !finite(map.res) || map.res <= 0 || map.res > 4 ||
-      !map.heights || !Number.isSafeInteger(map.heights.length) || map.heights.length !== map.N * map.N ||
+  const b = mapBounds(map), { Nx, Nz } = mapGrid(map);
+  if (![Nx, Nz].every(n => Number.isSafeInteger(n) && n >= 2 && n <= 4097) ||
+      Math.min(b.maxX - b.minX, b.maxZ - b.minZ) <= 4 || !finite(map.res) || map.res <= 0 || map.res > 4 ||
+      !map.heights || !Number.isSafeInteger(map.heights.length) || map.heights.length !== Nx * Nz ||
       !finite(map.seed)) throw new TypeError('Invalid coast heightfield map');
-  const expected = 2 * map.half * map.res + 1;
-  if (Math.abs(map.N - expected) > 1e-6) throw new TypeError('Coast heightfield dimensions do not match');
+  const expectedX = (b.maxX - b.minX) * map.res + 1, expectedZ = (b.maxZ - b.minZ) * map.res + 1;
+  if (Math.abs(Nx - expectedX) > 1e-6 || Math.abs(Nz - expectedZ) > 1e-6) throw new TypeError('Coast heightfield dimensions do not match');
   for (let i = 0; i < map.heights.length; i++) if (!finite(map.heights[i]))
     throw new TypeError('Coast heightfield contains a non-finite height');
   if (map.dock !== undefined && map.dock !== null) {
@@ -67,13 +69,13 @@ function makeDockPolygon(dock) {
   ], 'dock');
 }
 
-function makeBoundaryPolygons(bound) {
-  const L = BOUNDARY_LIMIT;
+function makeBoundaryPolygons(b, bounds) {
+  const L = Math.max(BOUNDARY_LIMIT, ...Object.values(bounds).map(Math.abs)) + (Object.values(bounds).some(v => Math.abs(v) >= BOUNDARY_LIMIT) ? 1 : 0);
   return Object.freeze([
-    freezePolygon('boundary:left', [{ x: -L, z: -L }, { x: -bound, z: -L }, { x: -bound, z: L }, { x: -L, z: L }], 'boundary'),
-    freezePolygon('boundary:right', [{ x: bound, z: -L }, { x: L, z: -L }, { x: L, z: L }, { x: bound, z: L }], 'boundary'),
-    freezePolygon('boundary:north', [{ x: -L, z: -L }, { x: L, z: -L }, { x: L, z: -bound }, { x: -L, z: -bound }], 'boundary'),
-    freezePolygon('boundary:south', [{ x: -L, z: bound }, { x: L, z: bound }, { x: L, z: L }, { x: -L, z: L }], 'boundary'),
+    freezePolygon('boundary:left', [{ x: -L, z: -L }, { x: b.minX, z: -L }, { x: b.minX, z: L }, { x: -L, z: L }], 'boundary'),
+    freezePolygon('boundary:right', [{ x: b.maxX, z: -L }, { x: L, z: -L }, { x: L, z: L }, { x: b.maxX, z: L }], 'boundary'),
+    freezePolygon('boundary:north', [{ x: -L, z: -L }, { x: L, z: -L }, { x: L, z: b.minZ }, { x: -L, z: b.minZ }], 'boundary'),
+    freezePolygon('boundary:south', [{ x: -L, z: b.maxZ }, { x: L, z: b.maxZ }, { x: L, z: L }, { x: -L, z: L }], 'boundary'),
   ]);
 }
 
@@ -89,20 +91,20 @@ export function createNavalCoast(map) {
   if (prior) return prior;
   validateMap(map);
 
-  const { N, half, res, heights, seed } = map;
-  const boundary = half - 2;
+  const { res, heights, seed } = map, { Nx, Nz } = mapGrid(map), bounds = mapBounds(map);
+  const boundary = insetMapBounds(map, 2);
   const dock = makeDockPolygon(map.dock);
-  const boundaries = makeBoundaryPolygons(boundary);
+  const boundaries = makeBoundaryPolygons(boundary, bounds);
   const cells = new Map();
 
   const buildCell = (i, j) => {
-    const cellId = j * (N - 1) + i;
+    const cellId = j * (Nx - 1) + i;
     if (cells.has(cellId)) return cells.get(cellId);
-    const k = j * N + i;
-    const h00 = heights[k], h10 = heights[k + 1], h01 = heights[k + N], h11 = heights[k + N + 1];
+    const k = j * Nx + i;
+    const h00 = heights[k], h10 = heights[k + 1], h01 = heights[k + Nx], h11 = heights[k + Nx + 1];
     const threshold = WATERLINE - Math.abs(h00 - h10 - h01 + h11) / 4;
-    const x0 = -half + i / res, x1 = x0 + 1 / res;
-    const z0 = -half + j / res, z1 = z0 + 1 / res;
+    const x0 = bounds.minX + i / res, x1 = x0 + 1 / res;
+    const z0 = bounds.minZ + j / res, z1 = z0 + 1 / res;
     const p00 = { x: x0, z: z0, h: h00 }, p10 = { x: x1, z: z0, h: h10 };
     const p01 = { x: x0, z: z1, h: h01 }, p11 = { x: x1, z: z1, h: h11 };
     const triangles = [[p00, p10, p11], [p00, p11, p01]];
@@ -128,28 +130,28 @@ export function createNavalCoast(map) {
       found.push(polygon);
     };
 
-    const gx0 = (minX + half) * res, gx1 = (maxX + half) * res;
-    const gz0 = (minZ + half) * res, gz1 = (maxZ + half) * res;
-    const i0 = Math.max(0, Math.min(N - 2, Math.floor(gx0) - 1));
-    const i1 = Math.max(0, Math.min(N - 2, Math.floor(gx1)));
-    const j0 = Math.max(0, Math.min(N - 2, Math.floor(gz0) - 1));
-    const j1 = Math.max(0, Math.min(N - 2, Math.floor(gz1)));
-    if (gx1 >= 0 && gx0 <= N - 1 && gz1 >= 0 && gz0 <= N - 1) {
+    const gx0 = (minX - bounds.minX) * res, gx1 = (maxX - bounds.minX) * res;
+    const gz0 = (minZ - bounds.minZ) * res, gz1 = (maxZ - bounds.minZ) * res;
+    const i0 = Math.max(0, Math.min(Nx - 2, Math.floor(gx0) - 1));
+    const i1 = Math.max(0, Math.min(Nx - 2, Math.floor(gx1)));
+    const j0 = Math.max(0, Math.min(Nz - 2, Math.floor(gz0) - 1));
+    const j1 = Math.max(0, Math.min(Nz - 2, Math.floor(gz1)));
+    if (gx1 >= 0 && gx0 <= Nx - 1 && gz1 >= 0 && gz0 <= Nz - 1) {
       for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++)
         for (const polygon of buildCell(i, j)) add(polygon);
     }
 
     if (dock && Math.max(...dock.vertices.map((v) => v.x)) >= minX && Math.min(...dock.vertices.map((v) => v.x)) <= maxX &&
         Math.max(...dock.vertices.map((v) => v.z)) >= minZ && Math.min(...dock.vertices.map((v) => v.z)) <= maxZ) add(dock);
-    if (minX <= -boundary) add(boundaries[0]);
-    if (maxX >= boundary) add(boundaries[1]);
-    if (minZ <= -boundary) add(boundaries[2]);
-    if (maxZ >= boundary) add(boundaries[3]);
+    if (minX <= boundary.minX) add(boundaries[0]);
+    if (maxX >= boundary.maxX) add(boundaries[1]);
+    if (minZ <= boundary.minZ) add(boundaries[2]);
+    if (maxZ >= boundary.maxZ) add(boundaries[3]);
     found.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
     return Object.freeze(found);
   };
 
-  const coast = Object.freeze({ version: 1, seed, half, cell: 1 / res, query });
+  const coast = Object.freeze({ version: 1, seed, bounds, ...(centeredSquare(bounds) ? { half: bounds.maxX } : {}), cell: 1 / res, query });
   cache.set(map, coast);
   return coast;
 }
