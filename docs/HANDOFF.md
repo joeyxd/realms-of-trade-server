@@ -1,5 +1,13 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**IC06a: el compañero alojado resume su propia memoria y el centro muestra el uso de la sesión, 2026-10-25, versión 0.6.0-alpha.115, protocolo 72 (sin cambio), sin SQL:**
+Área AREA17 (area17-market, 236925c, T-1025-25/26). Solo actúa con IC08 encendido (MN_HOSTED_INFERENCE en alpha.env).
+- Tras el 6.º turno recordado sin resumir, el compañero alojado hace una llamada de compactación sobre hasta 8 episodios, solo si el presupuesto deja al menos una llamada libre para la respuesta siguiente; un resumen pagado que falla bloquea la automatización en esa sesión (memory/summary_failed) y un emparejamiento nuevo lo reinicia. El emparejamiento del PC nunca resume solo.
+- PairedCompanion.memoryLoop: llamadas y tope, tokens, resúmenes, fin de la ventana, episodios, resúmenes y bytes del diario. La fila del compañero en marcha del Centro de inferencia muestra uso de la sesión, memoria en KB de 1024 y el aviso de bloqueo (ES/EN).
+- companion-continuity.mjs pasa a server/agent (tools/agent lo reexporta).
+- Pruebas: hosted-memory-loop 7/7, alojado + emparejado + continuidad + centro 80/80, gate del updater 72 archivos en verde.
+- Siguiente: presupuesto alojado ajustable por el dueño (20 llamadas por 2 h para pruebas) e IC06b poda y memoria entre sesiones.
+
 **PT20: vela, oleaje y estela de Wind Waker en la balsa, 2026-10-25, versión 0.6.0-alpha.114, protocolo 72 (sin cambio), sin SQL:**
 Port exacto de Wind Waker (research/wind-waker, fichas 05 y siguientes). Área playtest. Solo cliente: el sim, el servidor y el protocolo no cambian.
 - PT20a (06c23b2, T-1025-09): vela exacta (daGrid): la botavara va a +-30 grados según el lado del viento con la histéresis de WW, la tela se infla y flamea con los pesos y fases de WW, abre en 0,12 s con el sobreinflado de 0,5 s y se recoge al mástil con la vela abajo.
