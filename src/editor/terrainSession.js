@@ -4,15 +4,17 @@
 // reference differs. Tile bytes are shared with the undo history (document.js createDocumentHistory).
 // Pure module: no DOM; it runs in the browser and in Node.
 import { validateDocument } from './document.js';
-import { compileTerrainGrid, createTerrainGrid, TERRAIN_GRID_SEGMENTS, TERRAIN_GRID_SIZE, TERRAIN_MATERIALS,
+import { mapBounds } from '../sim/mapBounds.js';
+import { compileTerrainGrid, createTerrainGrid, TERRAIN_MATERIALS, terrainGridOf,
   terrainTileKey, validateTerrainForMap, validateTerrainGridForMap } from './terrainData.js';
-import { convertDocumentToV5, decodeTile, encodeTile, isTerrainTilesDocument, tilesToGrid, tileSha256, verifyTileBlobs,
-  TERRAIN_TILES_VERSION, TILE_SIZE, TILE_VERTICES, TILES_DOCUMENT_VERSION } from './terrainTiles.js';
+import { convertDocumentToV5, decodeTile, encodeTile, isTerrainTilesDocument, terrainDomain, tilesToGrid, tileSha256,
+  verifyTileBlobs, TERRAIN_DOMAINS, TERRAIN_TILES_VERSION, TILE_SIZE, TILE_VERTICES, TILES_DOCUMENT_VERSION } from './terrainTiles.js';
 import { followGround, sculptTerrainGrid } from './terrainSculpt.js';
 import { paintTerrainGrid } from './terrainPaint.js';
 import { regionTerrainGrid } from './terrainRegion.js';
 
-const HALF = TERRAIN_GRID_SEGMENTS / 2;
+// The grid geometry of tileKeysRegion when no map is given: today's square.
+const SQUARE = (({ minX, maxX, minZ, maxZ }) => ({ minX, minZ, Nx: maxX - minX + 1, Nz: maxZ - minZ + 1 }))(TERRAIN_DOMAINS['terrain-s21-v1']);
 const fail = (code) => { const error = new TypeError(`Terrain session: ${code}`); error.code = code; throw error; };
 const now = () => globalThis.performance?.now?.() ?? Date.now();
 const keyOf = (reference) => terrainTileKey(reference[0], reference[1]);
@@ -36,17 +38,21 @@ function sameReferences(a, b) {
  * Open a document for editing. A v3/v4 is checked with today's rules and converted to v5 (convertDocumentToV5);
  * a v2 stays v2 with an empty grid; a v5 needs every referenced tile in `tiles` (length, sha256 and canonical decode)
  * and a whole grid that passes the edit rules. Returns { document, tiles: Map of the referenced tiles, grid, converted }.
+ * baseRevision is a revision name or a domain record (terrainDomain); its domain must be the base map's bounds
+ * (domain_grid). A record is not compared with the document's revision name.
  */
 export async function openTerrainDocument({ map, baseRevision, document, tiles = null }) {
   const doc = validateDocument(document);
-  if (doc.base.revision !== baseRevision) fail('base_mismatch');
+  if (typeof baseRevision === 'string' && doc.base.revision !== baseRevision) fail('base_mismatch');
+  const domain = terrainDomain(baseRevision), bounds = mapBounds(map);
+  if (domain.minX !== bounds.minX || domain.maxX !== bounds.maxX || domain.minZ !== bounds.minZ || domain.maxZ !== bounds.maxZ) fail('domain_grid');
   if (doc.version === 3 || doc.version === 4) {
     validateTerrainForMap(map, doc.terrain);
     const converted = await convertDocumentToV5(doc);
     const grid = tilesToGrid({ tiles: converted.document.terrain.tiles, blobs: converted.blobs }, baseRevision);
     return { document: converted.document, tiles: converted.blobs, grid, converted: true };
   }
-  if (!isTerrainTilesDocument(doc)) return { document: doc, tiles: new Map(), grid: createTerrainGrid(), converted: false };
+  if (!isTerrainTilesDocument(doc)) return { document: doc, tiles: new Map(), grid: createTerrainGrid(terrainGridOf(map)), converted: false };
   const blobs = new Map();
   for (const [, , sha256] of doc.terrain.tiles) {
     const bytes = tiles instanceof Map ? tiles.get(sha256) : undefined;
@@ -60,15 +66,19 @@ export async function openTerrainDocument({ map, baseRevision, document, tiles =
   return { document: doc, tiles: blobs, grid, converted: false };
 }
 
-// Tile (tx, tz) owns grid rows j = 70tz + v + 280 and columns i = 70tx + u + 280 (D1).
-const tileRow = (tx, tz, v) => (TILE_SIZE * tz + v + HALF) * TERRAIN_GRID_SIZE + TILE_SIZE * tx + HALF;
+// Tile (tx, tz) owns grid rows j = 70tz + v - minZ and columns i = 70tx + u - minX (D1); g is a terrainGridOf.
+const tileRow = (g, tx, tz, v) => (TILE_SIZE * tz + v - g.minZ) * g.Nx + TILE_SIZE * tx - g.minX;
 
-/** GM08: the grid vertex bounds ({ i0, j0, i1, j1 }) of tiles by key ('tx,tz', as sync returns them); null for none. */
-export function tileKeysRegion(keys) {
+/**
+ * GM08: the grid vertex bounds ({ i0, j0, i1, j1 }) of tiles by key ('tx,tz', as sync returns them); null for none.
+ * `map` gives the grid geometry; without it, today's square.
+ */
+export function tileKeysRegion(keys, map = null) {
   let region = null;
+  const g = map ? terrainGridOf(map) : SQUARE;
   for (const key of keys) {
-    const [tx, tz] = key.split(',').map(Number), i0 = TILE_SIZE * tx + HALF, j0 = TILE_SIZE * tz + HALF;
-    const i1 = Math.min(TERRAIN_GRID_SEGMENTS, i0 + TILE_SIZE - 1), j1 = Math.min(TERRAIN_GRID_SEGMENTS, j0 + TILE_SIZE - 1);
+    const [tx, tz] = key.split(',').map(Number), i0 = TILE_SIZE * tx - g.minX, j0 = TILE_SIZE * tz - g.minZ;
+    const i1 = Math.min(g.Nx - 1, i0 + TILE_SIZE - 1), j1 = Math.min(g.Nz - 1, j0 + TILE_SIZE - 1);
     region = region ? { i0: Math.min(region.i0, i0), j0: Math.min(region.j0, j0), i1: Math.max(region.i1, i1), j1: Math.max(region.j1, j1) }
       : { i0, j0, i1, j1 };
   }
@@ -76,10 +86,10 @@ export function tileKeysRegion(keys) {
 }
 
 // Write a decoded tile into its region of the grid; null clears the region (absent means base).
-function writeTile(grid, tx, tz, tile) {
+function writeTile(grid, g, tx, tz, tile) {
   const { deltasMm, weights } = grid;
   for (let v = 0, n = 0; v < TILE_SIZE; v++) {
-    const row = tileRow(tx, tz, v);
+    const row = tileRow(g, tx, tz, v);
     for (let u = 0; u < TILE_SIZE; u++, n++) {
       const k = row + u;
       deltasMm[k] = tile ? tile.deltasMm[n] : 0;
@@ -89,20 +99,20 @@ function writeTile(grid, tx, tz, tile) {
   if (tile) for (const channel of tile.channels) {
     const plane = channel.weights, family = channel.id - 1;
     for (let v = 0, n = 0; v < TILE_SIZE; v++) {
-      const row = tileRow(tx, tz, v);
+      const row = tileRow(g, tx, tz, v);
       for (let u = 0; u < TILE_SIZE; u++, n++) weights[(row + u) * 4 + family] = plane[n];
     }
   }
 }
 
 // The canonical MNT1 blob of one grid tile, exactly as gridToTiles encodes it; null when the tile holds nothing.
-function encodeGridTile(grid, tx, tz, baseRevision) {
+function encodeGridTile(grid, g, tx, tz, baseRevision) {
   const { deltasMm, weights } = grid, deltas = new Int32Array(TILE_VERTICES);
   const planes = TERRAIN_MATERIALS.map(() => new Uint8Array(TILE_VERTICES));
   const [grass, dirt, sand, rock] = planes;
   let used = false;
   for (let v = 0, n = 0; v < TILE_SIZE; v++) {
-    const row = tileRow(tx, tz, v);
+    const row = tileRow(g, tx, tz, v);
     for (let u = 0; u < TILE_SIZE; u++, n++) {
       const k = row + u, w = k * 4;
       deltas[n] = deltasMm[k];
@@ -123,9 +133,11 @@ const PAINT_TOOLS = new Set(['paint', 'erase']);
  * material } (terrainRegion.js): the edit always starts from edit.document, whatever the grid held before.
  */
 export class TerrainSession {
-  constructor({ map, baseRevision, grid = createTerrainGrid(), references = [], lookup = () => undefined }) {
-    if (!map || typeof baseRevision !== 'string') throw new TypeError('TerrainSession requires a base map and revision');
-    this.map = map; this.baseRevision = baseRevision; this.grid = grid; this.lookup = lookup;
+  constructor({ map, baseRevision, grid = null, references = [], lookup = () => undefined }) {
+    if (!map || (typeof baseRevision !== 'string' && (baseRevision === null || typeof baseRevision !== 'object')))
+      throw new TypeError('TerrainSession requires a base map and revision');
+    this.map = map; this.baseRevision = baseRevision; this.lookup = lookup;
+    this.g = terrainGridOf(map); this.grid = grid ?? createTerrainGrid(this.g);
     this.references = copyReferences(references); this.compiled = null; this.pending = false;
   }
 
@@ -157,7 +169,7 @@ export class TerrainSession {
       if (tile.channels.some((channel) => channel.id > TERRAIN_MATERIALS.length)) fail('unknown_material');
       writes.push([after[0], after[1], tile]);
     }
-    for (const [tx, tz, tile] of writes) writeTile(this.grid, tx, tz, tile);
+    for (const [tx, tz, tile] of writes) writeTile(this.grid, this.g, tx, tz, tile);
     this.references = copyReferences(wanted); this.compiled = null;
     return writes.map(([tx, tz]) => terrainTileKey(tx, tz));
   }
@@ -175,10 +187,11 @@ export class TerrainSession {
   // Write a patch into the grid and keep the old values; the outer ring is never editable (base ocean, D2).
   _apply(patch) {
     const { indices } = patch, keys = new Set(), region = { i0: Infinity, j0: Infinity, i1: -1, j1: -1 };
+    const { Nx, Nz, minX, minZ } = this.g;
     for (const k of indices) {
-      const i = k % TERRAIN_GRID_SIZE, j = (k - i) / TERRAIN_GRID_SIZE;
-      if (i === 0 || j === 0 || i === TERRAIN_GRID_SEGMENTS || j === TERRAIN_GRID_SEGMENTS) fail('protected_ground');
-      keys.add(terrainTileKey(Math.floor((i - HALF) / TILE_SIZE), Math.floor((j - HALF) / TILE_SIZE)));
+      const i = k % Nx, j = (k - i) / Nx;
+      if (i === 0 || j === 0 || i === Nx - 1 || j === Nz - 1) fail('protected_ground');
+      keys.add(terrainTileKey(Math.floor((i + minX) / TILE_SIZE), Math.floor((j + minZ) / TILE_SIZE)));
       region.i0 = Math.min(region.i0, i); region.i1 = Math.max(region.i1, i);
       region.j0 = Math.min(region.j0, j); region.j1 = Math.max(region.j1, j);
     }
@@ -259,7 +272,7 @@ export class TerrainSession {
       start = now();
       const encoded = applied.dirtyTiles.map((key) => {
         const [tx, tz] = key.split(',').map(Number);
-        return [tx, tz, encodeGridTile(this.grid, tx, tz, this.baseRevision)];
+        return [tx, tz, encodeGridTile(this.grid, this.g, tx, tz, this.baseRevision)];
       });
       timings.encode = now() - start;
       start = now();

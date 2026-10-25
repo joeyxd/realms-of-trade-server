@@ -6,7 +6,8 @@ import { createGmPublicationAssets } from './gmPublicationAssets.mjs';
 import { resourceLayout } from '../src/data/resources.js';
 import { projectGmContent } from '../src/editor/contentProjection.js';
 import { compileAuthoredResources } from '../src/editor/resourceAdapters.js';
-import { TERRAIN_SAMPLE_COUNT } from '../src/editor/terrainData.js';
+import { terrainGridOf } from '../src/editor/terrainData.js';
+import { mapGrid } from '../src/sim/mapBounds.js';
 import { isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
 import { WORLD_LOAD_LIMITS } from '../src/editor/worldLoad.js';
 
@@ -22,20 +23,27 @@ export class GmTerrainInvalidError extends Error {
   }
 }
 
+// The vertex count of a compiled map's grid; a map with no valid grid is a terrain problem.
+function gridCount(map, reason) {
+  try { return terrainGridOf(map).count; } catch { throw new GmTerrainInvalidError(reason); }
+}
+
 // GM07b2c S7: sha256 hex of the compiled heights as bytes, each value a float32 written little-endian
 // (endian-explicit, so the hash does not depend on the platform's byte order).
-function heightsSha256(heights) {
-  if (!heights || heights.length !== TERRAIN_SAMPLE_COUNT) throw new GmTerrainInvalidError('heights');
+function heightsSha256(map) {
+  const heights = map.heights;
+  if (!heights || heights.length !== gridCount(map, 'heights')) throw new GmTerrainInvalidError('heights');
   const bytes = Buffer.allocUnsafe(heights.length * 4);
   for (let k = 0; k < heights.length; k++) bytes.writeFloatLE(heights[k], k * 4);
   return bytesSha256(bytes);
 }
 
 // GM07b2c S7: sha256 hex of the compiled weight bytes exactly as compileTerrainTiles returns them, the grid at
-// map.terrain.weights: a Uint8Array of 561 x 561 x 4, vertex k = j * 561 + i (x = i - 280, z = j - 280), four u8
+// map.terrain.weights: a Uint8Array of Nx x Nz x 4, vertex k = j * Nx + i (x = minX + i, z = minZ + j), four u8
 // weights per vertex in material id order 1..4 (grass, dirt, sand, rock). Bytes, so no byte order applies.
-function materialsSha256(weights) {
-  if (!(weights instanceof Uint8Array) || weights.length !== TERRAIN_SAMPLE_COUNT * 4) throw new GmTerrainInvalidError('weights');
+function materialsSha256(map) {
+  const weights = map.terrain?.weights;
+  if (!(weights instanceof Uint8Array) || weights.length !== gridCount(map, 'weights') * 4) throw new GmTerrainInvalidError('weights');
   return bytesSha256(weights);
 }
 
@@ -105,10 +113,13 @@ export function createGmPublicationService({ root, runtimeRoot = root, map, base
         collision: { count: colliders.length, sha256: sha256(colliders) }, validation: report };
       if (authoredResources.length) content.resources = { count: authoredResources.length, sha256: sha256(authoredResources) };
       // S7: a v5 names its tiles and hashes its compiled bytes, with this fixed key set; v3/v4 keep their rule.
+      // GM11b3 replaces gridSize with the domain; until then only a square grid has a content shape.
+      const { Nx, Nz } = projected ? mapGrid(projected) : {};
+      if (projected && Nx !== Nz) throw new GmTerrainInvalidError('domain');
       if (projected && tiled) content.terrain = { format: TERRAIN_TILES_CONTENT_FORMAT, version: 1, tileSize: checked.terrain.tileSize,
-        tiles: structuredClone(checked.terrain.tiles), heightsSha256: heightsSha256(projected.heights),
-        materialsSha256: materialsSha256(projected.terrain?.weights) };
-      else if (projected) content.terrain = { gridSize: 561, sha256: sha256(Array.from(projected.heights)),
+        tiles: structuredClone(checked.terrain.tiles), heightsSha256: heightsSha256(projected),
+        materialsSha256: materialsSha256(projected) };
+      else if (projected) content.terrain = { gridSize: Nx, sha256: sha256(Array.from(projected.heights)),
         ...(checked.terrain.version === 2 ? { materialsSha256: sha256(checked.terrain.materials) } : {}) };
       const revision = { schema: PREPARATION_SCHEMA, version, revisionId: sha256(content), content };
       if (current) revision.preparedWith = { gameVersion, protocolVersion, runtime: dependencies.runtime, baselineAssets };

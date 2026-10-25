@@ -1,10 +1,12 @@
 import { gmEditableBaseProps } from './baseIdentity.js';
 import { resourceLayout } from '../data/resources.js';
 import { freshwaterSource } from '../data/freshwater.js';
+import { insetMapBounds, mapBounds, mapGrid } from '../sim/mapBounds.js';
 
 export const TERRAIN_VERSION = 1;
 export const TERRAIN_MATERIAL_VERSION = 2;
 export const TERRAIN_MATERIALS = Object.freeze(['grass', 'dirt', 'sand', 'rock']);
+// Today's 561 x 561 square: the terrain v3/v4 index space and the default shape of a dense grid (GM11b2).
 export const TERRAIN_GRID_SEGMENTS = 560;
 export const TERRAIN_GRID_SIZE = TERRAIN_GRID_SEGMENTS + 1;
 export const TERRAIN_SAMPLE_COUNT = TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE;
@@ -57,11 +59,37 @@ export function validateTerrain(raw) {
   return { version: TERRAIN_MATERIAL_VERSION, samples, materials };
 }
 
-function heightFrom(heights, i, j) { return heights[j * TERRAIN_GRID_SIZE + i]; }
+const gridOfCache = new WeakMap();
+/**
+ * GM11b2: the vertex grid of a base map, frozen { minX, maxX, minZ, maxZ, Nx, Nz, count }: vertex k = j * Nx + i is at
+ * x = minX + i, z = minZ + j. Refused ('base_map') unless the map has 1 m cells, whole-metre bounds and a heights
+ * array of Nx * Nz. Cached per map object.
+ */
+export function terrainGridOf(map) {
+  const cached = gridOfCache.get(map);
+  if (cached) return cached;
+  let b, grid;
+  try { b = mapBounds(map); grid = mapGrid(map); } catch { fail('base_map'); }
+  const { Nx, Nz } = grid;
+  if ((map.res ?? 1) !== 1 || ![b.minX, b.maxX, b.minZ, b.maxZ].every(Number.isInteger) ||
+      Nx !== b.maxX - b.minX + 1 || Nz !== b.maxZ - b.minZ + 1 || !map.heights || map.heights.length !== Nx * Nz) fail('base_map');
+  const result = Object.freeze({ minX: b.minX, maxX: b.maxX, minZ: b.minZ, maxZ: b.maxZ, Nx, Nz, count: Nx * Nz });
+  gridOfCache.set(map, result);
+  return result;
+}
 
-function triangleHeight(heights, i, j, tx, tz) {
-  const h00 = heightFrom(heights, i, j), h10 = heightFrom(heights, i + 1, j);
-  const h01 = heightFrom(heights, i, j + 1), h11 = heightFrom(heights, i + 1, j + 1);
+// The grid of a map the edit rules read: terrainGridOf plus a groundAt to sample.
+function sampledGridOf(map) {
+  const g = terrainGridOf(map);
+  if (typeof map.groundAt !== 'function') fail('base_map');
+  return g;
+}
+
+function heightFrom(heights, Nx, i, j) { return heights[j * Nx + i]; }
+
+function triangleHeight(heights, Nx, i, j, tx, tz) {
+  const h00 = heightFrom(heights, Nx, i, j), h10 = heightFrom(heights, Nx, i + 1, j);
+  const h01 = heightFrom(heights, Nx, i, j + 1), h11 = heightFrom(heights, Nx, i + 1, j + 1);
   if ((i + j) & 1) {
     if (tx + tz <= 1) return h00 + (h10 - h00) * tx + (h01 - h00) * tz;
     return h10 * (1 - tz) + h01 * (1 - tx) + h11 * (tx + tz - 1);
@@ -93,12 +121,13 @@ function protectedMask(map) {
     if (editableIds.has(i)) continue;
     add(`prop:${i}`, p, Math.max(1, p.r || 0));
   }
-  const mask = new Uint8Array(TERRAIN_SAMPLE_COUNT);
+  const b = mapBounds(map), Nx = b.maxX - b.minX + 1, Sx = Nx - 1, Sz = b.maxZ - b.minZ;
+  const mask = new Uint8Array(Nx * (Sz + 1));
   for (const p of points) {
-    const radius = p.radius + 2, cx = p.x + map.half, cz = p.z + map.half;
-    for (let j = Math.max(0, Math.ceil(cz - radius)); j <= Math.min(TERRAIN_GRID_SEGMENTS, Math.floor(cz + radius)); j++)
-      for (let i = Math.max(0, Math.ceil(cx - radius)); i <= Math.min(TERRAIN_GRID_SEGMENTS, Math.floor(cx + radius)); i++)
-        if (Math.hypot(i - cx, j - cz) < radius) mask[j * TERRAIN_GRID_SIZE + i] = 1;
+    const radius = p.radius + 2, cx = p.x - b.minX, cz = p.z - b.minZ;
+    for (let j = Math.max(0, Math.ceil(cz - radius)); j <= Math.min(Sz, Math.floor(cz + radius)); j++)
+      for (let i = Math.max(0, Math.ceil(cx - radius)); i <= Math.min(Sx, Math.floor(cx + radius)); i++)
+        if (Math.hypot(i - cx, j - cz) < radius) mask[j * Nx + i] = 1;
   }
   const result = { points, mask };
   policyCache.set(map, result);
@@ -107,8 +136,10 @@ function protectedMask(map) {
 
 /** Conservative cosmetic scatter policy. The full fitted footprint avoids functional ground. */
 export function canScatterAt(map, x, z, radius = 0) {
-  if (!map || ![x, z, radius, map.half].every(Number.isFinite) || radius < 0 || radius > 24 ||
-      Math.abs(x) + radius >= map.half - 2 || Math.abs(z) + radius >= map.half - 2) return false;
+  if (!map || ![x, z, radius].every(Number.isFinite) || radius < 0 || radius > 24) return false;
+  let edge;
+  try { edge = insetMapBounds(map, 2); } catch { return false; }
+  if (x + radius >= edge.maxX || x - radius <= edge.minX || z + radius >= edge.maxZ || z - radius <= edge.minZ) return false;
   const { points } = protectedMask(map);
   if (points.some(p => Math.hypot(x - p.x, z - p.z) < radius + p.radius + 2)) return false;
   const safe = (px, pz) => {
@@ -161,38 +192,37 @@ export function validateTerrainForMap(baseMap, terrain) {
   return checked;
 }
 
-function markChangedCells(changedCells, index) {
-  const i = index % TERRAIN_GRID_SIZE, j = Math.floor(index / TERRAIN_GRID_SIZE);
+function markChangedCells(changedCells, index, Nx, Nz) {
+  const i = index % Nx, j = Math.floor(index / Nx);
   for (let dz = -1; dz <= 0; dz++) for (let dx = -1; dx <= 0; dx++) {
     const ci = i + dx, cj = j + dz;
-    if (ci >= 0 && ci < TERRAIN_GRID_SEGMENTS && cj >= 0 && cj < TERRAIN_GRID_SEGMENTS)
-      changedCells[cj * TERRAIN_GRID_SEGMENTS + ci] = 1;
+    if (ci >= 0 && ci < Nx - 1 && cj >= 0 && cj < Nz - 1) changedCells[cj * (Nx - 1) + ci] = 1;
   }
 }
 
 // The one compile behind terrain v1/v2 and grids. heights: a Float32Array copy of the base with the deltas added
 // (or the base array itself when no height changed); changedCells: the cells around every height delta (paint never
-// marks a cell); paint: four weights per vertex, or null.
+// marks a cell); paint: four weights per vertex, or null. changedCells holds (Nx - 1) * (Nz - 1) cells of the base grid.
 function projectTerrain(baseMap, heights, changedCells, paint, terrain) {
-  const half = baseMap.half;
+  const { minX, minZ, Nx, Nz } = terrainGridOf(baseMap), Sx = Nx - 1, Sz = Nz - 1;
   const heightAt = (x, z) => {
-    const wx = x + half, wz = z + half;
-    if (wx < 0 || wx > TERRAIN_GRID_SEGMENTS || wz < 0 || wz > TERRAIN_GRID_SEGMENTS) return baseMap.heightAt(x, z);
-    const fx = Math.min(TERRAIN_GRID_SEGMENTS - 1e-7, wx), fz = Math.min(TERRAIN_GRID_SEGMENTS - 1e-7, wz);
+    const wx = x - minX, wz = z - minZ;
+    if (wx < 0 || wx > Sx || wz < 0 || wz > Sz) return baseMap.heightAt(x, z);
+    const fx = Math.min(Sx - 1e-7, wx), fz = Math.min(Sz - 1e-7, wz);
     const i = Math.floor(fx), j = Math.floor(fz);
-    if (!changedCells[j * TERRAIN_GRID_SEGMENTS + i]) return baseMap.heightAt(x, z);
-    return triangleHeight(heights, i, j, fx - i, fz - j);
+    if (!changedCells[j * Sx + i]) return baseMap.heightAt(x, z);
+    return triangleHeight(heights, Nx, i, j, fx - i, fz - j);
   };
   const groundAt = (x, z) => {
     if (!isAffected(x, z)) return baseMap.groundAt(x, z);
     return baseMap.onDock?.(x, z) ? Math.max(heightAt(x, z), baseMap.dock?.deckY ?? 1.05) : heightAt(x, z);
   };
   function isAffected(x, z) {
-    const wx = x + half, wz = z + half;
-    if (wx < 0 || wx > TERRAIN_GRID_SEGMENTS || wz < 0 || wz > TERRAIN_GRID_SEGMENTS) return false;
-    const i = Math.floor(Math.min(TERRAIN_GRID_SEGMENTS - 1e-7, wx));
-    const j = Math.floor(Math.min(TERRAIN_GRID_SEGMENTS - 1e-7, wz));
-    return !!changedCells[j * TERRAIN_GRID_SEGMENTS + i];
+    const wx = x - minX, wz = z - minZ;
+    if (wx < 0 || wx > Sx || wz < 0 || wz > Sz) return false;
+    const i = Math.floor(Math.min(Sx - 1e-7, wx));
+    const j = Math.floor(Math.min(Sz - 1e-7, wz));
+    return !!changedCells[j * Sx + i];
   }
   const automaticMaterialAt = (x, z) => {
     if (!isAffected(x, z)) return baseMap.materialAt(x, z);
@@ -207,10 +237,10 @@ function projectTerrain(baseMap, heights, changedCells, paint, terrain) {
   // Same alternating triangles as heights and the GPU mesh; no independent splat grid.
   const materialWeightsAt = (x, z, out = [0, 0, 0, 0]) => {
     out.fill(0);
-    const wx = x + half, wz = z + half;
-    if (!paint || wx < 0 || wz < 0 || wx > 560 || wz > 560) return out;
-    const i = Math.min(559, Math.floor(wx)), j = Math.min(559, Math.floor(wz));
-    const tx = wx - i, tz = wz - j, a = j * TERRAIN_GRID_SIZE + i, b = a + 1, c = a + TERRAIN_GRID_SIZE, d = c + 1;
+    const wx = x - minX, wz = z - minZ;
+    if (!paint || wx < 0 || wz < 0 || wx > Sx || wz > Sz) return out;
+    const i = Math.min(Sx - 1, Math.floor(wx)), j = Math.min(Sz - 1, Math.floor(wz));
+    const tx = wx - i, tz = wz - j, a = j * Nx + i, b = a + 1, c = a + Nx, d = c + 1;
     let i0, i1, i2, w0, w1, w2;
     if ((i + j) & 1) {
       if (tx + tz <= 1) { i0 = a; i1 = b; i2 = c; w0 = 1 - tx - tz; w1 = tx; w2 = tz; }
@@ -231,9 +261,11 @@ function projectTerrain(baseMap, heights, changedCells, paint, terrain) {
     return material;
   };
   // terrainPaint: the four weights per vertex this map draws (null: none), compared by the editor preview (GM08).
-  return { ...baseMap, heights, heightAt, groundAt, materialAt, fullsegments: TERRAIN_GRID_SEGMENTS,
+  const projected = { ...baseMap, heights, heightAt, groundAt, materialAt, fullsegments: Sx,
     gmTerrain: true, terrain, materialWeightsAt, terrainPaint: paint,
     terrainProjection: true, terrainSource: baseMap.terrainSource || baseMap };
+  if (Nx !== Nz) delete projected.fullsegments;
+  return projected;
 }
 
 export function compileTerrainMap(baseMap, terrain) {
@@ -244,22 +276,25 @@ export function compileTerrainMap(baseMap, terrain) {
   const heights = checked.samples.length ? new Float32Array(baseMap.heights) : baseMap.heights;
   const changedCells = new Uint8Array(TERRAIN_GRID_SEGMENTS * TERRAIN_GRID_SEGMENTS);
   for (const [index, deltaMm] of checked.samples) heights[index] += deltaMm / 1000;
-  for (const [index] of checked.samples) markChangedCells(changedCells, index);
+  for (const [index] of checked.samples) markChangedCells(changedCells, index, TERRAIN_GRID_SIZE, TERRAIN_GRID_SIZE);
   const paint = hasPaint ? new Uint8Array(TERRAIN_SAMPLE_COUNT * 4) : null;
   for (const [index, ...weights] of checked.materials || []) paint.set(weights, index * 4);
   return projectTerrain(baseMap, heights, changedCells, paint, checked);
 }
 
-// --- GM07 dense grids (D12: the runtime grid stays 561 x 561; GM06b generalizes it). ---
+// --- GM07 dense grids (GM11b2: the shape follows the base map bounds; today's world is the 561 x 561 square). ---
 
 /**
- * A terrain grid: deltasMm[k] is the height delta in mm of vertex k = j*561 + i (x = i - 280, z = j - 280) and
- * weights[k*4 + c] its paint weight of family c (grass, dirt, sand, rock = material ids 1..4). Tiles are derived
- * from a grid and decoded into one (terrainTiles.js).
+ * A terrain grid: deltasMm[k] is the height delta in mm of vertex k = j * Nx + i (x = minX + i, z = minZ + j of the
+ * base map's terrainGridOf) and weights[k*4 + c] its paint weight of family c (grass, dirt, sand, rock = material ids
+ * 1..4). shape = { Nx, Nz } (a terrainGridOf result fits); default and a grid with no Nx/Nz: today's 561 square. Tiles
+ * are derived from a grid and decoded into one (terrainTiles.js).
  */
-export function createTerrainGrid() {
-  return { deltasMm: new Int32Array(TERRAIN_SAMPLE_COUNT), weights: new Uint8Array(TERRAIN_SAMPLE_COUNT * 4) };
+export function createTerrainGrid({ Nx, Nz } = { Nx: TERRAIN_GRID_SIZE, Nz: TERRAIN_GRID_SIZE }) {
+  return { Nx, Nz, deltasMm: new Int32Array(Nx * Nz), weights: new Uint8Array(Nx * Nz * 4) };
 }
+
+const gridShape = grid => ({ Nx: grid.Nx ?? TERRAIN_GRID_SIZE, Nz: grid.Nz ?? TERRAIN_GRID_SIZE });
 
 /** Key of tile (tx, tz) in dirty tile lists: 'tx,tz'. */
 export function terrainTileKey(tx, tz) {
@@ -269,8 +304,18 @@ export function terrainTileKey(tx, tz) {
 const TILE_KEY = /^(-?[0-9]{1,5}),(-?[0-9]{1,5})$/;
 
 function checkGridShape(grid) {
-  if (!grid || !(grid.deltasMm instanceof Int32Array) || grid.deltasMm.length !== TERRAIN_SAMPLE_COUNT ||
-      !(grid.weights instanceof Uint8Array) || grid.weights.length !== TERRAIN_SAMPLE_COUNT * 4) fail('grid');
+  if (!grid) fail('grid');
+  const { Nx, Nz } = gridShape(grid);
+  if (!Number.isSafeInteger(Nx) || !Number.isSafeInteger(Nz) || Nx < 2 || Nz < 2 ||
+      !(grid.deltasMm instanceof Int32Array) || grid.deltasMm.length !== Nx * Nz ||
+      !(grid.weights instanceof Uint8Array) || grid.weights.length !== Nx * Nz * 4) fail('grid');
+}
+
+// The grid of a base map for a dense grid: terrainGridOf (plus a groundAt to sample), and the grid of the same shape.
+function gridFor(baseMap, grid, sampled) {
+  const g = sampled ? sampledGridOf(baseMap) : terrainGridOf(baseMap), { Nx, Nz } = gridShape(grid);
+  if (Nx !== g.Nx || Nz !== g.Nz) fail('grid');
+  return g;
 }
 
 function touched(deltasMm, weights, k) {
@@ -278,15 +323,12 @@ function touched(deltasMm, weights, k) {
   return deltasMm[k] !== 0 || weights[w] !== 0 || weights[w + 1] !== 0 || weights[w + 2] !== 0 || weights[w + 3] !== 0;
 }
 
-// The outer vertex ring (x or z = +/-280) is not editable: the world edge stays base ocean, and x = 280 or z = 280
-// belongs to no tile.
-function checkGridRing({ deltasMm, weights }) {
-  const last = TERRAIN_GRID_SEGMENTS * TERRAIN_GRID_SIZE;
-  for (let n = 0; n < TERRAIN_GRID_SIZE; n++) {
-    if (touched(deltasMm, weights, n) || touched(deltasMm, weights, last + n) ||
-        touched(deltasMm, weights, n * TERRAIN_GRID_SIZE) ||
-        touched(deltasMm, weights, n * TERRAIN_GRID_SIZE + TERRAIN_GRID_SEGMENTS)) fail('grid_edge');
-  }
+// The outer vertex ring (x = minX or maxX, z = minZ or maxZ) is not editable: the world edge stays base ocean, and
+// x = maxX or z = maxZ belongs to no tile.
+function checkGridRing(grid) {
+  const { deltasMm, weights } = grid, { Nx, Nz } = gridShape(grid), last = (Nz - 1) * Nx;
+  for (let n = 0; n < Nx; n++) if (touched(deltasMm, weights, n) || touched(deltasMm, weights, last + n)) fail('grid_edge');
+  for (let n = 0; n < Nz; n++) if (touched(deltasMm, weights, n * Nx) || touched(deltasMm, weights, n * Nx + Nx - 1)) fail('grid_edge');
 }
 
 /** Structural check of a grid: its shape, an untouched outer ring, every per-vertex weight sum <= 255. */
@@ -306,19 +348,19 @@ export function validateTerrainGrid(grid) {
  */
 export function compileTerrainGrid(baseMap, grid) {
   validateTerrainGrid(grid);
-  checkBaseMap(baseMap, false);
+  const { Nx, Nz, count } = gridFor(baseMap, grid, false);
   const { deltasMm, weights } = grid;
   let hasHeights = false, hasPaint = false;
-  for (let k = 0; k < TERRAIN_SAMPLE_COUNT; k++) if (deltasMm[k] !== 0) { hasHeights = true; break; }
+  for (let k = 0; k < count; k++) if (deltasMm[k] !== 0) { hasHeights = true; break; }
   for (let w = 0; w < weights.length; w++) if (weights[w] !== 0) { hasPaint = true; break; }
   if (!hasHeights && !hasPaint) return { ...baseMap, gmTerrain: false, terrain: grid };
   const heights = hasHeights ? new Float32Array(baseMap.heights) : baseMap.heights;
-  const changedCells = new Uint8Array(TERRAIN_GRID_SEGMENTS * TERRAIN_GRID_SEGMENTS);
-  if (hasHeights) for (let k = 0; k < TERRAIN_SAMPLE_COUNT; k++) {
+  const changedCells = new Uint8Array((Nx - 1) * (Nz - 1));
+  if (hasHeights) for (let k = 0; k < count; k++) {
     const deltaMm = deltasMm[k];
     if (deltaMm === 0) continue;
     heights[k] += deltaMm / 1000;
-    markChangedCells(changedCells, k);
+    markChangedCells(changedCells, k, Nx, Nz);
   }
   return projectTerrain(baseMap, heights, changedCells, hasPaint ? new Uint8Array(weights) : null, grid);
 }
@@ -331,21 +373,21 @@ const editPolicyCache = new WeakMap();
 // protectedMask: codes[k] is 0 free, 1 protected_ground (dock, lawless, base ground < 0.75 m), 2 protected_route,
 // 3 protected_area; ground[k] is the base groundAt, for the after < 0.75 m rule. A map whose groundAt was replaced
 // gets a new policy; otherwise the base map must not change once it has been validated.
-function editPolicy(baseMap) {
+function editPolicy(baseMap, g) {
   let policy = editPolicyCache.get(baseMap);
   if (!policy || policy.groundAt !== baseMap.groundAt) {
-    policy = { groundAt: baseMap.groundAt, codes: new Uint8Array(TERRAIN_SAMPLE_COUNT).fill(UNKNOWN),
-      ground: new Float64Array(TERRAIN_SAMPLE_COUNT), mask: protectedMask(baseMap).mask };
+    policy = { groundAt: baseMap.groundAt, codes: new Uint8Array(g.count).fill(UNKNOWN),
+      ground: new Float64Array(g.count), mask: protectedMask(baseMap).mask };
     editPolicyCache.set(baseMap, policy);
   }
   return policy;
 }
 
-function baseCode(baseMap, policy, k) {
+function baseCode(baseMap, policy, g, k) {
   let code = policy.codes[k];
   if (code !== UNKNOWN) return code;
-  const i = k % TERRAIN_GRID_SIZE, j = (k - i) / TERRAIN_GRID_SIZE;
-  const x = -baseMap.half + i, z = -baseMap.half + j, before = baseMap.groundAt(x, z);
+  const i = k % g.Nx, j = (k - i) / g.Nx;
+  const x = g.minX + i, z = g.minZ + j, before = baseMap.groundAt(x, z);
   policy.ground[k] = before;
   if (baseMap.onDock?.(x, z) || baseMap.lawlessAt?.(x, z) || before < TERRAIN_MIN_HEIGHT) code = GROUND;
   else {
@@ -358,31 +400,33 @@ function baseCode(baseMap, policy, k) {
 }
 
 // Same precedence as validateTerrainForMap: ground (including after < 0.75 m), then route, then area.
-function vertexCode(baseMap, policy, deltasMm, k) {
-  const code = baseCode(baseMap, policy, k);
+function vertexCode(baseMap, policy, g, deltasMm, k) {
+  const code = baseCode(baseMap, policy, g, k);
   if (code === GROUND) return GROUND;
   const deltaMm = deltasMm[k];
   return deltaMm !== 0 && policy.ground[k] + deltaMm / 1000 < TERRAIN_MIN_HEIGHT ? GROUND : code;
 }
 
 // Rows to check as [j, i0, i1] triples in ascending vertex order: the whole grid, or the union of the dirty tiles.
-function checkedRows(half, dirtyTiles) {
+function checkedRows(g, dirtyTiles) {
+  const { Nx, Nz } = g, lastI = Nx - 1, lastJ = Nz - 1;
   if (dirtyTiles === undefined) {
-    const rows = new Int32Array(TERRAIN_GRID_SIZE * 3);
-    for (let j = 0; j < TERRAIN_GRID_SIZE; j++) { rows[j * 3] = j; rows[j * 3 + 2] = TERRAIN_GRID_SEGMENTS; }
+    const rows = new Int32Array(Nz * 3);
+    for (let j = 0; j < Nz; j++) { rows[j * 3] = j; rows[j * 3 + 2] = lastI; }
     return rows;
   }
   if (!Array.isArray(dirtyTiles)) fail('tile_key');
-  // Tiles of the grid: the far ring (x or z = half) belongs to none, so -4..3 for the 561 grid.
-  const first = Math.floor(-half / TERRAIN_TILE_SIZE), last = Math.floor((half - 1) / TERRAIN_TILE_SIZE);
+  // Tiles of the grid: the far ring (x = maxX or z = maxZ) belongs to none, so -4..3 for the 561 grid.
+  const firstX = Math.floor(g.minX / TERRAIN_TILE_SIZE), lastX = Math.floor((g.maxX - 1) / TERRAIN_TILE_SIZE);
+  const firstZ = Math.floor(g.minZ / TERRAIN_TILE_SIZE), lastZ = Math.floor((g.maxZ - 1) / TERRAIN_TILE_SIZE);
   const tiles = new Map();
   for (const key of dirtyTiles) {
     const match = typeof key === 'string' ? TILE_KEY.exec(key) : null;
     if (!match) fail('tile_key');
     const tx = Number(match[1]), tz = Number(match[2]);
-    if (tx < first || tx > last || tz < first || tz > last) fail('tile_key');
-    const i0 = TERRAIN_TILE_SIZE * tx + half, j0 = TERRAIN_TILE_SIZE * tz + half;
-    tiles.set(j0 * TERRAIN_GRID_SIZE + i0, [i0, j0]);
+    if (tx < firstX || tx > lastX || tz < firstZ || tz > lastZ) fail('tile_key');
+    const i0 = TERRAIN_TILE_SIZE * tx - g.minX, j0 = TERRAIN_TILE_SIZE * tz - g.minZ;
+    tiles.set(j0 * (Nx + TERRAIN_TILE_SIZE) + i0, [i0, j0]);
   }
   const sorted = [...tiles.values()].sort((a, b) => a[1] - b[1] || a[0] - b[0]);
   const rows = [];
@@ -390,9 +434,9 @@ function checkedRows(half, dirtyTiles) {
     let end = start;
     while (end < sorted.length && sorted[end][1] === sorted[start][1]) end++;
     const j0 = sorted[start][1];
-    for (let j = Math.max(0, j0); j <= Math.min(TERRAIN_GRID_SEGMENTS, j0 + TERRAIN_TILE_SIZE - 1); j++)
+    for (let j = Math.max(0, j0); j <= Math.min(lastJ, j0 + TERRAIN_TILE_SIZE - 1); j++)
       for (let t = start; t < end; t++)
-        rows.push(j, Math.max(0, sorted[t][0]), Math.min(TERRAIN_GRID_SEGMENTS, sorted[t][0] + TERRAIN_TILE_SIZE - 1));
+        rows.push(j, Math.max(0, sorted[t][0]), Math.min(lastI, sorted[t][0] + TERRAIN_TILE_SIZE - 1));
     start = end;
   }
   return Int32Array.from(rows);
@@ -407,13 +451,12 @@ function checkedRows(half, dirtyTiles) {
  */
 export function validateTerrainGridForMap(baseMap, grid, { dirtyTiles } = {}) {
   checkGridShape(grid);
-  checkBaseMap(baseMap, true);
-  if (baseMap.half !== TERRAIN_GRID_SEGMENTS / 2) fail('base_map');
+  const g = gridFor(baseMap, grid, true), { Nx, Nz } = g;
   checkGridRing(grid);
-  const rows = checkedRows(baseMap.half, dirtyTiles);
+  const rows = checkedRows(g, dirtyTiles);
   const { deltasMm, weights } = grid, heights = baseMap.heights;
   for (let r = 0; r < rows.length; r += 3) {
-    const row = rows[r] * TERRAIN_GRID_SIZE;
+    const row = rows[r] * Nx;
     for (let k = row + rows[r + 1], end = row + rows[r + 2]; k <= end; k++) {
       const w = k * 4;
       if (weights[w] + weights[w + 1] + weights[w + 2] + weights[w + 3] > 255) fail('material_weight');
@@ -423,15 +466,15 @@ export function validateTerrainGridForMap(baseMap, grid, { dirtyTiles } = {}) {
       if (!(height >= TERRAIN_GRID_MIN_HEIGHT && height <= TERRAIN_GRID_MAX_HEIGHT)) fail('height_range');
     }
   }
-  const policy = editPolicy(baseMap);
+  const policy = editPolicy(baseMap, g);
   for (let r = 0; r < rows.length; r += 3) {
     const j = rows[r];
     for (let i = rows[r + 1], end = rows[r + 2]; i <= end; i++) {
-      if (!touched(deltasMm, weights, j * TERRAIN_GRID_SIZE + i)) continue;
+      if (!touched(deltasMm, weights, j * Nx + i)) continue;
       for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
         const xIndex = i + dx, zIndex = j + dz;
-        if (xIndex < 0 || xIndex > TERRAIN_GRID_SEGMENTS || zIndex < 0 || zIndex > TERRAIN_GRID_SEGMENTS) continue;
-        const code = vertexCode(baseMap, policy, deltasMm, zIndex * TERRAIN_GRID_SIZE + xIndex);
+        if (xIndex < 0 || xIndex >= Nx || zIndex < 0 || zIndex >= Nz) continue;
+        const code = vertexCode(baseMap, policy, g, deltasMm, zIndex * Nx + xIndex);
         if (code !== FREE) fail(FORBIDDEN[code]);
       }
     }
@@ -444,15 +487,14 @@ export function validateTerrainGridForMap(baseMap, grid, { dirtyTiles } = {}) {
  * the base rules. An edit there still needs after >= 0.75 m and the height range. Fills the policy cache.
  */
 export function terrainEditableMask(baseMap) {
-  checkBaseMap(baseMap, true);
-  if (baseMap.half !== TERRAIN_GRID_SEGMENTS / 2) fail('base_map');
-  const policy = editPolicy(baseMap), codes = policy.codes, mask = new Uint8Array(TERRAIN_SAMPLE_COUNT);
-  for (let k = 0; k < TERRAIN_SAMPLE_COUNT; k++) baseCode(baseMap, policy, k);
-  for (let j = 1; j < TERRAIN_GRID_SEGMENTS; j++) for (let i = 1; i < TERRAIN_GRID_SEGMENTS; i++) {
+  const g = sampledGridOf(baseMap), { Nx, Nz, count } = g;
+  const policy = editPolicy(baseMap, g), codes = policy.codes, mask = new Uint8Array(count);
+  for (let k = 0; k < count; k++) baseCode(baseMap, policy, g, k);
+  for (let j = 1; j < Nz - 1; j++) for (let i = 1; i < Nx - 1; i++) {
     let free = 1;
     for (let dz = -1; dz <= 1 && free; dz++) for (let dx = -1; dx <= 1; dx++)
-      if (codes[(j + dz) * TERRAIN_GRID_SIZE + i + dx] !== FREE) { free = 0; break; }
-    mask[j * TERRAIN_GRID_SIZE + i] = free;
+      if (codes[(j + dz) * Nx + i + dx] !== FREE) { free = 0; break; }
+    mask[j * Nx + i] = free;
   }
   return mask;
 }
@@ -470,25 +512,25 @@ const editWeightCache = new WeakMap();
 export function terrainEditWeights(baseMap) {
   const cached = editWeightCache.get(baseMap);
   if (cached && cached.groundAt === baseMap.groundAt) return cached.weights;
-  const mask = terrainEditableMask(baseMap), N = TERRAIN_GRID_SIZE, distance = new Float32Array(TERRAIN_SAMPLE_COUNT);
-  for (let k = 0; k < TERRAIN_SAMPLE_COUNT; k++) distance[k] = mask[k] ? Infinity : 0;
+  const mask = terrainEditableMask(baseMap), { Nx, Nz, count } = terrainGridOf(baseMap), distance = new Float32Array(count);
+  for (let k = 0; k < count; k++) distance[k] = mask[k] ? Infinity : 0;
   // Two chamfer passes (1 and sqrt 2): distance to the nearest vertex off the mask, exact enough below a few metres.
-  for (let j = 0; j < N; j++) for (let i = 0, k = j * N; i < N; i++, k++) {
+  for (let j = 0; j < Nz; j++) for (let i = 0, k = j * Nx; i < Nx; i++, k++) {
     if (distance[k] === 0) continue;
     let d = distance[k];
     if (i > 0) d = Math.min(d, distance[k - 1] + 1);
-    if (j > 0) d = Math.min(d, distance[k - N] + 1, i > 0 ? distance[k - N - 1] + Math.SQRT2 : d, i < N - 1 ? distance[k - N + 1] + Math.SQRT2 : d);
+    if (j > 0) d = Math.min(d, distance[k - Nx] + 1, i > 0 ? distance[k - Nx - 1] + Math.SQRT2 : d, i < Nx - 1 ? distance[k - Nx + 1] + Math.SQRT2 : d);
     distance[k] = d;
   }
-  for (let j = N - 1; j >= 0; j--) for (let i = N - 1, k = j * N + i; i >= 0; i--, k--) {
+  for (let j = Nz - 1; j >= 0; j--) for (let i = Nx - 1, k = j * Nx + i; i >= 0; i--, k--) {
     if (distance[k] === 0) continue;
     let d = distance[k];
-    if (i < N - 1) d = Math.min(d, distance[k + 1] + 1);
-    if (j < N - 1) d = Math.min(d, distance[k + N] + 1, i < N - 1 ? distance[k + N + 1] + Math.SQRT2 : d, i > 0 ? distance[k + N - 1] + Math.SQRT2 : d);
+    if (i < Nx - 1) d = Math.min(d, distance[k + 1] + 1);
+    if (j < Nz - 1) d = Math.min(d, distance[k + Nx] + 1, i < Nx - 1 ? distance[k + Nx + 1] + Math.SQRT2 : d, i > 0 ? distance[k + Nx - 1] + Math.SQRT2 : d);
     distance[k] = d;
   }
-  const weights = new Float32Array(TERRAIN_SAMPLE_COUNT);
-  for (let k = 0; k < TERRAIN_SAMPLE_COUNT; k++) {
+  const weights = new Float32Array(count);
+  for (let k = 0; k < count; k++) {
     const t = Math.min(1, distance[k] / TERRAIN_EDIT_FEATHER);
     weights[k] = t * t * (3 - 2 * t);
   }

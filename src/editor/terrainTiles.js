@@ -1,7 +1,7 @@
 // GM07 terrain tiles (docs/briefs/gm07-terrain-tiles.md D1-D7): the domain table, tile math, the canonical MNT1
 // tile blob and its sha256 identity, dense grid <-> tiles, and the document v2/v3/v4 -> v5 converter.
 // Pure module: no DOM and no node: imports, it runs in the browser and in Node.
-import { TERRAIN_GRID_SEGMENTS, TERRAIN_GRID_SIZE, TERRAIN_MATERIALS, TERRAIN_TILE_SIZE, compileTerrainGrid,
+import { TERRAIN_GRID_SIZE, TERRAIN_MATERIALS, TERRAIN_TILE_SIZE, compileTerrainGrid,
   createTerrainGrid, validateTerrain, validateTerrainGrid, validateTerrainGridForMap } from './terrainData.js';
 
 export { terrainTileKey } from './terrainData.js';
@@ -38,9 +38,21 @@ export const TERRAIN_DOMAINS = Object.freeze({
   'terrain-s21-v1': Object.freeze({ minX: -280, maxX: 280, minZ: -280, maxZ: 280, cell: 1 }),
 });
 
-export function terrainDomain(baseRevision) {
-  if (typeof baseRevision !== 'string' || !Object.hasOwn(TERRAIN_DOMAINS, baseRevision)) fail('unknown_domain');
-  return TERRAIN_DOMAINS[baseRevision];
+const tileEdge = value => Number.isInteger(value) && value % TILE_SIZE === 0;
+
+/**
+ * The domain of a base revision: the registry entry of a revision name, or (GM11b2) a frozen copy of a domain record
+ * { minX, maxX, minZ, maxZ, cell: 1 } whose four edges are multiples of the tile size (else 'domain'). Every function
+ * below that takes `baseRevision` accepts either.
+ */
+export function terrainDomain(source) {
+  if (record(source)) {
+    if (![source.minX, source.maxX, source.minZ, source.maxZ].every(tileEdge) || source.minX >= source.maxX ||
+        source.minZ >= source.maxZ || source.cell !== 1) fail('domain');
+    return Object.freeze({ minX: source.minX, maxX: source.maxX, minZ: source.minZ, maxZ: source.maxZ, cell: 1 });
+  }
+  if (typeof source !== 'string' || !Object.hasOwn(TERRAIN_DOMAINS, source)) fail('unknown_domain');
+  return TERRAIN_DOMAINS[source];
 }
 
 const tileRanges = new WeakMap();
@@ -238,11 +250,12 @@ export function terrainTilesNotReady() {
   return error;
 }
 
-// The dense grid is the runtime 561 x 561 grid (D12): only a domain of exactly that extent maps onto it.
-function gridDomain(baseRevision) {
-  const domain = terrainDomain(baseRevision), half = TERRAIN_GRID_SEGMENTS / 2;
-  if (domain.cell !== 1 || domain.minX !== -half || domain.maxX !== half || domain.minZ !== -half ||
-      domain.maxZ !== half) fail('domain_grid');
+// The dense grid has one vertex per metre of its domain: Nx = maxX - minX + 1, Nz = maxZ - minZ + 1 (GM11b2). A grid
+// with no Nx/Nz is today's 561 square.
+const gridVertices = domain => ({ Nx: domain.maxX - domain.minX + 1, Nz: domain.maxZ - domain.minZ + 1 });
+function gridDomain(baseRevision, grid) {
+  const domain = terrainDomain(baseRevision), { Nx, Nz } = gridVertices(domain);
+  if (domain.cell !== 1 || Nx !== (grid?.Nx ?? TERRAIN_GRID_SIZE) || Nz !== (grid?.Nz ?? TERRAIN_GRID_SIZE)) fail('domain_grid');
   return domain;
 }
 
@@ -251,9 +264,9 @@ function gridDomain(baseRevision) {
  * Map sha256 -> Uint8Array. A tile with no height delta and no weight is absent. Async (sha256).
  */
 export async function gridToTiles(grid, baseRevision) {
-  const domain = gridDomain(baseRevision), range = terrainTileRange(baseRevision);
+  const domain = gridDomain(baseRevision, grid), range = terrainTileRange(baseRevision);
   validateTerrainGrid(grid);
-  const { deltasMm, weights } = grid, offset = -domain.minX;
+  const { deltasMm, weights } = grid, { Nx } = gridVertices(domain), originX = -domain.minX, originZ = -domain.minZ;
   const deltas = new Int32Array(TILE_VERTICES);
   const planes = TERRAIN_MATERIALS.map(() => new Uint8Array(TILE_VERTICES));
   const [grass, dirt, sand, rock] = planes;
@@ -261,7 +274,7 @@ export async function gridToTiles(grid, baseRevision) {
   for (let tz = range.tzMin; tz <= range.tzMax; tz++) for (let tx = range.txMin; tx <= range.txMax; tx++) {
     let used = false;
     for (let v = 0, n = 0; v < TILE_SIZE; v++) {
-      const row = (TILE_SIZE * tz + v + offset) * TERRAIN_GRID_SIZE + TILE_SIZE * tx + offset;
+      const row = (TILE_SIZE * tz + v + originZ) * Nx + TILE_SIZE * tx + originX;
       for (let u = 0; u < TILE_SIZE; u++, n++) {
         const k = row + u, w = k * 4;
         deltas[n] = deltasMm[k];
@@ -289,11 +302,11 @@ export async function gridToTiles(grid, baseRevision) {
  * ids other than 1..4 are refused until GM10 (unknown_material).
  */
 export function tilesToGrid(source, baseRevision) {
-  const domain = gridDomain(baseRevision);
+  const domain = terrainDomain(baseRevision), shape = gridVertices(domain);
   if (!source || typeof source !== 'object') fail('tile_blobs');
   const references = validateTileReferences(source.tiles, baseRevision);
   if (!(source.blobs instanceof Map)) fail('tile_blobs');
-  const grid = createTerrainGrid(), { deltasMm, weights } = grid, offset = -domain.minX;
+  const grid = createTerrainGrid(shape), { deltasMm, weights } = grid, originX = -domain.minX, originZ = -domain.minZ;
   for (const [tx, tz, sha256, length] of references) {
     const bytes = source.blobs.get(sha256);
     if (bytes === undefined) fail('tile_missing');
@@ -303,13 +316,13 @@ export function tilesToGrid(source, baseRevision) {
     if (tile.tx !== tx || tile.tz !== tz) fail('tile_key_mismatch');
     for (const channel of tile.channels) if (channel.id > TERRAIN_MATERIALS.length) fail('unknown_material');
     for (let v = 0, n = 0; v < TILE_SIZE; v++) {
-      const row = (TILE_SIZE * tz + v + offset) * TERRAIN_GRID_SIZE + TILE_SIZE * tx + offset;
+      const row = (TILE_SIZE * tz + v + originZ) * shape.Nx + TILE_SIZE * tx + originX;
       for (let u = 0; u < TILE_SIZE; u++, n++) deltasMm[row + u] = tile.deltasMm[n];
     }
     for (const channel of tile.channels) {
       const plane = channel.weights, family = channel.id - 1;
       for (let v = 0, n = 0; v < TILE_SIZE; v++) {
-        const row = (TILE_SIZE * tz + v + offset) * TERRAIN_GRID_SIZE + TILE_SIZE * tx + offset;
+        const row = (TILE_SIZE * tz + v + originZ) * shape.Nx + TILE_SIZE * tx + originX;
         for (let u = 0; u < TILE_SIZE; u++, n++) weights[(row + u) * 4 + family] = plane[n];
       }
     }
@@ -341,9 +354,10 @@ export function validateTerrainTilesForMap(baseMap, source, baseRevision, option
   return validateTerrainGridForMap(baseMap, tilesToGrid(source, baseRevision), options);
 }
 
+// Terrain v1/v2 indices are 561-based (today's square).
 const onOuterRing = index => {
   const i = index % TERRAIN_GRID_SIZE, j = (index - i) / TERRAIN_GRID_SIZE;
-  return i === 0 || j === 0 || i === TERRAIN_GRID_SEGMENTS || j === TERRAIN_GRID_SEGMENTS;
+  return i === 0 || j === 0 || i === TERRAIN_GRID_SIZE - 1 || j === TERRAIN_GRID_SIZE - 1;
 };
 
 /** Terrain v1/v2 (sparse) -> grid, exact: the same deltas and weights at the same index. Sync. */

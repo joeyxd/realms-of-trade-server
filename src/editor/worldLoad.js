@@ -1,6 +1,7 @@
 // GM11a (docs/briefs/gm11-world-growth-zones.md Z1): what one world costs to load at once, against the single-load
 // budget a phone holds. Pure module: no DOM and no node: imports; the editor panel, publicationValidation.js and the
 // server's preparation (through validateGmPublication) share it, so client and server refuse with the same code.
+import { mapBounds } from '../sim/mapBounds.js';
 import { TERRAIN_DOMAINS, TILE_SIZE, isTerrainTilesDocument } from './terrainTiles.js';
 
 // Joi, 2026-10-24: 1,000,000 terrain vertices (about a 980 m square at 1 m cells), a warning from 70 %, publication
@@ -39,7 +40,8 @@ export function worldLoadBudget(domain, document, limits = WORLD_LOAD_LIMITS) {
 /** The base revision's tile domain; a base without one (older test maps) loads its own generated square. */
 export function worldLoadDomain(map, baseRevision) {
   if (Object.hasOwn(TERRAIN_DOMAINS, baseRevision)) return TERRAIN_DOMAINS[baseRevision];
-  return { minX: -map.half, maxX: map.half, minZ: -map.half, maxZ: map.half, cell: 1 / (map.res || 1) };
+  const { minX, maxX, minZ, maxZ } = mapBounds(map);
+  return { minX, maxX, minZ, maxZ, cell: 1 / (map.res || 1) };
 }
 
 /** The share as a whole percent for the GM; an over world never reads 100 % (1,001 objects of 1,000 is 101 %). */
