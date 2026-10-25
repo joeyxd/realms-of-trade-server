@@ -1,5 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**PT11, PT14, PT04, PT15 y PT05: paneles táctiles, salto, balsa (controles, cubierta y zoom), 2026-10-24, versión 0.6.0-alpha.109, sin cambio de protocolo ni SQL:**
+Ronda R2 de Joi (alpha.95) y notas R1b. Specs en playtest/context/rounds/R2-2026-10-22.md y R1b-2026-10-22.md.
+- PT11 (db1b437): el seguidor de misión y los avisos se ven a través; la X del seguidor lo cierra hasta que cambian sus pasos; la tarjeta de misión se pliega a una línea. Escenarios de menos de 721 px y navales conservan el aviso completo.
+- PT14 (390c771): salto de laboratorio (MN_JUMP=lab) con carrera 10,8 -> 8,5 u/s y tope en el aire 32 -> 25 mu/f (decisión de Joi).
+- PT04 (fe3a396): el stick gira la balsa hacia donde apunta (fixedAxes invierte x: steer = -x, mx de cubierta = -x; el sim no cambia); la palanca de vela pegajosa manda en acelerar y frenar (W/S en cuartos, S en cero frena mientras se mantiene; palanca táctil a la izquierda del grupo).
+- PT15 (b232567): la velocidad en cubierta girada por la guiñada de la balsa llega a ecs.vx/vz, así que el ciclo de carrera se ve en cubierta; un caminante en cubierta ya no frena la balsa (tickNaval manda 0/0/0).
+- PT05 (dcdf19b): tres pasos de zoom de la cámara de persecución naval [1, 1,7, 2,4] (por defecto 1,7; ángulos iguales), con transición suave; rueda del ratón a bordo, pellizco con dos dedos sobre #game o las lecturas navales, y un botón redondo de zoom con 3 puntos sobre la palanca de vela.
+- Pruebas: naval-raft-controls, naval-touch-helm, naval-lab-camera, naval-crew-client, jump-sm64 y jump-world ampliadas; gate del actualizador en verde sobre origin con VR11.
+- Para la próxima prueba de Joi en el teléfono: derecha gira a la derecha, el tacto de la palanca, que soltar el timón ya no frena, que el pirata corre en cubierta y qué paso de zoom le gusta (y si la balsa sigue sintiéndose lenta). Siguiente: PT16 saltar a bordo.
+
 **VR11 sol dinámico, 2026-10-24 (T-1024-16), versión 0.6.0-alpha.108, sin cambio de protocolo ni SQL:**
 El sol cruza el cielo con el reloj del juego en lugar de quedarse fijo. Solo src/render/lighting.js, sky.js, water.js y tools/naval-lab/main.js.
 - Arco real: la fase del reloj mueve el sol por un círculo máximo (latitud 35, declinación 11; norte -z, este +x): sale por el
