@@ -1,5 +1,25 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**SK05, 2026-10-24 — préstamo de habilidades por equipo (T-1022-11, T-1024-32), versión 0.6.0-alpha.111, sin cambio de protocolo ni SQL:**
+Una base de BASES puede llevar `grants: [{ skill, rank }]`; mientras el objeto está
+equipado, Q y E aceptan el arte prestado aunque sea del otro arma. Módulo nuevo `src/data/grants.js`: `grantedSkills(eq)`
+(varios objetos con el mismo nodo: rango máximo, nunca suma), `effectiveRank`, `isLentArt`, `pruneLentLoadouts`. Cliente y
+servidor derivan el préstamo de su propio `profile.eq` + BASES; nada viaja por el cable. `setLoadout` (inventory.js) acepta
+el id prestado solo mientras un objeto equipado lo presta (si no, `weapon` como antes); `sanitizeSk` lo conserva en la carga
+solo con el objeto puesto. Un solo sitio revierte el slot al arte por defecto del arma, en p.sk.lo y en las columnas ECS:
+`applyLoadout` (stats.js) llama a `pruneLentLoadouts` en cada `refreshStats`, así que desequipar, cambiar anillo, derrame
+lawless y arma nueva pasan todos por ahí; volver a equipar no lo restaura. Lo prestado nunca da tinta, maestría ni práctica
+(`tattooXp` solo tinta tatuajes aprendidos; los ARTS no tienen tinta). Objeto piloto `pedernal` ('Pedernal de pistolero',
+abalorio, min 2, atk 0,5, presta Ráfaga rango 1; reutiliza la celda 'brujula' del atlas por el campo `icon` de la base,
+leído en kit.js). Hoja: `skillSheetState` suma `lent` y `loadout`; `nodeView` da `rank` (efectivo), `owned` y `lent`; la
+celda lleva el icono `I.chain` y "Prestado por <objeto>", el detalle ofrece Poner en Q / E (`data-put` + `data-id`, que
+`tattooClick` de charpanel.js lee); Subir, puntos y gates de nivel siguen con el rango propio. Tooltip: "Presta: Ráfaga
+(rango 1)" (`grantLines`, itemui.js). Estilos en styles/character.css (`.sk-chain`, `.sk-lent`). Tests nuevos
+`tests/skill-grants.test.mjs` (13). Segundo objeto piloto `alpargatas` ('Alpargatas de pescador', botas, min 1, spd 0,5,
+icono 'botas'): presta la pasiva de Supervivencia Nadador (`swimmer`) rango 1; la hoja la encadena sin Poner en Q / E y la
+carga no cambia. Los nodos pacíficos aún no tienen efecto: cuando SK06/SK07 les den uno, el código del efecto debe leer
+`effectiveRank(nodeRank(skills, id), grantedSkills(eq)[id])`, no el rango propio. Nombres EN de los dos en src/i18n/data.js.
+
 **ST01c lectura de dispositivo de los efectos nativos en el Taller de habilidades, 2026-10-24 (T-1024-30), versión 0.6.0-alpha.110, sin protocolo ni SQL:**
 - Instrumento para la medición en un teléfono real: con BasicHit o Flame nativo listo, la línea «Coste visual estimado» muestra `GPU: <formato> · <MiB>[ / 12 MiB]` (formato que eligió `KTX2Loader`: ASTC 4x4, BC7, ETC2, BC3, PVRTC o RGBA8; RGBA8 para los WebP), «Sobre el tope de GPU móvil» si lo pasa, `Decodificación: <ms>` (WebP o transcodificación KTX2; «primera carga» incluye el transcoder) y `<n> FPS · peor cuadro: <ms>` de los últimos 2 s. Sin cambio de comportamiento: el caso RGBA8 sin compresión se ve, no se maneja.
 - `NativeEffect.load` (fetchMs, decodeMs, cold, gpuFormat, gpuBytes, gpuCap) en `metrics.load`; `nativeTextureBytes` en `src/editor/niagaraNative.js` (mips transcodificados, o RGBA8 sobre toda la cadena); `SkillPreview.frameRate`. Prueba del gate nueva en `tests/niagara-native-studio.test.mjs`; `tools/qa-native-studio.mjs` exige que la lectura coincida con la GPU.
@@ -38,25 +58,6 @@ El sol cruza el cielo con el reloj del juego en lugar de quedarse fijo. Solo src
 - Pendiente de gusto para Joi: los números del arco (latitud, declinación, elevación mínima 22, TOD_PHASE), el color y la fuerza
   del crepúsculo (0,75), el color del disco de la luna y si los pasos de 0,2 grados se notan como un tic. Siguiente: CAM04 (vista
   cercana desde atrás para ver el atardecer; scene.js queda libre para camera-director).
-**SK05, 2026-10-24 — préstamo de habilidades por equipo (T-1022-11, T-1024-32):**
-Sin SQL, sin protocolo, sin versión. Una base de BASES puede llevar `grants: [{ skill, rank }]`; mientras el objeto está
-equipado, Q y E aceptan el arte prestado aunque sea del otro arma. Módulo nuevo `src/data/grants.js`: `grantedSkills(eq)`
-(varios objetos con el mismo nodo: rango máximo, nunca suma), `effectiveRank`, `isLentArt`, `pruneLentLoadouts`. Cliente y
-servidor derivan el préstamo de su propio `profile.eq` + BASES; nada viaja por el cable. `setLoadout` (inventory.js) acepta
-el id prestado solo mientras un objeto equipado lo presta (si no, `weapon` como antes); `sanitizeSk` lo conserva en la carga
-solo con el objeto puesto. Un solo sitio revierte el slot al arte por defecto del arma, en p.sk.lo y en las columnas ECS:
-`applyLoadout` (stats.js) llama a `pruneLentLoadouts` en cada `refreshStats`, así que desequipar, cambiar anillo, derrame
-lawless y arma nueva pasan todos por ahí; volver a equipar no lo restaura. Lo prestado nunca da tinta, maestría ni práctica
-(`tattooXp` solo tinta tatuajes aprendidos; los ARTS no tienen tinta). Objeto piloto `pedernal` ('Pedernal de pistolero',
-abalorio, min 2, atk 0,5, presta Ráfaga rango 1; reutiliza la celda 'brujula' del atlas por el campo `icon` de la base,
-leído en kit.js). Hoja: `skillSheetState` suma `lent` y `loadout`; `nodeView` da `rank` (efectivo), `owned` y `lent`; la
-celda lleva el icono `I.chain` y "Prestado por <objeto>", el detalle ofrece Poner en Q / E (`data-put` + `data-id`, que
-`tattooClick` de charpanel.js lee); Subir, puntos y gates de nivel siguen con el rango propio. Tooltip: "Presta: Ráfaga
-(rango 1)" (`grantLines`, itemui.js). Estilos en styles/character.css (`.sk-chain`, `.sk-lent`). Tests nuevos
-`tests/skill-grants.test.mjs` (13). Segundo objeto piloto `alpargatas` ('Alpargatas de pescador', botas, min 1, spd 0,5,
-icono 'botas'): presta la pasiva de Supervivencia Nadador (`swimmer`) rango 1; la hoja la encadena sin Poner en Q / E y la
-carga no cambia. Los nodos pacíficos aún no tienen efecto: cuando SK06/SK07 les den uno, el código del efecto debe leer
-`effectiveRank(nodeRank(skills, id), grantedSkills(eq)[id])`, no el rango propio. Nombres EN de los dos en src/i18n/data.js.
 
 **GM08c, GM08d y GM11a: ruido, erosión, mapa de alturas y medidor de carga en el editor GM, 2026-10-24 (T-1024-13, T-1024-17, T-1024-24, T-1024-28), versión 0.6.0-alpha.107, sin cambio de protocolo ni SQL:**
 Solo el editor GM (src/editor/terrain*.js, worldLoad.js, editor.js, publicationValidation.js), la preparación de la publicación en el servidor y el actualizador (lista TESTS). Los jugadores no ven nada nuevo.
