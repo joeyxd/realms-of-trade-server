@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**ST01e: la llama nativa con calidad de Taller en el mundo, Filmic en todo el mundo, luces de noche más vivas y el impacto de Tromba, 2026-10-25, versión 0.6.0-alpha.118, protocolo 72 (sin cambio), sin SQL:**
+Área ST01c Niagara nativo (st01c-native, T-1025-33, T-1025-41). Solo cliente.
+- Efectos nativos en HDR (7157e2e): en los tiers con contorno y half float, las mallas nativas van a LAYER.NATIVE, se acumulan en un target half float a resolución completa después del pase de FX y se componen sobre rtPost con el LUT Filmic del laboratorio (decodificado a lineal exacto: rtPost es SRGB8), más un segundo pase que baja la máscara de glow por la emisión. Los píxeles vacíos se descartan. Tier bajo o sin half float: la ruta 8 bits HDR_FIT de antes. De noche los loops de llama suben x1,6 (NIGHT_GAIN 0,6); las ráfagas no cambian.
+- Filmic en todo el mundo (74718b9): `pipeline.filmWorld` encendido por defecto (exposición 0,927, el mismo film-source.json de los efectos); solo en tiers con contorno, el tier bajo dibuja directo a pantalla sin pase final. De día más contraste y saturación; de noche más oscuro con la llama más caliente (el A/B que aprobó Joi; la llama pasa por el LUT dos veces en este modo y ese es el look aprobado).
+- Luces de noche (74718b9): las luces locales ordenadas (faroles, braseros, fogatas, lava, ventanas, ojos, antorcha portátil) suben hasta x1,3 a noche cerrada (`NIGHT_LIGHT_GAIN` en src/render/lights.js, perilla `dark` = (fire - 0,3) / 0,7) solo mientras el Filmic dibuja; destellos y proyectiles igual. En La Caldera (preset volcánico, fire 1) también, como la llama.
+- Ranura trombaImpact (b53bfdc): una ráfaga nativa enlazada al pie de la columna de la Tromba (etiqueta del Taller «Impacto de Tromba»), encima de la columna de agua. Hoy la única ráfaga nativa es NS_BasicHit (teñirla azul, escala hasta 3). Un cliente viejo que lee un documento con trombaImpact lo rechaza entero hasta recargar la versión nueva.
+- Pruebas: lights 36/36 (nuevo: el lift por la perilla dark), native-world-fx, presentation-bindings, niagara-native-studio, skill-preview; QA de navegador qa-native-world t1025-41-a en verde (0 errores, píxeles vacíos 2 304 bytes sin cambio, toggle Filmic restaura todos los bytes, lift 1 de noche y 0 de día o sin Filmic).
+- Para Joi en el juego: Taller -> Flame -> Usar en el juego -> Hoguera -> Probar -> Publicar; BasicHit -> Impacto de Tromba. Pendiente: costo real de GPU y de teléfono del pase half float (SwiftShader no sirve para medirlo).
+
 **Presupuesto alojado ajustable por el dueño y renovación de la ventana de 2 h, 2026-10-25, versión 0.6.0-alpha.117, protocolo 72 (sin cambio), sin SQL:**
 Área AREA17 (area17-market, T-1025-36). Diseño de IC06b en [briefs/ic06b-memory-continuity.md](briefs/ic06b-memory-continuity.md) (T-1025-38).
 - El Centro de inferencia tiene «Llamadas por 2 h (1–60)» junto a «Iniciar en el servidor»; por defecto 20 (antes 8 fijo). El navegador recuerda la elección. El servidor aplica 20 si el cliente no lo manda. El emparejamiento del PC sigue con 8.
@@ -23,6 +32,7 @@
 - companion-continuity.mjs pasa a server/agent (tools/agent lo reexporta).
 - Pruebas: hosted-memory-loop 7/7, alojado + emparejado + continuidad + centro 80/80, gate del updater 72 archivos en verde.
 - Siguiente: presupuesto alojado ajustable por el dueño (20 llamadas por 2 h para pruebas) e IC06b poda y memoria entre sesiones.
+
 **Actualizador del VPS: el gate real es la copia instalada, 2026-10-25, solo documentación (sin versión, protocolo ni SQL):**
 - El VPS corrió hasta el 2026-10-25 la copia del actualizador del 2026-10-11 (28 archivos), no la del repo: las listas `TESTS` añadidas entre esas fechas nunca corrieron en producción. T-1025-24 instaló la de `6268d0d` (72 archivos) después de pasar los 72 dentro de la imagen viva (455 pasan, 4 se saltan, 0 fallan).
 - Desde ahora los 72 archivos son gate de verdad: un test que solo pasa con dependencias de desarrollo (three, `docs/`, `tools/`) revierte el deploy. Correr la lista exacta antes de cada push.
