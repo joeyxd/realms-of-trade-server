@@ -1,7 +1,9 @@
 import { validateDocument } from '../src/editor/document.js';
 import { gmEditableBaseProps } from '../src/editor/baseIdentity.js';
 import { compileTerrainMap, terrainTileKey, validateTerrainForMap } from '../src/editor/terrainData.js';
-import { TILE_MAX_BYTES, decodeTile, isTerrainTilesDocument, validateTerrainTilesForMap } from '../src/editor/terrainTiles.js';
+import { DOMAIN_DOCUMENT_VERSION, TILE_MAX_BYTES, decodeTile, documentDomain, domainBounds, isBaseDomain, isTerrainTilesDocument,
+  validateDomain, validateTerrainTilesForMap } from '../src/editor/terrainTiles.js';
+import { baseMapForDomain } from '../src/sim/baseMapForDomain.js';
 import { resourceDescriptor, sourceAssetId, validateAuthoredResources } from '../src/editor/resourceAdapters.js';
 
 const COAST_ROCK_ID = 'model:coast-rock-v1';
@@ -40,10 +42,13 @@ export function createGmDraftValidator({ map, baseRevision, manifest, editorCata
   }
   const assets = approvedAssetIds(manifest, editorCatalog);
   const coastAvailable = entriesOf(manifest).some((entry) => entry?.id === COAST_ROCK_ID);
-  const baseIds = new Set(gmEditableBaseProps(map, baseRevision)
+  const idsOf = (world) => new Set(gmEditableBaseProps(world, baseRevision)
     .filter((entry) => !entry.coastal || coastAvailable)
     .map((entry) => entry.id));
+  const squareIds = idsOf(map);
   const checkReferences = (checked) => {
+    // GM11b3: a v6 is checked against the base map generated for its own domain (memoized, at most two kept).
+    const baseIds = checked.version === DOMAIN_DOCUMENT_VERSION ? idsOf(baseMapForDomain(map.seed >>> 0, documentDomain(checked))) : squareIds;
     for (const item of checked.objects) {
       if (item.assetId.startsWith('base:')) {
         if (!baseIds.has(item.assetId)) throw new GmDraftValidationError('base_reference');
@@ -94,19 +99,28 @@ export function createGmTerrainTileValidator({ map, baseRevision }) {
   if (!map || !Number.isSafeInteger(map.seed) || typeof baseRevision !== 'string' || !baseRevision) {
     throw new TypeError('Invalid GM terrain tile validation context');
   }
-  return function validateTile(bytes) {
+  // GM11b3: `domain` ({ minTx, maxTx, minTz, maxTz }) is the domain of the document v6 the tile belongs to; the tile then
+  // decodes in that domain and its map rules run on the base map generated for it. Without it, the base revision's.
+  return function validateTile(bytes, domain = null) {
     const refuse = (error) => {
       const failure = new GmDraftValidationError('tile_invalid');
       if (typeof error?.code === 'string') failure.reason = error.code;
       return failure;
     };
     if (!(bytes instanceof Uint8Array) || bytes.length < 1 || bytes.length > TILE_MAX_BYTES) throw refuse(null);
+    let revision = baseRevision, world = map;
+    if (domain !== null) {
+      try {
+        const checked = validateDomain(domain, baseRevision);
+        if (!isBaseDomain(checked, baseRevision)) { revision = domainBounds(checked); world = baseMapForDomain(map.seed >>> 0, revision); }
+      } catch (error) { throw refuse(error); }
+    }
     let tile;
-    try { tile = decodeTile(bytes, baseRevision); } catch (error) { throw refuse(error); }
+    try { tile = decodeTile(bytes, revision); } catch (error) { throw refuse(error); }
     // tilesToGrid reads the tile by its reference; the hash is not checked here (the route hashes the bytes).
     const reference = [tile.tx, tile.tz, '0'.repeat(64), bytes.length];
     try {
-      validateTerrainTilesForMap(map, { tiles: [reference], blobs: new Map([[reference[2], bytes]]) }, baseRevision,
+      validateTerrainTilesForMap(world, { tiles: [reference], blobs: new Map([[reference[2], bytes]]) }, revision,
         { dirtyTiles: [terrainTileKey(tile.tx, tile.tz)] });
     } catch (error) { throw refuse(error); }
     return { tx: tile.tx, tz: tile.tz };

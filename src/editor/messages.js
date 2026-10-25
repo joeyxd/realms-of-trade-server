@@ -25,6 +25,10 @@ const draftCodes = {
   unknown_material: 'tileInvalid', import_tile_missing: 'importTileMissing', import_tile_extra: 'importTileExtra',
   import_tile_invalid: 'importTileInvalid', document_tile_missing: 'draftInvalid', document_tile_invalid: 'draftInvalid',
   terrain_tiles_not_ready: 'tilesNotReady',
+  terrain_domains_not_ready: 'domainsNotReady',
+  // GM11b3: the world's extent as data.
+  domain: 'domainInvalid', domain_canonical: 'domainInvalid', domain_cut: 'domainCut', terrain_domain_runtime: 'domainRuntime',
+  domain_budget: 'domainBudget',
   // GM07b2: online drafts on tiles (upload, save, load of a remote head).
   tiles_missing: 'tilesMissing', tile_invalid: 'tileRefused', tile_batch: 'tileBatch', local_tile_missing: 'tileMissingLocal',
 };
@@ -33,7 +37,7 @@ const documentCodes = {
   format: 'draftInvalid', base: 'draftInvalid', objects: 'draftInvalid', object: 'draftInvalid', object_id: 'draftInvalid',
   asset_id: 'draftInvalid', transform: 'transform', position: 'transform', rotation: 'transform', scale: 'transform',
   collider: 'draftInvalid', duplicate_id: 'draftInvalid', object_limit: 'objectLimit', missing_object: 'draftInvalid',
-  object_patch: 'draftInvalid', history_limit: 'draftInvalid', tile_missing: 'tileMissing',
+  object_patch: 'draftInvalid', history_limit: 'draftInvalid', tile_missing: 'tileMissing', domain_cut: 'domainCut',
   selection: 'draftInvalid', selection_hidden: 'draftInvalid', selection_transform: 'transform', selection_limit: 'selectionLimit',
 };
 
@@ -65,6 +69,16 @@ const known = {
     es: 'Un bloque de terreno del archivo está dañado. No se importó nada.' },
   tilesNotReady: { en: 'This server does not accept terrain tiles for this step yet. Your design stays saved in this browser; export a copy to keep it.',
     es: 'Este servidor todavía no acepta bloques de terreno para este paso. Tu diseño sigue guardado en este navegador; exporta una copia para conservarlo.' },
+  domainsNotReady: { en: 'This server does not accept expanded worlds yet. Your design stays saved in this browser; export a copy to keep it.',
+    es: 'Este servidor todavía no acepta mundos ampliados. Tu diseño sigue guardado en este navegador; exporta una copia para conservarlo.' },
+  domainInvalid: { en: 'The world size of this draft is not valid, so it was not used. Your current draft is unchanged.',
+    es: 'El tamaño del mundo de este borrador no es válido, así que no se usó. Tu borrador actual no cambió.' },
+  domainBudget: { en: 'This world size no longer fits in one load: split it into zones. Nothing changed.',
+    es: 'Este tamaño de mundo ya no cabe en una sola carga: divídelo en zonas. No cambió nada.' },
+  domainCut: { en: 'The new world size would cut a terrain tile that has edits. Nothing changed.',
+    es: 'El nuevo tamaño del mundo cortaría un bloque de terreno con ediciones. No cambió nada.' },
+  domainRuntime: { en: 'This revision changes the size of the world, which a running game cannot do yet. The world stays as it is.',
+    es: 'Esta revisión cambia el tamaño del mundo, algo que una partida en curso todavía no puede hacer. El mundo sigue igual.' },
   tilesMissing: { en: 'The server is missing terrain tiles of this design, so the request did not complete. Nothing changed here; try again.',
     es: 'Al servidor le faltan bloques de terreno de este diseño, así que la solicitud no se completó. Aquí no cambió nada; vuelve a intentar.' },
   tileRefused: { en: 'The server refused a terrain tile of this design: it is damaged or breaks the map rules (height, protected ground or map edge). Nothing was saved online; your local design is preserved.',

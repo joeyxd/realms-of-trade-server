@@ -3,7 +3,11 @@ export const DOCUMENT_VERSION = 2;
 const TERRAIN_DOCUMENT_VERSION = 3;
 const MATERIAL_DOCUMENT_VERSION = 4;
 import { OBJECT_MAX_Y, OBJECT_MIN_Y, validateTerrain } from './terrainData.js';
-import { TERRAIN_TILES_VERSION, TILES_DOCUMENT_VERSION, validateTerrainTiles } from './terrainTiles.js';
+import { DOMAIN_DOCUMENT_VERSION, TERRAIN_DOMAINS, TERRAIN_DOMAIN_VERSION, TERRAIN_TILES_VERSION, TILES_DOCUMENT_VERSION, TILE_SIZE,
+  documentDomain, domainBounds, isBaseDomain, isTerrainTilesDocument, validateDomain, validateDomainTerrain,
+  validateTerrainTiles } from './terrainTiles.js';
+
+export { documentDomain };
 export const MAX_OBJECTS = 5000;
 export const MAX_OBJECT_ID_LENGTH = 96;
 export const MAX_ASSET_ID_LENGTH = 160;
@@ -11,7 +15,11 @@ export const MAX_ASSET_ID_LENGTH = 160;
 const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/;
 const OBJECT_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$/;
 const BASE_OVERRIDE_ID = /^base:(rock|flower|pebble):\d+:[a-f0-9]+$/;
-const MAX_HORIZONTAL_COORDINATE = 280;
+// GM11b3 D3: the horizontal limits are the document's domain: a v6's own, else the base revision's (an unknown revision
+// name keeps today's square, which v1-v4 documents have always had).
+const DEFAULT_AREA = TERRAIN_DOMAINS['terrain-s21-v1'];
+const baseArea = (revision) => Object.hasOwn(TERRAIN_DOMAINS, revision) ? TERRAIN_DOMAINS[revision] : DEFAULT_AREA;
+const areaOf = (document) => document.version === DOMAIN_DOCUMENT_VERSION ? domainBounds(document.terrain.domain) : baseArea(document.base.revision);
 const MIN_HEIGHT = OBJECT_MIN_Y;
 const MAX_HEIGHT = OBJECT_MAX_Y;
 const MAX_ROTATION = Math.PI * 200;
@@ -35,11 +43,11 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function validateTransform(transform) {
+function validateTransform(transform, area = DEFAULT_AREA) {
   if (!exactKeys(transform, ['position', 'rotation', 'scale'])) fail('transform');
   if (!exactKeys(transform.position, ['x', 'y', 'z']) || !exactKeys(transform.rotation, ['x', 'y', 'z'])) fail('transform');
   for (const axis of ['x', 'z']) {
-    if (!finiteIn(transform.position[axis], -MAX_HORIZONTAL_COORDINATE, MAX_HORIZONTAL_COORDINATE)) fail('position');
+    if (!finiteIn(transform.position[axis], axis === 'x' ? area.minX : area.minZ, axis === 'x' ? area.maxX : area.maxZ)) fail('position');
     if (!finiteIn(transform.rotation[axis], -MAX_ROTATION, MAX_ROTATION)) fail('rotation');
   }
   if (!finiteIn(transform.position.y, MIN_HEIGHT, MAX_HEIGHT) ||
@@ -52,11 +60,11 @@ function validateTransform(transform) {
   };
 }
 
-function validateObject(raw) {
+function validateObject(raw, area = DEFAULT_AREA) {
   if (!exactKeys(raw, ['id', 'assetId', 'transform', 'collider'])) fail('object');
   if (typeof raw.id !== 'string' || !OBJECT_ID.test(raw.id)) fail('object_id');
   if (typeof raw.assetId !== 'string' || !ID.test(raw.assetId) || raw.assetId.length > MAX_ASSET_ID_LENGTH) fail('asset_id');
-  const transform = validateTransform(raw.transform);
+  const transform = validateTransform(raw.transform, area);
   let collider;
   if (raw.collider === 'none') collider = 'none';
   else if (exactKeys(raw.collider, ['type', 'radius']) && raw.collider.type === 'circle' &&
@@ -71,18 +79,18 @@ function validateObject(raw) {
   };
 }
 
-function validateBaseOverride(raw) {
+function validateBaseOverride(raw, area = DEFAULT_AREA) {
   if (!exactKeys(raw, ['id', 'transform', 'hidden'])) fail('base_override');
   if (typeof raw.id !== 'string' || raw.id.length > MAX_OBJECT_ID_LENGTH || !BASE_OVERRIDE_ID.test(raw.id)) fail('base_override_id');
   if (typeof raw.hidden !== 'boolean') fail('base_override_hidden');
-  return { id: raw.id, transform: validateTransform(raw.transform), hidden: raw.hidden };
+  return { id: raw.id, transform: validateTransform(raw.transform, area), hidden: raw.hidden };
 }
 
 export function validateDocument(raw) {
   if (!isRecord(raw) || raw.schema !== DOCUMENT_SCHEMA) fail('format');
   const legacy = raw.version === 1;
   const terrainVersion = raw.version === TERRAIN_DOCUMENT_VERSION || raw.version === MATERIAL_DOCUMENT_VERSION ||
-    raw.version === TILES_DOCUMENT_VERSION;
+    raw.version === TILES_DOCUMENT_VERSION || raw.version === DOMAIN_DOCUMENT_VERSION;
   if ((!legacy && raw.version !== DOCUMENT_VERSION && !terrainVersion) ||
       !exactKeys(raw, legacy ? ['schema', 'version', 'base', 'objects'] :
         terrainVersion ? ['schema', 'version', 'base', 'objects', 'baseOverrides', 'terrain'] :
@@ -90,11 +98,18 @@ export function validateDocument(raw) {
   if (!exactKeys(raw.base, ['seed', 'revision']) || !Number.isSafeInteger(raw.base.seed) ||
       raw.base.seed < 0 || raw.base.seed > 0xffffffff || typeof raw.base.revision !== 'string' ||
       raw.base.revision.length < 1 || raw.base.revision.length > 128 || /[\u0000-\u001f]/.test(raw.base.revision)) fail('base');
+  // GM11b3: a v6 names its domain, which bounds the object positions, so its terrain is checked first.
+  let domainTerrain = null, area = baseArea(raw.base.revision);
+  if (raw.version === DOMAIN_DOCUMENT_VERSION) {
+    if (raw.terrain?.version !== TERRAIN_DOMAIN_VERSION) fail('terrain_version');
+    domainTerrain = validateDomainTerrain(raw.terrain, raw.base.revision);
+    area = domainBounds(domainTerrain.domain);
+  }
   if (!Array.isArray(raw.objects)) fail('objects');
-  const objects = raw.objects.map(validateObject);
+  const objects = raw.objects.map((object) => validateObject(object, area));
   const baseOverrides = legacy ? [] : raw.baseOverrides;
   if (!Array.isArray(baseOverrides) || objects.length + baseOverrides.length > MAX_OBJECTS) fail('object_limit');
-  const validatedOverrides = baseOverrides.map(validateBaseOverride);
+  const validatedOverrides = baseOverrides.map((override) => validateBaseOverride(override, area));
   const ids = new Set();
   for (const object of objects) {
     if (ids.has(object.id)) fail('duplicate_id');
@@ -116,6 +131,8 @@ export function validateDocument(raw) {
     // Document v5 (GM07 D7): tile references only, structural and synchronous; the tile bytes live beside it.
     if (raw.terrain?.version !== TERRAIN_TILES_VERSION) fail('terrain_version');
     result.terrain = validateTerrainTiles(raw.terrain, raw.base.revision);
+  } else if (domainTerrain) {
+    result.terrain = domainTerrain;
   } else if (terrainVersion) {
     result.terrain = validateTerrain(raw.terrain);
     if (result.terrain.version !== (raw.version === MATERIAL_DOCUMENT_VERSION ? 2 : 1)) fail('terrain_version');
@@ -127,7 +144,8 @@ export function createDocument({ seed, baseRevision, objects = [], baseOverrides
   return validateDocument({
     schema: DOCUMENT_SCHEMA,
     version: terrain === undefined ? DOCUMENT_VERSION : terrain.version === TERRAIN_TILES_VERSION ? TILES_DOCUMENT_VERSION :
-      terrain.version === 2 ? MATERIAL_DOCUMENT_VERSION : TERRAIN_DOCUMENT_VERSION,
+      terrain.version === TERRAIN_DOMAIN_VERSION ? DOMAIN_DOCUMENT_VERSION :
+        terrain.version === 2 ? MATERIAL_DOCUMENT_VERSION : TERRAIN_DOCUMENT_VERSION,
     base: { seed, revision: baseRevision },
     objects,
     baseOverrides,
@@ -135,13 +153,15 @@ export function createDocument({ seed, baseRevision, objects = [], baseOverrides
   });
 }
 
-export function createDecoration({ id, assetId, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, collider = 'none' }) {
-  return validateObject({ id, assetId, transform: { position, rotation, scale }, collider });
+// `area` ({ minX, maxX, minZ, maxZ }, GM11b3) is the horizontal limit of the world the decoration goes into: today's
+// square unless the caller holds a document domain (documentDomain); the document check repeats it on add.
+export function createDecoration({ id, assetId, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, collider = 'none' }, area = DEFAULT_AREA) {
+  return validateObject({ id, assetId, transform: { position, rotation, scale }, collider }, area);
 }
 
 export function addDecoration(document, decoration) {
   const current = validateDocument(document);
-  const object = validateObject(decoration);
+  const object = validateObject(decoration, areaOf(current));
   if (current.objects.length + current.baseOverrides.length >= MAX_OBJECTS) fail('object_limit');
   if (current.objects.some((item) => item.id === object.id)) fail('duplicate_id');
   return validateDocument({ ...current, objects: [...current.objects, object] });
@@ -149,7 +169,7 @@ export function addDecoration(document, decoration) {
 
 export function setBaseOverride(document, { id, transform, hidden = false }) {
   const current = validateDocument(document);
-  const override = validateBaseOverride({ id, transform, hidden });
+  const override = validateBaseOverride({ id, transform, hidden }, areaOf(current));
   if (current.objects.some((item) => item.id === id)) fail('duplicate_id');
   const existing = current.baseOverrides.findIndex((item) => item.id === id);
   if (existing < 0 && current.objects.length + current.baseOverrides.length >= MAX_OBJECTS) fail('object_limit');
@@ -175,7 +195,7 @@ export function updateDecoration(document, id, patch) {
   const allowed = ['assetId', 'transform', 'collider'];
   if (Object.keys(patch).some((key) => !allowed.includes(key))) fail('object_patch');
   const objects = current.objects.slice();
-  objects[index] = validateObject({ ...objects[index], ...clone(patch), id });
+  objects[index] = validateObject({ ...objects[index], ...clone(patch), id }, areaOf(current));
   return validateDocument({ ...current, objects });
 }
 
@@ -187,10 +207,28 @@ export function removeDecoration(document, id) {
   return validateDocument({ ...current, objects });
 }
 
+/**
+ * GM11b3 D2: the same document over `domain` ({ minTx, maxTx, minTz, maxTz }): a v5 when it is the base revision's
+ * domain, a v6 otherwise. Takes a v2 (no terrain), v5 or v6. The tiles stay as they are: a tile key outside the new domain
+ * throws 'domain_cut' (an edit is never dropped), an object or override outside it fails validation ('position').
+ */
+export function withDocumentDomain(document, domain, baseRevision) {
+  const current = validateDocument(document);
+  if (current.version !== DOCUMENT_VERSION && !isTerrainTilesDocument(current)) fail('document_version');
+  const revision = baseRevision ?? current.base.revision, next = validateDomain(domain, revision);
+  const tiles = current.terrain?.tiles ?? [];
+  for (const [tx, tz] of tiles) if (tx < next.minTx || tx > next.maxTx || tz < next.minTz || tz > next.maxTz) fail('domain_cut');
+  const base = isBaseDomain(next, revision);
+  return validateDocument({ schema: DOCUMENT_SCHEMA, version: base ? TILES_DOCUMENT_VERSION : DOMAIN_DOCUMENT_VERSION,
+    base: current.base, objects: current.objects, baseOverrides: current.baseOverrides,
+    terrain: base ? { version: TERRAIN_TILES_VERSION, tileSize: TILE_SIZE, tiles }
+      : { version: TERRAIN_DOMAIN_VERSION, tileSize: TILE_SIZE, domain: next, tiles } });
+}
+
 // GM07 D8: unique tile bytes the undo history may reference; the oldest entries are dropped first.
 export const HISTORY_TILE_BYTES = 64 * 1024 * 1024;
 
-const tileReferences = (document) => document?.version === TILES_DOCUMENT_VERSION ? document.terrain.tiles : [];
+const tileReferences = (document) => isTerrainTilesDocument(document) ? document.terrain.tiles : [];
 
 /**
  * Undo history of whole-document snapshots. A document v5 keeps tile references only; their bytes live in one shared

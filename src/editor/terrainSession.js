@@ -7,8 +7,9 @@ import { validateDocument } from './document.js';
 import { mapBounds } from '../sim/mapBounds.js';
 import { compileTerrainGrid, createTerrainGrid, TERRAIN_MATERIALS, terrainGridOf,
   terrainTileKey, validateTerrainForMap, validateTerrainGridForMap } from './terrainData.js';
-import { convertDocumentToV5, decodeTile, encodeTile, isTerrainTilesDocument, terrainDomain, tilesToGrid, tileSha256,
-  verifyTileBlobs, TERRAIN_DOMAINS, TERRAIN_TILES_VERSION, TILE_SIZE, TILE_VERTICES, TILES_DOCUMENT_VERSION } from './terrainTiles.js';
+import { convertDocumentToV5, decodeTile, documentDomain, encodeTile, isBaseDomain, isTerrainTilesDocument, terrainDomain, tilesToGrid,
+  tileSha256, verifyTileBlobs, DOMAIN_DOCUMENT_VERSION, TERRAIN_DOMAINS, TERRAIN_DOMAIN_VERSION, TERRAIN_TILES_VERSION, TILE_SIZE,
+  TILE_VERTICES, TILES_DOCUMENT_VERSION } from './terrainTiles.js';
 import { followGround, sculptTerrainGrid } from './terrainSculpt.js';
 import { paintTerrainGrid } from './terrainPaint.js';
 import { regionTerrainGrid } from './terrainRegion.js';
@@ -39,20 +40,28 @@ function sameReferences(a, b) {
  * a v2 stays v2 with an empty grid; a v5 needs every referenced tile in `tiles` (length, sha256 and canonical decode)
  * and a whole grid that passes the edit rules. Returns { document, tiles: Map of the referenced tiles, grid, converted }.
  * baseRevision is a revision name or a domain record (terrainDomain); its domain must be the base map's bounds
- * (domain_grid). A record is not compared with the document's revision name.
+ * (domain_grid). A record is not compared with the document's revision name. GM11b3: a document v6 runs on its own
+ * domain, which must be the base map's bounds too; `baseRevision` in the result is what a TerrainSession for the
+ * document takes (the revision name, or the v6's domain record).
  */
-export async function openTerrainDocument({ map, baseRevision, document, tiles = null }) {
+export async function openTerrainDocument({ map, baseRevision: given, document, tiles = null }) {
   const doc = validateDocument(document);
-  if (typeof baseRevision === 'string' && doc.base.revision !== baseRevision) fail('base_mismatch');
+  if (typeof given === 'string' && doc.base.revision !== given) fail('base_mismatch');
+  let baseRevision = given;
+  if (doc.version === DOMAIN_DOCUMENT_VERSION) {
+    const own = documentDomain(doc), asked = typeof given === 'string' ? own : terrainDomain(given);
+    if (asked.minX !== own.minX || asked.maxX !== own.maxX || asked.minZ !== own.minZ || asked.maxZ !== own.maxZ) fail('domain_grid');
+    baseRevision = own;
+  }
   const domain = terrainDomain(baseRevision), bounds = mapBounds(map);
   if (domain.minX !== bounds.minX || domain.maxX !== bounds.maxX || domain.minZ !== bounds.minZ || domain.maxZ !== bounds.maxZ) fail('domain_grid');
   if (doc.version === 3 || doc.version === 4) {
     validateTerrainForMap(map, doc.terrain);
     const converted = await convertDocumentToV5(doc);
     const grid = tilesToGrid({ tiles: converted.document.terrain.tiles, blobs: converted.blobs }, baseRevision);
-    return { document: converted.document, tiles: converted.blobs, grid, converted: true };
+    return { document: converted.document, tiles: converted.blobs, grid, converted: true, baseRevision };
   }
-  if (!isTerrainTilesDocument(doc)) return { document: doc, tiles: new Map(), grid: createTerrainGrid(terrainGridOf(map)), converted: false };
+  if (!isTerrainTilesDocument(doc)) return { document: doc, tiles: new Map(), grid: createTerrainGrid(terrainGridOf(map)), converted: false, baseRevision };
   const blobs = new Map();
   for (const [, , sha256] of doc.terrain.tiles) {
     const bytes = tiles instanceof Map ? tiles.get(sha256) : undefined;
@@ -63,7 +72,7 @@ export async function openTerrainDocument({ map, baseRevision, document, tiles =
   await verifyTileBlobs(source);
   const grid = tilesToGrid(source, baseRevision);
   validateTerrainGridForMap(map, grid);
-  return { document: doc, tiles: blobs, grid, converted: false };
+  return { document: doc, tiles: blobs, grid, converted: false, baseRevision };
 }
 
 // Tile (tx, tz) owns grid rows j = 70tz + v - minZ and columns i = 70tx + u - minX (D1); g is a terrainGridOf.
@@ -218,8 +227,13 @@ export class TerrainSession {
   _document(edit, before, after, references, sculpted) {
     const doc = validateDocument(edit.document);
     const { baseOverrides, objects } = sculpted ? followGround(doc, this.map, this.baseRevision, before, after) : doc;
-    return validateDocument({ schema: doc.schema, version: TILES_DOCUMENT_VERSION, base: doc.base, objects, baseOverrides,
-      terrain: { version: TERRAIN_TILES_VERSION, tileSize: TILE_SIZE, tiles: references } });
+    // GM11b3: a session on a domain other than the document's base revision's writes a v6 naming it.
+    const d = terrainDomain(this.baseRevision);
+    const domain = { minTx: d.minX / TILE_SIZE, maxTx: d.maxX / TILE_SIZE - 1, minTz: d.minZ / TILE_SIZE, maxTz: d.maxZ / TILE_SIZE - 1 };
+    if (isBaseDomain(domain, doc.base.revision)) return validateDocument({ schema: doc.schema, version: TILES_DOCUMENT_VERSION,
+      base: doc.base, objects, baseOverrides, terrain: { version: TERRAIN_TILES_VERSION, tileSize: TILE_SIZE, tiles: references } });
+    return validateDocument({ schema: doc.schema, version: DOMAIN_DOCUMENT_VERSION, base: doc.base, objects, baseOverrides,
+      terrain: { version: TERRAIN_DOMAIN_VERSION, tileSize: TILE_SIZE, domain, tiles: references } });
   }
 
   /**

@@ -57,7 +57,9 @@ function segDist(px, pz, ax, az, bx, bz, out) {
   return Math.sqrt(dx * dx + dz * dz);
 }
 
-export function generateWorld(seed) {
+// GM11b3: `bounds` ({ minX, maxX, minZ, maxZ }, whole metres containing the default square) builds a larger world; without it
+// the result is the same bit for bit as before.
+export function generateWorld(seed, { bounds } = {}) {
   const W = tuning.world;
   const size = W.size, half = size / 2;
   const res = W.gridRes;
@@ -904,5 +906,5 @@ export function generateWorld(seed) {
     props, colliders, queryColliders, npcs, botWaypoints, dock,
     landmarks: { spawn, village, arena, arenaR: L.arenaR, volcano, dockBase, dockEnd, path, ship: P(L.ship) },
     toWorld, toUV,
-  });
+  }, { bounds });
 }

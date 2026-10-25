@@ -2,17 +2,25 @@ import { verifyPreparedRevision, canonicalJson, PREPARATION_VERSION } from './pu
 import { installGmContent, projectGmContent } from './contentProjection.js';
 import { resourceLayout } from '../data/resources.js';
 import { TERRAIN_GRID_SIZE } from './terrainData.js';
-import { isTerrainTilesDocument, tileSha256 } from './terrainTiles.js';
+import { DOMAIN_DOCUMENT_VERSION, documentDomain, isBaseDomain, isTerrainTilesDocument, tileSha256, validateDomain } from './terrainTiles.js';
+import { mapBounds } from '../sim/mapBounds.js';
 
-const TILES_FORMAT = 'marea.gm.terrain-tiles', TILE_FETCH_LIMIT = 6;
+const TILES_FORMAT = 'marea.gm.terrain-tiles', TILE_FETCH_LIMIT = 6, BASE_REVISION = 'terrain-s21-v1';
 const terrainFailure = (why) => Object.assign(new Error(`content_terrain: ${why}`), { code: 'content_terrain' });
 
-// S7: the exact key set of content.terrain of a document v5, naming the document's own tiles.
+// S7: the exact key set of content.terrain of a document v5, naming the document's own tiles. GM11b3: a v6 is version 2
+// and names the document's domain, which must be valid, not the base revision's and the document's own.
 function checkTilesMetadata(metadata, document) {
-  if (!metadata || Object.keys(metadata).sort().join(',') !== 'format,heightsSha256,materialsSha256,tileSize,tiles,version' ||
-      metadata.format !== TILES_FORMAT || metadata.version !== 1 || metadata.tileSize !== document.terrain.tileSize ||
+  const grown = document.version === DOMAIN_DOCUMENT_VERSION;
+  if (!metadata || Object.keys(metadata).sort().join(',') !== (grown ? 'domain,format,heightsSha256,materialsSha256,tileSize,tiles,version'
+        : 'format,heightsSha256,materialsSha256,tileSize,tiles,version') ||
+      metadata.format !== TILES_FORMAT || metadata.version !== (grown ? 2 : 1) || metadata.tileSize !== document.terrain.tileSize ||
       !/^[a-f0-9]{64}$/.test(metadata.heightsSha256) || !/^[a-f0-9]{64}$/.test(metadata.materialsSha256) ||
       JSON.stringify(metadata.tiles) !== JSON.stringify(document.terrain.tiles)) throw terrainFailure('metadata');
+  if (grown) {
+    try { validateDomain(metadata.domain, BASE_REVISION); } catch { throw terrainFailure('domain'); }
+    if (isBaseDomain(metadata.domain, BASE_REVISION) || JSON.stringify(metadata.domain) !== JSON.stringify(document.terrain.domain)) throw terrainFailure('domain');
+  }
 }
 
 // S10: every tile of the active revision from the public immutable route (default HTTP cache), at most 6 in flight,
@@ -87,6 +95,13 @@ export async function loadGmWorldContent({ httpBase, map, baseMap, gameVersion, 
     // GM07b2d: a document v5 names its tiles; every one is fetched, verified and compiled before anything is installed.
     if (tiled) {
       checkTilesMetadata(content.terrain, document);
+      // GM11b3 D7: the world's extent never changes at runtime (GM11c); a revision over another domain leaves the player on the base world.
+      if (document.version === DOMAIN_DOCUMENT_VERSION) {
+        const domain = documentDomain(document), bounds = mapBounds(baseMap);
+        if (domain.minX !== bounds.minX || domain.maxX !== bounds.maxX || domain.minZ !== bounds.minZ || domain.maxZ !== bounds.maxZ) {
+          throw Object.assign(new Error('terrain_domain_runtime'), { code: 'terrain_domain_runtime' });
+        }
+      }
       tiles = await fetchTerrainTiles(document.terrain.tiles, httpBase, fetchImpl);
     }
     let projected;
@@ -104,9 +119,10 @@ export async function loadGmWorldContent({ httpBase, map, baseMap, gameVersion, 
     }
     if (tiled) {
       // S7: the hashes of the compiled bytes: heights as float32 little-endian, weights as they are.
-      const view = new DataView(new ArrayBuffer(TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE * 4));
-      if (projected.heights?.length !== TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE ||
-          projected.terrain?.weights?.length !== TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE * 4) throw terrainFailure('compiled size');
+      // The compiled size is the content domain's vertex count (561 x 561 for a v5).
+      const extent = documentDomain(document, BASE_REVISION), vertices = (extent.maxX - extent.minX + 1) * (extent.maxZ - extent.minZ + 1);
+      const view = new DataView(new ArrayBuffer(vertices * 4));
+      if (projected.heights?.length !== vertices || projected.terrain?.weights?.length !== vertices * 4) throw terrainFailure('compiled size');
       for (let k = 0; k < projected.heights.length; k++) view.setFloat32(k * 4, projected.heights[k], true);
       if (content.terrain.heightsSha256 !== await tileSha256(new Uint8Array(view.buffer))) throw terrainFailure('heights hash');
       if (content.terrain.materialsSha256 !== await tileSha256(projected.terrain.weights)) throw terrainFailure('materials hash');

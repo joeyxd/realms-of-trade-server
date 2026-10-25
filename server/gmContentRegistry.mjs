@@ -3,7 +3,8 @@ import { mkdir, open, readFile, readdir, rename, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { canonicalJson, PREPARATION_SCHEMA, PREPARATION_VERSION } from '../src/editor/publicationArtifact.js';
 import { createGmContentLock } from './gmContentLock.mjs';
-import { TILE_MAX_BYTES, decodeTile, encodeTile, isTerrainTilesDocument, validateTileReferences } from '../src/editor/terrainTiles.js';
+import { DOMAIN_DOCUMENT_VERSION, TILE_MAX_BYTES, decodeTile, documentDomain, encodeTile, isTerrainTilesDocument,
+  validateTileReferences } from '../src/editor/terrainTiles.js';
 
 const MAX_REVISIONS = 100;
 const MAX_BLOB_BYTES = 1024 * 1024 * 1024;
@@ -34,12 +35,16 @@ function safePath(value) {
 const TILE_TERRAIN_FORMAT = 'marea.gm.terrain-tiles';
 const TILE_TERRAIN_KEYS = 'format,heightsSha256,materialsSha256,tileSize,tiles,version';
 
+// GM11b3: a v6 revision's terrain is version 2 and also names the document's domain; the tiles are checked over it.
+const DOMAIN_TERRAIN_KEYS = 'domain,format,heightsSha256,materialsSha256,tileSize,tiles,version';
+
 function tileTerrainReferences(content) {
-  const document = content.document, terrain = content.terrain;
+  const document = content.document, terrain = content.terrain, grown = document.version === DOMAIN_DOCUMENT_VERSION;
   try {
-    const references = validateTileReferences(document.terrain?.tiles, document.base?.revision);
-    if (isObject(terrain) && Object.keys(terrain).sort().join(',') === TILE_TERRAIN_KEYS && terrain.format === TILE_TERRAIN_FORMAT &&
-        terrain.version === 1 && terrain.tileSize === document.terrain.tileSize && HASH.test(terrain.heightsSha256) &&
+    const references = validateTileReferences(document.terrain?.tiles, grown ? documentDomain(document) : document.base?.revision);
+    if (isObject(terrain) && Object.keys(terrain).sort().join(',') === (grown ? DOMAIN_TERRAIN_KEYS : TILE_TERRAIN_KEYS) &&
+        terrain.format === TILE_TERRAIN_FORMAT && (!grown || canonicalJson(terrain.domain) === canonicalJson(document.terrain.domain)) &&
+        terrain.version === (grown ? 2 : 1) && terrain.tileSize === document.terrain.tileSize && HASH.test(terrain.heightsSha256) &&
         HASH.test(terrain.materialsSha256) && canonicalJson(terrain.tiles) === canonicalJson(references)) return references;
   } catch { /* refused below */ }
   return fail('artifact');
@@ -186,7 +191,7 @@ export function createGmContentRegistry({ directory, root, worldId, lock = null,
     // GM07b2c S8: the terrain tiles of a document v5 join the same blobs/<sha256> store and the same budget, with
     // kind 'terrain-tile' and no release path: their bytes come from the caller at retain, never from the release.
     if (isTerrainTilesDocument(content.document)) {
-      const baseRevision = content.document.base.revision, tiles = new Map();
+      const baseRevision = content.document.version === DOMAIN_DOCUMENT_VERSION ? documentDomain(content.document) : content.document.base.revision, tiles = new Map();
       for (const [tx, tz, digest, size] of tileTerrainReferences(content)) {
         if (!Number.isSafeInteger(size) || size < 1 || size > TILE_MAX_BYTES) fail('artifact');
         if (!tiles.has(digest)) tiles.set(digest, { kind: 'terrain-tile', baseRevision, tx, tz, sha256: digest, bytes: size });

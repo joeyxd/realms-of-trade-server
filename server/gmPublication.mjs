@@ -8,7 +8,8 @@ import { projectGmContent } from '../src/editor/contentProjection.js';
 import { compileAuthoredResources } from '../src/editor/resourceAdapters.js';
 import { terrainGridOf } from '../src/editor/terrainData.js';
 import { mapGrid } from '../src/sim/mapBounds.js';
-import { isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
+import { DOMAIN_DOCUMENT_VERSION, documentDomain, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
+import { baseMapForDomain } from '../src/sim/baseMapForDomain.js';
 import { WORLD_LOAD_LIMITS } from '../src/editor/worldLoad.js';
 
 const sha256 = (value) => createHash('sha256').update(canonicalJson(value)).digest('hex');
@@ -83,18 +84,20 @@ export function createGmPublicationService({ root, runtimeRoot = root, map, base
       if (!ready) throw new Error('preparation_unavailable');
       if (![1, PREPARATION_VERSION].includes(version)) throw new Error('preparation_version');
       const checked = validateReferences(document);
-      const tiled = isTerrainTilesDocument(checked);
+      const tiled = isTerrainTilesDocument(checked), grown = checked.version === DOMAIN_DOCUMENT_VERSION;
       if (tiled && version !== PREPARATION_VERSION) throw new Error('preparation_version');
+      // GM11b3: a v6 is prepared over the base map generated for its own domain (memoized); everything else over `map`.
+      const world = grown ? baseMapForDomain(map.seed >>> 0, documentDomain(checked)) : map;
       // Draft saves skip the terrain of a v5 (S3): its whole-map rules run here, before any other check.
-      if (tiled) checkTileTerrain(map, checked, baseRevision, tiles);
-      const { colliders, ...report } = validateGmPublication({ map, document: checked, baseRevision, loadLimits, ...(tiled ? { tiles } : {}) });
+      if (tiled) checkTileTerrain(world, checked, baseRevision, tiles);
+      const { colliders, ...report } = validateGmPublication({ map: world, document: checked, baseRevision, loadLimits, ...(tiled ? { tiles } : {}) });
       if (!report.valid) return { report, revision: null };
-      const projected = checked.terrain ? projectGmContent(map, checked, baseRevision, tiled ? { tiles } : undefined) : null;
+      const projected = checked.terrain ? projectGmContent(world, checked, baseRevision, tiled ? { tiles } : undefined) : null;
       // A v5 takes the resources its projection compiled on the compiled terrain, which is what the server installs and
       // the client hashes. v3/v4 keep their call on the projected map unchanged; that map already holds the authored
       // resources, so an authored resource protects its own site there.
       const authoredResources = tiled ? projected.gmResources : compileAuthoredResources(projected || map, checked);
-      const coastal = new Set(gmEditableBaseProps(map, baseRevision).filter((entry) => entry.coastal).map((entry) => entry.id));
+      const coastal = new Set(gmEditableBaseProps(world, baseRevision).filter((entry) => entry.coastal).map((entry) => entry.id));
       const usesCoast = checked.baseOverrides.some((item) => coastal.has(item.id)) || checked.objects.some((item) => coastal.has(item.assetId));
       const assets = await dependencies.resolve(checked, usesCoast ? ['model:coast-rock-v1'] : []);
       const baselineAssets = await dependencies.resolveBaseline();
@@ -113,10 +116,11 @@ export function createGmPublicationService({ root, runtimeRoot = root, map, base
         collision: { count: colliders.length, sha256: sha256(colliders) }, validation: report };
       if (authoredResources.length) content.resources = { count: authoredResources.length, sha256: sha256(authoredResources) };
       // S7: a v5 names its tiles and hashes its compiled bytes, with this fixed key set; v3/v4 keep their rule.
-      // GM11b3 replaces gridSize with the domain; until then only a square grid has a content shape.
+      // GM11b3: a v6 names its domain (content terrain version 2, no gridSize); v3/v4 keep a square gridSize.
       const { Nx, Nz } = projected ? mapGrid(projected) : {};
-      if (projected && Nx !== Nz) throw new GmTerrainInvalidError('domain');
-      if (projected && tiled) content.terrain = { format: TERRAIN_TILES_CONTENT_FORMAT, version: 1, tileSize: checked.terrain.tileSize,
+      if (projected && !tiled && Nx !== Nz) throw new GmTerrainInvalidError('domain');
+      if (projected && tiled) content.terrain = { format: TERRAIN_TILES_CONTENT_FORMAT, version: grown ? 2 : 1, tileSize: checked.terrain.tileSize,
+        ...(grown ? { domain: structuredClone(checked.terrain.domain) } : {}),
         tiles: structuredClone(checked.terrain.tiles), heightsSha256: heightsSha256(projected),
         materialsSha256: materialsSha256(projected) };
       else if (projected) content.terrain = { gridSize: Nx, sha256: sha256(Array.from(projected.heights)),

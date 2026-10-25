@@ -2,7 +2,7 @@
 // budget a phone holds. Pure module: no DOM and no node: imports; the editor panel, publicationValidation.js and the
 // server's preparation (through validateGmPublication) share it, so client and server refuse with the same code.
 import { mapBounds } from '../sim/mapBounds.js';
-import { TERRAIN_DOMAINS, TILE_SIZE, isTerrainTilesDocument } from './terrainTiles.js';
+import { DOMAIN_DOCUMENT_VERSION, TERRAIN_DOMAINS, TILE_SIZE, documentDomain, isTerrainTilesDocument } from './terrainTiles.js';
 
 // Joi, 2026-10-24: 1,000,000 terrain vertices (about a 980 m square at 1 m cells), a warning from 70 %, publication
 // refused above 100 %. Raw tile bytes and added objects are measured against their own budget; the largest share wins.
@@ -22,6 +22,8 @@ const LEVELS = Object.freeze({ ok: 0, near: 1, over: 2 });
  * above 100 % (exactly 100 % still fits, so a 1,000-edit document stays publishable as edit_limit allows).
  */
 export function worldLoadBudget(domain, document, limits = WORLD_LOAD_LIMITS) {
+  // GM11b3: a document v6 carries its own domain, so a grown world raises the meter whatever domain the caller measured.
+  if (document?.version === DOMAIN_DOCUMENT_VERSION) domain = documentDomain(document);
   const columns = Math.round((domain.maxX - domain.minX) / domain.cell), rows = Math.round((domain.maxZ - domain.minZ) / domain.cell);
   const vertices = (columns + 1) * (rows + 1);
   const tiles = (Math.floor((domain.maxX - 1) / TILE_SIZE) - Math.floor(domain.minX / TILE_SIZE) + 1) *

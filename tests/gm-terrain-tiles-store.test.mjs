@@ -72,7 +72,7 @@ test('memory tile store refuses every bad input with its code and stores nothing
   await assert.rejects(store.putTerrainTiles({ world: WORLD,
     tiles: [new Uint8Array(3 * 1024 * 1024), new Uint8Array(3 * 1024 * 1024)] }), coded('tile_batch'), 'more than 4 MiB');
   for (const [label, bad] of [['plain array', [...good]], ['magic', magic], ['truncated', truncated],
-    ['trailing', trailing], ['key outside the domain', withKey(good, 4)], ['non-canonical height encoding', wideHeights(0, 0)],
+    ['trailing', trailing], ['key outside the domain limits', withKey(good, 64)], ['non-canonical height encoding', wideHeights(0, 0)],
     ['over 65,536 bytes', new Uint8Array(65537)], ['empty', new Uint8Array(0)]]) {
     await assert.rejects(store.putTerrainTiles({ world: WORLD, tiles: [good, bad] }), coded('tile_invalid'), label);
   }

@@ -16,9 +16,16 @@ export const TILE_MAX_BYTES = 65536;
 export const TILE_MAX_MATERIAL_ID = 255;
 export const TERRAIN_TILES_VERSION = 3;
 export const TILES_DOCUMENT_VERSION = 5;
+// GM11b3: document v6 = v5 plus terrain.domain, the world's extent in tiles (terrain version 4). v5 means the base revision's domain.
+export const DOMAIN_DOCUMENT_VERSION = 6;
+export const TERRAIN_DOMAIN_VERSION = 4;
+/** D1 limits of a document domain: tile indices in [min, max], at most maxTiles tiles per axis. */
+// maxVertices: a zone fits one load (GM11 Z1/Z4, worldLoad.js WORLD_LOAD_LIMITS) and the server never builds a bigger base map.
+export const TERRAIN_DOMAIN_LIMITS = Object.freeze({ min: -64, max: 63, maxTiles: 32, maxVertices: 1_000_000 });
 export const MAX_DOCUMENT_TILES = 256;
 // Until GM07b2 every path that would store, prepare, publish, activate or load a document v5 refuses it with this code.
 export const TERRAIN_TILES_NOT_READY = 'terrain_tiles_not_ready';
+export const TERRAIN_DOMAINS_NOT_READY = 'terrain_domains_not_ready';
 
 const MAGIC = Object.freeze([0x4d, 0x4e, 0x54, 0x31]); // 'MNT1'
 const INT16_LIMIT = 32767;
@@ -66,6 +73,49 @@ export function terrainTileRange(baseRevision) {
     tileRanges.set(domain, range);
   }
   return range;
+}
+
+const DOMAIN_KEYS = Object.freeze(['minTx', 'maxTx', 'minTz', 'maxTz']);
+const tileRecord = range => ({ minTx: range.txMin, maxTx: range.txMax, minTz: range.tzMin, maxTz: range.tzMax });
+const sameTiles = (a, b) => DOMAIN_KEYS.every(key => a[key] === b[key]);
+
+/**
+ * GM11b3 D1: a document domain { minTx, maxTx, minTz, maxTz } (integers, 70 m tiles). Valid when every bound lies in
+ * TERRAIN_DOMAIN_LIMITS, min <= max, each axis spans at most maxTiles tiles and it contains the tile range of
+ * `baseRevision` (a revision name or a domain record). Returns a plain copy; throws code 'domain'.
+ */
+export function validateDomain(domain, baseRevision) {
+  const { min, max, maxTiles } = TERRAIN_DOMAIN_LIMITS;
+  if (!record(domain) || Object.keys(domain).length !== DOMAIN_KEYS.length || !DOMAIN_KEYS.every(key => Object.hasOwn(domain, key) &&
+      Number.isInteger(domain[key]) && domain[key] >= min && domain[key] <= max)) fail('domain');
+  const { minTx, maxTx, minTz, maxTz } = domain, base = terrainTileRange(baseRevision);
+  if (minTx > maxTx || minTz > maxTz || maxTx - minTx + 1 > maxTiles || maxTz - minTz + 1 > maxTiles ||
+      minTx > base.txMin || maxTx < base.txMax || minTz > base.tzMin || maxTz < base.tzMax) fail('domain');
+  // Checked before any base map exists: generating one is synchronous and runs on the game server's thread.
+  if ((TILE_SIZE * (maxTx - minTx + 1) + 1) * (TILE_SIZE * (maxTz - minTz + 1) + 1) > TERRAIN_DOMAIN_LIMITS.maxVertices) fail('domain_budget');
+  return { minTx, maxTx, minTz, maxTz };
+}
+
+/** The metres record of a document domain: the shape of a TERRAIN_DOMAINS entry (tile tx covers [70 tx, 70 (tx + 1)]). */
+export function domainBounds(domain) {
+  if (!record(domain) || !DOMAIN_KEYS.every(key => Number.isInteger(domain[key])) || domain.minTx > domain.maxTx ||
+      domain.minTz > domain.maxTz) fail('domain');
+  return Object.freeze({ minX: TILE_SIZE * domain.minTx, maxX: TILE_SIZE * (domain.maxTx + 1),
+    minZ: TILE_SIZE * domain.minTz, maxZ: TILE_SIZE * (domain.maxTz + 1), cell: 1 });
+}
+
+/** True for a document v5 or v6 (terrain tiles). */
+export function isTerrainTilesDocument(document) {
+  return document !== null && typeof document === 'object' &&
+    (document.version === TILES_DOCUMENT_VERSION || document.version === DOMAIN_DOCUMENT_VERSION);
+}
+
+/**
+ * The domain of a document in metres: a v6's own domain; a v5, a terrain-less document or any other the domain of
+ * `baseRevision` (a revision name or a domain record; the document's own base revision when omitted).
+ */
+export function documentDomain(document, baseRevision = document?.base?.revision) {
+  return document?.version === DOMAIN_DOCUMENT_VERSION ? domainBounds(document.terrain.domain) : terrainDomain(baseRevision);
 }
 
 /** Editable vertex: integer coordinates inside the domain and off its outer ring. */
@@ -238,10 +288,21 @@ export function validateTerrainTiles(raw, baseRevision) {
   return { version: TERRAIN_TILES_VERSION, tileSize: TILE_SIZE, tiles: validateTileReferences(raw.tiles, baseRevision) };
 }
 
-/** True for a document v5 (terrain tiles). */
-export function isTerrainTilesDocument(document) {
-  return document !== null && typeof document === 'object' && document.version === TILES_DOCUMENT_VERSION;
+/**
+ * The terrain of a document v6 (GM11b3 D2): { version: 4, tileSize: 70, domain, tiles }, exact keys. The tile entries
+ * follow the v5 rules over the document's own domain. A domain equal to the base revision's is not a v6
+ * ('domain_canonical'): one world, one serialized form.
+ */
+export function validateDomainTerrain(raw, baseRevision) {
+  if (!record(raw) || Object.keys(raw).length !== 4 || !['version', 'tileSize', 'domain', 'tiles'].every(key => Object.hasOwn(raw, key)) ||
+      raw.version !== TERRAIN_DOMAIN_VERSION || raw.tileSize !== TILE_SIZE || !Array.isArray(raw.tiles)) fail('format');
+  const domain = validateDomain(raw.domain, baseRevision);
+  if (isBaseDomain(domain, baseRevision)) fail('domain_canonical');
+  return { version: TERRAIN_DOMAIN_VERSION, tileSize: TILE_SIZE, domain, tiles: validateTileReferences(raw.tiles, domainBounds(domain)) };
 }
+
+/** True when `domain` ({ minTx, maxTx, minTz, maxTz }) is the tile range of `baseRevision` (the form a v5 stands for). */
+export function isBaseDomain(domain, baseRevision) { return sameTiles(domain, tileRecord(terrainTileRange(baseRevision))); }
 
 /** The refusal of a document v5 by every store, prepare, publish, activate and load path until GM07b2. */
 export function terrainTilesNotReady() {
@@ -344,14 +405,26 @@ export async function verifyTileBlobs(source) {
   return true;
 }
 
+// GM11b3: the base map for a document v6's domain is the map the tiles compile over. A revision name whose domain is not
+// the map's bounds, with a map grown to a larger tile-aligned domain (res 1), compiles over that map's own bounds; the
+// callers that hold a document (gmPublication, activeContent) pass the base map for the document's domain.
+function compileDomain(baseMap, baseRevision) {
+  const b = baseMap?.bounds;
+  if (typeof baseRevision !== 'string' || !b || (baseMap.res ?? 1) !== 1) return baseRevision;
+  const base = terrainDomain(baseRevision);
+  if (b.minX > base.minX || b.maxX < base.maxX || b.minZ > base.minZ || b.maxZ < base.maxZ ||
+      b.minX === base.minX && b.maxX === base.maxX && b.minZ === base.minZ && b.maxZ === base.maxZ) return baseRevision;
+  try { return terrainDomain({ minX: b.minX, maxX: b.maxX, minZ: b.minZ, maxZ: b.maxZ, cell: 1 }); } catch { return baseRevision; }
+}
+
 /** Compile tiles over a base map: tilesToGrid, then compileTerrainGrid (terrainData.js). */
 export function compileTerrainTiles(baseMap, source, baseRevision) {
-  return compileTerrainGrid(baseMap, tilesToGrid(source, baseRevision));
+  return compileTerrainGrid(baseMap, tilesToGrid(source, compileDomain(baseMap, baseRevision)));
 }
 
 /** Validate tiles for a base map: tilesToGrid, then validateTerrainGridForMap. Returns the grid. */
 export function validateTerrainTilesForMap(baseMap, source, baseRevision, options) {
-  return validateTerrainGridForMap(baseMap, tilesToGrid(source, baseRevision), options);
+  return validateTerrainGridForMap(baseMap, tilesToGrid(source, compileDomain(baseMap, baseRevision)), options);
 }
 
 // Terrain v1/v2 indices are 561-based (today's square).

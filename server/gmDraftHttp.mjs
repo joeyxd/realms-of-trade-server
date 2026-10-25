@@ -3,7 +3,7 @@ import { playerKey } from './store.mjs';
 import { resolveGmSession } from './gmSession.mjs';
 import { MAX_TILE_BATCH, MAX_TILE_BATCH_BYTES } from './gmDraftStore.mjs';
 import { validateDocument } from '../src/editor/document.js';
-import { TERRAIN_TILES_NOT_READY, TILE_MAX_BYTES, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
+import { TERRAIN_TILES_NOT_READY, TERRAIN_DOMAINS_NOT_READY, TILE_MAX_BYTES, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SHA256 = /^[0-9a-f]{64}$/;
@@ -124,6 +124,10 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
   const tilesReady = async () => {
     if (typeof store.checkGmTerrainTiles !== 'function') return false;
     try { return (await bounded(store.checkGmTerrainTiles(), timeoutMs))?.version === 1; } catch { return false; }
+  };
+  const domainsReady = async () => {
+    if (typeof store.checkGmTerrainDomains !== 'function') return false;
+    try { return (await bounded(store.checkGmTerrainDomains(), timeoutMs))?.version === 1; } catch { return false; }
   };
   const tileStore = () => typeof store.putTerrainTiles === 'function' && typeof store.getTerrainTiles === 'function';
   // S6: the tiles of a document v5 from the store, at most MAX_TILE_BATCH hashes per call, into one Map sha256 -> bytes
@@ -341,14 +345,18 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
         let document;
         try {
           document = validateDocument(input.document);
-          if (![2, 3, 4, 5].includes(document.version) || document.base.seed !== seed || document.base.revision !== baseRevision) throw new Error('document');
+          if (![2, 3, 4, 5, 6].includes(document.version) || document.base.seed !== seed || document.base.revision !== baseRevision) throw new Error('document');
           const referenced = validateReferences(document);
           if (referenced === false) throw new Error('document');
           if (referenced !== undefined && referenced !== true) document = validateDocument(referenced);
           if (document.base.seed !== seed || document.base.revision !== baseRevision) throw new Error('document');
         } catch { send(res, 400, { ok: false, code: 'document' }); return true; }
         // GM07b2: a document v5 is saved with tile references; its tiles must already be uploaded (S4).
-        if (isTerrainTilesDocument(document) && !await tilesReady()) { send(res, 503, notReady()); return true; }
+        if (document.version === 6) {
+          if (!await tilesReady() || !await domainsReady()) {
+            send(res, 503, { ok: false, code: TERRAIN_DOMAINS_NOT_READY }); return true;
+          }
+        } else if (isTerrainTilesDocument(document) && !await tilesReady()) { send(res, 503, notReady()); return true; }
         if (controller.signal.aborted || res.destroyed || res.writableEnded || req.aborted) return true;
         const result = await bounded(store.saveGmDraft({ world: worldId, owner: accountId,
           operationId: input.operationId.toLowerCase(), expectedRevision: input.expectedRevision, document }), timeoutMs);
@@ -369,8 +377,9 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
         const code = error?.code;
         const known = ['gm_content_busy', 'gm_content_conflict', 'gm_content_changed', 'gm_content_missing',
           'gm_content_incompatible', 'gm_content_candidate', 'gm_content_routes', 'gm_content_occupied',
-          'gm_content_operation', 'gm_content_limit', 'gm_resource_unavailable', 'gm_resource_roster'];
+          'gm_content_operation', 'gm_content_limit', 'gm_resource_unavailable', 'gm_resource_roster', 'terrain_domain_runtime'];
         if (known.includes(code)) send(res, 409, { ok: false, code });
+        else if (code === TERRAIN_DOMAINS_NOT_READY) send(res, 503, { ok: false, code });
         else if (code === TERRAIN_TILES_NOT_READY && !registerRevision && !activateRevision) send(res, 503, notReady());
         else if (TILE_CODES.includes(code) && (uploadTiles || readTiles)) send(res, 400, { ok: false, code });
         else send(res, 503, registerRevision || activateRevision ? { ok: false, code: 'gm_content_unavailable' } : unavailable());

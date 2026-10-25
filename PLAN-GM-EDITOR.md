@@ -591,6 +591,46 @@ en el servidor, GM11e cruce en el cliente (precarga y pantalla), GM11f zonas en 
 GM11b va en tres sesiones (decisiones B1-B6 en el brief, T-1024-35): GM11b1 extensión en tiempo de ejecución (el mapa
 lleva sus límites y la simulación, las guardas de perlas, el render y el minimapa los leen; el mundo de hoy idéntico bit a
 bit; construido en T-1024-35), GM11b2 la rejilla del editor, GM11b3 el dominio como dato (documento v6, SQL044, protocolo).
+GM11b3 (chef, T-1025-22/23, 2026-10-25): el dominio `{ minTx, maxTx, minTz, maxTz }` (enteros en [-64, 63], contiene
+la isla, hasta 32 teselas por eje) solo se escribe cuando difiere del de la revisión base: un mundo del tamaño de hoy
+sigue siendo v5 y un v6 igual a la isla se rechaza (`domain_canonical`), así ningún borrador, revisión ni hash cambia.
+El contenido de un v6 lleva `terrain.version: 2` con el dominio. SQL044 acepta v6 con su RPC de disponibilidad y la
+bandera `gmTerrainDomains` en /status; sin SQL044 los v2-v5 siguen igual y un v6 responde 503. El mundo en marcha no
+cambia de tamaño en esta porción: activar un contenido con otro dominio se rechaza (`terrain_domain_runtime`) en el
+servidor y en el cliente. Activarlo de verdad (regenerar el mapa del servidor y la escena) y el aumento de protocolo
+pasan a GM11c, que es donde un mundo ampliado llega por primera vez a los jugadores.
+
+### GM12 Objetos con función (pedido por Joi el 2026-10-25 tras jugar; va después de GM11b3, antes de GM11c-f)
+
+Hoy nada colocado hace su función. Un objeto del documento es `{ id, assetId, transform, collider }` y nada más
+(src/editor/document.js:56-70); su collider es un círculo (publicationValidation.js:77-95 compileGmColliders) y la
+simulación solo conoce círculos (src/sim/systems/movement.js:54, world.js:413, projectiles.js:56).
+- **Fogata.** Cocinar y el combustible solo leen piezas de balsa: freshwater.js:32-41 y :122-130 (comida con calor),
+  fire.js:10-20 (cercanía por lanternDistance), ranuras de fuego con clave [barco, pieza] (fireProfile.js:31-40),
+  operaciones del servidor y SQL 022. La luz solo sale de la fogata del pueblo (render/lights.js:86, map.props). No
+  existe ninguna mecánica de calor o frío: el calor es una mecánica nueva y la decide Joi en GM12a.
+- **Cabaña.** Las seis cabañas del pueblo son un círculo de 2,6 m (worldgen.js:298-299); ningún edificio del juego tiene
+  interior. Se puede entrar con un anillo de círculos pequeños con hueco de puerta (funciona con la simulación de hoy)
+  y ocultando el techo al entrar; las cajas orientadas son un corte mayor (movimiento, disparos, cubierta, servidor).
+- **Puesto.** Se vende junto al NPC vendedor (quests.js:156, SHOP_R 4,5 m) o dentro del radio del pueblo (trade.js:84,
+  data/towns.js:21); el puesto del pueblo es decoración (worldgen.js:304). Un puesto que vende necesita una tienda del
+  servidor atada a la posición del objeto; el surtido y los precios los define el servidor.
+- **Algodón (piloto 03).** Malla de dos estados (intacto y cosechado): recurso recolectable.
+Patrón: el de los recursos de GM05b (src/editor/resourceAdapters.js:5-105, server/gmResourceRoster.mjs): un registro de
+adaptadores por assetId (fuego, refugio, tienda, recurso) compilado a una lista funcional que viaja en la publicación y
+su hash, sin campo nuevo por objeto. Cortes propuestos: GM12a diseño (Joi aprueba el calor y la tienda), GM12b refugio,
+GM12c fogata, GM12d puesto, GM12e algodón.
+
+### GM13 Lo protegido como dato (pedido por Joi el 2026-10-25; va después de GM09)
+
+Hoy del mapa base solo se mueven o quitan rocas naturales, flores y guijarros (src/editor/baseIdentity.js:29-51) y
+`protectedMask` (terrainData.js:102-131) guarda spawn, aldea, muelle, arena, volcán, cala, manantial, checkpoints, NPCs,
+recursos y banco. Sus posiciones son constantes L.* de src/sim/worldgen.js:26-48 que leen entre 5 y 25 ficheros cada
+una (spawn unos 25, muelle 22, arena 17, aldea y NPCs 15, cala y recursos 10, volcán 5); muelle, arena, volcán y
+manantial además van horneados en el terreno. Cortes propuestos: GM13a casas y fogata del pueblo movibles (se suman a
+gmEditableBaseProps con el collider de cabaña de GM12b); GM13b diseño de una tabla de anclas (posición y radio) en el
+documento, aplicada antes de generar el mundo, con cada lector pasando a map.landmarks / map.npcs y el terreno
+regenerado, revisado con AREA07 (muelle), combate (cala) y playtest (spawn); luego un corte por grupo de anclas.
 
 ## 10 Arquitectura de implementación propuesta
 

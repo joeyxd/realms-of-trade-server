@@ -571,7 +571,7 @@ export class GameHost {
       if (this.#requiresPearlStartup) this.#stopPearls();
       throw error;
     });
-    await Promise.allSettled([observe(this.#prepareEconomy()), observe(recovery), this.#probeGmTerrainTiles()]);
+    await Promise.allSettled([observe(this.#prepareEconomy()), observe(recovery), this.#probeGmTerrainTiles(), this.#probeGmTerrainDomains()]);
     if (failure) throw failure.error;
     if (this.closing) throw new StoreError('cancelled');
     if (this.#groundPearls) {
@@ -683,6 +683,14 @@ export class GameHost {
     this.gmTerrainTiles = ready;
   }
 
+  async #probeGmTerrainDomains() {
+    let ready = false;
+    if (typeof this.store.checkGmTerrainDomains === 'function') {
+      try { ready = (await this.store.checkGmTerrainDomains())?.version === 1; } catch { ready = false; }
+    }
+    this.gmTerrainDomains = ready;
+  }
+
   // Under Ground a GM roster needs the SQL040 family: the authority capability and installed readiness.
   // A missing or failing readiness probe is not ready; the caller fails closed before any roster write.
   async #groundGmResourcesReady() {
@@ -772,6 +780,7 @@ export class GameHost {
       storage: { kind: this.store.kind, durable: this.store.durable === true, accounts: !!this.resolvePlayer,
         playerCharacters: { ready: this.playerCharacters.ready, limit: 3 },
         gmTerrainTiles: this.gmTerrainTiles === true,
+        gmTerrainDomains: this.gmTerrainDomains === true,
         errors: this.profiles.errors + (this.worldState?.errors || 0), unsaved: this.unsavedProfiles.size,
         profileWrites: this.profiles.tasks.size, worldWriting: !!this.worldState?.running,
         economic: this.economicAuthority?.status() ?? null,

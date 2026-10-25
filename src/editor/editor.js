@@ -17,7 +17,8 @@ import { LAYER } from '../render/pipeline.js';
 import { TemplatePanel } from './templatePanel.js';
 import { validateTemplate, instantiateTemplate } from './templates.js';
 import { compileTerrainMap, OBJECT_MAX_Y, OBJECT_MIN_Y, validateTerrainForMap } from './terrainData.js';
-import { isTerrainTilesDocument } from './terrainTiles.js';
+import { DOMAIN_DOCUMENT_VERSION, documentDomain, isTerrainTilesDocument } from './terrainTiles.js';
+import { baseMapForDomain } from '../sim/baseMapForDomain.js';
 import { TerrainSession, openTerrainDocument, tileKeysRegion, tileReferences } from './terrainSession.js';
 import { createTerrainPreview, joinRegions } from './terrainPreview.js';
 import { TerrainPanel } from './terrainPanel.js';
@@ -38,7 +39,7 @@ const html = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '
 // Collisions read objects and base overrides only: a document v5 is passed without its terrain, since
 // compileGmColliders refuses v5 with the publication paths until GM07b2.
 const collisionDocument = (doc) => {
-  if (!isTerrainTilesDocument(doc)) return doc;
+  if (!isTerrainTilesDocument(doc) || doc.version === DOMAIN_DOCUMENT_VERSION) return doc; // a v6 keeps its domain (positions)
   const { terrain, ...rest } = doc;
   return { ...rest, version: 2 };
 };
@@ -81,7 +82,7 @@ export class WorldEditor {
     this.baseLayer = createBaseDecorationLayer({ scene, map, baseRevision });
     this.baseEntries = this.baseLayer.list().filter((entry) => entry.editable);
     this.sceneTab = false;
-    this.draftMap = map; this.terrainKey = null;
+    this.draftMap = map; this.terrainKey = null; this.firstMap = map;
     this.terrainPreview = createTerrainPreview({ scene, map, invalidate });
 
     this._installStyles(); this._buildUI();
@@ -395,11 +396,29 @@ export class WorldEditor {
 
   /** Open a document for editing (GM07b1): v3/v4 convert to v5, a v5 needs its tiles. Returns its terrain session. */
   async _openTerrain(document, tiles = null) {
-    const opened = await openTerrainDocument({ map: this.map, baseRevision: this.baseRevision, document, tiles });
-    const session = new TerrainSession({ map: this.map, baseRevision: this.baseRevision, grid: opened.grid,
+    // GM11b3: a v6 draft runs on the base map generated for its domain (memoized); a draft on the constructor's map
+    // brings the editor back to it. Every tool reads the map's bounds since GM11b2. The editor adopts the map only
+    // once the document opened: a refusal leaves the map, preview, history and session as they were.
+    let map = this.firstMap || this.map;
+    if (document?.version === DOMAIN_DOCUMENT_VERSION) {
+      const own = documentDomain(document), bounds = mapBounds(map);
+      if (own.minX !== bounds.minX || own.maxX !== bounds.maxX || own.minZ !== bounds.minZ || own.maxZ !== bounds.maxZ)
+        map = baseMapForDomain(map.seed >>> 0, own);
+    }
+    const opened = await openTerrainDocument({ map, baseRevision: this.baseRevision, document, tiles });
+    const session = new TerrainSession({ map, baseRevision: opened.baseRevision, grid: opened.grid,
       references: tileReferences(opened.document), lookup: (sha256) => this.history?.tile(sha256) });
     this._validateBaseReferences(opened.document, session.surface());
+    if (map !== this.map) this._adoptBaseMap(map);
     return { ...opened, session };
+  }
+
+  // Swap the base map under the preview and the walk test (the base props and colliders are the same on any domain).
+  _adoptBaseMap(map) {
+    this._stopWalking(); this.terrainPreview.restore(); this.terrainPreview.dispose();
+    this.map = map; this.draftMap = map; this.terrainKey = null;
+    this.terrainPreview = createTerrainPreview({ scene: this.scene, map, invalidate: this.invalidate });
+    if (this.walkPreview) this.walkPreview.map = map;
   }
 
   _installDocument({ document, tiles, session }) {
@@ -709,7 +728,7 @@ export class WorldEditor {
     const bounds = mapBounds(this.map); // a draft map shares its base map's bounds
     const decoration = createDecoration({ id: uid(), assetId: entry.id, position: {
       x: clamp(point.x, bounds.minX, bounds.maxX), y: clamp(this.draftMap.groundAt(point.x, point.z), OBJECT_MIN_Y, OBJECT_MAX_Y), z: clamp(point.z, bounds.minZ, bounds.maxZ),
-    }, collider: 'none' });
+    }, collider: 'none' }, bounds);
     try {
       this._commit(addDecoration(this.history.current(), decoration)); this.select(decoration.id);
       this._setStatus(resourceAdapter(entry.id) ? editorMessage('Resource added to private draft. Publish in Online to enable gathering.',

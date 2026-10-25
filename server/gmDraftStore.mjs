@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { validateDocument } from '../src/editor/document.js';
-import { MAX_DOCUMENT_TILES, TERRAIN_DOMAINS, TERRAIN_TILES_NOT_READY, TILE_MAX_BYTES, decodeTile, encodeTile,
-  isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
+import { MAX_DOCUMENT_TILES, TERRAIN_DOMAINS, TERRAIN_DOMAIN_LIMITS, TERRAIN_TILES_NOT_READY, TERRAIN_DOMAINS_NOT_READY, TILE_MAX_BYTES, decodeTile, domainBounds,
+  encodeTile, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const WORLD = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,99}$/;
@@ -35,11 +35,14 @@ function sameBytes(a, b) {
 
 // S3: a tile is stored only as its canonical MNT1 blob: it decodes in a known terrain domain (key inside it) and
 // re-encodes to the identical bytes. The world names no base revision, so any domain the code knows may claim it;
-// the document validator later checks each referenced tile against the document's own base revision.
+// the document validator later checks each referenced tile against the document's own base revision. GM11b3: a tile of a
+// document v6 may lie anywhere in the D1 limits, so the widest domain they allow also claims it.
+const LIMITS_DOMAIN = domainBounds({ minTx: TERRAIN_DOMAIN_LIMITS.min, maxTx: TERRAIN_DOMAIN_LIMITS.max,
+  minTz: TERRAIN_DOMAIN_LIMITS.min, maxTz: TERRAIN_DOMAIN_LIMITS.max });
 function checkedTile(raw) {
   if (!(raw instanceof Uint8Array) || raw.length > TILE_MAX_BYTES) throw new GmDraftStoreError('tile_invalid');
   const bytes = new Uint8Array(raw);
-  for (const baseRevision of Object.keys(TERRAIN_DOMAINS)) {
+  for (const baseRevision of [...Object.keys(TERRAIN_DOMAINS), LIMITS_DOMAIN]) {
     let canonical = false;
     try { canonical = sameBytes(encodeTile(decodeTile(bytes, baseRevision), baseRevision), bytes); } catch { /* next domain */ }
     if (canonical) return { sha256: sha256Hex(bytes), bytes };
@@ -158,6 +161,7 @@ export function createMemoryGmDraftMethods() {
   return Object.freeze({
     async checkGmDrafts() { return { version: 1 }; },
     async checkGmTerrainTiles() { return { version: 1 }; },
+    async checkGmTerrainDomains() { return { version: 1 }; },
     async putTerrainTiles(raw) {
       const world = checkedWorld(raw?.world), batch = checkedTileBatch(raw?.tiles);
       for (const [sha256, bytes] of batch) tiles.set(tileKey(world, sha256), bytes);
@@ -230,6 +234,18 @@ export function createSupabaseGmDraftMethods(client) {
   async function requireTerrainTiles() {
     try { await checkGmTerrainTiles(); } catch { throw new GmDraftStoreError(TERRAIN_TILES_NOT_READY); }
   }
+  async function checkGmTerrainDomains() {
+    let raw;
+    try { raw = await rpc('mn_gm_terrain_domains_ready', {}); } catch { throw new GmDraftStoreError('unavailable'); }
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw) || Object.keys(raw).length !== 1 || raw.version !== 1) {
+      throw new GmDraftStoreError('unavailable');
+    }
+    return { version: 1 };
+  }
+  async function requireTerrainDomains() {
+    try { await requireTerrainTiles(); await checkGmTerrainDomains(); }
+    catch { throw new GmDraftStoreError(TERRAIN_DOMAINS_NOT_READY); }
+  }
   return Object.freeze({
     async checkGmDrafts() {
       const raw = await rpc('mn_gm_drafts_ready', {});
@@ -237,6 +253,7 @@ export function createSupabaseGmDraftMethods(client) {
       return { version: 1 };
     },
     checkGmTerrainTiles,
+    checkGmTerrainDomains,
     async putTerrainTiles(raw) {
       const world = checkedWorld(raw?.world), batch = checkedTileBatch(raw?.tiles);
       if (batch.size === 0) return { ok: true, stored: 0 };
@@ -289,7 +306,8 @@ export function createSupabaseGmDraftMethods(client) {
         const ready = await rpc('mn_gm_material_drafts_ready', {});
         if (ready?.version !== 1 || ready?.terrainVersion !== 2 || Object.keys(ready).length !== 2) throw new GmDraftStoreError('unavailable');
       }
-      if (isTerrainTilesDocument(input.document)) await requireTerrainTiles();
+      if (input.document.version === 6) await requireTerrainDomains();
+      else if (isTerrainTilesDocument(input.document)) await requireTerrainTiles();
       const result = await rpc('mn_save_gm_draft', { p_operation_id: input.operationId, p_request: input.request });
       return checkedSaveResult(result, input.document);
     },

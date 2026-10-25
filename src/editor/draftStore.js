@@ -1,4 +1,4 @@
-import { validateDocument } from './document.js';
+import { documentDomain, validateDocument } from './document.js';
 import { isTerrainTilesDocument, tilesToGrid, verifyTileBlobs } from './terrainTiles.js';
 
 export const DRAFT_EXPORT_FORMAT = 'marea.gm.draft-export';
@@ -218,7 +218,7 @@ export async function checkDocumentTiles(document, tiles, { prefix = 'document',
   if (!verify) return blobs;
   try {
     await verifyTileBlobs({ tiles: references, blobs });
-    tilesToGrid({ tiles: references, blobs }, document.base.revision);
+    tilesToGrid({ tiles: references, blobs }, documentDomain(document)); // GM11b3: a v6 decodes over its own domain
   } catch (error) { throw new DraftStoreError(`${prefix}_tile_invalid`, { reason: error?.code }); }
   return blobs;
 }

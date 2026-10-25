@@ -5,7 +5,8 @@ import { createGmContentRegistry } from './gmContentRegistry.mjs';
 import { validateGmContentObstacles } from './gmContentObstacles.mjs';
 import { resourceLayout } from '../src/data/resources.js';
 import { sameRevisionIdentity } from '../src/editor/publicationArtifact.js';
-import { isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
+import { DOMAIN_DOCUMENT_VERSION, documentDomain, isTerrainTilesDocument } from '../src/editor/terrainTiles.js';
+import { mapBounds } from '../src/sim/mapBounds.js';
 
 const gzip = promisify(gzipCallback);
 const error = (code) => Object.assign(new Error(code), { code });
@@ -24,6 +25,14 @@ export function createGmContentService({ directory, root, worldId, baseMap, base
     const revision = loaded?.revision;
     if (!revision) throw error('gm_content_missing');
     const tiles = isTerrainTilesDocument(revision.content.document) ? loaded.tiles : null;
+    // GM11b3 D7: the running world's extent never changes at runtime (GM11c). A revision over another domain can be
+    // prepared and stored, but not installed or activated; the active revision stays.
+    if (revision.content.document.version === DOMAIN_DOCUMENT_VERSION) {
+      const domain = documentDomain(revision.content.document), bounds = mapBounds(baseMap);
+      if (domain.minX !== bounds.minX || domain.maxX !== bounds.maxX || domain.minZ !== bounds.minZ || domain.maxZ !== bounds.maxZ) {
+        throw error('terrain_domain_runtime');
+      }
+    }
     // Rebuild with the running code under the revision's own schema (GM07b0): schema 2 survives a code change
     // when the content and its derived hashes rebuild identically; schema 1 still needs the same runtime.
     // A document v5 rebuilds from its retained tiles, with the whole-map terrain rules.
