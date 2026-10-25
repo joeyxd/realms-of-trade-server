@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**GM11b: el tamaño del mundo como dato (límites del mapa, rejilla del editor y dominio del documento), 2026-10-25, versión 0.6.0-alpha.116, protocolo 72 (sin cambio), SQL044 opcional:**
+Área GM Constructor de mundos (asset-workshop, T-1024-35, T-1024-44, T-1024-45, T-1025-22/23; integración T-1025-34). El mundo de hoy queda idéntico bit a bit: mismos borradores, ids de revisión y hashes; ningún jugador recibe todavía un mundo crecido.
+- GM11b1 (c0ec8f6): el mapa lleva sus límites (`map.bounds`, `src/sim/mapBounds.js`); generador, sim, movimiento, guardas de perlas, render (terreno, agua, fondo marino, luces, vegetación) y minimapa los leen en vez de `map.half`.
+- GM11b2a/b (83bb88f, 97808b2): la rejilla del editor y todas las herramientas de terreno (pinceles, regiones, ruido, erosiones, mapa de alturas, vista previa, dispersión y objetos) leen los límites del mapa base.
+- GM11b3 (9b321bf): el dominio del mundo como dato en `terrainTiles.js` (teselas -64..63, 32 por eje, 1 M de vértices); documento v6 solo cuando el dominio difiere del de hoy. Servidor y cliente rechazan activar una revisión cuyo dominio no coincide con el mapa en marcha (409 `terrain_domain_runtime`). SQL044 (`044_gm_terrain_domains.sql`) con `mn_gm_terrain_domains_ready()` y `/status` gmTerrainDomains; sin ella, guardar un v6 da 503 `terrain_domains_not_ready` y todo lo demás (v2-v5) sigue igual.
+- Integración sobre PT20 y PT16: el parche de oleaje y la máscara de calma leen `uWorldMin`/`uWorldSize` en lugar de `uWorldHalf`; el cuadro plano del agua se centra en su geometría para que el parche hijo quede en coordenadas de mundo; los muestreadores de CPU (seaCalm, seaSwell) siguen en cuadrado centrado hasta GM11c. El caminante de cubierta conserva `walker` con los límites nuevos.
+- Pruebas: gate del updater 496/496 (78 archivos); cubierta, salto, naval, mar, mapa y gm-terrain-domains-sql 456/457 (el único fallo, naval-lab-server, es del worktree: su node_modules es un junction y el laboratorio no sirve `three` fuera de la raíz).
+- Pendiente para Joi: aplicar SQL044 en Supabase (solo para borradores crecidos). Siguiente: GM12a, objetos colocados que funcionan (fogata, choza, puesto, algodón).
+
 **IC06a: el compañero alojado resume su propia memoria y el centro muestra el uso de la sesión, 2026-10-25, versión 0.6.0-alpha.115, protocolo 72 (sin cambio), sin SQL:**
 Área AREA17 (area17-market, 236925c, T-1025-25/26). Solo actúa con IC08 encendido (MN_HOSTED_INFERENCE en alpha.env).
 - Tras el 6.º turno recordado sin resumir, el compañero alojado hace una llamada de compactación sobre hasta 8 episodios, solo si el presupuesto deja al menos una llamada libre para la respuesta siguiente; un resumen pagado que falla bloquea la automatización en esa sesión (memory/summary_failed) y un emparejamiento nuevo lo reinicia. El emparejamiento del PC nunca resume solo.
