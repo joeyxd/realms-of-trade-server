@@ -45,7 +45,9 @@ function validate(source) {
 }
 
 export class NativeSimulation {
-  constructor(source, options = {}) { this.source = structuredClone(validate(source)); this.configure(options); }
+  // endless (opt-in, the world's loop): no 8-second sequence end and no stopAt, so the emitters run for as long as the anchor
+  // exists; live particles stay bounded by their lifetimes. The default mode is the measured private sequence, unchanged.
+  constructor(source, options = {}, { endless = false } = {}) { this.source = structuredClone(validate(source)); this.endless = endless === true; this.configure(options); }
   configure(input = {}) {
     if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).some(k => !Object.hasOwn(CONTROL_SPEC, k)))
       throw new Error('Unknown native controls');
@@ -95,7 +97,7 @@ export class NativeSimulation {
     this.evaluate(p, emitter); return p;
   }
   advance() {
-    if (this.step >= 480) throw new Error('Private sequence ends at 8 seconds');
+    if (this.step >= 480 && !this.endless) throw new Error('Private sequence ends at 8 seconds');
     this.step++;
     this.live = this.live.map((list, emitter) => list.filter(p => {
       // The compiled ParticleState kills at lifetime - 0.0001, not at lifetime.
@@ -111,7 +113,7 @@ export class NativeSimulation {
       this.remainders[emitter] = remainder;
       for (let i = 0; i < count; i++) {
         const id = this.ids[emitter]++;
-        if (this.step / 60 > this.options.stopAt) continue;
+        if (!this.endless && this.step / 60 > this.options.stopAt) continue;
         const age = rateBirthAge(start, interval, i, DT);
         this.live[emitter].push(this.birth(emitter, id, age));
       }

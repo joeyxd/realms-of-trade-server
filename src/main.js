@@ -96,6 +96,7 @@ import { loadNavalRaftSkin } from './render/naval/raft-skin.js';
 import { LiveNavigationView } from './client/liveNavigationView.js';
 import { SwimStatus } from './client/swimStatus.js';
 import { GmEntry } from './editor/entry.js';
+import { createPresentationClient } from './net/presentationClient.js';
 
 const errors = new Map();
 function safe(name, fn) {
@@ -147,6 +148,13 @@ async function boot() {
   const gmContent = transport.kind === 'ws' ? await loadGmWorldContent({ httpBase: httpUrlFor(transport.url),
     map, baseMap, gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION }) : null;
   const world = new GameScene(canvas, map, { raftSkin: await raftSkinP, terrainMap: baseMap });
+  let presentationStorage = null;
+  try { presentationStorage = localStorage; } catch { /* Preview storage is optional. */ }
+  const presentation = createPresentationClient({ online: transport.kind === 'ws',
+    httpBase: transport.kind === 'ws' ? httpUrlFor(transport.url) : location.href, storage: presentationStorage });
+  presentation.onChange(doc => world.nativeFx?.setBindings(doc));
+  // Never blocks boot: the procedural look stays until the published bindings arrive.
+  world.nativeFx?.setBindings(presentation.effective()); void presentation.load(); presentation.start(document);
   const { createTerrainPreview } = await import('./editor/terrainPreview.js');
   const activeTerrain = createTerrainPreview({ scene: world.scene, map: baseMap,
     invalidate: () => world.pipeline.markDirty() });
@@ -795,6 +803,7 @@ async function boot() {
         const { SkillStudio } = await import('./editor/skillStudio.js');
         skillStudio?.dispose();
         skillStudio = new SkillStudio({ parent: $('#ui'), renderer: world.renderer,
+          presentation, auth: accountAuth,
           scope: { accountId: accountId || 'local', serverId: st.online ? httpUrlFor(transport.url) : 'solo' }, skin: settings.skin,
           onClose: () => {
             st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();

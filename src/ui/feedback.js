@@ -113,7 +113,7 @@ export class Feedback {
       case 'mhit': {
         const v = this.viewOf(ev.id), rec = this.client.entities.get(ev.id);
         const y = (rec ? rec.r.y : this.y(ev.x, ev.z)) + 1.1;
-        this.sparks(ev.x, y, ev.z, ev.stage === 3 ? 14 : 9, BONE, BONE1, { up: 2.5 });
+        W.nativeFx?.burst('meleeHit', ev.x, y, ev.z) || this.sparks(ev.x, y, ev.z, ev.stage === 3 ? 14 : 9, BONE, BONE1, { up: 2.5 });
         W.combatFx.ring(ev.x, y - 0.9, ev.z, 0.9, 0xfff1c8, 0.22, 0.2, 0.7);
         if (v) { v.flash(0xffffff, 1); this.flinch(v, ev.x, ev.z); }
         sfx.hit(this.material(rec), false);
@@ -147,7 +147,8 @@ export class Feedback {
         if (!ev.predictedHit) {
           sfx.hit(this.material(rec), !!ev.crit, this.vol(x, z));
           if (ev.elem === 4) sfx.inkHit(this.vol(x, z));
-          if (ev.kind !== 'melee') this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, ev.kind === 'burn' ? 3 : 8, hitPalette.c0, hitPalette.c1);
+          // A confirmed non-melee hit plays the bound native hit; burn ticks keep their 3 sparks.
+          if (ev.kind !== 'melee' && !(ev.kind !== 'burn' && W.nativeFx?.burst('damageHit', x, (rec ? rec.r.y : 0) + 1.1, z))) this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, ev.kind === 'burn' ? 3 : 8, hitPalette.c0, hitPalette.c1);
         } else if (ev.crit) sfx.hit(this.material(rec), true);
         if (rec && rec.enemy === 'dummy' && ev.by === this.client.youServer && ev.kind === 'melee') this.onTutorial('dummy', ev);
         break;

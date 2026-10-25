@@ -17,6 +17,7 @@ import { createCalaRing } from './vfx/calaring.js';
 import { DummyView, CannonView } from './practice.js';
 import { CrabView } from './crab.js';
 import { Effects } from './vfx/effects.js';
+import { NativeWorldFx } from './vfx/niagara/worldFx.js';
 import { ProjectileView } from './vfx/projectiles.js';
 import { Decals } from './vfx/decals.js';
 import { Footprints } from './vfx/footprints.js';
@@ -112,6 +113,11 @@ export class GameScene {
     this.harvestGoods = new HarvestGoods(this.scene);
     this.rafts = new RaftLayer(this.scene, { dock: map.dock, surfaceSkin: raftSkin, sailingRig: true });
     this.effects = new Effects(this.scene, map);
+    // Native Niagara effects bound by the presentation bindings (main.js calls nativeFx.setBindings); unbound slots stay procedural.
+    this.nativeFx = new NativeWorldFx(this.scene, { renderer: r, layer: LAYER.FX, depth: () => this.pipeline.rtNormal?.depthTexture ?? null, res: FXU.uRes.value,
+      premultiplied: { blending: THREE.CustomBlending, src: THREE.OneFactor, dst: THREE.OneMinusSrcAlphaFactor } });
+    this.nativeFx.setAnchors(this.effects.fires);
+    this.effects.nativeLoop = (slot) => this.nativeFx.loopReady(slot);
     this.projectiles = new ProjectileView(this.scene, map);
     this.decals = new Decals(this.scene, map, 32);
     this.footprints = new Footprints(this.scene, map);
@@ -159,6 +165,7 @@ export class GameScene {
     this.pipeline.setQuality({ pixelRatio: cfg.pixelRatio, ss: cfg.ss, outlines: cfg.outlines, fxaa: cfg.fxaa, comic: cfg.comic ?? 0, outlineMul: cfg.outlineMul ?? 1, dof: cfg.dof ?? 0 });
     this.lighting.setShadowSize(cfg.shadow);
     this.effects.setQuality(cfg.particles, cfg.outlines);
+    this.nativeFx.setQuality({ outlines: cfg.outlines });
     this.footprints.setQuality(cfg.particles, globalThis.matchMedia?.('(pointer: coarse)')?.matches === true);
     this.grass.setQuality(cfg.name, globalThis.matchMedia?.('(pointer: coarse)')?.matches === true);
     this.beachDebris.setQuality(cfg.name, globalThis.matchMedia?.('(pointer: coarse)')?.matches === true);
@@ -341,6 +348,7 @@ export class GameScene {
     const sim = ctx.simDt ?? dt;
     this.footprints.update(sim, ctx.playing);
     this.effects.update(dt, ctx.focus);
+    this.nativeFx.update(dt, ctx.focus, this.camera);
     this.after.update(sim);
     this.ambient.update(dt, ctx.focus, this.camera.position);
     // Sentinels: slow crystal pulse while asleep, bright while awake; their eye lights follow them.
@@ -436,6 +444,8 @@ export class GameScene {
     this.renderer.info.reset();
     this.pipeline.render(this.time);
   }
+
+  dispose() { this.nativeFx.dispose(); }
 }
 
 export { tuning };

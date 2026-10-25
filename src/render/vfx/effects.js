@@ -65,6 +65,10 @@ export class Effects {
     }
     this.ringCursor = 0;
     this.fires = [];
+    // Native presentation (scene.js sets it to NativeWorldFx.loopReady): a fire whose slot plays the native flame skips the
+    // procedural flames and smoke; sparks, night embers and lights stay. fireSpawns counts procedural flame and smoke births (QA).
+    this.nativeLoop = null;
+    this.fireSpawns = { campfire: 0, brazier: 0 };
     for (const p of map.props) {
       const f = { acc: 0, sparkAcc: Math.random(), smokeAcc: Math.random(), emberAcc: 0 };
       if (p.kind === 'brazier') this.fires.push({ ...f, x: p.x, y: p.y + 1.15, z: p.z, kind: 'brazier' });
@@ -180,10 +184,10 @@ export class Effects {
     this.alpha.wind.copy(U.mnWind.value);
     for (const f of this.fires) {
       if (!near(f, 60)) continue;
-      const camp = f.kind === 'campfire';
-      f.acc += dt * (camp ? 34 : 26);
+      const camp = f.kind === 'campfire', native = !!this.nativeLoop?.(f.kind);
+      f.acc = native ? 0 : f.acc + dt * (camp ? 34 : 26);
       while (f.acc >= 1) {
-        f.acc -= 1;
+        f.acc -= 1; this.fireSpawns[f.kind]++;
         const r = camp ? 0.4 : 0.4;
         const a = R() * Math.PI * 2, d = R() * r;
         this.add.spawn(f.x + Math.cos(a) * d, f.y, f.z + Math.sin(a) * d, (R() - 0.5) * 0.3, 1.6 + R() * 1.2, (R() - 0.5) * 0.3,
@@ -209,9 +213,9 @@ export class Effects {
         }
       } else f.emberAcc = 0;
       // Smoke: soft wisps, warm underneath (heat + the fire's own light), dark as they rise.
-      f.smokeAcc += dt * (camp ? 3 : 2.2);
+      if (!native) f.smokeAcc += dt * (camp ? 3 : 2.2);
       while (f.smokeAcc >= 1) {
-        f.smokeAcc -= 1;
+        f.smokeAcc -= 1; this.fireSpawns[f.kind]++;
         this.alpha.spawn(f.x + (R() - 0.5) * 0.3, f.y + 0.8, f.z + (R() - 0.5) * 0.3, (R() - 0.5) * 0.2, 0.9 + R() * 0.5, (R() - 0.5) * 0.2,
           { life: 3 + R() * 1.2, size: 0.45, size1: 2.3, color: [0.4, 0.38, 0.4], alpha: 0.32, gravity: -0.05, drag: 0.35, shape: SHAPE.WISP, turb: 0.35, heat: 0.6 });
       }

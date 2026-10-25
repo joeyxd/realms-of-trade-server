@@ -215,3 +215,10 @@
 .skill-studio[data-layout="compact-landscape"] .ss-import span { min-height: 27px; padding: 3px 6px; font-size: 10px; }
 .skill-studio[data-layout="compact-landscape"] .ss-status { flex-basis: 100%; }
 .skill-studio .ss-native-note { grid-column: 1 / -1; }
+.skill-studio .ss-presentation { border: 1px solid #58756b; border-radius: 8px; padding: 10px; margin-top: 8px; }
+.skill-studio .ss-presentation[hidden] { display: none; }
+.skill-studio .ss-presentation h3 { margin: 0 0 8px; font-size: 14px; }
+.skill-studio .ss-presentation-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.skill-studio .ss-presentation-actions button { white-space: normal; flex: 1 1 120px; }
+.skill-studio .ss-presentation p { font-size: 11px; line-height: 1.45; margin: 4px 0; overflow-wrap: anywhere; }
+.skill-studio .ss-presentation-message { color: #ffe09a; }

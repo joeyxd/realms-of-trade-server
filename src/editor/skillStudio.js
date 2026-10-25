@@ -3,6 +3,7 @@ import { SkillPreview } from '../render/skillPreview.js';
 import { stage } from '../ui/stage.js';
 import { SKILLS } from '../data/weapons.js';
 import { EFFECT_CATEGORIES, EFFECT_PROJECTS, effectParameters, filterEffects, getEffect } from './effectLibrary.js';
+import { PRESENTATION_EFFECTS, PRESENTATION_SLOTS, defaultPresentationBinding, slotAcceptsEffect } from '../data/presentationBindings.js';
 import {
   DEFAULT_SKILL_DOCUMENT, cloneSkillDocument, createDefaultSkillDocument, MAX_SKILL_DOCUMENT_BYTES,
   parseSkillDocument, validateSkillDocument,
@@ -95,11 +96,17 @@ function exactEnvelope(value, keys) {
     && Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
 }
 
-/** Private, local-only visual editor for registered presentation descriptors. */
+const slotLabels = { campfire: ['Hoguera', 'Campfire'], brazier: ['Braseros y antorchas', 'Braziers and torches'],
+  meleeHit: ['Golpe cuerpo a cuerpo', 'Melee hit'], damageHit: ['Golpe confirmado', 'Confirmed hit'] };
+
+/** Visual drafts remain local; GM presentation publishing is a separate operation. */
 export class SkillStudio {
-  constructor({ parent, renderer, scope, skin = 0, onClose } = {}) {
+  constructor({ parent, renderer, scope, skin = 0, onClose, presentation = null, auth = null } = {}) {
     if (!parent || !renderer) throw new TypeError('SkillStudio requires parent and renderer');
     Object.assign(this, { parent, renderer, skin, onClose });
+    Object.assign(this, { presentation, auth });
+    this.presentationSlot = 'campfire'; this.presentationCount = 1; this.presentationBusy = false;
+    this.unsubscribePresentation = presentation?.onStateChange(() => this.renderPresentation());
     this.scope = normalizeScope(scope);
     this.legacyStorageKey = `mn.skill-studio.v1:${encodeURIComponent(this.scope)}`;
     this.legacyRecoveryKey = `${this.legacyStorageKey}:recovery`;
@@ -276,7 +283,83 @@ export class SkillStudio {
     this.renderParameters(); this.renderLibrary(); this.updateEffectState(); this.refreshButtons(); this.updatePreviewStats();
     if (this.libraryOpen) this.toggleLibrary();
   }
+  renderPresentation() {
+    const block = this.presentationBlock;
+    if (!block || !this.root) return;
+    block.hidden = !Object.hasOwn(PRESENTATION_EFFECTS, this.activeEffect); block.replaceChildren();
+    if (block.hidden) return;
+    const text = (es, en) => this.lang === 'en' ? en : es;
+    const name = slot => slotLabels[slot][this.lang === 'en' ? 1 : 0];
+    const slots = Object.keys(PRESENTATION_SLOTS).filter(slot => slotAcceptsEffect(slot, this.activeEffect));
+    if (!slots.includes(this.presentationSlot)) this.presentationSlot = slots[0];
+    block.append(el('h3', '', text('Usar en el juego', 'Use in the game')));
+    const label = el('label', 'ss-field'); label.append(el('span', '', text('Momento', 'Moment')));
+    const select = document.createElement('select'); select.dataset.presentationSlot = '';
+    select.setAttribute('aria-label', text('Momento', 'Moment'));
+    for (const slot of slots) { const option = el('option', '', name(slot)); option.value = slot; select.append(option); }
+    select.value = this.presentationSlot; select.disabled = this.presentationBusy;
+    select.addEventListener('change', () => { this.presentationSlot = select.value; this.renderPresentation(); });
+    label.append(select); block.append(label);
+    if (PRESENTATION_SLOTS[this.presentationSlot].mode === 'loop') {
+      const countLabel = el('label', 'ss-field'); countLabel.append(el('span', '', text('Llamas', 'Flames')));
+      const count = document.createElement('input'); count.type = 'range'; count.min = '1'; count.max = '5'; count.step = '1';
+      count.value = String(this.presentationCount); count.dataset.presentationCount = ''; count.setAttribute('aria-label', text('Llamas', 'Flames'));
+      const value = el('output', '', count.value);
+      count.addEventListener('input', () => { this.presentationCount = Number(count.value); value.textContent = count.value; });
+      countLabel.append(count, value); block.append(countLabel);
+    }
+    const canPublish = this.presentation?.online && this.auth?.state?.signedIn;
+    const actions = el('div', 'ss-presentation-actions');
+    for (const [action, es, en, disabled] of [
+      ['test', 'Probar en partida (solo yo)', 'Try in a match (only me)', !this.presentation],
+      ['clear', 'Quitar prueba', 'Clear test', !this.presentation],
+      ['publish', 'Publicar para todos', 'Publish for everyone', !canPublish],
+      ['remove', 'Quitar del juego', 'Remove from the game', !canPublish],
+    ]) {
+      const node = button(`presentation-${action}`, text(es, en)); node.disabled = disabled || this.presentationBusy;
+      node.addEventListener('click', () => void this.applyPresentation(action)); actions.append(node);
+    }
+    block.append(actions);
+    if (!canPublish) block.append(el('p', '', !this.presentation?.online
+      ? text('Publicar requiere una partida en línea; en solitario solo puedes probar.', 'Publishing requires an online game; solo mode only supports testing.')
+      : text('Publicar requiere una sesión GM.', 'Publishing requires a GM session.')));
+    const status = el('div', 'ss-presentation-status'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
+    status.append(el('p', '', `${text('Revisión publicada', 'Published revision')}: ${this.presentation?.revision ?? 0}`));
+    const describe = binding => binding ? PRESENTATION_EFFECTS[binding.effect].name : text('Predeterminado', 'Default');
+    for (const slot of Object.keys(PRESENTATION_SLOTS)) status.append(el('p', '', `${name(slot)}: ${describe(this.presentation?.published.bindings[slot])} · ${text('Prueba local', 'Local test')}: ${this.presentation?.preview.bindings[slot] ? describe(this.presentation.preview.bindings[slot]) : text('Ninguna', 'None')}`));
+    block.append(status);
+    if (this.presentationMessage) { const message = el('p', 'ss-presentation-message', this.presentationMessage[this.lang === 'en' ? 1 : 0]); message.setAttribute('role', 'status'); block.append(message); }
+  }
+  async applyPresentation(action) {
+    if (!this.presentation || this.presentationBusy) return;
+    const client = this.presentation, slot = this.presentationSlot;
+    const binding = defaultPresentationBinding(slot, this.activeEffect);
+    if (!binding) return;
+    Object.assign(binding.parameters, this.document.parameters);
+    if (PRESENTATION_SLOTS[slot].mode === 'loop') binding.parameters.count = this.presentationCount;
+    this.presentationMessage = null;
+    if (action === 'clear') client.clearPreview();
+    else if (action === 'test') {
+      const doc = client.preview; doc.bindings[slot] = binding;
+      this.presentationMessage = client.setPreview(doc) ? ['Prueba local aplicada.', 'Local test applied.'] : ['Parámetros inválidos.', 'Invalid parameters.'];
+    } else {
+      const doc = client.published, expectedRevision = client.revision;
+      if (action === 'remove') delete doc.bindings[slot]; else doc.bindings[slot] = binding;
+      this.presentationBusy = true; this.renderPresentation();
+      try {
+        const identity = await this.auth.sessionIdentity();
+        const result = await client.publish(doc, expectedRevision, identity.token);
+        if (result.ok) this.presentationMessage = ['Publicado para todos. Cualquier prueba local sigue activa hasta quitarla.', 'Published for everyone. Any local test stays active until cleared.'];
+        else if (result.status === 409) {
+          await client.load(); this.presentationMessage = ['La publicación cambió. Se recargó; revisa y vuelve a publicar.', 'The publication changed. Reloaded; review it and publish again.'];
+        } else this.presentationMessage = ['No se pudo publicar. Tu borrador se conserva; revisa la conexión y la sesión GM.', 'Publishing failed. Your draft is preserved; check the connection and GM session.'];
+      } catch { this.presentationMessage = ['Se requiere una sesión GM válida. Tu borrador se conserva.', 'A valid GM session is required. Your draft is preserved.']; }
+      finally { this.presentationBusy = false; }
+    }
+    this.renderPresentation();
+  }
   updateEffectState() {
+    this.renderPresentation();
     const effect = getEffect(this.activeEffect), ready = Boolean(effect?.ready);
     this.viewport.hidden = !ready; this.pendingOverlay.hidden = ready;
     (ready ? this.metricsNode : this.pendingOverlay).append(this.provenance);
@@ -431,6 +514,7 @@ export class SkillStudio {
     this.ruleLabels = [
       el('p', '', `${t('radius')}: ${number(SKILLS.tromba.r, this.lang)}`), el('p', '', `${t('cooldown')}: ${number(SKILLS.tromba.cd, this.lang)} ${t('seconds')}`), el('p', '', `${t('delay')}: ${number(SKILLS.tromba.delay, this.lang)} ${t('seconds')}`),
     ]; rules.append(...this.ruleLabels); inspector.append(paramSection, rules);
+    this.presentationBlock = el('section', 'ss-presentation'); inspector.append(this.presentationBlock);
 
     const footer = el('footer', 'ss-footer');
     this.loadButton = button('load', t('load')); this.recoverButton = button('recover', t('recover')); this.recoverButton.hidden = !this.readStored(this.recoveryKey, true);
@@ -742,6 +826,7 @@ export class SkillStudio {
   dispose() {
     if (this.active) { this.endGesture(); if (this.dirty) this.saveRecovery(); this.finishClose(); }
     this.unsubscribeLocale?.(); this.unsubscribeLocale = null;
+    this.unsubscribePresentation?.(); this.unsubscribePresentation = null;
   }
 
   renderLocale() {

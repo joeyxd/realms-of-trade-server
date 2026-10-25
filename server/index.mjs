@@ -17,6 +17,8 @@ import { createWalletHttpHandler } from './web3/walletHttp.mjs';
 import { walletLinkFromEnv } from './web3/walletRuntime.mjs';
 import { createGmSessionHandler, parseGmAccountIds } from './gmSession.mjs';
 import { createGmDraftHandler } from './gmDraftHttp.mjs';
+import { createPresentationStore } from './presentationStore.mjs';
+import { createPresentationHandler } from './presentationHttp.mjs';
 import { createGmDraftValidator, createGmTerrainTileValidator } from './gmDraftValidation.mjs';
 import { createGmPublicationService } from './gmPublication.mjs';
 import { PROTOCOL_VERSION } from '../src/net/protocol.js';
@@ -61,6 +63,8 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   if (walletLink?.prepare !== undefined && typeof walletLink.prepare !== 'function') throw new StoreError('configuration');
   const walletHttp = walletLink === null ? null : createWalletHttpHandler({ service: walletLink, resolvePlayer });
   const gmSession = createGmSessionHandler({ resolvePlayer, accountIds: gmAccountIds });
+  const presentationStore = createPresentationStore({ directory: gmContentDirectory, log });
+  const presentation = createPresentationHandler({ store: presentationStore, resolvePlayer, accountIds: gmAccountIds });
   if (pearlStartup !== null && (!pearlStartup || typeof pearlStartup !== 'object' || Array.isArray(pearlStartup) ||
       !pearlStartup.journal || pearlStaging === null || worldId === undefined ||
       Object.keys(pearlStartup).some((key) => !['journal', 'accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)))) throw new StoreError('configuration');
@@ -116,6 +120,9 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
     if (p === '/api/characters') { void game.playerCharacters.handle(req, res); return; }
     if (p === '/api/gm/session') { void gmSession(req, res); return; }
+    if (p === '/api/world/presentation' || p === '/api/gm/presentation') {
+      void presentation(req, res, p === '/api/gm/presentation'); return;
+    }
     if (p === '/api/world/content') {
       if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
       const content = gmContent?.snapshot() ?? { generation: 0, revisionId: null, revision: null };
@@ -185,6 +192,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
     listen() {
       if (listening) return listening;
       listening = (async () => {
+        await presentationStore.prepare();
         if (walletLink?.prepare) await walletLink.prepare();
         if (game.closing) throw new Error('Server is closing');
         if (gmContent) { await publication.prepare(); await gmContent.prepare(); }

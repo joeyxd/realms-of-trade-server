@@ -28,6 +28,51 @@ const GPU_FORMATS = new Map([[THREE.RGBA_ASTC_4x4_Format, 'ASTC 4x4'], [THREE.RG
   [THREE.RGB_ETC2_Format, 'ETC2 RGB'], [THREE.RGB_ETC1_Format, 'ETC1'], [THREE.RGBA_S3TC_DXT5_Format, 'BC3'], [THREE.RGB_S3TC_DXT1_Format, 'BC1'],
   [THREE.RGBA_PVRTC_4BPPV1_Format, 'PVRTC'], [THREE.RGB_PVRTC_4BPPV1_Format, 'PVRTC RGB'], [THREE.RGBAFormat, 'RGBA8']]);
 
+const sha256 = async buffer => [...new Uint8Array(await crypto.subtle.digest('SHA-256', buffer))].map(v => v.toString(16).padStart(2, '0')).join('');
+// Fetch + SHA-256 + decode of one native effect's pinned files, shared by the Taller and the world (worldFx.js). Returns null when
+// alive() turns false mid-load (canceled; nothing leaks), else { recipe, source, film, textures, owned, mobile, cold, fetchMs, decodeMs }:
+// the caller owns `owned` (bitmaps and wrapping textures) and releases them with dispose()/close().
+export async function loadNativeAssets(effect, { quality, renderer, signal, alive = () => true } = {}) {
+  const bitmaps = [], owned = [], started = performance.now(), cold = quality === 'mobile' && !ktx2Loader;
+  try {
+    const recipe = Object.hasOwn(RECIPES, effect.recipe) ? RECIPES[effect.recipe] : null;
+    if (!recipe || Object.keys(effect.files).length !== 2 + recipe.textures) throw new Error(`Unknown native recipe: ${effect.recipe}`);
+    const mobile = quality === 'mobile';
+    if (mobile && !effect.mobileFiles) throw new Error(`No mobile texture set: ${effect.id}`);
+    const files = mobile ? { ...effect.files, ...effect.mobileFiles } : effect.files;
+    const bytes = await Promise.all(Object.values(files).map(async file => {
+      const response = await fetch(file.url, { signal });
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${file.url}`);
+      const buffer = await response.arrayBuffer();
+      if (await sha256(buffer) !== file.sha256) throw new Error(`Native file hash mismatch: ${file.url}`);
+      return buffer;
+    }));
+    const fetched = performance.now();
+    for (const [index, buffer] of bytes.slice(2).entries()) {
+      bitmaps.push(mobile ? await loadKtx2(renderer, buffer, Object.values(files)[index + 2].url)
+        : await createImageBitmap(new Blob([buffer], { type: 'image/webp' }), { imageOrientation: 'flipY', premultiplyAlpha: 'none', colorSpaceConversion: 'none' }));
+      if (!alive()) return null;
+    }
+    if (!alive()) return null;
+    const decoded = performance.now(), decode = buffer => JSON.parse(new TextDecoder().decode(buffer));
+    const source = decode(bytes[0]), film = decode(bytes[1]);
+    const textures = bitmaps.map(bitmap => {
+      owned.push(bitmap);
+      if (mobile) return bitmap; // KTX2Loader already set sRGB, the stored mip chain and the filters; no runtime flip (encoded lower-left)
+      const texture = new THREE.Texture(bitmap); owned.push(texture);
+      texture.flipY = false; texture.colorSpace = THREE.SRGBColorSpace;
+      texture.minFilter = THREE.LinearMipmapLinearFilter; texture.magFilter = THREE.LinearFilter; texture.needsUpdate = true;
+      return texture;
+    });
+    return { recipe, source, film, textures, owned, mobile, cold, fetchMs: fetched - started, decodeMs: decoded - fetched };
+  } finally {
+    // Canceled or failed loads close what they decoded; a returned set hands its bitmaps over in `owned`.
+    for (const bitmap of bitmaps) if (!owned.includes(bitmap)) { bitmap.close?.(); bitmap.dispose?.(); }
+  }
+}
+// The world's particle binding of a recipe: the same classes and layer sets as the Taller.
+export function createNativeParticles(effect, scene, textures) { return RECIPES[effect.recipe].particles(scene, textures, effect); }
+
 // Keep the transfer math byte-for-byte from the lab, replacing only its inputs/output.
 function replaceOnce(source, anchor, replacement) {
   if (source.split(anchor).length !== 2) throw new Error('Filmic composite anchor changed');
@@ -55,40 +100,13 @@ export class NativeEffect {
     if (this.disposed) return;
     const epoch = this.epoch, controller = this.controller = new AbortController();
     this.state = 'loading'; this.error = '';
-    // Local ownership until the final await: canceled loads cannot publish or leak a bitmap or a compressed texture.
-    const bitmaps = [], started = performance.now(), cold = quality === 'mobile' && !ktx2Loader;
     try {
-      const recipe = Object.hasOwn(RECIPES, effect.recipe) ? RECIPES[effect.recipe] : null;
-      if (!recipe || Object.keys(effect.files).length !== 2 + recipe.textures) throw new Error(`Unknown native recipe: ${effect.recipe}`);
-      const mobile = quality === 'mobile';
-      if (mobile && !effect.mobileFiles) throw new Error(`No mobile texture set: ${effect.id}`);
-      const files = mobile ? { ...effect.files, ...effect.mobileFiles } : effect.files;
-      const bytes = await Promise.all(Object.values(files).map(async file => {
-        const response = await fetch(file.url, { signal: controller.signal });
-        if (!response.ok) throw new Error(`HTTP ${response.status}: ${file.url}`);
-        const buffer = await response.arrayBuffer();
-        const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', buffer))].map(v => v.toString(16).padStart(2, '0')).join('');
-        if (hash !== file.sha256) throw new Error(`Native file hash mismatch: ${file.url}`);
-        return buffer;
-      }));
-      const fetched = performance.now();
-      for (const [index, buffer] of bytes.slice(2).entries()) {
-        bitmaps.push(mobile ? await loadKtx2(renderer, buffer, Object.values(files)[index + 2].url)
-          : await createImageBitmap(new Blob([buffer], { type: 'image/webp' }), { imageOrientation: 'flipY', premultiplyAlpha: 'none', colorSpaceConversion: 'none' }));
-        if (epoch !== this.epoch) return;
-      }
-      if (epoch !== this.epoch) return;
-      const decoded = performance.now(), decode = buffer => JSON.parse(new TextDecoder().decode(buffer));
-      this.source = decode(bytes[0]); this.effect = effect;
+      const assets = await loadNativeAssets(effect, { quality, renderer, signal: controller.signal, alive: () => epoch === this.epoch });
+      if (!assets || epoch !== this.epoch) { assets?.owned.forEach(r => { r.dispose?.(); r.close?.(); }); return; }
+      const { recipe, mobile, textures } = assets;
+      for (const resource of assets.owned) this.own(resource);
+      this.source = assets.source; this.effect = effect;
       this.simulation = new NATIVE_SIMULATIONS[effect.recipe](this.source); this.counts = Array(recipe.counts).fill(0);
-      const textures = bitmaps.map(bitmap => {
-        this.own(bitmap);
-        if (mobile) return bitmap; // KTX2Loader already set sRGB, the stored mip chain and the filters; no runtime flip (encoded lower-left)
-        const texture = this.own(new THREE.Texture(bitmap));
-        texture.flipY = false; texture.colorSpace = THREE.SRGBColorSpace;
-        texture.minFilter = THREE.LinearMipmapLinearFilter; texture.magFilter = THREE.LinearFilter; texture.needsUpdate = true;
-        return texture;
-      });
       this.particleScene = new THREE.Scene();
       this.particles = recipe.particles(this.particleScene, textures, effect);
       this.hdr = this.own(new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, depthBuffer: true }));
@@ -97,11 +115,11 @@ export class NativeEffect {
       this.depth.depthTexture = new THREE.DepthTexture(1, 1, THREE.UnsignedIntType);
       this.depth.depthTexture.minFilter = this.depth.depthTexture.magFilter = THREE.NearestFilter;
       this.depthMaterial = this.own(new THREE.MeshDepthMaterial({ side: THREE.DoubleSide, colorWrite: false }));
-      const lut = this.own(createFilmLUT(decode(bytes[1])).texture);
+      const lut = this.own(createFilmLUT(assets.film).texture);
       this.uniforms = { image: { value: this.hdr.texture }, exposure: { value: 1 },
         filmLUT: { value: lut }, tintColor: { value: new THREE.Color() }, opacity: { value: 1 } };
       // Measured on this device for the Taller readout: download + SHA-256, then WebP decode or KTX2 transcode (cold = the transcoder loads too).
-      this.load = { fetchMs: fetched - started, decodeMs: decoded - fetched, cold,
+      this.load = { fetchMs: assets.fetchMs, decodeMs: assets.decodeMs, cold: assets.cold,
         gpuFormat: [...new Set(textures.map(texture => GPU_FORMATS.get(texture.format) ?? `format ${texture.format}`))].join(' + '),
         gpuBytes: textures.reduce((sum, texture) => sum + nativeTextureBytes(texture), lut.image.data.byteLength), gpuCap: mobile ? NATIVE_MOBILE_GPU_CAP : null };
       const material = this.own(new THREE.ShaderMaterial({ uniforms: this.uniforms, glslVersion: THREE.GLSL3, toneMapped: false,
@@ -113,8 +131,6 @@ export class NativeEffect {
       this.state = 'ready';
     } catch (error) {
       if (epoch === this.epoch) { controller.abort(); this.release(); this.state = 'error'; this.error = error.message; }
-    } finally {
-      for (const bitmap of bitmaps) if (!this.resources.has(bitmap)) { bitmap.close?.(); bitmap.dispose?.(); }
     }
   }
   duration(parameters) { return (this.source ? nativeEndStep(this.source, parameters.seed, this.effect.recipe) : 480) / 60 * parameters.duration / parameters.speed; }
