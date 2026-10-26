@@ -50,7 +50,7 @@ test('jab 1 hits on frames 4-7 and, with no second press, ends after frame 27', 
   assert.equal(rows[26].stage, 1); assert.equal(rows[27].stage, 0);
 });
 
-test('a latched press links jab 2 on frame 20 and the forward tilt on jab 2 frame 25; prediction agrees', () => {
+test('a gated press links jab 2 on frame 20 and the forward tilt on jab 2 frame 25; prediction agrees', () => {
   const S = duel(), pred = new World(GAME.seed, { map, server: false });
   pred.meleeVersion = 1;
   S.w.events.length = 0;
@@ -71,7 +71,8 @@ test('before its first actable frame a jab holds the dash and the guard; the fla
   assert.equal(old.findIndex((r) => r && r.dash), 2);
 });
 
-test('a press made during the attacker hitlag still links jab 2, later by the frozen frames', () => {
+// T-1025-46: the jab lands before open=10; a press in that hitlag now rejects the string (rule 2).
+test('an early press during attacker hitlag rejects the next link', () => {
   const S = duel(), { w, ecs, a } = S;
   ecs.facing[a] = Math.PI / 2;
   w.events.length = 0;
@@ -84,5 +85,7 @@ test('a press made during the attacker hitlag still links jab 2, later by the fr
   assert.ok(hl > 0, 'jab 1 lands');
   const ev = w.events.find((x) => x.type === 'duel');
   near(ev.tele, 0.05, 1e-3); near(ev.win, 4 * DT, 1e-3);
-  assert.equal(rows[4].hitlag, hl); assert.equal(rows[19 + hl].stage, 1); assert.equal(rows[20 + hl].stage, 2);
+  assert.equal(rows[4].hitlag, hl); assert.equal(rows[19 + hl].stage, 1); assert.equal(rows[20 + hl].stage, 1);
+  assert.equal(rows[27 + hl].stage, 0);
+  assert.deepEqual(w.events.filter((x) => x.type === 'swing').map((x) => x.stage), [1]);
 });

@@ -22,12 +22,12 @@ import { BTN, moveWithCollision, standingHeight } from './movement.js';
 import { stepSwimming } from './swimming.js';
 import { PTYPE, KILL, NEVER, SHOT, beamSeg, segDist, lavaR } from '../projectiles.js';
 import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf, firePistol, firePistolSecondary, callRain, stepRain, stepTromba, stepWheel, takeEmpower, phases, skillNum } from './skills.js';
-import { ACT, C as COMP, airborne, intangible, resetJump, resetGrab } from '../ecs.js';
+import { STATE, ACT, C as COMP, airborne, intangible, resetJump, resetGrab } from '../ecs.js';
 import { hash01 } from '../../core/rng.js';
 import { SKILLS } from '../../data/weapons.js';
 import { CONSUMABLES } from '../../data/items.js';
-import { LAWLESS, MELEE, MELEE_GUARD, MELEE_GRAB, MELEE_ROLL } from '../../data/lawless.js';
-import { swingStages, swingFrame, swingBusy } from '../../data/meleeFrames.js';
+import { LAWLESS, MELEE, MELEE_GUARD, MELEE_GRAB, MELEE_ROLL, MELEE_SMASH } from '../../data/lawless.js';
+import { swingFrame, swingBusy, swingDescriptor, swingBlow, swingKey } from '../../data/meleeFrames.js';
 import { knockback, hitlagFrames, hitstunFrames, launchSpeed, di, meleePercent, meleeStun } from '../meleeHit.js';
 import { statsFor, refreshStats, kitUnlocked, passive, guardMax } from './stats.js';
 import { respawnNeeds } from './survival.js';
@@ -98,6 +98,7 @@ const throwMove = (st) => st === ACT.GRAB_THROW_F ? 'fthrow' : 'bthrow';
 // P3a: one paired hold, reconciled through PLAYER_FIELDS. Partner identities are server-owned.
 function grabPose(ecs, e, st) {
   ecs.grabSt[e] = st; ecs.grabT[e] = 0; setAct(ecs, e, st);
+  ecs.atkRej[e] = ecs.atkLink[e] = ecs.atkSmash[e] = ecs.chgN[e] = ecs.chgStop[e] = 0;
   ecs.atkStage[e] = ecs.atkBuf[e] = ecs.atkLatch[e] = ecs.qBuf[e] = ecs.eBuf[e] = ecs.gBuf[e] = ecs.rBuf[e] = 0;
   ecs.guardT[e] = -1; ecs.guardP[e] = ecs.guardLag[e] = ecs.guardStun[e] = ecs.dashBuffer[e] = 0;
   ecs.stagger[e] = ecs.faceLock[e] = ecs.dizzy[e] = ecs.dizzyIn[e] = ecs.brk[e] = ecs.grabDown[e] = ecs.state[e] = 0;
@@ -165,6 +166,7 @@ export function grabCollisions(world) {
       const p = world.lagPos(o, world.tick - pt + tuning.combat.interpTicks, {});
       if (Math.hypot(p.x - x, p.z - z) > G.radius * unit + ecs.radius[o]
         || (p.y ?? ecs.y[o]) > ecs.y[e] + (G.height + G.radius) * unit) continue;
+      endDash(ecs, o); // P5: a successful grab interrupts a vulnerable dash.
       grabPose(ecs, e, G.pull ? ACT.GRAB_PULL : ACT.GRAB_WAIT); grabPose(ecs, o, ACT.CAPTURE);
       ecs.grabWho[e] = o; ecs.grabWho[o] = e; ecs.grabGen[e] = ecs.generation[o]; ecs.grabGen[o] = ecs.generation[e];
       ecs.grabAt[o] = world.tick + 1;
@@ -255,6 +257,7 @@ export function hurtPlayer(world, e, raw, o) {
   const captured = world.meleeVersion === 1 && heldGrab(ecs, e);
   const dmg = (ecs.god[e] > 0 ? 0 : mitigate(raw, o.pierce ? 0 : ecs.def[e])) * (captured && !o.pummel ? MELEE_GRAB.external : 1);
   if (dmg > 0 && world.meleeVersion === 1) {
+    endDash(ecs, e); // P5: all landed damage shares this path, including chip shots and skills.
     if (captured && !o.pummel) {
       ecs.grabDmg[e] += meleePercent(dmg, ecs.maxHp[e], LAWLESS.meleeStamina); ecs.grabFlinch[e] = MELEE_GRAB.flinch;
       if (ecs.grabSt[e] !== ACT.THROWN && ecs.grabDmg[e] >= MELEE_GRAB.free) endGrab(world, e);
@@ -302,6 +305,7 @@ export function killPlayer(world, e, seq, by = 0) {
   if (world.meleeVersion === 1 && ecs.grabSt[e]) endGrab(world, e, true);
   resetGrab(ecs, e);
   ecs.hp[e] = 0;
+  ecs.atkRej[e] = ecs.atkLink[e] = ecs.atkSmash[e] = ecs.chgN[e] = ecs.chgStop[e] = 0;
   ecs.rollT[e] = 0;
   ecs.dead[e] = 1;
   ecs.hitlag[e] = ecs.lvx[e] = ecs.lvz[e] = 0;
@@ -330,9 +334,9 @@ export function killPlayer(world, e, seq, by = 0) {
 // {by, kind, seq (the attacker's), x, z, heavy, knock, pierce, above}.
 function duelBlow(world, e, o) {
   const ecs = world.ecs, by = o.by, melee = o.kind === 'melee', cast = o.kind === 'skill';
-  const skill = melee ? `melee${o.stage}` : o.kind === 'wave' ? 'storm' : o.skill || o.kind;
+  const skill = melee ? swingKey(o.stage, world.meleeVersion === 1 && o.smash) : o.kind === 'wave' ? 'storm' : o.skill || o.kind;
   const slot = ['q', 'e', 'g'][ecs.castK[by] - 1];
-  const tele = melee ? swingStages(world.meleeVersion)[o.stage - 1].windup : cast ? phases(skill, slot && skillOf(ecs, by, slot) === skill ? skillNum(ecs, by, slot) : SKILLS[skill])[0] : 0;
+  const tele = melee ? swingBlow(world.meleeVersion, o.stage, o.smash, o.charge).windup : cast ? phases(skill, slot && skillOf(ecs, by, slot) === skill ? skillNum(ecs, by, slot) : SKILLS[skill])[0] : 0;
   const win = melee ? ecs.atkT[by] : o.age ?? (cast && slot ? ecs.castT[by] : 0);
   return { type: 'duel', e, by, skill, heavy: o.heavy ? 1 : 0, tele: Math.round(tele * 1000) / 1000, win: Math.round(win * 1000) / 1000, x: o.x, z: o.z };
 }
@@ -611,8 +615,15 @@ function guardTake(world, e, raw, x, z, seq, o) {
 // ---- P2 (MN_MELEE): the shield -----------------------------------------------------------------------------
 const shieldAge = (ecs, e) => Math.round(ecs.guardT[e] / DT); // frames the shield has been up
 
+// P5: damage, launch and capture share the same dash interruption; never clear skill i-frames.
+function endDash(ecs, e) {
+  if (ecs.dashT[e] < 0) return;
+  ecs.dashT[e] = -1; ecs.state[e] = STATE.MOVE; ecs.vx[e] = ecs.vz[e] = 0;
+}
+
 // A hit that staggers or launches ends the break sequence, the dizzy and the shield's lag and stun.
 function launched(ecs, e) {
+  endDash(ecs, e); // Melee-only callers: also stop a launch with zero HP damage.
   ecs.rollT[e] = 0;
   if (ecs.dizzy[e] > 0 || ecs.brk[e] > 0) { ecs.dizzy[e] = ecs.brk[e] = 0; ecs.stagger[e] = 0; }
   ecs.guardLag[e] = ecs.guardStun[e] = 0;
@@ -690,7 +701,12 @@ function stepDizzy(ecs, e, cmd) {
 }
 
 function swingStage(world, e, stage, cmd) {
-  const ecs = world.ecs, st = swingStages(world.meleeVersion)[stage - 1];
+  const ecs = world.ecs;
+  if (world.meleeVersion === 1) {
+    ecs.atkRej[e] = ecs.atkLink[e] = ecs.chgN[e] = ecs.chgStop[e] = 0;
+    ecs.atkSmash[e] = stage === 3 && (cmd.btn & BTN.ATTACK) ? 1 : 0;
+  }
+  const st = swingBlow(world.meleeVersion, stage, ecs.atkSmash[e]);
   ecs.atkStage[e] = stage; ecs.atkT[e] = 0; ecs.atkBuf[e] = 0; ecs.atkLatch[e] = 0; ecs.swingId[e] += 1;
   ecs.guardT[e] = -1;
   ecs.empK[e] = takeEmpower(ecs, e); // the first swing after a Parpadeo hits harder, as a crit (world.meleeHits)
@@ -703,17 +719,36 @@ function swingStage(world, e, stage, cmd) {
   if (ecs.catchN[e] > 0) releaseCaught(world, e, cmd.seq >>> 0);
 }
 
-// P1b: one frame of a swing on Marth's frames (MN_MELEE, data/meleeFrames.js). A latched press links the next blow
-// on its `link` frame (it runs as that blow's frame 1), the hitbox and the blow's own step run on start..end, and the
-// swing ends after `total` or, from `iasa`, as soon as the stick asks to move.
+// P4: Dancing Blade's gate, without an input buffer. An early press poisons this blow's link;
+// an accepted one runs at link or on the next frame, whichever is later.
+function linkPress(ecs, e, st, f) {
+  if (!st.link || ecs.atkRej[e]) return;
+  if (f < st.open) { ecs.atkRej[e] = 1; ecs.atkLink[e] = 0; }
+  else if (f <= st.close && !ecs.atkLink[e]) ecs.atkLink[e] = Math.max(st.link, f + 1);
+}
 function meleeSwing(world, e, cmd, dt, pt, seq, canAct, prev) {
-  const ecs = world.ecs, stages = swingStages(1);
-  let stage = ecs.atkStage[e], st = stages[stage - 1];
-  if (st.link > 0 && ecs.atkLatch[e] > 0 && canAct && swingFrame(ecs.atkT[e]) + 1 >= st.link) {
-    swingStage(world, e, ++stage, cmd); st = stages[stage - 1];
+  const ecs = world.ecs;
+  let stage = ecs.atkStage[e], st = swingDescriptor(1, ecs, e), f = swingFrame(ecs.atkT[e]);
+  // World retains hitlag presses in atkLatch. Judge them at the frozen frame, not after the gate advances.
+  if (ecs.atkLatch[e]) { linkPress(ecs, e, st, f); ecs.atkLatch[e] = 0; }
+  if (f > 0 && (cmd.prs & BTN.ATTACK)) linkPress(ecs, e, st, f + 1);
+  if (ecs.atkLink[e] && !ecs.atkRej[e] && canAct && f + 1 >= ecs.atkLink[e]) {
+    swingStage(world, e, ++stage, cmd); st = swingDescriptor(1, ecs, e); f = 0;
   }
-  ecs.atkT[e] += dt;
-  const f = swingFrame(ecs.atkT[e]);
+  // The 3-4 charge window holds its last pose. Each held command after frame 4 pays one extra frame;
+  // reaching the cap releases on 5 on that command, even if the button stays down.
+  if (st.smash && f + 1 >= st.chargeOpen && !(cmd.btn & BTN.ATTACK)) ecs.chgStop[e] = 1;
+  const charging = st.smash && !ecs.chgStop[e] && f === st.chargeClose && (cmd.btn & BTN.ATTACK) && ecs.chgN[e] < MELEE_SMASH.cap;
+  if (charging) {
+    ecs.chgN[e] += 1;
+    if (ecs.chgN[e] === MELEE_SMASH.cap) ecs.atkT[e] = (st.chargeClose + 1) * dt;
+  } else ecs.atkT[e] += dt;
+  f = swingFrame(ecs.atkT[e]);
+  if (st.smash) {
+    ecs.castLock[e] = Math.max(0, (st.iasa - f - 1.5) * DT); // hold dash/jump through the frozen pose too
+    ecs.faceLock[e] = Math.max(0, (st.iasa - f - 1) * DT);
+    st = swingDescriptor(1, ecs, e);
+  }
   if (f >= st.start && f <= st.end) {
     if (st.lunge > 0) {
       const step = st.lunge / (st.end - st.start + 1);
@@ -728,6 +763,7 @@ function meleeSwing(world, e, cmd, dt, pt, seq, canAct, prev) {
 // that came too early, hit enemies (server).
 function swingActive(world, e, st, stage, pt, seq, prev) {
   const ecs = world.ecs, H = world.hazards, P = tuning.parry, F = tuning.feel;
+  if (world.meleeVersion === 1) st = swingDescriptor(1, ecs, e);
   const tag = 'c' + ecs.swingId[e];
   for (let s = 0; s < H.cap; s++) {
     if (!H.live(s, pt) || H.type[s] === PTYPE.UNSTOP) continue;
@@ -1003,20 +1039,23 @@ export function stepPlayerCombat(world, e, cmd, dt) {
 
   const atkPress = (cmd.prs & BTN.ATTACK) !== 0, guardPress = (cmd.prs & BTN.GUARD) !== 0;
   const pistol = skillOf(ecs, e, 'basic') === 'pistol';
+  const blow = melee && ecs.atkStage[e] > 0 ? swingDescriptor(1, ecs, e) : null;
+  const chargeLocked = blow?.smash && swingFrame(ecs.atkT[e]) + 1 >= blow.chargeOpen
+    && swingFrame(ecs.atkT[e]) <= blow.chargeClose && (cmd.btn & BTN.ATTACK) && !ecs.chgStop[e] && ecs.chgN[e] < MELEE_SMASH.cap;
   const dashShield = melee && ((cmd.btn | cmd.prs) & BTN.DASH) && (ecs.guardT[e] >= 0 || Math.hypot(cmd.mx || 0, cmd.mz || 0) < MELEE_ROLL.stick);
   const bodyShield = melee && (ecs.guardT[e] >= 0 || dashShield);
   const trigger = pistol && !bodyShield && (atkPress || (cmd.btn & BTN.ATTACK) !== 0); // held LMB keeps the left gun firing
   const triggerSecondary = pistol && !bodyShield && (guardPress || (cmd.btn & BTN.GUARD) !== 0); // RMB/K/LT/touch fires the right gun
   const guardHeld = dashShield || (!pistol && (guardPress || (cmd.btn & BTN.GUARD) !== 0));
   if (pistol && !melee && ecs.guardT[e] >= 0) ecs.guardT[e] = -1; // the pistol kit has no guard action
-  if (atkPress && !shielding && !dashShield) ecs.atkBuf[e] = T.player.inputBuffer;
-  if (atkPress && !shielding && ecs.atkStage[e] > 0) ecs.atkLatch[e] = 1; // P1b: links the next blow under Melee (meleeSwing)
+  if (atkPress && (!melee || pistol) && !shielding && !dashShield) ecs.atkBuf[e] = T.player.inputBuffer;
+  if (atkPress && !melee && !shielding && ecs.atkStage[e] > 0) ecs.atkLatch[e] = 1;
   if (cmd.prs & BTN.R) {
     if (kitUnlocked(ecs, e, 'r')) ecs.rBuf[e] = T.player.inputBuffer;
     else world.emit({ type: 'locked', e, seq, slot: 'r' });
   }
   bufferSkills(world, e, cmd, seq);
-  if (lagging || stunned) ecs.qBuf[e] = ecs.eBuf[e] = ecs.gBuf[e] = ecs.rBuf[e] = 0;
+  if (lagging || stunned || chargeLocked) ecs.qBuf[e] = ecs.eBuf[e] = ecs.gBuf[e] = ecs.rBuf[e] = 0;
 
   const dashing = ecs.dashT[e] >= 0 || air; // a jump cancels a swing and the guard just as a dash does
   if (dashing) {
@@ -1026,7 +1065,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
     cancelCast(ecs, e); // only in a cast's recovery: its windup / active frames hold the dash back
   }
   if (ecs.stagger[e] > 0) cancelCast(ecs, e);
-  const canAct = !ecs.swim[e] && !dashing && ecs.stagger[e] <= 0 && !lagging && !stunned;
+  const canAct = !ecs.swim[e] && !dashing && ecs.stagger[e] <= 0 && !lagging && !stunned && !chargeLocked;
 
   // Coyote: right after a parryable touched you, LMB turns its pending damage into a POBRE reflect (from
   // where you stand; the cutlass only: the pistols reflect by catching) and RMB into a block.
@@ -1063,10 +1102,9 @@ export function stepPlayerCombat(world, e, cmd, dt) {
 
   // Guard: up while RMB is held and nothing else is going on (a swing in its recovery is cut short; an
   // attack press wins over the guard). A new raise is only PERFECT-capable once the re-arm has run out.
-  const stages = swingStages(world.meleeVersion);
-  const st0 = ecs.atkStage[e] > 0 ? stages[ecs.atkStage[e] - 1] : null;
+  const st0 = ecs.atkStage[e] > 0 ? swingDescriptor(world.meleeVersion, ecs, e) : null;
   const busy = st0 && swingBusy(st0, ecs.atkT[e]);
-  const linking = st0 && st0.link > 0 && ecs.atkLatch[e] > 0; // under Melee a latched press wins over the guard too
+  const linking = st0 && st0.link > 0 && (melee ? ecs.atkLink[e] > 0 && !ecs.atkRej[e] : ecs.atkLatch[e] > 0); // under Melee a latched press wins over the guard too
   const guardOk = guardHeld && canAct && !busy && !castBusy(ecs, e) && !trigger && !(ecs.atkBuf[e] > 0) && !linking && !skillWanted(ecs, e) && !(ecs.rBuf[e] > 0 && ecs.riposte[e] >= P.riposte.max);
   if (melee) {
     // P2: Melee's shield. It stays up while held, for at least minHold frames and through shieldstun; a release past that
@@ -1113,7 +1151,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   }
 
   // Melee combo.
-  if (!pistol && canAct && !castBusy(ecs, e) && ecs.atkStage[e] === 0 && ecs.atkBuf[e] > 0) {
+  if (!pistol && canAct && !castBusy(ecs, e) && ecs.atkStage[e] === 0 && (melee ? atkPress && !shielding && !dashShield : ecs.atkBuf[e] > 0)) {
     const ls = ecs.lastStage[e];
     // Under Melee a blow links only through the latch: from rest it is always jab 1.
     swingStage(world, e, !melee && ecs.comboT[e] <= M.comboGap && ls > 0 && ls < 3 ? ls + 1 : 1, cmd);
@@ -1175,7 +1213,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   if (ecs.dead[e] > 0) { ecs.moveMul[e] = 0; setAct(ecs, e, ACT.DEAD); return; }
   const cp = castPose(ecs, e);
   const firing = pistol && (ecs.shotCd[e] > 0 || ecs.shotAltCd[e] > 0);
-  const swingSt = ecs.atkStage[e] > 0 ? stages[ecs.atkStage[e] - 1] : null;
+  const swingSt = ecs.atkStage[e] > 0 ? swingDescriptor(world.meleeVersion, ecs, e) : null;
   const committed = swingSt && swingBusy(swingSt, ecs.atkT[e]); // the recovery runs at full speed
   const triggerSlow = (trigger && ecs.shotCd[e] > 0) || (triggerSecondary && ecs.shotAltCd[e] > 0); // slow only while a trigger is held
   ecs.moveMul[e] = cp ? cp.move : committed ? swingSt.move : ecs.guardT[e] >= 0 ? (melee ? 0 : G.move)
@@ -1186,9 +1224,11 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   else if (ecs.guardT[e] >= 0) a = ACT.GUARD;
   else if (firing) a = ACT.SHOOT;
   else if (ecs.act[e] === ACT.CAST && ecs.actT[e] < 0.4) a = ACT.CAST;
-  else if (ecs.atkStage[e] > 0) a = ACT.SWING1 + ecs.atkStage[e] - 1;
+  else if (ecs.atkStage[e] > 0) a = melee && ecs.atkSmash[e] ? ACT.SMASH : ACT.SWING1 + ecs.atkStage[e] - 1;
   else if (ecs.act[e] === ACT.RIPOSTE && ecs.actT[e] < 0.45) a = ACT.RIPOSTE;
   setAct(ecs, e, a);
+  if (a === ACT.SMASH) ecs.actT[e] = ecs.atkT[e];
+  if (melee && !ecs.atkStage[e]) ecs.atkRej[e] = ecs.atkLink[e] = ecs.atkSmash[e] = ecs.chgN[e] = ecs.chgStop[e] = 0;
 }
 
 // A ron-coco potion (BTN.POTION): heals a share of max HP at once, then a short cooldown. Predicted.

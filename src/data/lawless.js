@@ -48,6 +48,7 @@ export const MELEE = {
   melee1: { bkb: 20, kbg: 50 },
   melee2: { bkb: 20, kbg: 50 },
   melee3: { bkb: 30, kbg: 70 },
+  melee3s: { bkb: 60, kbg: 70 }, // Melee forward smash non-tip, ficha 06:154
   lunge: { bkb: 35, kbg: 60 },
   gun_r: { bkb: 30, kbg: 70, proj: true },
   gun_l: { noKb: true, proj: true },
@@ -97,6 +98,20 @@ export const MELEE_ROLL = {
   stick: 0.5, // ours: same threshold as P3b throws; crossing edge (no stick recency timer here)
   total: 35, start: 4, forwardEnd: 19, backEnd: 23, // Melee SmashWiki via ficha 06 C2, Marth rolls
   distance: 30, // ours, Melee units: Marth's Ultimate params have no ground-roll speed/distance; root motion is animation data
+};
+
+// P5 (MN_MELEE): generic roll timeline, sim ticks at 60 Hz (06-data-values.md:106).
+export const MELEE_DASH = {
+  total: 31, // Melee: generic roll duration
+  start: 4, // Melee: first intangible frame
+  end: 19, // Melee: last intangible frame, followed by 12 vulnerable frames
+  move: 19, // ours: cover tuning.dash.distance before the stationary endlag
+};
+
+// P4 (MN_MELEE): Ultimate values; Melee's cap and 1.3671 multiplier remain unconfirmed (06:164).
+export const MELEE_SMASH = {
+  cap: 60, // Ultimate fighter_param.prc.txt:180, attack_s4_hold_frame
+  maxMul: 1.4, // Ultimate fighter_param.prc.txt:304, attack_s4_smash_hold_attack_up
 };
 
 // P3 (MN_MELEE). Frames at 60 Hz; throw animation rate 1 (weight coefficient is DATA; pirates weigh 87).

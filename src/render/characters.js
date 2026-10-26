@@ -21,7 +21,7 @@ import { startLaunch, stepLaunch, tiltAxis } from './launchPose.js';
 import { seaSurfaceY } from './naval/seaSwell.js';
 import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
-import { swingStages } from '../data/meleeFrames.js';
+import { MELEE_SMASH_STAGE, swingStages } from '../data/meleeFrames.js';
 import { MELEE_GRAB, MELEE_ROLL } from '../data/lawless.js';
 import { ACT } from '../sim/ecs.js';
 import { JUMP_STAGE, airStage } from '../sim/systems/jump.js';
@@ -459,8 +459,9 @@ export class CharacterView {
     let w = 0, spin = 0, lunge = 0;
     const set = (name, x, z, y) => { limbs[name] = [x, z, y]; };
 
-    if (act >= ACT.SWING1 && act <= ACT.SWING3) {
-      const stage = act - ACT.SWING1 + 1, st = swingStages(meleeRule)[stage - 1];
+    if ((act >= ACT.SWING1 && act <= ACT.SWING3) || act === ACT.SMASH) {
+      const stage = act === ACT.SMASH ? 3 : act - ACT.SWING1 + 1;
+      const st = act === ACT.SMASH ? MELEE_SMASH_STAGE : swingStages(meleeRule)[stage - 1];
       const tw = st.windup, ta = st.active, tr = st.recover;
       let p;
       if (t < tw) { p = 0; w = sm(t / tw); }

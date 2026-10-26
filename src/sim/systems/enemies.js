@@ -1,3 +1,4 @@
+import { swingKey } from '../../data/meleeFrames.js';
 // Enemy AI (server only). Steering, no pathfinding (DESIGN §7): approach to range, orbit, back off,
 // go home when the target leaves the leash. Attacks are telegraphed: a wind-up (event, so the client
 // shows the pose and the glow on its own timeline), then a pattern of projectiles or a ground circle.
@@ -441,7 +442,7 @@ export function damageEnemy(world, e, raw, o) {
   }
   let meleeData;
   if (world.meleeVersion === 1 && (ecs.mask[o.by] & C.PLAYER)) {
-    const skill = o.kind === 'melee' ? `melee${o.stage}` : o.kind === 'wave' ? 'storm' : o.skill || o.kind;
+    const skill = o.kind === 'melee' ? swingKey(o.stage, o.smash) : o.kind === 'wave' ? 'storm' : o.skill || o.kind;
     const row = MELEE[skill] || MELEE.default;
     const S = LAWLESS.meleeStamina, mhp = def.meleeHp ?? ecs.maxHp[e];
     const percent = meleePercent(ecs.maxHp[e] - Math.max(0, ecs.hp[e]), mhp, S);

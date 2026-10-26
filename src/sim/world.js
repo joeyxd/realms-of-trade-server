@@ -3,7 +3,7 @@
 // prediction of its own player (movement + combat against the projectiles the client knows about).
 import { tuning, DT } from '../data/tuning.js';
 import { di, hitlagFrames, meleePercent } from './meleeHit.js';
-import { swingStages, swingOn } from '../data/meleeFrames.js';
+import { swingDescriptor, swingKey, swingOn } from '../data/meleeFrames.js';
 import { ENEMIES, ENEMY_KINDS as ENEMY_KINDS_LIST, enemyIndex } from '../data/enemies.js';
 import { mulberry32 } from '../core/rng.js';
 import { ECS, C, KIND, TEAM, ACT, PLAYER_FIELDS, airborne, intangible } from './ecs.js';
@@ -627,7 +627,7 @@ export class World {
       if (this.meleeVersion === 1 && (ecs.mask[o] & C.PLAYER) && this.clank(e, o, st) && !ecs.atkStage[e]) return;
       b.hitBy.set(e, key);
       const stage = ecs.atkStage[e], emp = ecs.empK[e]; // empowered: the first swing after a Parpadeo (× empK, a crit)
-      this.strike(o, ecs.atk[e] * st.mult * (emp > 0 ? emp : 1), { by: e, kind: 'melee', stage, seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, crit: emp > 0, elem: ecs.elem[e], pt });
+      this.strike(o, ecs.atk[e] * st.mult * (emp > 0 ? emp : 1), { by: e, kind: 'melee', stage, ...(st.smash ? { smash: 1, charge: st.charge } : {}), seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, crit: emp > 0, elem: ecs.elem[e], pt });
       if (this.meleeVersion !== 1) this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
   }
@@ -639,7 +639,7 @@ export class World {
   clank(e, o, st) {
     const ecs = this.ecs, mg = MELEE_GUARD;
     if (!ecs.atkStage[o] || airborne(ecs, e) || airborne(ecs, o)) return false;
-    const so = swingStages(1)[ecs.atkStage[o] - 1];
+    const so = swingDescriptor(1, ecs, o);
     if (!swingOn(so, ecs.atkT[o])) return false;
     if (this.hitState(e).hitBy.get(o) === o * 65536 + ecs.swingId[o]) return false; // o's blow already landed on e
     if (!this.inBlow(o, so, ecs.x[e], ecs.z[e], ecs.hurtR[e])) return false;
@@ -650,7 +650,7 @@ export class World {
     // x's blow (stage s, damage d) is cancelled against y.
     const cancel = (x, y, s, d) => {
       const stage = ecs.atkStage[x];
-      this.emit({ type: 'duel', e: y, by: x, skill: 'melee' + stage, heavy: stage === 3 ? 1 : 0, tele: Math.round(s.windup * 1000) / 1000, win: Math.round(ecs.atkT[x] * 1000) / 1000, x: mx, z: mz, out: 'clank', dmg: 0, hp: ecs.hp[y] });
+      this.emit({ type: 'duel', e: y, by: x, skill: swingKey(stage, ecs.atkSmash[x]), heavy: stage === 3 ? 1 : 0, tele: Math.round(s.windup * 1000) / 1000, win: Math.round(ecs.atkT[x] * 1000) / 1000, x: mx, z: mz, out: 'clank', dmg: 0, hp: ecs.hp[y] });
       ecs.atkStage[x] = 0; ecs.atkBuf[x] = ecs.atkLatch[x] = 0;
       this.hitState(y).hitBy.set(x, x * 65536 + ecs.swingId[x]);
       return this.rebound(x, d, ecs.x[y], ecs.z[y]);
@@ -682,7 +682,7 @@ export class World {
   clankMob(e, a) {
     const ecs = this.ecs, mg = MELEE_GUARD, o = a.owner;
     if (!ecs.atkStage[e] || airborne(ecs, e) || !o || !ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0 || defOf(ecs, o)?.boss) return;
-    const st = swingStages(1)[ecs.atkStage[e] - 1], key = e * 65536 + ecs.swingId[e];
+    const st = swingDescriptor(1, ecs, e), key = e * 65536 + ecs.swingId[e];
     if (!swingOn(st, ecs.atkT[e]) || this.hitState(o).hitBy.get(e) === key || !this.inBlow(e, st, ecs.x[o], ecs.z[o], ecs.hurtR[o])) return;
     const dP = Math.floor(meleePercent(ecs.atk[e] * st.mult, ecs.maxHp[o], LAWLESS.meleeStamina)), dM = Math.floor(meleePercent(a.dmg, ecs.maxHp[e], LAWLESS.meleeStamina));
     let ra = 0, rb = 0;

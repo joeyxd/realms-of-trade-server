@@ -30,6 +30,7 @@ export const ACT = {
   GRAB: 22, GRAB_PULL: 23, GRAB_WAIT: 24, GRAB_PUMMEL: 25, CAPTURE: 26, GRAB_CUT: 27, CAPTURE_CUT: 28,
   GRAB_THROW_F: 29, GRAB_THROW_B: 30, THROWN: 31,
   ROLL_F: 32, ROLL_B: 33,
+  SMASH: 34,
 };
 
 // The columns of tattoo effects in flight (all 0 = nothing going on).
@@ -86,6 +87,7 @@ export class ECS {
     this.brk = f(); // P2b: frames of the shield-break flight, fall and stand-up left (before the dizzy)
     // PLAYER combat (predicted by the client: see PLAYER_FIELDS)
     this.atkStage = f(); this.atkT = f(); this.atkBuf = f(); this.lastStage = f(); this.comboT = f(); this.swingId = f();
+    this.atkRej = f(); this.atkLink = f(); this.atkSmash = f(); this.chgN = f(); this.chgStop = f(); // P4 link gate and smash charge
     this.atkLatch = new Uint8Array(cap); // P1b: an attack press made during the swing (Melee's jab latch)
     // Guard (RMB held): time up (−1 down), perfect window armed, re-arm timer, stamina, time since the
     // last block; caught bullets (count, heavy ones, max damage, age).
@@ -171,6 +173,7 @@ export class ECS {
     this.hitlag[id] = this.lvx[id] = this.lvz[id] = 0;
     this.guardLag[id] = this.guardStun[id] = this.dizzy[id] = this.dizzyIn[id] = this.brk[id] = 0;
     this.atkStage[id] = this.atkT[id] = this.atkBuf[id] = this.lastStage[id] = this.swingId[id] = this.atkLatch[id] = 0;
+    this.atkRej[id] = this.atkLink[id] = this.atkSmash[id] = this.chgN[id] = this.chgStop[id] = 0;
     this.comboT[id] = 99;
     this.guardT[id] = -1; this.guardP[id] = this.guardRe[id] = this.guardRegT[id] = 0; this.guardSt[id] = 60;
     this.catchN[id] = this.catchHv[id] = this.catchDmg[id] = this.catchT[id] = 0;
@@ -248,4 +251,5 @@ export const PLAYER_FIELDS = [
   // SRV01: profile-backed satiety, hydration and their shared prediction penalty.
   'needs', 'sat', 'hyd', 'needPen',
   'rollT', 'rollBack', 'rollX', 'rollZ', 'shieldStick',
+  'atkRej', 'atkLink', 'atkSmash', 'chgN', 'chgStop',
 ];
