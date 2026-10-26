@@ -187,6 +187,11 @@ function checkedCommand(raw, storedSkills = false) {
       ...(Object.hasOwn(raw, 'challenge') ? { challenge: raw.challenge } : {}),
       ...(Object.hasOwn(raw, 'lootRules') ? { lootRules: raw.lootRules } : {}) };
   }
+  if (raw.type === 'resource' && raw.op === 'pickup') {
+    exact(raw, ['type', 'op', 'opId', 'pile', 'expectedRev']);
+    key(raw.pile, 40); integer(raw.expectedRev, 1, MAX_VERSION - 1);
+    return jsonCopy(raw);
+  }
   if (raw.type === 'resource' && raw.op === 'craft') {
     exact(raw, RESOURCE_CRAFT_FIELDS);
     const recipe = CRAFT_RECIPES[raw.recipe];
@@ -223,6 +228,16 @@ export function checkedWorldData(raw) {
 
 function checkedAck(raw, command) {
   if (command.type === 'freshwater') exact(raw, ACK_FIELDS);
+  if (command.type === 'resource' && command.op === 'pickup') {
+    exact(raw, [...ACK_FIELDS, ...(raw.ok === true ? ['pile', 'goods', 'count', 'left', 'profileRev'] : [])]);
+    if (raw.ok === true) {
+      if (raw.pile !== command.pile || !object(raw.goods) || Object.keys(raw.goods).some(g => !['tronco', 'resina', 'coco'].includes(g))) fail('input');
+      integer(raw.goods.tronco, 1, 8);
+      for (const g of ['resina', 'coco']) if (Object.hasOwn(raw.goods, g)) integer(raw.goods[g], 1, 1);
+      integer(raw.count, 1, 10); integer(raw.left, 0, 10); integer(raw.profileRev, 1, MAX_VERSION);
+      if (raw.count !== Object.values(raw.goods).reduce((n, k) => n + k, 0)) fail('input');
+    }
+  }
   if (!object(raw) || ACK_FIELDS.some(k => !Object.hasOwn(raw, k)) || Object.hasOwn(raw, 'to')) fail('input');
   const expectedType = command.type === 'raft' ? 'raftEdit' : command.type;
   if (raw.type !== expectedType || raw.op !== command.op || raw.opId !== command.opId || typeof raw.ok !== 'boolean' ||
@@ -273,6 +288,7 @@ function checkedRequest(input, source = 'input') {
           canonicalEconomicText(planned.ack) !== canonicalEconomicText(ack)) fail('input');
     }
   } else if (Object.hasOwn(input, 'before')) fail('input');
+  if (command.type === 'resource' && command.op === 'pickup' && !Object.hasOwn(input, 'beneficiaries')) fail('input');
   if (Object.hasOwn(input, 'beneficiaries')) {
     request.beneficiaries = jsonCopy(input.beneficiaries);
     try { loggingParticipants(request); } catch { fail('input'); }

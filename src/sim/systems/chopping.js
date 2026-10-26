@@ -1,5 +1,5 @@
 // TA02: server-authoritative hold-to-chop. One `chop` command per swing, optional `crit`, palm HP by size, a fallen palm leaves
-// a log pile that `pickup` loads. All chop state lives in w.resources.chop; palm nodes only change rev/readyTick at the fell.
+// a log pile that `pickup` loads. All chop state lives in w.resources.chop; persisted palm nodes never change.
 import { DT } from '../../data/tuning.js';
 import { HARVEST, sanitizeTools } from '../../data/resources.js';
 import { AXES, PALM_SIZES, CHOP, palmSize, greenTicks } from '../../data/chopping.js';
@@ -8,13 +8,14 @@ import { LOGGING } from '../../data/progression.js';
 import { TRADE } from './trade.js';
 import { loggingStatus } from './progression.js';
 import { loggingTimingRank } from './loggingTiming.js';
-import { roomFor, load } from '../economy/cargo.js';
+import { roomFor, load, unload } from '../economy/cargo.js';
 import { C } from '../ecs.js';
 import { busy, onLand, emit, commit } from './resources.js';
 
 const owns = (o, k) => Object.hasOwn(o, k);
 const state = (w) => (w.resources.chop ||= { palms: new Map(), players: new Map(), active: new Set(), damaged: new Set(), piles: new Map(), pileSeq: 0 });
-const standing = (w, node) => node.readyTick <= w.tick;
+const readyTick = (w, node) => Math.max(node.readyTick, w.resources.chop?.palms.get(node.id)?.readyTick || 0);
+const standing = (w, node) => readyTick(w, node) <= w.tick;
 const full = (st) => { st.hp = st.maxHp; st.crits = 0; st.damage.clear(); };
 const alive = (c, e) => !!c.alive[e] && !(c.dead[e] > 0) && c.hp[e] > 0;
 const inRange = (c, e, node) => Math.hypot(c.x[e] - node.x, c.z[e] - node.z) <= HARVEST.radius && Math.abs(c.y[e] - node.y) <= CHOP.dy;
@@ -24,7 +25,7 @@ function palmState(w, node) {
   let st = palms.get(node.id);
   if (!st) {
     const size = palmSize(node.scale);
-    palms.set(node.id, st = { hp: PALM_SIZES[size].hp, maxHp: PALM_SIZES[size].hp, size, lastSwingTick: -Infinity, crits: 0, damage: new Map() });
+    palms.set(node.id, st = { hp: PALM_SIZES[size].hp, maxHp: PALM_SIZES[size].hp, size, readyTick: 0, cycle: 1, lastSwingTick: -Infinity, crits: 0, damage: new Map() });
   } else if (st.hp === 0 && standing(w, node)) full(st); // a palm that grew back
   return st;
 }
@@ -32,7 +33,8 @@ function palmState(w, node) {
 // Read-only view for the public snapshot: never creates state.
 export function palmView(w, node) {
   const st = w.resources.chop?.palms.get(node.id), size = st?.size ?? palmSize(node.scale), maxHp = PALM_SIZES[size].hp;
-  return { hp: st && st.hp === 0 && !standing(w, node) ? 0 : st && st.hp > 0 ? st.hp : maxHp, maxHp, size };
+  const remaining = Math.max(0, readyTick(w, node) - w.tick);
+  return { rev: node.rev + (st ? st.cycle - 1 : 0), ready: remaining === 0, wait: remaining * DT, hp: st && st.hp === 0 && !standing(w, node) ? 0 : st && st.hp > 0 ? st.hp : maxHp, maxHp, size };
 }
 
 export function publicPiles(w) {
@@ -78,7 +80,7 @@ export function chopCmd(w, e, msg) {
   if (tier < 1) return deny('tool', node?.rev ?? 0, { tool: 'axe' });
   if (!node || node.kind !== 'palm') return deny('node');
   if (!inRange(c, e, node)) return deny('far', node.rev);
-  if (!standing(w, node)) return deny('depleted', node.rev, { wait: (node.readyTick - w.tick) * DT });
+  if (!standing(w, node)) return deny('depleted', node.rev, { wait: (readyTick(w, node) - w.tick) * DT });
   let p = ch.players.get(e);
   if (!p) ch.players.set(e, p = { lastStart: null, lastCadence: 0, swings: [] });
   const t = w.tick, cadence = cadenceOf(profile, tier);
@@ -128,13 +130,13 @@ function fell(w, e, node, st) {
   const dx = node.x - c.x[e], dz = node.z - c.z[e], len = Math.hypot(dx, dz);
   const dir = len > 0 ? { x: Math.round(dx / len * 1000) / 1000, z: Math.round(dz / len * 1000) / 1000 } : { x: 1, z: 0 };
   const logs = size.logs + Math.min(st.crits, size.critBonusMax);
-  const loot = w.harvestLootEnabled === true ? harvestLoot('palm', node.id, node.rev + 1) : {};
+  const loot = w.harvestLootEnabled === true ? harvestLoot('palm', node.id, st.cycle + 1) : {};
   const practice = shares(st.damage);
-  node.rev += 1; node.readyTick = w.tick + HARVEST.respawnTicks;
+  st.cycle += 1; st.readyTick = w.tick + HARVEST.respawnTicks;
   st.hp = 0; st.crits = 0; st.damage.clear(); ch.damaged.delete(node.id);
   if (ch.piles.size >= CHOP.maxPiles) ch.piles.delete(ch.piles.keys().next().value);
   const x = node.x + dir.x * CHOP.pileOffset, z = node.z + dir.z * CHOP.pileOffset, ground = w.map.groundAt(x, z);
-  const pile = { id: `pile-${++ch.pileSeq}`, x, y: Number.isFinite(ground) ? ground : node.y, z, goods: { tronco: logs, ...loot }, rev: 1, expiresTick: w.tick + CHOP.pileTicks };
+  const pile = { id: `pile-${++ch.pileSeq}`, x, y: Number.isFinite(ground) ? ground : node.y, z, goods: { tronco: logs, ...loot }, rev: 1, practice, expiresTick: w.tick + CHOP.pileTicks };
   ch.piles.set(pile.id, pile);
   w.emit({ type: 'chopFell', e, node: node.id, dir, pile: pile.id, logs, practice });
 }
@@ -192,8 +194,31 @@ export function pickupCmd(w, e, msg, profile, deny, remember, saveFits) {
     const k = Math.min(pile.goods[good], roomFor(pack, good));
     if (k > 0 && load(pack, good, k)) { loaded[good] = k; count += k; }
   }
-  if (!count) return deny('full', pile.rev);
+  // Keep a log with leftover loot so every durable pickup obeys the bounded log grant.
+  const lootLeft = Object.keys(pile.goods).some(g => g !== 'tronco' && (loaded[g] || 0) < pile.goods[g]);
+  if (lootLeft && loaded.tronco === pile.goods.tronco) {
+    unload(pack, 'tronco', 1); loaded.tronco--; count--;
+  }
+  if (!loaded.tronco) return deny('full', pile.rev);
+  const contributors = (pile.practice || []).filter(row => w.profiles.has(row.e));
+  const awards = [...contributors.filter(row => row.e === e), ...contributors.filter(row => row.e !== e).slice(0, 3)];
+  const nextProfiles = new Map(awards.map(({ e: id, amount }) => {
+    const base = w.profiles.get(id), next = structuredClone(base);
+    if (amount > 0) {
+      next.progression ||= { v: 1, practice: { logging: 0 }, milestones: [], knowledge: [] };
+      next.progression.practice.logging = Math.min(LOGGING.maxPractice, next.progression.practice.logging + amount);
+    }
+    return [id, next];
+  }));
+  const actor = nextProfiles.get(e);
+  if (actor) { actor.eco.pack = pack; actor.eco.tradeRev = tradeRev + 1; }
+  if ([...nextProfiles.values()].some(p => !saveFits(p))) return deny('saveSize', pile.rev);
   if (!commit(w, e, profile, pack, tradeRev + 1, saveFits)) return deny('saveSize', pile.rev);
+  for (const [id, next] of nextProfiles) {
+    if (Object.hasOwn(next, 'progression')) w.profiles.get(id).progression = next.progression;
+    w.profileDirty?.add(id);
+  }
+  pile.practice = [];
   for (const [good, k] of Object.entries(loaded)) { pile.goods[good] -= k; if (!pile.goods[good]) delete pile.goods[good]; }
   const left = Object.values(pile.goods).reduce((n, k) => n + k, 0);
   if (left === 0) ch.piles.delete(pile.id); else pile.rev += 1;

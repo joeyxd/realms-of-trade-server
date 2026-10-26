@@ -1,7 +1,6 @@
 // Session-local coastal gathering and the first simple material recipe.
 import { DT } from '../../data/tuning.js';
 import { HARVEST, RESOURCE_KINDS, CRAFT_RECIPES, sanitizeTools, resourceLayout } from '../../data/resources.js';
-import { CHOP_RECIPES } from '../../data/chopping.js';
 import { GOODS } from '../../data/goods.js';
 import { harvestLoot } from '../../data/harvestLoot.js';
 import { TRADE } from './trade.js';
@@ -81,7 +80,7 @@ export function emit(w, e, msg, ok, why = '', rev = 0, extra = null) {
   return ack;
 }
 
-const recipeOf = (w, id) => owns(CRAFT_RECIPES, id) ? CRAFT_RECIPES[id] : w.chopVersion === 1 && owns(CHOP_RECIPES, id) ? CHOP_RECIPES[id] : null;
+const recipeOf = (w, id) => owns(CRAFT_RECIPES, id) ? CRAFT_RECIPES[id] : null;
 
 function exactSchema(w, msg) {
   if (!msg || typeof msg !== 'object' || Array.isArray(msg)

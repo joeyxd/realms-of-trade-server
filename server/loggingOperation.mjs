@@ -33,8 +33,39 @@ function timingQuality(request, node) {
   return result.quality;
 }
 
+function pickupParticipants(request) {
+  const rows = request.beneficiaries;
+  if (!Array.isArray(rows) || rows.length < 1 || rows.length > 4) fail();
+  let previous = '', actor = null, total = 0;
+  for (const row of rows) {
+    if (!exact(row, ['account', 'expectedVersion', 'before', 'profile']) || !UUID.test(row.account) || row.account <= previous
+        || !Number.isSafeInteger(row.expectedVersion) || row.expectedVersion < 1 || row.expectedVersion >= 2147483647) fail();
+    previous = row.account;
+    for (const p of [row.before, row.profile]) if (!p || Buffer.byteLength(JSON.stringify(p)) > 131072 || !same(sanitizeProfile(p), p)) fail();
+    const expected = copy(row.before), actual = row.profile;
+    const before = readProgression(expected.progression), after = readProgression(actual.progression);
+    const amount = after.practice.logging - before.practice.logging;
+    if (!Number.isSafeInteger(amount) || amount < 0 || amount > 10) fail();
+    total += amount;
+    if (amount > 0) { before.practice.logging += amount; expected.progression = before; }
+    if (row.account === request.account) {
+      actor = row;
+      if (row.expectedVersion !== request.expectedProfileVersion || !same(row.profile, request.profile)) fail();
+      if (request.ack.ok) {
+        for (const [g, n] of Object.entries(request.ack.goods)) expected.eco.pack.goods[g] = (expected.eco.pack.goods[g] || 0) + n;
+        expected.eco.tradeRev++;
+        if (request.ack.profileRev !== expected.eco.tradeRev) fail();
+      }
+    }
+    if (!same(expected, actual) || !request.ack.ok && amount !== 0) fail();
+  }
+  if (!actor || total > LOGGING.practicePerPalm) fail();
+  return copy(rows);
+}
+
 export function loggingParticipants(request) {
   if (!Object.hasOwn(request, 'beneficiaries')) return null;
+  if (request.command.type === 'resource' && request.command.op === 'pickup') return pickupParticipants(request);
   const { beneficiaries: rows, command, worldData, account, profile, expectedProfileVersion } = request;
   const node = worldData.resources?.nodes.find(n => n.id === command.node);
   if (command.type !== 'resource' || command.op !== 'gather' || ![2, 3].includes(worldData.resources?.v)

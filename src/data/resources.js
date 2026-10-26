@@ -27,6 +27,8 @@ export function sanitizeTools(raw) {
 export const CRAFT_RECIPES = Object.freeze({
   madera: Object.freeze({ id: 'madera', name: 'Tabla básica', inputs: Object.freeze({ tronco: 2 }), output: 'madera', count: 1, max: 10 }),
   hacha_piedra: Object.freeze({ id: 'hacha_piedra', name: 'Hacha de piedra', inputs: Object.freeze({ tronco: 3, piedra: 2 }), tool: 'axe', tier: 1, count: 1, max: 1, hand: true }),
+  hacha_hierro: Object.freeze({ id: 'hacha_hierro', name: 'Hacha de hierro', inputs: Object.freeze({ madera: 2, mineral_hierro: 3 }), tool: 'axe', tier: 2, count: 1, max: 1 }),
+  hacha_acero: Object.freeze({ id: 'hacha_acero', name: 'Hacha de acero', inputs: Object.freeze({ madera: 3, hierro: 4 }), tool: 'axe', tier: 3, count: 1, max: 1 }),
   pico_piedra: Object.freeze({ id: 'pico_piedra', name: 'Pico de piedra', inputs: Object.freeze({ tronco: 3, piedra: 2 }), tool: 'pickaxe', tier: 1, count: 1, max: 1, hand: true }),
 });
 

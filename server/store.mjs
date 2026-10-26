@@ -313,6 +313,7 @@ export function createMemoryStore() {
     async checkAttributeOperations() { return { version: 1 }; },
     async checkSkillOperations() { return { version: 1 }; },
     async checkFireOperations() { return { version: 1 }; },
+    async checkChopOperations() { return { version: 1 }; },
     async checkTorchResinCoconutOperations() { return { version: 1 }; },
     async checkFreshwaterOperations() { return { version: 1 }; },
     async checkCanteenOperations() { return { version: 1 }; },
@@ -853,6 +854,11 @@ export function createSupabaseStore(client) {
     async checkCanteenOperations() { const raw = await rpc('mn_canteen_operations_ready', {}); if (raw?.version !== 1) throw new StoreError('configuration'); return { version: 1 }; },
     async checkSpecialMealOperations() { const raw = await rpc('mn_special_meal_operations_ready', {}); if (raw?.version !== 1) throw new StoreError('configuration'); return { version: 1 }; },
     async checkFireOperations() { const raw = await rpc('mn_fire_operations_ready', {}); if (raw?.version !== 1) throw new StoreError('configuration'); return { version: 1 }; },
+    async checkChopOperations() {
+      const raw = await rpc('mn_chop_operations_ready', {});
+      if (!raw || raw.version !== 1 || Object.keys(raw).length !== 1) throw new StoreError('configuration');
+      return { version: 1 };
+    },
     async checkTorchResinCoconutOperations() {
       const raw = await rpc('mn_torch_resin_coconut_ready', {});
       if (!raw || raw.version !== 1 || Object.keys(raw).length !== 1) throw new StoreError('configuration');

@@ -51,15 +51,15 @@ const send = (w, e, msg) => { resourceCmd(w, e, { type: 'resource', ...msg }); r
 // Chop on every tick it is allowed until the palm falls; returns the tick the fall event was seen.
 function chopDown(w, e = 1, id = 'palm-1') {
   const node = w.resources.nodes.get(id);
-  while (node.readyTick <= w.tick) { chop(w, e, id); tickTo(w, w.tick + 1); }
+  while (view(w, id).ready) { chop(w, e, id); tickTo(w, w.tick + 1); }
 }
 
-test('chop is off by default: chop, crit, pickup and the new recipes are refused schema and the snapshot is unchanged', () => {
+test('the legacy test mode refuses chop, crit and pickup, but always recognizes axe recipes', () => {
   const w = fixture({ chop: false });
   assert.deepEqual([chop(w).why, chop(w).ok], ['schema', false]);
   assert.equal(crit(w), false); assert.equal(lastAck(w).why, 'schema');
   assert.equal(send(w, 1, { op: 'pickup', pile: 'pile-1', expectedRev: 1, opId: 'p' }).why, 'schema');
-  assert.equal(send(w, 1, { op: 'craft', recipe: 'hacha_hierro', expectedRev: 0, opId: 'c' }).why, 'schema');
+  assert.equal(send(w, 1, { op: 'craft', recipe: 'hacha_hierro', expectedRev: 0, opId: 'c' }).why, 'materials');
   const pub = publicResources(w);
   assert.equal('chop' in pub, false); assert.equal('piles' in pub, false);
   assert.deepEqual(Object.keys(view(w)).sort(), ['hits', 'id', 'kind', 'propIndex', 'ready', 'remaining', 'rev', 'rot', 'scale', 'wait', 'x', 'y', 'z']);
@@ -95,7 +95,8 @@ test('stone, iron and steel axes fell a large palm after 12, 6 and 4 landed swin
     const pile = publicResources(w).piles[0];
     assert.deepEqual(pile, { id: 'pile-1', x: 1.5, y: 2, z: 0, goods: { tronco: 5 }, rev: 1 });
     const node = w.resources.nodes.get('palm-1');
-    assert.deepEqual([node.rev, node.readyTick], [2, fellTick + HARVEST.respawnTicks]);
+    assert.deepEqual([node.rev, node.readyTick], [1, 0]);
+    assert.deepEqual([w.resources.chop.palms.get(node.id).cycle, w.resources.chop.palms.get(node.id).readyTick], [2, fellTick + HARVEST.respawnTicks]);
     assert.deepEqual([view(w).hp, view(w).maxHp, view(w).size, view(w).ready], [0, 12, 'large', false]);
     assert.equal(chop(w).why, 'depleted'); assert.equal(lastAck(w).wait, HARVEST.respawnTicks * DT);
     assert.equal(publicResources(w).chop, 1);
@@ -108,7 +109,7 @@ test('the fall direction follows the finisher and a palm grows back to full HP',
   chopDown(w);
   assert.deepEqual(of(w, 'chopFell')[0].dir, { x: 0, z: 1 });
   assert.deepEqual([publicResources(w).piles[0].x, publicResources(w).piles[0].z], [0, 1.5]);
-  tickTo(w, w.resources.nodes.get('palm-1').readyTick);
+  tickTo(w, w.resources.chop.palms.get('palm-1').readyTick);
   assert.deepEqual([view(w).hp, view(w).ready], [12, true]);
   assert.equal(chop(w).ok, true);
 });
@@ -356,7 +357,7 @@ test('felling practice is split by damage with largest remainder and always sums
   const run = (axes, swings, scale = 1) => {
     const w = fixture({ players: axes.length, axe: axes, scale });
     const left = swings.slice();
-    while (w.resources.nodes.get('palm-1').readyTick <= w.tick) {
+    while (view(w).ready) {
       for (let e = 1; e <= axes.length; e++) if (left[e - 1] > 0 && chop(w, e).ok) left[e - 1]--;
       tickTo(w, w.tick + 1);
     }

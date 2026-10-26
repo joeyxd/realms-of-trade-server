@@ -37,39 +37,22 @@ test('(a) a palm without an axe is refused no_tool before the body takes a step'
   assert.deepEqual([again.ok, again.why], [false, 'no_tool']);
 });
 
-test('(b) the mind orders a palm: three honest quality-0 hits on the production lanes, the all-zero yield, nothing to the mind', { timeout: 90000 }, async t => {
+test('(b) the always-on chop mode refuses the companion palm gather without felling or awarding goods', { timeout: 90000 }, async t => {
   const r = await room(t, { lanes: 'torch' }), { owner, characterKey, entry, entity } = await summoned(r);
   const game = r.app.game, w = game.server.world, { node } = zoneNode(w, 'palm');
   assert.equal(game.worldState.resources.v, 3, 'palm timing v3 is on');
   assert.equal(w.harvestLootEnabled, true, 'palm loot rules are on');
   giveTool(w, entity, 'axe');
-  const mind = await attachMind(r, owner), seenFrom = mind.messages.length, ownerFrom = owner.messages.length;
-  const before = pack(w, entity, 'tronco'), rev = node.rev, reasons = [];
-  const ordered = await order(mind, entry, 'gather', { node: node.id });
-  assert.equal(ordered.presence.order, 'gather');
-  await run(r, () => entry.order === 'wait', 4000, () => { if (reasons.at(-1) !== entry.reason) reasons.push(entry.reason); });
-  assert.equal(entry.reason, 'felled', JSON.stringify(r.outcomes.map(o => o.why)));
-  assert.deepEqual(reasons.filter(reason => /^hit_/.test(reason ?? '')), ['hit_1_of_3', 'hit_2_of_3']);
-  // Three hits, each its own opId and durable receipt, each with the server's challenge, past the perfect window.
-  const sent = hits(r);
-  assert.equal(sent.length, 3);
-  assert.equal(new Set(sent.map(s => s.msg.opId)).size, 3);
-  for (const s of sent) assert.deepEqual(Object.keys(s.msg).sort(), ['challenge', 'expectedRev', 'lootRules', 'node', 'op', 'opId', 't', 'type']);
-  assert.deepEqual(sent.map(s => s.msg.expectedRev), [rev, rev + 1, rev + 2]);
+  const mind = await attachMind(r, owner), seenFrom = mind.messages.length, ownerFrom = owner.messages.length, before = pack(w, entity, 'tronco'), rev = node.rev;
+  await order(mind, entry, 'gather', { node: node.id });
+  await run(r, () => entry.order === 'wait', 4000);
+  assert.equal(entry.reason, 'chop_mode');
+  assert.equal(pack(w, entity, 'tronco'), before);
+  assert.equal(node.rev, rev); assert.equal(node.hits, 0);
+  assert.equal(hits(r).length, 1);
   const receipts = ownCommits(r, characterKey);
-  assert.equal(receipts.length, 3);
-  for (const receipt of receipts) {
-    const { challenge, receivedTick, quality } = receipt.ack.timing;
-    assert.equal(quality, 0, 'every body hit is scored quality 0');
-    assert.ok(receivedTick > challenge.targetTick + challenge.width, 'the swing lands after the perfect window');
-    assert.ok(receivedTick <= challenge.endTick, 'inside the accepted window');
-  }
-  // The yield is exactly what a player gets with all three hits at quality 0, plus the node's fixed loot.
-  assert.equal(timingYield([0, 0, 0]), 3);
-  assert.equal(pack(w, entity, 'tronco') - before, timingYield([0, 0, 0]), 'exactly three logs');
-  assert.deepEqual(receipts[2].ack.loot ?? {}, harvestLoot('palm', node.id, rev + 3));
-  assert.equal(receipts[2].ack.count, 3);
-  assert.equal(node.hits, 3); assert.ok(node.readyTick > w.tick);
+  assert.equal(receipts.length, 1);
+  assert.deepEqual([receipts[0].ack.ok, receipts[0].ack.why], [false, 'chopMode']);
   assert.equal(game.worldState.resources.logging[node.id].quality, 0, 'the palm ledger holds no perfect hit');
   assert.equal(tools(w, entity).axe, 1, 'the axe is a belt tool and stays');
   await pause(50);
@@ -79,7 +62,7 @@ test('(b) the mind orders a palm: three honest quality-0 hits on the production 
   assert.equal(owner.messages.slice(ownerFrom).some(m => m.ev?.type === 'loggingAim'), false, 'the body challenge goes to no client');
   assert.equal(mind.ws.readyState, WebSocket.OPEN);
   const head = await presence(mind, 'load');
-  assert.deepEqual([head.presence.order, head.presence.reason], ['wait', 'felled']);
+  assert.deepEqual([head.presence.order, head.presence.reason], ['wait', 'chop_mode']);
 });
 
 test('(c) no client can supply, read or raise a body challenge or its timing', { timeout: 60000 }, async t => {
@@ -186,7 +169,7 @@ test('(e) a new order mid-chain stops it after the current hit', { timeout: 6000
   assert.equal(hits(r).length, 4);
 });
 
-test('(f) a busy lane is retried for a palm hit, with a fresh challenge, and still scores quality 0', { timeout: 90000 }, async t => {
+test('(f) a busy companion palm gather retries and then reports chop_mode', { timeout: 90000 }, async t => {
   const r = await room(t, { lanes: 'workshop' }), { owner, characterKey, entry, entity } = await summoned(r);
   const game = r.app.game, w = game.server.world, { node } = zoneNode(w, 'palm');
   giveTool(w, entity, 'axe');
@@ -199,20 +182,19 @@ test('(f) a busy lane is retried for a palm hit, with a fresh challenge, and sti
   assert.equal(entry.order, 'gather', 'busy is retried, not final');
   assert.equal(entry.gather.tries, 1);
   release();
-  await run(r, () => entry.reason === 'hit_1_of_3', 3000);
+  await run(r, () => entry.reason === 'chop_mode', 3000);
   const sent = hits(r);
   assert.equal(sent.length, 2);
-  assert.deepEqual(r.outcomes.slice(0, 2).map(o => o.why), ['busy', null]);
+  assert.deepEqual(r.outcomes.slice(0, 2).map(o => o.why), ['busy', 'chopMode']);
   assert.ok(sent[1].tick - sent[0].tick >= TICK_RATE, 'the retry waits at least 1 s of ticks');
   assert.notEqual(sent[1].msg.opId, sent[0].msg.opId);
   assert.notEqual(sent[1].msg.challenge, sent[0].msg.challenge, 'the expired challenge was replaced');
   const receipt = ownCommits(r, characterKey).at(-1);
-  assert.equal(receipt.ack.ok, true);
-  assert.equal(receipt.ack.timing.quality, 0);
-  assert.equal(node.hits, 1);
+  assert.deepEqual([receipt.ack.ok, receipt.ack.why], [false, 'chopMode']);
+  assert.equal(node.hits, 0);
 });
 
-test('(g) with economic resource operations off a palm is chopped on the direct path with the untimed yield', { timeout: 60000 }, async t => {
+test('(g) with economic resource operations off the direct path also refuses companion palm gather in chop mode', { timeout: 60000 }, async t => {
   const r = await room(t, { economic: false }), { owner, entry, entity } = await summoned(r);
   const game = r.app.game, w = game.server.world, { node } = zoneNode(w, 'palm');
   assert.equal(game.economicAuthority, null);
@@ -220,10 +202,10 @@ test('(g) with economic resource operations off a palm is chopped on the direct 
   const before = pack(w, entity, 'tronco');
   await order(owner, entry, 'gather', { node: node.id });
   await run(r, () => entry.order === 'wait', 4000);
-  assert.equal(entry.reason, 'felled', JSON.stringify(r.outcomes.map(o => o.why)));
-  assert.equal(hits(r).length, 3);
+  assert.equal(entry.reason, 'chop_mode', JSON.stringify(r.outcomes.map(o => o.why)));
+  assert.equal(hits(r).length, 1);
   for (const s of hits(r)) assert.equal(Object.hasOwn(s.msg, 'challenge'), false, 'no timing on this host');
-  assert.equal(pack(w, entity, 'tronco') - before, RESOURCE_KINDS.palm.yield, 'the same untimed yield a player gets here');
+  assert.equal(pack(w, entity, 'tronco') - before, 0, 'refused gathers award no goods');
   assert.equal(r.commits.length, 0);
 });
 
@@ -251,8 +233,8 @@ test('(h) bootstrap on one world: gather wood and stone, craft the axe, chop a p
   const { node: palm } = zoneNode(w, 'palm');
   await order(mind, entry, 'gather', { node: palm.id });
   await run(r, () => entry.order === 'wait', 4000);
-  assert.equal(entry.reason, 'felled');
-  assert.equal(pack(w, entity, 'tronco'), 3, 'the palm gave the all-zero yield');
+  assert.equal(entry.reason, 'chop_mode');
+  assert.equal(pack(w, entity, 'tronco'), 0, 'the companion needs its own future chop path');
   assert.ok(Math.hypot(w.ecs.x[entity] - anchor.x, w.ecs.z[entity] - anchor.z) <= 30, 'still inside the zone');
 });
 
@@ -274,43 +256,20 @@ test('(i) the CLI shows hit progress, the felled and broken outcomes and the too
   for (const words of ['recoge madera o piedra', 'fabrica un hacha o un pico', 'tala esa palmera', 'pica esa roca']) assert.ok(connected.includes(words), words);
 });
 
-test('(j) a body never finishes a palm on a player perfect hit: shared_palm, refused before walking and between hits', { timeout: 90000 }, async t => {
+test('(j) a player legacy palm gather is refused chopMode and a companion cannot finish it', { timeout: 90000 }, async t => {
   const r = await room(t, { lanes: 'workshop' }), { owner, entry, entity } = await summoned(r);
-  const game = r.app.game, w = game.server.world, ecs = w.ecs, player = ownerSide(r);
+  const game = r.app.game, w = game.server.world, player = ownerSide(r), { node } = zoneNode(w, 'palm');
   giveTool(w, entity, 'axe'); giveTool(w, player.entity, 'axe');
-  // The owner, a player, lands one perfect timed hit on a palm through the ordinary player lane.
-  const perfectHit = async (node, opId) => {
-    while ((w.resources.cooldowns.get(player.entity) || 0) > w.tick) { game.server.step(); await turn(); }
-    ecs.x[player.entity] = node.x - 1; ecs.z[player.entity] = node.z; ecs.y[player.entity] = w.map.groundAt(node.x - 1, node.z);
-    ecs.regenT[player.entity] = 100; ecs.moveMag[player.entity] = 0; ecs.vx[player.entity] = 0; ecs.vz[player.entity] = 0;
-    const from = owner.messages.length;
-    game.receive(player.sock, { t: MSG.CMD, type: 'resource', op: 'aim', node: node.id, expectedRev: node.rev });
-    const aimed = (await owner.next(m => m.ev?.type === 'loggingAim', from)).ev;
-    assert.equal(aimed.ok, true, JSON.stringify(aimed));
-    while (game.worldState.resourceTick() < aimed.challenge.targetTick) game.server.step();
-    game.receive(player.sock, { t: MSG.CMD, type: 'resource', op: 'gather', opId, node: node.id, expectedRev: node.rev, challenge: aimed.challengeId });
-    await game.economicAuthority.settle(); game.server.step();
-    const ack = (await owner.next(m => m.ev?.type === 'resource' && m.ev.opId === opId, from)).ev;
-    assert.equal(ack.ok, true, JSON.stringify(ack));
-    assert.equal(ack.timing.quality, 1, 'the player hit is perfect');
-  };
-  const { node: first } = zoneNode(w, 'palm');
-  await perfectHit(first, 'owner-perfect-1');
-  assert.equal(game.worldState.resources.logging[first.id].quality, 1);
-  const loaded = await presence(owner, 'load'), at = { x: ecs.x[entity], z: ecs.z[entity] };
-  const refused = await presence(owner, 'gather', loaded.presence.revision, { node: first.id });
-  assert.deepEqual([refused.ok, refused.why], [false, 'shared_palm']);
-  for (let i = 0; i < 30; i++) { game.server.step(); await turn(); }
-  assert.deepEqual({ x: ecs.x[entity], z: ecs.z[entity] }, at, 'the body did not move');
-  assert.equal(r.submitted.length, 0);
-  // Mid-chain: the body hits a second palm once, the player lands a perfect hit on it, the body stops before its next swing.
-  const { node: second } = zoneNode(w, 'palm', [first.id]);
-  await order(owner, entry, 'gather', { node: second.id });
-  await run(r, () => entry.reason === 'hit_1_of_3', 4000);
-  await perfectHit(second, 'owner-perfect-2');
-  await run(r, () => entry.order === 'wait', 600);
-  assert.equal(entry.reason, 'shared_palm');
-  assert.equal(r.submitted.length, 1, 'no body swing after the perfect hit');
-  assert.equal(second.hits, 2);
+  const ecs = w.ecs;
+  ecs.x[player.entity] = node.x - 1; ecs.z[player.entity] = node.z; ecs.y[player.entity] = node.y;
+  ecs.regenT[player.entity] = 100; ecs.moveMag[player.entity] = 0; ecs.vx[player.entity] = ecs.vz[player.entity] = 0;
+  const from = owner.messages.length;
+  game.receive(player.sock, { t: MSG.CMD, type: 'resource', op: 'gather', opId: 'owner-legacy-palm', node: node.id, expectedRev: node.rev });
+  await game.economicAuthority.settle(); game.server.step();
+  const ack = (await owner.next(m => m.ev?.type === 'resource' && m.ev.opId === 'owner-legacy-palm', from)).ev;
+  assert.deepEqual([ack.ok, ack.why], [false, 'chopMode']);
+  await order(owner, entry, 'gather', { node: node.id });
+  await run(r, () => entry.order === 'wait', 4000);
+  assert.equal(entry.reason, 'chop_mode'); assert.equal(node.hits, 0);
   assert.equal(pack(w, entity, 'tronco'), 0);
 });

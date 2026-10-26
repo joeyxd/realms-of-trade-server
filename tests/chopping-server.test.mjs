@@ -1,4 +1,4 @@
-// TA02: the MN_CHOP flag through LocalServer, GameHost, /status and the env mapping; a real LocalServer step loop.
+// Default chopping entrypoints, pickup readiness and the real LocalServer step loop.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { LocalServer } from '../src/net/localServer.js';
@@ -21,8 +21,9 @@ function join(server) {
 }
 const evs = (messages, type) => messages.filter((m) => m.t === MSG.EVENT && m.ev?.type === type).map((m) => m.ev);
 
-test('protocol 71 and the LocalServer flag defaults to off', () => {
-  assert.equal(PROTOCOL_VERSION, 71);
+test('welcome uses the current protocol and the LocalServer test default stays off', () => {
+  const { server, messages } = local(); join(server);
+  assert.equal(messages.find(m => m.t === MSG.WELCOME).v, PROTOCOL_VERSION);
   assert.equal(local().server.world.chopVersion, 0);
   assert.equal(local({ chop: 'yes' }).server.world.chopVersion, 0);
   assert.equal(local({ chop: true }).server.world.chopVersion, 1);
@@ -47,32 +48,32 @@ test('a LocalServer with chop on runs the swing from the real step loop, falls t
   assert.ok(evs(messages, 'chopSwing').length >= 1);
   assert.ok(evs(messages, 'chopHit').length >= 1);
   assert.equal(w.resources.chop.piles.size, 1);
-  assert.equal(palm.readyTick > w.tick, true);
+  assert.equal(w.resources.chop.palms.get(palm.id).readyTick > w.tick, true);
   const ack = messages.find((m) => m.t === MSG.EVENT && m.ev?.type === 'resource' && m.ev.op === 'chop' && m.ev.ok)?.ev;
   assert.deepEqual([ack.cadence, ack.node], [24, palm.id]);
 });
 
-test('the host refuses MN_CHOP with resource operations on (log line, chop stays off) and passes it through otherwise', () => {
+test('the host accepts chopping with resource operations and reports pickup readiness', () => {
   const lines = [];
   const common = { seed: 71, bots: 0, log: (...a) => lines.push(a.join(' ')), saves: hmacSaves('test-key') };
   const refused = new GameHost({ ...common, store: createMemoryStore(), resolvePlayer: async () => 'a', initializeAccounts: true,
     worldId: 'chop-test', economicOperations: true, resourceOperations: true, chop: true });
-  assert.deepEqual(lines, ['[srv] MN_CHOP=1 refused: resource operations are on until the v4 economy (TA04); chopping stays off']);
-  assert.equal(refused.server.world.chopVersion, 0);
-  assert.deepEqual(refused.status().storage.chop, { enabled: false });
+  assert.deepEqual(lines, []);
+  assert.equal(refused.server.world.chopVersion, 1);
+  assert.deepEqual(refused.status().storage.chop, { enabled: true, ready: false });
   const on = new GameHost({ ...common, chop: true });
-  assert.equal(lines.length, 1);
+  assert.equal(lines.length, 0);
   assert.equal(on.server.world.chopVersion, 1);
-  assert.deepEqual(on.status().storage.chop, { enabled: true });
-  assert.deepEqual(new GameHost(common).status().storage.chop, { enabled: false });
+  assert.deepEqual(on.status().storage.chop, { enabled: true, ready: true });
+  assert.deepEqual(new GameHost(common).status().storage.chop, { enabled: false, ready: true });
   for (const h of [refused, on]) h.close?.();
 });
 
-test('createGameServer forwards the chop option to /status', async () => {
+test('createGameServer always enables chopping regardless of obsolete options', async () => {
   for (const chop of [true, false]) {
     const gs = createGameServer({ port: 0, host: '127.0.0.1', bots: 0, log: () => {}, chop });
     const port = await gs.listen();
-    try { assert.deepEqual((await (await fetch(`http://127.0.0.1:${port}/status`)).json()).storage.chop, { enabled: chop }); }
+    try { assert.deepEqual((await (await fetch(`http://127.0.0.1:${port}/status`)).json()).storage.chop, { enabled: true, ready: true }); }
     finally { await gs.close(); }
   }
   assert.equal(CHOP.slack, 4);

@@ -193,14 +193,21 @@ function checkedTimingProof(proof, nodeId, rev) {
   return { challenge: { ...proof.challenge }, receivedTick: proof.receivedTick, quality: result.quality };
 }
 
-export function draftResource(world, entity, command, profile, state, account, tick = world.tick, profiles = new Map(), timingProof = null) {
+export function draftResource(world, entity, command, profile, state, account, tick = world.tick, profiles = new Map(), timingProof = null, accounts = new Map()) {
   if (!integer(tick) || tick < state.tick || !UUID.test(account)) fail();
   const resources = checkedResourceState(state), draft = Object.create(world);
-  resources.tick = tick;
+  if (command.op !== 'pickup') resources.tick = tick;
   draft.profiles = new Map([[entity, structuredClone(profile)]]);
   draft.profileDirty = new Set();
   draft.resources = { ...world.resources, nodes: new Map([...world.resources.nodes].map(([id, n]) => [id, { ...n }])),
     receipts: new Map(), cooldowns: new Map(world.resources.cooldowns) };
+  if (command.op === 'pickup') {
+    // Reserved online contributors and an isolated pile projection share the existing receipt.
+    draft.resources.chop = structuredClone(world.resources.chop);
+    for (const [id, key] of accounts) if (id !== entity && profiles.has(key)) draft.profiles.set(id, structuredClone(profiles.get(key)));
+    const pile = draft.resources.chop?.piles.get(command.pile);
+    if (pile) pile.practice = (pile.practice || []).filter(row => accounts.has(row.e));
+  }
   draft.loggingTimingVersion = resources.v;
   draft.loggingState = resources;
   draft.loggingProof = timingProof;
@@ -214,6 +221,9 @@ export function draftResource(world, entity, command, profile, state, account, t
   delete ack.to;
   const resultingProfiles = new Map([[account, structuredClone(draft.profiles.get(entity))]]);
   let loggingAwards = [];
+  if (command.op === 'pickup') {
+    for (const [id, key] of accounts) if (draft.profiles.has(id)) resultingProfiles.set(key, structuredClone(draft.profiles.get(id)));
+  }
   if (ack.ok) {
     if (command.op === 'gather') {
       const next = draft.resources.nodes.get(command.node), row = resources.nodes.find(n => n.id === command.node);
@@ -276,8 +286,10 @@ export function draftResource(world, entity, command, profile, state, account, t
         }
       }
     }
-    resources.cooldowns = Object.fromEntries(Object.entries(resources.cooldowns).filter(([, expires]) => expires > tick));
-    resources.cooldowns[account] = tick + draft.resources.cooldowns.get(entity) - world.tick;
+    if (command.op !== 'pickup') {
+      resources.cooldowns = Object.fromEntries(Object.entries(resources.cooldowns).filter(([, expires]) => expires > tick));
+      resources.cooldowns[account] = tick + draft.resources.cooldowns.get(entity) - world.tick;
+    }
   }
   for (const [actor, candidate] of resultingProfiles) {
     if (!sanitizeProfile(candidate) || Buffer.byteLength(JSON.stringify(candidate)) > 131072) fail();
@@ -285,13 +297,14 @@ export function draftResource(world, entity, command, profile, state, account, t
   }
   return { profile: resultingProfiles.get(account), profiles: resultingProfiles, loggingAwards,
     resources: checkedResourceState(resources),
-    resourceRuntime: { tick: world.tick, nodes: draft.resources.nodes, cooldown: draft.resources.cooldowns.get(entity) },
+    resourceRuntime: { ...(command.op === 'pickup' ? { chop: draft.resources.chop } : {}), tick: world.tick, nodes: draft.resources.nodes, cooldown: draft.resources.cooldowns.get(entity) },
     events: events.slice(0, -1), ack, economy: world.economy };
 }
 
 export function applyResource(world, entity, command, proposal) {
   if (world.tick !== proposal.resourceRuntime.tick) throw new StoreError('effect');
   if (!proposal.ack.ok) return;
+  if (command.op === 'pickup') world.resources.chop = proposal.resourceRuntime.chop;
   if (command.op === 'gather') {
     const node = world.resources.nodes.get(command.node), next = proposal.resourceRuntime.nodes.get(command.node);
     if (!node || node.kind !== next.kind || node.rev + 1 !== next.rev) throw new StoreError('effect');

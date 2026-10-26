@@ -103,7 +103,7 @@ export class GameHost {
     }
     if (typeof resourceOperations !== 'boolean' || resourceOperations && !economicOperations) throw new StoreError('configuration');
     this.resourceOperations = resourceOperations;
-    if (chop && resourceOperations) { log('[srv] MN_CHOP=1 refused: resource operations are on until the v4 economy (TA04); chopping stays off'); chop = false; }
+    this.chopReady = !resourceOperations; this.chopProbeAt = -Infinity; this.chopProbe = null;
     if (typeof loggingOperations !== 'boolean' || loggingOperations && !resourceOperations) throw new StoreError('configuration');
     this.loggingOperations = loggingOperations;
     if (typeof artisanOperations !== 'boolean' || artisanOperations && !loggingOperations) throw new StoreError('configuration');
@@ -584,7 +584,21 @@ export class GameHost {
     if (result.state !== 'ready' || !this.#pearlStartup.ready) throw new StoreError('recovery');
   }
 
+  async probeChop() {
+    if (!this.resourceOperations) return true;
+    if (this.chopReady || Date.now() - this.chopProbeAt < 60000) return this.chopProbe ?? this.chopReady;
+    this.chopProbeAt = Date.now();
+    this.chopProbe = (async () => {
+      try { this.chopReady = (await this.store.checkChopOperations?.())?.version === 1; }
+      catch { this.chopReady = false; }
+      return this.chopReady;
+    })();
+    try { return await this.chopProbe; } finally { this.chopProbe = null; }
+  }
+
   async #prepareEconomy() {
+    await this.probeChop();
+    if (this.server.world.chopVersion === 1 && !this.chopReady) this.log('[srv] CHOP PICKUP NOT READY: apply the chop operations migration; swings and fells remain enabled');
     if (this.worldState) {
       // Resolve the exact durable journal before any world load/adoption or player admission.
       if (this.groundAuthority) await this.groundAuthority.prepare();
@@ -814,7 +828,7 @@ export class GameHost {
         attributes: { enabled: this.attributeOperations, ready: this.attributeOperations && !!this.worldState?.ready },
         skills: { enabled: this.skillOperations, ready: this.skillOperations && !!this.worldState?.ready },
         jump: { mode: this.server.world.jumpMode },
-        chop: { enabled: this.server.world.chopVersion === 1 },
+        chop: { enabled: this.server.world.chopVersion === 1, ready: this.chopReady },
         companionCreation: { enabled: this.companionCreation.enabled, ready: this.companionCreation.ready,
           pending: this.companionCreation.busy.size },
         companionPairing: { enabled: this.companionPairing.enabled, ready: this.companionPairing.ready },

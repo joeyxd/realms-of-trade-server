@@ -108,7 +108,7 @@ export class LocalServer {
     this.world.fireEnabled = fire;
     this.world.harvestLootEnabled = harvestLoot === true;
     this.world.meleeVersion = melee === true ? 1 : 0;
-    this.world.chopVersion = chop === true ? 1 : 0; // TA02: MN_CHOP hold-to-chop
+    this.world.chopVersion = chop === true ? 1 : 0; // Hold-to-chop; direct test instances may use the legacy flow.
     this.world.freshwaterEnabled = freshwater;
     this.world.survivalEnabled = survival === true;
     this.world.mealsEnabled = meals === true;

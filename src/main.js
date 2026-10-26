@@ -141,7 +141,7 @@ async function boot() {
   // ?lag=&jitter= add artificial latency per direction (testing).
   const transportP = createTransport({
     seed: GAME.seed, bots: 5, preferWorker: params.get('worker') !== '0', debug,
-    server: params.get('server'), solo: params.has('solo'), lagMs: +params.get('lag') || 0, jitterMs: +params.get('jitter') || 0, chop: params.get('chop') === '1', melee: params.get('melee') === '1', // TA03: solo hold-to-chop
+    server: params.get('server'), solo: params.has('solo'), lagMs: +params.get('lag') || 0, jitterMs: +params.get('jitter') || 0, chop: true, melee: params.get('melee') === '1', // TA03: solo hold-to-chop
   });
   const canvas = $('#game');
   await assetsP;
