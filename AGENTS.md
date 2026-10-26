@@ -53,19 +53,19 @@
 ## Reglas técnicas
 
 - Decisión del autor, 2026-10-09: mantener los cambios aceptados publicados en el mismo VPS de amigos.
-  El actualizador sigue los commits enviados a `claude/loving-lovelace-ptbif7`, ejecuta comprobaciones
-  y espera a que no haya jugadores antes de sustituir la única autoridad. Ver `docs/DEPLOY-VPS.md`.
+  El actualizador sigue los commits enviados a `claude/loving-lovelace-ptbif7` y espera a que no haya
+  escrituras pendientes antes de sustituir la única autoridad. Ver `docs/DEPLOY-VPS.md`.
   Completar y revisar cada corte antes del push; nunca empaquetar todo el árbol dirty compartido.
   Confirmar revisión activa, salud pública y entrada real antes de declarar un cambio publicado.
   SQL, secretos y activaciones opcionales de M5 conservan sus verificaciones específicas; el actualizador
   no los aplica ni crea otra autoridad de guardado.
-- El gate real del deploy es la copia del actualizador instalada a mano en el VPS
-  (`/opt/marea-negra/ops/vps-update.py`), no la del repo: desde 2026-10-25 es la de `6268d0d` (72 archivos);
-  antes corría la del 2026-10-11 (28 archivos). Su lista `TESTS` corre dentro de la imagen de release (solo
-  dependencias de producción: sin three, sin `docs/` ni `tools/`) y un fallo revierte el deploy. Antes de cada
-  push correr exactamente esa lista. Añadir un archivo a `TESTS` o cambiar el actualizador no llega al VPS con el
-  push: la sesión que hace el push lo reinstala con la receta de `docs/DEPLOY-VPS.md` o lo deja escrito en el
-  traspaso como pendiente.
+- Decisión del autor, 2026-10-26: el VPS es su servidor de pruebas, no producción (solo lo usa el autor).
+  El gate es local: antes de cada push correr exactamente la lista `TESTS` de `deploy/vps-update.py`
+  (sin three, sin `docs/` ni `tools/`). El VPS ya no la repite dentro de la imagen (`RUN_IMAGE_TESTS = False`)
+  ni espera a que el autor cierre el juego, y reemplaza un mundo atascado (errores, carril fallido) en vez de
+  esperarlo; si la versión nueva no arranca sana vuelve a la anterior.
+  El actualizador instalado a mano (`/opt/marea-negra/ops/vps-update.py`) no se sustituye solo: un cambio en
+  su lógica lo reinstala la sesión del push con la receta de `docs/DEPLOY-VPS.md`; cambiar solo `TESTS` no.
 
 - Simulación determinista y autoritativa en `src/sim/**`: sin reloj ni `Math.random`; usar RNG del mundo.
 - Todo campo nuevo de perfil requiere valores por defecto y saneado. Cambios de snapshots/`you` requieren revisar

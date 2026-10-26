@@ -9,9 +9,14 @@ El objetivo de esta primera entrega es el commit `5fa9658b5f2265bd1ea8c58b3e5972
 El autor pidió mantener este mismo deploy actualizado. El servicio `marea-negra-update.timer` revisa cada
 dos minutos los pushes a `claude/loving-lovelace-ptbif7`. Solo usa archivos del commit remoto: cambios sin
 commit del checkout compartido no se publican. El script [vps-update.py](../deploy/vps-update.py) construye
-la imagen y ejecuta regresiones sin credenciales ni conexión de base de datos antes de detener el servidor.
-Si hay jugadores o estado pendiente, espera al siguiente ciclo. Detiene la autoridad anterior antes de
-arrancar la nueva, comprueba revisión/salud/almacenamiento y vuelve a la imagen anterior si falla.
+la imagen. Desde 2026-10-26 no corre la lista `TESTS` dentro de ella (`RUN_IMAGE_TESTS = False`): el VPS es
+el servidor de pruebas del autor y esa lista ya es el gate local antes de cada push. Si hay escrituras en curso en
+un mundo sano (perfiles sin guardar, carriles económicos, staging), espera al siguiente ciclo; jugadores
+conectados ya no lo frenan: la autoridad anterior guarda perfiles y mundo al recibir SIGTERM y el cliente se
+reconecta. Un mundo atascado (errores, carril fallido, tick bloqueado) se reemplaza en vez de esperar: nunca
+se libera solo, y la nueva autoridad recarga de Supabase; se pierde lo que no estaba guardado. Detiene la
+autoridad anterior antes de arrancar la nueva, comprueba revisión/salud/almacenamiento y vuelve a la imagen
+anterior si falla.
 Conserva `/etc/marea-negra/alpha.env`, `SAVE_SECRET` y `WORLD_ID`; no ejecuta migraciones ni activa M5/Web3.
 Cambios que requieren SQL o configuración necesitan su integración específica antes de publicarse.
 
@@ -21,21 +26,16 @@ construir, comprueba CPU ocupada, espera de disco, memoria disponible y espacio 
 El enlace `/opt/marea-negra/current` identifica la release aceptada. El código del actualizador instalado
 en `/opt/marea-negra/ops/vps-update.py` no se sustituye a sí mismo desde Git. Para actualizar el propio
 actualizador, revisar/copiar su nueva versión y unidades; el runtime sí se actualiza en cada imagen.
-Su lista `TESTS` es el gate real: un cambio en ella no corre en el VPS hasta reinstalar la copia. Instalada:
-`6268d0d` (72 archivos, fetch con `+refs`), desde 2026-10-25; antes, la del 2026-10-11 (28 archivos).
-La sesión que publica un push que cambia `deploy/vps-update.py` lo reinstala cuando `/status` ya muestra
-la nueva versión:
+Con `RUN_IMAGE_TESTS = False` un cambio solo en la lista `TESTS` no necesita reinstalar nada: esa lista es
+el gate local. Un cambio en la lógica de `deploy/vps-update.py` sí se reinstala, en la sesión del push:
 
 1. `git diff <sha instalado> <sha nuevo> -- deploy/systemd` vacío; si no, las unidades cambian y se
    instalan aparte con el autor.
-2. Correr la nueva lista dentro de la imagen activa: `docker run --rm --network none --cpus 1 --memory 1g
-   --volume /opt/marea-negra/releases/<sha>/tests:/app/tests:ro --workdir /app <GAME_IMAGE> node --test
-   --test-concurrency=1 <TESTS>` (`GAME_IMAGE` en `ops/compose-<sha>.env`, unos 8 minutos, 0 fallos).
-3. Bajo `flock -w 120 /opt/marea-negra/update.lock`: copiar `releases/<sha>/deploy/vps-update.py` a
-   `ops/vps-update.py.new` (no `git show` sobre el clon sin blobs), comparar su sha256 con el del commit,
-   comprobar sintaxis con `compile()` (py_compile deja un `.pyc`), guardar `ops/vps-update.py.bak-<fecha>`,
-   modo 755 y `mv` al sitio.
-4. `python3 /opt/marea-negra/ops/vps-update.py --check` con actual = remoto, y un ciclo del timer en
+2. Bajo `flock -w 120 /opt/marea-negra/update.lock`: copiar el `deploy/vps-update.py` del commit empujado a
+   `ops/vps-update.py.new` (desde `releases/<sha>/deploy/` si esa release ya existe, o por `scp` desde el
+   worktree), comparar su sha256 con `git show <sha>:deploy/vps-update.py`, comprobar sintaxis con
+   `compile()` (py_compile deja un `.pyc`), guardar `ops/vps-update.py.bak-<fecha>`, modo 755 y `mv` al sitio.
+3. `python3 /opt/marea-negra/ops/vps-update.py --check` y un ciclo del timer en
    `journalctl -u marea-negra-update.service` sin errores.
 
 ```bash
@@ -46,7 +46,7 @@ readlink -f /opt/marea-negra/current
 ```
 
 `--check` consulta revisiones sin construir ni reiniciar. Para publicar inmediatamente un push terminado,
-ejecutar `systemctl start marea-negra-update.service`; respeta el mismo bloqueo y espera si hay jugadores.
+ejecutar `systemctl start marea-negra-update.service`; respeta el mismo bloqueo y espera si hay estado pendiente.
 Para mantenimiento manual, detener primero el timer y esperar que el servicio termine; reactivarlo al
 cerrar. No levantar otra réplica. El cierre requiere unos segundos y los clientes deben recargar al cambiar
 el protocolo. Una revisión rechazada conserva la release anterior y queda registrada con espera entre intentos.

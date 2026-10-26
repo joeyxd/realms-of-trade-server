@@ -404,8 +404,31 @@ class VpsUpdateTests(unittest.TestCase):
         joined = self.idle_status()
         joined["players"] = 1
         joined["sockets"] = 1
-        self.assertFalse(update.is_idle_and_durable(joined))
+        self.assertTrue(update.is_idle_and_durable(joined))
         self.assertTrue(update.runtime_status_ready(joined))
+        joined["storage"]["unsaved"] = 1
+        self.assertFalse(update.is_idle_and_durable(joined))
+        self.assertFalse(update.world_stuck(joined))
+        self.assertFalse(update.may_replace(joined))
+
+    def test_a_fenced_world_is_replaced_instead_of_waiting_forever(self):
+        # The alpha.120 status of 2026-10-26: one failed economic write, errors 1 and unsaved 1 for 19 hours.
+        fenced = self.idle_status()
+        fenced["storage"]["errors"] = 1
+        fenced["storage"]["unsaved"] = 1
+        fenced["storage"]["economic"] = {"enabled": True, "pending": 1, "failed": True, "completed": 4, "replays": 0}
+        self.assertFalse(update.is_idle_and_durable(fenced))
+        self.assertTrue(update.world_stuck(fenced))
+        self.assertTrue(update.may_replace(fenced))
+        for mutate in (lambda s: s.__setitem__("errors", 1),
+                       lambda s: s["storage"].__setitem__("tickBlocked", True),
+                       lambda s: s["storage"]["world"].__setitem__("failed", True)):
+            status = self.idle_status()
+            status["storage"]["unsaved"] = 1
+            mutate(status)
+            self.assertTrue(update.may_replace(status))
+        for status in (None, {"players": 1}, {"storage": None}):
+            self.assertFalse(update.may_replace(status))
         for field, value in (
             ("economic", {"enabled": True, "pending": 1, "failed": False, "completed": 0, "replays": 0}),
             ("economic", {"enabled": True, "pending": 0, "failed": True, "completed": 0, "replays": 0}),
@@ -447,6 +470,7 @@ class VpsUpdateTests(unittest.TestCase):
             (release / "tests").mkdir(parents=True)
             log = root / "update.log"
             with mock.patch.object(update, "OPS", root), \
+                 mock.patch.object(update, "RUN_IMAGE_TESTS", True), \
                  mock.patch.object(update, "compose", return_value=mock.Mock(stdout="")) as compose, \
                  mock.patch.object(update, "image_metadata", side_effect=[update.UpdateError("image missing"), (image_id, sha)]), \
                  mock.patch.object(update, "resource_gate") as gate, \
@@ -461,6 +485,31 @@ class VpsUpdateTests(unittest.TestCase):
             self.assertIn("none", test_command)
             self.assertNotIn("--rm", test_command)
             self.assertEqual(run.call_args_list[1].args[0][:4], ["docker", "rm", "-f", test_command[test_command.index("--name") + 1]])
+
+    def test_default_candidate_builds_without_running_image_tests(self):
+        sha = "d" * 40
+        image_id = "sha256:" + "3" * 64
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            release = root / "release"
+            (release / "tests").mkdir(parents=True)
+            log = root / "update.log"
+            with mock.patch.object(update, "OPS", root), \
+                 mock.patch.object(update, "compose", return_value=mock.Mock(stdout="")) as compose, \
+                 mock.patch.object(update, "image_metadata", side_effect=[update.UpdateError("image missing"), (image_id, sha), (image_id, sha)]), \
+                 mock.patch.object(update, "resource_gate"), \
+                 mock.patch.object(update, "run") as run:
+                update.prepare_image(release, root / "compose.env", {"GAME_IMAGE": "marea-negra:alpha-dddddddddddd"}, sha, log)
+                builds = sum(call.args[2:4] == ("build", "--memory") for call in compose.call_args_list)
+                update.prepare_image(release, root / "compose.env", {"GAME_IMAGE": "marea-negra:alpha-dddddddddddd"}, sha, log)
+
+            self.assertFalse(update.RUN_IMAGE_TESTS)
+            self.assertEqual(builds, 1)
+            run.assert_not_called()
+            marker = json.loads((root / f"validated-{sha}.json").read_text(encoding="utf-8"))
+            self.assertEqual(marker, {"revision": sha, "image_id": image_id, "tests_skipped": True})
+            self.assertEqual(sum(call.args[2:4] == ("build", "--memory") for call in compose.call_args_list), 1)
+            self.assertIn("tests skipped", log.read_text(encoding="utf-8"))
 
     def test_failed_candidate_stops_before_prior_release_rollback(self):
         sha, old_sha = "a" * 40, "b" * 40
