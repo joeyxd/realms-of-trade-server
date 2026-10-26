@@ -1,0 +1,152 @@
+{
+  "schema": "marea.niagara-web-derivative",
+  "version": 1,
+  "id": "niagara-049badaf45e15fd6",
+  "atlasId": "component-3e468435ddbe1951-3x3-alpha",
+  "sourceSha256": "049badaf45e15fd639051bbb1d785ba4eb7918a53222aaae9fe05359f69394a7",
+  "sourceFrames": [
+    "5a695a901958d80069e126d0448436642c4db469244a13db0493171308c11f86",
+    "d72066eed03e4698667578560d614439b1541f504be17ef5f6bce22737a9ad99",
+    "4c9c3f571a0c52bf49aa7d2199c03f7f0eac99fe528740ab9e2c47f4dbe9ffbd",
+    "45b37cff40b5bbc6565d693030e0cb4f48452846312f193a56db23f7c0228683",
+    "73e4f5d231e66a4bf8c1491dc0365d0078419c20bf9e61fdf7b0c4f1fdd89e06",
+    "94c40f090299382b7f6701490ecbf5be50300a49344840c011abad23e3ee3e1c",
+    "93b9990e7621b72912e0c13a5c0ef44874e068af4cef123c0705a95c8a3d899c",
+    "93b9990e7621b72912e0c13a5c0ef44874e068af4cef123c0705a95c8a3d899c",
+    "93b9990e7621b72912e0c13a5c0ef44874e068af4cef123c0705a95c8a3d899c"
+  ],
+  "files": {
+    "desktop": {
+      "url": "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-desktop.webp",
+      "bytes": 45498,
+      "sha256": "1544617caa13becb35481c2c6d906d62f9292f96c70e3a06d52ddc81bef06875",
+      "width": 1024,
+      "height": 1024
+    },
+    "mobile": {
+      "url": "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-mobile.webp",
+      "bytes": 16790,
+      "sha256": "385c9a2d9a2692fe8d60eed8457e864d5ebf962822e7c4279d2e957484d42ac3",
+      "width": 512,
+      "height": 512
+    }
+  },
+  "derivative": {
+    "adapter": "flipbook-v1",
+    "role": "source-texture",
+    "atlas": {
+      "desktop": "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-desktop.webp",
+      "mobile": "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-mobile.webp"
+    },
+    "columns": 4,
+    "rows": 4,
+    "frames": 9,
+    "duration": 2,
+    "width": 6,
+    "height": 6,
+    "blend": "alpha",
+    "atlasId": "component-3e468435ddbe1951-3x3-alpha",
+    "component": {
+      "textureSha256": "3e468435ddbe1951d5c563c763e19feb4ff14fe4dc37492703f289d232c16505",
+      "columns": 3,
+      "rows": 3,
+      "mapping": "original-alpha-to-white",
+      "name": "T_Vfx_Stamp_Electric_33"
+    },
+    "sourceBinding": {
+      "systemSha256": "049badaf45e15fd639051bbb1d785ba4eb7918a53222aaae9fe05359f69394a7",
+      "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_ElectricLightning.NS_Spline_ElectricLightning:Detail_5.NiagaraSpriteRendererProperties_0",
+      "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_Stamp_Electric_33_01",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Electric_33"
+    }
+  },
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-2fecab64fda3b2cc",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_Electric_33.uasset",
+      "sha256": "3e468435ddbe1951d5c563c763e19feb4ff14fe4dc37492703f289d232c16505",
+      "bytes": 47237
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_Electric_33.png",
+      "sha256": "4d439ef0c8e9c51fb679130259b088fdfc667505da05751deb54d0b36568cd37",
+      "bytes": 36561,
+      "format": "PNG",
+      "width": 256,
+      "height": 256,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 3,
+      "rows": 3,
+      "cells": 9,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "original-alpha-to-white",
+    "mappingFormula": "RGB=white; A=native source alpha without remapping",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-049badaf45e15fd6",
+        "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_ElectricLightning",
+        "sourceBinding": {
+          "systemSha256": "049badaf45e15fd639051bbb1d785ba4eb7918a53222aaae9fe05359f69394a7",
+          "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_ElectricLightning.NS_Spline_ElectricLightning:Detail_5.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_Stamp_Stamp_Electric_33_01",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Electric_33"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_ElectricLightning.NS_Spline_ElectricLightning:",
+          "matched": true
+        },
+        "parameterName": "baseTex"
+      }
+    ]
+  },
+  "packing": {
+    "desktopTile": 256,
+    "mobileTile": 128,
+    "gutter": 2,
+    "oneAtlasVariantLoaded": true
+  },
+  "limitations": [
+    "Original SubUV texture only; the complete Niagara system is pending.",
+    "Playback duration is an editor default, not verified Niagara emitter timing.",
+    "Presentation controls do not modify Niagara emitter particle counts."
+  ]
+}

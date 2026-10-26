@@ -1,0 +1,30 @@
+✔ SQL032 historical compatibility stores freshwater commands in the existing immutable economic receipt with replay (3320.0423ms)
+✔ SQL032 historical compatibility rejects forged vessel deltas, duplicate containers, and unsupported command shapes (2543.4557ms)
+✔ SQL032 historical compatibility keeps legacy profiles without vessels valid and rejects invalid container bounds (2528.7349ms)
+✔ SQL032 historical compatibility records a denied freshwater interaction without changing profile contents (2182.6747ms)
+✔ SQL032 historical compatibility charges hold-first for a waterBarrel and rejects filled-barrel removal (2263.021ms)
+✔ SQL032 historical compatibility commits fill, deposit, withdraw, and decant through the existing receipt writer (2146.9419ms)
+✔ SQL032 historical compatibility replays an ordinary no-before receipt after bucket crafting changes the profile vessels (2128.1193ms)
+✔ SQL032 historical compatibility records stale rules:2 raft no-op denials with the normal current-revision record (1867.6942ms)
+✔ SQL032 historical compatibility preserves and validates bucket mass through attribute assignment (1870.0413ms)
+✔ SQL032 conserves bucket water and commits one drink with exact replay (1630.1135ms)
+✔ SQL032 rejects malformed needs, injected canteens, and confirms food decrement plus needs (1440.9805ms)
+✔ SQL032 mixed vessel order preserves legacy transfers and binds canteen barrel refills (1541.0852ms)
+✔ SQL032 ordinary economic receipts cannot restore or erase needs (1546.5851ms)
+✔ SQL030 stores freshwater commands in the existing immutable economic receipt with replay (2024.8351ms)
+✔ SQL030 rejects forged vessel deltas, duplicate containers, and unsupported command shapes (1350.3629ms)
+✔ SQL030 keeps legacy profiles without vessels valid and rejects invalid container bounds (1454.4839ms)
+✔ SQL030 records a denied freshwater interaction without changing profile contents (1502.0922ms)
+✔ SQL030 charges hold-first for a waterBarrel and rejects filled-barrel removal (1428.3361ms)
+✔ SQL030 commits fill, deposit, withdraw, and decant through the existing receipt writer (1621.9951ms)
+✔ SQL030 replays an ordinary no-before receipt after bucket crafting changes the profile vessels (1443.2165ms)
+✔ SQL030 records stale rules:2 raft no-op denials with the normal current-revision record (1547.3725ms)
+✔ SQL030 preserves and validates bucket mass through attribute assignment (1447.7702ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 41680.5938

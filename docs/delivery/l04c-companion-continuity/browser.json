@@ -1,0 +1,53 @@
+{
+  "schema": "mn.companion-continuity-browser.v1",
+  "at": "2026-10-11T05:56:47.546Z",
+  "production": false,
+  "model": "simulated",
+  "gameTransport": "real_local_C01",
+  "checks": [
+    {
+      "name": "opening is stopped and makes no inference",
+      "ok": true
+    },
+    {
+      "name": "confirmed conversation is captured automatically with no second inference",
+      "ok": true
+    },
+    {
+      "name": "selected episode summary is appended, sources retained and usage settled",
+      "ok": true
+    },
+    {
+      "name": "manual refresh keeps admission, quota and source files and makes no call",
+      "ok": true
+    },
+    {
+      "name": "paid automation opt-in reports conservative remaining quota without inference",
+      "ok": true
+    },
+    {
+      "name": "portrait continuity panel fits viewport",
+      "ok": true
+    },
+    {
+      "name": "landscape continuity panel fits viewport",
+      "ok": true
+    },
+    {
+      "name": "refresh remains actionable during a held conversation",
+      "ok": true
+    },
+    {
+      "name": "stopped refresh keeps stop and disables summary",
+      "ok": true
+    }
+  ],
+  "screenshots": [
+    "context-measured-desktop.png",
+    "continuity-desktop.png",
+    "continuity-portrait.png",
+    "continuity-landscape.png"
+  ],
+  "errors": [],
+  "accepted": true
+}

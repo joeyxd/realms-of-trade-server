@@ -1,0 +1,22 @@
+{
+  "schema": "st01c-asset-query/v1",
+  "exportT3D": [
+    "/Engine/Functions/Engine_MaterialFunctions01/Gradient/RadialGradientExponential.RadialGradientExponential",
+    "/Engine/Functions/Engine_MaterialFunctions01/Density/ExponentialDensity.ExponentialDensity"
+  ],
+  "textures": [
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall",
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1",
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Ground_Crack",
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Hit_Circle"
+  ],
+  "textureFields": [
+    "address_x",
+    "address_y",
+    "filter",
+    "srgb",
+    "compression_settings",
+    "lod_group",
+    "mip_gen_settings"
+  ]
+}

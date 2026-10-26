@@ -1,0 +1,72 @@
+{
+  "checkedAt": "2026-10-12T02:08:40.383925+00:00",
+  "candidateRevision": "62490c819b7ac2cfd1559fcf23c0604f606c648d",
+  "candidateVersion": "0.6.0-alpha.59",
+  "candidateProtocol": 58,
+  "branch": "claude/loving-lovelace-ptbif7",
+  "pushed": true,
+  "deploymentDeferred": false,
+  "reason": "normal updater activated after world became idle",
+  "normalUpdaterTimer": "active",
+  "publicAcceptance": "passed 12/12 desktop and mobile emulation; bullet clash verified locally",
+  "activeRevision": "62490c819b7ac2cfd1559fcf23c0604f606c648d",
+  "activeImageId": "sha256:f0deb2bf569a9252df78be6949b64daf5230151fb9c193d89c61e7491968e62a",
+  "containerHealth": "healthy",
+  "version": "0.6.0-alpha.59",
+  "players": 0,
+  "sockets": 0,
+  "errors": 0,
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "errors": 0,
+    "unsaved": 0,
+    "tickBlocked": false,
+    "worldReady": true,
+    "economicPending": 0
+  },
+  "publicHealth": {
+    "status": 200,
+    "body": "ok"
+  },
+  "localChecks": {
+    "integratedFocal": 49,
+    "integratedBrowser": 20,
+    "sourceAnimationsPreserved": true
+  },
+  "ownSqlChanges": false,
+  "specialMealsActivationChanged": false,
+  "previousDeferral": {
+    "checkedAt": "2026-10-11T20:49:19.9427711Z",
+    "candidateRevision": "bd555892d473a376189efd1a0bd04958638244c1",
+    "activeRevision": "cd5df250d6c99061a8ad5c0f8f5f692e86d32829",
+    "version": "0.6.0-alpha.57",
+    "players": 1,
+    "reason": "world busy; update deferred"
+  },
+  "containerId": "52e61f21f23b",
+  "validatedImage": {
+    "revision": "62490c819b7ac2cfd1559fcf23c0604f606c648d",
+    "imageId": "sha256:f0deb2bf569a9252df78be6949b64daf5230151fb9c193d89c61e7491968e62a",
+    "testsPassed": true
+  },
+  "publicChecks": {
+    "sourcesEqualGit": 24,
+    "browserPassed": 12,
+    "devices": [
+      "desktop",
+      "mobile emulation"
+    ],
+    "errors": 0,
+    "ordinaryMovement": true,
+    "nativeSwimBones": 65,
+    "nativeLoopSeconds": 5.708333,
+    "modelTextureWidths": [
+      1024,
+      512
+    ],
+    "acceptance": "public/acceptance.json",
+    "visualLimit": "night limits model visibility; daytime local visual review remains relevant",
+    "bulletClash": "local acceptance; not forced in public"
+  }
+}

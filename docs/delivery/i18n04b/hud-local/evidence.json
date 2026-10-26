@@ -1,0 +1,139 @@
+{
+  "at": "2026-10-10T22:59:29.110Z",
+  "scope": "Local real client and SoloWorker, local CDN substitutes",
+  "checks": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "locale": "es",
+      "boxes": {
+        ".tracker": {
+          "top": 194,
+          "bottom": 462.015625,
+          "left": 1016,
+          "right": 1266,
+          "visible": true
+        },
+        ".world-minimap": {
+          "top": 28,
+          "bottom": 154,
+          "left": 1124,
+          "right": 1250,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "top": 162,
+          "bottom": 174.09375,
+          "left": 1101,
+          "right": 1273,
+          "visible": true
+        }
+      },
+      "fallen": "\" · caído\""
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "locale": "en",
+      "boxes": {
+        ".tracker": {
+          "top": 194,
+          "bottom": 462.015625,
+          "left": 1016,
+          "right": 1266,
+          "visible": true
+        },
+        ".world-minimap": {
+          "top": 28,
+          "bottom": 154,
+          "left": 1124,
+          "right": 1250,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "top": 162,
+          "bottom": 174.09375,
+          "left": 1101,
+          "right": 1273,
+          "visible": true
+        }
+      },
+      "fallen": "\" · fallen\""
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "locale": "es",
+      "boxes": {
+        ".tracker": {
+          "top": 118,
+          "bottom": 149,
+          "left": 50,
+          "right": 300,
+          "visible": true
+        },
+        ".world-minimap": {
+          "top": 28,
+          "bottom": 154,
+          "left": 688,
+          "right": 814,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "top": 162,
+          "bottom": 174.09375,
+          "left": 665,
+          "right": 837,
+          "visible": true
+        }
+      },
+      "fallen": "\" · caído\""
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "locale": "en",
+      "boxes": {
+        ".tracker": {
+          "top": 118,
+          "bottom": 149,
+          "left": 10,
+          "right": 260,
+          "visible": true
+        },
+        ".world-minimap": {
+          "top": 28,
+          "bottom": 154,
+          "left": 688,
+          "right": 814,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "top": 162,
+          "bottom": 174.09375,
+          "left": 665,
+          "right": 837,
+          "visible": true
+        }
+      },
+      "fallen": "\" · fallen\""
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "1280-es.png",
+    "1280-en.png",
+    "844-es.png",
+    "844-en.png"
+  ],
+  "transport": "worker",
+  "pass": true
+}

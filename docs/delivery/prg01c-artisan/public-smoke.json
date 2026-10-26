@@ -1,0 +1,53 @@
+{
+  "schema": "mn.artisan.public.v1",
+  "at": "2026-10-10T21:16:48.880Z",
+  "checks": [
+    {
+      "name": "health",
+      "pass": true
+    },
+    {
+      "name": "M5_healthy_artisan_off",
+      "pass": true,
+      "version": "0.6.0-alpha.29"
+    },
+    {
+      "name": "protocol",
+      "pass": true,
+      "version": 41
+    },
+    {
+      "name": "artisan_modules",
+      "pass": true
+    },
+    {
+      "name": "server_SQL_private",
+      "pass": true
+    },
+    {
+      "name": "guest_WSS_profile_snapshot",
+      "pass": true
+    },
+    {
+      "name": "artisan_lane_disabled",
+      "pass": true
+    },
+    {
+      "name": "real_browser_guest_entry",
+      "pass": true,
+      "online": true,
+      "transport": "ws",
+      "artisan": true,
+      "storagePalette": true,
+      "hudVisible": true,
+      "titleHidden": true,
+      "errors": []
+    }
+  ],
+  "errors": [],
+  "limits": [
+    "Guest entry and disabled lane only; no live artisan SQL, lesson or durable storage transaction.",
+    "Browser desktop only; no physical phone or FPS acceptance."
+  ],
+  "pass": true
+}

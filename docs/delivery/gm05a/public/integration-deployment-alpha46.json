@@ -1,0 +1,96 @@
+{
+  "schema": "gm05a-deployment/v1",
+  "at": "2026-10-11T05:27:11.367232+00:00",
+  "release": "2a51c8d90c8ffcd75f81c749d82f5ec8e1cdae4e",
+  "image": "sha256:87934ad36f3b603d5554663ffc6767a4cb5d66d5dce79b801d82281bf38f45d6",
+  "imageRevision": "2a51c8d90c8ffcd75f81c749d82f5ec8e1cdae4e",
+  "container": "6327b047439e74b0185120095dc4b159fda34e815b27f382a98e5ca4bdd6b09b",
+  "running": true,
+  "health": "healthy",
+  "contentMount": "/opt/marea-negra/content",
+  "content": {
+    "version": 1,
+    "worldId": "marea-negra",
+    "generation": 6,
+    "revisionId": null
+  },
+  "retainedRevisions": 6,
+  "receipts": 6,
+  "lock": {
+    "inode": 98077,
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0o660"
+  },
+  "updaterSha256": "9b4431cf07d8f9a6433e7b5f6792dbc095732877d38e2bc685d739027f1edb85",
+  "updaterService": "activating",
+  "timer": "active",
+  "public": {
+    "health": 200,
+    "version": "0.6.0-alpha.46",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 3,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2262,
+        "errors": 0
+      }
+    },
+    "content": {
+      "generation": 6,
+      "revisionId": null
+    }
+  }
+}

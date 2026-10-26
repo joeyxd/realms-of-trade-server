@@ -1,0 +1,448 @@
+{
+  "schema": "gm05a-public-browser/v1",
+  "version": "0.6.0-alpha.46",
+  "production": true,
+  "simulatedAuth": false,
+  "localFixture": false,
+  "screenshots": [
+    "terrain-en-closeup-1440x900.png",
+    "terrain-en-closeup-844x390.png",
+    "terrain-es-closeup-1440x900.png",
+    "terrain-es-closeup-844x390.png",
+    "terrain-es-ramp-overview-1440x900.png"
+  ],
+  "checks": [
+    "public_guest_boot_and_gameplay_join",
+    "real_seed_has_five_policy_valid_strokes_on_existing_dry_ground",
+    "mouse_pointer_executes_raise_lower_flatten_smooth_and_two_click_ramp_as_real_history_edits",
+    "pending_autosave_completes_after_atomic_protected_rejection_without_erasing_error_status",
+    "escape_discards_the_preview_and_preserves_history",
+    "window_blur_discards_the_preview_without_history_commit",
+    "undo_redo_restores_exact_v3_sample_and_decoration_override_state",
+    "walk_preview_runs_over_the_ramp_and_uses_the_projected_ground_sampler",
+    "real_catalog_model_placement_uses_raised_draft_ground",
+    "spanish_english_narrow_closeup_and_ramp_overview_captures_saved",
+    "local_save_reopen_export_and_import_preserve_v3_while_fresh_v2_remains_legacy_shaped"
+  ],
+  "errors": [],
+  "seed": 99282957,
+  "site": [
+    {
+      "tool": "raise",
+      "x": -136,
+      "z": -144
+    },
+    {
+      "tool": "lower",
+      "x": -104,
+      "z": -144
+    },
+    {
+      "tool": "flatten",
+      "x": -176,
+      "z": -128
+    },
+    {
+      "tool": "smooth",
+      "x": -120,
+      "z": -120
+    },
+    {
+      "tool": "ramp",
+      "x": -192,
+      "z": -104
+    }
+  ],
+  "brushes": [
+    {
+      "tool": "raise",
+      "point": {
+        "x": -136,
+        "z": -144
+      },
+      "samples": 47
+    },
+    {
+      "tool": "lower",
+      "point": {
+        "x": -104,
+        "z": -144
+      },
+      "samples": 94
+    },
+    {
+      "tool": "flatten",
+      "point": {
+        "x": -176,
+        "z": -128
+      },
+      "samples": 141
+    },
+    {
+      "tool": "smooth",
+      "point": {
+        "x": -120,
+        "z": -120
+      },
+      "samples": 145
+    },
+    {
+      "tool": "ramp",
+      "point": {
+        "x": -192,
+        "z": -104
+      },
+      "samples": 256
+    }
+  ],
+  "runtime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.46",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 4921,
+    "uptime": 93,
+    "stepMs": 1.458,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 6,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 3,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2259,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 11,
+      "late": 0,
+      "trimmed": 104,
+      "clamped": 0,
+      "kbOut": 18313.4,
+      "kbIn": 68.1,
+      "dropped": 0
+    }
+  },
+  "guestGameplay": {
+    "joined": true,
+    "mode": "playing",
+    "hudVisible": true
+  },
+  "realAuth": {
+    "recoverySetupCancelled": true
+  },
+  "browserRuntime": {
+    "version": "0.6.0-alpha.46",
+    "protocolVersion": 52
+  },
+  "rampTerrace": {
+    "point": {
+      "x": -188,
+      "z": -104
+    },
+    "height": 4.585267066955566,
+    "baseHeight": 3.5852670669555664,
+    "samples": 192
+  },
+  "rampBeforeEndClick": {
+    "start": {
+      "x": 814.9305379539785,
+      "y": 466.5253735576005
+    },
+    "end": {
+      "x": 636.1636271139397,
+      "y": 418.9010420488937
+    },
+    "startElement": "game",
+    "endElement": "game",
+    "gameRect": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "top": 0,
+      "right": 1440,
+      "bottom": 900,
+      "left": 0
+    },
+    "point": {
+      "x": -196.10263865053264,
+      "z": -104.08980920003084
+    },
+    "points": [
+      {
+        "x": -188.0341505314886,
+        "z": -104.0398424480461
+      },
+      {
+        "x": -196.10263865053264,
+        "z": -104.08980920003084
+      }
+    ],
+    "pointerInside": true,
+    "cursorVisible": true,
+    "canvasRect": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "top": 0,
+      "right": 1440,
+      "bottom": 900,
+      "left": 0
+    }
+  },
+  "protectedPreflightCode": "protected_area",
+  "pendingSaveBeforeRejectedStroke": {
+    "point": {
+      "x": -136,
+      "z": -144
+    },
+    "dirty": true,
+    "timerPending": true,
+    "autosaveTimer": "QA-controlled 5000ms delay after a real edit; callback invokes the real saveNow()"
+  },
+  "delayedSaveAndProtectedRejection": {
+    "statusDuring": "Trazo bloqueado: mantén suelo seco y distancia de zonas protegidas, o reduce tamaño/altura. No se guardó ningún cambio.",
+    "statusAfterSave": "Trazo bloqueado: mantén suelo seco y distancia de zonas protegidas, o reduce tamaño/altura. No se guardó ningún cambio.",
+    "savedDocumentPreserved": true
+  },
+  "walkStartPositioning": "QA sets terrainInteraction.lastPoint to rampLow; gameplay movement remains real keyboard input",
+  "walkTrace": [
+    {
+      "x": -196,
+      "z": -104,
+      "y": 3.142394781112671,
+      "terrain": 3.142394781112671,
+      "base": 3.1563947200775146,
+      "high": 4.585267066955566,
+      "low": 3.5852670669555664
+    },
+    {
+      "x": -194.6250000000001,
+      "z": -104,
+      "y": 3.3913225829601084,
+      "terrain": 3.3913225829601084,
+      "base": 3.406947523355468
+    },
+    {
+      "x": -193.0000000000003,
+      "z": -104,
+      "y": 3.6853640079497727,
+      "terrain": 3.6853640079497727,
+      "base": 3.5643639564513943
+    },
+    {
+      "x": -191.3750000000005,
+      "z": -104,
+      "y": 3.9800700843333274,
+      "terrain": 3.9800700843333274,
+      "base": 3.584570020437236
+    },
+    {
+      "x": -189.53333333333407,
+      "z": -104,
+      "y": 4.313535912831491,
+      "terrain": 4.313535912831491,
+      "base": 3.5916027704874685
+    },
+    {
+      "x": -187.90833333333427,
+      "z": -104,
+      "y": 4.585192672411601,
+      "terrain": 4.585192672411601,
+      "base": 3.584459326664615
+    },
+    {
+      "x": -186.17500000000115,
+      "z": -104,
+      "y": 4.5850668191909785,
+      "terrain": 4.5850668191909785,
+      "base": 3.567991948127758
+    },
+    {
+      "x": -184.55000000000135,
+      "z": -104,
+      "y": 3.9719380617151288,
+      "terrain": 3.9719380617151288,
+      "base": 3.5671381592750198
+    },
+    {
+      "x": -182.81666666666823,
+      "z": -104,
+      "y": 3.8956937750174108,
+      "terrain": 3.8956937750174108,
+      "base": 3.8956937750174108
+    },
+    {
+      "x": -181.0833333333351,
+      "z": -104,
+      "y": 4.711045781770419,
+      "terrain": 4.711045781770419,
+      "base": 4.711045781770419
+    },
+    {
+      "x": -179.35000000000198,
+      "z": -104,
+      "y": 5.65487487316027,
+      "terrain": 5.65487487316027,
+      "base": 5.65487487316027
+    },
+    {
+      "x": -177.72500000000218,
+      "z": -104,
+      "y": 6.343983459472072,
+      "terrain": 6.343983459472072,
+      "base": 6.343983459472072
+    },
+    {
+      "x": -175.99166666666906,
+      "z": -104,
+      "y": 6.596241410573314,
+      "terrain": 6.596241410573314,
+      "base": 6.596241410573314
+    },
+    {
+      "x": -174.25833333333594,
+      "z": -104,
+      "y": 6.606534699598926,
+      "terrain": 6.606534699598926,
+      "base": 6.606534699598926
+    },
+    {
+      "x": -172.63333333333614,
+      "z": -104,
+      "y": 6.620993026097595,
+      "terrain": 6.620993026097595,
+      "base": 6.620993026097595
+    },
+    {
+      "x": -170.90000000000302,
+      "z": -104,
+      "y": 6.629910421371457,
+      "terrain": 6.629910421371457,
+      "base": 6.629910421371457
+    },
+    {
+      "x": -169.27500000000322,
+      "z": -104,
+      "y": 6.631069231033324,
+      "terrain": 6.631069231033324,
+      "base": 6.631069231033324
+    },
+    {
+      "x": -167.5416666666701,
+      "z": -104,
+      "y": 6.625167111555759,
+      "terrain": 6.625167111555759,
+      "base": 6.625167111555759
+    },
+    {
+      "x": -165.9166666666703,
+      "z": -104,
+      "y": 6.6111729939779025,
+      "terrain": 6.6111729939779025,
+      "base": 6.6111729939779025
+    },
+    {
+      "x": -164.18333333333717,
+      "z": -104,
+      "y": 6.5936886231104905,
+      "terrain": 6.5936886231104905,
+      "base": 6.5936886231104905
+    },
+    {
+      "x": -162.45000000000405,
+      "z": -104,
+      "y": 6.580066657066372,
+      "terrain": 6.580066657066372,
+      "base": 6.580066657066372
+    }
+  ],
+  "walkAcceptance": {
+    "startDistanceToRampLow": 0,
+    "rampCrossingSamples": 5,
+    "nearestHighEndpointDistance": 0.09166666666573065
+  },
+  "terracePlacement": {
+    "id": "gm-9f67142f-264e-4a63-a0d9-101a188b723f",
+    "position": {
+      "x": -188,
+      "y": 4.585267066955566,
+      "z": -104
+    },
+    "projected": 4.585267066955566,
+    "base": 3.5852670669555664
+  },
+  "narrowRadiusInteraction": {
+    "en": [
+      4,
+      4.5
+    ],
+    "es": [
+      4.5,
+      5
+    ]
+  },
+  "publicChain": {
+    "state": "not_run",
+    "reason": "Deliberate integration scope: this alpha46 pass verifies editor/authentication/guest and local-only editing; registration, activation, and the full public chain are not part of this run."
+  },
+  "scope": "Public editor/authentication/guest acceptance only; edits and saves stay in the disposable private browser IndexedDB context; no online save, registration, activation, or chain canary."
+}

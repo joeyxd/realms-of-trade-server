@@ -1,0 +1,63 @@
+{
+  "schema": "st01c-atlas-drift-acceptance/v1",
+  "decidedBy": "author",
+  "date": "2026-10-20",
+  "variant": "ktx2-uastc",
+  "referenceRun": "budget07",
+  "baseline": "source",
+  "maxFailingMax255": 3,
+  "ueFailuresAllowed": 0,
+  "acceptedFailures": [
+    "case-067.png",
+    "case-152.png",
+    "case-156.png",
+    "case-172.png",
+    "case-174.png",
+    "case-176.png",
+    "case-178.png",
+    "case-180.png",
+    "case-184.png",
+    "case-186.png",
+    "case-188.png",
+    "case-190.png",
+    "case-192.png",
+    "case-194.png",
+    "case-198.png",
+    "case-202.png",
+    "case-204.png",
+    "case-210.png",
+    "case-214.png",
+    "case-218.png",
+    "case-220.png",
+    "case-222.png",
+    "case-230.png",
+    "case-234.png",
+    "case-236.png",
+    "case-238.png",
+    "case-240.png",
+    "case-242.png",
+    "case-246.png",
+    "case-248.png",
+    "case-250.png",
+    "case-252.png",
+    "case-256.png",
+    "case-258.png",
+    "case-260.png",
+    "case-262.png",
+    "case-264.png"
+  ],
+  "budget": {
+    "limitBytes": 8388608,
+    "counts": [
+      "atlases",
+      "lut"
+    ],
+    "excludes": [
+      "renderTargets"
+    ],
+    "atlasGpuBytes": 8039200,
+    "lutBytes": 262144,
+    "totalBytes": 8301344
+  },
+  "note": "Decisión del autor: ktx2-uastc se acepta con la deriva de silueta medida en budget07 frente a source (37 casos: 36 celdas de humo aisladas y 1 vista de la capa de humo), cada uno con cambio máximo de 3/255 por píxel. Los picos de humo tenue son 33-52/255 (celdas 33-47, vista de capa 52) y el corte de silueta está en 32, así que entre 2 y 26 píxeles por celda (56 en la vista de capa) cruzan el corte y fallan el IoU mientras el cambio por píxel es de 1-3 niveles. La distancia a Unreal apenas cambia y sigue pasando. Cualquier caso fallido fuera de esta lista, con max255 > 3, o cualquier fallo contra Unreal, sigue siendo un fallo."
+}

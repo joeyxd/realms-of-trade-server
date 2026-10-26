@@ -1,0 +1,174 @@
+{
+  "build": "0.6.0-alpha.14",
+  "protocol": 30,
+  "generatedAt": "2026-10-08T22:02:23.893Z",
+  "setup": "Ephemeral localhost hosts, memory store, isolated browser contexts. Server ECS relocation is a QA fixture; gathering, panel opening, quantities and crafting use real controls. No .env, SQL or external services.",
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7c-harvest\\desktop-1280x720-00-palm-ready.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7c-harvest\\desktop-1280x720-01-first-chop.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7c-harvest\\desktop-1280x720-02-falling.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7c-harvest\\desktop-1280x720-03-stump.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7c-harvest\\desktop-1280x720-04-stone-ready.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7c-harvest\\desktop-1280x720-05-stone-collected.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7c-harvest\\desktop-1280x720-06-palm-wood-crafted.png"
+      ],
+      "acks": [
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "0ba7943d-4228-46e9-813c-ceb105525b6a",
+          "ok": true,
+          "why": "",
+          "rev": 2,
+          "good": "tronco",
+          "count": 0,
+          "remaining": 2,
+          "felled": false
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "da214385-abb4-42f6-971a-5a6801ca1cd4",
+          "ok": true,
+          "why": "",
+          "rev": 3,
+          "good": "tronco",
+          "count": 0,
+          "remaining": 1,
+          "felled": false
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "6d94127f-f5ab-492b-a5a2-813f2aa9fe0a",
+          "ok": true,
+          "why": "",
+          "rev": 4,
+          "good": "tronco",
+          "count": 2,
+          "remaining": 0,
+          "felled": true
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "4a8788a2-a0fb-419e-9d88-c3a12d671277",
+          "ok": false,
+          "why": "full",
+          "rev": 1
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "gather",
+          "opId": "3fad355f-b347-417a-b584-c06f3326ccb2",
+          "ok": true,
+          "why": "",
+          "rev": 2,
+          "good": "piedra",
+          "count": 1
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "craft",
+          "opId": "27b9bab4-5b4f-40e1-8cf2-cf43eaedace8",
+          "ok": true,
+          "why": "",
+          "rev": 3,
+          "good": "madera",
+          "count": 2
+        }
+      ],
+      "catalogue": {
+        "total": 176,
+        "palms": 96,
+        "stones": 69,
+        "bytes": 31633
+      },
+      "hitVisual": {
+        "metadata": {
+          "maxPalms": 96,
+          "loaded": [
+            "model:palm-tall-v1",
+            "model:palm-curved-v1",
+            "model:palm-short-v1"
+          ],
+          "textures": [
+            "tex:palm-albedo-v2",
+            "tex:palm-normal-v2"
+          ],
+          "maxNodes": 176,
+          "drawCalls": 10,
+          "visiblePalms": 20,
+          "damagedPalms": 1,
+          "stumps": 0,
+          "particles": 8,
+          "lastHit": {
+            "node": "palm-127",
+            "rev": 2,
+            "felled": false
+          },
+          "geometryTriangles": 3192
+        },
+        "pose": true,
+        "hatchetVisible": true
+      },
+      "stump": {
+        "ready": false,
+        "hits": 3,
+        "record": true,
+        "metadata": {
+          "maxPalms": 96,
+          "loaded": [
+            "model:palm-tall-v1",
+            "model:palm-curved-v1",
+            "model:palm-short-v1"
+          ],
+          "textures": [
+            "tex:palm-albedo-v2",
+            "tex:palm-normal-v2"
+          ],
+          "maxNodes": 176,
+          "drawCalls": 10,
+          "visiblePalms": 19,
+          "damagedPalms": 1,
+          "stumps": 1,
+          "particles": 0,
+          "lastHit": {
+            "node": "palm-127",
+            "rev": 4,
+            "felled": true
+          },
+          "geometryTriangles": 3192
+        },
+        "prompt": "Tocón · la palmera crece en 59 s"
+      },
+      "fullPack": "second full palm yield rejected; node and inventory unchanged",
+      "conservation": {
+        "before": {},
+        "after": {
+          "tronco": 2,
+          "piedra": 1
+        },
+        "goldUnchanged": true
+      },
+      "reconnect": "two wood and one stone preserved with exact revision/gold in signed online save"
+    }
+  ],
+  "failures": [],
+  "status": "passed"
+}

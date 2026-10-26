@@ -1,0 +1,403 @@
+TAP version 13
+# Subtest: Bucanero manifest binds only look 2 and selects one desktop/mobile character and portrait variant
+ok 1 - Bucanero manifest binds only look 2 and selects one desktop/mobile character and portrait variant
+  ---
+  duration_ms: 8.1997
+  type: 'test'
+  ...
+# Subtest: source and both runtime GLBs retain the 9,164-triangle Mixamo skin without source clips or unused PBR maps
+ok 2 - source and both runtime GLBs retain the 9,164-triangle Mixamo skin without source clips or unused PBR maps
+  ---
+  duration_ms: 11.7786
+  type: 'test'
+  ...
+# Subtest: preserved originals and generated runtime files match their SHA-256 evidence
+ok 3 - preserved originals and generated runtime files match their SHA-256 evidence
+  ---
+  duration_ms: 21.6497
+  type: 'test'
+  ...
+# Subtest: known draft and document errors become natural bilingual messages
+ok 4 - known draft and document errors become natural bilingual messages
+  ---
+  duration_ms: 0.8434
+  type: 'test'
+  ...
+# Subtest: unknown external error bytes never reach the visible status
+ok 5 - unknown external error bytes never reach the visible status
+  ---
+  duration_ms: 0.2289
+  type: 'test'
+  ...
+# Subtest: visible operation status retains its semantic source and severity across locale changes
+ok 6 - visible operation status retains its semantic source and severity across locale changes
+  ---
+  duration_ms: 0.162
+  type: 'test'
+  ...
+# Subtest: editor controls stay out of the outline pass and remain raycastable on NO_OUTLINE
+ok 7 - editor controls stay out of the outline pass and remain raycastable on NO_OUTLINE
+  ---
+  duration_ms: 24.7411
+  type: 'test'
+  ...
+# Subtest: normal-pass failures restore world materials so the next frame can render
+ok 8 - normal-pass failures restore world materials so the next frame can render
+  ---
+  duration_ms: 9.3731
+  type: 'test'
+  ...
+# Subtest: a real editor mixed selection can be captured without changing document objects
+ok 9 - a real editor mixed selection can be captured without changing document objects
+  ---
+  duration_ms: 2.448
+  type: 'test'
+  ...
+# THREE.BufferGeometry.computeBoundingBox(): Computed min/max have NaN values. The "position" attribute is likely to have NaN values. BufferGeometry {
+#   isBufferGeometry: true,
+#   uuid: '7218d80f-d092-4575-8215-569bcd377208',
+#   name: '',
+#   type: 'BufferGeometry',
+#   index: null,
+#   attributes: {
+#     position: Float32BufferAttribute {
+#       isBufferAttribute: true,
+#       name: '',
+#       array: [Float32Array],
+#       itemSize: 3,
+#       count: 3,
+#       normalized: false,
+#       usage: 35044,
+#       _updateRange: [Object],
+#       updateRanges: [],
+#       gpuType: 1015,
+#       version: 0
+#     }
+#   },
+#   morphAttributes: {},
+#   morphTargetsRelative: false,
+#   groups: [],
+#   boundingBox: Box3 {
+#     isBox3: true,
+#     min: Vector3 { x: NaN, y: 0, z: 0 },
+#     max: Vector3 { x: NaN, y: 0, z: 1 }
+#   },
+#   boundingSphere: null,
+#   drawRange: { start: 0, count: Infinity },
+#   userData: {}
+# }
+# Subtest: measures indexed and non-indexed triangles with drawRange and group intersections
+ok 10 - measures indexed and non-indexed triangles with drawRange and group intersections
+  ---
+  duration_ms: 2.3905
+  type: 'test'
+  ...
+# Subtest: deduplicates shared geometry, materials, and loaded texture maps in the cost estimate
+ok 11 - deduplicates shared geometry, materials, and loaded texture maps in the cost estimate
+  ---
+  duration_ms: 0.9575
+  type: 'test'
+  ...
+# Subtest: uses conservative root-local XZ bounds after child transforms
+ok 12 - uses conservative root-local XZ bounds after child transforms
+  ---
+  duration_ms: 0.4714
+  type: 'test'
+  ...
+# Subtest: ignores invisible objects and material groups while retaining visible group cost
+ok 13 - ignores invisible objects and material groups while retaining visible group cost
+  ---
+  duration_ms: 0.3352
+  type: 'test'
+  ...
+# Subtest: fails closed on empty, non-triangle, unbounded, and not-yet-loaded models
+ok 14 - fails closed on empty, non-triangle, unbounded, and not-yet-loaded models
+  ---
+  duration_ms: 1.5996
+  type: 'test'
+  ...
+# Subtest: prepares stable runtime fingerprint and resolves only used assets with catalog loader metadata
+ok 15 - prepares stable runtime fingerprint and resolves only used assets with catalog loader metadata
+  ---
+  duration_ms: 48.0988
+  type: 'test'
+  ...
+# Subtest: uses actual bytes and rejects a declared digest mismatch
+ok 16 - uses actual bytes and rejects a declared digest mismatch
+  ---
+  duration_ms: 30.4333
+  type: 'test'
+  ...
+# Subtest: hashes the resolved file bytes instead of trusting stale index byte counts
+ok 17 - hashes the resolved file bytes instead of trusting stale index byte counts
+  ---
+  duration_ms: 27.3442
+  type: 'test'
+  ...
+# Subtest: rejects external glTF buffer and image URIs
+ok 18 - rejects external glTF buffer and image URIs
+  ---
+  duration_ms: 52.2561
+  type: 'test'
+  ...
+# Subtest: rejects traversal asset paths
+ok 19 - rejects traversal asset paths
+  ---
+  duration_ms: 16.0984
+  type: 'test'
+  ...
+# Subtest: rechecks bytes at resolution and ignores missing unused assets
+ok 20 - rechecks bytes at resolution and ignores missing unused assets
+  ---
+  duration_ms: 24.186
+  type: 'test'
+  ...
+# Subtest: resolveBaseline hashes every normalized manifest model and texture variant
+ok 21 - resolveBaseline hashes every normalized manifest model and texture variant
+  ---
+  duration_ms: 29.1681
+  type: 'test'
+  ...
+# Subtest: resolveBaseline fails closed when an unused manifest source is missing
+ok 22 - resolveBaseline fails closed when an unused manifest source is missing
+  ---
+  duration_ms: 27.2683
+  type: 'test'
+  ...
+# Subtest: resolve rejects an assets directory junction that escapes the assets root
+ok 23 - resolve rejects an assets directory junction that escapes the assets root
+  ---
+  duration_ms: 29.5513
+  type: 'test'
+  ...
+# Subtest: scatter is reproducible and uses only explicit seed and input data
+ok 24 - scatter is reproducible and uses only explicit seed and input data
+  ---
+  duration_ms: 5.5598
+  type: 'test'
+  ...
+# Subtest: circle, square, and rotated ellipse constrain candidates to their brush footprint
+ok 25 - circle, square, and rotated ellipse constrain candidates to their brush footprint
+  ---
+  duration_ms: 1.4022
+  type: 'test'
+  ...
+# Subtest: rotated square includes its corner footprint beyond the unrotated radius
+ok 26 - rotated square includes its corner footprint beyond the unrotated radius
+  ---
+  duration_ms: 3.2902
+  type: 'test'
+  ...
+# Subtest: rotated ellipse influence covers the union of resampled brush positions along a stroke
+ok 27 - rotated ellipse influence covers the union of resampled brush positions along a stroke
+  ---
+  duration_ms: 7.4117
+  type: 'test'
+  ...
+# Subtest: per-cell jitter, selection, rotation and scale stay fixed when the stroke footprint expands
+ok 28 - per-cell jitter, selection, rotation and scale stay fixed when the stroke footprint expands
+  ---
+  duration_ms: 12.5362
+  type: 'test'
+  ...
+# Subtest: spacing holds against every prior decoration and every accepted point
+ok 29 - spacing holds against every prior decoration and every accepted point
+  ---
+  duration_ms: 0.7836
+  type: 'test'
+  ...
+# Subtest: policy exclusions and unsupported heights are omitted deterministically and counted
+ok 30 - policy exclusions and unsupported heights are omitted deterministically and counted
+  ---
+  duration_ms: 0.5977
+  type: 'test'
+  ...
+# Subtest: model metrics and hard object, triangle, primitive, and candidate limits reject whole plans
+ok 31 - model metrics and hard object, triangle, primitive, and candidate limits reject whole plans
+  ---
+  duration_ms: 4.5269
+  type: 'test'
+  ...
+# Subtest: existing authored cost participates in cumulative triangle and primitive budgets
+ok 32 - existing authored cost participates in cumulative triangle and primitive budgets
+  ---
+  duration_ms: 0.5842
+  type: 'test'
+  ...
+# Subtest: dense strokes stop invoking spatial policy as soon as object budget is exceeded
+ok 33 - dense strokes stop invoking spatial policy as soon as object budget is exceeded
+  ---
+  duration_ms: 2.9368
+  type: 'test'
+  ...
+# Subtest: application creates one schema-preserving atomic history entry with stable IDs and roundtrips
+ok 34 - application creates one schema-preserving atomic history entry with stable IDs and roundtrips
+  ---
+  duration_ms: 1.6774
+  type: 'test'
+  ...
+# Subtest: zero placements are a no-op and invalid IDs cannot partially change the source document
+ok 35 - zero placements are a no-op and invalid IDs cannot partially change the source document
+  ---
+  duration_ms: 0.4549
+  type: 'test'
+  ...
+# Subtest: Escape cancellation restores the private base and commits nothing
+ok 36 - Escape cancellation restores the private base and commits nothing
+  ---
+  duration_ms: 9.3108
+  type: 'test'
+  ...
+# Subtest: one matching pointer release commits once and reuses preview IDs
+ok 37 - one matching pointer release commits once and reuses preview IDs
+  ---
+  duration_ms: 7.6902
+  type: 'test'
+  ...
+# Subtest: nonmatching pointer and editor UI release cannot commit the gesture
+ok 38 - nonmatching pointer and editor UI release cannot commit the gesture
+  ---
+  duration_ms: 2.1388
+  type: 'test'
+  ...
+# Subtest: a second pointer cannot replace the active gesture or its ID cache
+ok 39 - a second pointer cannot replace the active gesture or its ID cache
+  ---
+  duration_ms: 4.4545
+  type: 'test'
+  ...
+# Subtest: a matching release without a terrain hit discards the preview
+ok 40 - a matching release without a terrain hit discards the preview
+  ---
+  duration_ms: 2.0711
+  type: 'test'
+  ...
+# Subtest: scatter gesture beyond 256 path points is rejected atomically
+ok 41 - scatter gesture beyond 256 path points is rejected atomically
+  ---
+  duration_ms: 8.7908
+  type: 'test'
+  ...
+# Subtest: panel keeps measured costs above brush controls and uses an editable numeric seed
+ok 42 - panel keeps measured costs above brush controls and uses an editable numeric seed
+  ---
+  duration_ms: 17.7912
+  type: 'test'
+  ...
+# Subtest: cosmetic scatter policy admits safe dry ground and rejects protected gameplay sites
+ok 43 - cosmetic scatter policy admits safe dry ground and rejects protected gameplay sites
+  ---
+  duration_ms: 382.9401
+  type: 'test'
+  ...
+# Subtest: scatter rejects a footprint crossing the shoreline or a steep height break
+ok 44 - scatter rejects a footprint crossing the shoreline or a steep height break
+  ---
+  duration_ms: 290.029
+  type: 'test'
+  ...
+# Subtest: real shrub scatter survives document and publication compilation without duplicating assets or world state
+ok 45 - real shrub scatter survives document and publication compilation without duplicating assets or world state
+  ---
+  duration_ms: 917.9648
+  type: 'test'
+  ...
+# Subtest: terrain v3 projects the movement sampler and resets to the exact v2 baseline
+ok 46 - terrain v3 projects the movement sampler and resets to the exact v2 baseline
+  ---
+  duration_ms: 418.4896
+  type: 'test'
+  ...
+# Subtest: v2 documents retain their historical shape and projection without terrain fields
+ok 47 - v2 documents retain their historical shape and projection without terrain fields
+  ---
+  duration_ms: 293.6437
+  type: 'test'
+  ...
+# Subtest: client publication and server save reject samples in protected ground
+ok 48 - client publication and server save reject samples in protected ground
+  ---
+  duration_ms: 266.9538
+  type: 'test'
+  ...
+# Subtest: publication checks object support against the projected ground height
+ok 49 - publication checks object support against the projected ground height
+  ---
+  duration_ms: 225.103
+  type: 'test'
+  ...
+# Subtest: activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+ok 50 - activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+  ---
+  duration_ms: 255.5924
+  type: 'test'
+  ...
+# Subtest: painted v4 terrain draft saves, prepares, activates, loads for clients, admits matching peer, and rolls back
+ok 51 - painted v4 terrain draft saves, prepares, activates, loads for clients, admits matching peer, and rolls back
+  ---
+  duration_ms: 8866.7624
+  type: 'test'
+  ...
+# Subtest: authority snapshots carry each adopted load tier into bit-identical predicted movement replay
+ok 52 - authority snapshots carry each adopted load tier into bit-identical predicted movement replay
+  ---
+  duration_ms: 18.5077
+  type: 'test'
+  ...
+# Subtest: load boundaries use exact comfort/ceiling values, including level 10 Carga 9
+ok 53 - load boundaries use exact comfort/ceiling values, including level 10 Carga 9
+  ---
+  duration_ms: 0.6022
+  type: 'test'
+  ...
+# Subtest: the next authority command reflects profile and cargo changes, including water vessel mass
+ok 54 - the next authority command reflects profile and cargo changes, including water vessel mass
+  ---
+  duration_ms: 4.9475
+  type: 'test'
+  ...
+# Subtest: swimming applies its own saturated cargo slowdown without stacking the land tier multiplier
+ok 55 - swimming applies its own saturated cargo slowdown without stacking the land tier multiplier
+  ---
+  duration_ms: 7.9095
+  type: 'test'
+  ...
+# Subtest: gather capacity rejects over-ceiling cargo commands without consuming the node and accepts an exact-ceiling result
+ok 56 - gather capacity rejects over-ceiling cargo commands without consuming the node and accepts an exact-ceiling result
+  ---
+  duration_ms: 11.8568
+  type: 'test'
+  ...
+# Subtest: commerce capacity rejects a buy cargo command above the ceiling without changing pack, gold, or market stock
+ok 57 - commerce capacity rejects a buy cargo command above the ceiling without changing pack, gold, or market stock
+  ---
+  duration_ms: 283.2851
+  type: 'test'
+  ...
+# Subtest: the comfortable load is 80 % of the ceiling only with Carga adopted
+ok 58 - the comfortable load is 80 % of the ceiling only with Carga adopted
+  ---
+  duration_ms: 1.9334
+  type: 'test'
+  ...
+# Subtest: a heavy pack walks at 70 % without dash; above the ceiling at 40 %; the client predicts the server tier
+ok 59 - a heavy pack walks at 70 % without dash; above the ceiling at 40 %; the client predicts the server tier
+  ---
+  duration_ms: 27.0769
+  type: 'test'
+  ...
+# Subtest: an unadopted legacy pack above its ceiling keeps its goods, normal walking and dash
+ok 60 - an unadopted legacy pack above its ceiling keeps its goods, normal walking and dash
+  ---
+  duration_ms: 4.4314
+  type: 'test'
+  ...
+1..60
+# tests 60
+# suites 0
+# pass 60
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 15822.5368

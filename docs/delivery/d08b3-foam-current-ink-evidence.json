@@ -1,0 +1,821 @@
+{
+  "date": "2026-10-06",
+  "sourceCommit": "f6da8dc8b0d044c0cd85beb938c3bf8239ba5a60",
+  "scope": "isolated naval lab B3 visual effects and local house fixture level correction",
+  "status": "implemented and browser-reviewed; human approval and physical mobile performance pending",
+  "url": "http://127.0.0.1:5180/",
+  "tests": {
+    "node": "v24.14.0",
+    "files": 14,
+    "total": 80,
+    "pass": 80,
+    "fail": 0,
+    "exitCode": 0,
+    "durationMs": 962.8967,
+    "afterHouseCorrection": true,
+    "globalSuiteRepeated": false,
+    "paths": [
+      "tests/naval-handling.test.mjs",
+      "tests/naval-lab-clock.test.mjs",
+      "tests/naval-lab-input.test.mjs",
+      "tests/naval-lab-server.test.mjs",
+      "tests/naval-navigation.test.mjs",
+      "tests/naval-lab-feedback.test.mjs",
+      "tests/naval-lab-speed-feel.test.mjs",
+      "tests/naval-lab-scenery.test.mjs",
+      "tests/naval-lab-camera.test.mjs",
+      "tests/naval-lab-look.test.mjs",
+      "tests/raft-renderer.test.mjs",
+      "tests/raft-materials.test.mjs",
+      "tests/naval-lab-raft-skin.test.mjs",
+      "tests/naval-lab-reference-fx.test.mjs"
+    ]
+  },
+  "sourceIdentities": [
+    {
+      "path": "tools/naval-lab/effects.js",
+      "sha256LF": "beb7166ab0483cf1aa7a6016200a22d52caba9458f543e48d7bcff23293bf8cf",
+      "matchesCommit": true
+    },
+    {
+      "path": "tools/naval-lab/speed-feel.js",
+      "sha256LF": "5c69eacf0a3682d969d5117c2b0f501e5e45ebde7a5602ed73d828c2f910a051",
+      "matchesCommit": true
+    },
+    {
+      "path": "tools/naval-lab/fixtures.js",
+      "sha256LF": "7e7d084b9cc6286c536e34e4388c47ed4e39e37bdbacb3c1e9686c0f51890443",
+      "matchesCommit": true
+    },
+    {
+      "path": "tests/naval-lab-speed-feel.test.mjs",
+      "sha256LF": "157da2baeb2b3e92d3954b046c0281d81bbdb30bae8aaa5bb184dffbedc4321f",
+      "matchesCommit": true
+    },
+    {
+      "path": "tests/naval-lab-reference-fx.test.mjs",
+      "sha256LF": "d128f0ee13bcb6e67940a8cddc9edd5e4fbe20963ece4a73e160acc84ce69c17",
+      "matchesCommit": true
+    }
+  ],
+  "budgets": {
+    "wakeSeconds": 4,
+    "desktop": {
+      "wakeSamplesPerSide": 40,
+      "wakeVerticesTotal": 468,
+      "sprayTrianglesTotal": 72,
+      "sprayPoolCapacity": 288,
+      "inkPaths": 40
+    },
+    "mobile": {
+      "wakeSamplesPerSide": 24,
+      "wakeVerticesTotal": 276,
+      "sprayTrianglesTotal": 48,
+      "sprayPoolCapacity": 144,
+      "inkPaths": 24
+    },
+    "currentTrianglesTotal": 80,
+    "currentLanes": 2,
+    "newTextureDownloads": 0,
+    "sharedNoise": {
+      "width": 256,
+      "height": 256,
+      "reference": "U.mnNoiseTex",
+      "samplesPerCurrentOrWakeFragment": 1
+    },
+    "additionalSprayDrawCalls": 2
+  },
+  "browserReview": {
+    "surface": "Chrome",
+    "screenshotsPersisted": true,
+    "screenshotsLocallyStoredOnly": true,
+    "screenshots": [
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-soft-paused.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 111178,
+        "sha256": "aae57802daf35028983d6ca075582eddd878dde8b97f64bcf1dba7ba18917f89",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-original.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 114145,
+        "sha256": "647be4a94a7577d139c21869fd28e92b6179323613ac5f1bfd0da98e2a31522b",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-flat.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 111351,
+        "sha256": "0e33d8a5247293e7af340924961b5e7aac083de983e5f67c9fee5669eadda271",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-flipped.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 111612,
+        "sha256": "8ac49d07430f86f4e7ef3d5113c9abff863ae57679e62ab3bc66457d7be6f385",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-isometric.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 109974,
+        "sha256": "8e0e4301c78c54f4d034419ed5d5155469bd40adcfdbff86d739faf3322fa56c",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-house-corrected.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 114218,
+        "sha256": "f91c05f7d16d2775c06dc0d4dd5f4651a12d9588fb60ae870328d2ee78216314",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-mobile-portrait-house-corrected.jpg",
+        "format": "jpeg",
+        "width": 390,
+        "height": 844,
+        "bytes": 49758,
+        "sha256": "c8cea81ac85725284bda1baec1cf9133c602b5a33cb22acba6741d936c4fe030",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-mobile-landscape-house-corrected.jpg",
+        "format": "jpeg",
+        "width": 844,
+        "height": 390,
+        "bytes": 54281,
+        "sha256": "36a3766367d57ac7db40a8f02738a6bbb028277700734a476965d1a4d70b9344",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b3-desktop-boost.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 132982,
+        "sha256": "136c93220a7ad33575ef7e69e240c0789534882c6b8c42112564ccbd0ecfbc11",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b3-desktop-turn.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 122301,
+        "sha256": "4b5eaba09bb4df497a49315e339fa8a5fdd1f176d77a64b4197217cc68e46bc5",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b3-mobile-landscape-boost.jpg",
+        "format": "jpeg",
+        "width": 844,
+        "height": 390,
+        "bytes": 59316,
+        "sha256": "9f0fb8b709181d086c21eee86be1aa8155508f6d43c9b589a542b21aae65ea65",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b3-mobile-portrait-boost.jpg",
+        "format": "jpeg",
+        "width": 390,
+        "height": 844,
+        "bytes": 54166,
+        "sha256": "e945ee9041622a608fc0a9c22a08ed1b92196b31c6cf84e1cee267ed673a956e",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b3-desktop-comic-disabled.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 121737,
+        "sha256": "65f2ec221d0820e19171bc767971a2d4d29a085e6d4e71e6df77f954aaed05ea",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b3-final-default-viewport.jpg",
+        "format": "jpeg",
+        "width": 824,
+        "height": 742,
+        "bytes": 92638,
+        "sha256": "dbd5bdfb23e041677fd76914854fea4b006588bda9746e7fa19fea41648bdc3d",
+        "inspected": true
+      }
+    ],
+    "screenshotEncodingNote": "CUA returned JPEG bytes; .jpg copies preserve those exact bytes. Earlier .png-named copies were retained locally.",
+    "reviewedViewportsCss": [
+      [
+        1280,
+        800
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "consoleErrorsObserved": 0,
+    "sourceCodeMatchesCapturedVersion": true,
+    "inputs": {
+      "boost": "real capture button during announced window; result perfect",
+      "turn": "held visible starboard button by CUA pointer drag",
+      "turnDegrees": 89.51338168753092
+    },
+    "desktopBoost": {
+      "receipt": "shots/naval-reference-20261006/b3-desktop-boost.json",
+      "receiptSha256": "0644160a82277528c0707acd281a5672fb0bd72d5e4eaed8868e6b1f60daa61c",
+      "viewport": null,
+      "fixture": "empty",
+      "state": {
+        "tick": 495,
+        "x": 0.6968779141206625,
+        "z": 47.92346756631264,
+        "yaw": 0,
+        "vx": 0.09854908702545655,
+        "vz": 10.944140271187477,
+        "omega": 0
+      },
+      "paused": true,
+      "mobile": false,
+      "boostResult": "perfect",
+      "boostUntil": 736,
+      "effects": {
+        "disposed": false,
+        "poolCapacity": 288,
+        "activeParticles": 112,
+        "wakeSamples": 35,
+        "wakeEmissions": 70,
+        "wakeCapacity": 40,
+        "wakeSeconds": 4,
+        "wakeVertices": 408,
+        "currentTriangles": 80,
+        "flowPhase": 7.96670000000001,
+        "spraySheetTriangles": 72,
+        "foamFlecks": 545,
+        "foamCapacity": 722,
+        "foamRecycles": 11,
+        "foamCellOrigin": [
+          -9,
+          2
+        ],
+        "captureBursts": 1,
+        "currentVisible": true,
+        "gustVisible": false,
+        "currentStrength": 1.0201267273027297
+      },
+      "feel": {
+        "lines": 40,
+        "intensity": 0.6999985418916473,
+        "fov": 40.446653002039916,
+        "roll": 0,
+        "reducedMotion": false
+      },
+      "cameraFov": 55.446653002039916,
+      "raftSkin": {
+        "albedo": {
+          "src": "/assets/textures/raft/wood-boards-v2.webp",
+          "width": 1024,
+          "height": 1024
+        },
+        "normal": {
+          "src": "/assets/textures/raft/wood-boards-v2-normal.webp",
+          "width": 1024,
+          "height": 1024
+        },
+        "relief": "soft",
+        "mobile": false,
+        "disposed": false,
+        "woodMaterials": 4,
+        "active": "author"
+      },
+      "actualWoodRequests": null,
+      "audio": {
+        "unlocked": true,
+        "enabled": true,
+        "played": {
+          "approach": 0,
+          "window": 0,
+          "capture": 0,
+          "perfect": 1,
+          "miss": 0
+        }
+      }
+    },
+    "desktopTurn": {
+      "receipt": "shots/naval-reference-20261006/b3-desktop-turn.json",
+      "receiptSha256": "2fd857541f236571ecefc6f308bf0b0160012536071349b0279f9aa1a3829795",
+      "viewport": null,
+      "fixture": "empty",
+      "state": {
+        "tick": 889,
+        "x": 26.587814365280067,
+        "z": 96.84551751599113,
+        "yaw": 1.5623032350418127,
+        "vx": 5.174514746136592,
+        "vz": 0.3781865614645334,
+        "omega": 0.12511473706984222
+      },
+      "paused": true,
+      "mobile": false,
+      "boostResult": "",
+      "boostUntil": 736,
+      "effects": {
+        "disposed": false,
+        "poolCapacity": 288,
+        "activeParticles": 80,
+        "wakeSamples": 35,
+        "wakeEmissions": 126,
+        "wakeCapacity": 40,
+        "wakeSeconds": 4,
+        "wakeVertices": 408,
+        "currentTriangles": 80,
+        "flowPhase": 14.52500000000001,
+        "spraySheetTriangles": 72,
+        "foamFlecks": 534,
+        "foamCapacity": 722,
+        "foamRecycles": 30,
+        "foamCellOrigin": [
+          -3,
+          15
+        ],
+        "captureBursts": 1,
+        "currentVisible": true,
+        "gustVisible": false,
+        "currentStrength": 0
+      },
+      "feel": {
+        "lines": 40,
+        "intensity": 2.458615536568194e-7,
+        "fov": 35.000003352240924,
+        "roll": 0.002588443139230921,
+        "reducedMotion": false
+      },
+      "cameraFov": 50.00759487574048,
+      "raftSkin": {
+        "albedo": {
+          "src": "/assets/textures/raft/wood-boards-v2.webp",
+          "width": 1024,
+          "height": 1024
+        },
+        "normal": {
+          "src": "/assets/textures/raft/wood-boards-v2-normal.webp",
+          "width": 1024,
+          "height": 1024
+        },
+        "relief": "soft",
+        "mobile": false,
+        "disposed": false,
+        "woodMaterials": 4,
+        "active": "author"
+      },
+      "actualWoodRequests": null,
+      "audio": {
+        "unlocked": true,
+        "enabled": true,
+        "played": {
+          "approach": 0,
+          "window": 0,
+          "capture": 0,
+          "perfect": 1,
+          "miss": 0
+        }
+      }
+    },
+    "mobileLandscapeBoost": {
+      "receipt": "shots/naval-reference-20261006/b3-mobile-landscape-boost.json",
+      "receiptSha256": "ce474d268ff04f61ce9e430c3a1a59322c97f6658a5ef750821fbab11a18a875",
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1.0000000298023224
+      },
+      "fixture": "empty",
+      "state": {
+        "tick": 464,
+        "x": 0.6333830269002795,
+        "z": 42.23823274046771,
+        "yaw": 0,
+        "vx": 0.15116113479212737,
+        "vz": 10.494829829776215,
+        "omega": 0
+      },
+      "paused": true,
+      "mobile": true,
+      "boostResult": "perfect",
+      "boostUntil": 738,
+      "effects": {
+        "disposed": false,
+        "poolCapacity": 144,
+        "activeParticles": 31,
+        "wakeSamples": 24,
+        "wakeEmissions": 44,
+        "wakeCapacity": 24,
+        "wakeSeconds": 4,
+        "wakeVertices": 276,
+        "currentTriangles": 80,
+        "flowPhase": 7.50000000000001,
+        "spraySheetTriangles": 48,
+        "foamFlecks": 254,
+        "foamCapacity": 338,
+        "foamRecycles": 10,
+        "foamCellOrigin": [
+          -6,
+          4
+        ],
+        "captureBursts": 1,
+        "currentVisible": true,
+        "gustVisible": false,
+        "currentStrength": 1.3070875239697064
+      },
+      "feel": {
+        "lines": 24,
+        "intensity": 0.6998419205085458,
+        "fov": 40.1443076995873,
+        "roll": 0,
+        "reducedMotion": false
+      },
+      "cameraFov": 55.1443076995873,
+      "raftSkin": {
+        "albedo": {
+          "src": "/assets/textures/raft/wood-boards-v2-mobile.webp",
+          "width": 512,
+          "height": 512
+        },
+        "normal": null,
+        "relief": "flat",
+        "mobile": true,
+        "disposed": false,
+        "woodMaterials": 4,
+        "active": "author"
+      },
+      "actualWoodRequests": [
+        "http://127.0.0.1:5180/assets/textures/raft/wood-boards-v2-mobile.webp"
+      ],
+      "audio": {
+        "unlocked": true,
+        "enabled": true,
+        "played": {
+          "approach": 0,
+          "window": 0,
+          "capture": 0,
+          "perfect": 1,
+          "miss": 0
+        }
+      }
+    },
+    "mobilePortraitBoost": {
+      "receipt": "shots/naval-reference-20261006/b3-mobile-portrait-boost.json",
+      "receiptSha256": "bd54ada624f4971f41992884f7dcc03b2dac5441c54c99e8f549b2ad9c771a4d",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1.0000000298023224
+      },
+      "fixture": "empty",
+      "state": {
+        "tick": 464,
+        "x": 0.6333830269002795,
+        "z": 42.23823274046771,
+        "yaw": 0,
+        "vx": 0.15116113479212737,
+        "vz": 10.494829829776215,
+        "omega": 0
+      },
+      "paused": true,
+      "mobile": true,
+      "boostResult": "perfect",
+      "boostUntil": 738,
+      "effects": {
+        "disposed": false,
+        "poolCapacity": 144,
+        "activeParticles": 31,
+        "wakeSamples": 24,
+        "wakeEmissions": 44,
+        "wakeCapacity": 24,
+        "wakeSeconds": 4,
+        "wakeVertices": 276,
+        "currentTriangles": 80,
+        "flowPhase": 7.50000000000001,
+        "spraySheetTriangles": 48,
+        "foamFlecks": 254,
+        "foamCapacity": 338,
+        "foamRecycles": 10,
+        "foamCellOrigin": [
+          -6,
+          4
+        ],
+        "captureBursts": 1,
+        "currentVisible": true,
+        "gustVisible": false,
+        "currentStrength": 1.3070875239697064
+      },
+      "feel": {
+        "lines": 24,
+        "intensity": 0.6998419205085458,
+        "fov": 40.1443076995873,
+        "roll": 0,
+        "reducedMotion": false
+      },
+      "cameraFov": 55.1443076995873,
+      "raftSkin": {
+        "albedo": {
+          "src": "/assets/textures/raft/wood-boards-v2-mobile.webp",
+          "width": 512,
+          "height": 512
+        },
+        "normal": null,
+        "relief": "flat",
+        "mobile": true,
+        "disposed": false,
+        "woodMaterials": 4,
+        "active": "author"
+      },
+      "actualWoodRequests": [
+        "http://127.0.0.1:5180/assets/textures/raft/wood-boards-v2-mobile.webp"
+      ],
+      "audio": {
+        "unlocked": true,
+        "enabled": true,
+        "played": {
+          "approach": 0,
+          "window": 0,
+          "capture": 0,
+          "perfect": 1,
+          "miss": 0
+        }
+      }
+    },
+    "comicDisabled": {
+      "receipt": "shots/naval-reference-20261006/b3-desktop-comic-disabled.json",
+      "receiptSha256": "544926f2d8d983b68b2cc63ef4de0f8799a4d945f03be98a25ef1b82bfcda5ba",
+      "viewport": null,
+      "fixture": "empty",
+      "state": {
+        "tick": 483,
+        "x": 0.6694122600767725,
+        "z": 46.503921412520015,
+        "yaw": 0,
+        "vx": 0.11059988979160468,
+        "vz": 10.998088943681045,
+        "omega": 0
+      },
+      "paused": true,
+      "mobile": false,
+      "boostResult": "perfect",
+      "boostUntil": 724,
+      "effects": {
+        "disposed": false,
+        "poolCapacity": 288,
+        "activeParticles": 140,
+        "wakeSamples": 35,
+        "wakeEmissions": 70,
+        "wakeCapacity": 40,
+        "wakeSeconds": 4,
+        "wakeVertices": 408,
+        "currentTriangles": 80,
+        "flowPhase": 8.004100000000006,
+        "spraySheetTriangles": 72,
+        "foamFlecks": 545,
+        "foamCapacity": 722,
+        "foamRecycles": 11,
+        "foamCellOrigin": [
+          -9,
+          2
+        ],
+        "captureBursts": 1,
+        "currentVisible": true,
+        "gustVisible": false,
+        "currentStrength": 1.0667227581928707
+      },
+      "feel": {
+        "lines": 40,
+        "intensity": 0,
+        "fov": 35,
+        "roll": 0,
+        "reducedMotion": false
+      },
+      "cameraFov": 50,
+      "raftSkin": {
+        "albedo": {
+          "src": "/assets/textures/raft/wood-boards-v2.webp",
+          "width": 1024,
+          "height": 1024
+        },
+        "normal": {
+          "src": "/assets/textures/raft/wood-boards-v2-normal.webp",
+          "width": 1024,
+          "height": 1024
+        },
+        "relief": "soft",
+        "mobile": false,
+        "disposed": false,
+        "woodMaterials": 4,
+        "active": "author"
+      },
+      "actualWoodRequests": null,
+      "audio": {
+        "unlocked": true,
+        "enabled": true,
+        "played": {
+          "approach": 0,
+          "window": 0,
+          "capture": 0,
+          "perfect": 1,
+          "miss": 0
+        }
+      }
+    },
+    "finalNativeViewport": {
+      "receipt": "shots/naval-reference-20261006/b3-final-default-viewport.json",
+      "receiptSha256": "3a4a132dbcd1ab0d694ea90fae8633ff171dd4f5b2c5ca90a7e4ba2497831762",
+      "viewport": {
+        "width": 824,
+        "height": 742,
+        "dpr": 1.5
+      },
+      "fixture": "empty",
+      "state": {
+        "tick": 466,
+        "x": 0.6323495971917124,
+        "z": 43.65249503423331,
+        "yaw": 0,
+        "vx": 0.13736839764681655,
+        "vz": 10.909664938755043,
+        "omega": 0
+      },
+      "paused": true,
+      "mobile": false,
+      "boostResult": "perfect",
+      "boostUntil": 720,
+      "effects": {
+        "disposed": false,
+        "poolCapacity": 288,
+        "activeParticles": 114,
+        "wakeSamples": 36,
+        "wakeEmissions": 68,
+        "wakeCapacity": 40,
+        "wakeSeconds": 4,
+        "wakeVertices": 420,
+        "currentTriangles": 80,
+        "flowPhase": 7.712200000000009,
+        "spraySheetTriangles": 72,
+        "foamFlecks": 540,
+        "foamCapacity": 722,
+        "foamRecycles": 10,
+        "foamCellOrigin": [
+          -9,
+          1
+        ],
+        "captureBursts": 1,
+        "currentVisible": true,
+        "gustVisible": false,
+        "currentStrength": 1.2150389236810037
+      },
+      "feel": {
+        "lines": 40,
+        "intensity": 0.6999914617092992,
+        "fov": 40.404718512596695,
+        "roll": 0,
+        "reducedMotion": false
+      },
+      "cameraFov": 55.404718512596695,
+      "raftSkin": {
+        "albedo": {
+          "src": "/assets/textures/raft/wood-boards-v2.webp",
+          "width": 1024,
+          "height": 1024
+        },
+        "normal": {
+          "src": "/assets/textures/raft/wood-boards-v2-normal.webp",
+          "width": 1024,
+          "height": 1024
+        },
+        "relief": "soft",
+        "mobile": false,
+        "disposed": false,
+        "woodMaterials": 4,
+        "active": "author"
+      },
+      "actualWoodRequests": [
+        "http://127.0.0.1:5180/assets/textures/raft/wood-boards-v2.webp",
+        "http://127.0.0.1:5180/assets/textures/raft/wood-boards-v2-normal.webp"
+      ],
+      "audio": {
+        "unlocked": true,
+        "enabled": true,
+        "played": {
+          "approach": 0,
+          "window": 0,
+          "capture": 0,
+          "perfect": 1,
+          "miss": 0
+        }
+      }
+    },
+    "viewportResetConfirmed": true,
+    "deliverableTabMarked": true,
+    "finalPaused": true,
+    "reducedMotion": "unit tested; system preference not overridden in browser",
+    "caveats": [
+      "browser screenshots and logs are observations, not a GPU performance measurement",
+      "source before the house correction used for empty-fixture boost/turn captures; its FX and empty fixture are identical to the final source",
+      "house framing repeated after fixture correction in all three viewports"
+    ]
+  },
+  "fixtureCorrection": {
+    "fixture": "house",
+    "wallsFromLevel": 0,
+    "wallsToLevel": 1,
+    "acceptedParts": 29,
+    "mass": 143,
+    "inertia": 951.2634032634035,
+    "beforeHeight": 0.3342657342657343,
+    "afterHeight": 0.44335664335664343,
+    "beforeStability": 0.9398162779111849,
+    "afterStability": 0.9227866433451634,
+    "formulasChanged": false,
+    "mainGameBlueprintsChanged": false,
+    "screenshots": [
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-house-corrected.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 114218,
+        "sha256": "f91c05f7d16d2775c06dc0d4dd5f4651a12d9588fb60ae870328d2ee78216314",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-mobile-portrait-house-corrected.jpg",
+        "format": "jpeg",
+        "width": 390,
+        "height": 844,
+        "bytes": 49758,
+        "sha256": "c8cea81ac85725284bda1baec1cf9133c602b5a33cb22acba6741d936c4fe030",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-mobile-landscape-house-corrected.jpg",
+        "format": "jpeg",
+        "width": 844,
+        "height": 390,
+        "bytes": 54281,
+        "sha256": "36a3766367d57ac7db40a8f02738a6bbb028277700734a476965d1a4d70b9344",
+        "inspected": true
+      }
+    ]
+  },
+  "reuse": {
+    "sourceReadOnly": true,
+    "candidatePreview": "system thumbnail only",
+    "portableExportValidated": false,
+    "candidates": [
+      {
+        "path": "C:/Unreal/MyProject/Content/_SplineVFX/NS/NS_Spline_WaterSplash.uasset",
+        "bytes": 5381446
+      },
+      {
+        "path": "C:/Unreal/MyProject/Content/_SplineVFX/_GenericSource/BP/BP_SplineVFX_WaterSplash.uasset",
+        "bytes": 68664
+      },
+      {
+        "path": "C:/Unreal/MyProject/Content/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_WaterSplash_77.uasset",
+        "bytes": 1577127
+      }
+    ],
+    "decision": "Reuse browser-native particle pool, historical ribbons, depth pipeline, shared noise and actual current field; no new alpha texture until export is verified"
+  },
+  "acceptance": {
+    "implementation": "verified",
+    "desktopAndEmulatedMobileVisualReview": "completed",
+    "humanVisualApproval": "pending",
+    "physicalPhoneFps": "pending",
+    "fullReferenceFidelity": "not complete",
+    "b2NormalGreenSign": "inconclusive under diffuse lighting",
+    "b2MipGuttersAtAllDistances": "pending"
+  },
+  "mainGameManifestChanged": false,
+  "simulationFormulasChanged": false,
+  "onlineAuthorityAdded": false,
+  "sqlChangedByThisCut": false,
+  "publicDeployment": false,
+  "next": "B4 HUD with real speed in u/s, implemented actions, current/gust callouts and heading"
+}

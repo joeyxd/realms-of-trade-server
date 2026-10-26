@@ -1,0 +1,20 @@
+{
+  "schema": "gm05a-sql-readiness/v1",
+  "at": "2026-10-11T05:08:46.877Z",
+  "migration": "server/migrations/031_gm_terrain_drafts.sql",
+  "sha256": "7993c50485952065917e372804bfdb6d9cf572a08e790dc8d47a7c7227d5ea1a",
+  "ready": true,
+  "terrain": {
+    "data": {
+      "version": 1,
+      "terrainVersion": 1
+    },
+    "code": null
+  },
+  "legacy": {
+    "data": {
+      "version": 1
+    },
+    "code": null
+  }
+}

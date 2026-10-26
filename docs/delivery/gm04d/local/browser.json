@@ -1,0 +1,154 @@
+{
+  "schema": "gm04d-browser/v1",
+  "at": "2026-10-12T04:49:25.772Z",
+  "version": "0.6.0-alpha.59",
+  "production": false,
+  "simulatedAuth": true,
+  "checks": [
+    "functional_palette_and_native_models",
+    "place_palm_through_canvas",
+    "place_stone_through_canvas",
+    "invalid_spacing_is_atomic",
+    "resource_duplicate_delete_undo_redo_and_inspector",
+    "resource_move_preserves_identity_and_grounding",
+    "private_save_and_reopen_preserve_resources",
+    "mobile_resource_controls_and_native_preview",
+    "no_remote_writes_or_render_errors"
+  ],
+  "screenshots": [
+    "palette-es-desktop.png",
+    "placed-palm-es.png",
+    "placed-stone-es.png",
+    "resources-es-desktop.png",
+    "resources-en-desktop.png",
+    "resources-es-mobile.png",
+    "resources-en-mobile.png"
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "networkFailures": [],
+  "remoteWrites": [],
+  "runtime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.59",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 0,
+    "uptime": 0,
+    "stepMs": 0,
+    "bots": 0,
+    "names": [],
+    "errors": 0,
+    "storage": {
+      "kind": "memory",
+      "durable": false,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": null,
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": false,
+        "ready": false,
+        "logging": false
+      },
+      "fire": {
+        "enabled": false,
+        "ready": false
+      },
+      "freshwater": {
+        "enabled": false,
+        "ready": false,
+        "canteen": false,
+        "meals": false
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "workshop": {
+        "enabled": false,
+        "ready": false
+      },
+      "attributes": {
+        "enabled": false,
+        "ready": false
+      },
+      "companionCreation": {
+        "enabled": false,
+        "ready": false,
+        "pending": 0
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "palm": {
+    "id": "gm-985756c8-b11f-424e-8c93-e2e2f186e4a8",
+    "assetId": "prop:gm-resource-palm-v1",
+    "transform": {
+      "position": {
+        "x": -140,
+        "y": 1.1344672441482544,
+        "z": -150
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": 1
+    },
+    "collider": "none"
+  },
+  "stone": {
+    "id": "gm-2479a4e9-2fc2-4714-9172-3d65c16ccc14",
+    "assetId": "prop:gm-resource-stone-v1",
+    "transform": {
+      "position": {
+        "x": -120,
+        "y": 2.1013872623443604,
+        "z": -150
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": 1
+    },
+    "collider": "none"
+  },
+  "phase": "complete"
+}

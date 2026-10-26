@@ -1,0 +1,407 @@
+{
+  "schema": "l02a-agent-movement-verification/v1",
+  "status": "local_software_verified",
+  "generatedAt": "2026-10-08T13:51:02.421Z",
+  "checkout": {
+    "head": "342c026f3ffcfdd958f8507c688ebe4ac43c5440",
+    "sharedDirty": true,
+    "missionCommit": null,
+    "hashBasis": "Final working files and complete local TAP logs; shared checkout is not an immutable test snapshot."
+  },
+  "protocol": {
+    "version": 27,
+    "changedByMission": false
+  },
+  "agentTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs tests/agent-movement.test.mjs tests/agent-movement-network.test.mjs tests/agent-movement-runner.test.mjs",
+    "startedAt": "2026-10-08T13:46:40.034Z",
+    "finishedAt": "2026-10-08T13:47:02.623Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 115,
+    "pass": 114,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 1,
+    "durationMs": 22550.6994,
+    "stderr": "",
+    "log": "agent-tests.tap"
+  },
+  "regressionTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs",
+    "startedAt": "2026-10-08T13:47:02.624Z",
+    "finishedAt": "2026-10-08T13:47:11.336Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 20,
+    "pass": 20,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 8667.5887,
+    "stderr": "",
+    "log": "chat-network-regression.tap"
+  },
+  "dependencyStability": {
+    "startedAt": "2026-10-08T13:46:40.033Z",
+    "finishedAt": "2026-10-08T13:47:11.340Z",
+    "before": {
+      "src/client/gameClient.js": "b2b51b948f9e9270abccb990d3f79d0c6bfae08c817aa0236cee6ffa6cb8ffd2",
+      "src/net/protocol.js": "b6259aca8a755b364358007eb360c1634b1653be946a5b56cad8f52f9ade3456",
+      "src/net/wsTransport.js": "ab71cf2a0dd0e8387f91ce8b23da6c2cd6e2190bf09c5ecfa26ec61b32742f3b",
+      "src/net/lagLink.js": "311d7e4f8a7a8c72e1a73945d5e5458da5738a9eaa6adffd852b4c0e435e17bb",
+      "src/net/localServer.js": "c4d52abdc5ec8f9b48e1fbb904cd4ea502500cc7e53f98cd428dce8cd339b4fc",
+      "src/net/chatService.js": "bb1a5572752e9d616412114ceb6bc5ffbd7e006c1ea31ba06a9e84fa92010f18",
+      "src/sim/ecs.js": "8c91a0cb70da533421644c06ac9a684639d7a9aa311ef32f334c6db1e2ceba11",
+      "src/sim/worldgen.js": "294483d590e1711ce29735c67d6de0c66c571eed94d73974c68678dcf0375a0a",
+      "server/host.mjs": "8bac6990d566c9598c6f8803605beaeaa35896b99b9fab8f2ff662bf8221b70d",
+      "server/index.mjs": "2217c6918588c9449768ef4a45e49b28c5571c5bf119e723a262f969f553cd44",
+      "tools/agent/chat.mjs": "adef21c4ba3c5477e22b23e64fd74f923b7fdcb7cf1d8f76a1a5062268dc0cc0",
+      "tools/agent/context.mjs": "394cb32ba9a05ffccb555537e925084bfd8bb66b844d9780690046c1f0fa5b78",
+      "tools/agent/contract.mjs": "8a0569be1c558ce0971c419b8fb749d1d343ef8b51585940532f3efb3080b1b2",
+      "tools/agent/fixtures.mjs": "32bdd6533afc799c21143d8a9b2f858fcac7e37cb77c72002a91791aaf25aa29",
+      "tools/agent/lab.mjs": "7ba6aac34920cd5aee8e8543d7e142d6ecf7f28a412c0ac2a0e73c8f5358d56c",
+      "tools/agent/movement-task.mjs": "79e0dd4389eff096b7ffb9077b9dbf834eeeb28ae3496a985b30004ce02a1be5",
+      "tools/agent/network-client.mjs": "51fb7961c71122b36a6accaf2e00bfe5d2a03d5177c8ae6c199d086a329720b6",
+      "tools/agent/network-runner.mjs": "a75c8bd59062d561e561fff232629cd3da11508b4849d2beb240ceeb9f891a2e",
+      "tools/agent/owner-files.mjs": "44ef8dc4d19b537ed9f6aa442c55cac60d26ce2eabc0b89b3c88bf57060fed49",
+      "tools/agent/run.mjs": "2e0c7dfcc84b963dfaecc516fadcf54a47045fcb087ddde4e7e74f92b3a6ad8c",
+      "tools/agent/runner-context.mjs": "a76d235090a0d7b08723f9a34dfc35b90bce2593f5c6781206da6c243997552f",
+      "tools/agent/session.mjs": "c2f0fe01149daa00f73648aa932e9dd633da43d654e0b9f27b9b03c8426931f7"
+    },
+    "after": {
+      "src/client/gameClient.js": "b2b51b948f9e9270abccb990d3f79d0c6bfae08c817aa0236cee6ffa6cb8ffd2",
+      "src/net/protocol.js": "b6259aca8a755b364358007eb360c1634b1653be946a5b56cad8f52f9ade3456",
+      "src/net/wsTransport.js": "ab71cf2a0dd0e8387f91ce8b23da6c2cd6e2190bf09c5ecfa26ec61b32742f3b",
+      "src/net/lagLink.js": "311d7e4f8a7a8c72e1a73945d5e5458da5738a9eaa6adffd852b4c0e435e17bb",
+      "src/net/localServer.js": "c4d52abdc5ec8f9b48e1fbb904cd4ea502500cc7e53f98cd428dce8cd339b4fc",
+      "src/net/chatService.js": "bb1a5572752e9d616412114ceb6bc5ffbd7e006c1ea31ba06a9e84fa92010f18",
+      "src/sim/ecs.js": "8c91a0cb70da533421644c06ac9a684639d7a9aa311ef32f334c6db1e2ceba11",
+      "src/sim/worldgen.js": "294483d590e1711ce29735c67d6de0c66c571eed94d73974c68678dcf0375a0a",
+      "server/host.mjs": "8bac6990d566c9598c6f8803605beaeaa35896b99b9fab8f2ff662bf8221b70d",
+      "server/index.mjs": "2217c6918588c9449768ef4a45e49b28c5571c5bf119e723a262f969f553cd44",
+      "tools/agent/chat.mjs": "adef21c4ba3c5477e22b23e64fd74f923b7fdcb7cf1d8f76a1a5062268dc0cc0",
+      "tools/agent/context.mjs": "394cb32ba9a05ffccb555537e925084bfd8bb66b844d9780690046c1f0fa5b78",
+      "tools/agent/contract.mjs": "8a0569be1c558ce0971c419b8fb749d1d343ef8b51585940532f3efb3080b1b2",
+      "tools/agent/fixtures.mjs": "32bdd6533afc799c21143d8a9b2f858fcac7e37cb77c72002a91791aaf25aa29",
+      "tools/agent/lab.mjs": "7ba6aac34920cd5aee8e8543d7e142d6ecf7f28a412c0ac2a0e73c8f5358d56c",
+      "tools/agent/movement-task.mjs": "79e0dd4389eff096b7ffb9077b9dbf834eeeb28ae3496a985b30004ce02a1be5",
+      "tools/agent/network-client.mjs": "51fb7961c71122b36a6accaf2e00bfe5d2a03d5177c8ae6c199d086a329720b6",
+      "tools/agent/network-runner.mjs": "a75c8bd59062d561e561fff232629cd3da11508b4849d2beb240ceeb9f891a2e",
+      "tools/agent/owner-files.mjs": "44ef8dc4d19b537ed9f6aa442c55cac60d26ce2eabc0b89b3c88bf57060fed49",
+      "tools/agent/run.mjs": "2e0c7dfcc84b963dfaecc516fadcf54a47045fcb087ddde4e7e74f92b3a6ad8c",
+      "tools/agent/runner-context.mjs": "a76d235090a0d7b08723f9a34dfc35b90bce2593f5c6781206da6c243997552f",
+      "tools/agent/session.mjs": "c2f0fe01149daa00f73648aa932e9dd633da43d654e0b9f27b9b03c8426931f7"
+    },
+    "changedDuringTests": [],
+    "head": "342c026f3ffcfdd958f8507c688ebe4ac43c5440"
+  },
+  "rootReview": {
+    "runtimeRead": true,
+    "newTestsRead": true,
+    "finalSuitesExecuted": true,
+    "newCases": 18,
+    "rawTapBasis": "Root reviewed focused new-test names, all failure lines and final totals from persisted complete TAP.",
+    "network": "Two ordinary local WebSocket guests, dev:false/worldId:null/bots:0. Controlled flat terrain without art colliders plus unwalkable east boundary installed before listen/JOIN. Server-confirmed go_to, follow, keep_distance, blocked and bounded jumps; host errors=0.",
+    "cli": "Real child CLI and owner files: navigation/context/hashes, malformed cancel rejection, explicit cancel without closing session, uncertainty retained, fresh snapshots and clean exit; no inference/spend.",
+    "integrationFix": "Holding neutral sequences stay attached to follow/keep_distance inputRange; resuming the same bounded task does not produce a sequence gap.",
+    "workerEvidence": "Luna modules/tests were read by root; isolated worker runs do not substitute for final root suites."
+  },
+  "limits": {
+    "authority": "local_runner_only",
+    "characterMode": "guest",
+    "navigation": "local_direct_planar_only",
+    "defaultTaskHorizonMs": 30000,
+    "initialGoToRange": 64,
+    "serverQueueRevocation": "unproven",
+    "archiveDurability": "process_only",
+    "inferenceCalls": 0,
+    "gameSpendingEnabled": false,
+    "globalPathfinding": false,
+    "pveBodyImplemented": false,
+    "publication": false,
+    "newVisualAcceptance": false,
+    "fullGameSuiteExecuted": false,
+    "symlinkSkip": "EPERM on Windows; not counted as pass"
+  },
+  "checks": {
+    "utf8Files": 23,
+    "badEncoding": [],
+    "replacementCharacters": 0,
+    "replacement": [],
+    "trailingWhitespaceFiles": 0,
+    "trailing": [],
+    "focusedRelativeLinks": 30,
+    "missingLinks": [],
+    "directionRows": 22,
+    "directionIds": [
+      "L00a",
+      "L00b",
+      "L00c",
+      "L00d",
+      "L01a",
+      "L01b",
+      "L01c",
+      "L02a",
+      "L02b",
+      "L02c",
+      "L03a",
+      "L03b",
+      "L03c",
+      "L04a",
+      "L04b",
+      "L05a",
+      "L05b",
+      "L06a",
+      "L06b",
+      "L06c",
+      "L06d",
+      "L06e"
+    ],
+    "launchModality": "D-A3 Propuesto; por acordar",
+    "launchModalityUnchanged": true,
+    "scopedGitDiffCheck": "passed; LF/CRLF normalization warnings only",
+    "changedAfterTests": [],
+    "cleanup": "Both final suite child processes exited naturally; CLI temp-directory deletion guarded to the exact named OS-temp workspace. No permanent test host started."
+  },
+  "artifacts": [
+    {
+      "path": "tools/agent/contract.mjs",
+      "bytes": 8973,
+      "sha256": "8a0569be1c558ce0971c419b8fb749d1d343ef8b51585940532f3efb3080b1b2"
+    },
+    {
+      "path": "tools/agent/movement-task.mjs",
+      "bytes": 7883,
+      "sha256": "79e0dd4389eff096b7ffb9077b9dbf834eeeb28ae3496a985b30004ce02a1be5"
+    },
+    {
+      "path": "tools/agent/session.mjs",
+      "bytes": 11255,
+      "sha256": "c2f0fe01149daa00f73648aa932e9dd633da43d654e0b9f27b9b03c8426931f7"
+    },
+    {
+      "path": "tools/agent/network-client.mjs",
+      "bytes": 20188,
+      "sha256": "51fb7961c71122b36a6accaf2e00bfe5d2a03d5177c8ae6c199d086a329720b6"
+    },
+    {
+      "path": "tools/agent/network-runner.mjs",
+      "bytes": 6811,
+      "sha256": "a75c8bd59062d561e561fff232629cd3da11508b4849d2beb240ceeb9f891a2e"
+    },
+    {
+      "path": "tools/agent/run.mjs",
+      "bytes": 9141,
+      "sha256": "2e0c7dfcc84b963dfaecc516fadcf54a47045fcb087ddde4e7e74f92b3a6ad8c"
+    },
+    {
+      "path": "tests/agent-movement.test.mjs",
+      "bytes": 13839,
+      "sha256": "ab2557d6b59503b6b66b31c387a6eab4365bbf490ec25627ed43a74b41a3facd"
+    },
+    {
+      "path": "tests/agent-movement-network.test.mjs",
+      "bytes": 17346,
+      "sha256": "ff383551155c7ee2db4ce2e1ebf5f8176ad7e77e5bb9385e518671f7c4b11a7e"
+    },
+    {
+      "path": "tests/agent-movement-runner.test.mjs",
+      "bytes": 9658,
+      "sha256": "24d8ff32080131d85c7465229c27d7390f2cc6450bb163ec8d2d640664e7d15a"
+    },
+    {
+      "path": "docs/briefs/l02a-agent-movement.md",
+      "bytes": 2239,
+      "sha256": "723880ac568166fcb86fa8155a1ffbabadc7564b88e6011e2036e121314c279e"
+    },
+    {
+      "path": "docs/agents/movement-runner.md",
+      "bytes": 4358,
+      "sha256": "fe59618b6f208d18a90eeb41336202d86fd6d7e4455d709f759a233eeec181b4"
+    },
+    {
+      "path": "docs/agents/interface-v1.md",
+      "bytes": 16598,
+      "sha256": "a18efed4a8c0db6dd232a860dc5e8609f1a86394e2edded9f85fbebe55f857ed"
+    },
+    {
+      "path": "docs/agents/network-runner.md",
+      "bytes": 7061,
+      "sha256": "ca13c08507dc62635209b2bb7699aa8ad547c32097d8e559256a07d00c822e5d"
+    },
+    {
+      "path": "docs/delivery/l02a-agent-movement.md",
+      "bytes": 4624,
+      "sha256": "8a6326ec35526855108ca413d8b80be869be4ed4ace1255827980acad2564e0b"
+    },
+    {
+      "path": "PLAN-EXTRA-LLM.md",
+      "bytes": 53943,
+      "sha256": "d38222393ed4fe8a44df2b93fbe0474c705905e416beedcf533d7c3f242054ec"
+    },
+    {
+      "path": "PLAN-DELIVERY.md",
+      "bytes": 64731,
+      "sha256": "185034c4acb6dd6d5b7ac0eca779586792c993cce1b1edf9b4b58ee6b7d12812"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 74449,
+      "sha256": "c6520879c4b6445019245ff800f28d897f05d387e01a51462d9a1514f12939af"
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "bytes": 102788,
+      "sha256": "b2d30213a1e45d418abc1b51699c5347201ae76ee7db6e14b295146b20abec8d"
+    },
+    {
+      "path": "docs/delivery/l02a-agent-movement/agent-tests.json",
+      "bytes": 776,
+      "sha256": "1f4657cbcc139d195723250cadb4e38c8e0181ab179a65a232d6b21f2c25ba3e"
+    },
+    {
+      "path": "docs/delivery/l02a-agent-movement/agent-tests.tap",
+      "bytes": 26790,
+      "sha256": "1d895f4da4e385589b3b80207f30de30bd7f072b35112521165f142de9693458"
+    },
+    {
+      "path": "docs/delivery/l02a-agent-movement/chat-network-regression.json",
+      "bytes": 441,
+      "sha256": "5ace32e543855a6953d529ee24470d7eb96b0d1aa2ecde57a508e3d06f480d59"
+    },
+    {
+      "path": "docs/delivery/l02a-agent-movement/chat-network-regression.tap",
+      "bytes": 4721,
+      "sha256": "34b9ba83b7e5adda7fd5727b1e3af3c76f7b996a8cebb5e5f865a9b2d96289ba"
+    },
+    {
+      "path": "docs/delivery/l02a-agent-movement/dependency-stability.json",
+      "bytes": 4529,
+      "sha256": "224bcd56c9f797dfb6c269eb11f55514827fb63f815504c6183107514fc95eb7"
+    }
+  ],
+  "checkedLinks": [
+    {
+      "source": "docs/briefs/l02a-agent-movement.md",
+      "target": "../research/unreal-assets/CANDIDATES.csv"
+    },
+    {
+      "source": "docs/agents/movement-runner.md",
+      "target": "../briefs/l02a-agent-movement.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../briefs/l00-agent-interface.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../PLAN-EXTRA-LLM.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../tools/agent/fixtures/personality.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../tools/agent/fixtures/objectives.json"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "../../tools/agent/fixtures/memory.jsonl"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "chat-runner.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "movement-runner.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "network-runner.md"
+    },
+    {
+      "source": "docs/agents/interface-v1.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "movement-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "chat-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "chat-runner.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "../delivery/l01a-agent-network.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "../delivery/l01b-agent-chat.md"
+    },
+    {
+      "source": "docs/agents/network-runner.md",
+      "target": "lifecycle-runner.md"
+    },
+    {
+      "source": "docs/delivery/l02a-agent-movement.md",
+      "target": "../agents/movement-runner.md"
+    },
+    {
+      "source": "docs/delivery/l02a-agent-movement.md",
+      "target": "../briefs/l02a-agent-movement.md"
+    },
+    {
+      "source": "docs/delivery/l02a-agent-movement.md",
+      "target": "l02a-agent-movement/agent-tests.tap"
+    },
+    {
+      "source": "docs/delivery/l02a-agent-movement.md",
+      "target": "l02a-agent-movement/agent-tests.json"
+    },
+    {
+      "source": "docs/delivery/l02a-agent-movement.md",
+      "target": "l02a-agent-movement/chat-network-regression.tap"
+    },
+    {
+      "source": "docs/delivery/l02a-agent-movement.md",
+      "target": "l02a-agent-movement/chat-network-regression.json"
+    },
+    {
+      "source": "docs/delivery/l02a-agent-movement.md",
+      "target": "../../tests/agent-movement.test.mjs"
+    },
+    {
+      "source": "docs/delivery/l02a-agent-movement.md",
+      "target": "../../tests/agent-movement-network.test.mjs"
+    },
+    {
+      "source": "docs/delivery/l02a-agent-movement.md",
+      "target": "../../tests/agent-movement-runner.test.mjs"
+    },
+    {
+      "source": "docs/delivery/l02a-agent-movement.md",
+      "target": "l02a-agent-movement/dependency-stability.json"
+    },
+    {
+      "source": "docs/delivery/l02a-agent-movement.md",
+      "target": "l02a-agent-movement-verification.json"
+    }
+  ],
+  "next": "L02b"
+}

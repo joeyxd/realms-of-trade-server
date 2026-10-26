@@ -1,0 +1,400 @@
+{
+  "schema": "character-alpha-prompts/v1",
+  "requestedModel": "GPT Image 2",
+  "executedTool": "image_gen.imagegen",
+  "executedModel": "Not reported or selectable by this built-in tool; exact model not attested",
+  "reference": "User-attached Horizon Tides creator, 2026-10-08. First male master uses latest conversation image; subsequent edits use local generated masters.",
+  "assets": [
+    {
+      "id": "male-master",
+      "file": "male-scout-master-v1.png",
+      "prompt": "Use case: background-extraction / identity-preserve\nAsset type: master full-body illustrated character cutout for a modular character creator.\nInput image 1: the user's Horizon Tides character creator reference. This is the authoritative character and art style, not loose inspiration.\nPrimary request: extract and faithfully reproduce ONLY the large central male raft scout as one complete high-detail illustrated character on a genuinely transparent RGBA background. Match his actual identity, face, tousled brown hair, brass goggles on head, smile, heroic youthful adult proportions, his exact three-quarter stance facing image right, warm skin, cream rolled-sleeve shirt, crossed leather straps, belt, utility pouches, rope, patched dark olive charcoal breeches and worn brown leather boots. One hand rests near his hip and the other hangs relaxed. Keep all small outfit details.\nStyle: EXACT reference's polished hand-painted anime adventure concept art: confident expressive facial drawing, selective ink outlines, textured brushwork, chunky painted shadows, warm golden sunlit highlights, vibrant but natural materials. It must look like the reference character, not a generic 3D toy, low-poly mesh, Pixar render, photoreal model or flat vector cartoon.\nComposition: isolated single full body, from every hair spike to both boot soles, centered with clear transparent margins. Portrait canvas, 1024x1536 if possible. Maintain a fixed camera and the reference pose suitable for later aligned layers.\nConstraints: no UI, panels, thumbnails, harbor, platform, floor shadow, text, logo, watermark, border, extra character, extra weapon. Do not add a coat or cape. Background pixels must be genuinely transparent, never a drawn checkerboard or solid color. Preserve the reference character very closely.",
+      "references": [],
+      "conversationImageCount": 1,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-1c809d5f-a3cb-4693-9c22-b40a7697bf67.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "male-base",
+      "file": "male-base-v1.png",
+      "prompt": "Use case: precise-object-edit / identity-preserve. Input image is the edit target, our locked male scout. Create the interchangeable BODY BASE layer for a 2D character creator. KEEP EXACT pixel layout, canvas 1024x1536, full-body scale, head silhouette, nose, ears, jaw, skin, arms, hands, legs and feet positions, pose and camera of the reference. Same adult male, exact warm illustrated skin and selective ink, painterly golden lighting. Make him BALD. Remove all hair and goggles. Remove eyes, eyebrows and mouth drawing, leaving clean warm blank skin where those three swappable facial layers will sit; KEEP nose, cheek shading, ears and chin. Remove ALL equipment, straps, gloves, belts, pouches, rope, jewelry and boots. Replace clothing with plain fitted pale cream sleeveless undershirt and plain modest charcoal shorts to mid-thigh, no belt/straps/details. Bare hands and bare feet in the SAME exact positions as booted reference. Do not reposition or beautify anatomy. No hair, eyes, brows, lips, scars, jewelry, outfit gear, platform, background, halo or shadows outside the silhouette. The surrounding canvas must be fully transparent RGBA. This is the underlying body, each interchangeable part is drawn separately. Preserve the reference's professional painted anime adventure art, NOT a generic 3D or flat cartoon.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-5d307ead-f702-4e8a-a4b4-0c321fa36c93.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "female-master",
+      "file": "female-scout-master-v1.png",
+      "prompt": "Use case: style-transfer / identity-preserve. Reference image is the locked style, outfit, pose and composition guide. Create a FEMALE scout counterpart as a complete master character cutout, adult woman, in the SAME exact polished painted anime adventure style as the reference: selective lively ink contours, textured highlights, painted leather/brass. Same 1024x1536 portrait layout, full body and relaxed three-quarter stance facing image right, same feet positions, left hand near hip and other relaxed. Fit young adult feminine face and athletic adult proportions to the same cream rolled sleeve shirt, dark patched breeches, bronze hardware, crossed leather straps, belt pouches, rope, dark fingerless gloves and worn chunky brown boots. Bright magenta tousled high ponytail and brass goggles on top like the female crew direction. Warm sunlit tan skin, confident friendly smiling expression. Match detail density and painterly finish exactly, no 3D render. Genuinely transparent RGBA background, no floor shadow or platform, no text/UI/extra character/background.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-b76a51fe-b28d-463f-8ade-8ec6c8e193e5.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "male-hair-scout",
+      "file": "male-hair-scout-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Reference is edit target, locked male scout. Output ONLY HIS TOUSLED BROWN HAIR as an isolated swappable alpha layer. Delete every other visible thing including body, skin, face, goggles, goggles strap, jewelry, clothing and background. Retain all brown hair masses, spikes, forehead fringe, sideburns, and back-of-neck hair, paint plausible hair underneath removed goggles. Critical: preserve EXACT 1024x1536 portrait canvas, original hair position, scale, view and silhouette. Do not center/enlarge the hair; the hair remains at the TOP CENTER at its original pixel coordinates, the rest of the image entirely transparent. This full-canvas layer will be directly overlaid on an identically posed bald base. Match source's warm shaded painted hair, selective ink, highlights. Actual RGBA transparency, no face, no eyebrows, no hat, no white/black fill or checker pattern.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-d19cc06f-c176-45a3-af6b-6b736daeea7e.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "male-eyes",
+      "file": "male-eyes-amber-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Image 1 is the male scout master, image 2 is its bald blank-face target base. Generate ONLY the TWO EYES including painted lids and amber brown irises, copied from the master character with the same three-quarter face looking right. They must sit on image2's eye positions just above its nose, matching master scale. Omit eyebrows, nose, lashes extending outside lids, skin plates, forehead, face, hair and all body/clothes. Eye whites/irises and expressive dark upper/lower lid strokes ONLY; no rectangular skin patch. Exact layer contract: 1024x1536 portrait canvas, no crop, no zoom, no recentering. Retain the source's original part coordinates and pixel scale, everything else genuinely RGBA transparent. One sparse overlay, not a character and not a sheet. Same polished painterly anime adventure linework and warm shaded colors. No text, no UI, no backdrop, no checkerboard.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png",
+        "docs/art/source/character-alpha-v1/male-base-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-5213421a-415d-4130-9d01-467a2cb73324.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "male-brows",
+      "file": "male-brows-scout-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Image1 male scout master; image2 bald blank-face target. Generate ONLY his TWO DARK BROWN EYEBROWS, exact master expression and angle, positioned on the blank face of image2 just above eyes. Transparent gaps everywhere around/between the two brows; no skin, eyes, nose, hair or other illustration. Preserve drawn hair-stroke texture and illustrated curve of the reference. Exact layer contract: 1024x1536 portrait canvas, no crop, no zoom, no recentering. Retain the source's original part coordinates and pixel scale, everything else genuinely RGBA transparent. One sparse overlay, not a character and not a sheet. Same polished painterly anime adventure linework and warm shaded colors. No text, no UI, no backdrop, no checkerboard.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png",
+        "docs/art/source/character-alpha-v1/male-base-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-ead81c6b-cfdc-4dce-bbdb-c50221262443.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "male-mouth",
+      "file": "male-mouth-smile-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Image1 male scout master; image2 bald blank-face target. Generate ONLY his confident SMILING MOUTH as an alpha overlay, copying master expression, white teeth, mouth opening, ink upper/lower contour and subtle lip. Correct three-quarter right-facing angle and original location below nose on image2, exact scale. No skin patch, face, chin, nose or body. No extra detached mouth copies. Exact layer contract: 1024x1536 portrait canvas, no crop, no zoom, no recentering. Retain the source's original part coordinates and pixel scale, everything else genuinely RGBA transparent. One sparse overlay, not a character and not a sheet. Same polished painterly anime adventure linework and warm shaded colors. No text, no UI, no backdrop, no checkerboard.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png",
+        "docs/art/source/character-alpha-v1/male-base-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-f74f88f1-0983-4bf9-b95c-3573efcbf66a.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "female-base",
+      "file": "female-base-v1.png",
+      "prompt": "Use case: precise-object-edit / identity-preserve. Input image is locked FEMALE scout edit target. Create interchangeable BODY BASE layer. KEEP EXACT canvas 1024x1536, head size/outline/nose/ears/chin, full-body scale, skin, pose, arm/hand/leg/foot coordinates, three-quarter right-facing camera and painted lighting. Adult woman, same source's attractive athletic feminine adult anatomy, not male muscles. BALD, remove all hair and goggles. Remove ONLY facial eyes, eyebrows and mouth strokes, leaving clean skin where swappable parts go; preserve the nose, ear, cheek shading and jaw exactly. Remove ALL equipment, jewelry, straps, gloves, pouches, belts, rope and boots. Plain fitted cream sleeveless undershirt and plain modest charcoal shorts to mid-thigh. Bare hands/feet in exact original positions. Genuinely transparent RGBA surroundings, no shadow/halo/platform. Maintain source's high-quality painted anime adventure texture and ink, no new style.",
+      "references": [
+        "docs/art/source/character-alpha-v1/female-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-5dc57aae-f0d6-46ed-98da-f9647c5d2f74.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "harbor",
+      "file": "harbor-background-v1.png",
+      "prompt": "Use case: stylized-concept. Asset type: character creator harbor backdrop; the reference character sets the exact painted anime adventure art style but MUST NOT appear in the result. A sunlit vibrant tropical pirate harbor in that same finely painted illustration style, blue summer sky, turquoise ocean, warmly lit wooden piers and ropes, ship masts with weathered banners on the sides, green tropical cliffs with a distant old watchtower. Center foreground empty unobstructed circular wooden-and-brass workshop platform for a character to stand on, calm stage background. Landscape 1536x1024. Layered depth and gentle atmospheric softness behind the central figure space. The reference user UI has navy panels and a harbor: produce scenery ONLY, no UI, panels, characters, mannequins, labels, text, logos or watermarks. Bright natural turquoise blue, warm brass and sunwashed timber, brushed textured selective ink edges. Not realistic or 3D.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": false,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-4968b3f9-531f-4254-9cfb-48469b68e18b.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "male-top",
+      "file": "male-shirt-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. EDIT TARGET male scout. Generate ONLY the exact cream rolled-sleeve SHIRT from the reference, including collar, folds, seams, shirt buttons and small sleeve patch. Remove crossed straps, necklace, belts, hair, head, hands, ALL exposed skin, trousers, gloves, boots, pouches and rope. Neck opening must be transparent, cuff openings transparent, preserve original shirt positions as garment-only alpha layer fitting the reference pose. No body parts visible. Genuinely transparent RGBA. Single sparse overlay, preserve original1024x1536 full-body canvas and original position, size and perspective exactly: DO NOT RECENTER, ENLARGE OR ZOOM the piece. Everything outside specified piece entirely transparent. Hand-painted anime adventure detail, warm sunlight, ink contours and worn materials identical to source. No background, text, sheet, body or mannequin.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-b2720c0b-2e80-4d43-a2b1-225e9a85c2eb.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "male-bottom",
+      "file": "male-breeches-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. EDIT TARGET male scout. Generate ONLY the exact patched dark olive charcoal BREECHES from waist to rolled cuffs below knees. Include patch stitching, cloth folds, side pockets; remove belts, red sash, rope, leather pouches, hands/skin/body, shirt, boots and ALL other objects. Waist and legs remain exact source coordinates. Garment-only layer with transparent gap between legs and outside pants. Genuinely transparent RGBA. Single sparse overlay, preserve original1024x1536 full-body canvas and original position, size and perspective exactly: DO NOT RECENTER, ENLARGE OR ZOOM the piece. Everything outside specified piece entirely transparent. Hand-painted anime adventure detail, warm sunlight, ink contours and worn materials identical to source. No background, text, sheet, body or mannequin.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-13467508-68f5-4728-8b39-c7d4130deceb.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "male-boots",
+      "file": "male-boots-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. EDIT TARGET male scout. Generate ONLY the TWO worn brown leather BOOTS from source, with gold buckles, laces and thick soles. At same exact original positions/size/perspective, both boots disconnected with transparent space between. No skin legs trousers rope body. Genuinely transparent RGBA. Single sparse overlay, preserve original1024x1536 full-body canvas and original position, size and perspective exactly: DO NOT RECENTER, ENLARGE OR ZOOM the piece. Everything outside specified piece entirely transparent. Hand-painted anime adventure detail, warm sunlight, ink contours and worn materials identical to source. No background, text, sheet, body or mannequin.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-6ba0a6de-02ee-46e7-980f-d6d68faaa47f.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "goggles",
+      "file": "scout-goggles-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. EDIT TARGET male scout. Generate ONLY the brass GOGGLES plus short leather mounting strap from his head at their exact original angle and coordinates. Clear dark glass lenses, worn gold rims, small highlight. Remove all hair, face skin, head body and clothing. The two lenses and strap are a self-contained wearable layer, transparent everywhere around them. Genuinely transparent RGBA. Single sparse overlay, preserve original1024x1536 full-body canvas and original position, size and perspective exactly: DO NOT RECENTER, ENLARGE OR ZOOM the piece. Everything outside specified piece entirely transparent. Hand-painted anime adventure detail, warm sunlight, ink contours and worn materials identical to source. No background, text, sheet, body or mannequin.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-400273c6-3c70-44e2-904a-d4808cae88ff.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "beard",
+      "file": "male-beard-short-v1.png",
+      "prompt": "Use case: identity-preserve. Input scout sets face angle/target, art style and hair color. Create ONLY a neat SHORT BROWN BEARD + MUSTACHE as separate alpha overlay for his exact young adult male three-quarter-right face. Chin/jaw hair with soft natural edges and individual painted strokes, modest 3-day-to-short beard, mouth opening transparent for separate smile, no face/skin/eyes/nose. Place at original jaw coordinates under nose along chin, mustache and beard disconnected around transparent mouth opening, matching the face precisely. Do not make a huge beard or invent secondface. Genuinely transparent RGBA. Single sparse overlay, preserve original1024x1536 full-body canvas and original position, size and perspective exactly: DO NOT RECENTER, ENLARGE OR ZOOM the piece. Everything outside specified piece entirely transparent. Hand-painted anime adventure detail, warm sunlight, ink contours and worn materials identical to source. No background, text, sheet, body or mannequin.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "rejected-shape",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-433b9525-d8f6-4513-b1d2-379ee8c93fe4.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "rejectionReason": "Floating jaw outline; replaced by male-beard-short-v2.png, clipped to base silhouette by compositor."
+    },
+    {
+      "id": "female-eyes",
+      "file": "female-eyes-amber-v1.png",
+      "prompt": "Use case: precise-object-edit. Image1 locked female scout master; image2 is her bald blank-face base. Generate ONLY the pair of her expressive amber EYES including whites/irises/lid ink and modest lashes, copying the actual reference. Correct three-quarter face angle facing right, exact eye asymmetry/perspective, matching blank base face. No skin rectangles, eyebrows, nose, face hair, skin or clothes. Preserve original eyes location and scale if possible. One sparse overlay on a truly transparent RGBA 1024x1536 portrait canvas. Match original pose/view and drawing size exactly. Do not add face/head/body or skin swatches. No text, sheets, background, checkerboard. Polished source painterly anime drawing and warm sunlit detail. No 3D/toy look.",
+      "references": [
+        "docs/art/source/character-alpha-v1/female-scout-master-v1.png",
+        "docs/art/source/character-alpha-v1/female-base-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-dad7d5d0-ae54-40b2-a7b3-ca313946d2c2.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "female-brows",
+      "file": "female-brows-v1.png",
+      "prompt": "Use case: precise-object-edit. Image1 locked female scout master; image2 blank face base. Generate ONLY the two elegant dark brown EYEBROWS copying her exact reference eyebrow angle and expression, for her three-quarter right-facing face. Transparent space around/between them, no eyes, nose, forehead/skin/face/hair. Preserve original face coordinates and scale if possible. One sparse overlay on a truly transparent RGBA 1024x1536 portrait canvas. Match original pose/view and drawing size exactly. Do not add face/head/body or skin swatches. No text, sheets, background, checkerboard. Polished source painterly anime drawing and warm sunlit detail. No 3D/toy look.",
+      "references": [
+        "docs/art/source/character-alpha-v1/female-scout-master-v1.png",
+        "docs/art/source/character-alpha-v1/female-base-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-6497cb10-6788-47ad-98db-a5ce78b4e902.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "female-mouth",
+      "file": "female-mouth-smile-v1.png",
+      "prompt": "Use case: precise-object-edit. Image1 locked female scout master; image2 blank face base. Generate ONLY her confident SMILING MOUTH, exact source expression and three-quarter right-facing perspective: dark ink shape, subtle natural pink lip with white teeth. No skin patch, no chin, no nose, no face/body/hair. Preserve original face coordinates and size if possible. One sparse overlay on a truly transparent RGBA 1024x1536 portrait canvas. Match original pose/view and drawing size exactly. Do not add face/head/body or skin swatches. No text, sheets, background, checkerboard. Polished source painterly anime drawing and warm sunlit detail. No 3D/toy look.",
+      "references": [
+        "docs/art/source/character-alpha-v1/female-scout-master-v1.png",
+        "docs/art/source/character-alpha-v1/female-base-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-eb8c9874-aec4-4637-aebb-453b26a28177.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "female-hair",
+      "file": "female-hair-pony-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Extract ONLY the exact female scout's bright MAGENTA TOUSLED HIGH PONYTAIL, fringe, nape and large layered hair masses. Remove goggles/strap, face, all skin/eyes and clothing/body. Paint matching hair beneath removed goggles. Keep original hair's framing, perspective and position at top of the original full-body portrait canvas, do not recenter/enlarge hair. Transparent hole where her face/ear belong, actual hair cutout layer. One sparse overlay on a truly transparent RGBA 1024x1536 portrait canvas. Match original pose/view and drawing size exactly. Do not add face/head/body or skin swatches. No text, sheets, background, checkerboard. Polished source painterly anime drawing and warm sunlit detail. No 3D/toy look.",
+      "references": [
+        "docs/art/source/character-alpha-v1/female-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-7c1e8584-8154-4dce-bc78-cea9c1a82cb6.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "male-hair-swept",
+      "file": "male-hair-swept-v1.png",
+      "prompt": "Use case: identity-preserve. Reference1 locked brown-haired male scout art; ref2 bald target body. Create ONLY an alternative short SWEPT-BACK dark brown hairstyle for his exact head pose, three-quarter looking right. Strong illustrated strand masses, small lively fringe, source's painterly highlights and ink, adult adventure scout. No goggles, skin, face, eyes, scalp, beard or body. Original full-body portrait canvas, hair stays at head position/scale, transparent face opening. One sparse overlay on a truly transparent RGBA 1024x1536 portrait canvas. Match original pose/view and drawing size exactly. Do not add face/head/body or skin swatches. No text, sheets, background, checkerboard. Polished source painterly anime drawing and warm sunlit detail. No 3D/toy look.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png",
+        "docs/art/source/character-alpha-v1/male-base-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-a998c09c-b546-4734-9db9-466834130c12.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "male-eyes-blue",
+      "file": "male-eyes-blue-v1.png",
+      "prompt": "Use case: precise-object-edit. Edit ONLY the iris COLOR of the isolated two eyes in the reference to rich ocean blue with dark pupils and bright painted reflections. Keep exact whites, lids, angle, drawing shapes, positions, image scale and 1024x1536 canvas unchanged. Preserve ALL existing transparency. Output isolated eye layer only. No added face, eye brows, nose, skin/background. Same high quality drawn anime adventure look.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-eyes-amber-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "rejected-alpha",
+      "rejectionReason": "No alpha=0 pixels; replaced by male-eyes-blue-v2.png",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-ea30d279-fb76-4ae1-8772-c8ddb3764d34.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "gloves",
+      "file": "scout-gloves-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Generate ONLY the source's TWO dark brown FINGERLESS LEATHER GLOVES and wrist bracers in original positions and correct left/right hand poses, one at hip and the other hanging. Remove ALL skin, hands, fingertips and everything else; preserve only leather, brass fasteners, straps. Actual transparent holes where exposed fingers/knuckles belong. Transparent RGBA overlay only, source1024x1536 portrait full-body layout preserved. DO NOT include ANY person, face, skin, mannequin, background or shadow; leave openings genuinely transparent. Do not center/enlarge object if extracting existing source piece. SAME polished hand-painted anime adventure style, textured worn cloth/leather/brass and warm golden light.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-ae22d101-0396-4f17-84ac-f49a1a6a9117.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "pouch",
+      "file": "scout-pouch-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Generate ONLY the medium brown LEATHER UTILITY POUCH hanging on source character's viewer-right hip with brass rectangular buckle and flap, short leather strap, worn corners, source angle and paint texture. Remove belt, rope, hands, pants, all other gear/person. No duplicate pouch. Transparent RGBA overlay only, source1024x1536 portrait full-body layout preserved. DO NOT include ANY person, face, skin, mannequin, background or shadow; leave openings genuinely transparent. Do not center/enlarge object if extracting existing source piece. SAME polished hand-painted anime adventure style, textured worn cloth/leather/brass and warm golden light.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-5d737602-0cc8-4487-9971-0705fe782709.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "rope",
+      "file": "scout-rope-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Generate ONLY the source's coiled GOLDEN HEMP ROPE LOOP hung at character viewer-right hip, with upper tied knot and belt loop fastening. Copy source's rope angle, twist fiber detail, exact pose and size. Rope itself visible, all spaces inside loop and surrounding canvas transparent. No pouch, belt, clothes, skin/body. Transparent RGBA overlay only, source1024x1536 portrait full-body layout preserved. DO NOT include ANY person, face, skin, mannequin, background or shadow; leave openings genuinely transparent. Do not center/enlarge object if extracting existing source piece. SAME polished hand-painted anime adventure style, textured worn cloth/leather/brass and warm golden light.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-d25aaa3d-dd5e-4e45-aee5-4cd40f666ad4.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "harness",
+      "file": "scout-harness-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Generate ONLY the dark worn LEATHER SHOULDER HARNESS/CROSSED CHEST STRAPS with brass buckles and waist BELT with red SASH from the source. Preserve source perspective, torso and waist coordinates. Remove shirt/body/skin/face, boots pants, pouches, rope, necklace and ALL other objects. Shoulder straps and belt/sash are one wearable harness module; all areas between straps are genuine transparent alpha revealing the shirt underneath. Transparent RGBA overlay only, source1024x1536 portrait full-body layout preserved. DO NOT include ANY person, face, skin, mannequin, background or shadow; leave openings genuinely transparent. Do not center/enlarge object if extracting existing source piece. SAME polished hand-painted anime adventure style, textured worn cloth/leather/brass and warm golden light.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-a8cd05f9-1d2f-44ac-b9c7-5411e68dfeea.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "female-top",
+      "file": "female-shirt-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Output ONLY the source female scout's exact cream rolled-sleeve SHIRT: fitted feminine torso, collar, seams and buttons, small sleeve patch. Remove harness straps, necklace, waist sash/belt, body/skin, hands, pants, gloves, gear and hair. Keep exact original pose and shirt coordinates with transparent collar and sleeve openings. Transparent RGBA overlay only, source1024x1536 portrait full-body layout preserved. DO NOT include ANY person, face, skin, mannequin, background or shadow; leave openings genuinely transparent. Do not center/enlarge object if extracting existing source piece. SAME polished hand-painted anime adventure style, textured worn cloth/leather/brass and warm golden light.",
+      "references": [
+        "docs/art/source/character-alpha-v1/female-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-51ce42da-e30a-4c9c-8982-3a5ea46d224d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "female-bottom",
+      "file": "female-breeches-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Output ONLY the exact female scout's dark olive charcoal BREECHES from waistband to below-knee rolled cuffs, patchwork and seams/pockets. No red sash, belts, leather pouches, rope, hands/body/skin, shirt or boots. Keep original coordinates/pose, transparent gap between legs. Transparent RGBA overlay only, source1024x1536 portrait full-body layout preserved. DO NOT include ANY person, face, skin, mannequin, background or shadow; leave openings genuinely transparent. Do not center/enlarge object if extracting existing source piece. SAME polished hand-painted anime adventure style, textured worn cloth/leather/brass and warm golden light.",
+      "references": [
+        "docs/art/source/character-alpha-v1/female-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-aa0d2714-86e3-4dbd-8c5e-6afb4a9c099c.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "female-boots",
+      "file": "female-boots-v1.png",
+      "prompt": "Use case: precise-object-edit / background-extraction. Output ONLY the two exact female scout's worn brown LEATHER BOOTS with brass buckles and laces, same original positions and perspective. Remove legs, trousers, all other objects. Transparent space between separate boots and rest canvas. Transparent RGBA overlay only, source1024x1536 portrait full-body layout preserved. DO NOT include ANY person, face, skin, mannequin, background or shadow; leave openings genuinely transparent. Do not center/enlarge object if extracting existing source piece. SAME polished hand-painted anime adventure style, textured worn cloth/leather/brass and warm golden light.",
+      "references": [
+        "docs/art/source/character-alpha-v1/female-scout-master-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-1787e79c-80f7-4649-b4d3-3fee63c21d01.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "male-eyes-blue-v2",
+      "file": "male-eyes-blue-v2.png",
+      "prompt": "Use case: precise-object-edit / background extraction. Input is an isolated pair of amber eyes, our exact painted anime scout eyes. Make the IRIS COLOR vivid ocean blue, preserve exact eye white shapes, pupils, upper and lower eyelid linework, relative positions and warm painted shading at eyelids. Output ONLY these two tiny illustrated eye shapes as one sparse pair overlay on TRANSPARENT background. REAL RGBA alpha: every pixel outside the pair of eyes must have alpha 0. No surrounding brown fog, no halo, no skin patches, no solid background, no checkerboard painted in the file, no shadow, no face, eyebrows, nose, text or extra elements. Same portrait 1024x1536 canvas, eye pair scale and pixel position of input. The eyes keep reference-quality hand-painted anime adventure art; don't redraw the entire character. Strict genuine transparent_background cutout.",
+      "references": [
+        "docs/art/source/character-alpha-v1/male-eyes-amber-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-05fb13e8-bba9-4ee3-a552-3939fa5ae71c.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "beard-v2",
+      "file": "male-beard-short-v2.png",
+      "prompt": "Use case: precise-object-edit/background-extraction. Reference1 shows our illustrated male scout in his exact locked pose, warm tan skin, three-quarter head facing right. Reference2 is its current beard layer, which has a dangling diagonal chin outline on the right and is REJECTED. Generate a replacement SHORT STUBBLE BEARD alpha overlay that naturally fits reference1's existing jaw and face shape. Paint only sparse short dark brown hair strokes along sideburns, jaw and chin, and a neat modest mustache above the smiling mouth. NO new jaw outline, NO cheek or chin skin, NO detached loop, NO floating diagonal line, NO large sculpted wedge. The original head/nose/mouth identity and angle are authoritative. Face and mouth opening areas are transparent; just the beard hair. Use the SAME polished painted anime pirate concept art, with warm illuminated hair texture and selective ink strokes. Portrait1024x1536 canvas, original beard position near face at top center; everything else alpha0. Preserve small original scale if possible. Actual RGBA transparent cutout, no brown fog, no shadow or halo, no background or checkerboard, no other body/clothes/gear, no eyes/brows/lips. Output only one beard layer with genuine alpha.",
+      "references": [
+        "docs/art/character-alpha-v1/review/male-modular-canvas.png",
+        "docs/art/source/character-alpha-v1/male-beard-short-v1.png"
+      ],
+      "conversationImageCount": 0,
+      "requestedTransparent": true,
+      "technicalStatus": "alpha-validated",
+      "tool": "image_gen.imagegen",
+      "outputHint": "Generated images are saved to C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e as C:\\Users\\xxajx\\.codex\\generated_images\\01a1193f-6b92-72e0-b44a-4172575d157e\\exec-65f1b8c1-8b37-4ce7-9442-e8a69b1906eb.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "referenceSnapshots": [
+        {
+          "path": "docs/art/character-alpha-v1/generation-guide-male-v1.png",
+          "sha256": "a18e2fdb487015b27b13b3c345eb4e22a6fcdf000888e5b6017ae67e6c5f8ab1"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "gm04b-browser/v1",
+  "version": "0.6.0-alpha.41",
+  "at": "2026-10-11T02:59:06.603Z",
+  "simulatedAuth": true,
+  "production": false,
+  "checks": [
+    "fixture_loads_optimized_crate_and_beach_debris_with_live_base_decoration"
+  ],
+  "screenshots": [
+    "local-failure.png"
+  ],
+  "errors": [
+    "Error: Template preflight failed: {\"ok\":false,\"code\":\"template_selection\",\"items\":[{\"id\":\"qa-gm04b-crate\",\"y\":6.400000095367432,\"collider\":{\"type\":\"circle\",\"radius\":0.8}},{\"id\":\"qa-gm04b-planks\",\"y\":6.400000095367432,\"collider\":\"none\"},{\"id\":\"qa-gm04b-log\",\"y\":6.400000095367432,\"collider\":\"none\"},{\"id\":\"base:rock:643:bcbe1fbd\",\"base\":true,\"hidden\":false,\"y\":6.347303793102641,\"collider\":{\"type\":\"circle\",\"radius\":0.55}},{\"id\":\"base:flower:725:24fc58de\",\"base\":true,\"hidden\":false,\"y\":6.39897711932631,\"collider\":\"none\"},{\"id\":\"base:pebble:1068:0cb97607\",\"base\":true,\"hidden\":false,\"y\":6.400000095367432,\"collider\":\"none\"}],\"base\":{\"seed\":99282957,\"revision\":\"terrain-s21-v1\"}}\n    at file:///C:/DEV/real%20of%20trade/gm-editor-first/tools/qa-gm04b.mjs:284:36"
+  ],
+  "assetRequests": [
+    "/assets/models/prop-storage-crate.glb",
+    "/assets/models/coast-rock-v1.glb",
+    "/assets/models/beach-shell-fan-v1.glb",
+    "/assets/models/beach-shell-oval-v1.glb",
+    "/assets/models/beach-shell-chip-v1.glb",
+    "/assets/models/beach-pebbles-v1.glb",
+    "/assets/models/palm-tall-v1.glb",
+    "/assets/models/palm-curved-v1.glb",
+    "/assets/models/palm-short-v1.glb",
+    "/assets/models/palm-base-open-v1.glb",
+    "/assets/models/palm-base-lush-v1.glb",
+    "/assets/models/shrub-round-v1.glb",
+    "/assets/models/shrub-low-v1.glb",
+    "/assets/models/shrub-tall-v1.glb",
+    "/assets/models/beach-debris-branch-v1.glb",
+    "/assets/models/beach-debris-log-v1.glb",
+    "/assets/models/beach-debris-planks-v1.glb"
+  ],
+  "injectedScenarios": {
+    "missingAsset": "uploaded same-base test library with an unknown model id; no project asset was changed",
+    "casConflict": "second TemplateStore instance advanced the same IndexedDB world key",
+    "draftWrites": "fixture and placement edits remained in the fresh browser-local draft"
+  },
+  "runtimeBefore": {
+    "version": "0.6.0-alpha.41",
+    "protocolVersion": null,
+    "content": {
+      "generation": 0,
+      "revisionId": null
+    }
+  },
+  "playwrightModule": "C:\\DEV\\real of trade\\realms-of-trade-server\\.scratch\\pilot-browser\\node_modules\\playwright\\index.mjs",
+  "loadedRuntime": {
+    "version": "0.6.0-alpha.41",
+    "protocolVersion": 47
+  },
+  "fixtureSite": {
+    "x": 49.49747468305833,
+    "z": 91.92388155425118
+  },
+  "secondFixtureSite": {
+    "x": 56.568542494923804,
+    "z": 98.99494936611666
+  },
+  "phase": "gm04b_fixture_and_template_panel"
+}

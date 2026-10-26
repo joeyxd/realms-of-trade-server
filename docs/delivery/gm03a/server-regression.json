@@ -1,0 +1,32 @@
+﻿{
+    "suite":  "GM03a mounted HTTP/store plus server, economy, resources, and rafts regression",
+    "recordedAt":  "2026-10-10T20:46:00Z",
+    "exitCode":  0,
+    "files":  [
+                  "tests/gmSession.test.mjs",
+                  "tests/gm-draft-http.test.mjs",
+                  "tests/gm-draft-server.test.mjs",
+                  "tests/gm-draft-store.test.mjs",
+                  "tests/gm-draft-validation.test.mjs",
+                  "tests/gm-remote-draft-client.test.mjs",
+                  "tests/gm-draft-sql.test.mjs",
+                  "tests/accounts-server.test.mjs",
+                  "tests/economic-host.test.mjs",
+                  "tests/economic-store.test.mjs",
+                  "tests/economic-sql.test.mjs",
+                  "tests/economic-resource-sql.test.mjs",
+                  "tests/economic-resource-contract.test.mjs",
+                  "tests/resource-authority.test.mjs",
+                  "tests/resource-loop-server.test.mjs",
+                  "tests/raft-door-host.test.mjs",
+                  "tests/raft-production-server.test.mjs",
+                  "tests/raft-persistence.test.mjs",
+                  "tests/raft-capacity-server.test.mjs"
+              ],
+    "tests":  113,
+    "passed":  113,
+    "failed":  0,
+    "cancelled":  0,
+    "skipped":  0,
+    "tap":  "server-regression.tap"
+}

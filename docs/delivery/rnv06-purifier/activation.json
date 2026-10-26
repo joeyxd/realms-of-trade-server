@@ -1,0 +1,90 @@
+{
+  "state": "active_accepted",
+  "revision": "b977b7c8b5ca87f4920e8d60af48cd72d57e783e",
+  "protocol": 47,
+  "observed": {
+    "containers": 1,
+    "utc": "2026-10-11T02:14:05Z",
+    "active": "d5622376e2bd2da681e8f113bc1e0744575150e0969dd060e2cccdf9b81a3767 sha256:01dcbcb6722cdd6e83add286b3399a47ee03ed540f58cec50cba5b5c0626869a healthy b977b7c8b5ca87f4920e8d60af48cd72d57e783e",
+    "command": "[\"node\",\"deploy/runtime.mjs\"]",
+    "status": {
+      "version": "0.6.0-alpha.39",
+      "content": {
+        "generation": 4,
+        "revisionId": null,
+        "switching": false
+      },
+      "players": 0,
+      "sockets": 0,
+      "tick": 7713,
+      "errors": 0,
+      "storage": {
+        "kind": "supabase",
+        "durable": true,
+        "accounts": true,
+        "unsaved": 0,
+        "errors": 0,
+        "tickBlocked": false,
+        "combatDeaths": null,
+        "deathDrops": null,
+        "groundTransactions": null,
+        "fire": {
+          "enabled": true,
+          "ready": true
+        },
+        "artisan": {
+          "enabled": true,
+          "ready": true
+        },
+        "economic": {
+          "enabled": true,
+          "pending": 0,
+          "failed": false,
+          "completed": 0,
+          "replays": 0
+        },
+        "resources": {
+          "enabled": true,
+          "ready": true,
+          "logging": true
+        },
+        "profileWrites": 0,
+        "worldWriting": false,
+        "world": {
+          "id": "marea-negra",
+          "ready": true,
+          "failed": false,
+          "version": 1977,
+          "errors": 0
+        }
+      }
+    },
+    "public_health": 200,
+    "public_page": 200,
+    "validation": {
+      "revision": "b977b7c8b5ca87f4920e8d60af48cd72d57e783e",
+      "image_id": "sha256:01dcbcb6722cdd6e83add286b3399a47ee03ed540f58cec50cba5b5c0626869a",
+      "tests_passed": true
+    },
+    "offline_summary": [
+      "# tests 109",
+      "# pass 109",
+      "# fail 0",
+      "# skipped 0"
+    ],
+    "current": "/opt/marea-negra/releases/b977b7c8b5ca87f4920e8d60af48cd72d57e783e",
+    "timer": "active",
+    "service": "ExecMainStatus=0\nActiveState=activating",
+    "updater_sha256": "3e5e9ad641fb0dd45e88c571d3aaab136422c7acf154ae189a6370afda6d899d"
+  },
+  "imageChecks": {
+    "sourceHashesMatched": 12,
+    "testsPassed": 29,
+    "testsFailed": 0,
+    "files": 5,
+    "network": "none",
+    "log": "image-purifier.tap"
+  },
+  "publicSmoke": "public/evidence-2026-10-11T02-13-10-004Z.json",
+  "scope": "Full purifier flow accepted locally with disposable account; live image and anonymous WSS/map smoke accepted. Live authenticated material canary not performed."
+}

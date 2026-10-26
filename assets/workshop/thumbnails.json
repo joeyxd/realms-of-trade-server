@@ -1,0 +1,203 @@
+{
+  "schema": "marea.asset-thumbnails.v1",
+  "entries": [
+    {
+      "id": "aw-pilot-01",
+      "sourceRevision": "cd847a9249b35f6321262b37cd4da4e73a77b3112cecb7561942217555060689",
+      "presentation": "geometry",
+      "url": "assets/workshop/thumbnails/aw-pilot-01.webp",
+      "bytes": 1528,
+      "sha256": "cd5a10e458e912c5b77f63f59bbf3aa34c13839d7f2d0fc070568c461781001a",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "aw-pilot-02",
+      "sourceRevision": "dfb1a62560fa891f74d6f2d0629b72ac973faf284b6dde653e5ee6a005c6f7ad",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/aw-pilot-02.webp",
+      "bytes": 1374,
+      "sha256": "4467d1a2a47b74a742847f9573275cb5932b0d9668f3c377927677586a81f237",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "aw-pilot-03",
+      "sourceRevision": "2b4ac4659babc621e78ab1c0ed8ad92cb047b9e4b75451d05cfba3f3a8ab1843",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/aw-pilot-03.webp",
+      "bytes": 756,
+      "sha256": "d96b5917d4e43a9942eb9ded6611f5f41ee4837881a8611bd2c285456d49c020",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "aw-pilot-04",
+      "sourceRevision": "3a2daaa5484e52c2524c2f15824224bd797a3e1fa3c099b9c60b5caedd961c22",
+      "presentation": "geometry",
+      "url": "assets/workshop/thumbnails/aw-pilot-04.webp",
+      "bytes": 1158,
+      "sha256": "9e8b4420d23fb2d0422701f7ea41e0b723b08aeeb5b0ecf737478e3901fc5cf8",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "aw-pilot-05",
+      "sourceRevision": "47fae71524ea6a181b1b3c10724069329f0b44b82925d743b2c68c23e26c0627",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/aw-pilot-05.webp",
+      "bytes": 1928,
+      "sha256": "b8ee449b28b4949affb0ecae732ff9edd357c423de94e58608abc061ecbd1715",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "aw-pilot-06",
+      "sourceRevision": "a2ff76e9bb6cd50f45f2649cac902f0363777922864fed7de2b331271c0922dd",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/aw-pilot-06.webp",
+      "bytes": 1482,
+      "sha256": "4d15bcf6805708b75cba8232be67a7937717d086639970d8c7b73d81e922a0c6",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "aw-pilot-07",
+      "sourceRevision": "bb085dcd518e6335d7f69d9c63531e355ee74d128f65a4bc0808fb3fc2b94782",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/aw-pilot-07.webp",
+      "bytes": 680,
+      "sha256": "e224dde203820e9119ffe53ca1d3873abb6ebf65dad4ba963b46d76417470777",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "aw-pilot-11",
+      "sourceRevision": "9caf4abf7ea14f2b4f81e75beab572692c7131df17c955d5095d0881932dc501",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/aw-pilot-11.webp",
+      "bytes": 1192,
+      "sha256": "a5a4b7f7a1bbf24271d1655ef20cdf44df80b84f4f83cc89d76e7c02c8623c43",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "aw-pilot-12",
+      "sourceRevision": "73691877dae3f4e57eb9b84d8dbaa5bdfaba996c327c8a07edac85a6eb464dfa",
+      "presentation": "geometry",
+      "url": "assets/workshop/thumbnails/aw-pilot-12.webp",
+      "bytes": 2292,
+      "sha256": "37eea5883493ec94f61f86fc9595dcef8db1eb39a77fd850754e325e4b78c6c9",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "aw-pilot-19",
+      "sourceRevision": "c854553398dfcd477d09fd8bc0517876f0029ace7232bd87e4e43c5e1f0eac16",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/aw-pilot-19.webp",
+      "bytes": 1688,
+      "sha256": "ce1c30195f8c8c68cfed21f270cf3c46dcff9e7d7316bf1cd8c8e63a0e1ba2d7",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "model:coast-rock-v1",
+      "sourceRevision": "integrated:sha256:042fafbf69a687587b3793c6cd15a754bc66fc2387e3a815b047d94025cadc97",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/model-coast-rock-v1.webp",
+      "bytes": 1078,
+      "sha256": "ac55c4256e13f5a50980f3a8c794a818bf69379edd34ed1f16ceeba445c6f88c",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "model:beach-shell-fan-v1",
+      "sourceRevision": "integrated:sha256:dbf411eae5ac91f0ec373c6f24d16d13235c7b5f28c1c4c4a16f10fd2281f893",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/model-beach-shell-fan-v1.webp",
+      "bytes": 1056,
+      "sha256": "b55d5e07b3b7fc458e3d589869c4e10f16f97ca456a6604ee1502209b7a65448",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "model:palm-tall-v1",
+      "sourceRevision": "integrated:sha256:9c691dee9c25655fbce6512e7ef8f8984b52cb589a7a6f914301a85a1c3b46af",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/model-palm-tall-v1.webp",
+      "bytes": 1760,
+      "sha256": "9cb5810d0a2c1f765466102cae1cdd181567f2908aa91b39ebd738cca3dbde76",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "model:palm-base-open-v1",
+      "sourceRevision": "integrated:sha256:255b5360c0f8bb009d30875557ae1dae47ec019a2c987d32b964b74e82935d98",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/model-palm-base-open-v1.webp",
+      "bytes": 1780,
+      "sha256": "aaab95718cbe4af50fbaf117e65776ed681fc6d154a9270c673448ed23121b30",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "model:shrub-round-v1",
+      "sourceRevision": "integrated:sha256:5cc05093a45d949012d2876157d829a3456976d8015e6d26218b0aea37c05e5a",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/model-shrub-round-v1.webp",
+      "bytes": 1282,
+      "sha256": "5561f47ab72b4f94667c4b1d2f1917fa1e259ec9c0f406620e653c42fa46a583",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "model:beach-debris-branch-v1",
+      "sourceRevision": "integrated:sha256:e99d1c98aa358b0eb4c3da7d4bd30f394b74109e61b159822f8db2dfb3ed4831",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/model-beach-debris-branch-v1.webp",
+      "bytes": 910,
+      "sha256": "f612aa6edb4161fdecb5f7af2970b9c010e2e6b8996b85bcbdf876be66c4d636",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "model:item-resina-v1",
+      "sourceRevision": "integrated:sha256:671a29d88c122ac7e33d340a1367f8646cec690ef7594c248365d78d827c4cd7",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/model-item-resina-v1.webp",
+      "bytes": 1744,
+      "sha256": "1743dd34d3e10a5b8fc3e38f8353a20df042a085c75758f6dcef5df66a0ee86d",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    },
+    {
+      "id": "model:item-antorcha-v1",
+      "sourceRevision": "integrated:sha256:2007cdc1986fe0c3a43f4e3c59515c219bb90c293c902868a67fd5ec932c73a1",
+      "presentation": "pbr",
+      "url": "assets/workshop/thumbnails/model-item-antorcha-v1.webp",
+      "bytes": 1240,
+      "sha256": "1f62e2525d7b1559320822cf75354ff72421cf7e87fac1d1cb9d8dc697dbcbab",
+      "width": 160,
+      "height": 160,
+      "label": "Render del derivado en el taller; no es una captura Unreal."
+    }
+  ]
+}

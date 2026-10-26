@@ -1,0 +1,136 @@
+{
+  "milestone": "W02a-wallet-link",
+  "date": "2026-10-07",
+  "status": "implemented-opt-in-and-verified-locally",
+  "node": "v24.14.0",
+  "viem": "2.57.3",
+  "tests": [
+    {
+      "command": "node --test tests/web3-wallet-link.test.mjs tests/web3-wallet-http.test.mjs tests/web3-wallet-sql.test.mjs tests/web3-wallet-integration.test.mjs",
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0
+    },
+    {
+      "command": "node --test tests/web3-asset-registry.test.mjs tests/web3-asset-registry-sql.test.mjs tests/web3-asset-registry-process.test.mjs tests/web3-asset-registry-boundary.test.mjs tests/web3-equipment-content.test.mjs tests/items.test.mjs tests/accounts-server.test.mjs tests/account-auth.test.mjs",
+      "passed": 61,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0
+    }
+  ],
+  "verification": {
+    "http": "real loopback createGameServer",
+    "signature": "real EOA local test keys via viem",
+    "accountProvider": "Supabase getUser simulated",
+    "sql": "Supabase SDK against local PGlite",
+    "lostReplies": [
+      "issue",
+      "complete"
+    ],
+    "reopenedApplicationAndDatabase": true,
+    "separateRecoveryProcesses": false,
+    "nonceReplayRejectedAfterReopen": true,
+    "existingGameProfileUnchanged": true,
+    "existingW01AssetUnchanged": true,
+    "sqlRollback": true,
+    "migrationReapply": true,
+    "w01SelectPrivilegesPreserved": true,
+    "rpcBodyAndHttpDeadlines": true,
+    "peerAbort": true,
+    "independentReview": true
+  },
+  "scope": {
+    "fullCheckoutSuite": false,
+    "remoteSupabase": false,
+    "postgresMultiConnectionContention": false,
+    "browserWallet": false,
+    "rpcTestnet": false,
+    "erc1271": false,
+    "onchainTokens": false,
+    "mint": false,
+    "payments": false,
+    "gameplayRights": false,
+    "liveMigrationApplied": false,
+    "defaultCliMounted": false,
+    "published": false
+  },
+  "files": [
+    {
+      "path": "server/web3/walletContract.mjs",
+      "bytes": 4485,
+      "sha256": "3af1a22c65076e8874204976c6ba5f2013b77b13ad4cad3c4e5aac5d30de89f1"
+    },
+    {
+      "path": "server/web3/walletStore.mjs",
+      "bytes": 5518,
+      "sha256": "b3b555afde965d162ab0434f184ead300c13e71e719b866d76dcf59170dd9bea"
+    },
+    {
+      "path": "server/web3/walletLink.mjs",
+      "bytes": 4242,
+      "sha256": "29394742147c630224d66f1dcfd5546d08ffa78d230fca4859f925a9f625ae98"
+    },
+    {
+      "path": "server/web3/walletHttp.mjs",
+      "bytes": 5108,
+      "sha256": "ee676cb3e0fd73f46f92ac0828c257fe738b50be40a502af75db970e187f3e27"
+    },
+    {
+      "path": "server/migrations/web3/002_wallet_link.sql",
+      "bytes": 17205,
+      "sha256": "8552648f176970f1c38bc9c079dd0f6ee446947af55c351559e5d75f8d02fc05"
+    },
+    {
+      "path": "tests/web3-wallet-link.test.mjs",
+      "bytes": 8666,
+      "sha256": "c056f28a6af7b5d1f5c4f8f316429cef001ce6b53b7cf958c8eef95a3035cb37"
+    },
+    {
+      "path": "tests/web3-wallet-http.test.mjs",
+      "bytes": 8926,
+      "sha256": "bebc8b7a7139423a460eab371d0fbb9b4dbcc6c7edb3b6579949564162bf8a1d"
+    },
+    {
+      "path": "tests/web3-wallet-sql.test.mjs",
+      "bytes": 16079,
+      "sha256": "e85caa9e27bfd7ac681390d003ff4bea668d5f720f89526f96b62a364cd23cfc"
+    },
+    {
+      "path": "tests/web3-wallet-integration.test.mjs",
+      "bytes": 8411,
+      "sha256": "1b97219f2da64cd4a1e7dfeb1c2f00acccd9640d27620c6b81030d2c3d1883fc"
+    },
+    {
+      "path": "tests/helpers/web3-wallet-sql.mjs",
+      "bytes": 3382,
+      "sha256": "2d307774c973eefd02dcf6b19056a6bd35f0201a44f1f3b972b77851b7fd23d8"
+    },
+    {
+      "path": "docs/briefs/w02a-wallet-link.md",
+      "bytes": 6324,
+      "sha256": "c9094ae535e4c73808dd95cd47985eb9e5ad8feecc558bbff32a95973fad40c8"
+    },
+    {
+      "path": "server/index.mjs",
+      "bytes": 9112,
+      "sha256": "cceb4e6a5435a5bdfe0e128a1e7f4f7c86afaa43f910c463cff22d731d1cbd95",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    },
+    {
+      "path": "package.json",
+      "bytes": 871,
+      "sha256": "dff6bc1ea5a10b972026b1f9866782aca1a3e87ed21549dd463c25b15b439a43",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 12382,
+      "sha256": "bc9c9ea87a15c0a453e9506222804545ffb73c0c5a05ea50baf52ab0a7fec7f0",
+      "ownership": "shared-file snapshot; unrelated edits preserved"
+    }
+  ]
+}

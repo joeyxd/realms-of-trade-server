@@ -1,0 +1,870 @@
+{
+    "date":  "2026-10-04",
+    "baseCommit":  "f9ddb17",
+    "decision":  "defer for campfire smoke; main runtime retains procedural path",
+    "sourceSha256":  "4B340D88FB318748461BD7EEBDA98D9C0CF7E8D7C4E870BE2412A2EA1AA86AF5",
+    "compressedBytes":  287022,
+    "decodedRgbaBytes":  4194304,
+    "fullMipChainRgbaBytesEstimate":  5592404,
+    "realGpuPerformanceVerified":  false,
+    "frameTimeMeasured":  false,
+    "capturesFrozen":  true,
+    "cases":  [
+                  {
+                      "case":  "success",
+                      "quality":  "high",
+                      "tod":  "day",
+                      "viewport":  {
+                                       "width":  1280,
+                                       "height":  720,
+                                       "dpr":  1,
+                                       "phone":  false
+                                   },
+                      "browser":  {
+                                      "userAgent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+                                      "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                      "swiftshader":  true
+                                  },
+                      "campfire":  {
+                                       "x":  66.46803743153548,
+                                       "y":  2.4118165371991687,
+                                       "z":  76.36753236814714
+                                   },
+                      "asset":  {
+                                    "id":  "tex:a01-noise00",
+                                    "state":  {
+                                                  "state":  "ok",
+                                                  "error":  "",
+                                                  "registryErrors":  [
+
+                                                                     ]
+                                              },
+                                    "interceptedCandidate":  false,
+                                    "originalBytes":  287022
+                                },
+                      "cohort":  {
+                                     "count":  9,
+                                     "frozen":  true,
+                                     "camera":  {
+                                                    "p":  [
+                                                              71.19950532409362,
+                                                              10.64326479197311,
+                                                              81.09900026070528
+                                                          ],
+                                                    "q":  [
+                                                              -0.3757756596600807,
+                                                              0.3495987113522072,
+                                                              0.15565137464090179,
+                                                              0.8440059503346554
+                                                          ],
+                                                    "target":  [
+                                                                   66.46803743153548,
+                                                                   2.4118165371991687,
+                                                                   76.36753236814714
+                                                               ],
+                                                    "dist":  10
+                                                },
+                                     "worldTime":  6.443399999999994,
+                                     "lightingTod":  "day",
+                                     "lightingPhase":  0.08
+                                 },
+                      "captures":  {
+                                       "procedural":  {
+                                                          "loadedFlag":  0,
+                                                          "expectedLoadedFlag":  0,
+                                                          "globalProceduralUnchanged":  true,
+                                                          "drawcalls":  111,
+                                                          "triangles":  270500,
+                                                          "points":  1800,
+                                                          "lines":  0,
+                                                          "geometries":  96,
+                                                          "textures":  50,
+                                                          "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                          "texture":  null,
+                                                          "bytes":  909680,
+                                                          "resolution":  {
+                                                                             "width":  1280,
+                                                                             "height":  720
+                                                                         }
+                                                      },
+                                       "noise00":  {
+                                                       "loadedFlag":  1,
+                                                       "expectedLoadedFlag":  1,
+                                                       "globalProceduralUnchanged":  true,
+                                                       "drawcalls":  111,
+                                                       "triangles":  270500,
+                                                       "points":  1800,
+                                                       "lines":  0,
+                                                       "geometries":  96,
+                                                       "textures":  50,
+                                                       "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                       "texture":  {
+                                                                       "width":  1024,
+                                                                       "height":  1024,
+                                                                       "wrapS":  1000,
+                                                                       "wrapT":  1000,
+                                                                       "magFilter":  1006,
+                                                                       "minFilter":  1008,
+                                                                       "format":  1023,
+                                                                       "type":  1009,
+                                                                       "colorSpace":  "",
+                                                                       "generateMipmaps":  true,
+                                                                       "anisotropy":  4
+                                                                   },
+                                                       "bytes":  909452,
+                                                       "resolution":  {
+                                                                          "width":  1280,
+                                                                          "height":  720
+                                                                      }
+                                                   }
+                                   },
+                      "pageErrors":  [
+
+                                     ],
+                      "gameErrors":  [
+
+                                     ],
+                      "evidencePath":  "shots/asset-a01/high-day-final/evidence.json",
+                      "capturePaths":  [
+                                           "shots/asset-a01/high-day-final/01-procedural.png",
+                                           "shots/asset-a01/high-day-final/02-noise00.png"
+                                       ],
+                      "consoleErrors":  [
+
+                                        ]
+                  },
+                  {
+                      "case":  "success",
+                      "quality":  "high",
+                      "tod":  "night",
+                      "viewport":  {
+                                       "width":  1280,
+                                       "height":  720,
+                                       "dpr":  1,
+                                       "phone":  false
+                                   },
+                      "browser":  {
+                                      "userAgent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+                                      "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                      "swiftshader":  true
+                                  },
+                      "campfire":  {
+                                       "x":  66.46803743153548,
+                                       "y":  2.4118165371991687,
+                                       "z":  76.36753236814714
+                                   },
+                      "asset":  {
+                                    "id":  "tex:a01-noise00",
+                                    "state":  {
+                                                  "state":  "ok",
+                                                  "error":  "",
+                                                  "registryErrors":  [
+
+                                                                     ]
+                                              },
+                                    "interceptedCandidate":  false,
+                                    "originalBytes":  287022
+                                },
+                      "cohort":  {
+                                     "count":  9,
+                                     "frozen":  true,
+                                     "camera":  {
+                                                    "p":  [
+                                                              71.19950532409362,
+                                                              10.64326479197311,
+                                                              81.09900026070528
+                                                          ],
+                                                    "q":  [
+                                                              -0.3757756596600807,
+                                                              0.3495987113522072,
+                                                              0.15565137464090179,
+                                                              0.8440059503346554
+                                                          ],
+                                                    "target":  [
+                                                                   66.46803743153548,
+                                                                   2.4118165371991687,
+                                                                   76.36753236814714
+                                                               ],
+                                                    "dist":  10
+                                                },
+                                     "worldTime":  5.529600000000002,
+                                     "lightingTod":  "night",
+                                     "lightingPhase":  0.08
+                                 },
+                      "captures":  {
+                                       "procedural":  {
+                                                          "loadedFlag":  0,
+                                                          "expectedLoadedFlag":  0,
+                                                          "globalProceduralUnchanged":  true,
+                                                          "drawcalls":  115,
+                                                          "triangles":  272488,
+                                                          "points":  1800,
+                                                          "lines":  0,
+                                                          "geometries":  98,
+                                                          "textures":  50,
+                                                          "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                          "texture":  null,
+                                                          "bytes":  864471,
+                                                          "resolution":  {
+                                                                             "width":  1280,
+                                                                             "height":  720
+                                                                         }
+                                                      },
+                                       "noise00":  {
+                                                       "loadedFlag":  1,
+                                                       "expectedLoadedFlag":  1,
+                                                       "globalProceduralUnchanged":  true,
+                                                       "drawcalls":  115,
+                                                       "triangles":  272488,
+                                                       "points":  1800,
+                                                       "lines":  0,
+                                                       "geometries":  98,
+                                                       "textures":  50,
+                                                       "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                       "texture":  {
+                                                                       "width":  1024,
+                                                                       "height":  1024,
+                                                                       "wrapS":  1000,
+                                                                       "wrapT":  1000,
+                                                                       "magFilter":  1006,
+                                                                       "minFilter":  1008,
+                                                                       "format":  1023,
+                                                                       "type":  1009,
+                                                                       "colorSpace":  "",
+                                                                       "generateMipmaps":  true,
+                                                                       "anisotropy":  4
+                                                                   },
+                                                       "bytes":  864483,
+                                                       "resolution":  {
+                                                                          "width":  1280,
+                                                                          "height":  720
+                                                                      }
+                                                   }
+                                   },
+                      "pageErrors":  [
+
+                                     ],
+                      "gameErrors":  [
+
+                                     ],
+                      "evidencePath":  "shots/asset-a01/high-night/evidence.json",
+                      "capturePaths":  [
+                                           "shots/asset-a01/high-night/01-procedural.png",
+                                           "shots/asset-a01/high-night/02-noise00.png"
+                                       ],
+                      "consoleErrors":  [
+                                            {
+                                                "value":  [
+                                                              "Failed to load resource: net::ERR_FAILED"
+                                                          ],
+                                                "Count":  1
+                                            }
+                                        ]
+                  },
+                  {
+                      "case":  "success",
+                      "quality":  "low",
+                      "tod":  "day",
+                      "viewport":  {
+                                       "width":  844,
+                                       "height":  390,
+                                       "dpr":  1,
+                                       "phone":  true
+                                   },
+                      "browser":  {
+                                      "userAgent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+                                      "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                      "swiftshader":  true
+                                  },
+                      "campfire":  {
+                                       "x":  66.46803743153548,
+                                       "y":  2.4118165371991687,
+                                       "z":  76.36753236814714
+                                   },
+                      "asset":  {
+                                    "id":  "tex:a01-noise00",
+                                    "state":  {
+                                                  "state":  "ok",
+                                                  "error":  "",
+                                                  "registryErrors":  [
+
+                                                                     ]
+                                              },
+                                    "interceptedCandidate":  false,
+                                    "originalBytes":  287022
+                                },
+                      "cohort":  {
+                                     "count":  9,
+                                     "frozen":  true,
+                                     "camera":  {
+                                                    "p":  [
+                                                              71.19950532409362,
+                                                              10.64326479197311,
+                                                              81.09900026070528
+                                                          ],
+                                                    "q":  [
+                                                              -0.3757756596600807,
+                                                              0.3495987113522072,
+                                                              0.15565137464090179,
+                                                              0.8440059503346554
+                                                          ],
+                                                    "target":  [
+                                                                   66.46803743153548,
+                                                                   2.4118165371991687,
+                                                                   76.36753236814714
+                                                               ],
+                                                    "dist":  10
+                                                },
+                                     "worldTime":  7.542799999999999,
+                                     "lightingTod":  "day",
+                                     "lightingPhase":  0.08
+                                 },
+                      "captures":  {
+                                       "procedural":  {
+                                                          "loadedFlag":  0,
+                                                          "expectedLoadedFlag":  0,
+                                                          "globalProceduralUnchanged":  true,
+                                                          "drawcalls":  75,
+                                                          "triangles":  178748,
+                                                          "points":  1800,
+                                                          "lines":  0,
+                                                          "geometries":  92,
+                                                          "textures":  42,
+                                                          "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                          "texture":  null,
+                                                          "bytes":  268968,
+                                                          "resolution":  {
+                                                                             "width":  844,
+                                                                             "height":  390
+                                                                         }
+                                                      },
+                                       "noise00":  {
+                                                       "loadedFlag":  1,
+                                                       "expectedLoadedFlag":  1,
+                                                       "globalProceduralUnchanged":  true,
+                                                       "drawcalls":  75,
+                                                       "triangles":  178748,
+                                                       "points":  1800,
+                                                       "lines":  0,
+                                                       "geometries":  92,
+                                                       "textures":  42,
+                                                       "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                       "texture":  {
+                                                                       "width":  1024,
+                                                                       "height":  1024,
+                                                                       "wrapS":  1000,
+                                                                       "wrapT":  1000,
+                                                                       "magFilter":  1006,
+                                                                       "minFilter":  1008,
+                                                                       "format":  1023,
+                                                                       "type":  1009,
+                                                                       "colorSpace":  "",
+                                                                       "generateMipmaps":  true,
+                                                                       "anisotropy":  4
+                                                                   },
+                                                       "bytes":  269001,
+                                                       "resolution":  {
+                                                                          "width":  844,
+                                                                          "height":  390
+                                                                      }
+                                                   }
+                                   },
+                      "pageErrors":  [
+
+                                     ],
+                      "gameErrors":  [
+
+                                     ],
+                      "evidencePath":  "shots/asset-a01/low-phone-day/evidence.json",
+                      "capturePaths":  [
+                                           "shots/asset-a01/low-phone-day/01-procedural.png",
+                                           "shots/asset-a01/low-phone-day/02-noise00.png"
+                                       ],
+                      "consoleErrors":  [
+                                            {
+                                                "value":  [
+                                                              "Failed to load resource: net::ERR_FAILED"
+                                                          ],
+                                                "Count":  1
+                                            }
+                                        ]
+                  },
+                  {
+                      "case":  "success",
+                      "quality":  "low",
+                      "tod":  "night",
+                      "viewport":  {
+                                       "width":  844,
+                                       "height":  390,
+                                       "dpr":  1,
+                                       "phone":  true
+                                   },
+                      "browser":  {
+                                      "userAgent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+                                      "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                      "swiftshader":  true
+                                  },
+                      "campfire":  {
+                                       "x":  66.46803743153548,
+                                       "y":  2.4118165371991687,
+                                       "z":  76.36753236814714
+                                   },
+                      "asset":  {
+                                    "id":  "tex:a01-noise00",
+                                    "state":  {
+                                                  "state":  "ok",
+                                                  "error":  "",
+                                                  "registryErrors":  [
+
+                                                                     ]
+                                              },
+                                    "interceptedCandidate":  false,
+                                    "originalBytes":  287022
+                                },
+                      "cohort":  {
+                                     "count":  9,
+                                     "frozen":  true,
+                                     "camera":  {
+                                                    "p":  [
+                                                              71.19950532409362,
+                                                              10.64326479197311,
+                                                              81.09900026070528
+                                                          ],
+                                                    "q":  [
+                                                              -0.3757756596600807,
+                                                              0.3495987113522072,
+                                                              0.15565137464090179,
+                                                              0.8440059503346554
+                                                          ],
+                                                    "target":  [
+                                                                   66.46803743153548,
+                                                                   2.4118165371991687,
+                                                                   76.36753236814714
+                                                               ],
+                                                    "dist":  10
+                                                },
+                                     "worldTime":  7.171000000000002,
+                                     "lightingTod":  "night",
+                                     "lightingPhase":  0.08
+                                 },
+                      "captures":  {
+                                       "procedural":  {
+                                                          "loadedFlag":  0,
+                                                          "expectedLoadedFlag":  0,
+                                                          "globalProceduralUnchanged":  true,
+                                                          "drawcalls":  79,
+                                                          "triangles":  180736,
+                                                          "points":  1800,
+                                                          "lines":  0,
+                                                          "geometries":  94,
+                                                          "textures":  42,
+                                                          "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                          "texture":  null,
+                                                          "bytes":  263443,
+                                                          "resolution":  {
+                                                                             "width":  844,
+                                                                             "height":  390
+                                                                         }
+                                                      },
+                                       "noise00":  {
+                                                       "loadedFlag":  1,
+                                                       "expectedLoadedFlag":  1,
+                                                       "globalProceduralUnchanged":  true,
+                                                       "drawcalls":  79,
+                                                       "triangles":  180736,
+                                                       "points":  1800,
+                                                       "lines":  0,
+                                                       "geometries":  94,
+                                                       "textures":  42,
+                                                       "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                       "texture":  {
+                                                                       "width":  1024,
+                                                                       "height":  1024,
+                                                                       "wrapS":  1000,
+                                                                       "wrapT":  1000,
+                                                                       "magFilter":  1006,
+                                                                       "minFilter":  1008,
+                                                                       "format":  1023,
+                                                                       "type":  1009,
+                                                                       "colorSpace":  "",
+                                                                       "generateMipmaps":  true,
+                                                                       "anisotropy":  4
+                                                                   },
+                                                       "bytes":  263439,
+                                                       "resolution":  {
+                                                                          "width":  844,
+                                                                          "height":  390
+                                                                      }
+                                                   }
+                                   },
+                      "pageErrors":  [
+
+                                     ],
+                      "gameErrors":  [
+
+                                     ],
+                      "evidencePath":  "shots/asset-a01/low-phone-night/evidence.json",
+                      "capturePaths":  [
+                                           "shots/asset-a01/low-phone-night/01-procedural.png",
+                                           "shots/asset-a01/low-phone-night/02-noise00.png"
+                                       ],
+                      "consoleErrors":  [
+                                            {
+                                                "value":  [
+                                                              "Failed to load resource: net::ERR_FAILED"
+                                                          ],
+                                                "Count":  1
+                                            }
+                                        ]
+                  },
+                  {
+                      "case":  "disabled",
+                      "quality":  "high",
+                      "tod":  "day",
+                      "viewport":  {
+                                       "width":  1280,
+                                       "height":  720,
+                                       "dpr":  1,
+                                       "phone":  false
+                                   },
+                      "browser":  {
+                                      "userAgent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+                                      "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                      "swiftshader":  true
+                                  },
+                      "campfire":  {
+                                       "x":  66.46803743153548,
+                                       "y":  2.4118165371991687,
+                                       "z":  76.36753236814714
+                                   },
+                      "asset":  {
+                                    "id":  "tex:a01-noise00",
+                                    "state":  {
+                                                  "state":  "disabled",
+                                                  "error":  "",
+                                                  "registryErrors":  [
+
+                                                                     ]
+                                              },
+                                    "interceptedCandidate":  false,
+                                    "originalBytes":  287022
+                                },
+                      "cohort":  {
+                                     "count":  9,
+                                     "frozen":  true,
+                                     "camera":  {
+                                                    "p":  [
+                                                              71.19950532409362,
+                                                              10.64326479197311,
+                                                              81.09900026070528
+                                                          ],
+                                                    "q":  [
+                                                              -0.3757756596600807,
+                                                              0.3495987113522072,
+                                                              0.15565137464090179,
+                                                              0.8440059503346554
+                                                          ],
+                                                    "target":  [
+                                                                   66.46803743153548,
+                                                                   2.4118165371991687,
+                                                                   76.36753236814714
+                                                               ],
+                                                    "dist":  10
+                                                },
+                                     "worldTime":  5.546200000000001,
+                                     "lightingTod":  "day",
+                                     "lightingPhase":  0.08
+                                 },
+                      "captures":  {
+                                       "procedural":  {
+                                                          "loadedFlag":  0,
+                                                          "expectedLoadedFlag":  0,
+                                                          "globalProceduralUnchanged":  true,
+                                                          "drawcalls":  111,
+                                                          "triangles":  270500,
+                                                          "points":  1800,
+                                                          "lines":  0,
+                                                          "geometries":  96,
+                                                          "textures":  49,
+                                                          "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                          "texture":  null,
+                                                          "bytes":  907573,
+                                                          "resolution":  {
+                                                                             "width":  1280,
+                                                                             "height":  720
+                                                                         }
+                                                      },
+                                       "noise00":  {
+                                                       "loadedFlag":  0,
+                                                       "expectedLoadedFlag":  0,
+                                                       "globalProceduralUnchanged":  true,
+                                                       "drawcalls":  111,
+                                                       "triangles":  270500,
+                                                       "points":  1800,
+                                                       "lines":  0,
+                                                       "geometries":  96,
+                                                       "textures":  49,
+                                                       "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                       "texture":  null,
+                                                       "bytes":  907573,
+                                                       "resolution":  {
+                                                                          "width":  1280,
+                                                                          "height":  720
+                                                                      }
+                                                   }
+                                   },
+                      "pageErrors":  [
+
+                                     ],
+                      "gameErrors":  [
+
+                                     ],
+                      "evidencePath":  "shots/asset-a01/disabled/evidence.json",
+                      "capturePaths":  [
+                                           "shots/asset-a01/disabled/01-procedural.png",
+                                           "shots/asset-a01/disabled/02-noise00.png"
+                                       ],
+                      "consoleErrors":  [
+                                            {
+                                                "value":  [
+                                                              "Failed to load resource: net::ERR_FAILED"
+                                                          ],
+                                                "Count":  1
+                                            }
+                                        ]
+                  },
+                  {
+                      "case":  "missing",
+                      "quality":  "high",
+                      "tod":  "day",
+                      "viewport":  {
+                                       "width":  1280,
+                                       "height":  720,
+                                       "dpr":  1,
+                                       "phone":  false
+                                   },
+                      "browser":  {
+                                      "userAgent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+                                      "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                      "swiftshader":  true
+                                  },
+                      "campfire":  {
+                                       "x":  66.46803743153548,
+                                       "y":  2.4118165371991687,
+                                       "z":  76.36753236814714
+                                   },
+                      "asset":  {
+                                    "id":  "tex:a01-noise00",
+                                    "state":  {
+                                                  "state":  "error",
+                                                  "error":  "tex:a01-noise00: [object Event]",
+                                                  "registryErrors":  [
+                                                                         "tex:a01-noise00: [object Event]"
+                                                                     ]
+                                              },
+                                    "interceptedCandidate":  true,
+                                    "originalBytes":  287022
+                                },
+                      "cohort":  {
+                                     "count":  9,
+                                     "frozen":  true,
+                                     "camera":  {
+                                                    "p":  [
+                                                              71.19950532409362,
+                                                              10.64326479197311,
+                                                              81.09900026070528
+                                                          ],
+                                                    "q":  [
+                                                              -0.3757756596600807,
+                                                              0.3495987113522072,
+                                                              0.15565137464090179,
+                                                              0.8440059503346554
+                                                          ],
+                                                    "target":  [
+                                                                   66.46803743153548,
+                                                                   2.4118165371991687,
+                                                                   76.36753236814714
+                                                               ],
+                                                    "dist":  10
+                                                },
+                                     "worldTime":  6.079799999999999,
+                                     "lightingTod":  "day",
+                                     "lightingPhase":  0.08
+                                 },
+                      "captures":  {
+                                       "procedural":  {
+                                                          "loadedFlag":  0,
+                                                          "expectedLoadedFlag":  0,
+                                                          "globalProceduralUnchanged":  true,
+                                                          "drawcalls":  111,
+                                                          "triangles":  270500,
+                                                          "points":  1800,
+                                                          "lines":  0,
+                                                          "geometries":  96,
+                                                          "textures":  49,
+                                                          "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                          "texture":  null,
+                                                          "bytes":  906824,
+                                                          "resolution":  {
+                                                                             "width":  1280,
+                                                                             "height":  720
+                                                                         }
+                                                      },
+                                       "noise00":  {
+                                                       "loadedFlag":  0,
+                                                       "expectedLoadedFlag":  0,
+                                                       "globalProceduralUnchanged":  true,
+                                                       "drawcalls":  111,
+                                                       "triangles":  270500,
+                                                       "points":  1800,
+                                                       "lines":  0,
+                                                       "geometries":  96,
+                                                       "textures":  49,
+                                                       "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                       "texture":  null,
+                                                       "bytes":  906824,
+                                                       "resolution":  {
+                                                                          "width":  1280,
+                                                                          "height":  720
+                                                                      }
+                                                   }
+                                   },
+                      "pageErrors":  [
+
+                                     ],
+                      "gameErrors":  [
+
+                                     ],
+                      "evidencePath":  "shots/asset-a01/missing/evidence.json",
+                      "capturePaths":  [
+                                           "shots/asset-a01/missing/01-procedural.png",
+                                           "shots/asset-a01/missing/02-noise00.png"
+                                       ],
+                      "consoleErrors":  [
+                                            {
+                                                "value":  [
+                                                              "Failed to load resource: net::ERR_FAILED",
+                                                              "Failed to load resource: the server responded with a status of 404 (Not Found)"
+                                                          ],
+                                                "Count":  2
+                                            }
+                                        ]
+                  },
+                  {
+                      "case":  "bad",
+                      "quality":  "high",
+                      "tod":  "day",
+                      "viewport":  {
+                                       "width":  1280,
+                                       "height":  720,
+                                       "dpr":  1,
+                                       "phone":  false
+                                   },
+                      "browser":  {
+                                      "userAgent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+                                      "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                      "swiftshader":  true
+                                  },
+                      "campfire":  {
+                                       "x":  66.46803743153548,
+                                       "y":  2.4118165371991687,
+                                       "z":  76.36753236814714
+                                   },
+                      "asset":  {
+                                    "id":  "tex:a01-noise00",
+                                    "state":  {
+                                                  "state":  "error",
+                                                  "error":  "tex:a01-noise00: [object Event]",
+                                                  "registryErrors":  [
+                                                                         "tex:a01-noise00: [object Event]"
+                                                                     ]
+                                              },
+                                    "interceptedCandidate":  true,
+                                    "originalBytes":  287022
+                                },
+                      "cohort":  {
+                                     "count":  9,
+                                     "frozen":  true,
+                                     "camera":  {
+                                                    "p":  [
+                                                              71.19950532409362,
+                                                              10.64326479197311,
+                                                              81.09900026070528
+                                                          ],
+                                                    "q":  [
+                                                              -0.3757756596600807,
+                                                              0.3495987113522072,
+                                                              0.15565137464090179,
+                                                              0.8440059503346554
+                                                          ],
+                                                    "target":  [
+                                                                   66.46803743153548,
+                                                                   2.4118165371991687,
+                                                                   76.36753236814714
+                                                               ],
+                                                    "dist":  10
+                                                },
+                                     "worldTime":  6,
+                                     "lightingTod":  "day",
+                                     "lightingPhase":  0.08
+                                 },
+                      "captures":  {
+                                       "procedural":  {
+                                                          "loadedFlag":  0,
+                                                          "expectedLoadedFlag":  0,
+                                                          "globalProceduralUnchanged":  true,
+                                                          "drawcalls":  111,
+                                                          "triangles":  270500,
+                                                          "points":  1800,
+                                                          "lines":  0,
+                                                          "geometries":  96,
+                                                          "textures":  49,
+                                                          "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                          "texture":  null,
+                                                          "bytes":  903670,
+                                                          "resolution":  {
+                                                                             "width":  1280,
+                                                                             "height":  720
+                                                                         }
+                                                      },
+                                       "noise00":  {
+                                                       "loadedFlag":  0,
+                                                       "expectedLoadedFlag":  0,
+                                                       "globalProceduralUnchanged":  true,
+                                                       "drawcalls":  111,
+                                                       "triangles":  270500,
+                                                       "points":  1800,
+                                                       "lines":  0,
+                                                       "geometries":  96,
+                                                       "textures":  49,
+                                                       "renderer":  "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+                                                       "texture":  null,
+                                                       "bytes":  903670,
+                                                       "resolution":  {
+                                                                          "width":  1280,
+                                                                          "height":  720
+                                                                      }
+                                                   }
+                                   },
+                      "pageErrors":  [
+
+                                     ],
+                      "gameErrors":  [
+
+                                     ],
+                      "evidencePath":  "shots/asset-a01/bad/evidence.json",
+                      "capturePaths":  [
+                                           "shots/asset-a01/bad/01-procedural.png",
+                                           "shots/asset-a01/bad/02-noise00.png"
+                                       ],
+                      "consoleErrors":  [
+                                            {
+                                                "value":  [
+                                                              "Failed to load resource: net::ERR_FAILED"
+                                                          ],
+                                                "Count":  1
+                                            }
+                                        ]
+                  }
+              ]
+}

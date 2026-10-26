@@ -1,0 +1,91 @@
+{
+  "schema": "l03d-logging-failure-diagnostic/v1",
+  "at": "2026-10-11T01:48:20.056Z",
+  "fixtureMarkerSha256": "3bba138d33d146dd72ff6c2bda34c63215a3a73d4b7ef9e97e63754fc27510cb",
+  "fixtureMatchCount": 1,
+  "accountIdSha256": "38a8f74f6a25ba30e9ca17bb20dc9ef0c7544b0f480fb33a61bf17648608636b",
+  "profile": {
+    "ownerSentinelValid": true,
+    "version": 3,
+    "dataSha256": "af95c5025025974408b80af27a8dd9ebd276a1bd683f78be18aefed8c0bbcc5e",
+    "workshopV": 1,
+    "crateKits": 0,
+    "storageCredit": false,
+    "axe": true
+  },
+  "world": {
+    "id": "marea-negra",
+    "version": 1936,
+    "dataSha256": "fce2f81a12a023d05e44a91087b2a8cb9e0ccf3a11c778c7d5efc3f3912d4035",
+    "resourceV": 3,
+    "resourceTick": 1319594,
+    "savedEconomyHours": 2552.125,
+    "savedEconomyAccumulator": 3.6166666664135794,
+    "palmCount": 96,
+    "chosenNodeSha256": "122e9ae1e433776645cadec122504ed89e932d9294fcadf444b40c54971d19e7",
+    "chosenNodeRev": 1,
+    "chosenNodeHits": 0,
+    "chosenNodeReadyAt": 0
+  },
+  "candidate": {
+    "kind": "resource.gather",
+    "denial": "timing",
+    "inventedChallenge": true,
+    "operationIdSha256": "3b082b81433e605363056c58943c53bc4dc5ae74405a9a0e1a9d44613226c986",
+    "commandSha256": "0a93d0304e8aa9b960d65d1d0b99494d4e6ea1841cf8970141870b0a8fe46e67",
+    "requestSha256": "b9fff58788f4569c593de0738725e3f70718c563260fb2a39f6314b500dc2960",
+    "jsEconomicInputValid": true,
+    "jsLoggingWorldTransition": true
+  },
+  "normalizer": {
+    "available": true,
+    "returnedObject": true,
+    "outputSha256": "caa79859da9bf3bda99b97687b4596c148ac4dd83d37e63cc054daaaed121119"
+  },
+  "validatorProbes": [
+    {
+      "name": "resource_state",
+      "available": true,
+      "value": true
+    },
+    {
+      "name": "economic_request",
+      "available": true,
+      "value": true
+    },
+    {
+      "name": "logging_beneficiaries",
+      "available": true,
+      "value": true
+    },
+    {
+      "name": "logging_awards",
+      "available": true,
+      "value": true
+    },
+    {
+      "name": "economic_request_starter_base",
+      "available": true,
+      "value": true
+    },
+    {
+      "name": "logging_transition",
+      "available": true,
+      "value": true
+    },
+    {
+      "name": "starter_v3_transition",
+      "available": true,
+      "value": true
+    }
+  ],
+  "receipts": {
+    "queryAvailable": true,
+    "count": 0,
+    "rows": []
+  },
+  "publicStatus": {
+    "available": false,
+    "httpStatus": 503
+  }
+}

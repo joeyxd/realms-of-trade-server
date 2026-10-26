@@ -1,0 +1,904 @@
+{
+  "generatedAt": "2026-10-08T02:07:43.550Z",
+  "purpose": "Server-owned coastal gather, wood crafting, raft editor use, save/reconnect and shared depletion.",
+  "harness": "fresh ephemeral GameHost per viewport; memory profile store; local Three.js/GSAP; browser contexts isolated; no .env or external storage.",
+  "setup": "QA fixture moves server ECS players to deterministic node, bench and helm positions; gather/craft/build actions themselves use the real keyboard/touch/UI and server protocol.",
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "resource-desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "failed",
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7-resource-loop\\resource-desktop-1280x720-00-fresh-world.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7-resource-loop\\resource-desktop-1280x720-01-harvested.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7-resource-loop\\resource-desktop-1280x720-02-bench-crafted.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7-resource-loop\\resource-desktop-1280x720-failure.png"
+      ],
+      "errors": [],
+      "consoleErrors": [],
+      "gathers": [
+        {
+          "node": "coast-10",
+          "kind": "wood",
+          "ack": {
+            "op": "gather",
+            "opId": "03a0b5e5-2b5d-4a16-a3a6-81f4e50fa7eb",
+            "ok": true,
+            "why": "",
+            "good": "tronco",
+            "rev": 2
+          },
+          "before": {
+            "gold": 0,
+            "tradeRev": 1,
+            "pack": {
+              "tronco": 1
+            },
+            "cap": 10
+          },
+          "after": {
+            "gold": 0,
+            "tradeRev": 2,
+            "pack": {
+              "tronco": 2
+            },
+            "cap": 10
+          },
+          "worldNode": {
+            "id": "coast-10",
+            "kind": "wood",
+            "rev": 2,
+            "ready": false,
+            "readyTick": 4540,
+            "tick": 943
+          },
+          "renderBefore": {
+            "snapshotNode": {
+              "id": "coast-10",
+              "kind": "wood",
+              "x": 45.31857447286161,
+              "y": 2.639341838889398,
+              "z": -82.28909129677595,
+              "rev": 1,
+              "ready": true,
+              "wait": 0
+            },
+            "diagnostic": {
+              "maxNodes": 16,
+              "textures": [],
+              "gameplay": true,
+              "loaded": [
+                "model:coast-rock-v1",
+                "model:beach-debris-log-v1",
+                "model:beach-debris-planks-v1"
+              ]
+            },
+            "rendered": {
+              "groupVisible": true,
+              "meshVisible": true,
+              "x": 45.31857447286161,
+              "y": 2.639341838889398,
+              "z": -82.28909129677595,
+              "vertices": 54
+            },
+            "snapshotBytes": 2156
+          },
+          "renderAfter": {
+            "snapshotNode": {
+              "id": "coast-10",
+              "kind": "wood",
+              "x": 45.31857447286161,
+              "y": 2.639341838889398,
+              "z": -82.28909129677595,
+              "rev": 2,
+              "ready": false,
+              "wait": 59.96666666666667
+            },
+            "diagnostic": {
+              "maxNodes": 16,
+              "textures": [],
+              "gameplay": true,
+              "loaded": [
+                "model:coast-rock-v1",
+                "model:beach-debris-log-v1",
+                "model:beach-debris-planks-v1"
+              ]
+            },
+            "rendered": {
+              "groupVisible": true,
+              "meshVisible": false,
+              "x": 45.31857447286161,
+              "y": 2.639341838889398,
+              "z": -82.28909129677595,
+              "vertices": 54
+            },
+            "snapshotBytes": 2186
+          }
+        },
+        {
+          "node": "coast-12",
+          "kind": "stone",
+          "ack": {
+            "op": "gather",
+            "opId": "958d688d-d353-450a-b15a-9c7353a6125e",
+            "ok": true,
+            "why": "",
+            "good": "piedra",
+            "rev": 2
+          },
+          "before": {
+            "gold": 0,
+            "tradeRev": 2,
+            "pack": {
+              "tronco": 2
+            },
+            "cap": 10
+          },
+          "after": {
+            "gold": 0,
+            "tradeRev": 3,
+            "pack": {
+              "tronco": 2,
+              "piedra": 1
+            },
+            "cap": 10
+          },
+          "worldNode": {
+            "id": "coast-12",
+            "kind": "stone",
+            "rev": 2,
+            "ready": false,
+            "readyTick": 4576,
+            "tick": 978
+          },
+          "renderBefore": {
+            "snapshotNode": {
+              "id": "coast-12",
+              "kind": "stone",
+              "x": 65.05382386916237,
+              "y": 1.7588819783532914,
+              "z": -65.05382386916237,
+              "rev": 1,
+              "ready": true,
+              "wait": 0
+            },
+            "diagnostic": {
+              "maxNodes": 16,
+              "textures": [],
+              "gameplay": true,
+              "loaded": [
+                "model:coast-rock-v1",
+                "model:beach-debris-log-v1",
+                "model:beach-debris-planks-v1"
+              ]
+            },
+            "rendered": {
+              "groupVisible": true,
+              "meshVisible": true,
+              "x": 65.05382386916237,
+              "y": 1.7588819783532914,
+              "z": -65.05382386916237,
+              "vertices": 192
+            },
+            "snapshotBytes": 2186
+          },
+          "renderAfter": {
+            "snapshotNode": {
+              "id": "coast-12",
+              "kind": "stone",
+              "x": 65.05382386916237,
+              "y": 1.7588819783532914,
+              "z": -65.05382386916237,
+              "rev": 2,
+              "ready": false,
+              "wait": 59.96666666666667
+            },
+            "diagnostic": {
+              "maxNodes": 16,
+              "textures": [],
+              "gameplay": true,
+              "loaded": [
+                "model:coast-rock-v1",
+                "model:beach-debris-log-v1",
+                "model:beach-debris-planks-v1"
+              ]
+            },
+            "rendered": {
+              "groupVisible": true,
+              "meshVisible": true,
+              "x": 65.05382386916237,
+              "y": 1.7588819783532914,
+              "z": -65.05382386916237,
+              "vertices": 192
+            },
+            "snapshotBytes": 2203
+          }
+        }
+      ],
+      "serverLog": [
+        "[net] #1 connected (127.0.0.1) · sockets 1",
+        "[net] #2 connected (127.0.0.1) · sockets 2",
+        "[net] #2 left · players 1 · sockets 1",
+        "[net] #1 left · players 0 · sockets 0"
+      ],
+      "serverMessages": [
+        {
+          "id": 1,
+          "t": "hello",
+          "name": "Grumete414",
+          "v": 22,
+          "op": "",
+          "node": ""
+        },
+        {
+          "id": 2,
+          "t": "hello",
+          "name": "Resource Peer",
+          "v": 22,
+          "op": "",
+          "node": ""
+        },
+        {
+          "id": 1,
+          "t": "cmd",
+          "name": "",
+          "op": "gather",
+          "node": "coast-1"
+        },
+        {
+          "id": 2,
+          "t": "cmd",
+          "name": "",
+          "op": "gather",
+          "node": "coast-1"
+        },
+        {
+          "id": 2,
+          "t": "cmd",
+          "name": "",
+          "op": "gather",
+          "node": "coast-10"
+        },
+        {
+          "id": 1,
+          "t": "cmd",
+          "name": "",
+          "op": "gather",
+          "node": "coast-10"
+        },
+        {
+          "id": 1,
+          "t": "cmd",
+          "name": "",
+          "op": "gather",
+          "node": "coast-12"
+        },
+        {
+          "id": 1,
+          "t": "cmd",
+          "name": "",
+          "op": "craft",
+          "node": ""
+        }
+      ],
+      "websockets": [
+        {
+          "label": "owner",
+          "url": "ws://127.0.0.1:57445/ws",
+          "closed": false
+        }
+      ],
+      "resources": [
+        {
+          "id": "coast-1",
+          "kind": "wood",
+          "x": 105.54575969252762,
+          "y": 1.7241227474424363,
+          "z": 79.80062018727583,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-10",
+          "kind": "wood",
+          "x": 45.31857447286161,
+          "y": 2.639341838889398,
+          "z": -82.28909129677595,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-11",
+          "kind": "wood",
+          "x": 55.45322158987447,
+          "y": 2.2209544202915743,
+          "z": -74.02792226255272,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-12",
+          "kind": "stone",
+          "x": 65.05382386916237,
+          "y": 1.7588819783532914,
+          "z": -65.05382386916237,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-13",
+          "kind": "wood",
+          "x": 74.02792226255272,
+          "y": 1.693077144095066,
+          "z": -55.45322158987446,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-14",
+          "kind": "wood",
+          "x": 89.75777139801818,
+          "y": 3.21347007436484,
+          "z": -34.74748471002228,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-15",
+          "kind": "stone",
+          "x": 96.36203509410852,
+          "y": 3.5670678081098535,
+          "z": -23.84175767451812,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-16",
+          "kind": "wood",
+          "x": 102.0382797153959,
+          "y": 3.5477584171916767,
+          "z": -12.706421479377852,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-2",
+          "kind": "wood",
+          "x": 88.0259639390594,
+          "y": 1.1619416773569624,
+          "z": 102.20724324289841,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-3",
+          "kind": "stone",
+          "x": 101.12682011079231,
+          "y": 2.9143793809659755,
+          "z": 77.46118158518067,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-4",
+          "kind": "wood",
+          "x": 85.06267504307219,
+          "y": 2.578678204000939,
+          "z": 94.9809773386489,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-5",
+          "kind": "wood",
+          "x": 93.48465401061476,
+          "y": 3.358566719980865,
+          "z": 79.07279484440178,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-6",
+          "kind": "stone",
+          "x": 82.72323644097702,
+          "y": 2.1081057445760125,
+          "z": 99.39991692038421,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-7",
+          "kind": "wood",
+          "x": 95.82409261270993,
+          "y": 3.7173769002816472,
+          "z": 74.65385526266647,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-8",
+          "kind": "wood",
+          "x": 79.75994754498983,
+          "y": 2.6454455441798377,
+          "z": 92.1736510161347,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        },
+        {
+          "id": "coast-9",
+          "kind": "stone",
+          "x": 34.747484710022285,
+          "y": 2.4946825022832533,
+          "z": -89.75777139801818,
+          "rev": 1,
+          "ready": true,
+          "wait": 0
+        }
+      ],
+      "bench": {
+        "x": 98.73539398420614,
+        "y": 2.487394956150242,
+        "z": 84.11558472002913
+      },
+      "initial": {
+        "gold": 0,
+        "tradeRev": 0,
+        "pack": {},
+        "cap": 10
+      },
+      "wirePeer": {
+        "protocol": 22,
+        "entity": 28,
+        "scene": false,
+        "close": {
+          "code": 1000,
+          "reason": ""
+        }
+      },
+      "raceAcks": {
+        "owner": {
+          "op": "gather",
+          "opId": "391328e8-6098-4b23-a663-9b1815ae8ae9",
+          "ok": true,
+          "why": "",
+          "good": "tronco",
+          "rev": 2
+        },
+        "peer": {
+          "type": "resource",
+          "to": 28,
+          "op": "gather",
+          "opId": "shared-race-1",
+          "ok": false,
+          "why": "revision",
+          "rev": 2
+        },
+        "node": {
+          "id": "coast-1",
+          "kind": "wood",
+          "rev": 2,
+          "ready": false,
+          "readyTick": 4498,
+          "tick": 902
+        },
+        "client": {
+          "acks": [
+            {
+              "op": "gather",
+              "opId": "391328e8-6098-4b23-a663-9b1815ae8ae9",
+              "ok": true,
+              "why": "",
+              "good": "tronco",
+              "rev": 2
+            }
+          ],
+          "resources": {
+            "id": "coast-1",
+            "kind": "wood",
+            "x": 105.54575969252762,
+            "y": 1.7241227474424363,
+            "z": 79.80062018727583,
+            "rev": 2,
+            "ready": false,
+            "wait": 59.96666666666667
+          }
+        }
+      },
+      "sharedDepletion": {
+        "node": "coast-1",
+        "mode": "owner UI action followed by peer wire action with same expectedRev",
+        "raceStart": {
+          "owner": {
+            "pack": {},
+            "packCap": 10,
+            "tradeRev": 0,
+            "gold": 0,
+            "shipRev": 1,
+            "parts": [
+              [
+                "foundation",
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                "foundation",
+                1,
+                0,
+                0,
+                0
+              ],
+              [
+                "foundation",
+                0,
+                1,
+                0,
+                0
+              ],
+              [
+                "foundation",
+                1,
+                1,
+                0,
+                0
+              ],
+              [
+                "sail",
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                "crate",
+                1,
+                1,
+                0,
+                0
+              ]
+            ],
+            "hold": {},
+            "player": {
+              "x": 105.54575969252762,
+              "y": 1.7241227474424363,
+              "z": 79.80062018727583
+            },
+            "errors": []
+          },
+          "peer": {
+            "gold": 0,
+            "tradeRev": 0,
+            "pack": {},
+            "cap": 10
+          },
+          "nodeRev": 1
+        },
+        "raceEnd": {
+          "owner": {
+            "gold": 0,
+            "tradeRev": 1,
+            "pack": {
+              "tronco": 1
+            },
+            "cap": 10
+          },
+          "peer": {
+            "gold": 0,
+            "tradeRev": 0,
+            "pack": {},
+            "cap": 10
+          },
+          "node": {
+            "id": "coast-1",
+            "kind": "wood",
+            "rev": 2,
+            "ready": false,
+            "readyTick": 4498,
+            "tick": 902
+          },
+          "acks": [
+            {
+              "op": "gather",
+              "opId": "391328e8-6098-4b23-a663-9b1815ae8ae9",
+              "ok": true,
+              "why": "",
+              "good": "tronco",
+              "rev": 2
+            },
+            {
+              "type": "resource",
+              "to": 28,
+              "op": "gather",
+              "opId": "shared-race-1",
+              "ok": false,
+              "why": "revision",
+              "rev": 2
+            }
+          ],
+          "render": {
+            "snapshotNode": {
+              "id": "coast-1",
+              "kind": "wood",
+              "x": 105.54575969252762,
+              "y": 1.7241227474424363,
+              "z": 79.80062018727583,
+              "rev": 2,
+              "ready": false,
+              "wait": 59.96666666666667
+            },
+            "diagnostic": {
+              "maxNodes": 16,
+              "textures": [],
+              "gameplay": true,
+              "loaded": [
+                "model:coast-rock-v1",
+                "model:beach-debris-log-v1",
+                "model:beach-debris-planks-v1"
+              ]
+            },
+            "rendered": {
+              "groupVisible": true,
+              "meshVisible": false,
+              "x": 105.54575969252762,
+              "y": 1.7241227474424363,
+              "z": 79.80062018727583,
+              "vertices": 54
+            },
+            "snapshotBytes": 2168
+          }
+        },
+        "renderBefore": {
+          "snapshotNode": {
+            "id": "coast-1",
+            "kind": "wood",
+            "x": 105.54575969252762,
+            "y": 1.7241227474424363,
+            "z": 79.80062018727583,
+            "rev": 1,
+            "ready": true,
+            "wait": 0
+          },
+          "diagnostic": {
+            "maxNodes": 16,
+            "textures": [],
+            "gameplay": true,
+            "loaded": [
+              "model:coast-rock-v1",
+              "model:beach-debris-log-v1",
+              "model:beach-debris-planks-v1"
+            ]
+          },
+          "rendered": {
+            "groupVisible": true,
+            "meshVisible": true,
+            "x": 105.54575969252762,
+            "y": 1.7241227474424363,
+            "z": 79.80062018727583,
+            "vertices": 54
+          },
+          "snapshotBytes": 2151
+        }
+      },
+      "fullPack": {
+        "deny": {
+          "type": "resource",
+          "to": 28,
+          "op": "gather",
+          "opId": "full-pack-deny-1",
+          "ok": false,
+          "why": "full",
+          "rev": 1
+        },
+        "node": {
+          "id": "coast-10",
+          "kind": "wood",
+          "rev": 1,
+          "ready": true,
+          "readyTick": 0,
+          "tick": 937
+        },
+        "profile": {
+          "gold": 0,
+          "tradeRev": 0,
+          "pack": {
+            "agua": 10
+          },
+          "cap": 10
+        },
+        "fixture": "test-only full bag; no currency injected"
+      },
+      "craft": {
+        "recipe": "madera",
+        "ack": {
+          "op": "craft",
+          "opId": "982a3650-c386-4333-a1d2-1d811e145f4b",
+          "ok": true,
+          "why": "",
+          "good": "madera",
+          "rev": 4
+        },
+        "before": {
+          "gold": 0,
+          "tradeRev": 3,
+          "pack": {
+            "tronco": 2,
+            "piedra": 1
+          },
+          "cap": 10
+        },
+        "after": {
+          "gold": 0,
+          "tradeRev": 4,
+          "pack": {
+            "tronco": 1,
+            "piedra": 1,
+            "madera": 1
+          },
+          "cap": 10
+        }
+      },
+      "editorAim": {
+        "targetState": {
+          "target": null,
+          "dir": 0,
+          "selected": "railing",
+          "actionDisabled": true,
+          "status": "Casilla — · nivel 0 · Norte · Listo"
+        },
+        "aimDiagnostics": {
+          "stage": {
+            "w": 1280,
+            "h": 720,
+            "rotated": false
+          },
+          "canvas": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 720
+          },
+          "editorContext": true,
+          "point": {
+            "x": 1097.657872134791,
+            "y": 1683.8755997885557
+          }
+        }
+      },
+      "failure": "Error: raft editor could not aim at railing cell: {\"target\":null,\"dir\":0,\"selected\":\"railing\",\"actionDisabled\":true,\"status\":\"Casilla — · nivel 0 · Norte · Listo\"}\n    at check (file:///C:/DEV/real%20of%20trade/realms-of-trade-server/tools/qa-resource-loop.mjs:22:33)\n    at buildRailing (file:///C:/DEV/real%20of%20trade/realms-of-trade-server/tools/qa-resource-loop.mjs:140:3)\n    at async runViewport (file:///C:/DEV/real%20of%20trade/realms-of-trade-server/tools/qa-resource-loop.mjs:251:5)\n    at async file:///C:/DEV/real%20of%20trade/realms-of-trade-server/tools/qa-resource-loop.mjs:278:32",
+      "hostDebug": {
+        "status": {
+          "players": 1,
+          "max": 2,
+          "sockets": 1,
+          "tick": 1299,
+          "uptime": 22,
+          "stepMs": 0.493,
+          "bots": 0,
+          "names": [
+            "Grumete414"
+          ],
+          "errors": 0,
+          "storage": {
+            "kind": "memory",
+            "durable": false,
+            "accounts": false,
+            "errors": 0,
+            "unsaved": 0,
+            "tickBlocked": false,
+            "staging": null,
+            "startup": null,
+            "world": null
+          },
+          "net": {
+            "fill": 305,
+            "late": 9,
+            "trimmed": 0,
+            "clamped": 0,
+            "kbOut": 2445.2,
+            "kbIn": 77.2,
+            "dropped": 0
+          }
+        },
+        "sockets": [
+          1
+        ],
+        "clients": [
+          {
+            "id": 1,
+            "entity": 26
+          }
+        ],
+        "serverMessages": [
+          {
+            "id": 1,
+            "t": "hello",
+            "name": "Grumete414",
+            "v": 22,
+            "op": "",
+            "node": ""
+          },
+          {
+            "id": 2,
+            "t": "hello",
+            "name": "Resource Peer",
+            "v": 22,
+            "op": "",
+            "node": ""
+          },
+          {
+            "id": 1,
+            "t": "cmd",
+            "name": "",
+            "op": "gather",
+            "node": "coast-1"
+          },
+          {
+            "id": 2,
+            "t": "cmd",
+            "name": "",
+            "op": "gather",
+            "node": "coast-1"
+          },
+          {
+            "id": 2,
+            "t": "cmd",
+            "name": "",
+            "op": "gather",
+            "node": "coast-10"
+          },
+          {
+            "id": 1,
+            "t": "cmd",
+            "name": "",
+            "op": "gather",
+            "node": "coast-10"
+          },
+          {
+            "id": 1,
+            "t": "cmd",
+            "name": "",
+            "op": "gather",
+            "node": "coast-12"
+          },
+          {
+            "id": 1,
+            "t": "cmd",
+            "name": "",
+            "op": "craft",
+            "node": ""
+          }
+        ]
+      },
+      "ownerDebug": {
+        "close": null,
+        "joined": true,
+        "mode": "playing",
+        "transport": 1
+      }
+    }
+  ],
+  "failures": [
+    "resource-desktop-1280x720: raft editor could not aim at railing cell: {\"target\":null,\"dir\":0,\"selected\":\"railing\",\"actionDisabled\":true,\"status\":\"Casilla — · nivel 0 · Norte · Listo\"}"
+  ],
+  "status": "failed",
+  "finishedAt": "2026-10-08T02:08:07.454Z"
+}

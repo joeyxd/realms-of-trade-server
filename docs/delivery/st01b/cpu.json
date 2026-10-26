@@ -1,0 +1,188 @@
+{
+  "schema": "marea.st01b-cpu-evidence/v3",
+  "generatedAtUtc": "2026-10-13T04:46:00.926Z",
+  "evidenceStatus": "final-registration CPU snapshot; browser and device acceptance pending",
+  "repository": {
+    "branch": "codex/st01b-niagara",
+    "head": "fcd5160fc1ce97b7d18883a5bd99c59723d2211d",
+    "workingTreeHasUncommittedChanges": true
+  },
+  "execution": {
+    "mode": "CPU-only",
+    "browser": false,
+    "gpu": false,
+    "defaultSuiteRun": false,
+    "command": "node --test tests/effect-library.test.mjs tests/flipbook-effect.test.mjs tests/skill-preview.test.mjs tests/skill-presentation.test.mjs tests/gm-editor-entry.test.mjs tests/gm-editor-walk-preview.test.mjs tests/gm-functional-authority.test.mjs tests/account-auth.test.mjs",
+    "result": {
+      "tests": 58,
+      "passed": 58,
+      "failed": 0,
+      "skipped": 0
+    },
+    "files": [
+      {
+        "path": "tests/effect-library.test.mjs",
+        "tests": 7,
+        "passed": 7
+      },
+      {
+        "path": "tests/flipbook-effect.test.mjs",
+        "tests": 4,
+        "passed": 4
+      },
+      {
+        "path": "tests/skill-preview.test.mjs",
+        "tests": 4,
+        "passed": 4
+      },
+      {
+        "path": "tests/skill-presentation.test.mjs",
+        "tests": 7,
+        "passed": 7
+      },
+      {
+        "path": "tests/gm-editor-entry.test.mjs",
+        "tests": 5,
+        "passed": 5
+      },
+      {
+        "path": "tests/gm-editor-walk-preview.test.mjs",
+        "tests": 8,
+        "passed": 8
+      },
+      {
+        "path": "tests/gm-functional-authority.test.mjs",
+        "tests": 12,
+        "passed": 12
+      },
+      {
+        "path": "tests/account-auth.test.mjs",
+        "tests": 11,
+        "passed": 11
+      }
+    ]
+  },
+  "catalog": {
+    "uniqueOriginalNiagaraSystems": 916,
+    "originalSourceRecords": 993,
+    "systemEntries": 916,
+    "systemPending": 915,
+    "systemCaptureExcerpts": [
+      "niagara-b23e30580f0f5d09"
+    ],
+    "standaloneSourceTextureComponents": 15,
+    "additionalTextureComponentSourceRecords": 15,
+    "combinedSourceRecords": 1008,
+    "effectLibraryEntries": 932,
+    "viewReadyCount": 17,
+    "viewReadyComposition": {
+      "Tromba": 1,
+      "standaloneSourceTextureComponents": 15,
+      "systemCaptureExcerpts": 1
+    },
+    "noGameplayClaim": true,
+    "waterSplash": {
+      "role": "source-texture component",
+      "grid": [
+        7,
+        7
+      ],
+      "frames": 49,
+      "textureSha256": "26e09bd0f93cb620768268867f7887759315452bd5e9da4a7506da06e798a672",
+      "sourceSystemSha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287"
+    },
+    "fireworkCapture": {
+      "id": "niagara-b23e30580f0f5d09",
+      "role": "system-capture",
+      "sourceSystemSha256": "b23e30580f0f5d097c19d496c0d7685eb61da4882e224f876cd5d16346d438b0",
+      "frames": 60,
+      "durationSeconds": 2,
+      "blend": "additive",
+      "project": "MyProject",
+      "byteAliasNote": "Exact-byte aliases are catalogued; dependency equivalence is not inferred."
+    },
+    "sourceClassEvidence": {
+      "original": "NiagaraSystem (UE 5.8 AssetRegistry)",
+      "components": "Texture2D (source-component evidence)"
+    },
+    "componentSourceBindings": {
+      "count": 15,
+      "exactHashesRendererPathsMaterialAndTexture": true
+    },
+    "compiledNamespace": {
+      "absoluteUnrealPathsPresent": false
+    },
+    "manifestAtlasFiles": {
+      "count": 32,
+      "expected": 32,
+      "allSha256Match": true,
+      "hashes": {
+        "/assets/vfx/niagara/component-12ce65c60986b47a-8x8-alpha-desktop.webp": "feda40af9f6a5bde14d8836e3b05e3655597481123d547799371b35b51a3bda2",
+        "/assets/vfx/niagara/component-12ce65c60986b47a-8x8-alpha-mobile.webp": "1e8d76f37792e681d7b839e29f0cb7b07c850fd543d9ff518f1ec53c6e6cc5f1",
+        "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-desktop.webp": "0c57edca524ea8fe223bb4a91a0cc8ed3010f1aa0b4d3f33bc362260ba774da4",
+        "/assets/vfx/niagara/component-1d5c64ec6742cb1b-8x4-luma-mobile.webp": "5d439862e41b84f38b1ff827a10283ee68a174374c4f79cabe2b3b56e7bee24b",
+        "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-desktop.webp": "c6d58b8f597079fc0dc329a6c492427efe1505240ccd33f382737818cc1287a8",
+        "/assets/vfx/niagara/component-26e09bd0f93cb620-7x7-luma-mobile.webp": "e5c7d186ea39e166cc1905ea4591e61e0901c552b4c3ec715874c7ee9e8dba70",
+        "/assets/vfx/niagara/component-3e0a757f3e8443eb-8x4-luma-desktop.webp": "faaa1f78644294baed1d4b844579b8caffb987797e9983813ad77a3aa60f7466",
+        "/assets/vfx/niagara/component-3e0a757f3e8443eb-8x4-luma-mobile.webp": "be4d28a165526538f1c6350aff65e220ade7f493571d533a6fdabf657347624e",
+        "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-desktop.webp": "1544617caa13becb35481c2c6d906d62f9292f96c70e3a06d52ddc81bef06875",
+        "/assets/vfx/niagara/component-3e468435ddbe1951-3x3-alpha-mobile.webp": "385c9a2d9a2692fe8d60eed8457e864d5ebf962822e7c4279d2e957484d42ac3",
+        "/assets/vfx/niagara/component-4866b9058807eeef-8x4-luma-desktop.webp": "baaf9dabf9bedd61ea4ac265552acbdc82bf2e593be57b8a94cbd96d63cea075",
+        "/assets/vfx/niagara/component-4866b9058807eeef-8x4-luma-mobile.webp": "24d0937359ad54cc801a55831d9c639b54e652d5b6d60f717da018e064050665",
+        "/assets/vfx/niagara/component-7e5099cefb584032-8x8-alpha-desktop.webp": "83d5d6205a61e274aad9ee05532d7e05cf255b47d004a2be415471f3fe6c9572",
+        "/assets/vfx/niagara/component-7e5099cefb584032-8x8-alpha-mobile.webp": "3c644e6c3c5fa0fe574971b38ecd6d7c58eb41478ec030133f7cb9404ddd1a1c",
+        "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-desktop.webp": "8c6a783f3570c44e4134329a8fb7ba16657e7821e8f83f0f9650c7f9dc211717",
+        "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-mobile.webp": "69a55f1777dcf951c7d07ef52033c96f49da2a7e30c89fb5c42e08ac3832085b",
+        "/assets/vfx/niagara/component-bc703e63cd85d73c-8x8-alpha-desktop.webp": "522bfcd8a7caef6bdf32c808e968a90010bf5c04701543e65fd0a633e316e5bc",
+        "/assets/vfx/niagara/component-bc703e63cd85d73c-8x8-alpha-mobile.webp": "aa49a5c98a49d8f12471157a822b349c8f865c7f6477fab6328bbefd53779df8",
+        "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-desktop.webp": "3d26d941dd765edd7b9d2c46b512c3373819a6cdc514e598805aa49375f9feb1",
+        "/assets/vfx/niagara/component-d7a5e783ffa8ee81-8x8-alpha-mobile.webp": "41e386d6624f10fc68ab9b050c2e470f17637e675b6fcdb27e948cf80da0f8b4",
+        "/assets/vfx/niagara/component-dd710adffbd411cd-8x8-alpha-desktop.webp": "96aed315f6575044a520bf55e01f377f08ad7a9762b4aeeb38b18adb636ce58b",
+        "/assets/vfx/niagara/component-dd710adffbd411cd-8x8-alpha-mobile.webp": "bd1933d621ccbee8c311261d064cb5560ef931158039d04198112fbcbda65577",
+        "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-desktop.webp": "aff85a92afc4ad7673ac4f5be763811855c17894b11977b1a6ed9adadbf888d3",
+        "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-mobile.webp": "2dd4ccf9c2166a53d8bfcad4d5669b046be9be08dd07afc7513a70ee14067aa7",
+        "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-desktop.webp": "9967b5f53045e8fc986ce446c15b56e50311c6ea018dda2f71b27812bfa72602",
+        "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-mobile.webp": "0788b907bc7170d5ee52b2e39e091591c4ba05d849de30d9dcad71167b5b5ff6",
+        "/assets/vfx/niagara/component-ee97ef90f7754523-8x8-alpha-desktop.webp": "95a82cf7e268e7a454bfe41d86debbb2112acf18fc542e6d36a1ec445619d824",
+        "/assets/vfx/niagara/component-ee97ef90f7754523-8x8-alpha-mobile.webp": "dbdaac7579c0c5bcf0485298d0cda25669f4167f24ceaa2eb49f00014ef943e4",
+        "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-desktop.webp": "83a99d6b7bedfa9a22761351af413db32882570f87ae4c36845f45ee0f9764d9",
+        "/assets/vfx/niagara/component-f7736e0dfe565c2f-4x4-rgba-mobile.webp": "cdf5a7478f0ace23daca20a83795f190c3e23511479278846c0be8aca100d143",
+        "/assets/vfx/niagara/niagara-b23e30580f0f5d09-desktop.webp": "414a576c793109355a6fc621966257c07c62bfc694444e9488885c1ba277f239",
+        "/assets/vfx/niagara/niagara-b23e30580f0f5d09-mobile.webp": "a0aaa0d011d0b8bbabed69e83fe6f000eea8f21eee9f7c1088d5795b43e10019"
+      }
+    },
+    "orphanedOldAtlasFiles": [],
+    "desktopTileDistribution": {
+      "256": 13,
+      "512": 2
+    },
+    "sourceHashes": {
+      "tools/extract-niagara-subuv.py": "b39edfa9c6d312a14e426f0fd190d8b08f7da579222f9de63a1550af3580a3af",
+      "tools/pack-niagara-flipbook.py": "ec9b9e1c45edce679d61fc2cb156606a041c51a64b4c3c28c062fd8c5c8823a9",
+      "src/editor/niagaraCatalog.js": "f16ac44310f2bfbdea681c82ecb178c5f6efae1c8895dc2b600f49a63f542e1a",
+      "src/editor/niagaraDerivatives.js": "b69f1397b892a373ffcd73eeb32f88c1540caece1d6ca086ffea70a4eada3e60",
+      "src/editor/effectLibrary.js": "d782e30f7dcf5bbbfde91048fd69d890f8e0ee2188d088823c2c465ed8e53de2",
+      "src/render/vfx/flipbook.js": "2fc787ebbc8286b72495ffebbecc3f2ce5153e5c4bcef49f1d15c4ebc5ce5d2b",
+      "tests/effect-library.test.mjs": "597218eec6aa90912c2f30d1a3ef2b8a763b13f17ae93c7b066cee2f3ab22eee",
+      "docs/research/unreal-assets/niagara-catalog.json": "7c1f7dd0043aef0d0f197cb1db9231e90c2233bca84bcf924921abcc0121b7b0"
+    },
+    "sourceSystemBindings": {
+      "accepted": 157,
+      "candidates": 160,
+      "deferred": 3,
+      "allExact": true,
+      "project": "MyProject"
+    },
+    "staleUnregisteredAtlasFiles": []
+  },
+  "guardReview": {
+    "sharedAtlasGuard": "Focused tests pass; exact component hash, grid, mapping, system package/digest, renderer path and texture package binding are required.",
+    "lifecycleAndGameplayPreservation": "58 focused CPU tests pass across effect library, preview disposal/abort, editor focus, GM authority and account authorization",
+    "limitations": [
+      "No GPU/browser/physical-device acceptance in this report.",
+      "No live Niagara simulation or gameplay authority is established.",
+      "Ready views are Tromba, 15 source-texture components, and one baked system capture."
+    ]
+  },
+  "evidenceTextEncoding": "UTF-8 without BOM, LF; JSON formatting normalized before staging"
+}

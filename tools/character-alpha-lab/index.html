@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101c25"><title>Estudio de personaje · Marea Negra</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/tools/character-alpha-lab/style.css">
+</head>
+<body>
+  <header class="masthead"><a class="brand" href="#" aria-label="Marea Negra"><span class="brand-mark">✦</span><span>MAREA <b>NEGRA</b></span></a><div class="mast-title"><span>ATELIER DE PERSONAJES</span><h1>Estudio de apariencia</h1></div><div class="edition"><i></i> ESTUDIO 2D · VISTA FIJA</div></header>
+  <main class="workspace">
+    <aside class="panel left-panel" aria-label="Piezas del personaje">
+      <div class="panel-heading"><span class="eyebrow">01 — CONFIGURACIÓN</span><h2>Tu explorador</h2><p>Combina piezas ilustradas del catálogo.</p></div>
+      <section class="control-group"><label class="field-label" for="body-select">Silueta base</label><select id="body-select"></select></section>
+      <div class="mode-switch" role="group" aria-label="Modo de vista"><button data-mode="master" aria-pressed="true">Lámina</button><button data-mode="modular" aria-pressed="false">Piezas</button></div>
+      <div id="parts" class="parts-list"></div>
+      <div class="panel-foot"><span class="tiny-seal">✦</span><span>Arte original · alfa real<br><b>Selección local de vista</b></span></div>
+    </aside>
+    <section class="stage" aria-label="Vista ilustrada del personaje">
+      <div class="stage-top"><div><span class="eyebrow">MAREA · ESTUDIO DE CAMPO</span><div class="stage-name" id="stage-name">Explorador</div></div><span class="fixed-badge"><span></span> VISTA FIJA</span></div>
+      <div class="artboard" id="artboard"><canvas id="character" width="1024" height="1536" aria-label="Personaje compuesto con ilustraciones alpha"></canvas><div class="canvas-status" id="status" role="status">Buscando manifiesto…</div><div class="canvas-credit">DOCUMENTO DE TRABAJO <b>·</b> NO SE GUARDA EN PARTIDA</div></div>
+      <div class="stage-bottom"><span id="asset-note">Cargando catálogo</span><span class="stage-rule"></span><span>ARTE 2D · CAPAS ALPHA</span></div>
+    </section>
+    <aside class="panel right-panel" aria-label="Vista y exportación">
+      <div class="panel-heading"><span class="eyebrow">02 — PRESENTACIÓN</span><h2>Enfoque</h2></div>
+      <div class="view-buttons" role="group" aria-label="Tamaño de vista"><button data-zoom="full" aria-pressed="true"><span class="view-icon full-icon">↕</span>Figura completa</button><button data-zoom="face" aria-pressed="false"><span class="view-icon face-icon">◉</span>Acercar rostro</button></div>
+      <section class="control-group backdrop-control"><span class="field-label">Fondo de la escena</span><div id="backgrounds" class="background-list"></div></section>
+      <section class="control-group"><span class="field-label">Transparencia</span><div class="mode-switch backdrop-switch"><button data-backdrop="scene" aria-pressed="true">Puerto</button><button data-backdrop="checker" aria-pressed="false">Cuadros</button><button data-backdrop="dark" aria-pressed="false">Oscuro</button></div></section>
+      <div class="divider"></div>
+      <div class="action-stack"><button id="shuffle" class="button-quiet"><span>⤨</span> Probar combinación</button><button id="reset" class="button-quiet"><span>↺</span> Restablecer piezas</button><button id="export-png" class="button-primary" disabled><span>↓</span> Exportar PNG transparente</button><button id="export-json" class="button-outline" disabled><span>⌘</span> Descargar ficha JSON</button></div>
+      <p class="export-note">La ficha describe esta vista y sus IDs de catálogo. No crea identidad ni progreso del juego.</p>
+      <div class="right-foot"><span class="gold-dot"></span><span id="load-state">PREPARANDO CATÁLOGO</span></div>
+    </aside>
+  </main>
+  <script type="module" src="/tools/character-alpha-lab/main.js"></script>
+</body>
+</html>

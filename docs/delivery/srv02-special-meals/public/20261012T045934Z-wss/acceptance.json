@@ -1,0 +1,90 @@
+{
+  "schema": "mn.special-meals.public.v1",
+  "startedAt": "2026-10-12T04:59:40.132Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "mode": "authenticated-disposable-profile",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "gameVersion": "0.6.0-alpha.59",
+  "protocolVersion": 58,
+  "checks": [
+    {
+      "name": "public_health_build_protocol_sql035_meals_readiness_and_idle_gate",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.59",
+      "protocolVersion": 58,
+      "specialMealsEnabled": true,
+      "realPlayers": 0
+    },
+    {
+      "name": "anonymous_meal_denied_without_receipt",
+      "pass": true
+    },
+    {
+      "name": "random_disposable_account_normal_password_login_and_exact_grog_cost_seed",
+      "pass": true
+    },
+    {
+      "name": "authenticated_status_and_bounded_grog_seed",
+      "pass": true
+    },
+    {
+      "name": "grog_receipt_exact_cost_effect_and_initial_timer",
+      "pass": true,
+      "operationId": "16e52a31-d340-5e0b-a55e-50178586223a",
+      "timerTicks": 54000
+    },
+    {
+      "name": "grog_replay_returns_same_receipt_without_recharging_or_refilling_needs",
+      "pass": true,
+      "timerTicks": 53952
+    },
+    {
+      "name": "grog_opid_collision_keeps_original_receipt_and_revision",
+      "pass": true
+    },
+    {
+      "name": "offline_grog_timer_pauses_at_exact_saved_ticks",
+      "pass": true,
+      "savedTicks": 53844,
+      "laterTicks": 53844
+    },
+    {
+      "name": "reentry_restores_timer_and_neutral_inputs_advance_connected_ticks",
+      "pass": true,
+      "reentryTicks": 53844,
+      "laterTicks": 53840
+    },
+    {
+      "name": "heat_recipe_denial_has_unchanged_durable_gameplay_receipt",
+      "pass": true,
+      "denial": "owner",
+      "operationId": "259098f0-aeed-5dba-aa03-1ef71a1c48fa"
+    },
+    {
+      "name": "success_and_heat_denial_receipts_retained",
+      "pass": true,
+      "receipts": [
+        {
+          "operationId": "16e52a31-d340-5e0b-a55e-50178586223a",
+          "opId": "grog-20cb201c2d7e4de49659",
+          "ackOk": true
+        },
+        {
+          "operationId": "259098f0-aeed-5dba-aa03-1ef71a1c48fa",
+          "opId": "heat-d286e6a9cf5f46f2b3",
+          "ackOk": false
+        }
+      ],
+      "tradeRev": 1,
+      "hotFireProof": "not attempted; no cooker ownership or live fire was fabricated"
+    }
+  ],
+  "pass": true,
+  "scope": "grog cost, effect, timer, exact replay/collision, reload and reentry persistence; heat meals receive no fabricated proof",
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 2,
+    "receiptPolicy": "economic receipts intentionally retained"
+  },
+  "completedAt": "2026-10-12T05:00:00.086Z"
+}

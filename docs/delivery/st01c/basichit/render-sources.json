@@ -1,0 +1,192 @@
+{
+  "schema": "st01c-basichit-render-sources/v1",
+  "thresholds": {
+    "maskIoUMin": 0.94,
+    "meanRgbMax255": 10,
+    "identicalRuns": 2,
+    "definitions": "Same as the pilot final-color gate (tools/niagara-native-lab/compare-color.py lines 28-37): mask = max channel > 32 on each image, visible union = max channel > 8 on either image. Native side: native simulation -> half-float HDR target -> color-lab Filmic LUT (film-color.js) -> canvas, against basichit-reference03 FinalColorLDR at its native 1024 px, no resampling; 15 images (steps 2, 6, 12, 18, 24 x front, oblique, side). Gate draw order: emitter order (Flame, Flash, SimpleBurst); reverse order diagnostic only. Author decision 2026-10-21; definitions corrected by T-1021-44 before the first binding run (the first version cited the depth gate's ACES presentation and 512 px); numbers unchanged.",
+    "transferPrecondition": {
+      "step": 12,
+      "cameras": [
+        "front",
+        "oblique",
+        "side"
+      ],
+      "transferMae255Max": 2,
+      "transferP95ChannelError255Max": 4,
+      "meaning": "The same Filmic LUT applied to the UE HDR must match the UE LDR; if it fails, no native result is declared."
+    },
+    "resolutionPx": 1024
+  },
+  "radialGradientExponential": {
+    "asset": "/Engine/Functions/Engine_MaterialFunctions01/Gradient/RadialGradientExponential.RadialGradientExponential",
+    "calls": "/Engine/Functions/Engine_MaterialFunctions01/Density/ExponentialDensity.ExponentialDensity (twice, Use Exp2 unwired = true)",
+    "closedForm": "ED(t, k) = (t > 1e-5) ? 1 / pow(2.718282, (t*k)^2) : 1 ; x = 1 - length(UVs - CenterPosition) / Radius ; out = InvertDensity ? ED(length(UVs - CenterPosition) / Radius, Density) : 1 - ED(x, Density)",
+    "glsl": "float x = 1.0 - length(uv - vec2(0.5)) / 0.5; float tk = x * 2.333; float grad = 1.0 - (x > 1e-5 ? 1.0 / pow(2.718282, tk * tk) : 1.0); float opacity = color.a * grad;",
+    "glslGeneral": "float radialGradientExponential(vec2 uv, vec2 center, float radius, float density, bool invertDensity) { float t = length(uv - center) / radius; if (!invertDensity) t = 1.0 - t; float tk = t * density; float ed = t > 1e-5 ? 1.0 / pow(2.718282, tk * tk) : 1.0; return invertDensity ? ed : 1.0 - ed; }",
+    "inputs": [
+      {
+        "name": "UVs",
+        "type": "Vector2",
+        "default": "TexCoord[0] (UTiling 1, VTiling 1)",
+        "evidence": "RadialGradientExponential.t3d:154-161, TextureCoordinate_7 300-304"
+      },
+      {
+        "name": "CenterPosition",
+        "type": "Vector2",
+        "default": [
+          0.5,
+          0.5
+        ],
+        "evidence": "RadialGradientExponential.t3d:128-134"
+      },
+      {
+        "name": "Radius",
+        "type": "Scalar",
+        "default": 0.5,
+        "evidence": "RadialGradientExponential.t3d:141-147"
+      },
+      {
+        "name": "Density",
+        "type": "Scalar",
+        "default": 2.333,
+        "evidence": "RadialGradientExponential.t3d:167-172"
+      },
+      {
+        "name": "Invert Density",
+        "type": "StaticBool",
+        "default": false,
+        "evidence": "RadialGradientExponential.t3d:179-184, StaticBool_3 277-282 has no Value"
+      },
+      {
+        "name": "ExponentialDensity.Use Exp2",
+        "type": "StaticBool",
+        "default": true,
+        "evidence": "ExponentialDensity.t3d:134-139, StaticBool_0 Value=True at 213; unwired at RadialGradientExponential.t3d:204 and 216"
+      }
+    ],
+    "instance": {
+      "material": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Master_RadialBeam",
+      "wired": {
+        "Radius": "ScalarParameter 'Radius' DefaultValue 0.5 (M_Master_RadialBeam.t3d:24, 47-48; no instance overrides it, material-defaults.json)"
+      },
+      "unwired": {
+        "UVs": "TexCoord[0]",
+        "CenterPosition": [
+          0.5,
+          0.5
+        ],
+        "Density": 2.333,
+        "Invert Density": false
+      },
+      "ruleForUnwired": "UMaterialExpressionFunctionInput::Compile -> CompilePreviewValue when bUsePreviewValueAsDefault (MaterialExpressions.cpp:16545-16613, 16484-16543)",
+      "opacity": "ParticleColor.a * RadialGradientExponential (M_Master_RadialBeam.t3d:16, 35-36); EmissiveColor = ParticleColor.rgb (15); BLEND_Translucent, MSM_Unlit (58-59)",
+      "glsl": "float x = 1.0 - length(uv - vec2(0.5)) / 0.5; float tk = x * 2.333; float grad = 1.0 - (x > 1e-5 ? 1.0 / pow(2.718282, tk * tk) : 1.0); float opacity = color.a * grad;",
+      "samplesAlongRadius": [
+        {
+          "distanceFromCenterUv": 0,
+          "value": 0.995673
+        },
+        {
+          "distanceFromCenterUv": 0.1,
+          "value": 0.969299
+        },
+        {
+          "distanceFromCenterUv": 0.2,
+          "value": 0.859063
+        },
+        {
+          "distanceFromCenterUv": 0.25,
+          "value": 0.743525
+        },
+        {
+          "distanceFromCenterUv": 0.3,
+          "value": 0.58141
+        },
+        {
+          "distanceFromCenterUv": 0.4,
+          "value": 0.195646
+        },
+        {
+          "distanceFromCenterUv": 0.45,
+          "value": 0.052974
+        },
+        {
+          "distanceFromCenterUv": 0.5,
+          "value": 0.0
+        }
+      ]
+    },
+    "edgeCases": {
+      "outsideRadius": "length >= Radius gives x <= 0, ED = 1, out = 0 (hard zero at and beyond the radius, continuous at x = 0)",
+      "base": "pow base is the constant 2.718282 (ExponentialDensity.t3d:98), always positive; PositiveClampedPow(max(base,0), e) cannot see 0 or negative base",
+      "radiusZero": "length/0 = +inf (length > 0) or NaN (length = 0); x = -inf or NaN; the If node returns the AEqualsB/ALessThanB branch (both 1), out = 0 everywhere",
+      "radiusNegative": "x = 1 + length/|Radius| >= 1, ED ~ 0, out ~ 1 everywhere (>= 0.9957 at Density 2.333); not reachable with the material default 0.5",
+      "ifNode": "select(abs(A - B) > 1e-5, select(A >= B, 1/pow(e,(A*k)^2), 1), 1): any t <= 1e-5 or NaN returns 1 (EqualsThreshold 1e-5, MaterialExpressionIf.h:36; HLSLMaterialTranslator.cpp:6614)",
+      "descriptionVersusGraph": "the ExponentialDensity description (t3d:231) says 0 at depth 0; the graph returns 1 at depth <= 0 and falls to 0 as depth grows; the graph is the source used here"
+    }
+  },
+  "textures": {
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall": {
+      "addressX": "TA_WRAP",
+      "addressY": "TA_WRAP",
+      "filter": "TF_DEFAULT",
+      "srgb": true,
+      "compressionSettings": "TC_DEFAULT",
+      "lodGroup": "TEXTUREGROUP_WORLD",
+      "mipGenSettings": "TMGS_FROM_TEXTURE_GROUP",
+      "sourceSize": [
+        2048,
+        1024
+      ]
+    },
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1": {
+      "addressX": "TA_WRAP",
+      "addressY": "TA_WRAP",
+      "filter": "TF_DEFAULT",
+      "srgb": true,
+      "compressionSettings": "TC_DEFAULT",
+      "lodGroup": "TEXTUREGROUP_WORLD",
+      "mipGenSettings": "TMGS_FROM_TEXTURE_GROUP",
+      "sourceSize": [
+        2048,
+        1024
+      ]
+    },
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Ground_Crack": {
+      "addressX": "TA_WRAP",
+      "addressY": "TA_WRAP",
+      "filter": "TF_DEFAULT",
+      "srgb": true,
+      "compressionSettings": "TC_DEFAULT",
+      "lodGroup": "TEXTUREGROUP_WORLD",
+      "mipGenSettings": "TMGS_FROM_TEXTURE_GROUP",
+      "sourceSize": [
+        2048,
+        2048
+      ]
+    },
+    "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Hit_Circle": {
+      "addressX": "TA_WRAP",
+      "addressY": "TA_WRAP",
+      "filter": "TF_DEFAULT",
+      "srgb": true,
+      "compressionSettings": "TC_DEFAULT",
+      "lodGroup": "TEXTUREGROUP_WORLD",
+      "mipGenSettings": "TMGS_FROM_TEXTURE_GROUP",
+      "sourceSize": [
+        2048,
+        2048
+      ]
+    }
+  },
+  "runs": [
+    "engine-assets01",
+    "engine-assets02"
+  ],
+  "sha256": {
+    "ExponentialDensity.t3d": "82ab6c86fd46fa4996b238abc56245cc0eebe83a546d4f26687b2978bc18ed39",
+    "RadialGradientExponential.t3d": "b4502357c07fdf6990be5611b61a4cb3bdeba6cb151b40ee646342216212cdb7",
+    "textures.json": "cc2d6bfcd5a27b11562c4ae1661e50f6b6a60dfaab12b4abed90f5eeb857ad73"
+  }
+}

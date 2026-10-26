@@ -1,0 +1,137 @@
+// P02c ring-loft anatomy source. Coordinates are meters, +Y up, +Z forward, +X character left.
+import * as THREE from 'three';
+
+export const BODY_BONES=['body','hips','thighL','shinL','thighR','shinR','spine','chest','head','armL','foreL','armR','foreR','clothF','clothB'];
+const BI=Object.fromEntries(BODY_BONES.map((n,i)=>[n,i]));
+const TAU=Math.PI*2, clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const mix=(a,b,t)=>a+(b-a)*t, smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t);};
+const colors={skin:0xc89575,top:0x4d6270,shorts:0x4b4b49};
+
+// Each patch owns its UV chart vertices; equal positions are welded for topology and normal averaging.
+class Surface {
+  constructor(kind){this.kind=kind;this.positions=[];this.uvs=[];this.colors=[];this.joints=[];this.weights=[];this.tris=[];this.tags=[];}
+  vertex(p,tag,ws){const id=this.positions.length;this.positions.push(p);this.tags.push(tag);this.colors.push(new THREE.Color(colors[this.kind]).toArray());const clean=ws.filter(x=>x[1]>1e-5).sort((a,b)=>b[1]-a[1]).slice(0,4),sum=clean.reduce((n,x)=>n+x[1],0)||1;const ji=[0,0,0,0],ww=[0,0,0,0];clean.forEach((x,i)=>{ji[i]=x[0];ww[i]=x[1]/sum;});this.joints.push(ji);this.weights.push(ww);this.uvs.push(this.uv(tag,p));return id;}
+  uv(tag,p){const {chart,u,v}=tag,box=chart==='torso'?[0,0,.5,.5]:chart==='armL'?[.5,0,.75,.5]:chart==='armR'?[.75,0,1,.5]:chart==='legL'?[0,.5,.35,1]:chart==='legR'?[.35,.5,.7,1]:chart==='handL'?[.7,.5,.85,.75]:chart==='handR'?[.85,.5,1,.75]:chart==='footL'?[.7,.75,.85,1]:chart==='footR'?[.85,.75,1,1]:[0,0,1,1];const pad=chart==='garment'?0:.006;return [box[0]+pad+clamp(u)*(box[2]-box[0]-2*pad),box[1]+pad+clamp(v)*(box[3]-box[1]-2*pad)];}
+  tri(a,b,c){this.tris.push([a,b,c]);}
+  ring(points,chart,ws,v=0){return points.map((p,i)=>this.vertex(p,{chart,u:i/points.length,v},ws(p)));}
+  loft(rings){for(let r=0;r<rings.length-1;r++){const a=rings[r],b=rings[r+1],na=a.length,nb=b.length;let i=0,j=0;while(i<na||j<nb){const nextA=i<na?(i+1)/na:Infinity,nextB=j<nb?(j+1)/nb:Infinity,a0=a[i%na],a1=a[(i+1)%na],b0=b[j%nb],b1=b[(j+1)%nb];if(Math.abs(nextA-nextB)<1e-9){this.tri(a0,a1,b1);this.tri(a0,b1,b0);i++;j++;}else if(nextA<nextB){this.tri(a0,a1,b0);i++;}else{this.tri(a0,b1,b0);j++;}}}}
+  cap(ring,center,chart,ws){const c=this.vertex(center,{chart,u:.5,v:.5},ws(center));for(let i=0;i<ring.length;i++)this.tri(c,ring[(i+1)%ring.length],ring[i]);}
+  geometry(){
+    const key=p=>p.map(v=>Math.round(v*1e6)).join(','),weld=new Map(),wp=[],ids=this.positions.map(p=>{const k=key(p);if(!weld.has(k)){weld.set(k,wp.length);wp.push(p);}return weld.get(k);});
+    // Propagate a consistent winding over the welded edge graph, including chart-seam duplicates.
+    const triOut=this.tris.map(t=>t.slice()),f=this.tris.map(t=>t.map(i=>ids[i])),edgeMap=new Map();
+    for(let fi=0;fi<f.length;fi++)for(let q=0;q<3;q++){const a=f[fi][q],b=f[fi][(q+1)%3],k=a<b?`${a}:${b}`:`${b}:${a}`;if(!edgeMap.has(k))edgeMap.set(k,[]);edgeMap.get(k).push({fi,dir:a<b?1:-1});}
+    const flip=new Int8Array(f.length);let components=0;for(let seed=0;seed<f.length;seed++)if(!flip[seed]){components++;flip[seed]=1;const queue=[seed];while(queue.length){const fi=queue.pop();for(let q=0;q<3;q++){const a=f[fi][q],b=f[fi][(q+1)%3],k=a<b?`${a}:${b}`:`${b}:${a}`,entries=edgeMap.get(k)||[];for(const e of entries){if(e.fi===fi)continue;const same=(a<b?1:-1)===e.dir,desired=flip[fi]*(same?-1:1);if(!flip[e.fi]){flip[e.fi]=desired;queue.push(e.fi);}}}}}
+    let volume=0;for(let i=0;i<f.length;i++){if(flip[i]<0){[f[i][1],f[i][2]]=[f[i][2],f[i][1]];[triOut[i][1],triOut[i][2]]=[triOut[i][2],triOut[i][1]];}const a=wp[f[i][0]],b=wp[f[i][1]],c=wp[f[i][2]];volume+=(a[0]*(b[1]*c[2]-b[2]*c[1])+a[1]*(b[2]*c[0]-b[0]*c[2])+a[2]*(b[0]*c[1]-b[1]*c[0]))/6;}
+    if(volume<0)for(let i=0;i<f.length;i++){[f[i][1],f[i][2]]=[f[i][2],f[i][1]];[triOut[i][1],triOut[i][2]]=[triOut[i][2],triOut[i][1]];}
+    const normals=wp.map(()=>[0,0,0]),faceNormals=[];for(const t of f){const a=wp[t[0]],b=wp[t[1]],c=wp[t[2]],u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],v=[c[0]-a[0],c[1]-a[1],c[2]-a[2]],n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]],length=Math.hypot(...n)||1;faceNormals.push(n.map(x=>x/length));for(const id of t)for(let k=0;k<3;k++)normals[id][k]+=n[k];}
+    // Keep smooth averages in concave socket/crotch fans inside every incident face hemisphere.
+    for(let pass=0;pass<12;pass++)for(let fi=0;fi<f.length;fi++)for(const id of f[fi]){const n=normals[id],l=Math.hypot(...n)||1,face=faceNormals[fi],dot=n.reduce((sum,x,k)=>sum+x*face[k],0)/l;if(dot<.025)for(let k=0;k<3;k++)n[k]+=face[k]*(.025-dot)*l;}
+    const norm=normals.map(n=>{const l=Math.hypot(...n)||1;return n.map(v=>v/l);});
+    const boundaryEdges=[...edgeMap.values()].filter(x=>x.length===1).length,nonManifoldEdges=[...edgeMap.values()].filter(x=>x.length>2).length,used=[...new Set(triOut.flat())],refs=used.map(id=>({id,tag:this.tags[id]})),remap=new Map(used.map((id,i)=>[id,i])),seamCopies=new Map(),finalTris=triOut.map(t=>t.map(id=>remap.get(id)));
+    for(let fi=0;fi<triOut.length;fi++){const t=triOut[fi],tags=t.map(id=>this.tags[id]);if(tags.every(tag=>tag.chart===tags[0].chart)&&Math.max(...tags.map(tag=>tag.u))-Math.min(...tags.map(tag=>tag.u))>.5)for(let q=0;q<3;q++)if(tags[q].u<.5){const id=t[q];if(!seamCopies.has(id)){seamCopies.set(id,refs.length);refs.push({id,tag:{...this.tags[id],u:1}});}finalTris[fi][q]=seamCopies.get(id);}}
+    const hardNormals=new Map();for(let fi=0;fi<finalTris.length;fi++){const tri=finalTris[fi],pts=tri.map(i=>this.positions[refs[i].id]),u=pts[1].map((v,k)=>v-pts[0][k]),v=pts[2].map((x,k)=>x-pts[0][k]),cross=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]],length=Math.hypot(...cross)||1,face=cross.map(x=>x/length),smoothNormal=tri.map(i=>norm[ids[refs[i].id]]),dot=smoothNormal.flatMap(n=>n.map((x,k)=>x*face[k])).reduce((a,b)=>a+b,0);if(dot< -1e-10)for(let q=0;q<3;q++){const ref=refs[tri[q]],copy=refs.length;refs.push({...ref});finalTris[fi][q]=copy;hardNormals.set(copy,face);}}
+    const p=refs.flatMap(({id})=>this.positions[id]),uv=refs.flatMap(({id,tag})=>this.uv(tag,this.positions[id])),col=refs.flatMap(({id})=>this.colors[id]),ji=refs.flatMap(({id})=>this.joints[id]),jw=refs.flatMap(({id})=>this.weights[id]),nn=refs.flatMap(({id},i)=>hardNormals.get(i)||norm[ids[id]]),finalIndices=finalTris.flat();const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nn,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setAttribute('skinIndex',new THREE.Uint16BufferAttribute(ji,4));g.setAttribute('skinWeight',new THREE.Float32BufferAttribute(jw,4));g.setIndex(finalIndices);g.userData={triangles:f.length,components,boundaryEdges,nonManifoldEdges,signedVolume:Number(Math.abs(volume).toFixed(6)),topology:'indexed ring lofts and shared socket patches'};return g;
+  }
+}
+
+function torso(kind,R){
+  const male=kind==='male',N=16,s=new Surface('skin');
+  const profile=[[.90,male?.164:.172,.12],[.94,male?.158:.165,.114],[.98,male?.15:.145,.108],[1.02,male?.146:.135,.102],[1.08,male?.151:.14,.104],[1.16,male?.162:.15,.112],[1.24,male?.18:.168,.12],[1.30,male?.195:.176,.126],[1.34,male?.20:.18,.126],[1.40,male?.205:.183,.124],[1.46,male?.198:.177,.116],[1.50,.132,.086],[R.neck,.064,.056]];
+  const rings=profile.map(([y,rx,rz],ri)=>Array.from({length:N},(_,j)=>{const a=TAU*j/N;return [Math.sin(a)*rx,y,Math.cos(a)*rz];}));
+  const shoulderRows=[profile.findIndex(x=>x[0]===1.34),profile.findIndex(x=>x[0]===1.40),profile.findIndex(x=>x[0]===1.46)];
+  const patches=[];for(const side of [1,-1]){const center=side>0?4:12;patches.push({side,rows:shoulderRows,cols:[center-1,center],type:'arm'});}
+  const skip=(r,j)=>patches.some(p=>r>=p.rows[0]&&r<p.rows.at(-1)&&p.cols.includes((j+N)%N));
+  const charted= rings.map((ring,ri)=>ring.map((p,j)=>s.vertex(p,{chart:'torso',u:(j/N)*.98+.01,v:1-ri/(rings.length-1)},torsoWeights(p,R))));
+  for(let r=0;r<rings.length-1;r++)for(let j=0;j<N;j++)if(!skip(r,j)){const k=(j+1)%N,a=charted[r][j],b=charted[r][k],c=charted[r+1][k],d=charted[r+1][j];s.tri(a,b,c);s.tri(a,c,d);}
+  s.cap(charted.at(-1),[0,R.neck,0],'torso',p=>[[BI.head,1]]);
+  const patchLoop=(patch)=>{const {side,rows,cols}=patch, j0=(cols[0]+N)%N,j1=(cols[1]+1)%N,r0=rows[0],r1=rows.at(-1);return [charted[r0][j0],charted[r0][(j0+1)%N],charted[r0][j1],charted[rows[1]][j1],charted[r1][j1],charted[r1][(j1+N-1)%N],charted[r1][j0],charted[rows[1]][j0]].map(id=>s.positions[id]);};
+  for(const patch of patches){const rootPts=patchLoop(patch),side=patch.side,left=side>0,limb=patch.type,chart=left?'armL':'armR',rootIds=rootPts.map((p,i)=>s.vertex(p,{chart,u:i/8,v:0},torsoWeights(p,R)));
+    const start=rootPts.reduce((a,p)=>a.map((v,i)=>v+p[i]/rootPts.length),[0,0,0]);
+    loftArm(s,rootIds,start,chart,R,left);
+  }
+  const bottom=charted[0], bridgePts=[[0,.90,-.05],[0,.76,0],[0,.90,.05]],bridge=bridgePts.map((p,i)=>s.vertex(p,{chart:'legL',u:.42+i*.08,v:0},bridgeWeights(p,R)));
+  for(const left of [true,false]){const arc=left?bottom.slice(0,9):[...bottom.slice(8),bottom[0]],bloop=left?bridge:[...bridge].reverse(),root=[...arc,...bloop],rootIds=root.map((id,i)=>{const p=s.positions[id],onBridge=i>=9;return s.vertex(p,{chart:left?'legL':'legR',u:i/root.length,v:0},onBridge?bridgeWeights(p,R):torsoWeights(p,R));}),start=root.map(id=>s.positions[id]).reduce((a,p)=>a.map((v,k)=>v+p[k]/root.length),[0,0,0]);loftLeg(s,rootIds,start,left?'legL':'legR',R,left);}
+  return s;
+}
+function torsoWeights(p,R){const y=p[1],pelvis=1-smooth(.84,1.02,y),chest=smooth(1.12,1.34,y),head=smooth(R.neck-.075,R.neck,y),body=1-head;return [[BI.hips,pelvis*body],[BI.spine,Math.max(.02,1-pelvis-chest)*body],[BI.chest,chest*body],[BI.head,head]];}
+function armWeights(p,R,left){const upper=left?BI.armL:BI.armR,fore=left?BI.foreL:BI.foreR;const t=smooth(R.elbow-.11,R.elbow+.11,p[1]);return [[upper,t],[fore,1-t]];}
+function legWeights(p,R,left){const thigh=left?BI.thighL:BI.thighR,shin=left?BI.shinL:BI.shinR,t=smooth(R.knee-.10,R.knee+.10,p[1]);return [[left?BI.hips:BI.hips,.04],[thigh,t*.96],[shin,(1-t)*.96]];}
+function blendWeights(a,b,t){const m=new Map();for(const [id,w]of a)m.set(id,(m.get(id)||0)+w*(1-t));for(const[id,w]of b)m.set(id,(m.get(id)||0)+w*t);return [...m.entries()];}
+function armChainWeights(p,R,left){return blendWeights(torsoWeights(p,R),armWeights(p,R,left),1-smooth(1.15,1.40,p[1]));}
+function legChainWeights(p,R,left){return blendWeights(torsoWeights(p,R),legWeights(p,R,left),1-smooth(.52,.98,p[1]));}
+function bridgeWeights(p,R){return p[1]<.78?[[BI.hips,.5],[BI.thighL,.25],[BI.thighR,.25]]:torsoWeights(p,R);}
+function circleAt(center,axisX,axisZ,rx,rz,count=8){return Array.from({length:count},(_,i)=>{const a=TAU*i/count;return [center[0]+axisX[0]*Math.cos(a)*rx+axisZ[0]*Math.sin(a)*rz,center[1]+axisX[1]*Math.cos(a)*rx+axisZ[1]*Math.sin(a)*rz,center[2]+axisX[2]*Math.cos(a)*rx+axisZ[2]*Math.sin(a)*rz];});}
+function sectionRing(center,direction,rx,rz,count=12){const l=Math.hypot(...direction)||1,t=direction.map(v=>v/l);let ref=[1,0,0];if(Math.abs(t[0])>.9)ref=[0,0,1];const dot=ref.reduce((sum,v,i)=>sum+v*t[i],0),ax=ref.map((v,i)=>v-dot*t[i]),al=Math.hypot(...ax);ax.forEach((v,i)=>ax[i]=v/al);const az0=[t[1]*ax[2]-t[2]*ax[1],t[2]*ax[0]-t[0]*ax[2],t[0]*ax[1]-t[1]*ax[0]],azl=Math.hypot(...az0),az=az0.map(v=>v/azl);return circleAt(center,ax,az,rx,rz,count);}
+function alignLoop(rootPoints,candidate){const n=candidate.length,m=rootPoints.length,center=arr=>arr.reduce((a,p)=>a.map((v,k)=>v+p[k]/arr.length),[0,0,0]),rc=center(rootPoints),cc=center(candidate),norm=v=>{const l=Math.hypot(...v)||1;return v.map(x=>x/l);};let best={score:Infinity,shift:0,sign:1};for(const sign of [1,-1])for(let shift=0;shift<n;shift++){let score=0;for(let k=0;k<n;k++){const u=k*m/n,lo=Math.floor(u)%m,t=u-Math.floor(u),a=rootPoints[lo],b=rootPoints[(lo+1)%m],sample=a.map((v,q)=>mix(v,b[q],t)),r=norm(sample.map((v,q)=>v-rc[q])),c=norm(candidate[(shift+sign*k+n*10)%n].map((v,q)=>v-cc[q]));score+=1-r.reduce((sum,x,q)=>sum+x*c[q],0);}if(score<best.score)best={score,shift,sign};}return best;}
+function addTube(s,root,centers,radii,chart,weights,count=root.length,capEnd=true,alignRoot=true){const rings=[root],rootPoints=root.map(id=>s.positions[id]);let phase=null;for(let i=1;i<centers.length;i++){const tangent=[centers[i][0]-centers[i-1][0],centers[i][1]-centers[i-1][1],centers[i][2]-centers[i-1][2]],l=Math.hypot(...tangent)||1,t=[tangent[0]/l,tangent[1]/l,tangent[2]/l];let x=[1,0,0];if(Math.abs(t[0])>.9)x=[0,0,1];const d=x[0]*t[0]+x[1]*t[1]+x[2]*t[2],ax=[x[0]-d*t[0],x[1]-d*t[1],x[2]-d*t[2]],al=Math.hypot(...ax);ax.forEach((v,k)=>ax[k]=v/al);const az0=[t[1]*ax[2]-t[2]*ax[1],t[2]*ax[0]-t[0]*ax[2],t[0]*ax[1]-t[1]*ax[0]],azl=Math.hypot(...az0),az=az0.map(v=>v/azl),candidate=circleAt(centers[i],ax,az,radii[i][0],radii[i][1],count);if(i===1)phase=alignRoot?alignLoop(rootPoints,candidate):{shift:0,sign:1};const pts=Array.from({length:count},(_,k)=>candidate[(phase.shift+phase.sign*k+count*10)%count]);
+    rings.push(s.ring(pts,chart,weights,i/(centers.length-1)));}s.loft(rings);if(capEnd)s.cap(rings.at(-1),centers.at(-1),chart,weights);return rings.at(-1);}
+function rechart(s,ring,chart,weights,v=0){return ring.map((id,i)=>s.vertex(s.positions[id],{chart,u:i/ring.length,v},weights(s.positions[id],id)));}
+function loftHand(s,wristLoop,wrist,handChart,weights,left){
+  const nx=7,nz=4,ny=4,halfWidth=.043,halfDepth=.017,yOffsets=[-.018,-.036,-.054,-.072,-.09],grid=[];
+  for(let j=0;j<=ny;j++){
+    grid[j]=[];
+    for(let i=0;i<=nx;i++){
+      grid[j][i]=[];
+      for(let k=0;k<=nz;k++){
+        let x=(i/nx*2-1)*halfWidth,z=(k/nz*2-1)*halfDepth;
+        const nx0=x/halfWidth,nz0=z/halfDepth;
+        x*=1-.16*Math.abs(nz0);z*=1-.16*Math.abs(nx0);
+        const p=[wrist[0]+x,wrist[1]+yOffsets[j],wrist[2]+.002+z];
+        grid[j][i][k]=s.vertex(p,{chart:handChart,u:(i/nx)*.84+(k/nz)*.16,v:j/ny},weights(p));
+      }
+    }
+  }
+  const perimeter=[];
+  for(let i=0;i<nx;i++)perimeter.push(grid[0][i][0]);
+  for(let k=0;k<nz;k++)perimeter.push(grid[0][nx][k]);
+  for(let i=nx;i>0;i--)perimeter.push(grid[0][i][nz]);
+  for(let k=nz;k>0;k--)perimeter.push(grid[0][0][k]);
+  const handRoot=rechart(s,wristLoop,handChart,(p,id)=>s.joints[id].map((bone,k)=>[bone,s.weights[id][k]]).filter(x=>x[1]>1e-6),0);
+  const phase=alignLoop(handRoot.map(id=>s.positions[id]),perimeter.map(id=>s.positions[id]));
+  const alignedPerimeter=perimeter.map((_,i)=>perimeter[(phase.shift+phase.sign*i+perimeter.length*10)%perimeter.length]);
+  s.loft([handRoot,alignedPerimeter]);
+  const quad=(a,b,c,d)=>{s.tri(a,b,c);s.tri(a,c,d);};
+  const thumbJ=2,thumbK=2,thumbI=left?nx:0;
+  for(let j=0;j<ny;j++)for(let k=0;k<nz;k++){
+    if(!(thumbI===0&&j===thumbJ&&k>=thumbK))quad(grid[j][0][k],grid[j][0][k+1],grid[j+1][0][k+1],grid[j+1][0][k]);
+    if(!(thumbI===nx&&j===thumbJ&&k>=thumbK))quad(grid[j][nx][k],grid[j+1][nx][k],grid[j+1][nx][k+1],grid[j][nx][k+1]);
+  }
+  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++)for(const k of [0,nz])
+    quad(grid[j][i][k],grid[j+1][i][k],grid[j+1][i+1][k],grid[j][i+1][k]);
+
+  const fingerCells=[0,2,4,6],fingerDepth=2;
+  for(let i=0;i<nx;i++)for(let k=0;k<nz;k++){
+    if(fingerCells.includes(i)&&k===fingerDepth)continue;
+    quad(grid[ny][i][k],grid[ny][i+1][k],grid[ny][i+1][k+1],grid[ny][i][k+1]);
+  }
+  const fingerLengths=left?[.050,.067,.073,.063]:[.063,.073,.067,.050];
+  for(let f=0;f<fingerCells.length;f++){
+    const i=fingerCells[f],k=fingerDepth,loop=[grid[ny][i][k],grid[ny][i+1][k],grid[ny][i+1][k+1],grid[ny][i][k+1]],root=loop.map(id=>s.positions[id]),center=root.reduce((a,p)=>a.map((v,q)=>v+p[q]/root.length),[0,0,0]),len=fingerLengths[f];
+    const spread=(center[0]-wrist[0])*.15;
+    addTube(s,loop,[center,[center[0]+spread*.3,center[1]-len*.48,center[2]+.002],[center[0]+spread*.7,center[1]-len*.84,center[2]+.008],[center[0]+spread,center[1]-len*.97,center[2]+.012],[center[0]+spread,center[1]-len*1.025,center[2]+.013]],[[.0065,.0075],[.006,.007],[.0054,.0062],[.0037,.0046],[.0012,.0018]],handChart,weights,8,true);
+  }
+  const thumbLoop=thumbI===0?[grid[thumbJ][0][2],grid[thumbJ][0][3],grid[thumbJ][0][4],grid[thumbJ+1][0][4],grid[thumbJ+1][0][3],grid[thumbJ+1][0][2]]:[grid[thumbJ][nx][2],grid[thumbJ+1][nx][2],grid[thumbJ+1][nx][3],grid[thumbJ+1][nx][4],grid[thumbJ][nx][4],grid[thumbJ][nx][3]],thumbPts=thumbLoop.map(id=>s.positions[id]),thumbCenter=thumbPts.reduce((a,p)=>a.map((v,q)=>v+p[q]/thumbPts.length),[0,0,0]),side=left?1:-1;
+  addTube(s,thumbLoop,[thumbCenter,[thumbCenter[0]+side*.017,thumbCenter[1]-.007,thumbCenter[2]+.002],[thumbCenter[0]+side*.035,thumbCenter[1]-.022,thumbCenter[2]+.006],[thumbCenter[0]+side*.040,thumbCenter[1]-.025,thumbCenter[2]+.007]],[[.012,.009],[.010,.009],[.0065,.0065],[.0018,.002]],handChart,weights,8,true);
+}
+function loftArm(s,root,start,chart,R,left){const x=left?1:-1,centers=[start,[x*(R.shX+.01),1.39,0],[x*(R.shX+.02),1.33,.002],[x*(R.shX+.025),1.27,0],[x*(R.shX+.045),R.elbow,.005],[x*(R.shX+.075),1.04,.012],[x*(R.shX+.09),R.wrist,.02]],radii=[[.09,.085],[.076,.073],[.064,.062],[.059,.057],[.048,.047],[.040,.039],[.031,.031]],weights=p=>armChainWeights(p,R,left),wristLoop=addTube(s,root,centers,radii,chart,weights,12,false),wrist=centers.at(-1),handChart=left?'handL':'handR';loftHand(s,wristLoop,wrist,handChart,p=>armChainWeights(p,R,left),left);}
+function loftLeg(s,root,start,chart,R,left){const x=left?R.legX:-R.legX,count=root.length,centers=[start,[x*.98,.84,0],[x*.97,.78,.002],[x*.96,.72,.003],[x*.95,R.knee,.004],[x*.94,.32,.02],[x*.92,.18,.025]],radii=[[.105,.10],[.10,.095],[.094,.09],[.088,.084],[.066,.065],[.049,.05],[.040,.043]],weights=p=>legChainWeights(p,R,left),ankleLoop=addTube(s,root,centers,radii,chart,weights,12,false),ankle=centers.at(-1),footChart=left?'footL':'footR',footRoot=rechart(s,ankleLoop,footChart,(p,id)=>s.joints[id].map((bone,k)=>[bone,s.weights[id][k]]).filter(x=>x[1]>1e-6),0),rootPoints=ankleLoop.map(id=>s.positions[id]),footRings=[footRoot],profile=[[-.025,-.012,.043,.040],[-.052,.018,.050,.050],[-.074,.055,.058,.047],[-.095,.092,.064,.039],[-.104,.125,.061,.032],[-.106,.149,.048,.025],[-.106,.161,.026,.016]];let phase=null,previous=ankle;for(let i=0;i<profile.length;i++){const [dy,z,rx,rz]=profile[i],center=[ankle[0],ankle[1]+dy,ankle[2]+z],direction=center.map((v,k)=>v-previous[k]),pts=sectionRing(center,direction,rx,rz,12);if(i===0)phase=alignLoop(rootPoints,pts);const aligned=pts.map((p,j)=>pts[(phase.shift+phase.sign*j+pts.length*10)%pts.length]);footRings.push(s.ring(aligned,footChart,weights,(i+1)/(profile.length+1)));previous=center;}s.loft(footRings);s.cap(footRings.at(-1),[ankle[0],ankle[1]-.106,ankle[2]+.163],footChart,weights);}
+
+function garment(kind,profiles,R){const s=new Surface(kind),N=16,weight=p=>kind==='top'?torsoWeights(p,R):[[BI.hips,1]],rings=profiles.map(([y,rx,rz],ri)=>s.ring(Array.from({length:N},(_,i)=>{const a=TAU*i/N;return [Math.sin(a)*(rx+.012),y,Math.cos(a)*(rz+.012)];}),'garment',weight,ri/(profiles.length-1)));s.loft(rings);s.cap(rings[0],[0,profiles[0][0]-.01,0],'garment',weight);
+  if(kind==='top'){const [y,rx,rz]=profiles.at(-1),inner=s.ring(Array.from({length:N},(_,i)=>{const a=TAU*i/N;return [Math.sin(a)*.066,y,Math.cos(a)*.056];}),'garment',weight,1),neck=s.ring(Array.from({length:N},(_,i)=>{const a=TAU*i/N;return [Math.sin(a)*.066,y-.075,Math.cos(a)*.056];}),'garment',weight,1);s.loft([rings.at(-1),inner,neck]);s.cap(neck,[0,y-.075,0],'garment',weight);}else s.cap(rings.at(-1),[0,profiles.at(-1)[0],0],'garment',weight);return s;}
+function shorts(R){const s=new Surface('shorts'),N=16,profile=[[1.0,.16,.12],[.96,.17,.13],[.90,.18,.135],[.84,.17,.13],[.78,.16,.125]],rings=profile.map(([y,rx,rz],ri)=>s.ring(Array.from({length:N},(_,i)=>{const a=TAU*i/N;return [Math.sin(a)*(rx+.012),y,Math.cos(a)*(rz+.012)];}),'garment',p=>[[BI.hips,1]],ri/(profile.length-1)));s.loft(rings);s.cap(rings[0],[0,1,0],'garment',p=>[[BI.hips,1]]);
+  const bottom=rings.at(-1),bridgePts=[[0,.78,-.05],[0,.70,0],[0,.78,.05]],bridge=bridgePts.map(p=>s.vertex(p,{chart:'garment',u:.5,v:.9},bridgeWeights(p,R)));
+  // Interior hem caps follow the rigid hip band; only the medial bridge blends both thighs.
+  for(const left of [true,false]){const arc=left?bottom.slice(0,9):[...bottom.slice(8),bottom[0]],bloop=left?bridge:[...bridge].reverse(),root=[...arc,...bloop],center=root.reduce((a,id)=>a.map((v,k)=>v+s.positions[id][k]/root.length),[0,0,0]);s.cap(root,center,'garment',p=>[[BI.hips,1]]);}
+  return s;}
+
+export function createBody(kind='male'){
+  if(kind!=='male'&&kind!=='female')throw new TypeError(`Unknown body kind: ${kind}`);const male=kind==='male';
+  const R=male?{hip:.91,knee:.48,waist:1,chest:1.22,shY:1.45,shX:.20,elbow:1.16,wrist:.91,neck:1.54,legX:.102,head:.30,hand:1}:{hip:.89,knee:.47,waist:.99,chest:1.19,shY:1.42,shX:.18,elbow:1.13,wrist:.89,neck:1.51,legX:.097,head:.30,hand:.96};
+  R.uvMapping='packed atlas: torso, armL/R, legL/R, handL/R and footL/R; 0.006 chart padding';
+  const joints={body:[0,0,0],hips:[0,R.hip+.02,0],thighL:[R.legX,R.hip,0],shinL:[R.legX,R.knee,.01],thighR:[-R.legX,R.hip,0],shinR:[-R.legX,R.knee,.01],spine:[0,R.waist,0],chest:[0,R.chest,0],head:[0,R.neck,.005],armL:[R.shX,R.shY,0],foreL:[R.shX+.04,R.elbow,0],armR:[-R.shX,R.shY,0],foreR:[-R.shX-.04,R.elbow,0],clothF:[0,R.hip+.05,.09],clothB:[0,R.hip+.05,-.09]};
+  const body=torso(kind,R),top=garment('top',[[.94,male?.164:.17,.12],[1.02,male?.151:.141,.11],[1.12,male?.16:.148,.115],[1.22,male?.183:.167,.125],[1.32,male?.20:.182,.133],[1.40,male?.205:.183,.13],[1.46,male?.198:.177,.119]],R),shortsMesh=shorts(R);
+  const geometry=body.geometry(),topGeometry=top.geometry(),shortsGeometry=shortsMesh.geometry();
+  const garmentsTriangles=topGeometry.userData.triangles+shortsGeometry.userData.triangles,totalTriangles=geometry.userData.triangles+garmentsTriangles;if(totalTriangles>=6500)throw new Error(`P02c body and garments exceed 6.5k triangle budget: ${totalTriangles}`);for(const [name,g]of [['body',geometry],['top',topGeometry],['shorts',shortsGeometry]])if(g.userData.components!==1||g.userData.boundaryEdges||g.userData.nonManifoldEdges)throw new Error(`${name} failed welded topology audit: ${JSON.stringify(g.userData)}`);
+  return {R,geometry,top:topGeometry,shorts:shortsGeometry,joints,topologyInfo:{bodyMethod:'indexed torso rings and socket patches, connected palm grids with four finger and one thumb lofts, split pelvis bridge, limb lofts',normalMethod:'position-welded face accumulation',components:geometry.userData.components,boundaryEdges:geometry.userData.boundaryEdges,nonManifoldEdges:geometry.userData.nonManifoldEdges,bodyTriangles:geometry.userData.triangles,garmentTriangles:garmentsTriangles,totalTriangles}};
+}

@@ -1,0 +1,68 @@
+{
+  "at": "2026-10-11T02:09:50.816302+00:00",
+  "readonly": true,
+  "revision": "d9620558a93f6a6ed88614857b03d7d9822a4b1b",
+  "version": "0.6.0-alpha.38",
+  "protocol": 46,
+  "imageId": "sha256:f937c420dbe5555048f10c3087e9a5d237e80389c3aa880b6a54b3841cf6bc8c",
+  "containerId": "4e1178161adad04b75c429507109349bd0ca8f22bed44dfac72364b27b77bd0c",
+  "containerStartedAt": "2026-10-11T02:01:18.835081617Z",
+  "singleAuthority": true,
+  "dockerHealth": "healthy",
+  "publicHealthStatus": 200,
+  "publicStatusStatus": 200,
+  "publicProtocolMatches": true,
+  "publicVersionMatches": true,
+  "authEnabled": true,
+  "timer": "active",
+  "players": 0,
+  "sockets": 0,
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0,
+    "unsaved": 0,
+    "profileWrites": 0,
+    "worldWriting": false,
+    "tickBlocked": false,
+    "economic": {
+      "enabled": true,
+      "pending": 0,
+      "failed": false,
+      "completed": 11,
+      "replays": 3
+    },
+    "resources": {
+      "enabled": true,
+      "ready": true,
+      "logging": true
+    },
+    "workshop": {
+      "enabled": true,
+      "ready": true
+    },
+    "artisan": {
+      "enabled": true,
+      "ready": true
+    },
+    "world": {
+      "id": "marea-negra",
+      "ready": true,
+      "failed": false,
+      "version": 1972,
+      "errors": 0
+    }
+  },
+  "readiness": {
+    "mn_starter_workshop_ready": 1,
+    "mn_workshop_raft_identifiers_ready": 1
+  },
+  "sourceHashes": {
+    "server/economicAuthority.mjs": "91eb7df31797e16df064149437af6adadb185b80e496b8e3abc2e2a9584f34b5",
+    "src/data/meta.js": "489bac65e09bb09714f78b731a2a73eb7bf5704d8d50e789d26e1f8a8da7d1da",
+    "src/net/protocol.js": "1a5c217b60953b70149ea4913eefccfb7fa9210076e302204f8084ee1c90fd38",
+    "package.json": "898e068bb16f2b52cbecc4e338313b4781af820afce9456483599785f7a8e8f7"
+  },
+  "sourceHashesMatchReviewedGit": true
+}

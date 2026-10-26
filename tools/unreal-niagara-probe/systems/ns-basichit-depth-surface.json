@@ -1,0 +1,9 @@
+{
+  "schema": "st01c-surface-spec/v1",
+  "system": "NS_BasicHit",
+  "sizeCm": 3000,
+  "material": {"blend": "opaque", "shading": "unlit", "twoSided": true, "emissive": [0, 0, 0]},
+  "walls": {"cameras": ["front", "oblique", "side"], "offsetsCm": [-25, 0, 50, 150]},
+  "floors": [{"camera": "oblique", "zCm": -10}],
+  "depthStep": 6
+}

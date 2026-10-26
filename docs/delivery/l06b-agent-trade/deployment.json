@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-10T19:58:27.835063+00:00",
+  "container": "marea-negra-alpha-marea-negra-alpha-1",
+  "revision": "cafff18208235b7149682e5ce6de34c3fc0704b5",
+  "version": "0.6.0-alpha.26",
+  "image": "marea-negra:alpha-cafff1820823",
+  "imageId": "sha256:abff4bd7de15141b930802e83dfb2310727ed6cf8519b19a7ca83818bfe81eaf",
+  "containerId": "7d8399c0fb5e1c1777fc627a0f280ab3b860d4d438262f09199c8801afc8988b",
+  "running": true,
+  "health": "healthy",
+  "startedAt": "2026-10-10T19:58:06.375578866Z",
+  "oomKilled": false,
+  "currentRelease": "/opt/marea-negra/releases/cafff18208235b7149682e5ce6de34c3fc0704b5",
+  "updateState": {}
+}

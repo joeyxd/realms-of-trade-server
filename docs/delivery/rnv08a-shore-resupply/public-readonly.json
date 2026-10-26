@@ -1,0 +1,220 @@
+{
+  "at": "2026-10-11T06:49:06.651Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "revision": "cd2a97b0f08e37b17620feef3fa9efcb3baf0594",
+  "hashes": [
+    {
+      "path": "src/data/meta.js",
+      "sha256": "add4e20b9d05fc18e47fcaa9e466320f9d2e946994711a0d7f659a6d325a0b89",
+      "expectedSha256": "add4e20b9d05fc18e47fcaa9e466320f9d2e946994711a0d7f659a6d325a0b89",
+      "matches": true
+    },
+    {
+      "path": "src/net/protocol.js",
+      "sha256": "c6bff57343d9102126105036583a59aba28db07ad1fda9b3b56e192a3748df2e",
+      "expectedSha256": "c6bff57343d9102126105036583a59aba28db07ad1fda9b3b56e192a3748df2e",
+      "matches": true
+    },
+    {
+      "path": "src/data/freshwater.js",
+      "sha256": "1626c2dabee9524c1cb3069a45bcf154bb8ea63aa1d85ec74631119a654abee7",
+      "expectedSha256": "1626c2dabee9524c1cb3069a45bcf154bb8ea63aa1d85ec74631119a654abee7",
+      "matches": true
+    },
+    {
+      "path": "src/data/survival.js",
+      "sha256": "f8989de674fd234a47318603d32882fb73cf9030b334eace70f6b1960cbb1536",
+      "expectedSha256": "f8989de674fd234a47318603d32882fb73cf9030b334eace70f6b1960cbb1536",
+      "matches": true
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "53fbcd48e3744e28e2cf980988ed044823c09f9da0d3b82764e1115da47f3cb2",
+      "expectedSha256": "53fbcd48e3744e28e2cf980988ed044823c09f9da0d3b82764e1115da47f3cb2",
+      "matches": true
+    },
+    {
+      "path": "src/net/localServer.js",
+      "sha256": "f359ca0d5e3705b57a2cbc4d8922f9423a7da93ae6ce45edcdbb0168d66a5429",
+      "expectedSha256": "f359ca0d5e3705b57a2cbc4d8922f9423a7da93ae6ce45edcdbb0168d66a5429",
+      "matches": true
+    },
+    {
+      "path": "src/sim/naval/pilot.js",
+      "sha256": "d09ea30870ff5cce00953e731e4d2ad00939ba731b912afed67da3a3a188b0c2",
+      "expectedSha256": "d09ea30870ff5cce00953e731e4d2ad00939ba731b912afed67da3a3a188b0c2",
+      "matches": true
+    },
+    {
+      "path": "src/sim/naval/trial.js",
+      "sha256": "b9ad7a2640736e2a66dbed664e9106160a3ee0316cf911d8d44f9af896318de5",
+      "expectedSha256": "b9ad7a2640736e2a66dbed664e9106160a3ee0316cf911d8d44f9af896318de5",
+      "matches": true
+    },
+    {
+      "path": "src/sim/naval/shoreService.js",
+      "sha256": "1a102abe4101c7af93ada329925292dd021c89915bd0686ad1e44054ea2aa9d9",
+      "expectedSha256": "1a102abe4101c7af93ada329925292dd021c89915bd0686ad1e44054ea2aa9d9",
+      "matches": true
+    },
+    {
+      "path": "src/sim/systems/commerce.js",
+      "sha256": "4e93301642c7d82f98cec15537f08f448b2ea975a73c1b00be8abd0ce624e6b3",
+      "expectedSha256": "4e93301642c7d82f98cec15537f08f448b2ea975a73c1b00be8abd0ce624e6b3",
+      "matches": true
+    },
+    {
+      "path": "src/sim/systems/freshwater.js",
+      "sha256": "c8ef8eae4a02fcdb5acd2caba5174a6354f7ff6b7f6d0ecfbc6638bf2649136e",
+      "expectedSha256": "c8ef8eae4a02fcdb5acd2caba5174a6354f7ff6b7f6d0ecfbc6638bf2649136e",
+      "matches": true
+    },
+    {
+      "path": "src/sim/systems/freshwaterProfile.js",
+      "sha256": "e4546fc41d50844453856bff7d8b7da43f52cdc9d5c5734b00ab79914d6fe0d3",
+      "expectedSha256": "e4546fc41d50844453856bff7d8b7da43f52cdc9d5c5734b00ab79914d6fe0d3",
+      "matches": true
+    },
+    {
+      "path": "src/sim/systems/survival.js",
+      "sha256": "acaf6f722ff5e5f5170ef60cced01d9f630e75dddd9a2c34cf6e436f49b22927",
+      "expectedSha256": "acaf6f722ff5e5f5170ef60cced01d9f630e75dddd9a2c34cf6e436f49b22927",
+      "matches": true
+    },
+    {
+      "path": "src/sim/economy/cargo.js",
+      "sha256": "65780ee07d94e030fea30e6729a3429baa7d7a9ef6ca3b57162d9dd23c1f5a02",
+      "expectedSha256": "65780ee07d94e030fea30e6729a3429baa7d7a9ef6ca3b57162d9dd23c1f5a02",
+      "matches": true
+    },
+    {
+      "path": "src/sim/economy/waterContainers.js",
+      "sha256": "3ded36dc64e25ddbba1b434704fd9dd3a15366f13dd99839985d7f0463a22593",
+      "expectedSha256": "3ded36dc64e25ddbba1b434704fd9dd3a15366f13dd99839985d7f0463a22593",
+      "matches": true
+    },
+    {
+      "path": "src/ui/commerce.js",
+      "sha256": "c10f9d50b6770c7f56cce74999839a482e240c5bc345f1e9bd69f434e580f913",
+      "expectedSha256": "c10f9d50b6770c7f56cce74999839a482e240c5bc345f1e9bd69f434e580f913",
+      "matches": true
+    },
+    {
+      "path": "src/ui/freshwaterPanel.js",
+      "sha256": "e0a2b7bba530a463e0e2854dadeba81db3d00bbbf61b7ee7874bdc8577b7d5f5",
+      "expectedSha256": "e0a2b7bba530a463e0e2854dadeba81db3d00bbbf61b7ee7874bdc8577b7d5f5",
+      "matches": true
+    },
+    {
+      "path": "src/ui/shoreStopState.js",
+      "sha256": "69d3c1a1c2c4ec941fffa5a43b32ef91206e8934827943611331f7cd9aa3928b",
+      "expectedSha256": "69d3c1a1c2c4ec941fffa5a43b32ef91206e8934827943611331f7cd9aa3928b",
+      "matches": true
+    },
+    {
+      "path": "styles/commerce.css",
+      "sha256": "dd2bc251ddaece90f413863627c3b2f75d0c021dc853ddf045c0bfb45211ed43",
+      "expectedSha256": "dd2bc251ddaece90f413863627c3b2f75d0c021dc853ddf045c0bfb45211ed43",
+      "matches": true
+    },
+    {
+      "path": "styles/freshwater.css",
+      "sha256": "035d61f93e202bf8bd00836d859e6bfd857deadc35ccfaf4dff3abe628f6d0f9",
+      "expectedSha256": "035d61f93e202bf8bd00836d859e6bfd857deadc35ccfaf4dff3abe628f6d0f9",
+      "matches": true
+    },
+    {
+      "path": "src/client/gameClient.js",
+      "sha256": "1aa59a4f943d901c6ac678ec24c3ce678746949d50645dbc4b072048554fa982",
+      "expectedSha256": "1aa59a4f943d901c6ac678ec24c3ce678746949d50645dbc4b072048554fa982",
+      "matches": true
+    }
+  ],
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.50",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 1505,
+    "uptime": 34,
+    "stepMs": 1.145,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2356,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "pass": true
+}

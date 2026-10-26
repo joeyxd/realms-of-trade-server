@@ -1,0 +1,1658 @@
+TAP version 13
+# Subtest: durable mode defaults stopped, isolates owners and requires explicit CAS permission to connect
+ok 1 - durable mode defaults stopped, isolates owners and requires explicit CAS permission to connect
+  ---
+  duration_ms: 666.255
+  type: 'test'
+  ...
+# Subtest: stop clears work immediately before storage confirms; old grants and legacy resume cannot bypass it
+ok 2 - stop clears work immediately before storage confirms; old grants and legacy resume cannot bypass it
+  ---
+  duration_ms: 606.2404
+  type: 'test'
+  ...
+# Subtest: confirmed stop hydrates on a new host and permission survives reentry without restoring old grants
+ok 3 - confirmed stop hydrates on a new host and permission survives reentry without restoring old grants
+  ---
+  duration_ms: 1069.5556
+  type: 'test'
+  ...
+# Subtest: readiness failure keeps agent admission closed while ordinary gameplay and private projection stay healthy
+ok 4 - readiness failure keeps agent admission closed while ordinary gameplay and private projection stay healthy
+  ---
+  duration_ms: 389.2852
+  type: 'test'
+  ...
+# Subtest: an uncertain resume holds its slot, never enables late, and read recovery needs explicit owner resume
+ok 5 - an uncertain resume holds its slot, never enables late, and read recovery needs explicit owner resume
+  ---
+  duration_ms: 499.6045
+  type: 'test'
+  ...
+# Subtest: storage CAS conflict adopts evidence conservatively; routine reads do not pause a permitted agent
+ok 6 - storage CAS conflict adopts evidence conservatively; routine reads do not pause a permitted agent
+  ---
+  duration_ms: 419.3303
+  type: 'test'
+  ...
+# Subtest: owner disconnect while a resume saves cannot enable the character or receive a late private reply
+ok 7 - owner disconnect while a resume saves cannot enable the character or receive a late private reply
+  ---
+  duration_ms: 340.3492
+  type: 'test'
+  ...
+# Subtest: fire paid operation commits through the optional ground journal and shared SQL receipt
+ok 8 - fire paid operation commits through the optional ground journal and shared SQL receipt
+  ---
+  duration_ms: 3021.6528
+  type: 'test'
+  ...
+# Subtest: GM roster readiness probes the deployed validator semantics and exact resource shapes
+ok 9 - GM roster readiness probes the deployed validator semantics and exact resource shapes
+  ---
+  duration_ms: 4.857
+  type: 'test'
+  ...
+# Subtest: stale readiness cannot hide invalid validator behavior, while unavailable roster skips probes
+ok 10 - stale readiness cannot hide invalid validator behavior, while unavailable roster skips probes
+  ---
+  duration_ms: 0.7994
+  type: 'test'
+  ...
+# Subtest: roster readiness continues to redact and propagate validator RPC failures
+ok 11 - roster readiness continues to redact and propagate validator RPC failures
+  ---
+  duration_ms: 0.8742
+  type: 'test'
+  ...
+# Subtest: automatic ordinary pickup commits and applies once at the cadence selector
+ok 12 - automatic ordinary pickup commits and applies once at the cadence selector
+  ---
+  duration_ms: 4961.9048
+  type: 'test'
+  ...
+# Subtest: automatic expiry transitions every ordinary row after its durable deadline without profile changes
+ok 13 - automatic expiry transitions every ordinary row after its durable deadline without profile changes
+  ---
+  duration_ms: 4623.5861
+  type: 'test'
+  ...
+# Subtest: legacy host keeps death persistence and common family composition unmounted by default
+ok 14 - legacy host keeps death persistence and common family composition unmounted by default
+  ---
+  duration_ms: 334.0407
+  type: 'test'
+  ...
+# Subtest: GM content switching excludes a ready host with common death authorities mounted
+ok 15 - GM content switching excludes a ready host with common death authorities mounted
+  ---
+  duration_ms: 3717.4268
+  type: 'test'
+  ...
+# Subtest: Cala fatal commits the whole captured death, but applies and publishes only on the next host boundary
+ok 16 - Cala fatal commits the whole captured death, but applies and publishes only on the next host boundary
+  ---
+  duration_ms: 4755.7621
+  type: 'test'
+  ...
+# Subtest: exterior zero-pearl fatal keeps the safe-zone death result without generating loot
+ok 17 - exterior zero-pearl fatal keeps the safe-zone death result without generating loot
+  ---
+  duration_ms: 4073.7956
+  type: 'test'
+  ...
+# Subtest: death current rows hydrate after restart; an ordinary drop can be picked and another expired under the same owner
+ok 18 - death current rows hydrate after restart; an ordinary drop can be picked and another expired under the same owner
+  ---
+  duration_ms: 6562.5936
+  type: 'test'
+  ...
+# Subtest: fatal input inside a real server step neutralizes the remainder of its queued commands
+ok 19 - fatal input inside a real server step neutralizes the remainder of its queued commands
+  ---
+  duration_ms: 5014.461
+  type: 'test'
+  ...
+# Subtest: fatal deaths from one terminal tick serialize profile and PK versions
+ok 20 - fatal deaths from one terminal tick serialize profile and PK versions
+  ---
+  duration_ms: 6984.557
+  type: 'test'
+  ...
+# Subtest: a killer who dies later in the same terminal tick transfers the killer role serially
+ok 21 - a killer who dies later in the same terminal tick transfers the killer role serially
+  ---
+  duration_ms: 5791.9305
+  type: 'test'
+  ...
+# Subtest: disconnect after SQL commit but before beforeTick fences death without local apply
+ok 22 - disconnect after SQL commit but before beforeTick fences death without local apply
+  ---
+  duration_ms: 4803.0773
+  type: 'test'
+  ...
+# Subtest: close after SQL commit but before apply preserves the local pre-death snapshot
+ok 23 - close after SQL commit but before apply preserves the local pre-death snapshot
+  ---
+  duration_ms: 4637.6847
+  type: 'test'
+  ...
+# Subtest: apply failure after SQL commit restores the local death projection and fences the host
+ok 24 - apply failure after SQL commit restores the local death projection and fences the host
+  ---
+  duration_ms: 4432.8173
+  type: 'test'
+  ...
+# Subtest: ground family waits for the sole tick boundary, commits SQL023 atomically, and checkpoint follows its version
+ok 25 - ground family waits for the sole tick boundary, commits SQL023 atomically, and checkpoint follows its version
+  ---
+  duration_ms: 4969.9769
+  type: 'test'
+  ...
+# Subtest: whole-death and managed-drop families share the same adopted-world transaction boundary
+ok 26 - whole-death and managed-drop families share the same adopted-world transaction boundary
+  ---
+  duration_ms: 3382.6016
+  type: 'test'
+  ...
+# Subtest: batch family moves an owned pearl through the adopted transaction writer
+ok 27 - batch family moves an owned pearl through the adopted transaction writer
+  ---
+  duration_ms: 3052.1946
+  type: 'test'
+  ...
+# Subtest: a false result callback fences the family reservation and never resolves as applied
+ok 28 - a false result callback fences the family reservation and never resolves as applied
+  ---
+  duration_ms: 2776.5425
+  type: 'test'
+  ...
+# Subtest: a throw callback fences the family reservation and never resolves as applied
+ok 29 - a throw callback fences the family reservation and never resolves as applied
+  ---
+  duration_ms: 2775.7912
+  type: 'test'
+  ...
+# Subtest: a async result callback fences the family reservation and never resolves as applied
+ok 30 - a async result callback fences the family reservation and never resolves as applied
+  ---
+  duration_ms: 2703.0199
+  type: 'test'
+  ...
+# Subtest: stop while SQL is completing rejects the family result without applying gameplay
+ok 31 - stop while SQL is completing rejects the family result without applying gameplay
+  ---
+  duration_ms: 2774.9559
+  type: 'test'
+  ...
+# Subtest: replacing the boundary owner fences an active family before its callback can run
+ok 32 - replacing the boundary owner fences an active family before its callback can run
+  ---
+  duration_ms: 2665.0692
+  type: 'test'
+  ...
+# Subtest: prepared death reserves before its first await and rejects any unreserved source before journal IO
+ok 33 - prepared death reserves before its first await and rejects any unreserved source before journal IO
+  ---
+  duration_ms: 2685.2785
+  type: 'test'
+  ...
+# Subtest: the opt-in composes one ready ground owner while defaults keep the legacy host
+ok 34 - the opt-in composes one ready ground owner while defaults keep the legacy host
+  ---
+  duration_ms: 712.9861
+  type: 'test'
+  ...
+# Subtest: opt-in fails closed for an absent clock or a resource tick outside that clock
+ok 35 - opt-in fails closed for an absent clock or a resource tick outside that clock
+  ---
+  duration_ms: 548.6916
+  type: 'test'
+  ...
+# Subtest: a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+ok 36 - a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+  ---
+  duration_ms: 314.9248
+  type: 'test'
+  ...
+# Subtest: coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+ok 37 - coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+  ---
+  duration_ms: 307.8483
+  type: 'test'
+  ...
+# Subtest: shutdown settles and drains a pending checkpoint before the final world flush
+ok 38 - shutdown settles and drains a pending checkpoint before the final world flush
+  ---
+  duration_ms: 285.8369
+  type: 'test'
+  ...
+# Subtest: the trusted opt-in rejects accessors and the separate agent-trade lane
+ok 39 - the trusted opt-in rejects accessors and the separate agent-trade lane
+  ---
+  duration_ms: 0.5263
+  type: 'test'
+  ...
+# Subtest: accounts-only ground hosts reject guest admission
+ok 40 - accounts-only ground hosts reject guest admission
+  ---
+  duration_ms: 246.6862
+  type: 'test'
+  ...
+# Subtest: replacing the installed beforeTick owner fences the world
+ok 41 - replacing the installed beforeTick owner fences the world
+  ---
+  duration_ms: 339.7889
+  type: 'test'
+  ...
+# Subtest: give reserves both accounts before IO and applies the two-profile receipt only at drain
+ok 42 - give reserves both accounts before IO and applies the two-profile receipt only at drain
+  ---
+  duration_ms: 4492.2481
+  type: 'test'
+  ...
+# Subtest: real give command validates selectors and never accepts client authority fields
+ok 43 - real give command validates selectors and never accepts client authority fields
+  ---
+  duration_ms: 4116.9601
+  type: 'test'
+  ...
+# Subtest: prior autosaves for both accounts settle under the give reservation
+ok 44 - prior autosaves for both accounts settle under the give reservation
+  ---
+  duration_ms: 3990.2356
+  type: 'test'
+  ...
+# Subtest: a near-limit running profile is rejected before reserving or starting settlement IO
+ok 45 - a near-limit running profile is rejected before reserving or starting settlement IO
+  ---
+  duration_ms: 3629.6267
+  type: 'test'
+  ...
+# Subtest: lost SQL response and missing receipt read retry the same request without duplicating a gift
+ok 46 - lost SQL response and missing receipt read retry the same request without duplicating a gift
+  ---
+  duration_ms: 4190.1883
+  type: 'test'
+  ...
+# Subtest: receiver disconnect fences a committed give before local apply
+ok 47 - receiver disconnect fences a committed give before local apply
+  ---
+  duration_ms: 3993.7549
+  type: 'test'
+  ...
+# Subtest: receiver death fences a committed give before local apply
+ok 48 - receiver death fences a committed give before local apply
+  ---
+  duration_ms: 4238.7687
+  type: 'test'
+  ...
+# Subtest: receiver recycle fences a committed give before local apply
+ok 49 - receiver recycle fences a committed give before local apply
+  ---
+  duration_ms: 4758.9495
+  type: 'test'
+  ...
+# Subtest: close fences a committed give before local apply
+ok 50 - close fences a committed give before local apply
+  ---
+  duration_ms: 4698.714
+  type: 'test'
+  ...
+# Subtest: completion replaced fences a committed give before local apply
+ok 51 - completion replaced fences a committed give before local apply
+  ---
+  duration_ms: 4048.9547
+  type: 'test'
+  ...
+# Subtest: command null fences a committed give before local apply
+ok 52 - command null fences a committed give before local apply
+  ---
+  duration_ms: 3704.64
+  type: 'test'
+  ...
+# Subtest: give fences a null command hook before reaching legacy transfer
+ok 53 - give fences a null command hook before reaching legacy transfer
+  ---
+  duration_ms: 3247.0201
+  type: 'test'
+  ...
+# Subtest: give fences a replacement command hook before reaching legacy transfer
+ok 54 - give fences a replacement command hook before reaching legacy transfer
+  ---
+  duration_ms: 3552.5648
+  type: 'test'
+  ...
+# Subtest: second session apply failure rolls back both live bags and fences the committed host
+ok 55 - second session apply failure rolls back both live bags and fences the committed host
+  ---
+  duration_ms: 3579.0715
+  type: 'test'
+  ...
+# Subtest: partial events apply failure rolls back both live bags and fences the committed host
+ok 56 - partial events apply failure rolls back both live bags and fences the committed host
+  ---
+  duration_ms: 4291.7973
+  type: 'test'
+  ...
+# Subtest: give prepares a detached two-profile CAS operation and applies both profiles and events
+ok 57 - give prepares a detached two-profile CAS operation and applies both profiles and events
+  ---
+  duration_ms: 41.1692
+  type: 'test'
+  ...
+# Subtest: give rejects swallowed, distant, combat, full, wrong-holder and self transfers without mutation
+    # Subtest: swallowed
+    ok 1 - swallowed
+      ---
+      duration_ms: 13.2068
+      type: 'test'
+      ...
+    # Subtest: far
+    ok 2 - far
+      ---
+      duration_ms: 18.4269
+      type: 'test'
+      ...
+    # Subtest: combat
+    ok 3 - combat
+      ---
+      duration_ms: 16.4561
+      type: 'test'
+      ...
+    # Subtest: full
+    ok 4 - full
+      ---
+      duration_ms: 15.2316
+      type: 'test'
+      ...
+    # Subtest: holder
+    ok 5 - holder
+      ---
+      duration_ms: 11.8571
+      type: 'test'
+      ...
+    # Subtest: self
+    ok 6 - self
+      ---
+      duration_ms: 11.3992
+      type: 'test'
+      ...
+    1..6
+ok 58 - give rejects swallowed, distant, combat, full, wrong-holder and self transfers without mutation
+  ---
+  duration_ms: 87.6305
+  type: 'test'
+  ...
+# Subtest: baseline allows settlement counters but catches either endpoint or shared ledger drift
+ok 59 - baseline allows settlement counters but catches either endpoint or shared ledger drift
+  ---
+  duration_ms: 16.3688
+  type: 'test'
+  ...
+# Subtest: preflight accepts autosave activity for both accounts, snapshots read-only and cannot apply
+ok 60 - preflight accepts autosave activity for both accounts, snapshots read-only and cannot apply
+  ---
+  duration_ms: 19.9192
+  type: 'test'
+  ...
+# Subtest: current endpoint loss, death and guest identity cancel or reject a plan
+    # Subtest: recycled
+    ok 1 - recycled
+      ---
+      duration_ms: 17.7759
+      type: 'test'
+      ...
+    # Subtest: dead
+    ok 2 - dead
+      ---
+      duration_ms: 12.7786
+      type: 'test'
+      ...
+    # Subtest: guest
+    ok 3 - guest
+      ---
+      duration_ms: 3.9231
+      type: 'test'
+      ...
+    1..3
+ok 61 - current endpoint loss, death and guest identity cancel or reject a plan
+  ---
+  duration_ms: 35.0076
+  type: 'test'
+  ...
+# Subtest: failure while marking the second profile dirty rolls back both sessions and the first profile
+ok 62 - failure while marking the second profile dirty rolls back both sessions and the first profile
+  ---
+  duration_ms: 23.8644
+  type: 'test'
+  ...
+# Subtest: one-shot failure writing the second session confirmed value restores both sessions and projections
+ok 63 - one-shot failure writing the second session confirmed value restores both sessions and projections
+  ---
+  duration_ms: 25.1804
+  type: 'test'
+  ...
+# Subtest: partial event append failure truncates publication and restores the full give projection
+ok 64 - partial event append failure truncates publication and restores the full give projection
+  ---
+  duration_ms: 33.998
+  type: 'test'
+  ...
+# Subtest: ordinary host stays unmounted; mount requires recovered GHA owner and empty tick-zero server
+ok 65 - ordinary host stays unmounted; mount requires recovered GHA owner and empty tick-zero server
+  ---
+  duration_ms: 4647.9066
+  type: 'test'
+  ...
+# Subtest: startup hydrates durable ground pearl rows after recovery and uses durable-to-local zero clock anchor
+ok 66 - startup hydrates durable ground pearl rows after recovery and uses durable-to-local zero clock anchor
+  ---
+  duration_ms: 4501.0783
+  type: 'test'
+  ...
+# Subtest: SQL current death-drop rows are checked but fail closed before host startup installs any rows
+ok 67 - SQL current death-drop rows are checked but fail closed before host startup installs any rows
+  ---
+  duration_ms: 3860.0239
+  type: 'test'
+  ...
+# Subtest: authenticated pickup waits for common SQL receipt and applies once at boundary with session/profile CAS
+ok 68 - authenticated pickup waits for common SQL receipt and applies once at boundary with session/profile CAS
+  ---
+  duration_ms: 4162.6435
+  type: 'test'
+  ...
+# Subtest: pickup rejects early, distant and full receivers without a family journal operation
+ok 69 - pickup rejects early, distant and full receivers without a family journal operation
+  ---
+  duration_ms: 3974.1764
+  type: 'test'
+  ...
+# Subtest: automatic return then restart hydration maps current row version into the next pickup
+ok 70 - automatic return then restart hydration maps current row version into the next pickup
+  ---
+  duration_ms: 5645.0165
+  type: 'test'
+  ...
+# Subtest: rejoin at a checkpoint retains hydrated source without replaying an old world snapshot
+ok 71 - rejoin at a checkpoint retains hydrated source without replaying an old world snapshot
+  ---
+  duration_ms: 4639.0869
+  type: 'test'
+  ...
+# Subtest: disconnecting the pickup receiver while SQL is pending fences apply
+ok 72 - disconnecting the pickup receiver while SQL is pending fences apply
+  ---
+  duration_ms: 4499.7347
+  type: 'test'
+  ...
+# Subtest: shutdown after SQL commit but before the prepared receipt drain never applies pickup
+ok 73 - shutdown after SQL commit but before the prepared receipt drain never applies pickup
+  ---
+  duration_ms: 3953.4569
+  type: 'test'
+  ...
+# Subtest: replacing the GHA before mounting cannot install or activate lifecycle ownership
+ok 74 - replacing the GHA before mounting cannot install or activate lifecycle ownership
+  ---
+  duration_ms: 2557.1018
+  type: 'test'
+  ...
+# Subtest: selector leave reserves and persists an owned pearl, then applies only at the common tick boundary
+ok 75 - selector leave reserves and persists an owned pearl, then applies only at the common tick boundary
+  ---
+  duration_ms: 4135.2413
+  type: 'test'
+  ...
+# Subtest: real CMD pearl leave is routed only when mounted; malformed give, swallow, combat, unknown, spit and sell fail closed
+not ok 76 - real CMD pearl leave is routed only when mounted; malformed give, swallow, combat, unknown, spit and sell fail closed
+  ---
+  duration_ms: 3395.5409
+  type: 'test'
+  location: 'C:\\DEV\\real of trade\\area15-resource-live\\tests\\ground-pearl-leave-host.test.mjs:82:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+
+      Comparison {
+    +   code: 'busy'
+    -   code: 'unknown'
+      }
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    code: 'unknown'
+  actual:
+  error: 'Storage: busy'
+  stack: |-
+    fail (file:///C:/DEV/real%20of%20trade/area15-resource-live/server/groundPearlLifecycle.mjs:23:30)
+    #available (file:///C:/DEV/real%20of%20trade/area15-resource-live/server/groundPearlLifecycle.mjs:74:55)
+    GroundPearlLifecycle.leave (file:///C:/DEV/real%20of%20trade/area15-resource-live/server/groundPearlLifecycle.mjs:112:51)
+    assert.throws.code (file:///C:/DEV/real%20of%20trade/area15-resource-live/tests/ground-pearl-leave-host.test.mjs:101:43)
+    getActual (node:assert:611:5)
+    strict.throws (node:assert:759:24)
+    TestContext.<anonymous> (file:///C:/DEV/real%20of%20trade/area15-resource-live/tests/ground-pearl-leave-host.test.mjs:101:12)
+    async Test.run (node:internal/test_runner/test:1125:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/DEV/real%20of%20trade/area15-resource-live/tests/ground-pearl-leave-host.test.mjs:101:12)
+    async Test.run (node:internal/test_runner/test:1125:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+  ...
+# Subtest: shutdown fences a SQL committed leave until recovery
+ok 77 - shutdown fences a SQL committed leave until recovery
+  ---
+  duration_ms: 3568.9827
+  type: 'test'
+  ...
+# Subtest: a normally applied leave hydrates as one source after restart and can be picked up once
+ok 78 - a normally applied leave hydrates as one source after restart and can be picked up once
+  ---
+  duration_ms: 4685.5994
+  type: 'test'
+  ...
+# Subtest: disconnect and shutdown fence a retained leave receipt before gameplay apply
+ok 79 - disconnect and shutdown fence a retained leave receipt before gameplay apply
+  ---
+  duration_ms: 3187.4433
+  type: 'test'
+  ...
+# Subtest: taking over the common completion callback prevents a retained leave from applying
+ok 80 - taking over the common completion callback prevents a retained leave from applying
+  ---
+  duration_ms: 3166.3697
+  type: 'test'
+  ...
+# Subtest: mounted leave command fences a null pearl hook before legacy mutation
+ok 81 - mounted leave command fences a null pearl hook before legacy mutation
+  ---
+  duration_ms: 3152.7654
+  type: 'test'
+  ...
+# Subtest: mounted leave command fences a replacement pearl hook before legacy mutation
+ok 82 - mounted leave command fences a replacement pearl hook before legacy mutation
+  ---
+  duration_ms: 3150.2115
+  type: 'test'
+  ...
+# Subtest: planner prepares detached helper delta and atomically applies the exact durable receipt
+ok 83 - planner prepares detached helper delta and atomically applies the exact durable receipt
+  ---
+  duration_ms: 51.0819
+  type: 'test'
+  ...
+# Subtest: planner rejects holder, generation, profile and duplicate UID drift without mutation
+    # Subtest: holder
+    ok 1 - holder
+      ---
+      duration_ms: 12.5367
+      type: 'test'
+      ...
+    # Subtest: version
+    ok 2 - version
+      ---
+      duration_ms: 11.0886
+      type: 'test'
+      ...
+    # Subtest: profile
+    ok 3 - profile
+      ---
+      duration_ms: 14.2474
+      type: 'test'
+      ...
+    # Subtest: ledger
+    ok 4 - ledger
+      ---
+      duration_ms: 10.008
+      type: 'test'
+      ...
+    # Subtest: duplicate profile
+    ok 5 - duplicate profile
+      ---
+      duration_ms: 11.5108
+      type: 'test'
+      ...
+    # Subtest: duplicate drop
+    ok 6 - duplicate drop
+      ---
+      duration_ms: 11.0922
+      type: 'test'
+      ...
+    # Subtest: row shape
+    ok 7 - row shape
+      ---
+      duration_ms: 9.4235
+      type: 'test'
+      ...
+    1..7
+ok 84 - planner rejects holder, generation, profile and duplicate UID drift without mutation
+  ---
+  duration_ms: 80.8938
+  type: 'test'
+  ...
+# Subtest: durable row accessors are rejected without invocation
+ok 85 - durable row accessors are rejected without invocation
+  ---
+  duration_ms: 3.7378
+  type: 'test'
+  ...
+# Subtest: assertBaseline allows settlement session counters while assertCurrent fences them
+ok 86 - assertBaseline allows settlement session counters while assertCurrent fences them
+  ---
+  duration_ms: 34.1435
+  type: 'test'
+  ...
+# Subtest: captured ECS progress is carried into the profile and RNG replacement fences a plan
+ok 87 - captured ECS progress is carried into the profile and RNG replacement fences a plan
+  ---
+  duration_ms: 16.2272
+  type: 'test'
+  ...
+# Subtest: in-place target geometry drift and allocator descriptor drift fence the plan
+ok 88 - in-place target geometry drift and allocator descriptor drift fence the plan
+  ---
+  duration_ms: 50.0555
+  type: 'test'
+  ...
+# Subtest: wrong receipt and publication callback failure leave all state untouched
+ok 89 - wrong receipt and publication callback failure leave all state untouched
+  ---
+  duration_ms: 38.7836
+  type: 'test'
+  ...
+# Subtest: synchronous apply failure restores profile, receipt fields, drop order, ledger and dirty state
+ok 90 - synchronous apply failure restores profile, receipt fields, drop order, ledger and dirty state
+  ---
+  duration_ms: 31.3027
+  type: 'test'
+  ...
+# Subtest: unmounted lootOnKill and openChest still insert rolled pearls immediately
+ok 91 - unmounted lootOnKill and openChest still insert rolled pearls immediately
+  ---
+  duration_ms: 303.6749
+  type: 'test'
+  ...
+# Subtest: real sentinel loot captures synchronously, retains its tick, commits SQL, then drains after same-tick death
+ok 92 - real sentinel loot captures synchronously, retains its tick, commits SQL, then drains after same-tick death
+  ---
+  duration_ms: 3834.5257
+  type: 'test'
+  ...
+# Subtest: two real mint routes in one tick publish only after both SQL receipts drain
+ok 93 - two real mint routes in one tick publish only after both SQL receipts drain
+  ---
+  duration_ms: 3311.5003
+  type: 'test'
+  ...
+# Subtest: closing with a captured mint before its first drain rejects flush without durable or local effects
+ok 94 - closing with a captured mint before its first drain rejects flush without durable or local effects
+  ---
+  duration_ms: 2684.3225
+  type: 'test'
+  ...
+# Subtest: closing after mint SQL commit fences the delayed apply and retains its current receipt
+ok 95 - closing after mint SQL commit fences the delayed apply and retains its current receipt
+  ---
+  duration_ms: 2635.2317
+  type: 'test'
+  ...
+# Subtest: replacing afterTick while a mint receipt is retained rejects late application
+ok 96 - replacing afterTick while a mint receipt is retained rejects late application
+  ---
+  duration_ms: 2744.868
+  type: 'test'
+  ...
+# Subtest: mint ownership is explicit and closing or hook takeover prevents late authority use
+ok 97 - mint ownership is explicit and closing or hook takeover prevents late authority use
+  ---
+  duration_ms: 2708.2747
+  type: 'test'
+  ...
+# Subtest: mint planning is detached and applies a fresh checked ground receipt with projected deadlines
+ok 98 - mint planning is detached and applies a fresh checked ground receipt with projected deadlines
+  ---
+  duration_ms: 27.0997
+  type: 'test'
+  ...
+# Subtest: uses the origin tick within the one tick capture window and rejects out of window candidates
+ok 99 - uses the origin tick within the one tick capture window and rejects out of window candidates
+  ---
+  duration_ms: 5.928
+  type: 'test'
+  ...
+# Subtest: rejects UID collisions and duplicate live profile ownership
+ok 100 - rejects UID collisions and duplicate live profile ownership
+  ---
+  duration_ms: 5.1588
+  type: 'test'
+  ...
+# Subtest: cancels when profiles, RNG, or target geometry drift during the IO window
+ok 101 - cancels when profiles, RNG, or target geometry drift during the IO window
+  ---
+  duration_ms: 8.1878
+  type: 'test'
+  ...
+# Subtest: rejects replay and malformed receipts without applying; rolls back if publication throws
+ok 102 - rejects replay and malformed receipts without applying; rolls back if publication throws
+  ---
+  duration_ms: 23.8803
+  type: 'test'
+  ...
+# Subtest: a fault after drop insertion rolls back the mint allocator, ledger and drop
+ok 103 - a fault after drop insertion rolls back the mint allocator, ledger and drop
+  ---
+  duration_ms: 13.0012
+  type: 'test'
+  ...
+# Subtest: rolled-pearl seam stays synchronous and does not intercept existing pearl drops
+ok 104 - rolled-pearl seam stays synchronous and does not intercept existing pearl drops
+  ---
+  duration_ms: 12.7919
+  type: 'test'
+  ...
+# Subtest: pickup plan is detached and a checked receipt advances the profile session exactly once
+ok 105 - pickup plan is detached and a checked receipt advances the profile session exactly once
+  ---
+  duration_ms: 33.1504
+  type: 'test'
+  ...
+# Subtest: rejects hostile receiver getters and source getters without evaluating them
+ok 106 - rejects hostile receiver getters and source getters without evaluating them
+  ---
+  duration_ms: 10.6225
+  type: 'test'
+  ...
+# Subtest: rejects stale hydrated row version and mismatched durable source without a plan
+ok 107 - rejects stale hydrated row version and mismatched durable source without a plan
+  ---
+  duration_ms: 9.3813
+  type: 'test'
+  ...
+# Subtest: a disconnect invalidates the prepared effect before any local write
+ok 108 - a disconnect invalidates the prepared effect before any local write
+  ---
+  duration_ms: 11.5475
+  type: 'test'
+  ...
+# Subtest: profile, ECS, and source mutations after planning fail the baseline before applying
+ok 109 - profile, ECS, and source mutations after planning fail the baseline before applying
+  ---
+  duration_ms: 59.4705
+  type: 'test'
+  ...
+# Subtest: synchronous failure after tentative profile writes restores all local and session metadata
+ok 110 - synchronous failure after tentative profile writes restores all local and session metadata
+  ---
+  duration_ms: 12.8634
+  type: 'test'
+  ...
+# Subtest: stale profile-session version and unexpected in-flight save reject the adapter
+ok 111 - stale profile-session version and unexpected in-flight save reject the adapter
+  ---
+  duration_ms: 10.0379
+  type: 'test'
+  ...
+# Subtest: plans the same deterministic return as the legacy helper and applies only a checked family receipt
+ok 112 - plans the same deterministic return as the legacy helper and applies only a checked family receipt
+  ---
+  duration_ms: 46.9167
+  type: 'test'
+  ...
+# Subtest: rejects wrong receipts and changed source baselines without mutating World
+ok 113 - rejects wrong receipts and changed source baselines without mutating World
+  ---
+  duration_ms: 29.4432
+  type: 'test'
+  ...
+# Subtest: rejects accessors, proxies, non-ground identities, and a UID duplicated in live ownership
+ok 114 - rejects accessors, proxies, non-ground identities, and a UID duplicated in live ownership
+  ---
+  duration_ms: 14.7038
+  type: 'test'
+  ...
+# Subtest: preserves drop iteration order around unrelated drops when the target is appended
+ok 115 - preserves drop iteration order around unrelated drops when the target is appended
+  ---
+  duration_ms: 13.9331
+  type: 'test'
+  ...
+# Subtest: SQL019 keeps a pending exact envelope across reopen and lists pending rows in UUID order
+ok 116 - SQL019 keeps a pending exact envelope across reopen and lists pending rows in UUID order
+  ---
+  duration_ms: 2305.0187
+  type: 'test'
+  ...
+# Subtest: SQL019 persists a commit when the response is lost, and retry returns its canonical receipt
+ok 117 - SQL019 persists a commit when the response is lost, and retry returns its canonical receipt
+  ---
+  duration_ms: 951.7755
+  type: 'test'
+  ...
+# Subtest: SQL019 terminalizes a stale CAS without effects, releases the world, and admits the next intent
+ok 118 - SQL019 terminalizes a stale CAS without effects, releases the world, and admits the next intent
+  ---
+  duration_ms: 935.0441
+  type: 'test'
+  ...
+# Subtest: SQL019 rolls every effect and receipt back if finalization fails, leaving the intent recoverable
+ok 119 - SQL019 rolls every effect and receipt back if finalization fails, leaving the intent recoverable
+  ---
+  duration_ms: 935.7677
+  type: 'test'
+  ...
+# Subtest: SQL019 immutable identities, terminal results, namespace reservation, and world-scoped pending limit
+ok 120 - SQL019 immutable identities, terminal results, namespace reservation, and world-scoped pending limit
+  ---
+  duration_ms: 927.4967
+  type: 'test'
+  ...
+# Subtest: SQL019 reapply is safe and all intent RPCs and tables remain service-only
+ok 121 - SQL019 reapply is safe and all intent RPCs and tables remain service-only
+  ---
+  duration_ms: 915.404
+  type: 'test'
+  ...
+# Subtest: SQL019 permits sequential same-tick intents to reuse the current clock receipt
+ok 122 - SQL019 permits sequential same-tick intents to reuse the current clock receipt
+  ---
+  duration_ms: 963.7914
+  type: 'test'
+  ...
+# Subtest: SQL019 allows the current receipt from a prior advancing intent as the next same-tick clock
+ok 123 - SQL019 allows the current receipt from a prior advancing intent as the next same-tick clock
+  ---
+  duration_ms: 883.7858
+  type: 'test'
+  ...
+# Subtest: SQL019 retains SQL018 legacy collision guards for old transaction and clock identities
+ok 124 - SQL019 retains SQL018 legacy collision guards for old transaction and clock identities
+  ---
+  duration_ms: 876.6038
+  type: 'test'
+  ...
+# Subtest: SQL019 recovers an exact pending envelope before session world load, then accepts same-tick begin after lost reply
+ok 125 - SQL019 recovers an exact pending envelope before session world load, then accepts same-tick begin after lost reply
+  ---
+  duration_ms: 943.0489
+  type: 'test'
+  ...
+# Subtest: SQL019 preserves standalone legacy pearl writes and blocks both UUIDs reserved by a pending intent
+ok 126 - SQL019 preserves standalone legacy pearl writes and blocks both UUIDs reserved by a pending intent
+  ---
+  duration_ms: 939.1342
+  type: 'test'
+  ...
+# Subtest: SQL019 admits exact nested pearl mint and pickup receipts and commits each final journal row atomically
+ok 127 - SQL019 admits exact nested pearl mint and pickup receipts and commits each final journal row atomically
+  ---
+  duration_ms: 1018.2777
+  type: 'test'
+  ...
+# Subtest: SQL018 readiness is service-only and resource gather/craft share the durable clock transaction
+ok 128 - SQL018 readiness is service-only and resource gather/craft share the durable clock transaction
+  ---
+  duration_ms: 1501.1414
+  type: 'test'
+  ...
+# Subtest: pearl mint and pickup commit with clock, immutable replay, and no duplicate legacy receipt promotion
+ok 129 - pearl mint and pickup commit with clock, immutable replay, and no duplicate legacy receipt promotion
+  ---
+  duration_ms: 970.7949
+  type: 'test'
+  ...
+# Subtest: world CAS, clock CAS and a post-effect SQL failure roll every family write back
+ok 130 - world CAS, clock CAS and a post-effect SQL failure roll every family write back
+  ---
+  duration_ms: 932.0005
+  type: 'test'
+  ...
+# Subtest: whole death and death-drop pickup share one transaction family with the same world clock
+ok 131 - whole death and death-drop pickup share one transaction family with the same world clock
+  ---
+  duration_ms: 960.0455
+  type: 'test'
+  ...
+# Subtest: SQL018 reapply, v1/v2 resource and logging snapshots, and lost response survive reopen
+ok 132 - SQL018 reapply, v1/v2 resource and logging snapshots, and lost response survive reopen
+  ---
+  duration_ms: 2045.9443
+  type: 'test'
+  ...
+# Subtest: SQL018 rejects NULL payloads and refuses to overwrite a corrupt current world snapshot
+ok 133 - SQL018 rejects NULL payloads and refuses to overwrite a corrupt current world snapshot
+  ---
+  duration_ms: 914.9291
+  type: 'test'
+  ...
+# Subtest: SQL023/029 compose attributes, workshop, raft and resource receipts and retain them after database reopen
+ok 134 - SQL023/029 compose attributes, workshop, raft and resource receipts and retain them after database reopen
+  ---
+  duration_ms: 10267.0342
+  type: 'test'
+  ...
+# Subtest: memory: slow receipt keeps actions until apply, then movement/ACK survive and fresh G works
+ok 135 - memory: slow receipt keeps actions until apply, then movement/ACK survive and fresh G works
+  ---
+  duration_ms: 322.6808
+  type: 'test'
+  ...
+# Subtest: SDK/SQL006: slow receipt keeps actions until apply, then movement/ACK survive and fresh G works
+ok 136 - SDK/SQL006: slow receipt keeps actions until apply, then movement/ACK survive and fresh G works
+  ---
+  duration_ms: 1551.0419
+  type: 'test'
+  ...
+# Subtest: memory: retired replacement leaves inputs and owner progress untouched
+ok 137 - memory: retired replacement leaves inputs and owner progress untouched
+  ---
+  duration_ms: 223.4969
+  type: 'test'
+  ...
+# Subtest: SDK/SQL008: retired replacement leaves inputs and owner progress untouched
+ok 138 - SDK/SQL008: retired replacement leaves inputs and owner progress untouched
+  ---
+  duration_ms: 1161.0414
+  type: 'test'
+  ...
+# Subtest: give does not change active power and never prepares or filters either endpoint
+ok 139 - give does not change active power and never prepares or filters either endpoint
+  ---
+  duration_ms: 221.5978
+  type: 'test'
+  ...
+# Subtest: a carried potion remains usable exactly once while old combat presses are removed
+ok 140 - a carried potion remains usable exactly once while old combat presses are removed
+  ---
+  duration_ms: 214.5175
+  type: 'test'
+  ...
+# Subtest: without adapter the accepted queue and non-G buffer behavior stays unchanged
+ok 141 - without adapter the accepted queue and non-G buffer behavior stays unchanged
+  ---
+  duration_ms: 219.4036
+  type: 'test'
+  ...
+# Subtest: trim/late carry cannot resurrect filtered actions; remaining movement and filler ACK are normal
+ok 142 - trim/late carry cannot resurrect filtered actions; remaining movement and filler ACK are normal
+  ---
+  duration_ms: 229.3875
+  type: 'test'
+  ...
+# Subtest: local save failure after filtering restores transport references and ECS buffers; SQL stays committed
+ok 143 - local save failure after filtering restores transport references and ECS buffers; SQL stays committed
+  ---
+  duration_ms: 224.9541
+  type: 'test'
+  ...
+# Subtest: builtin effect refuses preparation outside apply and detects changed queue or identity before its writes
+    # Subtest: queue
+    ok 1 - queue
+      ---
+      duration_ms: 226.2072
+      type: 'test'
+      ...
+    # Subtest: command
+    ok 2 - command
+      ---
+      duration_ms: 208.5554
+      type: 'test'
+      ...
+    # Subtest: carry
+    ok 3 - carry
+      ---
+      duration_ms: 199.7925
+      type: 'test'
+      ...
+    # Subtest: last
+    ok 4 - last
+      ---
+      duration_ms: 211.6739
+      type: 'test'
+      ...
+    # Subtest: ack
+    ok 5 - ack
+      ---
+      duration_ms: 251.7761
+      type: 'test'
+      ...
+    # Subtest: identity
+    ok 6 - identity
+      ---
+      duration_ms: 221.4312
+      type: 'test'
+      ...
+    1..6
+ok 144 - builtin effect refuses preparation outside apply and detects changed queue or identity before its writes
+  ---
+  duration_ms: 1320.28
+  type: 'test'
+  ...
+# Subtest: invalid, async and caught reentrant input adapters fence before local writes
+    # Subtest: throw
+    ok 1 - throw
+      ---
+      duration_ms: 351.2638
+      type: 'test'
+      ...
+    # Subtest: Promise
+    ok 2 - Promise
+      ---
+      duration_ms: 240.3802
+      type: 'test'
+      ...
+    # Subtest: rejected Promise
+    ok 3 - rejected Promise
+      ---
+      duration_ms: 233.6615
+      type: 'test'
+      ...
+    # Subtest: missing method
+    ok 4 - missing method
+      ---
+      duration_ms: 236.9167
+      type: 'test'
+      ...
+    # Subtest: reentry
+    ok 5 - reentry
+      ---
+      duration_ms: 236.1258
+      type: 'test'
+      ...
+    # Subtest: getter reentry
+    ok 6 - getter reentry
+      ---
+      duration_ms: 229.4155
+      type: 'test'
+      ...
+    1..6
+ok 145 - invalid, async and caught reentrant input adapters fence before local writes
+  ---
+  duration_ms: 1528.5409
+  type: 'test'
+  ...
+# Subtest: failed input apply/assert and rollback callback cannot leave staging-owned ECS/profile writes applied
+    # Subtest: apply throw
+    ok 1 - apply throw
+      ---
+      duration_ms: 233.5364
+      type: 'test'
+      ...
+    # Subtest: apply Promise
+    ok 2 - apply Promise
+      ---
+      duration_ms: 230.8892
+      type: 'test'
+      ...
+    # Subtest: assert reentry
+    ok 3 - assert reentry
+      ---
+      duration_ms: 223.6955
+      type: 'test'
+      ...
+    # Subtest: rollback throw
+    ok 4 - rollback throw
+      ---
+      duration_ms: 245.0905
+      type: 'test'
+      ...
+    1..4
+ok 146 - failed input apply/assert and rollback callback cannot leave staging-owned ECS/profile writes applied
+  ---
+  duration_ms: 933.7756
+  type: 'test'
+  ...
+# Subtest: invalidated death/revival, closed session and recycled profile never prepare an input effect
+    # Subtest: death/revival
+    ok 1 - death/revival
+      ---
+      duration_ms: 209.6402
+      type: 'test'
+      ...
+    # Subtest: closed
+    ok 2 - closed
+      ---
+      duration_ms: 211.9937
+      type: 'test'
+      ...
+    # Subtest: recycled
+    ok 3 - recycled
+      ---
+      duration_ms: 203.443
+      type: 'test'
+      ...
+    1..3
+ok 147 - invalidated death/revival, closed session and recycled profile never prepare an input effect
+  ---
+  duration_ms: 625.4748
+  type: 'test'
+  ...
+# Subtest: adapter configuration and selector validation fail closed without transport changes
+ok 148 - adapter configuration and selector validation fail closed without transport changes
+  ---
+  duration_ms: 205.6914
+  type: 'test'
+  ...
+# Subtest: detached capture reads current ECS progress while preserving profile-only state and all world containers
+ok 149 - detached capture reads current ECS progress while preserving profile-only state and all world containers
+  ---
+  duration_ms: 21.7018
+  type: 'test'
+  ...
+# Subtest: invalid ECS progress fails capture rather than resetting or clamping a durable profile
+    # Subtest: xp:NaN
+    ok 1 - xp:NaN
+      ---
+      duration_ms: 12.395
+      type: 'test'
+      ...
+    # Subtest: xp:-1
+    ok 2 - xp:-1
+      ---
+      duration_ms: 11.5271
+      type: 'test'
+      ...
+    # Subtest: level:0
+    ok 3 - level:0
+      ---
+      duration_ms: 9.5171
+      type: 'test'
+      ...
+    # Subtest: potions:1000
+    ok 4 - potions:1000
+      ---
+      duration_ms: 8.5183
+      type: 'test'
+      ...
+    1..4
+ok 150 - invalid ECS progress fails capture rather than resetting or clamping a durable profile
+  ---
+  duration_ms: 42.5837
+  type: 'test'
+  ...
+# Subtest: capture adapters reject async, malformed and inventory/progress substitutions before scheduling storage
+    # Subtest: throw
+    ok 1 - throw
+      ---
+      duration_ms: 14.6212
+      type: 'test'
+      ...
+    # Subtest: resolved Promise
+    ok 2 - resolved Promise
+      ---
+      duration_ms: 14.1895
+      type: 'test'
+      ...
+    # Subtest: rejected Promise
+    ok 3 - rejected Promise
+      ---
+      duration_ms: 11.0049
+      type: 'test'
+      ...
+    # Subtest: noncanonical
+    ok 4 - noncanonical
+      ---
+      duration_ms: 10.9928
+      type: 'test'
+      ...
+    # Subtest: gold replacement
+    ok 5 - gold replacement
+      ---
+      duration_ms: 15.0068
+      type: 'test'
+      ...
+    # Subtest: pearl replacement
+    ok 6 - pearl replacement
+      ---
+      duration_ms: 9.9063
+      type: 'test'
+      ...
+    # Subtest: identity replacement
+    ok 7 - identity replacement
+      ---
+      duration_ms: 11.55
+      type: 'test'
+      ...
+    1..7
+ok 151 - capture adapters reject async, malformed and inventory/progress substitutions before scheduling storage
+  ---
+  duration_ms: 91.3973
+  type: 'test'
+  ...
+# Subtest: memory: baseline captures synchronously and apply rebases newer ECS/profile progress once
+ok 152 - memory: baseline captures synchronously and apply rebases newer ECS/profile progress once
+  ---
+  duration_ms: 33.7311
+  type: 'test'
+  ...
+# Subtest: SDK/SQL006: baseline captures synchronously and apply rebases newer ECS/profile progress once
+ok 153 - SDK/SQL006: baseline captures synchronously and apply rebases newer ECS/profile progress once
+  ---
+  duration_ms: 1424.5795
+  type: 'test'
+  ...
+# Subtest: give captures both trusted endpoints independently and transfers no player progress with the UID
+ok 154 - give captures both trusted endpoints independently and transfers no player progress with the UID
+  ---
+  duration_ms: 15.6537
+  type: 'test'
+  ...
+# Subtest: memory: retired replacement is denied without reading storage or capturing newer progress
+ok 155 - memory: retired replacement is denied without reading storage or capturing newer progress
+  ---
+  duration_ms: 7.5965
+  type: 'test'
+  ...
+# Subtest: SDK/SQL008: retired replacement is denied without reading storage or capturing newer progress
+ok 156 - SDK/SQL008: retired replacement is denied without reading storage or capturing newer progress
+  ---
+  duration_ms: 951.9103
+  type: 'test'
+  ...
+# Subtest: reserved save accepts the canonical detached snapshot without publishing, syncing or queuing old inventory
+ok 157 - reserved save accepts the canonical detached snapshot without publishing, syncing or queuing old inventory
+  ---
+  duration_ms: 18.3708
+  type: 'test'
+  ...
+# Subtest: capture failure after the durable receipt fences before any local progress, pearl or event writes
+ok 158 - capture failure after the durable receipt fences before any local progress, pearl or event writes
+  ---
+  duration_ms: 12.7704
+  type: 'test'
+  ...
+# Subtest: failed local save enqueue rolls back captured scalars, pearl slots and ECS while keeping the durable fence
+ok 159 - failed local save enqueue rolls back captured scalars, pearl slots and ECS while keeping the durable fence
+  ---
+  duration_ms: 14.9314
+  type: 'test'
+  ...
+# Subtest: invalidation, death/revival and entity reuse prevent both late capture and local apply
+    # Subtest: invalidation after revival
+    ok 1 - invalidation after revival
+      ---
+      duration_ms: 12.523
+      type: 'test'
+      ...
+    # Subtest: closed session
+    ok 2 - closed session
+      ---
+      duration_ms: 16.1695
+      type: 'test'
+      ...
+    # Subtest: reused profile/entity
+    ok 3 - reused profile/entity
+      ---
+      duration_ms: 14.4291
+      type: 'test'
+      ...
+    1..3
+ok 160 - invalidation, death/revival and entity reuse prevent both late capture and local apply
+  ---
+  duration_ms: 43.6681
+  type: 'test'
+  ...
+# Subtest: caught staging reentry from a trusted capture cannot reserve, save or drain another operation
+ok 161 - caught staging reentry from a trusted capture cannot reserve, save or drain another operation
+  ---
+  duration_ms: 21.1526
+  type: 'test'
+  ...
+# Subtest: identity invalidation during initial capture retains the gate fence without starting journal or storage work
+ok 162 - identity invalidation during initial capture retains the gate fence without starting journal or storage work
+  ---
+  duration_ms: 12.7122
+  type: 'test'
+  ...
+# Subtest: actual GameHost bridge captures reserved trusted accounts; paused tick applies progress without early publication
+ok 163 - actual GameHost bridge captures reserved trusted accounts; paused tick applies progress without early publication
+  ---
+  duration_ms: 283.7351
+  type: 'test'
+  ...
+# Subtest: SQL006 SDK staging waits for receipt/journal, rebases current progress and applies exact ECS effect once
+ok 164 - SQL006 SDK staging waits for receipt/journal, rebases current progress and applies exact ECS effect once
+  ---
+  duration_ms: 1353.8872
+  type: 'test'
+  ...
+# Subtest: SQL SDK lost replies replay the frozen request without a second generation or tick effect
+ok 165 - SQL SDK lost replies replay the frozen request without a second generation or tick effect
+  ---
+  duration_ms: 934.8941
+  type: 'test'
+  ...
+# Subtest: new SQL-backed authority after commit before apply loads current swallowed state without replaying a gameplay event
+ok 166 - new SQL-backed authority after commit before apply loads current swallowed state without replaying a gameplay event
+  ---
+  duration_ms: 937.121
+  type: 'test'
+  ...
+# Subtest: SQL-backed enqueue failure rolls back local ECS but leaves the durable receipt and terminal journal intact
+ok 167 - SQL-backed enqueue failure rolls back local ECS but leaves the durable receipt and terminal journal intact
+  ---
+  duration_ms: 969.0615
+  type: 'test'
+  ...
+# Subtest: slow swallow commit and journal closure leave all world state untouched until one tick apply
+ok 168 - slow swallow commit and journal closure leave all world state untouched until one tick apply
+  ---
+  duration_ms: 52.1826
+  type: 'test'
+  ...
+# Subtest: swallow preflight uses real calm/UID rules without writes or a journal entry; replacement is excluded
+    # Subtest: recent damage
+    ok 1 - recent damage
+      ---
+      duration_ms: 10.7158
+      type: 'test'
+      ...
+    # Subtest: cast
+    ok 2 - cast
+      ---
+      duration_ms: 13.4803
+      type: 'test'
+      ...
+    # Subtest: attack
+    ok 3 - attack
+      ---
+      duration_ms: 23.7309
+      type: 'test'
+      ...
+    # Subtest: dash
+    ok 4 - dash
+      ---
+      duration_ms: 15.447
+      type: 'test'
+      ...
+    # Subtest: dead
+    ok 5 - dead
+      ---
+      duration_ms: 12.3124
+      type: 'test'
+      ...
+    # Subtest: despawned
+    ok 6 - despawned
+      ---
+      duration_ms: 12.3397
+      type: 'test'
+      ...
+    # Subtest: nearby chasing foe
+    ok 7 - nearby chasing foe
+      ---
+      duration_ms: 10.554
+      type: 'test'
+      ...
+    # Subtest: unknown bag UID
+    ok 8 - unknown bag UID
+      ---
+      duration_ms: 12.1551
+      type: 'test'
+      ...
+    # Subtest: already swallowed
+    ok 9 - already swallowed
+      ---
+      duration_ms: 11.5898
+      type: 'test'
+      ...
+    # Subtest: explicit replacement
+    ok 10 - explicit replacement
+      ---
+      duration_ms: 9.2906
+      type: 'test'
+      ...
+    # Subtest: zero generation
+    ok 11 - zero generation
+      ---
+      duration_ms: 8.6696
+      type: 'test'
+      ...
+    # Subtest: guest identity
+    ok 12 - guest identity
+      ---
+      duration_ms: 8.7431
+      type: 'test'
+      ...
+    # Subtest: foreign ledger owner
+    ok 13 - foreign ledger owner
+      ---
+      duration_ms: 13.1833
+      type: 'test'
+      ...
+    1..13
+ok 169 - swallow preflight uses real calm/UID rules without writes or a journal entry; replacement is excluded
+  ---
+  duration_ms: 164.1858
+  type: 'test'
+  ...
+# Subtest: apply matches every real pearl helper kind using latest HP, gear/mastery, timers and progress
+    # Subtest: brasa
+    ok 1 - brasa
+      ---
+      duration_ms: 14.4178
+      type: 'test'
+      ...
+    # Subtest: escarcha
+    ok 2 - escarcha
+      ---
+      duration_ms: 12.5238
+      type: 'test'
+      ...
+    # Subtest: tormenta
+    ok 3 - tormenta
+      ---
+      duration_ms: 12.3641
+      type: 'test'
+      ...
+    # Subtest: tinta
+    ok 4 - tinta
+      ---
+      duration_ms: 12.9397
+      type: 'test'
+      ...
+    1..4
+ok 170 - apply matches every real pearl helper kind using latest HP, gear/mastery, timers and progress
+  ---
+  duration_ms: 53.0609
+  type: 'test'
+  ...
+# Subtest: accepted calm is not re-tested after SQL: current combat continues while only the swallow effect applies
+ok 171 - accepted calm is not re-tested after SQL: current combat continues while only the swallow effect applies
+  ---
+  duration_ms: 7.7268
+  type: 'test'
+  ...
+# Subtest: give and swallow coordinators share one reservation; unrelated entities remain unchanged
+ok 172 - give and swallow coordinators share one reservation; unrelated entities remain unchanged
+  ---
+  duration_ms: 9.3886
+  type: 'test'
+  ...
+# Subtest: prior profile CAS drains before the single-account builder and a mutable command cannot rewrite the plan
+ok 173 - prior profile CAS drains before the single-account builder and a mutable command cannot rewrite the plan
+  ---
+  duration_ms: 6.4823
+  type: 'test'
+  ...
+# Subtest: a rejected managed generation fences without changing local stats, profile or events
+ok 174 - a rejected managed generation fences without changing local stats, profile or events
+  ---
+  duration_ms: 11.8262
+  type: 'test'
+  ...
+# Subtest: unavailable commit and receipt retain a fence; later authoritative reads never license local apply
+ok 175 - unavailable commit and receipt retain a fence; later authoritative reads never license local apply
+  ---
+  duration_ms: 20.0798
+  type: 'test'
+  ...
+# Subtest: post-commit lifecycle/identity/bypass mismatches fence without any ECS apply or success event
+    # Subtest: death
+    ok 1 - death
+      ---
+      duration_ms: 11.792
+      type: 'test'
+      ...
+    # Subtest: death then revival
+    ok 2 - death then revival
+      ---
+      duration_ms: 14.3679
+      type: 'test'
+      ...
+    # Subtest: close
+    ok 3 - close
+      ---
+      duration_ms: 13.3574
+      type: 'test'
+      ...
+    # Subtest: client recycled
+    ok 4 - client recycled
+      ---
+      duration_ms: 13.4346
+      type: 'test'
+      ...
+    # Subtest: profile replaced
+    ok 5 - profile replaced
+      ---
+      duration_ms: 11.7618
+      type: 'test'
+      ...
+    # Subtest: pearl bypass
+    ok 6 - pearl bypass
+      ---
+      duration_ms: 17.5154
+      type: 'test'
+      ...
+    # Subtest: ledger bypass
+    ok 7 - ledger bypass
+      ---
+      duration_ms: 12.3333
+      type: 'test'
+      ...
+    # Subtest: save bypass
+    ok 8 - save bypass
+      ---
+      duration_ms: 12.4032
+      type: 'test'
+      ...
+    1..8
+ok 176 - post-commit lifecycle/identity/bypass mismatches fence without any ECS apply or success event
+  ---
+  duration_ms: 107.7963
+  type: 'test'
+  ...
+# Subtest: journal preflight invalidation prevents first SQL send
+ok 177 - journal preflight invalidation prevents first SQL send
+  ---
+  duration_ms: 11.8442
+  type: 'test'
+  ...
+# Subtest: ambiguous duplicate replies keep exact request and apply only once when receipt recovery succeeds
+ok 178 - ambiguous duplicate replies keep exact request and apply only once when receipt recovery succeeds
+  ---
+  duration_ms: 13.9477
+  type: 'test'
+  ...
+# Subtest: terminal journal failure never applies an otherwise committed swallow, even after read-only reconciliation
+ok 179 - terminal journal failure never applies an otherwise committed swallow, even after read-only reconciliation
+  ---
+  duration_ms: 14.9841
+  type: 'test'
+  ...
+# Subtest: post-commit event/enqueue/release failures roll back every tentative profile, ECS, ledger and dirty change
+    # Subtest: event decoration
+    ok 1 - event decoration
+      ---
+      duration_ms: 13.1246
+      type: 'test'
+      ...
+    # Subtest: save enqueue
+    ok 2 - save enqueue
+      ---
+      duration_ms: 18.5774
+      type: 'test'
+      ...
+    # Subtest: append event
+    ok 3 - append event
+      ---
+      duration_ms: 14.3234
+      type: 'test'
+      ...
+    # Subtest: release
+    ok 4 - release
+      ---
+      duration_ms: 14.4216
+      type: 'test'
+      ...
+    # Subtest: row changed during decoration
+    ok 5 - row changed during decoration
+      ---
+      duration_ms: 12.9107
+      type: 'test'
+      ...
+    # Subtest: progress changed during decoration
+    ok 6 - progress changed during decoration
+      ---
+      duration_ms: 13.7492
+      type: 'test'
+      ...
+    # Subtest: progress changed during enqueue
+    ok 7 - progress changed during enqueue
+      ---
+      duration_ms: 12.6377
+      type: 'test'
+      ...
+    1..7
+ok 180 - post-commit event/enqueue/release failures roll back every tentative profile, ECS, ledger and dirty change
+  ---
+  duration_ms: 100.6312
+  type: 'test'
+  ...
+# Subtest: detached ECS row preserves typed conversion, never aliases brains, and rejects cross-entity writes/changed containers
+ok 181 - detached ECS row preserves typed conversion, never aliases brains, and rejects cross-entity writes/changed containers
+  ---
+  duration_ms: 3.1131
+  type: 'test'
+  ...
+# Subtest: capability snapshot advertises versioned rules and enabled host rejects unversioned commands
+ok 182 - capability snapshot advertises versioned rules and enabled host rejects unversioned commands
+  ---
+  duration_ms: 371.9792
+  type: 'test'
+  ...
+# Subtest: torch capability fails closed when its SQL readiness check is unavailable
+ok 183 - torch capability fails closed when its SQL readiness check is unavailable
+  ---
+  duration_ms: 296.629
+  type: 'test'
+  ...
+# Subtest: marked final palm receipt grants exact drops once and versioned torch spends two logs plus resin
+ok 184 - marked final palm receipt grants exact drops once and versioned torch spends two logs plus resin
+  ---
+  duration_ms: 486.1265
+  type: 'test'
+  ...
+# Subtest: coconut hydration is capped, durable across restart, and receipt replay consumes only once
+ok 185 - coconut hydration is capped, durable across restart, and receipt replay consumes only once
+  ---
+  duration_ms: 487.0229
+  type: 'test'
+  ...
+# Subtest: disabled capability retains unversioned one-plank hand torch and no palm drops
+ok 186 - disabled capability retains unversioned one-plank hand torch and no palm drops
+  ---
+  duration_ms: 565.9979
+  type: 'test'
+  ...
+1..186
+# tests 267
+# suites 0
+# pass 266
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 319030.8148

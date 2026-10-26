@@ -1,0 +1,79 @@
+TAP version 13
+# Subtest: GM roster readiness probes the deployed validator semantics and exact resource shapes
+ok 1 - GM roster readiness probes the deployed validator semantics and exact resource shapes
+  ---
+  duration_ms: 3.7682
+  type: 'test'
+  ...
+# Subtest: stale readiness cannot hide invalid validator behavior, while unavailable roster skips probes
+ok 2 - stale readiness cannot hide invalid validator behavior, while unavailable roster skips probes
+  ---
+  duration_ms: 1.3354
+  type: 'test'
+  ...
+# Subtest: roster readiness continues to redact and propagate validator RPC failures
+ok 3 - roster readiness continues to redact and propagate validator RPC failures
+  ---
+  duration_ms: 0.7896
+  type: 'test'
+  ...
+# Subtest: HTTP listener and simulation wait for initial world load and creation CAS
+ok 4 - HTTP listener and simulation wait for initial world load and creation CAS
+  ---
+  duration_ms: 368.2187
+  type: 'test'
+  ...
+# Subtest: world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+ok 5 - world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+  ---
+  duration_ms: 371.2667
+  type: 'test'
+  ...
+# Subtest: ambiguous save failure fences the host and preserves the last confirmed world generation
+ok 6 - ambiguous save failure fences the host and preserves the last confirmed world generation
+  ---
+  duration_ms: 236.2362
+  type: 'test'
+  ...
+# Subtest: autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+ok 7 - autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+  ---
+  duration_ms: 281.7354
+  type: 'test'
+  ...
+# Subtest: load failure never opens the HTTP listener or manufactures a replacement world
+ok 8 - load failure never opens the HTTP listener or manufactures a replacement world
+  ---
+  duration_ms: 276.0227
+  type: 'test'
+  ...
+# Subtest: shutdown aborts a stuck startup load and late null result cannot write a world
+ok 9 - shutdown aborts a stuck startup load and late null result cannot write a world
+  ---
+  duration_ms: 235.9118
+  type: 'test'
+  ...
+# Subtest: createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+ok 10 - createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+  ---
+  duration_ms: 238.2611
+  type: 'test'
+  ...
+# Subtest: createGameServer can close cleanly before listen begins
+ok 11 - createGameServer can close cleanly before listen begins
+  ---
+  duration_ms: 286.1275
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3050.6875
+
+# command exit status: 0
+# parsed counts: tests=11 pass=11 fail=0

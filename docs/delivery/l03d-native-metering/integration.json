@@ -1,0 +1,32 @@
+{
+  "startedAt": "2026-10-10T20:48:23.678Z",
+  "finishedAt": "2026-10-10T20:48:49.241Z",
+  "node": "v24.14.0",
+  "baseRevision": "535f316419fc4531b754d6bcb402dc3dc7ae00ff",
+  "command": [
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=2",
+    "tests/ground-transaction-journal.test.mjs",
+    "tests/ground-transaction-journal-sql.test.mjs",
+    "tests/ground-transaction-journal-process.test.mjs"
+  ],
+  "counts": {
+    "tests": 27,
+    "pass": 27,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "sourceStable": true,
+  "sourceSha256": {
+    "tests/ground-transaction-journal.test.mjs": "5b1dbd6e4458b58a25477a9c4f5adf444cee214f3edef867a5f8d9cc15c3ed16",
+    "tests/ground-transaction-journal-sql.test.mjs": "0048215e08e48fe452ba058d8ac90563f0d28fc0facd8b6adb615c67f97c5de1",
+    "tests/ground-transaction-journal-process.test.mjs": "93e64574d76c1e3452539470bfb70158f39c16fe8c3824cd39234a224ec5728b",
+    "server/groundTransactionJournal.mjs": "98144e5e90db2f02fb7690ef85c1ccff4d992951d4b179390e9c720d56258bf5",
+    "server/groundTransactionSession.mjs": "f55e9bc14237a27ecc51241f714273a0769ea27a08fb2f00733a8a4880d99e37",
+    "server/migrations/019_ground_transaction_journal.sql": "811276a8ce2ae10f77bef635fa04e209ce38fcb2fe125f9811ba1003c2c7b7d3"
+  },
+  "ok": true,
+  "scope": "Dormant SQL019 upstream integration only; no live SQL activation or GameHost mounting."
+}

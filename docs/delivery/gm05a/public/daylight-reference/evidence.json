@@ -1,0 +1,117 @@
+{
+  "schema": "gm05a-daylight-reference/v1",
+  "scope": "renderer-only screenshot evidence; no server clock or content writes",
+  "version": "0.6.0-alpha.45",
+  "protocolVersion": 51,
+  "screenshots": [
+    "terrain-en-closeup-1440x900.png",
+    "terrain-es-closeup-1440x900.png",
+    "terrain-es-closeup-844x390.png",
+    "terrain-en-closeup-844x390.png",
+    "terrain-es-ramp-overview-1440x900.png"
+  ],
+  "beforeLighting": {
+    "gameplay": false,
+    "tod": "cycle",
+    "phase": 0.10715495189282481,
+    "zoneTarget": 0,
+    "zoneW": 0,
+    "sunIntensity": 2.45,
+    "hemisphereIntensity": 0.95
+  },
+  "afterLighting": {
+    "gameplay": false,
+    "tod": "day",
+    "phase": 0.10715495189282481,
+    "zoneTarget": 0,
+    "zoneW": 0,
+    "sunIntensity": 2.45,
+    "hemisphereIntensity": 0.95,
+    "renderedFrames": 10,
+    "remoteOrGameplayWrites": false
+  },
+  "privateImport": {
+    "version": 3,
+    "normalizedDocumentSha256": "e3688ff1b0e1106571327227a0a574079b5548b17e57c89bfe313d919d0a775f",
+    "terrainSamples": 256,
+    "privateIndexedDbOnly": true
+  },
+  "remoteDraftBefore": {
+    "revision": 25,
+    "documentSha256": "8c672093dfff687490f1723b907a761d075345789020d62fc47149e7b1638c6a"
+  },
+  "remoteDraftAfter": {
+    "revision": 25,
+    "documentSha256": "8c672093dfff687490f1723b907a761d075345789020d62fc47149e7b1638c6a"
+  },
+  "serverBefore": {
+    "health": "ok",
+    "version": "0.6.0-alpha.45",
+    "players": 0,
+    "sockets": 0
+  },
+  "serverAfter": {
+    "health": "ok",
+    "version": "0.6.0-alpha.45",
+    "players": 0,
+    "sockets": 1
+  },
+  "errors": [],
+  "referenceSite": {
+    "center": {
+      "x": -192,
+      "z": -104
+    },
+    "high": {
+      "x": -188,
+      "z": -104
+    },
+    "low": {
+      "x": -196,
+      "z": -104
+    }
+  },
+  "runtime": {
+    "version": "0.6.0-alpha.45",
+    "protocolVersion": 51
+  },
+  "ramp": {
+    "center": {
+      "x": -192,
+      "z": -104
+    },
+    "high": {
+      "x": -188,
+      "z": -104
+    },
+    "low": {
+      "x": -196,
+      "z": -104
+    },
+    "highHeight": 4.585267066955566,
+    "highBase": 3.5852670669555664,
+    "objectCount": 1
+  },
+  "captureAcceptance": {
+    "rendererOnly": true,
+    "gameplayClockUnchanged": true,
+    "dayPresetApplied": true,
+    "noServerClockOrContentWrites": true,
+    "visualTerrainRiseMetres": 1,
+    "noBrowserSocketsAfterCapture": true
+  },
+  "serverContentAfter": {
+    "generation": 6,
+    "revisionId": null
+  },
+  "serverAfterBrowserClosed": {
+    "health": "ok",
+    "version": "0.6.0-alpha.45",
+    "players": 0,
+    "sockets": 0
+  },
+  "serverContentAfterBrowserClosed": {
+    "generation": 6,
+    "revisionId": null
+  }
+}

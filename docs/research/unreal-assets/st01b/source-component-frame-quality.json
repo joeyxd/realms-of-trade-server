@@ -1,0 +1,918 @@
+{
+  "schema": "marea.niagara-source-component-frame-quality",
+  "version": 1,
+  "status": "candidate-quality-evidence-not-acceptance",
+  "extractor": "Exact fractional UV cell bounds; Catmull-Rom bicubic taps clamped to source pixel centers inside each cell; EXR linear RGB converted to sRGB for PNG output.",
+  "counts": {
+    "recipes": 16,
+    "v2Frames": 736,
+    "v3Native512Recipes": 2,
+    "exactRendererOwnerBindings": 160,
+    "exactOwnerErrors": 0
+  },
+  "water49Comparison": {
+    "priorManifest": ".scratch\\st01b-subuv-previews\\recipe-b3c77161eb4332af\\manifest.json",
+    "oldFrames": 49,
+    "newFrames": 49,
+    "identicalFrameHashCount": 4,
+    "allFramesByteIdentical": false,
+    "status": "re-evaluated source candidate; replacement pending root visual review and explicit packer --replace-reviewed"
+  },
+  "smoke1GridComparison": {
+    "artifact": "smoke1-grid-configuration-comparison.png",
+    "10x5": "serialized config but fractional 307.2 px natural height; pending actual system capture",
+    "10x6": "serialized config with exact 256x256 natural cells",
+    "status": "exploratory comparison; defer 10x5 recipe"
+  },
+  "recipes": [
+    {
+      "recipeId": "recipe-0724cfb177578c52",
+      "candidateAlias": "source-component-t-smoke-1-10x5-luminance-to-white-alpha",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1",
+      "component": {
+        "textureSha256": "ecddb7ecffb46fb0c61d5c0bf9d8e0f7d74f8b25cd614cd1e7ddc2df0468f0ce",
+        "columns": 10,
+        "rows": 5,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2560,
+        1536
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        307.2
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        307
+      ],
+      "rendererGridMatchesNaturalCellGrid": false,
+      "reviewFlags": [
+        "serialized 10x5 configuration does not match the 10x6 natural 256x256 cell grid; defer pending actual system capture"
+      ],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-0724cfb177578c52\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 50,
+          "framesWithNonemptyAlpha": 50,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 503653,
+          "alphaNonemptyPixelFraction": 0.15370269775390624,
+          "meanAlphaRange": [
+            0.03436141668581495,
+            0.055306468290441176
+          ],
+          "uniqueFramePixelHashCount": 50,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0005451725978477328,
+            0.01338656556372549
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-0a5e1890731459ba",
+      "candidateAlias": "source-component-t-thinsmoke-fx-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Textures/T_ThinSmoke_FX",
+      "component": {
+        "textureSha256": "eb5fe0f905f673b83fca336bc1e2145fd2c08f11501b3abbe9013f6a7afa43ff",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        2048,
+        2048
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-0a5e1890731459ba\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 1777798,
+          "alphaNonemptyPixelFraction": 0.4238600730895996,
+          "meanAlphaRange": [
+            0.10139052447150736,
+            0.1558877982345282
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0022231756472120097,
+            0.0034981521905637254
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-110287b7f03f7498",
+      "candidateAlias": "source-component-t-vfx-stamp-lightbeam-81-8x1-original-alpha-to-white",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Lightbeam_81",
+      "component": {
+        "textureSha256": "8117bd91eb290326d1c8dcfb4bb2d219e053ab23ac920304464f38db91e59cf4",
+        "columns": 8,
+        "rows": 1,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        512,
+        128
+      ],
+      "nativeSourceCellPixels": [
+        64.0,
+        128.0
+      ],
+      "recommendedNoUpscaleTile": [
+        64,
+        128
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-110287b7f03f7498\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 8,
+          "framesWithNonemptyAlpha": 8,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 162103,
+          "alphaNonemptyPixelFraction": 0.3091869354248047,
+          "meanAlphaRange": [
+            0.0069597431257659315,
+            0.16296703862208947
+          ],
+          "uniqueFramePixelHashCount": 8,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0020954356474034925,
+            0.008404974843941483
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-1cba9d7469a29652",
+      "candidateAlias": "source-component-t-smoke-wispy-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_Smoke_Wispy",
+      "component": {
+        "textureSha256": "bc703e63cd85d73c5836fb01e1f3f2786bf6c7b4e5c3ec27d21f072f262eed76",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        4096,
+        4096
+      ],
+      "nativeSourceCellPixels": [
+        512.0,
+        512.0
+      ],
+      "recommendedNoUpscaleTile": [
+        512,
+        512
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-1cba9d7469a29652\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 934142,
+          "alphaNonemptyPixelFraction": 0.2227168083190918,
+          "meanAlphaRange": [
+            0.002148796530330882,
+            0.05469282561657476
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0005753012264476103,
+            0.006359728644875919
+          ]
+        },
+        {
+          "variant": "v3-native-512",
+          "manifest": ".scratch\\st01b-candidateframes-v3\\source-component-recipe-1cba9d7469a29652\\manifest.json",
+          "outputFrameSize": [
+            512,
+            512
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 3531320,
+          "alphaNonemptyPixelFraction": 0.21048307418823242,
+          "meanAlphaRange": [
+            0.002147839116115196,
+            0.05467375213024663
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0005755106608072917,
+            0.006488455978094363
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-2d4c30d1b345f448",
+      "candidateAlias": "source-component-t-smokepufflight-eoo-loop-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_SmokePuffLight_EOO_Loop",
+      "component": {
+        "textureSha256": "12ce65c60986b47a7d79fa8bfd2da0a9703106a58769a449e9a492247284042c",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        2048,
+        2048
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-2d4c30d1b345f448\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 2385142,
+          "alphaNonemptyPixelFraction": 0.568662166595459,
+          "meanAlphaRange": [
+            0.15134109796262254,
+            0.17046425015318628
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.001527883492264093,
+            0.0025995591107536766
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-2fecab64fda3b2cc",
+      "candidateAlias": "source-component-t-vfx-stamp-electric-33-3x3-original-alpha-to-white",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Electric_33",
+      "component": {
+        "textureSha256": "3e468435ddbe1951d5c563c763e19feb4ff14fe4dc37492703f289d232c16505",
+        "columns": 3,
+        "rows": 3,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        256,
+        256
+      ],
+      "nativeSourceCellPixels": [
+        85.33333333333333,
+        85.33333333333333
+      ],
+      "recommendedNoUpscaleTile": [
+        85,
+        85
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [
+        "v2-256: 3 frames have fully empty alpha"
+      ],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-2fecab64fda3b2cc\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 9,
+          "framesWithNonemptyAlpha": 6,
+          "framesWithEmptyAlpha": 3,
+          "alphaNonemptyPixelCount": 145247,
+          "alphaNonemptyPixelFraction": 0.2462548149956597,
+          "meanAlphaRange": [
+            0.0,
+            0.11287398992800245
+          ],
+          "uniqueFramePixelHashCount": 7,
+          "duplicateFrameCount": 2,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0,
+            0.029281017827052697
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-40abfaa92d054075",
+      "candidateAlias": "source-component-t-vfx-stamp-watersplash-77-7x7-luminance-to-white-alpha",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_WaterSplash_77",
+      "component": {
+        "textureSha256": "26e09bd0f93cb620768268867f7887759315452bd5e9da4a7506da06e798a672",
+        "columns": 7,
+        "rows": 7,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2048,
+        2048
+      ],
+      "nativeSourceCellPixels": [
+        292.57142857142856,
+        292.57142857142856
+      ],
+      "recommendedNoUpscaleTile": [
+        292,
+        292
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [
+        "v2-256: 4 frames have fully empty alpha"
+      ],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-40abfaa92d054075\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 49,
+          "framesWithNonemptyAlpha": 45,
+          "framesWithEmptyAlpha": 4,
+          "alphaNonemptyPixelCount": 932075,
+          "alphaNonemptyPixelFraction": 0.29025175133529973,
+          "meanAlphaRange": [
+            0.0,
+            0.28213177849264703
+          ],
+          "uniqueFramePixelHashCount": 46,
+          "duplicateFrameCount": 3,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0,
+            0.03138601265701593
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-7e1c530db9f2f8df",
+      "candidateAlias": "source-component-t-waterspark-4x4-original-rgba",
+      "texturePackage": "/Game/ArrowTrail/Texture/T_WaterSpark",
+      "component": {
+        "textureSha256": "f7736e0dfe565c2f523efab21ae24b0fbc4354d824c8ad1e69730d88821e2115",
+        "columns": 4,
+        "rows": 4,
+        "mapping": "original-rgba"
+      },
+      "sourceImageDimensions": [
+        1024,
+        1024
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-7e1c530db9f2f8df\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 16,
+          "framesWithNonemptyAlpha": 16,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 145276,
+          "alphaNonemptyPixelFraction": 0.13854598999023438,
+          "meanAlphaRange": [
+            0.024731924019607842,
+            0.10338344199984681
+          ],
+          "uniqueFramePixelHashCount": 16,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.007296199424594057,
+            0.0359717425178079
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-89e7dc634823c9fb",
+      "candidateAlias": "source-component-t-explosionroil-eoo-loop-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/NiagaraExamples/Textures/Sprites/T_ExplosionRoil_EOO_Loop",
+      "component": {
+        "textureSha256": "ee97ef90f775452373cf035eecb6cc276bd10f69c5fda12747ae61665f2c2c6d",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        2048,
+        2048
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-89e7dc634823c9fb\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 2009774,
+          "alphaNonemptyPixelFraction": 0.47916746139526367,
+          "meanAlphaRange": [
+            0.19965144138710172,
+            0.20277380849800858
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0024697546865425856,
+            0.004598026649624693
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-b8543465984ee6a1",
+      "candidateAlias": "source-component-t-flowloop-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/ArrowTrail/Texture/T_FlowLoop",
+      "component": {
+        "textureSha256": "d7a5e783ffa8ee81e49dcd903a9a63c02c3950a000ad504a99a93ec57552d640",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        4096,
+        4096
+      ],
+      "nativeSourceCellPixels": [
+        512.0,
+        512.0
+      ],
+      "recommendedNoUpscaleTile": [
+        512,
+        512
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-b8543465984ee6a1\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 1260666,
+          "alphaNonemptyPixelFraction": 0.3005661964416504,
+          "meanAlphaRange": [
+            0.04629905551087623,
+            0.05602626426547181
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.002011272954005821,
+            0.0031470055673636643
+          ]
+        },
+        {
+          "variant": "v3-native-512",
+          "manifest": ".scratch\\st01b-candidateframes-v3\\source-component-recipe-b8543465984ee6a1\\manifest.json",
+          "outputFrameSize": [
+            512,
+            512
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 5050466,
+          "alphaNonemptyPixelFraction": 0.301031231880188,
+          "meanAlphaRange": [
+            0.04629749971277573,
+            0.05602494782092524
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.002020734899184283,
+            0.00315250695920458
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-ce800df9a9628c95",
+      "candidateAlias": "source-component-t-flameuv-2-8x4-luminance-to-white-alpha",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_2",
+      "component": {
+        "textureSha256": "3e0a757f3e8443ebfc1644d98ecea09e9f225c684d588fb0f89afcfac9d0c410",
+        "columns": 8,
+        "rows": 4,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2048,
+        1024
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-ce800df9a9628c95\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 32,
+          "framesWithNonemptyAlpha": 32,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 535467,
+          "alphaNonemptyPixelFraction": 0.25533056259155273,
+          "meanAlphaRange": [
+            0.07454905790441177,
+            0.09564956964231004
+          ],
+          "uniqueFramePixelHashCount": 32,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.005799013025620405,
+            0.008265162449257046
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-d1b8904e485bf83d",
+      "candidateAlias": "source-component-t-flameuv-1-8x4-luminance-to-white-alpha",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1",
+      "component": {
+        "textureSha256": "4866b9058807eeef9a3da577670e150c6606d5b8d38eaedffc8579bfc36e00d4",
+        "columns": 8,
+        "rows": 4,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2048,
+        1024
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-d1b8904e485bf83d\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 32,
+          "framesWithNonemptyAlpha": 32,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 436461,
+          "alphaNonemptyPixelFraction": 0.20812082290649414,
+          "meanAlphaRange": [
+            0.032908241421568625,
+            0.04489153693704044
+          ],
+          "uniqueFramePixelHashCount": 32,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.005282891965379902,
+            0.007035633161956188
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-dc094fba73f69da8",
+      "candidateAlias": "source-component-t-fireball-8x4-luminance-to-white-alpha",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall",
+      "component": {
+        "textureSha256": "1d5c64ec6742cb1b37e1237b96f4736cce439f661d64ca90467482cfb77288ab",
+        "columns": 8,
+        "rows": 4,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2048,
+        1024
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-dc094fba73f69da8\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 32,
+          "framesWithNonemptyAlpha": 32,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 966730,
+          "alphaNonemptyPixelFraction": 0.46097278594970703,
+          "meanAlphaRange": [
+            0.07045162425321691,
+            0.08363102931602329
+          ],
+          "uniqueFramePixelHashCount": 32,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0012926438275505515,
+            0.002093371223000919
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-df3dfa2ce32b38da",
+      "candidateAlias": "source-component-t-smoke-1-10x6-luminance-to-white-alpha",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1",
+      "component": {
+        "textureSha256": "ecddb7ecffb46fb0c61d5c0bf9d8e0f7d74f8b25cd614cd1e7ddc2df0468f0ce",
+        "columns": 10,
+        "rows": 6,
+        "mapping": "luminance-to-white-alpha"
+      },
+      "sourceImageDimensions": [
+        2560,
+        1536
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-df3dfa2ce32b38da\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 60,
+          "framesWithNonemptyAlpha": 60,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 605171,
+          "alphaNonemptyPixelFraction": 0.15390294392903645,
+          "meanAlphaRange": [
+            0.040650191961550244,
+            0.05232699525122549
+          ],
+          "uniqueFramePixelHashCount": 60,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0006528218587239583,
+            0.0011405047248391545
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-e4b40c9ac3eef002",
+      "candidateAlias": "source-component-t-vfx-stamp-fog3-88-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88",
+      "component": {
+        "textureSha256": "dd710adffbd411cd04757b30db840fbd9e4db02cb5e9d40e649c4457d825bb4c",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        1024,
+        1024
+      ],
+      "nativeSourceCellPixels": [
+        128.0,
+        128.0
+      ],
+      "recommendedNoUpscaleTile": [
+        128,
+        128
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 697221,
+          "alphaNonemptyPixelFraction": 0.1662304401397705,
+          "meanAlphaRange": [
+            4.7870710784313725e-06,
+            0.027057602826286765
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            4.607555912990196e-06,
+            0.0024895013547411153
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    },
+    {
+      "recipeId": "recipe-f93c7523d11ee2ba",
+      "candidateAlias": "source-component-t-vfx-stamp-steam-88-8x8-original-alpha-to-white",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Steam_88",
+      "component": {
+        "textureSha256": "7e5099cefb58403225612a3d6e4763c633aa89caea3a7395ee6dc762dafe72aa",
+        "columns": 8,
+        "rows": 8,
+        "mapping": "original-alpha-to-white"
+      },
+      "sourceImageDimensions": [
+        2048,
+        2048
+      ],
+      "nativeSourceCellPixels": [
+        256.0,
+        256.0
+      ],
+      "recommendedNoUpscaleTile": [
+        256,
+        256
+      ],
+      "rendererGridMatchesNaturalCellGrid": true,
+      "reviewFlags": [],
+      "candidateVariants": [
+        {
+          "variant": "v2-256",
+          "manifest": ".scratch\\st01b-candidateframes-v2\\source-component-recipe-f93c7523d11ee2ba\\manifest.json",
+          "outputFrameSize": [
+            256,
+            256
+          ],
+          "frameCount": 64,
+          "framesWithNonemptyAlpha": 64,
+          "framesWithEmptyAlpha": 0,
+          "alphaNonemptyPixelCount": 2450305,
+          "alphaNonemptyPixelFraction": 0.5841982364654541,
+          "meanAlphaRange": [
+            0.24646313237208947,
+            0.32913614908854166
+          ],
+          "uniqueFramePixelHashCount": 64,
+          "duplicateFrameCount": 0,
+          "adjacentRgbaMeanAbsDiffRange": [
+            0.0020084156709558824,
+            0.0031650618010876227
+          ]
+        }
+      ],
+      "editorialDefaultDurationSeconds": 2,
+      "timingStatus": "editorial-default-not-system-truth"
+    }
+  ],
+  "limitations": [
+    "Alpha pixel counts and frame hashes identify blank/duplicate outputs but do not establish temporal coherence or Niagara playback.",
+    "Nonsequential/random atlas classification remains a root visual review; known random/static atlas exclusions remain excluded.",
+    "No candidate is accepted, packed, or registered."
+  ]
+}

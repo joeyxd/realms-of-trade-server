@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-11T16:16:41.540930+00:00",
+  "instances": 1,
+  "container": "marea-negra-alpha-marea-negra-alpha-1",
+  "activeRevision": "6fd7f686fa038613e8174e2f3169fee4cae797c1",
+  "image": "sha256:4e287bf053274f552af6f04c1e43f2e566be4be137e90fb0ec437a6b30cb0aee",
+  "health": "healthy",
+  "timerActive": true,
+  "publicHealthHttp": 200,
+  "publicStatusHttp": 200,
+  "version": "0.6.0-alpha.51",
+  "players": 0,
+  "sockets": 0,
+  "errors": 0,
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0,
+    "unsaved": 0,
+    "tickBlocked": false
+  },
+  "hashes": {
+    "src/ui/companions.js": "6282699e97d60ebd4255caef11f853b879bb2470286ef2101de0a20fc01071b9",
+    "src/ui/inferenceConfig.js": "d8c683fde99d88592ced07b34bf4d9623ffe95d799dfceda71615d4deb770afd",
+    "src/client/companions.js": "c087fc4dabb2439e66e549a2e1c628d8153c5c53a412d20dc96008aac9fc18ab",
+    "src/client/inferenceConfig.js": "327af25e1db460812bce900586867ebb6f62fea6c66b1a2d02a1bc0db10630fc",
+    "src/net/inferenceConfig.js": "e0690bbcd2abafc56c9a853dcd5b93fb38187c1f6e949c39c4353246e07ef325",
+    "src/data/meta.js": "ec833ee8d4aa7fc6d12b85a79038b27f3d2ddcea60b60a724fe2d69cc5c958d0"
+  },
+  "ready": {
+    "checkCompanionConfig": {
+      "version": 1
+    },
+    "checkCompanionControl": {
+      "version": 1
+    },
+    "checkInferenceConfig": {
+      "version": 1
+    }
+  },
+  "inferenceCatalogConfigured": false,
+  "expectedRevision": "6fd7f686fa038613e8174e2f3169fee4cae797c1",
+  "publicSourceHashes": {
+    "src/ui/companions.js": "6282699e97d60ebd4255caef11f853b879bb2470286ef2101de0a20fc01071b9",
+    "src/ui/inferenceConfig.js": "d8c683fde99d88592ced07b34bf4d9623ffe95d799dfceda71615d4deb770afd",
+    "src/client/companions.js": "c087fc4dabb2439e66e549a2e1c628d8153c5c53a412d20dc96008aac9fc18ab",
+    "src/client/inferenceConfig.js": "327af25e1db460812bce900586867ebb6f62fea6c66b1a2d02a1bc0db10630fc",
+    "src/net/inferenceConfig.js": "e0690bbcd2abafc56c9a853dcd5b93fb38187c1f6e949c39c4353246e07ef325",
+    "src/data/meta.js": "ec833ee8d4aa7fc6d12b85a79038b27f3d2ddcea60b60a724fe2d69cc5c958d0"
+  }
+}

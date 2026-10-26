@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "family": "town-furniture-v1",
+  "revision": 33,
+  "httpFiles": 43,
+  "data": [
+    {
+      "id": "banco-carpintero-v1",
+      "images": 28,
+      "failures": [],
+      "hrefs": 76
+    },
+    {
+      "id": "mobiliario-sepia-v1",
+      "images": 28,
+      "failures": [],
+      "hrefs": 76
+    }
+  ],
+  "errors": []
+}

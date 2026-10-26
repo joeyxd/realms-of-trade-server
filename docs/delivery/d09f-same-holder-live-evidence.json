@@ -1,0 +1,242 @@
+{
+  "delivery": "D09f SQL006 Supabase full commit follow-up",
+  "date": "2026-10-06",
+  "sourceCommit": "532691ad12346c64997cc30271ed90602d65f1c8",
+  "productionSources": [
+    {
+      "file": "server/store.mjs",
+      "sha256": "8e63db2cfb13793a811e07f1cfb7acb92e0c2af22e2d848b4c1db8a724b9ec8e",
+      "matchesHead": true
+    },
+    {
+      "file": "server/profileSessions.mjs",
+      "sha256": "9bafa14fb1fd7448ddff9c1d43abb53df2c7a84a9d5a33cb83211bdf9b9bb320",
+      "matchesHead": true
+    },
+    {
+      "file": "server/pearlQueue.mjs",
+      "sha256": "bd5adbcaca305ca13bc61719e4e9ab8e0db75caf06ba16c1f642c08a79635c8c",
+      "matchesHead": true
+    },
+    {
+      "file": "server/pearlJournal.mjs",
+      "sha256": "4ffa1d3b62cb837b50fdd066d94a12fa664d49a4ce1aec1e776b4560220d4beb",
+      "matchesHead": true
+    },
+    {
+      "file": "server/pearlOperations.mjs",
+      "sha256": "a3998dd4344db4ab05315c1ba7a494f6360b7079c457976e5708f95a3f4af26e",
+      "matchesHead": true
+    },
+    {
+      "file": "server/pearlGround.mjs",
+      "sha256": "1921255a227c6f2469b44901746115e99b4fc3c63985a7f34c9a833783478443",
+      "matchesHead": true
+    },
+    {
+      "file": "server/pearlMutationGate.mjs",
+      "sha256": "e3250fd8018aef53c8cb63deb709e7775a73bdef6b82d855f570f26ab1411e83",
+      "matchesHead": true
+    },
+    {
+      "file": "server/pearlStaging.mjs",
+      "sha256": "561b0cfabeda56bda5299302bfbd3795ba303e573a7762db69c6afe67d610226",
+      "matchesHead": true
+    },
+    {
+      "file": "server/pearlEcsEffect.mjs",
+      "sha256": "33e8dc9310853f2870495167e99962997ac7d06d87cafecfae0d721c78c06f2e",
+      "matchesHead": true
+    },
+    {
+      "file": "server/host.mjs",
+      "sha256": "ad37a19f432a812402e3d51158b12d606d9ad1a08eca41587913fae34010feb5",
+      "matchesHead": true
+    },
+    {
+      "file": "src/net/localServer.js",
+      "sha256": "b5e83035c799be50a9ab9b5e6c5a79836e22502445cde6d11f2e953f32d81825",
+      "matchesHead": true
+    },
+    {
+      "file": "src/net/protocol.js",
+      "sha256": "782c8a7ae25f12bd16337173808c440409613ed1b61b8fcdebb93c120d56d84f",
+      "matchesHead": true
+    },
+    {
+      "file": "src/sim/systems/inventory.js",
+      "sha256": "da34e995584bba4e4f5bf81297ae01b4470be629e8882959054d3f490bbb0bb6",
+      "matchesHead": true
+    },
+    {
+      "file": "src/sim/systems/pearls.js",
+      "sha256": "4f64f717570d1dd2ecedf5501b5730169dfa1c6ab308a7db15172ed746566452",
+      "matchesHead": true
+    },
+    {
+      "file": "src/sim/systems/stats.js",
+      "sha256": "2d6df7c144d01e9f5b66f259ede516d82b14bff48430536ba0dbe824a1e0b8e6",
+      "matchesHead": true
+    },
+    {
+      "file": "server/migrations/001_store.sql",
+      "sha256": "29d7762215c754d1367ce1ab19142e5eecbaeeb59c7743e54ac19db6d7db1583",
+      "matchesHead": true
+    },
+    {
+      "file": "server/migrations/002_accounts.sql",
+      "sha256": "12a3a71523bc4f574f2873d5907ab9bd3236163e6db34697a2dba22a9fa07ae1",
+      "matchesHead": true
+    },
+    {
+      "file": "server/migrations/003_pearl_operations.sql",
+      "sha256": "77c92847099f366b0481bf55a71b0fca7138e716726003d2050db34ecef9b096",
+      "matchesHead": true
+    },
+    {
+      "file": "server/migrations/004_pearl_ground.sql",
+      "sha256": "b11876cbb629b5f9b08cb5cd4233a9841c48eeb89e8047c250d2dd83d4daa5ee",
+      "matchesHead": true
+    },
+    {
+      "file": "server/migrations/005_pearl_journal.sql",
+      "sha256": "85783e38d4aace762c71f89aa43e06b91989444b96d107baff0856977675bfad",
+      "matchesHead": true
+    },
+    {
+      "file": "server/migrations/006_pearl_same_holder.sql",
+      "sha256": "babc657ae756dd65c3a83bf7ad323eef842f0990432a2747b2d6ccf22fd711df",
+      "matchesHead": true
+    }
+  ],
+  "runner": {
+    "file": "tools/verify-pearl-same-holder.mjs",
+    "sha256": "ce95eea1bef2369b27a8c140130b2453ca7f33320ac9a51284419fb48dc752da"
+  },
+  "acceptance": {
+    "kind": "live Supabase SDK and ProfileSessions",
+    "checks": 21,
+    "passed": 21,
+    "failed": 0,
+    "freshNodeProcesses": 4,
+    "scope": "canary-swallow-187a3c31-18ed-4bb4-b21a-789319469ae9",
+    "syntheticProfiles": 2,
+    "managedUIDs": 4,
+    "gameplayFixturesRemoved": true,
+    "retainedTerminalAuditRows": 2,
+    "checksDetail": [
+      {
+        "phase": "prepare",
+        "check": "exact-fixtures-absent-before-seeding",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "tracked-and-legacy-managed-UIDs-seeded",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badGold-rejected-with-all-state-and-receipts-unchanged",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badProfile-rejected-with-all-state-and-receipts-unchanged",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badUnique-rejected-with-all-state-and-receipts-unchanged",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badWorld-rejected-with-all-state-and-receipts-unchanged",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badKind-rejected-with-all-state-and-receipts-unchanged",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "badOrder-rejected-with-all-state-and-receipts-unchanged",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "committed-request-prepared-and-atomic-one-endpoint-result",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "exact-replay-and-UUID-payload-mismatch-without-second-effect",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "second-request-persisted-unsent-and-both-journal-rows-pending",
+        "ok": true
+      },
+      {
+        "phase": "recover",
+        "check": "fresh-process-scan-admission-and-read-only-committed-recovery",
+        "ok": true
+      },
+      {
+        "phase": "recover",
+        "check": "unsent-request-keeps-one-account-and-UID-reserved",
+        "ok": true
+      },
+      {
+        "phase": "recover",
+        "check": "explicit-resume-one-exact-request-no-new-UUID-or-builder",
+        "ok": true
+      },
+      {
+        "phase": "recover",
+        "check": "both-profiles-ledgers-locations-receipts-current-and-diary-terminal",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "third-process-current-state-no-dispatch-or-history-apply",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "historical-replay-preserves-newer-progress",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "public-commit-RPC-denied-and-fixture-state-unchanged",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "terminal-journal-idempotence-and-reopen-denied",
+        "ok": true
+      },
+      {
+        "phase": "cleanup",
+        "check": "all-known-gameplay-and-journal-fixtures-settled-before-cleanup",
+        "ok": true
+      },
+      {
+        "phase": "cleanup",
+        "check": "exact-synthetic-fixtures-removed-two-audit-rows-retained",
+        "ok": true
+      }
+    ]
+  },
+  "limits": [
+    "No GameHost restart or gameplay hooks",
+    "No concurrent multi-host/leases acceptance",
+    "No affinity runtime or numeric balance",
+    "No host restart, browser, deployment or publish"
+  ],
+  "foreignWorkPreserved": true
+}

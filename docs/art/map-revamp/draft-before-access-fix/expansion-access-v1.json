@@ -1,0 +1,55 @@
+{
+  "seed": 99282957,
+  "searchGridStep": 1.5,
+  "edgeSubstepMax": 0.15,
+  "movementAcceptance": "World + canStand + moveWithCollision; each accepted edge starts at its BFS node and must finish within 0.05 units of its destination",
+  "exploredReachableCells": 21853,
+  "results": [
+    {
+      "id": "expansion-1",
+      "targetUV": { "u": 145, "v": -48 },
+      "targetXZ": { "x": -136.4716087690037, "z": -68.58935777509511 },
+      "groundY": -0.41871422075847003,
+      "pathReach": false,
+      "pathSteps": null,
+      "nearestReachable": {
+        "x": -129.5,
+        "z": -65,
+        "groundY": -0.5668602883815765,
+        "distance": 7.841353076203426,
+        "approachPathSteps": 155,
+        "approachWorstPositiveRisePerSubstep": 0.141189
+      },
+      "blockingSamples": [
+        { "x": -130.561, "z": -63.939, "groundY": -0.931567, "standable": false },
+        { "x": -131, "z": -65, "groundY": -1.301547, "standable": false },
+        { "x": -130.561, "z": -66.061, "groundY": -1.255609, "standable": false },
+        { "x": -129.5, "z": -66.5, "groundY": -0.812247, "standable": false }
+      ],
+      "finding": "The nearest explored standable cell is 7.84 units from the target. A deep-water band blocks sampled approaches on the target-facing side."
+    },
+    {
+      "id": "expansion-2",
+      "targetUV": { "u": -20, "v": -133 },
+      "targetXZ": { "x": -79.90306627407988, "z": 108.18733752154178 },
+      "groundY": 6.752800431977715,
+      "pathReach": false,
+      "pathSteps": null,
+      "nearestReachable": {
+        "x": -65,
+        "z": 83.5,
+        "groundY": -0.578022375702858,
+        "distance": 28.83688641778342,
+        "approachPathSteps": 112,
+        "approachWorstPositiveRisePerSubstep": 0.141356
+      },
+      "blockingSamples": [
+        { "x": -63.939, "z": 84.561, "groundY": -0.730851, "standable": false },
+        { "x": -65, "z": 85, "groundY": -1.396446, "standable": false },
+        { "x": -66.061, "z": 84.561, "groundY": -1.617588, "standable": false },
+        { "x": -66.5, "z": 83.5, "groundY": -1.196967, "standable": false }
+      ],
+      "finding": "The expansion target is dry and elevated, but the nearest explored standable cell is 28.84 units away. A deep-water band separates it from the spawn-connected land."
+    }
+  ]
+}

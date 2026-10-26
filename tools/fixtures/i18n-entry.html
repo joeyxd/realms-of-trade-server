@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>i18n entry fixture</title>
+  <link rel="stylesheet" href="/styles/vars.css">
+  <link rel="stylesheet" href="/styles/panels.css">
+  <link rel="stylesheet" href="/styles/account.css">
+  <link rel="stylesheet" href="/styles/wallet.css">
+  <link rel="stylesheet" href="/styles/i18n.css">
+  <script type="importmap">{"imports":{"gsap":"/.scratch/gsap-local/package/index.js"}}</script>
+  <style>
+    body { font: 16px system-ui; margin: 2rem; color: #202033; background: #f5f0df; }
+    .title-actions { display: flex; gap: 1rem; align-items: center; }
+  </style>
+</head>
+<body>
+  <h1>Entry UI language fixture</h1>
+  <header class="title-actions"><div class="title-net"></div></header>
+  <button id="show-pause" type="button">Open pause menu</button>
+  <main id="pause" hidden></main>
+  <script type="module" src="./i18n-entry.js"></script>
+</body>
+</html>

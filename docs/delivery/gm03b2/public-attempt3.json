@@ -1,0 +1,30 @@
+{
+  "schema": "gm03b2-browser/v1",
+  "production": true,
+  "simulatedAuth": false,
+  "simulatedGameplayStorage": false,
+  "version": "0.6.0-alpha.35",
+  "at": "2026-10-10T23:16:47.558Z",
+  "checks": [
+    "saved_draft_prepared_and_registered_by_exact_hash"
+  ],
+  "errors": [],
+  "updaterLockHeld": true,
+  "placement": {
+    "x": 52.60984444386616,
+    "y": 10.34122963817173,
+    "z": 69.2130673202977
+  },
+  "revisionId": "1f14e46cdbd4a04480409e4ddfdbce02e4af1ca90dcb4e14bb12ef4aca79a7bb",
+  "failure": {
+    "error": "gm_content_busy",
+    "busy": false,
+    "active": true,
+    "mode": "editor"
+  },
+  "draftRestore": {
+    "status": 200,
+    "from": 17,
+    "to": 19
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "schema": "mn.local-inference.canary.v1",
+  "at": "2026-10-11T04:17:28.733Z",
+  "baseUrl": "http://127.0.0.1:8080/v1",
+  "modelId": "qwen3.8-flash-next-coder-iq1_m",
+  "thinkingMode": "disabled",
+  "apiKeyUsed": false,
+  "limits": {
+    "maxCalls": 3,
+    "maxOutputTokens": 512,
+    "timeoutMs": 30000,
+    "maxInputBytes": 16384,
+    "maxResponseBytes": 262144
+  },
+  "scope": "Synthetic local proposals only; no gameplay, player context, memory, ledger or production activation",
+  "state": "passed",
+  "steps": [
+    {
+      "name": "decision",
+      "state": "complete",
+      "transport": {
+        "ok": true,
+        "why": "ok",
+        "dispatched": true,
+        "usageKnown": true,
+        "usage": {
+          "inputTokens": 1227,
+          "outputTokens": 16,
+          "totalTokens": 1243,
+          "cachedInputTokens": 0,
+          "reasoningTokens": null
+        },
+        "responseId": "chatcmpl-714abc5f54524b4eb4022aa4",
+        "reportedModel": "qwen3.8-flash-next-coder-iq1_m",
+        "finishReason": "stop",
+        "latencyMs": 5346,
+        "costNanoUsd": null,
+        "executionMayContinue": false
+      },
+      "pass": true,
+      "proposal": {
+        "type": "wait",
+        "args": {}
+      }
+    },
+    {
+      "name": "conversation",
+      "state": "complete",
+      "transport": {
+        "ok": true,
+        "why": "ok",
+        "dispatched": true,
+        "usageKnown": true,
+        "usage": {
+          "inputTokens": 321,
+          "outputTokens": 31,
+          "totalTokens": 352,
+          "cachedInputTokens": 0,
+          "reasoningTokens": null
+        },
+        "responseId": "chatcmpl-18ebe024d5aa476c8594680d",
+        "reportedModel": "qwen3.8-flash-next-coder-iq1_m",
+        "finishReason": "stop",
+        "latencyMs": 5848,
+        "costNanoUsd": null,
+        "executionMayContinue": false
+      },
+      "pass": true,
+      "proposal": {
+        "type": "reply",
+        "args": {
+          "text": "Hola! Como are you? I hope you have a nice day."
+        }
+      }
+    },
+    {
+      "name": "cancellation",
+      "state": "complete",
+      "abortAfterMs": 200,
+      "transport": {
+        "ok": false,
+        "why": "aborted",
+        "dispatched": true,
+        "usageKnown": false,
+        "usage": null,
+        "responseId": null,
+        "reportedModel": null,
+        "finishReason": null,
+        "latencyMs": 212,
+        "costNanoUsd": null,
+        "executionMayContinue": true
+      },
+      "after": {
+        "calls": 3,
+        "inFlight": false,
+        "uncertain": true
+      },
+      "guard": {
+        "ok": false,
+        "why": "uncertain_blocked",
+        "dispatched": false,
+        "usageKnown": false,
+        "usage": null,
+        "responseId": null,
+        "reportedModel": null,
+        "finishReason": null,
+        "latencyMs": 0,
+        "costNanoUsd": null,
+        "executionMayContinue": false
+      },
+      "pass": true
+    }
+  ],
+  "calls": 3,
+  "actionsExecuted": 0,
+  "chatsSent": 0,
+  "costNanoUsd": null,
+  "pass": true,
+  "transportState": {
+    "calls": 3,
+    "inFlight": false,
+    "uncertain": true
+  },
+  "knownUsage": {
+    "calls": 2,
+    "inputTokens": 1548,
+    "outputTokens": 47
+  },
+  "unknownCalls": 1
+}

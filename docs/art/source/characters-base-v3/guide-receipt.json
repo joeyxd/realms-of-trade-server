@@ -1,0 +1,21 @@
+{
+  "schema": "character-style-guide/v1",
+  "tool": "built-in image_gen",
+  "createdDate": "2026-10-08",
+  "file": "head-style-guide-v1.png",
+  "bytes": 1849477,
+  "sha256": "d66a91cabfcaf6f23b841a9fb383f7a10724846cf4f92600eef5cb02a705797c",
+  "dimensions": {
+    "width": 1536,
+    "height": 1024
+  },
+  "mode": "RGBA",
+  "alpha": {
+    "min": 0,
+    "max": 254,
+    "transparentPixels": 830271,
+    "partiallyTransparentPixels": 742593
+  },
+  "scope": "Reference for editable geometric head refinement; not a runtime texture, UV map or 3D model",
+  "promptFile": "guide-prompt.json"
+}

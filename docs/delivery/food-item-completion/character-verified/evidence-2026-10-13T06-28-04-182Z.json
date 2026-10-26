@@ -1,0 +1,144 @@
+{
+  "schema": "mn.provision-character.local.v1",
+  "generatedAt": "2026-10-13T06:28:04.182Z",
+  "purpose": "Exercise real CharacterScreen render, goodsHtml, and part methods with a disposable profile fixture.",
+  "scope": "Local serial Chromium over a disposable localhost static server only. No external service, account, or persistent player writes. Fixture state changes model saved meal values; they do not send gameplay commands.",
+  "viewports": [
+    {
+      "name": "desktop-es",
+      "locale": "es",
+      "width": 1280,
+      "height": 900,
+      "mobile": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "guideGoods": 12,
+        "localized": "es",
+        "ordinaryComfort": 40,
+        "heartyBiscuitComfort": 50,
+        "replacementComfort": 40,
+        "guideOpenPreservedAcrossPartUpdate": true,
+        "volumeAndWeightMetersVisible": true,
+        "screenshots": 5
+      },
+      "screenshots": [
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-es-normal-meters-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-es-normal-guide-open-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-es-hearty-biscuit-plus-10-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-es-replacement-no-bonus-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-es-guide-end-2026-10-13T06-28-04-182Z.png"
+      ]
+    },
+    {
+      "name": "desktop-en",
+      "locale": "en",
+      "width": 1280,
+      "height": 900,
+      "mobile": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "guideGoods": 12,
+        "localized": "en",
+        "ordinaryComfort": 40,
+        "heartyBiscuitComfort": 50,
+        "replacementComfort": 40,
+        "guideOpenPreservedAcrossPartUpdate": true,
+        "volumeAndWeightMetersVisible": true,
+        "screenshots": 5
+      },
+      "screenshots": [
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-en-normal-meters-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-en-normal-guide-open-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-en-hearty-biscuit-plus-10-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-en-replacement-no-bonus-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-en-guide-end-2026-10-13T06-28-04-182Z.png"
+      ]
+    },
+    {
+      "name": "mobile-es",
+      "locale": "es",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "guideGoods": 12,
+        "localized": "es",
+        "ordinaryComfort": 40,
+        "heartyBiscuitComfort": 50,
+        "replacementComfort": 40,
+        "guideOpenPreservedAcrossPartUpdate": true,
+        "volumeAndWeightMetersVisible": true,
+        "screenshots": 5
+      },
+      "screenshots": [
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-es-normal-meters-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-es-normal-guide-open-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-es-hearty-biscuit-plus-10-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-es-replacement-no-bonus-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-es-guide-end-2026-10-13T06-28-04-182Z.png"
+      ]
+    },
+    {
+      "name": "mobile-en",
+      "locale": "en",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "guideGoods": 12,
+        "localized": "en",
+        "ordinaryComfort": 40,
+        "heartyBiscuitComfort": 50,
+        "replacementComfort": 40,
+        "guideOpenPreservedAcrossPartUpdate": true,
+        "volumeAndWeightMetersVisible": true,
+        "screenshots": 5
+      },
+      "screenshots": [
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-en-normal-meters-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-en-normal-guide-open-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-en-hearty-biscuit-plus-10-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-en-replacement-no-bonus-2026-10-13T06-28-04-182Z.png",
+        "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-en-guide-end-2026-10-13T06-28-04-182Z.png"
+      ]
+    }
+  ],
+  "failures": [],
+  "screenshots": [
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-es-normal-meters-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-es-normal-guide-open-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-es-hearty-biscuit-plus-10-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-es-replacement-no-bonus-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-es-guide-end-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-en-normal-meters-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-en-normal-guide-open-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-en-hearty-biscuit-plus-10-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-en-replacement-no-bonus-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\desktop-en-guide-end-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-es-normal-meters-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-es-normal-guide-open-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-es-hearty-biscuit-plus-10-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-es-replacement-no-bonus-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-es-guide-end-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-en-normal-meters-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-en-normal-guide-open-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-en-hearty-biscuit-plus-10-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-en-replacement-no-bonus-2026-10-13T06-28-04-182Z.png",
+    "C:\\DEV\\real of trade\\prg01c-artisan\\docs\\delivery\\food-item-completion\\character-verified\\mobile-en-guide-end-2026-10-13T06-28-04-182Z.png"
+  ],
+  "completedAt": "2026-10-13T06:28:09.720Z"
+}

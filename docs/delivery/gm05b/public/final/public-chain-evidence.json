@@ -1,0 +1,89 @@
+{
+  "schema": "gm05b-public-chain/v1",
+  "at": "2026-10-11T06:33:22.318Z",
+  "origin": "https://marea.62.171.136.148.sslip.io",
+  "expectedRuntime": {
+    "version": "0.6.0-alpha.48",
+    "protocolVersion": 53
+  },
+  "initial": {
+    "generation": 6,
+    "revisionId": null
+  },
+  "draft": {
+    "originalRevision": 25,
+    "originalDocumentSha256": "8c672093dfff687490f1723b907a761d075345789020d62fc47149e7b1638c6a",
+    "canaryRevision": 26,
+    "canaryDocumentSha256": "6aadeababc224200282d73039db86e9922cc2a1372e4cd2aa07541550fd2380b",
+    "exactReplay": true,
+    "exactReload": true,
+    "sample": {
+      "index": 70841,
+      "x": -125,
+      "z": -154,
+      "deltaMm": 1000
+    }
+  },
+  "preparation": {
+    "revisionId": "053d30d7d2594fe80497660cbd1fbae9bba034bb868329383fcc3d2bcd8168ce",
+    "compilerVersion": 2,
+    "terrain": {
+      "gridSize": 561,
+      "sha256": "8c17383da5e0956405d31a628cc8dc82935d951945d17ec432de04d7860956ca",
+      "materialsSha256": "6dad37d289aefee832705a597eeb85cef112265fc5e86d76eb1eb90d2988b20d"
+    },
+    "valid": true,
+    "registered": true
+  },
+  "activation": {
+    "operationId": "c5149b43-3d8d-4dfa-826a-256061612646",
+    "generation": 7,
+    "revisionId": "053d30d7d2594fe80497660cbd1fbae9bba034bb868329383fcc3d2bcd8168ce"
+  },
+  "browserPeer": {
+    "browser": {
+      "loaded": true,
+      "terrainHash": "8c17383da5e0956405d31a628cc8dc82935d951945d17ec432de04d7860956ca",
+      "materialsHash": "6dad37d289aefee832705a597eeb85cef112265fc5e86d76eb1eb90d2988b20d",
+      "height": 1.9244766235351562,
+      "material": "rock",
+      "materialWeights": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "peer": {
+      "welcomed": true,
+      "content": {
+        "generation": 7,
+        "revisionId": "053d30d7d2594fe80497660cbd1fbae9bba034bb868329383fcc3d2bcd8168ce"
+      }
+    }
+  },
+  "rollback": {
+    "operationId": "861b3811-7924-465d-bf37-620c7ce2a80c",
+    "generation": 8,
+    "revisionId": null,
+    "verified": true
+  },
+  "draftRestore": {
+    "restored": true,
+    "operationId": "fa13ea1e-3d6a-4b24-8e07-1ea439ae805f",
+    "revision": 27,
+    "documentSha256": "8c672093dfff687490f1723b907a761d075345789020d62fc47149e7b1638c6a"
+  },
+  "failure": null,
+  "runtime": {
+    "version": "0.6.0-alpha.48",
+    "protocolVersion": 53,
+    "players": 0,
+    "sockets": 0
+  },
+  "cleanup": {
+    "activeRollbackVerified": true,
+    "draftRestored": true,
+    "retainedCanaryRevision": true
+  }
+}

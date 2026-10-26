@@ -1,0 +1,809 @@
+{
+  "schema": "character-lab-qa/v2",
+  "scope": "P02a isolated anatomy/UV/material studies; no gameplay or physical-device FPS acceptance",
+  "cases": [
+    {
+      "id": "desktop",
+      "width": 1440,
+      "height": 900,
+      "size": 1024,
+      "bodies": [
+        {
+          "body": "male",
+          "assetUrl": "/docs/art/source/characters-base-v1/male-base-v1.glb",
+          "quality": 1024,
+          "boneNames": [
+            "body",
+            "hips",
+            "thighL",
+            "shinL",
+            "thighR",
+            "shinR",
+            "spine",
+            "chest",
+            "head",
+            "armL",
+            "foreL",
+            "armR",
+            "foreR",
+            "clothF",
+            "clothB"
+          ],
+          "parts": [
+            {
+              "name": "body_base",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 1024,
+                "height": 1024
+              }
+            },
+            {
+              "name": "head_base",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 1024,
+                "height": 1024
+              }
+            },
+            {
+              "name": "eyes_base",
+              "joints": 15,
+              "uv": true,
+              "texture": null
+            },
+            {
+              "name": "base_top",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 1024,
+                "height": 1024
+              }
+            },
+            {
+              "name": "base_shorts",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 1024,
+                "height": 1024
+              }
+            }
+          ],
+          "programsLinked": true,
+          "glError": 0,
+          "horizontalOverflow": false,
+          "recolor": {
+            "skinChanged": true,
+            "clothesUnchanged": true
+          },
+          "poses": [
+            {
+              "pose": "a",
+              "finite": true,
+              "movedVertices": 859,
+              "maxEdgeStretch": 2.181,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 859,
+                  "maxEdgeStretch": 2.181
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1.338
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                }
+              ]
+            },
+            {
+              "pose": "run",
+              "finite": true,
+              "movedVertices": 4978,
+              "maxEdgeStretch": 3.323,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 4978,
+                  "maxEdgeStretch": 3.323
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 2759,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 996,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 1615,
+                  "maxEdgeStretch": 1.422
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 1480,
+                  "maxEdgeStretch": 3.136
+                }
+              ]
+            },
+            {
+              "pose": "joints",
+              "finite": true,
+              "movedVertices": 2439,
+              "maxEdgeStretch": 3.932,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 2439,
+                  "maxEdgeStretch": 3.932
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 459,
+                  "maxEdgeStretch": 1.839
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 400,
+                  "maxEdgeStretch": 2.501
+                }
+              ]
+            }
+          ],
+          "checkerApplied": true,
+          "conceptLoaded": true
+        },
+        {
+          "body": "female",
+          "assetUrl": "/docs/art/source/characters-base-v1/female-base-v1.glb",
+          "quality": 1024,
+          "boneNames": [
+            "body",
+            "hips",
+            "thighL",
+            "shinL",
+            "thighR",
+            "shinR",
+            "spine",
+            "chest",
+            "head",
+            "armL",
+            "foreL",
+            "armR",
+            "foreR",
+            "clothF",
+            "clothB"
+          ],
+          "parts": [
+            {
+              "name": "body_base",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 1024,
+                "height": 1024
+              }
+            },
+            {
+              "name": "head_base",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 1024,
+                "height": 1024
+              }
+            },
+            {
+              "name": "eyes_base",
+              "joints": 15,
+              "uv": true,
+              "texture": null
+            },
+            {
+              "name": "base_top",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 1024,
+                "height": 1024
+              }
+            },
+            {
+              "name": "base_shorts",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 1024,
+                "height": 1024
+              }
+            }
+          ],
+          "programsLinked": true,
+          "glError": 0,
+          "horizontalOverflow": false,
+          "recolor": {
+            "skinChanged": true,
+            "clothesUnchanged": true
+          },
+          "poses": [
+            {
+              "pose": "a",
+              "finite": true,
+              "movedVertices": 768,
+              "maxEdgeStretch": 2.137,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 768,
+                  "maxEdgeStretch": 2.137
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1.253
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                }
+              ]
+            },
+            {
+              "pose": "run",
+              "finite": true,
+              "movedVertices": 4675,
+              "maxEdgeStretch": 3.113,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 4675,
+                  "maxEdgeStretch": 3.113
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 2759,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 996,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 1648,
+                  "maxEdgeStretch": 1.506
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 1450,
+                  "maxEdgeStretch": 2.901
+                }
+              ]
+            },
+            {
+              "pose": "joints",
+              "finite": true,
+              "movedVertices": 2186,
+              "maxEdgeStretch": 3.948,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 2186,
+                  "maxEdgeStretch": 3.948
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 484,
+                  "maxEdgeStretch": 1.636
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 353,
+                  "maxEdgeStretch": 2.441
+                }
+              ]
+            }
+          ],
+          "checkerApplied": true,
+          "conceptLoaded": true
+        }
+      ],
+      "errors": [],
+      "consoleErrors": [],
+      "requests": [
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v1/male-base-v1.glb",
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v1/female-base-v1.glb",
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v0/female-base-v0.glb",
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v0/male-base-v0.glb"
+      ],
+      "requestFailures": [],
+      "comparisonAndRapidSwitchPassed": true
+    },
+    {
+      "id": "mobile",
+      "width": 390,
+      "height": 844,
+      "size": 512,
+      "isMobile": true,
+      "hasTouch": true,
+      "bodies": [
+        {
+          "body": "male",
+          "assetUrl": "/docs/art/source/characters-base-v1/male-base-v1-mobile.glb",
+          "quality": 512,
+          "boneNames": [
+            "body",
+            "hips",
+            "thighL",
+            "shinL",
+            "thighR",
+            "shinR",
+            "spine",
+            "chest",
+            "head",
+            "armL",
+            "foreL",
+            "armR",
+            "foreR",
+            "clothF",
+            "clothB"
+          ],
+          "parts": [
+            {
+              "name": "body_base",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 512,
+                "height": 512
+              }
+            },
+            {
+              "name": "head_base",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 512,
+                "height": 512
+              }
+            },
+            {
+              "name": "eyes_base",
+              "joints": 15,
+              "uv": true,
+              "texture": null
+            },
+            {
+              "name": "base_top",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 512,
+                "height": 512
+              }
+            },
+            {
+              "name": "base_shorts",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 512,
+                "height": 512
+              }
+            }
+          ],
+          "programsLinked": true,
+          "glError": 0,
+          "horizontalOverflow": false,
+          "recolor": {
+            "skinChanged": true,
+            "clothesUnchanged": true
+          },
+          "poses": [
+            {
+              "pose": "a",
+              "finite": true,
+              "movedVertices": 859,
+              "maxEdgeStretch": 2.181,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 859,
+                  "maxEdgeStretch": 2.181
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1.338
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                }
+              ]
+            },
+            {
+              "pose": "run",
+              "finite": true,
+              "movedVertices": 4978,
+              "maxEdgeStretch": 3.323,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 4978,
+                  "maxEdgeStretch": 3.323
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 2759,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 996,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 1615,
+                  "maxEdgeStretch": 1.422
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 1480,
+                  "maxEdgeStretch": 3.136
+                }
+              ]
+            },
+            {
+              "pose": "joints",
+              "finite": true,
+              "movedVertices": 2439,
+              "maxEdgeStretch": 3.932,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 2439,
+                  "maxEdgeStretch": 3.932
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 459,
+                  "maxEdgeStretch": 1.839
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 400,
+                  "maxEdgeStretch": 2.501
+                }
+              ]
+            }
+          ],
+          "checkerApplied": true,
+          "conceptLoaded": true
+        },
+        {
+          "body": "female",
+          "assetUrl": "/docs/art/source/characters-base-v1/female-base-v1-mobile.glb",
+          "quality": 512,
+          "boneNames": [
+            "body",
+            "hips",
+            "thighL",
+            "shinL",
+            "thighR",
+            "shinR",
+            "spine",
+            "chest",
+            "head",
+            "armL",
+            "foreL",
+            "armR",
+            "foreR",
+            "clothF",
+            "clothB"
+          ],
+          "parts": [
+            {
+              "name": "body_base",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 512,
+                "height": 512
+              }
+            },
+            {
+              "name": "head_base",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 512,
+                "height": 512
+              }
+            },
+            {
+              "name": "eyes_base",
+              "joints": 15,
+              "uv": true,
+              "texture": null
+            },
+            {
+              "name": "base_top",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 512,
+                "height": 512
+              }
+            },
+            {
+              "name": "base_shorts",
+              "joints": 15,
+              "uv": true,
+              "texture": {
+                "width": 512,
+                "height": 512
+              }
+            }
+          ],
+          "programsLinked": true,
+          "glError": 0,
+          "horizontalOverflow": false,
+          "recolor": {
+            "skinChanged": true,
+            "clothesUnchanged": true
+          },
+          "poses": [
+            {
+              "pose": "a",
+              "finite": true,
+              "movedVertices": 768,
+              "maxEdgeStretch": 2.137,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 768,
+                  "maxEdgeStretch": 2.137
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1.253
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                }
+              ]
+            },
+            {
+              "pose": "run",
+              "finite": true,
+              "movedVertices": 4675,
+              "maxEdgeStretch": 3.113,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 4675,
+                  "maxEdgeStretch": 3.113
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 2759,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 996,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 1648,
+                  "maxEdgeStretch": 1.506
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 1450,
+                  "maxEdgeStretch": 2.901
+                }
+              ]
+            },
+            {
+              "pose": "joints",
+              "finite": true,
+              "movedVertices": 2186,
+              "maxEdgeStretch": 3.948,
+              "parts": [
+                {
+                  "name": "body_base",
+                  "finite": true,
+                  "movedVertices": 2186,
+                  "maxEdgeStretch": 3.948
+                },
+                {
+                  "name": "head_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "eyes_base",
+                  "finite": true,
+                  "movedVertices": 0,
+                  "maxEdgeStretch": 1
+                },
+                {
+                  "name": "base_top",
+                  "finite": true,
+                  "movedVertices": 484,
+                  "maxEdgeStretch": 1.636
+                },
+                {
+                  "name": "base_shorts",
+                  "finite": true,
+                  "movedVertices": 353,
+                  "maxEdgeStretch": 2.441
+                }
+              ]
+            }
+          ],
+          "checkerApplied": true,
+          "conceptLoaded": true
+        }
+      ],
+      "errors": [],
+      "consoleErrors": [],
+      "requests": [
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v1/male-base-v1-mobile.glb",
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v1/female-base-v1-mobile.glb",
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v0/female-base-v0.glb",
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v0/male-base-v0.glb"
+      ],
+      "requestFailures": [],
+      "comparisonAndRapidSwitchPassed": true
+    }
+  ],
+  "failures": []
+}

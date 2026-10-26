@@ -1,0 +1,3151 @@
+{
+  "baseUrl": "http://127.0.0.1:5199",
+  "startedAt": "2026-10-07T16:33:07.082Z",
+  "cases": [
+    {
+      "name": "pilot-desktop-1280x800",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "errors": [],
+      "checks": [
+        "pilot readiness, impact fixture, control geometry, real input and diagnostics"
+      ],
+      "status": "passed",
+      "helmInput": {
+        "before": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "moving": {
+          "throttle": 1,
+          "brake": 0,
+          "steer": 1
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": -1.423520049619687,
+          "orbitYaw": 0,
+          "orbitPitch": 0,
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            137.63078460849982,
+            3.5199999999999996,
+            107.86239958673706
+          ],
+          "target": [
+            124.6319097200189,
+            0.37,
+            103.37735915953684
+          ]
+        }
+      },
+      "handPose": {
+        "handleWorld": {
+          "x": 130.4005772131029,
+          "y": 1.92,
+          "z": 105.94855272655205
+        },
+        "gripWorld": {
+          "left": {
+            "x": 130.4223682137014,
+            "y": 1.92,
+            "z": 105.98209601638649
+          },
+          "right": {
+            "x": 130.37878621250442,
+            "y": 1.92,
+            "z": 105.91500943671763
+          }
+        },
+        "sailAngles": [
+          0.00627564747816578
+        ],
+        "steerAngle": 0.42,
+        "active": true,
+        "handsWorld": {
+          "left": {
+            "x": 130.42236821370136,
+            "y": 1.9200000000000217,
+            "z": 105.9820960163865,
+            "error": 3.85130590454953e-14,
+            "clampedTargetWorld": {
+              "x": 130.4223682137014,
+              "y": 1.92,
+              "z": 105.98209601638649
+            },
+            "clamped": false
+          },
+          "right": {
+            "x": 130.3787862125044,
+            "y": 1.920000000000006,
+            "z": 105.91500943671763,
+            "error": 2.904713483186334e-14,
+            "clampedTargetWorld": {
+              "x": 130.37878621250442,
+              "y": 1.92,
+              "z": 105.91500943671763
+            },
+            "clamped": false
+          }
+        }
+      },
+      "finalDiagnostics": {
+        "tick": 378,
+        "active": true,
+        "epoch": 1,
+        "ack": 378,
+        "shipId": "b6f9f422-ce71-4c4f-87ce-eabd1f749fbc:r1",
+        "hull": "100%",
+        "shipPose": {
+          "x": 126.11783896773963,
+          "y": 0.72,
+          "z": 117.09524729251754,
+          "yaw": 1.37718886654529
+        },
+        "pilotPose": {
+          "x": 127.67635611255957,
+          "y": 0.72,
+          "z": 114.34369785460038,
+          "f": 1.3771888665452892
+        },
+        "rig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "deckMode": "helm",
+        "deckActive": false,
+        "deckEpoch": 0,
+        "deckAck": 0,
+        "deckState": null,
+        "deckShipId": null,
+        "profileBaseline": true,
+        "guest": null,
+        "lastImpact": null,
+        "impactCount": 0,
+        "visualImpactCount": 0,
+        "audioImpactCount": 0,
+        "effects": {
+          "disposed": false,
+          "poolCapacity": 288,
+          "activeParticles": 48,
+          "wakeSamples": 15,
+          "wakeEmissions": 15,
+          "wakeCapacity": 40,
+          "wakeSeconds": 4,
+          "wakeVertices": 168,
+          "currentTriangles": 80,
+          "flowPhase": 3.191799999999996,
+          "spraySheetTriangles": 72,
+          "foamFlecks": 545,
+          "foamCapacity": 722,
+          "foamRecycles": 4,
+          "foamCellOrigin": [
+            23,
+            19
+          ],
+          "captureBursts": 0,
+          "impactBursts": 0,
+          "currentVisible": false,
+          "gustVisible": false,
+          "currentStrength": 0
+        },
+        "sound": {
+          "unlocked": false,
+          "enabled": false,
+          "paused": false,
+          "mobile": false,
+          "ambienceSources": 0,
+          "activeOneShots": 0,
+          "maxOneShots": 3,
+          "played": {
+            "approach": 0,
+            "window": 0,
+            "capture": 0,
+            "perfect": 0,
+            "miss": 0,
+            "impact": 0
+          },
+          "mix": {
+            "wind": 0,
+            "water": 0
+          },
+          "disposed": false
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": 1.2873320314428092,
+          "orbitYaw": 0,
+          "orbitPitch": 0,
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            122.06653403886034,
+            3.5199999999999996,
+            109.52777456887924
+          ],
+          "target": [
+            132.0053487880886,
+            0.37,
+            119.03073712697248
+          ]
+        },
+        "helm": {
+          "handleWorld": {
+            "x": 128.00019057269245,
+            "y": 1.92,
+            "z": 114.4071899204863
+          },
+          "gripWorld": {
+            "left": {
+              "x": 128.00788658067862,
+              "y": 1.92,
+              "z": 114.367937258652
+            },
+            "right": {
+              "x": 127.99249456470628,
+              "y": 1.92,
+              "z": 114.44644258232059
+            }
+          },
+          "sailAngles": [
+            0.043423225990789405
+          ],
+          "steerAngle": 0,
+          "active": true,
+          "handsWorld": {
+            "left": {
+              "x": 128.00788658067864,
+              "y": 1.9200000000000077,
+              "z": 114.367937258652,
+              "error": 2.9465076446571454e-14,
+              "clampedTargetWorld": {
+                "x": 128.00788658067862,
+                "y": 1.92,
+                "z": 114.367937258652
+              },
+              "clamped": false
+            },
+            "right": {
+              "x": 127.99249456470628,
+              "y": 1.9199999999999962,
+              "z": 114.44644258232059,
+              "error": 3.774758283725532e-15,
+              "clampedTargetWorld": {
+                "x": 127.99249456470628,
+                "y": 1.92,
+                "z": 114.44644258232059
+              },
+              "clamped": false
+            }
+          }
+        },
+        "touch": null,
+        "coast": {
+          "patchSize": 96,
+          "step": 2,
+          "triangles": 4608,
+          "center": {
+            "x": 125.15790027001893,
+            "z": 94.04520189781084
+          },
+          "dock": {
+            "base": {
+              "x": 112.42997820866107,
+              "z": 84.14570696119917
+            },
+            "end": {
+              "x": 137.88582233137677,
+              "z": 103.9446968344225
+            },
+            "halfWidth": 1.7
+          }
+        },
+        "impactFixture": {
+          "pose": {
+            "x": 131.42216893446533,
+            "y": 0.72,
+            "z": 102.83344893301414,
+            "yaw": -1.43116998663535
+          },
+          "shore": {
+            "x": 107.93408148658779,
+            "z": 108.15413949353886
+          },
+          "direction": {
+            "x": -0.9902680687415703,
+            "z": 0.13917310096006574
+          },
+          "clearance": 20,
+          "coastDistance": 30.246093750000007,
+          "dockClearance": 0.3908035290286236,
+          "baselinePose": {
+            "x": 105.1759435013211,
+            "y": 0.72,
+            "z": 126.45439089993741,
+            "yaw": 0.9097531579442095
+          },
+          "rig": {
+            "beam": 4,
+            "length": 4
+          }
+        },
+        "errors": [],
+        "connected": true,
+        "ready": true,
+        "controls": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "glError": 0,
+        "assetErrors": [],
+        "mobile": false,
+        "lastPilotEvent": {
+          "active": true,
+          "ok": true,
+          "epoch": 1,
+          "op": "mount"
+        },
+        "sourceEcsPose": {
+          "x": 131.42216893446533,
+          "y": 0.72,
+          "z": 102.83344893301414,
+          "yaw": -1.43116998663535
+        }
+      },
+      "runtimeAssets": {
+        "glError": 0
+      },
+      "glError": 0,
+      "assetErrors": [],
+      "labErrors": []
+    },
+    {
+      "name": "pilot-mobile-390x844",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "checks": [
+        "pilot readiness, impact fixture, control geometry, real input and diagnostics"
+      ],
+      "status": "passed",
+      "controlGeometry": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "document": {
+          "width": 390,
+          "height": 1107
+        },
+        "parent": {
+          "x": 10,
+          "y": 50,
+          "width": 370,
+          "height": 481.078125,
+          "right": 380,
+          "bottom": 531.078125
+        },
+        "targets": [
+          {
+            "label": "move",
+            "x": 29,
+            "y": 381.078125,
+            "width": 104,
+            "height": 104,
+            "right": 133,
+            "bottom": 485.078125
+          },
+          {
+            "label": "look",
+            "x": 257,
+            "y": 381.078125,
+            "width": 104,
+            "height": 104,
+            "right": 361,
+            "bottom": 485.078125
+          },
+          {
+            "label": "walk",
+            "x": 253.0625,
+            "y": 319.078125,
+            "width": 51.9375,
+            "height": 48,
+            "right": 305,
+            "bottom": 367.078125
+          },
+          {
+            "label": "center",
+            "x": 313,
+            "y": 319.078125,
+            "width": 48,
+            "height": 48,
+            "right": 361,
+            "bottom": 367.078125
+          }
+        ]
+      },
+      "dualTouch": {
+        "axes": {
+          "throttle": 0.894427190999916,
+          "brake": 0,
+          "steer": 0.447213595499958
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": -1.4281804910690066,
+          "orbitYaw": 0.36865415005522617,
+          "orbitPitch": 0.04123105625617661,
+          "look": {
+            "x": 0.970142500145332,
+            "y": 0.242535625036333
+          },
+          "fov": 50,
+          "position": [
+            142.3292819673145,
+            5.374760959636487,
+            104.69564623441592
+          ],
+          "target": [
+            121.76372253302478,
+            0.19600830078124998,
+            105.34883652449463
+          ]
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 2,
+          "move": {
+            "x": 0.447213595499958,
+            "y": -0.894427190999916
+          },
+          "look": {
+            "x": 0.970142500145332,
+            "y": 0.242535625036333
+          },
+          "actions": 2
+        }
+      },
+      "handPose": {
+        "handleWorld": {
+          "x": 130.47527636359897,
+          "y": 1.92,
+          "z": 105.96997221859634
+        },
+        "gripWorld": {
+          "left": {
+            "x": 130.48838777906997,
+            "y": 1.92,
+            "z": 106.00776230703691
+          },
+          "right": {
+            "x": 130.462164948128,
+            "y": 1.92,
+            "z": 105.93218213015575
+          }
+        },
+        "sailAngles": [
+          0.002474920937771685
+        ],
+        "steerAngle": 0.18782971010998234,
+        "active": true,
+        "handsWorld": {
+          "left": {
+            "x": 130.48838777906997,
+            "y": 1.9200000000000268,
+            "z": 106.00776230703691,
+            "error": 2.6867397195928788e-14,
+            "clampedTargetWorld": {
+              "x": 130.48838777906997,
+              "y": 1.92,
+              "z": 106.00776230703691
+            },
+            "clamped": false
+          },
+          "right": {
+            "x": 130.462164948128,
+            "y": 1.9199999999999788,
+            "z": 105.93218213015574,
+            "error": 2.5434528619335685e-14,
+            "clampedTargetWorld": {
+              "x": 130.462164948128,
+              "y": 1.92,
+              "z": 105.93218213015575
+            },
+            "clamped": false
+          }
+        }
+      },
+      "lookOnly": {
+        "axes": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": -0.4032523419894554,
+          "orbitYaw": 1.2057092661001692,
+          "orbitPitch": 0.68,
+          "look": {
+            "x": 0.9503971290446888,
+            "y": 0.3110390604146254
+          },
+          "fov": 50,
+          "position": [
+            117.81175208269666,
+            11.972269131871435,
+            102.25431382631298
+          ],
+          "target": [
+            123.45166748558411,
+            0.19600830078124998,
+            119.1073474036168
+          ]
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 1,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0.9503971290446888,
+            "y": 0.3110390604146254
+          },
+          "actions": 2
+        }
+      },
+      "cancelled": {
+        "axes": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 2
+        }
+      },
+      "deckToggle": {
+        "tick": 565,
+        "active": true,
+        "epoch": 1,
+        "ack": 566,
+        "shipId": "560ee033-2c0e-47e2-b33f-a604ed559fe9:r1",
+        "hull": "100%",
+        "shipPose": {
+          "x": 118.01713704633019,
+          "y": 0.72,
+          "z": 113.32388876554391,
+          "yaw": -0.3107235140464284
+        },
+        "pilotPose": {
+          "x": 120.56772728238592,
+          "y": 0.72,
+          "z": 115.19324412173953,
+          "f": -0.31072351404642795
+        },
+        "rig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "deckMode": "walking",
+        "deckActive": true,
+        "deckEpoch": 1,
+        "deckAck": 21,
+        "deckState": {
+          "x": 3.000000000000011,
+          "y": 0,
+          "z": 0.9999999999999816,
+          "f": 0,
+          "vx": 0,
+          "vz": 0,
+          "mag": 0
+        },
+        "deckShipId": "560ee033-2c0e-47e2-b33f-a604ed559fe9:r1",
+        "profileBaseline": true,
+        "guest": null,
+        "lastImpact": null,
+        "impactCount": 0,
+        "visualImpactCount": 0,
+        "audioImpactCount": 0,
+        "effects": {
+          "disposed": false,
+          "poolCapacity": 144,
+          "activeParticles": 14,
+          "wakeSamples": 16,
+          "wakeEmissions": 16,
+          "wakeCapacity": 24,
+          "wakeSeconds": 4,
+          "wakeVertices": 180,
+          "currentTriangles": 80,
+          "flowPhase": 4.850199999999993,
+          "spraySheetTriangles": 48,
+          "foamFlecks": 263,
+          "foamCapacity": 338,
+          "foamRecycles": 5,
+          "foamCellOrigin": [
+            23,
+            22
+          ],
+          "captureBursts": 0,
+          "impactBursts": 0,
+          "currentVisible": false,
+          "gustVisible": false,
+          "currentStrength": 0
+        },
+        "sound": {
+          "unlocked": false,
+          "enabled": false,
+          "paused": false,
+          "mobile": true,
+          "ambienceSources": 0,
+          "activeOneShots": 0,
+          "maxOneShots": 3,
+          "played": {
+            "approach": 0,
+            "window": 0,
+            "capture": 0,
+            "perfect": 0,
+            "miss": 0,
+            "impact": 0
+          },
+          "mix": {
+            "wind": 0,
+            "water": 0
+          },
+          "disposed": false
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": -0.3112247118548158,
+          "orbitYaw": 1.7474356296556421,
+          "orbitPitch": 0.68,
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            111.3054248839919,
+            11.972269131871435,
+            110.05111681195397
+          ],
+          "target": [
+            125.83005321907815,
+            0.19600830078124998,
+            120.29165186814448
+          ]
+        },
+        "helm": {
+          "handleWorld": {
+            "x": 120.47424406145169,
+            "y": 1.92,
+            "z": 115.48458651407388
+          },
+          "gripWorld": {
+            "left": {
+              "x": 120.51232820400658,
+              "y": 1.92,
+              "z": 115.49681754370584
+            },
+            "right": {
+              "x": 120.43615991889679,
+              "y": 1.92,
+              "z": 115.4723554844419
+            }
+          },
+          "sailAngles": [
+            0.00021030890949269576
+          ],
+          "steerAngle": 0,
+          "active": false,
+          "handsWorld": null
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 2
+        },
+        "coast": {
+          "patchSize": 96,
+          "step": 4,
+          "triangles": 1152,
+          "center": {
+            "x": 125.15790027001893,
+            "z": 94.04520189781084
+          },
+          "dock": {
+            "base": {
+              "x": 112.42997820866107,
+              "z": 84.14570696119917
+            },
+            "end": {
+              "x": 137.88582233137677,
+              "z": 103.9446968344225
+            },
+            "halfWidth": 1.7
+          }
+        },
+        "impactFixture": {
+          "pose": {
+            "x": 131.42216893446533,
+            "y": 0.72,
+            "z": 102.83344893301414,
+            "yaw": -1.43116998663535
+          },
+          "shore": {
+            "x": 107.93408148658779,
+            "z": 108.15413949353886
+          },
+          "direction": {
+            "x": -0.9902680687415703,
+            "z": 0.13917310096006574
+          },
+          "clearance": 20,
+          "coastDistance": 30.246093750000007,
+          "dockClearance": 0.3908035290286236,
+          "baselinePose": {
+            "x": 105.1759435013211,
+            "y": 0.72,
+            "z": 126.45439089993741,
+            "yaw": 0.9097531579442095
+          },
+          "rig": {
+            "beam": 4,
+            "length": 4
+          }
+        },
+        "errors": [],
+        "connected": true,
+        "ready": true,
+        "controls": {
+          "mx": 0,
+          "mz": 0,
+          "brake": 0
+        },
+        "glError": 0,
+        "assetErrors": [],
+        "mobile": true,
+        "lastPilotEvent": {
+          "active": true,
+          "ok": true,
+          "epoch": 1,
+          "op": "walk"
+        },
+        "sourceEcsPose": {
+          "x": 131.42216893446533,
+          "y": 0.72,
+          "z": 102.83344893301414,
+          "yaw": -1.43116998663535
+        }
+      },
+      "deckReturn": {
+        "tick": 745,
+        "active": true,
+        "epoch": 1,
+        "ack": 746,
+        "shipId": "560ee033-2c0e-47e2-b33f-a604ed559fe9:r1",
+        "hull": "100%",
+        "shipPose": {
+          "x": 117.22815792791373,
+          "y": 0.72,
+          "z": 115.7772629765687,
+          "yaw": -0.30996747626239857
+        },
+        "pilotPose": {
+          "x": 119.78016073816599,
+          "y": 0.72,
+          "z": 117.64468945610265,
+          "f": -0.30996747626239873
+        },
+        "rig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "deckMode": "helm",
+        "deckActive": false,
+        "deckEpoch": 1,
+        "deckAck": 0,
+        "deckState": null,
+        "deckShipId": null,
+        "profileBaseline": true,
+        "guest": null,
+        "lastImpact": null,
+        "impactCount": 0,
+        "visualImpactCount": 0,
+        "audioImpactCount": 0,
+        "effects": {
+          "disposed": false,
+          "poolCapacity": 144,
+          "activeParticles": 8,
+          "wakeSamples": 21,
+          "wakeEmissions": 25,
+          "wakeCapacity": 24,
+          "wakeSeconds": 4,
+          "wakeVertices": 240,
+          "currentTriangles": 80,
+          "flowPhase": 6.508799999999991,
+          "spraySheetTriangles": 48,
+          "foamFlecks": 257,
+          "foamCapacity": 338,
+          "foamRecycles": 6,
+          "foamCellOrigin": [
+            23,
+            23
+          ],
+          "captureBursts": 0,
+          "impactBursts": 0,
+          "currentVisible": false,
+          "gustVisible": false,
+          "currentStrength": 0
+        },
+        "sound": {
+          "unlocked": false,
+          "enabled": false,
+          "paused": false,
+          "mobile": true,
+          "ambienceSources": 0,
+          "activeOneShots": 0,
+          "maxOneShots": 3,
+          "played": {
+            "approach": 0,
+            "window": 0,
+            "capture": 0,
+            "perfect": 0,
+            "miss": 0,
+            "impact": 0
+          },
+          "mix": {
+            "wind": 0,
+            "water": 0
+          },
+          "disposed": false
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": -0.30996794459184707,
+          "orbitYaw": 1.7474356296556421,
+          "orbitPitch": 0.68,
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            110.48436317003521,
+            11.972269131871435,
+            112.59585498617582
+          ],
+          "target": [
+            125.02185000038548,
+            0.19600830078124998,
+            122.81812788249634
+          ]
+        },
+        "helm": {
+          "handleWorld": {
+            "x": 119.67950647500412,
+            "y": 1.92,
+            "z": 117.9589476173016
+          },
+          "gripWorld": {
+            "left": {
+              "x": 119.71760021464455,
+              "y": 1.92,
+              "z": 117.97114872381728
+            },
+            "right": {
+              "x": 119.64141273536367,
+              "y": 1.92,
+              "z": 117.94674651078593
+            }
+          },
+          "sailAngles": [
+            1.8518364797159848e-7
+          ],
+          "steerAngle": 0,
+          "active": true,
+          "handsWorld": {
+            "left": {
+              "x": 119.71760021464456,
+              "y": 1.9200000000000066,
+              "z": 117.97114872381725,
+              "error": 3.2467143154296425e-14,
+              "clampedTargetWorld": {
+                "x": 119.71760021464455,
+                "y": 1.92,
+                "z": 117.97114872381728
+              },
+              "clamped": false
+            },
+            "right": {
+              "x": 119.64141273536367,
+              "y": 1.9200000000000021,
+              "z": 117.94674651078593,
+              "error": 2.220446049250313e-15,
+              "clampedTargetWorld": {
+                "x": 119.64141273536367,
+                "y": 1.92,
+                "z": 117.94674651078593
+              },
+              "clamped": false
+            }
+          }
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 2
+        },
+        "coast": {
+          "patchSize": 96,
+          "step": 4,
+          "triangles": 1152,
+          "center": {
+            "x": 125.15790027001893,
+            "z": 94.04520189781084
+          },
+          "dock": {
+            "base": {
+              "x": 112.42997820866107,
+              "z": 84.14570696119917
+            },
+            "end": {
+              "x": 137.88582233137677,
+              "z": 103.9446968344225
+            },
+            "halfWidth": 1.7
+          }
+        },
+        "impactFixture": {
+          "pose": {
+            "x": 131.42216893446533,
+            "y": 0.72,
+            "z": 102.83344893301414,
+            "yaw": -1.43116998663535
+          },
+          "shore": {
+            "x": 107.93408148658779,
+            "z": 108.15413949353886
+          },
+          "direction": {
+            "x": -0.9902680687415703,
+            "z": 0.13917310096006574
+          },
+          "clearance": 20,
+          "coastDistance": 30.246093750000007,
+          "dockClearance": 0.3908035290286236,
+          "baselinePose": {
+            "x": 105.1759435013211,
+            "y": 0.72,
+            "z": 126.45439089993741,
+            "yaw": 0.9097531579442095
+          },
+          "rig": {
+            "beam": 4,
+            "length": 4
+          }
+        },
+        "errors": [],
+        "connected": true,
+        "ready": true,
+        "controls": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "glError": 0,
+        "assetErrors": [],
+        "mobile": true,
+        "lastPilotEvent": {
+          "active": true,
+          "ok": true,
+          "epoch": 1,
+          "op": "helm"
+        },
+        "sourceEcsPose": {
+          "x": 131.42216893446533,
+          "y": 0.72,
+          "z": 102.83344893301414,
+          "yaw": -1.43116998663535
+        }
+      },
+      "finalDiagnostics": {
+        "tick": 757,
+        "active": true,
+        "epoch": 1,
+        "ack": 758,
+        "shipId": "560ee033-2c0e-47e2-b33f-a604ed559fe9:r1",
+        "hull": "100%",
+        "shipPose": {
+          "x": 117.20002412273158,
+          "y": 0.72,
+          "z": 115.86509881175951,
+          "yaw": -0.30996719504520304
+        },
+        "pilotPose": {
+          "x": 119.75202745813618,
+          "y": 0.72,
+          "z": 117.73252457362632,
+          "f": -0.3099671950452034
+        },
+        "rig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "deckMode": "helm",
+        "deckActive": false,
+        "deckEpoch": 1,
+        "deckAck": 0,
+        "deckState": null,
+        "deckShipId": null,
+        "profileBaseline": true,
+        "guest": null,
+        "lastImpact": null,
+        "impactCount": 0,
+        "visualImpactCount": 0,
+        "audioImpactCount": 0,
+        "effects": {
+          "disposed": false,
+          "poolCapacity": 144,
+          "activeParticles": 8,
+          "wakeSamples": 20,
+          "wakeEmissions": 25,
+          "wakeCapacity": 24,
+          "wakeSeconds": 4,
+          "wakeVertices": 228,
+          "currentTriangles": 80,
+          "flowPhase": 6.608799999999991,
+          "spraySheetTriangles": 48,
+          "foamFlecks": 257,
+          "foamCapacity": 338,
+          "foamRecycles": 6,
+          "foamCellOrigin": [
+            23,
+            23
+          ],
+          "captureBursts": 0,
+          "impactBursts": 0,
+          "currentVisible": false,
+          "gustVisible": false,
+          "currentStrength": 0
+        },
+        "sound": {
+          "unlocked": false,
+          "enabled": false,
+          "paused": false,
+          "mobile": true,
+          "ambienceSources": 0,
+          "activeOneShots": 0,
+          "maxOneShots": 3,
+          "played": {
+            "approach": 0,
+            "window": 0,
+            "capture": 0,
+            "perfect": 0,
+            "miss": 0,
+            "impact": 0
+          },
+          "mix": {
+            "wind": 0,
+            "water": 0
+          },
+          "disposed": false
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": -0.30996750050235145,
+          "orbitYaw": 1.7474356296556421,
+          "orbitPitch": 0.68,
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            110.45619030300415,
+            11.972269131871435,
+            112.68381017043924
+          ],
+          "target": [
+            124.99368167295701,
+            0.19600830078124998,
+            122.90607661081357
+          ]
+        },
+        "helm": {
+          "handleWorld": {
+            "x": 119.65363992339874,
+            "y": 1.92,
+            "z": 118.03970602610907
+          },
+          "gripWorld": {
+            "left": {
+              "x": 119.6917336662415,
+              "y": 1.92,
+              "z": 118.05190712262659
+            },
+            "right": {
+              "x": 119.615546180556,
+              "y": 1.92,
+              "z": 118.02750492959156
+            }
+          },
+          "sailAngles": [
+            1.2238966817790242e-7
+          ],
+          "steerAngle": 0,
+          "active": true,
+          "handsWorld": {
+            "left": {
+              "x": 119.6917336662415,
+              "y": 1.9199999999999957,
+              "z": 118.0519071226266,
+              "error": 1.4823868115664955e-14,
+              "clampedTargetWorld": {
+                "x": 119.6917336662415,
+                "y": 1.92,
+                "z": 118.05190712262659
+              },
+              "clamped": false
+            },
+            "right": {
+              "x": 119.61554618055601,
+              "y": 1.9200000000000081,
+              "z": 118.02750492959154,
+              "error": 2.1711602766173917e-14,
+              "clampedTargetWorld": {
+                "x": 119.615546180556,
+                "y": 1.92,
+                "z": 118.02750492959156
+              },
+              "clamped": false
+            }
+          }
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 2
+        },
+        "coast": {
+          "patchSize": 96,
+          "step": 4,
+          "triangles": 1152,
+          "center": {
+            "x": 125.15790027001893,
+            "z": 94.04520189781084
+          },
+          "dock": {
+            "base": {
+              "x": 112.42997820866107,
+              "z": 84.14570696119917
+            },
+            "end": {
+              "x": 137.88582233137677,
+              "z": 103.9446968344225
+            },
+            "halfWidth": 1.7
+          }
+        },
+        "impactFixture": {
+          "pose": {
+            "x": 131.42216893446533,
+            "y": 0.72,
+            "z": 102.83344893301414,
+            "yaw": -1.43116998663535
+          },
+          "shore": {
+            "x": 107.93408148658779,
+            "z": 108.15413949353886
+          },
+          "direction": {
+            "x": -0.9902680687415703,
+            "z": 0.13917310096006574
+          },
+          "clearance": 20,
+          "coastDistance": 30.246093750000007,
+          "dockClearance": 0.3908035290286236,
+          "baselinePose": {
+            "x": 105.1759435013211,
+            "y": 0.72,
+            "z": 126.45439089993741,
+            "yaw": 0.9097531579442095
+          },
+          "rig": {
+            "beam": 4,
+            "length": 4
+          }
+        },
+        "errors": [],
+        "connected": true,
+        "ready": true,
+        "controls": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "glError": 0,
+        "assetErrors": [],
+        "mobile": true,
+        "lastPilotEvent": {
+          "active": true,
+          "ok": true,
+          "epoch": 1,
+          "op": "helm"
+        },
+        "sourceEcsPose": {
+          "x": 131.42216893446533,
+          "y": 0.72,
+          "z": 102.83344893301414,
+          "yaw": -1.43116998663535
+        }
+      },
+      "runtimeAssets": {
+        "glError": 0
+      },
+      "glError": 0,
+      "assetErrors": [],
+      "labErrors": []
+    },
+    {
+      "name": "pilot-mobile-844x390",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "errors": [],
+      "checks": [
+        "pilot readiness, impact fixture, control geometry, real input and diagnostics"
+      ],
+      "status": "passed",
+      "controlGeometry": {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "document": {
+          "width": 844,
+          "height": 787
+        },
+        "parent": {
+          "x": 12,
+          "y": -1,
+          "width": 820,
+          "height": 330,
+          "right": 832,
+          "bottom": 329
+        },
+        "targets": [
+          {
+            "label": "move",
+            "x": 37,
+            "y": 167,
+            "width": 116,
+            "height": 116,
+            "right": 153,
+            "bottom": 283
+          },
+          {
+            "label": "look",
+            "x": 691,
+            "y": 167,
+            "width": 116,
+            "height": 116,
+            "right": 807,
+            "bottom": 283
+          },
+          {
+            "label": "walk",
+            "x": 699.0625,
+            "y": 106,
+            "width": 51.9375,
+            "height": 48,
+            "right": 751,
+            "bottom": 154
+          },
+          {
+            "label": "center",
+            "x": 759,
+            "y": 106,
+            "width": 48,
+            "height": 48,
+            "right": 807,
+            "bottom": 154
+          }
+        ]
+      },
+      "dualTouch": {
+        "axes": {
+          "throttle": 0.8661749482628573,
+          "brake": 0,
+          "steer": 0.4330874741314287
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": -1.4282810925776774,
+          "orbitYaw": 0.3252230506841688,
+          "orbitPitch": 0.03637363066862414,
+          "look": {
+            "x": 0.8558501333793914,
+            "y": 0.21396253334484786
+          },
+          "fov": 50,
+          "position": [
+            138.1388095497536,
+            3.7927420792376845,
+            105.19643595421516
+          ],
+          "target": [
+            124.39448815242476,
+            0.37,
+            105.03450651478957
+          ]
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 2,
+          "move": {
+            "x": 0.4330874741314287,
+            "y": -0.8661749482628573
+          },
+          "look": {
+            "x": 0.8558501333793914,
+            "y": 0.21396253334484786
+          },
+          "actions": 2
+        }
+      },
+      "handPose": {
+        "handleWorld": {
+          "x": 130.4768231702212,
+          "y": 1.92,
+          "z": 105.97057494471254
+        },
+        "gripWorld": {
+          "left": {
+            "x": 130.48970181897758,
+            "y": 1.92,
+            "z": 106.00844499100522
+          },
+          "right": {
+            "x": 130.4639445214648,
+            "y": 1.92,
+            "z": 105.93270489841986
+          }
+        },
+        "sailAngles": [
+          0.002390667958360737
+        ],
+        "steerAngle": 0.18189673913520005,
+        "active": true,
+        "handsWorld": {
+          "left": {
+            "x": 130.4897018189776,
+            "y": 1.9199999999999573,
+            "z": 106.00844499100523,
+            "error": 5.317214951750687e-14,
+            "clampedTargetWorld": {
+              "x": 130.48970181897758,
+              "y": 1.92,
+              "z": 106.00844499100522
+            },
+            "clamped": false
+          },
+          "right": {
+            "x": 130.46394452146478,
+            "y": 1.920000000000006,
+            "z": 105.93270489841984,
+            "error": 3.233704429407591e-14,
+            "clampedTargetWorld": {
+              "x": 130.4639445214648,
+              "y": 1.92,
+              "z": 105.93270489841986
+            },
+            "clamped": false
+          }
+        }
+      },
+      "lookOnly": {
+        "axes": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": -0.5537077294985026,
+          "orbitYaw": -0.3232336304780733,
+          "orbitPitch": 0.6728159239320285,
+          "look": {
+            "x": 0.9503971290446888,
+            "y": 0.3110390604146254
+          },
+          "fov": 50,
+          "position": [
+            128.26673829911263,
+            8.193930282076945,
+            108.59829250527785
+          ],
+          "target": [
+            116.63061616010799,
+            0.37,
+            111.13123552775185
+          ]
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 1,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0.9503971290446888,
+            "y": 0.3110390604146254
+          },
+          "actions": 2
+        }
+      },
+      "cancelled": {
+        "axes": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 2
+        }
+      },
+      "deckToggle": {
+        "tick": 538,
+        "active": true,
+        "epoch": 1,
+        "ack": 539,
+        "shipId": "ffb30153-954e-4368-8f6d-b4dde418b046:r1",
+        "hull": "100%",
+        "shipPose": {
+          "x": 118.627806795423,
+          "y": 0.72,
+          "z": 111.37409692211531,
+          "yaw": -0.44330228368918917
+        },
+        "pilotPose": {
+          "x": 120.90890239049432,
+          "y": 0.72,
+          "z": 113.56421173329443,
+          "f": -0.44330228368918867
+        },
+        "rig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "deckMode": "walking",
+        "deckActive": true,
+        "deckEpoch": 1,
+        "deckAck": 21,
+        "deckState": {
+          "x": 3.000000000000005,
+          "y": 0,
+          "z": 0.9999999999999762,
+          "f": 0,
+          "vx": 0,
+          "vz": 0,
+          "mag": 0
+        },
+        "deckShipId": "ffb30153-954e-4368-8f6d-b4dde418b046:r1",
+        "profileBaseline": true,
+        "guest": null,
+        "lastImpact": null,
+        "impactCount": 0,
+        "visualImpactCount": 0,
+        "audioImpactCount": 0,
+        "effects": {
+          "disposed": false,
+          "poolCapacity": 144,
+          "activeParticles": 18,
+          "wakeSamples": 15,
+          "wakeEmissions": 15,
+          "wakeCapacity": 24,
+          "wakeSeconds": 4,
+          "wakeVertices": 168,
+          "currentTriangles": 80,
+          "flowPhase": 4.570799999999992,
+          "spraySheetTriangles": 48,
+          "foamFlecks": 263,
+          "foamCapacity": 338,
+          "foamRecycles": 5,
+          "foamCellOrigin": [
+            23,
+            22
+          ],
+          "captureBursts": 0,
+          "impactBursts": 0,
+          "currentVisible": false,
+          "gustVisible": false,
+          "currentStrength": 0
+        },
+        "sound": {
+          "unlocked": false,
+          "enabled": false,
+          "paused": false,
+          "mobile": true,
+          "ambienceSources": 0,
+          "activeOneShots": 0,
+          "maxOneShots": 3,
+          "played": {
+            "approach": 0,
+            "window": 0,
+            "capture": 0,
+            "perfect": 0,
+            "miss": 0,
+            "impact": 0
+          },
+          "mix": {
+            "wind": 0,
+            "water": 0
+          },
+          "disposed": false
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": -0.4438478457930572,
+          "orbitYaw": 0.21849273307739936,
+          "orbitPitch": 0.68,
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            123.88494755429241,
+            8.235947680138514,
+            108.9290235531488
+          ],
+          "target": [
+            116.1935329885301,
+            0.37,
+            117.97077539855535
+          ]
+        },
+        "helm": {
+          "handleWorld": {
+            "x": 120.76737793235431,
+            "y": 1.92,
+            "z": 113.86227065957313
+          },
+          "gripWorld": {
+            "left": {
+              "x": 120.80351153755137,
+              "y": 1.92,
+              "z": 113.87942765743006
+            },
+            "right": {
+              "x": 120.73124432715724,
+              "y": 1.92,
+              "z": 113.8451136617162
+            }
+          },
+          "sailAngles": [
+            0.00021518792409835896
+          ],
+          "steerAngle": 0,
+          "active": false,
+          "handsWorld": null
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 2
+        },
+        "coast": {
+          "patchSize": 96,
+          "step": 4,
+          "triangles": 1152,
+          "center": {
+            "x": 125.15790027001893,
+            "z": 94.04520189781084
+          },
+          "dock": {
+            "base": {
+              "x": 112.42997820866107,
+              "z": 84.14570696119917
+            },
+            "end": {
+              "x": 137.88582233137677,
+              "z": 103.9446968344225
+            },
+            "halfWidth": 1.7
+          }
+        },
+        "impactFixture": {
+          "pose": {
+            "x": 131.42216893446533,
+            "y": 0.72,
+            "z": 102.83344893301414,
+            "yaw": -1.43116998663535
+          },
+          "shore": {
+            "x": 107.93408148658779,
+            "z": 108.15413949353886
+          },
+          "direction": {
+            "x": -0.9902680687415703,
+            "z": 0.13917310096006574
+          },
+          "clearance": 20,
+          "coastDistance": 30.246093750000007,
+          "dockClearance": 0.3908035290286236,
+          "baselinePose": {
+            "x": 105.1759435013211,
+            "y": 0.72,
+            "z": 126.45439089993741,
+            "yaw": 0.9097531579442095
+          },
+          "rig": {
+            "beam": 4,
+            "length": 4
+          }
+        },
+        "errors": [],
+        "connected": true,
+        "ready": true,
+        "controls": {
+          "mx": 0,
+          "mz": 0,
+          "brake": 0
+        },
+        "glError": 0,
+        "assetErrors": [],
+        "mobile": true,
+        "lastPilotEvent": {
+          "active": true,
+          "ok": true,
+          "epoch": 1,
+          "op": "walk"
+        },
+        "sourceEcsPose": {
+          "x": 131.42216893446533,
+          "y": 0.72,
+          "z": 102.83344893301414,
+          "yaw": -1.43116998663535
+        }
+      },
+      "deckReturn": {
+        "tick": 825,
+        "active": true,
+        "epoch": 1,
+        "ack": 826,
+        "shipId": "ffb30153-954e-4368-8f6d-b4dde418b046:r1",
+        "hull": "100%",
+        "shipPose": {
+          "x": 117.24781540505235,
+          "y": 0.72,
+          "z": 114.27882914687842,
+          "yaw": -0.44241595211383045
+        },
+        "pilotPose": {
+          "x": 119.53085127178467,
+          "y": 0.72,
+          "z": 116.46692129101078,
+          "f": -0.44241595211383
+        },
+        "rig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "deckMode": "helm",
+        "deckActive": false,
+        "deckEpoch": 1,
+        "deckAck": 0,
+        "deckState": null,
+        "deckShipId": null,
+        "profileBaseline": true,
+        "guest": null,
+        "lastImpact": null,
+        "impactCount": 0,
+        "visualImpactCount": 0,
+        "audioImpactCount": 0,
+        "effects": {
+          "disposed": false,
+          "poolCapacity": 144,
+          "activeParticles": 0,
+          "wakeSamples": 17,
+          "wakeEmissions": 24,
+          "wakeCapacity": 24,
+          "wakeSeconds": 4,
+          "wakeVertices": 192,
+          "currentTriangles": 80,
+          "flowPhase": 7.104199999999986,
+          "spraySheetTriangles": 48,
+          "foamFlecks": 257,
+          "foamCapacity": 338,
+          "foamRecycles": 6,
+          "foamCellOrigin": [
+            23,
+            23
+          ],
+          "captureBursts": 0,
+          "impactBursts": 0,
+          "currentVisible": false,
+          "gustVisible": false,
+          "currentStrength": 0
+        },
+        "sound": {
+          "unlocked": false,
+          "enabled": false,
+          "paused": false,
+          "mobile": true,
+          "ambienceSources": 0,
+          "activeOneShots": 0,
+          "maxOneShots": 3,
+          "played": {
+            "approach": 0,
+            "window": 0,
+            "capture": 0,
+            "perfect": 0,
+            "miss": 0,
+            "impact": 0
+          },
+          "mix": {
+            "wind": 0,
+            "water": 0
+          },
+          "disposed": false
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": -0.4424159619132707,
+          "orbitYaw": 0.21849273307739936,
+          "orbitPitch": 0.68,
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            122.46038339091758,
+            8.235947680138514,
+            111.90952368946495
+          ],
+          "target": [
+            114.78192344426304,
+            0.37,
+            120.96227947452594
+          ]
+        },
+        "helm": {
+          "handleWorld": {
+            "x": 119.38957033311773,
+            "y": 1.92,
+            "z": 116.76514888257365
+          },
+          "gripWorld": {
+            "left": {
+              "x": 119.42571913209504,
+              "y": 1.92,
+              "z": 116.78227384483631
+            },
+            "right": {
+              "x": 119.35342153414041,
+              "y": 1.92,
+              "z": 116.748023920311
+            }
+          },
+          "sailAngles": [
+            3.952990823563596e-9
+          ],
+          "steerAngle": 0,
+          "active": true,
+          "handsWorld": {
+            "left": {
+              "x": 119.42571913209505,
+              "y": 1.9199999999999944,
+              "z": 116.78227384483631,
+              "error": 1.5256581230628793e-14,
+              "clampedTargetWorld": {
+                "x": 119.42571913209504,
+                "y": 1.92,
+                "z": 116.78227384483631
+              },
+              "clamped": false
+            },
+            "right": {
+              "x": 119.35342153414042,
+              "y": 1.9199999999999835,
+              "z": 116.748023920311,
+              "error": 2.1724088854275808e-14,
+              "clampedTargetWorld": {
+                "x": 119.35342153414041,
+                "y": 1.92,
+                "z": 116.748023920311
+              },
+              "clamped": false
+            }
+          }
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 2
+        },
+        "coast": {
+          "patchSize": 96,
+          "step": 4,
+          "triangles": 1152,
+          "center": {
+            "x": 125.15790027001893,
+            "z": 94.04520189781084
+          },
+          "dock": {
+            "base": {
+              "x": 112.42997820866107,
+              "z": 84.14570696119917
+            },
+            "end": {
+              "x": 137.88582233137677,
+              "z": 103.9446968344225
+            },
+            "halfWidth": 1.7
+          }
+        },
+        "impactFixture": {
+          "pose": {
+            "x": 131.42216893446533,
+            "y": 0.72,
+            "z": 102.83344893301414,
+            "yaw": -1.43116998663535
+          },
+          "shore": {
+            "x": 107.93408148658779,
+            "z": 108.15413949353886
+          },
+          "direction": {
+            "x": -0.9902680687415703,
+            "z": 0.13917310096006574
+          },
+          "clearance": 20,
+          "coastDistance": 30.246093750000007,
+          "dockClearance": 0.3908035290286236,
+          "baselinePose": {
+            "x": 105.1759435013211,
+            "y": 0.72,
+            "z": 126.45439089993741,
+            "yaw": 0.9097531579442095
+          },
+          "rig": {
+            "beam": 4,
+            "length": 4
+          }
+        },
+        "errors": [],
+        "connected": true,
+        "ready": true,
+        "controls": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "glError": 0,
+        "assetErrors": [],
+        "mobile": true,
+        "lastPilotEvent": {
+          "active": true,
+          "ok": true,
+          "epoch": 1,
+          "op": "helm"
+        },
+        "sourceEcsPose": {
+          "x": 131.42216893446533,
+          "y": 0.72,
+          "z": 102.83344893301414,
+          "yaw": -1.43116998663535
+        }
+      },
+      "finalDiagnostics": {
+        "tick": 833,
+        "active": true,
+        "epoch": 1,
+        "ack": 834,
+        "shipId": "ffb30153-954e-4368-8f6d-b4dde418b046:r1",
+        "hull": "100%",
+        "shipPose": {
+          "x": 117.2331898317589,
+          "y": 0.72,
+          "z": 114.30970200718961,
+          "yaw": -0.4424159482106777
+        },
+        "pilotPose": {
+          "x": 119.5162257070317,
+          "y": 0.72,
+          "z": 116.49779414241094,
+          "f": -0.44241594821067665
+        },
+        "rig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "deckMode": "helm",
+        "deckActive": false,
+        "deckEpoch": 1,
+        "deckAck": 0,
+        "deckState": null,
+        "deckShipId": null,
+        "profileBaseline": true,
+        "guest": null,
+        "lastImpact": null,
+        "impactCount": 0,
+        "visualImpactCount": 0,
+        "audioImpactCount": 0,
+        "effects": {
+          "disposed": false,
+          "poolCapacity": 144,
+          "activeParticles": 0,
+          "wakeSamples": 16,
+          "wakeEmissions": 24,
+          "wakeCapacity": 24,
+          "wakeSeconds": 4,
+          "wakeVertices": 180,
+          "currentTriangles": 80,
+          "flowPhase": 7.191699999999986,
+          "spraySheetTriangles": 48,
+          "foamFlecks": 257,
+          "foamCapacity": 338,
+          "foamRecycles": 6,
+          "foamCellOrigin": [
+            23,
+            23
+          ],
+          "captureBursts": 0,
+          "impactBursts": 0,
+          "currentVisible": false,
+          "gustVisible": false,
+          "currentStrength": 0
+        },
+        "sound": {
+          "unlocked": false,
+          "enabled": false,
+          "paused": false,
+          "mobile": true,
+          "ambienceSources": 0,
+          "activeOneShots": 0,
+          "maxOneShots": 3,
+          "played": {
+            "approach": 0,
+            "window": 0,
+            "capture": 0,
+            "perfect": 0,
+            "miss": 0,
+            "impact": 0
+          },
+          "mix": {
+            "wind": 0,
+            "water": 0
+          },
+          "disposed": false
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": -0.44241595538345624,
+          "orbitYaw": 0.21849273307739936,
+          "orbitPitch": 0.68,
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            122.4457123771481,
+            8.235947680138514,
+            111.94049238972451
+          ],
+          "target": [
+            114.76725248960636,
+            0.37,
+            120.99324822492441
+          ]
+        },
+        "helm": {
+          "handleWorld": {
+            "x": 119.37628967684718,
+            "y": 1.92,
+            "z": 116.7931827925774
+          },
+          "gripWorld": {
+            "left": {
+              "x": 119.41243847588588,
+              "y": 1.92,
+              "z": 116.81030775471048
+            },
+            "right": {
+              "x": 119.34014087780848,
+              "y": 1.92,
+              "z": 116.7760578304443
+            }
+          },
+          "sailAngles": [
+            2.732475579136917e-9
+          ],
+          "steerAngle": 0,
+          "active": true,
+          "handsWorld": {
+            "left": {
+              "x": 119.41243847588588,
+              "y": 1.9200000000000037,
+              "z": 116.81030775471046,
+              "error": 1.4703645528818136e-14,
+              "clampedTargetWorld": {
+                "x": 119.41243847588588,
+                "y": 1.92,
+                "z": 116.81030775471048
+              },
+              "clamped": false
+            },
+            "right": {
+              "x": 119.34014087780848,
+              "y": 1.9200000000000133,
+              "z": 116.77605783044429,
+              "error": 1.9479273482635503e-14,
+              "clampedTargetWorld": {
+                "x": 119.34014087780848,
+                "y": 1.92,
+                "z": 116.7760578304443
+              },
+              "clamped": false
+            }
+          }
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 2
+        },
+        "coast": {
+          "patchSize": 96,
+          "step": 4,
+          "triangles": 1152,
+          "center": {
+            "x": 125.15790027001893,
+            "z": 94.04520189781084
+          },
+          "dock": {
+            "base": {
+              "x": 112.42997820866107,
+              "z": 84.14570696119917
+            },
+            "end": {
+              "x": 137.88582233137677,
+              "z": 103.9446968344225
+            },
+            "halfWidth": 1.7
+          }
+        },
+        "impactFixture": {
+          "pose": {
+            "x": 131.42216893446533,
+            "y": 0.72,
+            "z": 102.83344893301414,
+            "yaw": -1.43116998663535
+          },
+          "shore": {
+            "x": 107.93408148658779,
+            "z": 108.15413949353886
+          },
+          "direction": {
+            "x": -0.9902680687415703,
+            "z": 0.13917310096006574
+          },
+          "clearance": 20,
+          "coastDistance": 30.246093750000007,
+          "dockClearance": 0.3908035290286236,
+          "baselinePose": {
+            "x": 105.1759435013211,
+            "y": 0.72,
+            "z": 126.45439089993741,
+            "yaw": 0.9097531579442095
+          },
+          "rig": {
+            "beam": 4,
+            "length": 4
+          }
+        },
+        "errors": [],
+        "connected": true,
+        "ready": true,
+        "controls": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "glError": 0,
+        "assetErrors": [],
+        "mobile": true,
+        "lastPilotEvent": {
+          "active": true,
+          "ok": true,
+          "epoch": 1,
+          "op": "helm"
+        },
+        "sourceEcsPose": {
+          "x": 131.42216893446533,
+          "y": 0.72,
+          "z": 102.83344893301414,
+          "yaw": -1.43116998663535
+        }
+      },
+      "runtimeAssets": {
+        "glError": 0
+      },
+      "glError": 0,
+      "assetErrors": [],
+      "labErrors": []
+    },
+    {
+      "name": "lab-mobile-844x390",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "errors": [],
+      "checks": [
+        "tailwind gust action, held movement, helm/sail diagnostics, cancel neutralization and mobile bounds"
+      ],
+      "status": "passed",
+      "controlGeometry": {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "document": {
+          "width": 844,
+          "height": 390
+        },
+        "parent": {
+          "x": 0,
+          "y": 0,
+          "width": 844,
+          "height": 390,
+          "right": 844,
+          "bottom": 390
+        },
+        "targets": [
+          {
+            "label": "move",
+            "x": 24,
+            "y": 252,
+            "width": 116,
+            "height": 116,
+            "right": 140,
+            "bottom": 368
+          },
+          {
+            "label": "look",
+            "x": 704,
+            "y": 252,
+            "width": 116,
+            "height": 116,
+            "right": 820,
+            "bottom": 368
+          },
+          {
+            "label": "capture",
+            "x": 660,
+            "y": 197,
+            "width": 48,
+            "height": 48,
+            "right": 708,
+            "bottom": 245
+          },
+          {
+            "label": "jettison",
+            "x": 716,
+            "y": 197,
+            "width": 48,
+            "height": 48,
+            "right": 764,
+            "bottom": 245
+          },
+          {
+            "label": "center",
+            "x": 772,
+            "y": 197,
+            "width": 48,
+            "height": 48,
+            "right": 820,
+            "bottom": 245
+          }
+        ]
+      },
+      "dualTouch": {
+        "controls": {
+          "throttle": 0.901185770750988,
+          "brake": 0,
+          "steer": 0
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 2,
+          "move": {
+            "x": 0,
+            "y": -0.901185770750988
+          },
+          "look": {
+            "x": 0.8558501333793914,
+            "y": 0.21396253334484786
+          },
+          "actions": 3
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": 0,
+          "orbitYaw": 0.46750813535849256,
+          "orbitPitch": 0.05228709408614719,
+          "look": {
+            "x": 0.8558501333793914,
+            "y": 0.21396253334484786
+          },
+          "fov": 50,
+          "position": [
+            0.24425107265942048,
+            3.8669745428344244,
+            -8.121056051085324
+          ],
+          "target": [
+            0.07922999024618184,
+            0.32499999999999996,
+            5.617266711349144
+          ]
+        }
+      },
+      "moveOnly": {
+        "controls": {
+          "throttle": 0.901185770750988,
+          "brake": 0,
+          "steer": 0
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 1,
+          "move": {
+            "x": 0,
+            "y": -0.901185770750988
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 3
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": 0,
+          "orbitYaw": 0.7112628118462778,
+          "orbitPitch": 0.07954913027228108,
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            -1.7925362183988733,
+            4.070989436108646,
+            -7.518511016008133
+          ],
+          "target": [
+            1.3595512788560113,
+            0.32499999999999996,
+            5.838741641998681
+          ]
+        }
+      },
+      "helmResponse": {
+        "controls": {
+          "throttle": 0.8858315352801555,
+          "brake": 0,
+          "steer": 0.46400699467055767
+        },
+        "helm": {
+          "handleWorld": {
+            "x": 1.1251737215746143,
+            "y": 1.855204455897309,
+            "z": 1.039949515747356
+          },
+          "gripWorld": {
+            "left": {
+              "x": 1.1643812002758789,
+              "y": 1.854935118815102,
+              "z": 1.0320311149349422
+            },
+            "right": {
+              "x": 1.0859662428733496,
+              "y": 1.8554737929795164,
+              "z": 1.04786791655977
+            }
+          },
+          "sailAngles": [
+            0.001974205678980212
+          ],
+          "steerAngle": 0.1948829377616342,
+          "active": true,
+          "handsWorld": {
+            "left": {
+              "x": 1.1643812002758789,
+              "y": 1.8549351188151018,
+              "z": 1.0320311149349422,
+              "error": 2.220446049250313e-16,
+              "clampedTargetWorld": {
+                "x": 1.1643812002758789,
+                "y": 1.854935118815102,
+                "z": 1.0320311149349422
+              },
+              "clamped": false
+            },
+            "right": {
+              "x": 1.0859662428733496,
+              "y": 1.8554737929795164,
+              "z": 1.04786791655977,
+              "error": 0,
+              "clampedTargetWorld": {
+                "x": 1.0859662428733496,
+                "y": 1.8554737929795164,
+                "z": 1.04786791655977
+              },
+              "clamped": false
+            }
+          }
+        }
+      },
+      "captureBaseline": {
+        "tick": 231,
+        "lastAttempt": -1,
+        "gust": {
+          "id": 0,
+          "phase": "approach",
+          "progress": 0.18888888888888888,
+          "remaining": 2.15
+        },
+        "wind": {
+          "id": "tail",
+          "name": "A favor · sur ↓",
+          "yaw": 0,
+          "strength": 1
+        },
+        "yaw": 0.5281607439897965
+      },
+      "captureAttempt": {
+        "activity": {
+          "boostUntil": 715,
+          "multiplier": 2.35,
+          "lastAttempt": 0,
+          "result": "capture",
+          "resultUntil": 535
+        },
+        "gust": {
+          "id": 0,
+          "phase": "window",
+          "progress": 0.7814814814814814,
+          "remaining": 0.9833333333333333
+        },
+        "controls": {
+          "throttle": 0.901185770750988,
+          "brake": 0,
+          "steer": 0
+        },
+        "helm": {
+          "handleWorld": {
+            "x": 10.443205375428752,
+            "y": 1.9634306678086992,
+            "z": 19.673594845899853
+          },
+          "gripWorld": {
+            "left": {
+              "x": 10.474266666767392,
+              "y": 1.9633262033546588,
+              "z": 19.64839196377193
+            },
+            "right": {
+              "x": 10.41214408409011,
+              "y": 1.9635351322627397,
+              "z": 19.698797728027774
+            }
+          },
+          "sailAngles": [
+            0.00009594966043380282
+          ],
+          "steerAngle": 0,
+          "active": true,
+          "handsWorld": {
+            "left": {
+              "x": 10.474266666767393,
+              "y": 1.9633262033546557,
+              "z": 19.64839196377193,
+              "error": 3.580361673049448e-15,
+              "clampedTargetWorld": {
+                "x": 10.474266666767392,
+                "y": 1.9633262033546588,
+                "z": 19.64839196377193
+              },
+              "clamped": false
+            },
+            "right": {
+              "x": 10.41214408409011,
+              "y": 1.9635351322627403,
+              "z": 19.698797728027778,
+              "error": 3.614624287906422e-15,
+              "clampedTargetWorld": {
+                "x": 10.41214408409011,
+                "y": 1.9635351322627397,
+                "z": 19.698797728027774
+              },
+              "clamped": false
+            }
+          }
+        }
+      },
+      "cancelled": {
+        "controls": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 3
+        }
+      },
+      "finalDiagnostics": {
+        "fixture": {
+          "id": "empty",
+          "name": "Balsa ligera",
+          "detail": "La balsa inicial, sin lastre.",
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0
+            ]
+          ],
+          "cargo": []
+        },
+        "rig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "state": {
+          "tick": 520,
+          "x": 21.03268313947683,
+          "z": 34.538578684968456,
+          "yaw": 0.6819895928185572,
+          "vx": 5.0124559248719445,
+          "vz": 6.173366414430847,
+          "omega": 0.0000055701112006127345
+        },
+        "wind": {
+          "id": "tail",
+          "name": "A favor · sur ↓",
+          "yaw": 0,
+          "strength": 1
+        },
+        "structure": {
+          "version": 1,
+          "entries": [
+            {
+              "id": "lab:3:1",
+              "part": [
+                "foundation",
+                0,
+                0,
+                0,
+                0
+              ],
+              "maxHp": 60,
+              "hp": 60
+            },
+            {
+              "id": "lab:3:2",
+              "part": [
+                "foundation",
+                1,
+                0,
+                0,
+                0
+              ],
+              "maxHp": 60,
+              "hp": 60
+            },
+            {
+              "id": "lab:3:3",
+              "part": [
+                "foundation",
+                0,
+                1,
+                0,
+                0
+              ],
+              "maxHp": 60,
+              "hp": 60
+            },
+            {
+              "id": "lab:3:4",
+              "part": [
+                "foundation",
+                1,
+                1,
+                0,
+                0
+              ],
+              "maxHp": 60,
+              "hp": 60
+            },
+            {
+              "id": "lab:3:5",
+              "part": [
+                "sail",
+                0,
+                0,
+                0,
+                0
+              ],
+              "maxHp": 40,
+              "hp": 40
+            },
+            {
+              "id": "lab:3:6",
+              "part": [
+                "crate",
+                1,
+                1,
+                0,
+                0
+              ],
+              "maxHp": 15,
+              "hp": 15
+            }
+          ]
+        },
+        "hull": {
+          "hp": 240,
+          "maxHp": 240,
+          "fraction": 1,
+          "destroyed": false,
+          "total": 4,
+          "disabled": false
+        },
+        "disabled": false,
+        "operationalRig": {
+          "dryMass": 21,
+          "cargoMass": 0,
+          "mass": 21,
+          "buoyancy": 56,
+          "load": 0.375,
+          "cx": 1.8571428571428572,
+          "cz": 1.8571428571428572,
+          "height": 0,
+          "inertia": 55.142857142857146,
+          "beam": 4,
+          "length": 4,
+          "hullCx": 2,
+          "hullCz": 2,
+          "imbalance": 0.10101525445522104,
+          "stability": 0.9339591174686888,
+          "flotation": 1,
+          "wetted": 1.0984375,
+          "sail": 1,
+          "cells": 4
+        },
+        "liveParts": [
+          [
+            "foundation",
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            1,
+            1,
+            0,
+            0
+          ],
+          [
+            "sail",
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "crate",
+            1,
+            1,
+            0,
+            0
+          ]
+        ],
+        "activity": {
+          "boostUntil": 715,
+          "multiplier": 2.35,
+          "lastAttempt": 0,
+          "result": "capture",
+          "resultUntil": 535
+        },
+        "gust": {
+          "id": 0,
+          "phase": "idle",
+          "progress": 0,
+          "remaining": 15.333333333333334
+        },
+        "current": {
+          "x": 0,
+          "z": 0,
+          "strength": 0
+        },
+        "effects": {
+          "disposed": false,
+          "poolCapacity": 144,
+          "activeParticles": 31,
+          "wakeSamples": 17,
+          "wakeEmissions": 17,
+          "wakeCapacity": 24,
+          "wakeSeconds": 4,
+          "wakeVertices": 192,
+          "currentTriangles": 80,
+          "flowPhase": 3.433399999999996,
+          "spraySheetTriangles": 48,
+          "foamFlecks": 259,
+          "foamCapacity": 338,
+          "foamRecycles": 11,
+          "foamCellOrigin": [
+            -1,
+            2
+          ],
+          "captureBursts": 1,
+          "impactBursts": 0,
+          "currentVisible": false,
+          "gustVisible": false,
+          "currentStrength": 0
+        },
+        "audio": {
+          "unlocked": true,
+          "enabled": true,
+          "paused": false,
+          "mobile": true,
+          "ambienceSources": 1,
+          "activeOneShots": 0,
+          "maxOneShots": 3,
+          "played": {
+            "approach": 1,
+            "window": 1,
+            "capture": 1,
+            "perfect": 0,
+            "miss": 0,
+            "impact": 0
+          },
+          "mix": {
+            "wind": 0.023306226229787487,
+            "water": 0.0161751663460975
+          },
+          "disposed": false
+        },
+        "feel": {
+          "lines": 24,
+          "intensity": 0.6999996098267415,
+          "fov": 39.18861589934551,
+          "roll": 1.9490954646154882e-7,
+          "reducedMotion": false
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": 0.6819860807133924,
+          "orbitYaw": 0.7112628118462778,
+          "orbitPitch": 0.07954913027228108,
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "fov": 54.18861589934551,
+          "position": [
+            13.871567348591725,
+            4.070989436108646,
+            28.56271076615031
+          ],
+          "target": [
+            24.738161943618373,
+            0.32499999999999996,
+            36.94537001411681
+          ]
+        },
+        "hud": {
+          "speed": 7.952054280851372,
+          "speedText": "8.0",
+          "speedFraction": 0.6116964831424132,
+          "heading": 39,
+          "headingText": "039",
+          "headingDegrees": 39.07512534034885,
+          "windDegrees": 0,
+          "currentDegrees": null,
+          "boostSeconds": 3.25,
+          "boostFraction": 0.5909090909090909,
+          "boostActive": true,
+          "loadPercent": 38,
+          "cargoMass": 0,
+          "cargoCount": 0,
+          "captureDisabled": true,
+          "captureReady": false,
+          "gustProgress": 0,
+          "gustMarks": {
+            "approach": 0.6666666666666666,
+            "windowStart": 0.6666666666666666,
+            "windowEnd": 1,
+            "perfectStart": 0.7666666666666667,
+            "perfectEnd": 0.9
+          },
+          "gustText": "¡VELA CARGADA! 3.3 s",
+          "flowText": "Corrientes apagadas",
+          "resultText": "¡Ráfaga atrapada! Sigue dando vela.",
+          "calloutText": "¡RÁFAGA CAZADA!",
+          "calloutTone": "mint",
+          "calloutDetail": "3.3 s"
+        },
+        "scenery": {
+          "disposed": false,
+          "mobile": true,
+          "formations": 9,
+          "meshes": 1,
+          "vertices": 2835,
+          "triangles": 945,
+          "clearCorridorHalfWidth": 60,
+          "maxHeight": 63,
+          "updateCount": 72,
+          "lastCenter": {
+            "x": 20.9946628933548,
+            "z": 34.4917527439176
+          }
+        },
+        "helm": {
+          "handleWorld": {
+            "x": 21.500348285971548,
+            "y": 1.9654864133264947,
+            "z": 33.300455276164236
+          },
+          "gripWorld": {
+            "left": {
+              "x": 21.5314010883123,
+              "y": 1.9654654690006879,
+              "z": 33.275241727661076
+            },
+            "right": {
+              "x": 21.469295483630795,
+              "y": 1.9655073576523017,
+              "z": 33.325668824667396
+            }
+          },
+          "sailAngles": [
+            0.0000011430190234307247
+          ],
+          "steerAngle": 0,
+          "active": true,
+          "handsWorld": {
+            "left": {
+              "x": 21.5314010883123,
+              "y": 1.9654654690006916,
+              "z": 33.275241727661076,
+              "error": 3.774758283725532e-15,
+              "clampedTargetWorld": {
+                "x": 21.5314010883123,
+                "y": 1.9654654690006879,
+                "z": 33.275241727661076
+              },
+              "clamped": false
+            },
+            "right": {
+              "x": 21.469295483630795,
+              "y": 1.9655073576523017,
+              "z": 33.325668824667396,
+              "error": 0,
+              "clampedTargetWorld": {
+                "x": 21.469295483630795,
+                "y": 1.9655073576523017,
+                "z": 33.325668824667396
+              },
+              "clamped": false
+            }
+          }
+        },
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 3
+        },
+        "controls": {
+          "throttle": 0,
+          "brake": 0,
+          "steer": 0
+        },
+        "raftSkin": {
+          "albedo": {
+            "src": "/assets/textures/raft/wood-boards-v2-mobile.webp",
+            "width": 512,
+            "height": 512
+          },
+          "normal": null,
+          "relief": "flat",
+          "mobile": true,
+          "disposed": false,
+          "woodMaterials": 4,
+          "active": "author"
+        },
+        "mobile": true,
+        "paused": false,
+        "droppedSeconds": 2.811740000000001,
+        "textures": [
+          {
+            "id": "prop:storage-crate",
+            "kind": "prop",
+            "src": "models/prop-storage-crate.glb",
+            "selectedSrc": "models/prop-storage-crate.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 204,
+            "notes": []
+          },
+          {
+            "id": "tex:raft-comic-v1",
+            "kind": "tex",
+            "src": "textures/raft/comic-materials-v1.webp",
+            "selectedSrc": "textures/raft/comic-materials-v1-mobile.webp",
+            "state": "ok",
+            "error": "",
+            "tris": 0,
+            "notes": []
+          }
+        ],
+        "samples": 86
+      },
+      "runtimeAssets": {
+        "glError": 0
+      },
+      "assetDiagnostics": [
+        {
+          "id": "prop:storage-crate",
+          "kind": "prop",
+          "src": "models/prop-storage-crate.glb",
+          "selectedSrc": "models/prop-storage-crate.glb",
+          "state": "ok",
+          "error": "",
+          "tris": 204,
+          "notes": []
+        },
+        {
+          "id": "tex:raft-comic-v1",
+          "kind": "tex",
+          "src": "textures/raft/comic-materials-v1.webp",
+          "selectedSrc": "textures/raft/comic-materials-v1-mobile.webp",
+          "state": "ok",
+          "error": "",
+          "tris": 0,
+          "notes": []
+        }
+      ]
+    }
+  ],
+  "status": "passed",
+  "finishedAt": "2026-10-07T16:35:03.271Z"
+}

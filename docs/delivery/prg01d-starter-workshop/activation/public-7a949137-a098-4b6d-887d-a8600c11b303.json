@@ -1,0 +1,34 @@
+{
+  "schema": "mn.starter-workshop.public.v1",
+  "at": "2026-10-11T01:38:38.136Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "mode": "timed-logging-only",
+  "protocol": 46,
+  "gameVersion": "0.6.0-alpha.37",
+  "checks": [
+    {
+      "name": "public_tls_release_and_sql023_024_026_readiness",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.37",
+      "protocolVersion": 46,
+      "realPlayers": 0,
+      "workshopReady": true,
+      "resourcesReady": true
+    },
+    {
+      "name": "disconnected_timed_logging_axe_seed",
+      "pass": true,
+      "cargoKinds": 0
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "pass": false,
+  "failure": "bounded wait expired: reject invented logging challenge UUID",
+  "cleanupFailure": "profile writes did not drain",
+  "completedAt": "2026-10-11T01:39:31.458Z"
+}

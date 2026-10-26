@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: SQL024 partial personal project, prepaid storage, paid later storage, kits and pack use exact immutable receipts
+ok 1 - SQL024 partial personal project, prepaid storage, paid later storage, kits and pack use exact immutable receipts
+  ---
+  duration_ms: 1473.5878
+  type: 'test'
+  ...
+# Subtest: SQL026 accepts real host raft IDs and persisted condition without rewriting SQL024 receipts
+ok 2 - SQL026 accepts real host raft IDs and persisted condition without rewriting SQL024 receipts
+  ---
+  duration_ms: 1071.5019
+  type: 'test'
+  ...
+# Subtest: SQL024 adopts a legacy pack only in its exact paid workshop receipt
+ok 3 - SQL024 adopts a legacy pack only in its exact paid workshop receipt
+  ---
+  duration_ms: 1739.3549
+  type: 'test'
+  ...
+# Subtest: SQL024 v3 worlds still craft, gather ordinary resources and load paid fire while freezing unrelated carry and ledgers
+ok 4 - SQL024 v3 worlds still craft, gather ordinary resources and load paid fire while freezing unrelated carry and ledgers
+  ---
+  duration_ms: 1774.8578
+  type: 'test'
+  ...
+# Subtest: SQL024 world saves adopt v2 exactly once and subsequently advance only the paused resource clock
+ok 5 - SQL024 world saves adopt v2 exactly once and subsequently advance only the paused resource clock
+  ---
+  duration_ms: 1797.1034
+  type: 'test'
+  ...
+# Subtest: SQL024 rejects invented credit, changed rewards, missing payment, cargo loss and forged capacity without a receipt
+ok 6 - SQL024 rejects invented credit, changed rewards, missing payment, cargo loss and forged capacity without a receipt
+  ---
+  duration_ms: 1999.6287
+  type: 'test'
+  ...
+# Subtest: SQL024 rejects malformed workshop envelopes and raft command aliases before any mutation
+ok 7 - SQL024 rejects malformed workshop envelopes and raft command aliases before any mutation
+  ---
+  duration_ms: 1775.5005
+  type: 'test'
+  ...
+# Subtest: SQL024 timed palm receipt conserves practice and exact three-to-six yield; forged proof and extra logs reject
+ok 8 - SQL024 timed palm receipt conserves practice and exact three-to-six yield; forged proof and extra logs reject
+  ---
+  duration_ms: 1655.4795
+  type: 'test'
+  ...
+# Subtest: SQL024 and SQL026 leave a SQL021 receipt unchanged and replay its original envelope
+ok 9 - SQL024 and SQL026 leave a SQL021 receipt unchanged and replay its original envelope
+  ---
+  duration_ms: 1656.1622
+  type: 'test'
+  ...
+# Subtest: SQL024 preserves adopted-world fences and commits workshop and legacy receipts only through the common authority
+ok 10 - SQL024 preserves adopted-world fences and commits workshop and legacy receipts only through the common authority
+  ---
+  duration_ms: 1776.789
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 17296.6638

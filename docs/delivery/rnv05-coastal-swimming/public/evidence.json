@@ -1,0 +1,49 @@
+{
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "scope": "Public guest join, exact version/protocol, swimming projection, minimap and big map. No public teleport, authenticated death, inventory command or durability claim.",
+  "pageErrors": [],
+  "failedRequests": [],
+  "websockets": [
+    "wss://marea.62.171.136.148.sslip.io/ws"
+  ],
+  "phase": "joined",
+  "release": {
+    "version": "0.6.0-alpha.36",
+    "protocol": 45,
+    "swimmingFields": [
+      "swim",
+      "swimStamina",
+      "swimDrown",
+      "swimLoad"
+    ]
+  },
+  "projection": {
+    "entity": 29,
+    "swim": 0,
+    "reserve": 30,
+    "drown": 0,
+    "load": 0,
+    "hudHidden": true
+  },
+  "state": {
+    "mode": "playing",
+    "joined": true,
+    "clientErrors": {},
+    "minimapVisible": true,
+    "mapHidden": false
+  },
+  "assertions": {
+    "publicWss": true,
+    "exactVersion": true,
+    "exactProtocol": true,
+    "swimmingColumns": true,
+    "landReserve": true,
+    "landHudHidden": true,
+    "joined": true,
+    "minimap": true,
+    "bigMap": true,
+    "noBrowserErrors": true
+  },
+  "pass": true,
+  "generatedAt": "2026-10-10T23:54:36.593Z"
+}

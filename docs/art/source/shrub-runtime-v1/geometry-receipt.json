@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "family": "shrub-v1",
+  "recipeSha256": "4ef7f0fdfaeda901abbed6fd7e5fe8d5165ce58bcb339b7ba8129c46a58d032b",
+  "sources": [
+    {
+      "file": "src/render/shrubGeometry.js",
+      "snapshot": "docs/art/source/shrub-runtime-v1/shrubGeometry.source.js",
+      "bytes": 6860,
+      "sha256": "5e1c22f6e3dc3a8a46c22aa08741b7eaf20a33910cebeeb98d2cc079b71943d9"
+    },
+    {
+      "file": "tools/prepare-shrubs.mjs",
+      "snapshot": "docs/art/source/shrub-runtime-v1/prepare-shrubs.source.mjs",
+      "bytes": 8003,
+      "sha256": "9741b68efef0744297818763ec5b1de53ffdc906e468c647aada0caf635ba265"
+    }
+  ],
+  "geometry": {
+    "api": "SHRUB_IDS, SHRUB_STYLES, shrubGeometry(variant,{cards:true}), loadedShrubGeometry(data)",
+    "parts": [
+      "stems",
+      "leaves"
+    ],
+    "attributes": [
+      "POSITION",
+      "NORMAL",
+      "COLOR_0",
+      "_FLEX",
+      "_PAINT",
+      "TEXCOORD_0"
+    ],
+    "atlas": "shrub-v1 2x2; TextureLoader flipY=true",
+    "material": "vertex colors; leaves double sided; no embedded images"
+  },
+  "budgets": {
+    "maxTrianglesPerModel": 700,
+    "maxBytesPerModel": 102400
+  },
+  "models": [
+    {
+      "style": "round",
+      "file": "assets/models/shrub-round-v1.glb",
+      "bytes": 24720,
+      "sha256": "7ff75f2d4701c9da14651e39faa15b2cdf2b53f382f4835df526740084b5b5cd",
+      "triangles": 424,
+      "vertices": 342,
+      "parts": {
+        "stems": {
+          "vertices": 147,
+          "triangles": 216,
+          "bounds": {
+            "min": [
+              -0.16740000247955322,
+              -0.06495190411806107,
+              -0.22499339282512665
+            ],
+            "max": [
+              0.21580000221729279,
+              1.3461865186691284,
+              0.205940842628479
+            ]
+          }
+        },
+        "leaves": {
+          "vertices": 195,
+          "triangles": 208,
+          "bounds": {
+            "min": [
+              -0.9333764314651489,
+              0.3847275376319885,
+              -0.8878035545349121
+            ],
+            "max": [
+              0.9294393658638,
+              1.5236319303512573,
+              0.8826124668121338
+            ]
+          }
+        }
+      },
+      "images": 0
+    },
+    {
+      "style": "low",
+      "file": "assets/models/shrub-low-v1.glb",
+      "bytes": 28832,
+      "sha256": "9539b5275294a6c42fbfa074eab2e9c6bf87cd8875c368b51a505cf4d656e45f",
+      "triangles": 512,
+      "vertices": 406,
+      "parts": {
+        "stems": {
+          "vertices": 196,
+          "triangles": 288,
+          "bounds": {
+            "min": [
+              -0.26266250014305115,
+              -0.06495190411806107,
+              -0.20793285965919495
+            ],
+            "max": [
+              0.21798095107078552,
+              0.7651865482330322,
+              0.23027363419532776
+            ]
+          }
+        },
+        "leaves": {
+          "vertices": 210,
+          "triangles": 224,
+          "bounds": {
+            "min": [
+              -0.968844473361969,
+              0.11020924150943756,
+              -0.9776556491851807
+            ],
+            "max": [
+              0.9163680672645569,
+              0.8808018565177917,
+              0.8981719017028809
+            ]
+          }
+        }
+      },
+      "images": 0
+    },
+    {
+      "style": "tall",
+      "file": "assets/models/shrub-tall-v1.glb",
+      "bytes": 25656,
+      "sha256": "2b1a278b7b62eee177cb103c22febc18f463d08baddb0575e66dd2c094d89290",
+      "triangles": 440,
+      "vertices": 357,
+      "parts": {
+        "stems": {
+          "vertices": 147,
+          "triangles": 216,
+          "bounds": {
+            "min": [
+              -0.2029452919960022,
+              -0.06495190411806107,
+              -0.23698826134204865
+            ],
+            "max": [
+              0.20100000500679016,
+              1.7611864805221558,
+              0.14645585417747498
+            ]
+          }
+        },
+        "leaves": {
+          "vertices": 210,
+          "triangles": 224,
+          "bounds": {
+            "min": [
+              -0.8748912215232849,
+              0.2571548819541931,
+              -0.8271942138671875
+            ],
+            "max": [
+              0.8661127090454102,
+              1.9772759675979614,
+              0.8255826234817505
+            ]
+          }
+        }
+      },
+      "images": 0
+    }
+  ]
+}

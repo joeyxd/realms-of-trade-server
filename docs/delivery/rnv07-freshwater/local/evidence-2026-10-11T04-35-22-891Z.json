@@ -1,0 +1,381 @@
+{
+  "generatedAt": "2026-10-11T04:35:22.891Z",
+  "purpose": "Verify visible freshwater source/map marker, bucket, spring collection, raft barrel construction, water transfers, decanting, reload persistence, and localized panel bounds.",
+  "harness": "One serial Chromium launch; desktop ES 1280x720 and touch EN 390x844 normal-play sessions; isolated disposable memory-backed GameHost/account per viewport; local Three.js/GSAP/font routes only. No SQL, external services, production writes, or physical-device performance claim.",
+  "fixture": "Authenticated profile begins with 6 pack wood and the normal starter raft. The UI pays 2 wood for a bucket and 4 wood for a water barrel. Server-side relocation provides repeatable raft/spring access. To protect this logistics happy path, the fixture removes world enemy entities and spawners; enemy interruption/damage behavior is not evidenced here.",
+  "assertions": [],
+  "viewports": [
+    {
+      "name": "freshwater-desktop-es",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "low",
+      "locale": "es",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:53442/ws"
+        },
+        {
+          "url": "ws://127.0.0.1:53442/ws"
+        }
+      ],
+      "screenshots": [
+        "freshwater-desktop-es-2026-10-11T04-35-22-891Z-01-barrel-builder-cost.jpg",
+        "freshwater-desktop-es-2026-10-11T04-35-22-891Z-02-spring-visible-world.jpg",
+        "freshwater-desktop-es-2026-10-11T04-35-22-891Z-03-full-map-spring-marker.jpg",
+        "freshwater-desktop-es-2026-10-11T04-35-22-891Z-04-spring-panel.jpg",
+        "freshwater-desktop-es-2026-10-11T04-35-22-891Z-05-barrel-before-deposit.jpg",
+        "freshwater-desktop-es-2026-10-11T04-35-22-891Z-06-barrel-with-water-4-of-20.jpg",
+        "freshwater-desktop-es-2026-10-11T04-35-22-891Z-07-water-in-provisions.jpg"
+      ],
+      "assertions": {
+        "normalPlayWssJoinAndReload": true,
+        "localizedBucketAndSpringUI": true,
+        "exactTwoWoodBucketAndFourWoodBarrelPayments": true,
+        "realTwoSecondServerSpringCollection": true,
+        "serverConfirmedDepositWithdrawAndDecant": true,
+        "bucketAndBarrelWaterSurvivesOrderedReload": true,
+        "waterAmountConserved": true,
+        "desktopMobilePanelBoundsAndNoDocumentOverflow": true,
+        "noBrowserErrorsOrExternalRequests": true,
+        "encounterDamageInterruptionTested": false
+      },
+      "port": 53442,
+      "fixture": {
+        "account": "disposable memory-backed account",
+        "raftId": "qa-freshwater-raft",
+        "packWood": 6,
+        "spring": {
+          "id": "salty-spring",
+          "x": 59.396969619669996,
+          "y": 5.335283553727776,
+          "z": 38.18376618407357
+        },
+        "enemyProtection": "server fixture removed nearby ENEMY entities and spawners; this happy path does not verify encounter or interruption behavior"
+      },
+      "bucket": {
+        "water": 0,
+        "packWoodAfterCraft": 4
+      },
+      "barrel": {
+        "paletteLabel": "▤\nBarril de agua",
+        "cost": "Barril de agua\nCoste: 4 Tabla básica · Norte",
+        "part": [
+          "waterBarrel",
+          1,
+          0,
+          0,
+          0
+        ],
+        "condition": {
+          "id": "p7",
+          "part": [
+            "waterBarrel",
+            1,
+            0,
+            0,
+            0
+          ],
+          "maxHp": 25,
+          "hp": 25
+        },
+        "packWoodAfterBuild": 0,
+        "editorBounds": {
+          "x": 958,
+          "y": 12,
+          "right": 1268,
+          "bottom": 708,
+          "action": {
+            "x": 1132.265625,
+            "y": 649,
+            "right": 1254,
+            "bottom": 694
+          },
+          "viewport": {
+            "width": 1280,
+            "height": 720,
+            "documentWidth": 1280
+          }
+        }
+      },
+      "springVisual": {
+        "visible": true,
+        "geometryChildren": 13,
+        "position": {
+          "x": 59.396969619669996,
+          "y": 5.335283553727776,
+          "z": 38.18376618407357
+        },
+        "player": {
+          "x": 59.396969619669996,
+          "z": 38.18376618407357
+        }
+      },
+      "springMap": {
+        "label": "Manantial de agua dulce",
+        "mapTitle": "Isla de la Caldera"
+      },
+      "collection": {
+        "source": "salty-spring",
+        "seconds": 2,
+        "bucketWater": 4,
+        "enemiesRemovedForFixture": 2,
+        "snapshotProgress": 1
+      },
+      "deposit": {
+        "bucket": 0,
+        "barrel": 4
+      },
+      "renderedDeposit": {
+        "amount": "4/20",
+        "state": ""
+      },
+      "reload": {
+        "raftId": "qa-freshwater-raft",
+        "bucket": 0,
+        "barrel": 4,
+        "ordered": "browser reload -> memory GameHost save -> same account normal-play WSS rejoin"
+      },
+      "withdrawAndDecant": {
+        "bucket": 0,
+        "barrel": 0,
+        "provisions": 4,
+        "conservation": 4
+      },
+      "final": {
+        "raftId": "qa-freshwater-raft",
+        "pack": {
+          "cap": 18,
+          "maxMass": 18,
+          "goods": {
+            "agua": 4
+          },
+          "vessels": [
+            {
+              "id": "bucket",
+              "kind": "bucket",
+              "water": 0
+            }
+          ]
+        },
+        "holdVessels": [
+          {
+            "id": "p7",
+            "kind": "barrel",
+            "water": 0
+          }
+        ],
+        "panelBounds": {
+          "x": 804,
+          "y": 66.4765625,
+          "right": 1244,
+          "bottom": 653.5234375,
+          "width": 440,
+          "height": 587.046875,
+          "scrollHeight": 585,
+          "clientHeight": 585,
+          "viewport": {
+            "width": 1280,
+            "height": 720,
+            "documentWidth": 1280
+          }
+        }
+      }
+    },
+    {
+      "name": "freshwater-mobile-en",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "quality": "low",
+      "locale": "en",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:62179/ws"
+        },
+        {
+          "url": "ws://127.0.0.1:62179/ws"
+        }
+      ],
+      "screenshots": [
+        "freshwater-mobile-en-2026-10-11T04-35-22-891Z-01-barrel-builder-cost.jpg",
+        "freshwater-mobile-en-2026-10-11T04-35-22-891Z-02-spring-visible-world.jpg",
+        "freshwater-mobile-en-2026-10-11T04-35-22-891Z-03-full-map-spring-marker.jpg",
+        "freshwater-mobile-en-2026-10-11T04-35-22-891Z-04-spring-panel.jpg",
+        "freshwater-mobile-en-2026-10-11T04-35-22-891Z-05-barrel-before-deposit.jpg",
+        "freshwater-mobile-en-2026-10-11T04-35-22-891Z-06-barrel-with-water-4-of-20.jpg",
+        "freshwater-mobile-en-2026-10-11T04-35-22-891Z-07-water-in-provisions.jpg"
+      ],
+      "assertions": {
+        "normalPlayWssJoinAndReload": true,
+        "localizedBucketAndSpringUI": true,
+        "exactTwoWoodBucketAndFourWoodBarrelPayments": true,
+        "realTwoSecondServerSpringCollection": true,
+        "serverConfirmedDepositWithdrawAndDecant": true,
+        "bucketAndBarrelWaterSurvivesOrderedReload": true,
+        "waterAmountConserved": true,
+        "desktopMobilePanelBoundsAndNoDocumentOverflow": true,
+        "noBrowserErrorsOrExternalRequests": true,
+        "encounterDamageInterruptionTested": false
+      },
+      "port": 62179,
+      "fixture": {
+        "account": "disposable memory-backed account",
+        "raftId": "qa-freshwater-raft",
+        "packWood": 6,
+        "spring": {
+          "id": "salty-spring",
+          "x": 59.396969619669996,
+          "y": 5.335283553727776,
+          "z": 38.18376618407357
+        },
+        "enemyProtection": "server fixture removed nearby ENEMY entities and spawners; this happy path does not verify encounter or interruption behavior"
+      },
+      "bucket": {
+        "water": 0,
+        "packWoodAfterCraft": 4
+      },
+      "barrel": {
+        "paletteLabel": "▤\nWater barrel",
+        "cost": "Water barrel\nCost: 4 Basic plank · North",
+        "part": [
+          "waterBarrel",
+          1,
+          0,
+          0,
+          0
+        ],
+        "condition": {
+          "id": "p7",
+          "part": [
+            "waterBarrel",
+            1,
+            0,
+            0,
+            0
+          ],
+          "maxHp": 25,
+          "hp": 25
+        },
+        "packWoodAfterBuild": 0,
+        "editorBounds": {
+          "x": 5,
+          "y": 561,
+          "right": 385,
+          "bottom": 839,
+          "action": {
+            "x": 14,
+            "y": 718.390625,
+            "right": 64,
+            "bottom": 830
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390
+          }
+        }
+      },
+      "springVisual": {
+        "visible": true,
+        "geometryChildren": 13,
+        "position": {
+          "x": 59.396969619669996,
+          "y": 5.335283553727776,
+          "z": 38.18376618407357
+        },
+        "player": {
+          "x": 59.396969619669996,
+          "z": 38.18376618407357
+        }
+      },
+      "springMap": {
+        "label": "Freshwater spring",
+        "mapTitle": "Caldera Island"
+      },
+      "collection": {
+        "source": "salty-spring",
+        "seconds": 2,
+        "bucketWater": 4,
+        "enemiesRemovedForFixture": 2,
+        "snapshotProgress": 0.9916666666666667
+      },
+      "deposit": {
+        "bucket": 0,
+        "barrel": 4
+      },
+      "renderedDeposit": {
+        "amount": "4/20",
+        "state": ""
+      },
+      "reload": {
+        "raftId": "qa-freshwater-raft",
+        "bucket": 0,
+        "barrel": 4,
+        "ordered": "browser reload -> memory GameHost save -> same account normal-play WSS rejoin"
+      },
+      "withdrawAndDecant": {
+        "bucket": 0,
+        "barrel": 0,
+        "provisions": 4,
+        "conservation": 4
+      },
+      "final": {
+        "raftId": "qa-freshwater-raft",
+        "pack": {
+          "cap": 18,
+          "maxMass": 18,
+          "goods": {
+            "agua": 4
+          },
+          "vessels": [
+            {
+              "id": "bucket",
+              "kind": "bucket",
+              "water": 0
+            }
+          ]
+        },
+        "holdVessels": [
+          {
+            "id": "p7",
+            "kind": "barrel",
+            "water": 0
+          }
+        ],
+        "panelBounds": {
+          "x": 54.6015625,
+          "y": 392,
+          "right": 335.3984375,
+          "bottom": 832,
+          "width": 280.796875,
+          "height": 440,
+          "scrollHeight": 540,
+          "clientHeight": 279,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390
+          }
+        }
+      }
+    }
+  ],
+  "failures": [],
+  "performanceClaim": false
+}

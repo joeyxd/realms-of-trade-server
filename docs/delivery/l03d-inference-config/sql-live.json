@@ -1,0 +1,18 @@
+{
+  "schema": "mn.l03d.inference-config.sql-live.v1",
+  "date": "2026-10-10 America/Mexico_City",
+  "migration": "server/migrations/028_inference_config.sql",
+  "sha256": "e8449f9e173ff54e79e8857b058af63b8e9ca36fe22a31c1683c18b1c71956ce",
+  "target": "Realms of trade Supabase main Production",
+  "method": "authenticated SQL Editor in task-owned browser tab",
+  "editorTextVerified": "exact after CRLF normalization",
+  "migrationResult": "Success. No rows returned",
+  "ready": { "version": 1 },
+  "canaryRole": "service_role",
+  "checks": ["readiness", "save revision one", "exact immediate replay", "other owner empty head", "stale CAS conflict", "rollback verified empty head"],
+  "rolledBackHead": { "revision": 0, "config": null, "savedAt": null },
+  "retainedCanaryRows": false,
+  "providerCalls": false,
+  "gameplayWrites": false,
+  "limits": ["Service RPC canary, not authenticated public owner UI acceptance", "No ledger, provider availability or inference spend proved"]
+}

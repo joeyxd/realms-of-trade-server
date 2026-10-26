@@ -1,0 +1,133 @@
+{
+  "schema": "st01c-source-copy-audit/v1",
+  "system": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit",
+  "originalRoot": "C:\\Unreal\\MyProject\\Content",
+  "copyRoot": ".scratch/unreal/Content",
+  "closureMethod": "dependency report seeds plus AssetRegistry hard-reference closure (probe_closure.py)",
+  "engineAndScriptPackageCount": 43,
+  "totalHardReferencePackages": 58,
+  "files": [
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Basic_Flash.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Basic_Flash",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\FX\\NiagaraEmitters\\NE_Basic_Flash.uasset",
+      "bytes": 71424,
+      "sha256": "403e53019d038a17ccac63dfb7a953c7c801c806474b993a50cfec0458561a9a",
+      "status": "copied"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Flame_Basic_001.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_Flame_Basic_001",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\FX\\NiagaraEmitters\\NE_Flame_Basic_001.uasset",
+      "bytes": 91403,
+      "sha256": "c0b102604d3a572c4bb7e84a029eb23db4a3dc85ad5877c79f598a74e1e2ef56",
+      "status": "already-present"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_SimpleBurst.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraEmitters/NE_SimpleBurst",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\FX\\NiagaraEmitters\\NE_SimpleBurst.uasset",
+      "bytes": 139448,
+      "sha256": "3a062fa3c1ec68a0c789625011d62690f97ababd46524b010b15787cd2f0671b",
+      "status": "copied"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\FX\\NiagaraSystems\\NS_BasicHit.uasset",
+      "bytes": 1121086,
+      "sha256": "97a82bae61b292371a78cadc6ffef2f7dcae3ea39ac0a9ccb6b5ed2ee57e18cf",
+      "status": "copied"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Fireball.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Fireball",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\MI_Fireball.uasset",
+      "bytes": 71669,
+      "sha256": "0e3732622a3a0ab1ca8062e69be9cf786244c7a526e9951c5ba40e8cf54f9d25",
+      "status": "already-present"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Flame_1",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\MI_Flame_1.uasset",
+      "bytes": 70479,
+      "sha256": "14da8cbff4cfff879cfa54bf32908f717f36c25895d570d0111c1974c6b12ace",
+      "status": "already-present"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Hit_1.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Hit_1",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\MI_Hit_1.uasset",
+      "bytes": 72566,
+      "sha256": "b009dfaf23645964831faeff5f3f8b1e5a2a312db3c8a42567eedc44a4eea90c",
+      "status": "already-present"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Radial_2.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Radial_2",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\MI_Radial_2.uasset",
+      "bytes": 66116,
+      "sha256": "8d1f0106d85baef3e77b1fc39835e1b47cd84a87a036d6e180dfa83f862a95d7",
+      "status": "already-present"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Ground_Crack.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Ground_Crack",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\M_Ground_Crack.uasset",
+      "bytes": 75919,
+      "sha256": "6e7d91ee8c75711f464b91f066be99cadd43a8c3ebdd500eec0ccf6e8702509f",
+      "status": "already-present"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Master_RadialBeam.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Master_RadialBeam",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\M_Master_RadialBeam.uasset",
+      "bytes": 73417,
+      "sha256": "4c3c1f1063d04c817becf91b40773b384e54e3fe0ef05c383c253252db57d1fe",
+      "status": "already-present"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/M_Smoke",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\M_Smoke.uasset",
+      "bytes": 76144,
+      "sha256": "a931cf8c9dc077689c739352110b40bb536daa8c517db583344c8e4f5d7e77e3",
+      "status": "already-present"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FireBall",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\Textures\\T_FireBall.uasset",
+      "bytes": 645067,
+      "sha256": "1d5c64ec6742cb1b37e1237b96f4736cce439f661d64ca90467482cfb77288ab",
+      "status": "already-present"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_FlameUV_1",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\Textures\\T_FlameUV_1.uasset",
+      "bytes": 635421,
+      "sha256": "4866b9058807eeef9a3da577670e150c6606d5b8d38eaedffc8579bfc36e00d4",
+      "status": "already-present"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Ground_Crack.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Ground_Crack",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\Textures\\T_Ground_Crack.uasset",
+      "bytes": 375075,
+      "sha256": "d7e4250127f10753b7e1c34ca62cbf784a96162643909bf25e703a8de6eef343",
+      "status": "already-present"
+    },
+    {
+      "relative": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Hit_Circle.uasset",
+      "package": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Hit_Circle",
+      "source": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\Textures\\T_Hit_Circle.uasset",
+      "bytes": 192041,
+      "sha256": "0835a472b1ba3d7f9205aec8cd6adf0f64f0b66c908efe3fd731bcc8ddef40b1",
+      "status": "already-present"
+    }
+  ],
+  "alreadyPresentCount": 12,
+  "copiedCount": 3
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "l03d-retained-qa-cleanup/v1",
+  "observedAt": "2026-10-11T01:13:55Z",
+  "pass": true,
+  "status": "cleaned",
+  "mutated": true,
+  "publicVersionAtCleanup": "0.6.0-alpha.36",
+  "profileRemoved": true,
+  "authRemoved": true,
+  "retainedEconomicReceiptCount": 6,
+  "failedStorageReceiptAbsent": true,
+  "cleanupScript": "docs/delivery/prg01d-starter-workshop/activation/cleanup-retained.mjs",
+  "cleanupScriptSha256": "B3496DD22547D728B66BEEA5746313DF0CAB3618F5CF8B06E6B2557A30FEBD1F"
+}

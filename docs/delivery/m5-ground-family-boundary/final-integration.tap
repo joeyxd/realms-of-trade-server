@@ -1,0 +1,358 @@
+TAP version 13
+# Subtest: level-one legacy profile keeps attr absent when allocation has no earned point
+ok 1 - level-one legacy profile keeps attr absent when allocation has no earned point
+  ---
+  duration_ms: 5.5212
+  type: 'test'
+  ...
+# Subtest: assigning every earned point uses current level cap and preserves unrelated profile data
+ok 2 - assigning every earned point uses current level cap and preserves unrelated profile data
+  ---
+  duration_ms: 0.8816
+  type: 'test'
+  ...
+# Subtest: stale expectedRev conflicts and replanning an applied command is not a receipt replay
+ok 3 - stale expectedRev conflicts and replanning an applied command is not a receipt replay
+  ---
+  duration_ms: 0.7911
+  type: 'test'
+  ...
+# Subtest: assignment may rescue an over-limit legacy load only when the new ceiling fits it
+ok 4 - assignment may rescue an over-limit legacy load only when the new ceiling fits it
+  ---
+  duration_ms: 0.4555
+  type: 'test'
+  ...
+# Subtest: reset at exact new ceiling is allowed and can happen only once
+ok 5 - reset at exact new ceiling is allowed and can happen only once
+  ---
+  duration_ms: 0.8241
+  type: 'test'
+  ...
+# Subtest: reset is refused above 50 and exactly at the point where a lighter load becomes possible
+ok 6 - reset is refused above 50 and exactly at the point where a lighter load becomes possible
+  ---
+  duration_ms: 1.4592
+  type: 'test'
+  ...
+# Subtest: invalid attrs are rejected without clamping or rewriting legacy/future state
+ok 7 - invalid attrs are rejected without clamping or rewriting legacy/future state
+  ---
+  duration_ms: 1.0469
+  type: 'test'
+  ...
+# Subtest: malformed command shapes, identifiers, and amounts are rejected
+ok 8 - malformed command shapes, identifiers, and amounts are rejected
+  ---
+  duration_ms: 0.4988
+  type: 'test'
+  ...
+# Subtest: point and receipt limits refuse changes without altering the profile
+ok 9 - point and receipt limits refuse changes without altering the profile
+  ---
+  duration_ms: 0.5576
+  type: 'test'
+  ...
+# Subtest: non-JSON or accessor-bearing source profiles fail closed without invoking getters
+ok 10 - non-JSON or accessor-bearing source profiles fail closed without invoking getters
+  ---
+  duration_ms: 0.3286
+  type: 'test'
+  ...
+# Subtest: carry state and recorded capacity must match the canonical source profile
+ok 11 - carry state and recorded capacity must match the canonical source profile
+  ---
+  duration_ms: 0.8252
+  type: 'test'
+  ...
+# Subtest: recovery decision accepts only the fully idle durable failed-world state
+ok 12 - recovery decision accepts only the fully idle durable failed-world state
+  ---
+  duration_ms: 1.4292
+  type: 'test'
+  ...
+# Subtest: recovery stays closed around economic operations and pending profile or world writes
+ok 13 - recovery stays closed around economic operations and pending profile or world writes
+  ---
+  duration_ms: 0.287
+  type: 'test'
+  ...
+# Subtest: HTTP probe accepts only a 200 JSON status contract
+ok 14 - HTTP probe accepts only a 200 JSON status contract
+  ---
+  duration_ms: 30.305
+  type: 'test'
+  ...
+# Subtest: four persistent eligible probes request one graceful recovery and exit nonzero
+ok 15 - four persistent eligible probes request one graceful recovery and exit nonzero
+  ---
+  duration_ms: 1.2342
+  type: 'test'
+  ...
+# Subtest: a healthy or unrecognized probe resets the consecutive failure count
+ok 16 - a healthy or unrecognized probe resets the consecutive failure count
+  ---
+  duration_ms: 0.282
+  type: 'test'
+  ...
+# Subtest: pending profiles, enabled staging, hung probes, and unknown state do not trigger recovery
+ok 17 - pending profiles, enabled staging, hung probes, and unknown state do not trigger recovery
+  ---
+  duration_ms: 0.2221
+  type: 'test'
+  ...
+# Subtest: a probe that never resolves cannot advance or fire the failure guard
+ok 18 - a probe that never resolves cannot advance or fire the failure guard
+  ---
+  duration_ms: 0.1791
+  type: 'test'
+  ...
+# Subtest: external shutdown closes polling, forwards termination, escalates, and preserves child exit code
+ok 19 - external shutdown closes polling, forwards termination, escalates, and preserves child exit code
+  ---
+  duration_ms: 0.2254
+  type: 'test'
+  ...
+# Subtest: a child that exits on its own keeps its exit status
+ok 20 - a child that exits on its own keeps its exit status
+  ---
+  duration_ms: 0.1499
+  type: 'test'
+  ...
+# Subtest: child launch error settles once with a nonzero code
+ok 21 - child launch error settles once with a nonzero code
+  ---
+  duration_ms: 0.1878
+  type: 'test'
+  ...
+# Subtest: a real child completes its SIGTERM drain before recovery exits nonzero
+ok 22 - a real child completes its SIGTERM drain before recovery exits nonzero
+  ---
+  duration_ms: 100.6731
+  type: 'test'
+  ...
+# Subtest: release checker accepts real current artifact and an active base pointer
+ok 23 - release checker accepts real current artifact and an active base pointer
+  ---
+  duration_ms: 7604.3943
+  type: 'test'
+  ...
+# Subtest: release checker rejects incompatible runtime metadata and corrupted retained bytes without source changes
+ok 24 - release checker rejects incompatible runtime metadata and corrupted retained bytes without source changes
+  ---
+  duration_ms: 5508.553
+  type: 'test'
+  ...
+# Subtest: GM content HTTP enforces auth and methods, binds registration to the exact saved head, and activates generation 0 to 1
+ok 25 - GM content HTTP enforces auth and methods, binds registration to the exact saved head, and activates generation 0 to 1
+  ---
+  duration_ms: 6664.118
+  type: 'test'
+  ...
+# Subtest: stale HELLO is rejected before auth/profile I/O, current HELLO receives matching WELCOME, and occupied activation is busy
+ok 26 - stale HELLO is rejected before auth/profile I/O, current HELLO receives matching WELCOME, and occupied activation is busy
+  ---
+  duration_ms: 3576.1066
+  type: 'test'
+  ...
+# Subtest: default server accepts a HELLO without content identity and welcomes with the base identity
+ok 27 - default server accepts a HELLO without content identity and welcomes with the base identity
+  ---
+  duration_ms: 289.132
+  type: 'test'
+  ...
+# Subtest: a real editor mixed selection can be captured without changing document objects
+ok 28 - a real editor mixed selection can be captured without changing document objects
+  ---
+  duration_ms: 2.1521
+  type: 'test'
+  ...
+# Subtest: template captures visible mixed selection with centroid XZ/minimum Y and preserves base IDs
+ok 29 - template captures visible mixed selection with centroid XZ/minimum Y and preserves base IDs
+  ---
+  duration_ms: 2.1222
+  type: 'test'
+  ...
+# Subtest: placement composes relative transforms at one YXZ pivot and makes independent ordinary instances
+ok 30 - placement composes relative transforms at one YXZ pivot and makes independent ordinary instances
+  ---
+  duration_ms: 1.7222
+  type: 'test'
+  ...
+# Subtest: relative height spans document range and placement at minimum height stays valid
+ok 31 - relative height spans document range and placement at minimum height stays valid
+  ---
+  duration_ms: 0.4236
+  type: 'test'
+  ...
+# Subtest: template, library, import bytes, base mismatch, and malformed selection reject atomically
+ok 32 - template, library, import bytes, base mismatch, and malformed selection reject atomically
+  ---
+  duration_ms: 3.5534
+  type: 'test'
+  ...
+# Subtest: placement checks whole batch against document bounds and combined object ceiling
+ok 33 - placement checks whole batch against document bounds and combined object ceiling
+  ---
+  duration_ms: 14.2082
+  type: 'test'
+  ...
+# Subtest: late load cannot replace the current session library
+ok 34 - late load cannot replace the current session library
+  ---
+  duration_ms: 2.8723
+  type: 'test'
+  ...
+# Subtest: failed compare-and-swap retains full candidate for export and explicit retry
+ok 35 - failed compare-and-swap retains full candidate for export and explicit retry
+  ---
+  duration_ms: 0.6071
+  type: 'test'
+  ...
+# Subtest: stop and reopen keep the panel mounted and preserve a pending candidate
+ok 36 - stop and reopen keep the panel mounted and preserve a pending candidate
+  ---
+  duration_ms: 0.3303
+  type: 'test'
+  ...
+# Subtest: save, rename, delete, import, and retry are guarded while inactive, walking, or dragging
+ok 37 - save, rename, delete, import, and retry are guarded while inactive, walking, or dragging
+  ---
+  duration_ms: 0.7832
+  type: 'test'
+  ...
+# Subtest: failed initial load leaves controls readonly and a retry can recover
+ok 38 - failed initial load leaves controls readonly and a retry can recover
+  ---
+  duration_ms: 0.4536
+  type: 'test'
+  ...
+# Subtest: IndexedDB open error clears cached rejection so the same source can retry
+ok 39 - IndexedDB open error clears cached rejection so the same source can retry
+  ---
+  duration_ms: 1.5588
+  type: 'test'
+  ...
+# Subtest: blocked IndexedDB open retries and closes a late successful connection
+ok 40 - blocked IndexedDB open retries and closes a late successful connection
+  ---
+  duration_ms: 0.3025
+  type: 'test'
+  ...
+# Subtest: template store loads empty, saves and exports immutable revisioned libraries
+ok 41 - template store loads empty, saves and exports immutable revisioned libraries
+  ---
+  duration_ms: 1.9393
+  type: 'test'
+  ...
+# Subtest: shared-source concurrent writers use CAS and report current revision without overwriting winner
+ok 42 - shared-source concurrent writers use CAS and report current revision without overwriting winner
+  ---
+  duration_ms: 0.6614
+  type: 'test'
+  ...
+# Subtest: additive import validates first, gives imported templates fresh IDs, and saves as one revision
+ok 43 - additive import validates first, gives imported templates fresh IDs, and saves as one revision
+  ---
+  duration_ms: 0.8407
+  type: 'test'
+  ...
+# Subtest: store refuses invalid scope, corrupt stored data, quota errors, size overflow, and revision exhaustion
+ok 44 - store refuses invalid scope, corrupt stored data, quota errors, size overflow, and revision exhaustion
+  ---
+  duration_ms: 3.4377
+  type: 'test'
+  ...
+# Subtest: library is bounded and failed saves leave source record intact
+ok 45 - library is bounded and failed saves leave source record intact
+  ---
+  duration_ms: 1.2192
+  type: 'test'
+  ...
+# Subtest: family ingress rejects accessors, wrong worlds and unsupported families before any journal or SQL write
+ok 46 - family ingress rejects accessors, wrong worlds and unsupported families before any journal or SQL write
+  ---
+  duration_ms: 378.4219
+  type: 'test'
+  ...
+# Subtest: family lanes exclude another operation and normal snapshots until the boundary releases them
+ok 47 - family lanes exclude another operation and normal snapshots until the boundary releases them
+  ---
+  duration_ms: 353.1246
+  type: 'test'
+  ...
+# Subtest: invalidating a reserved UID after SQL commit fences without applying the obsolete callback
+ok 48 - invalidating a reserved UID after SQL commit fences without applying the obsolete callback
+  ---
+  duration_ms: 292.185
+  type: 'test'
+  ...
+# Subtest: an unexpected world mutation while SQL is pending cannot be published by a prepared family
+ok 49 - an unexpected world mutation while SQL is pending cannot be published by a prepared family
+  ---
+  duration_ms: 268.191
+  type: 'test'
+  ...
+# Subtest: a trusted adapter releasing its capability cannot leave the result pending or bypass the world fence
+ok 50 - a trusted adapter releasing its capability cannot leave the result pending or bypass the world fence
+  ---
+  duration_ms: 275.2467
+  type: 'test'
+  ...
+# Subtest: the opt-in composes one ready ground owner while defaults keep the legacy host
+ok 51 - the opt-in composes one ready ground owner while defaults keep the legacy host
+  ---
+  duration_ms: 640.602
+  type: 'test'
+  ...
+# Subtest: opt-in fails closed for an absent clock or a resource tick outside that clock
+ok 52 - opt-in fails closed for an absent clock or a resource tick outside that clock
+  ---
+  duration_ms: 453.8054
+  type: 'test'
+  ...
+# Subtest: a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+ok 53 - a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+  ---
+  duration_ms: 253.9961
+  type: 'test'
+  ...
+# Subtest: coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+ok 54 - coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+  ---
+  duration_ms: 270.6983
+  type: 'test'
+  ...
+# Subtest: shutdown settles and drains a pending checkpoint before the final world flush
+ok 55 - shutdown settles and drains a pending checkpoint before the final world flush
+  ---
+  duration_ms: 247.0353
+  type: 'test'
+  ...
+# Subtest: the trusted opt-in rejects accessors and the separate agent-trade lane
+ok 56 - the trusted opt-in rejects accessors and the separate agent-trade lane
+  ---
+  duration_ms: 0.4678
+  type: 'test'
+  ...
+# Subtest: accounts-only ground hosts reject guest admission
+ok 57 - accounts-only ground hosts reject guest admission
+  ---
+  duration_ms: 222.4919
+  type: 'test'
+  ...
+# Subtest: replacing the installed beforeTick owner fences the world
+ok 58 - replacing the installed beforeTick owner fences the world
+  ---
+  duration_ms: 240.7527
+  type: 'test'
+  ...
+1..58
+# tests 58
+# suites 0
+# pass 58
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 15957.2988

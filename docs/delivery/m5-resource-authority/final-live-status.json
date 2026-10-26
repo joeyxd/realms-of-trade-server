@@ -1,0 +1,64 @@
+{
+  "recordedAt": "2026-10-10T18:57:45.551304+00:00",
+  "revision": "a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98",
+  "image": "marea-negra:alpha-a5b8f127340c",
+  "imageId": "sha256:e011fc83172b19a20c187fdac234acac9c637716e52f5e1b947f0874fe68318e",
+  "container": "483bc13dc370",
+  "containerCount": 1,
+  "health": "healthy",
+  "startedAt": "2026-10-10T18:55:29.696236332Z",
+  "restartCount": 0,
+  "flags": {
+    "MN_RESOURCE_OPERATIONS": "1",
+    "MN_ECONOMIC_OPERATIONS": "1"
+  },
+  "updaterTimer": "active",
+  "publicHealth": 200,
+  "tickAdvances": true,
+  "offlineReleaseTests": {
+    "tests": 107,
+    "pass": 107,
+    "fail": 0
+  },
+  "status": {
+    "version": "0.6.0-alpha.23",
+    "players": 0,
+    "sockets": 0,
+    "uptime": 133,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 8
+      },
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1381,
+        "errors": 0
+      }
+    }
+  }
+}

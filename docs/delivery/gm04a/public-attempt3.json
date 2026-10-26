@@ -1,0 +1,138 @@
+{
+  "schema": "gm04a-browser/v1",
+  "version": "0.6.0-alpha.40",
+  "at": "2026-10-11T02:33:22.370Z",
+  "simulatedAuth": false,
+  "production": true,
+  "checks": [
+    "public_guest_boot_and_gameplay_join",
+    "public_one_use_account_setup_link_is_consumed_and_cancelled",
+    "fixture_uses_real_crate_and_beach_debris_models_without_gameplay_join",
+    "scene_checkboxes_select_three_decorations_and_form_temporary_centroid",
+    "keyboard_checkbox_toggle_keeps_focus_on_the_scene_item",
+    "group_transform_gizmo_renders_at_low_and_high_quality_in_each_mode",
+    "pointer_drag_of_group_x_handle_moves_all_members_by_one_delta_and_undoes_once",
+    "group_gizmo_preview_moves_every_asset_then_finishes_as_one_undo",
+    "group_inspector_x_y_z_rotation_and_scale_transform_every_member",
+    "mixed_selection_escape_cancels_preview_and_restores_instanced_rock_matrix",
+    "window_blur_cancels_mixed_preview_and_restores_base_instance_matrix",
+    "shift_click_and_checkbox_extend_selection",
+    "duplicate_three_members_creates_unique_decorations_and_undoes_redoes_atomically",
+    "mixed_delete_removes_draft_props_and_hides_base_rock_as_one_undo",
+    "clear_selection_detaches_group_and_disables_inspector",
+    "walk_preview_hides_multi_selection_bounds_and_return_restores_selection",
+    "collision_controls_remain_individual_and_disable_for_multiple_selection",
+    "local_save_close_reopen_preserves_exact_document",
+    "spanish_english_and_narrow_viewport_show_actual_debris_model_in_editor"
+  ],
+  "screenshots": [
+    "public-attempt3-guest-gameplay.png"
+  ],
+  "errors": [],
+  "assetRequests": [
+    "/assets/models/prop-storage-crate.glb",
+    "/assets/models/coast-rock-v1.glb",
+    "/assets/models/beach-shell-fan-v1.glb",
+    "/assets/models/beach-shell-oval-v1.glb",
+    "/assets/models/beach-shell-chip-v1.glb",
+    "/assets/models/beach-pebbles-v1.glb",
+    "/assets/models/palm-tall-v1.glb",
+    "/assets/models/palm-curved-v1.glb",
+    "/assets/models/palm-short-v1.glb",
+    "/assets/models/palm-base-open-v1.glb",
+    "/assets/models/palm-base-lush-v1.glb",
+    "/assets/models/shrub-round-v1.glb",
+    "/assets/models/shrub-low-v1.glb",
+    "/assets/models/shrub-tall-v1.glb",
+    "/assets/models/beach-debris-branch-v1.glb",
+    "/assets/models/beach-debris-log-v1.glb",
+    "/assets/models/beach-debris-planks-v1.glb"
+  ],
+  "runtimeBefore": {
+    "version": "0.6.0-alpha.40",
+    "protocolVersion": null,
+    "content": {
+      "generation": 4,
+      "revisionId": null
+    }
+  },
+  "playwrightModule": "C:\\DEV\\real of trade\\realms-of-trade-server\\.scratch\\pilot-browser\\node_modules\\playwright\\index.mjs",
+  "guestBoot": {
+    "online": true,
+    "transport": "ws",
+    "serverMarked": true,
+    "gmButtonHidden": true
+  },
+  "loadedRuntime": {
+    "version": "0.6.0-alpha.40",
+    "protocolVersion": 47
+  },
+  "fixtureSite": {
+    "x": 49.49747468305833,
+    "z": 91.92388155425118
+  },
+  "rendering": [
+    {
+      "quality": "low",
+      "mode": "translate"
+    },
+    {
+      "quality": "low",
+      "mode": "rotate"
+    },
+    {
+      "quality": "low",
+      "mode": "scale"
+    },
+    {
+      "quality": "high",
+      "mode": "translate"
+    },
+    {
+      "quality": "high",
+      "mode": "rotate"
+    },
+    {
+      "quality": "high",
+      "mode": "scale"
+    }
+  ],
+  "captureLightingOverride": {
+    "scope": "browser-client-renderer-only",
+    "gameplay": false,
+    "tod": "day",
+    "phase": 0.23723458644598072,
+    "zoneTarget": 0,
+    "zoneWBefore": 0,
+    "setters": [
+      "setTimeOfDay(day,0)",
+      "setZone(false,0)"
+    ],
+    "remoteOrGameplayWrites": false,
+    "settled": {
+      "sunIntensity": 2.45,
+      "hemisphereIntensity": 0.95,
+      "zoneWeight": 0
+    }
+  },
+  "runtimeAfter": {
+    "version": "0.6.0-alpha.40",
+    "protocolVersion": null,
+    "content": {
+      "generation": 4,
+      "revisionId": null
+    }
+  },
+  "remoteMutations": [],
+  "archive": {
+    "note": "Functional 19/19 run retained to document premature guest capture. Only its guest screenshot is retained separately; editor screenshots were superseded by the final run.",
+    "recordedScreenshotNames": [
+      "public-attempt3-guest-gameplay.png",
+      "public-account-setup.png",
+      "public-selection-es-desktop.png",
+      "public-selection-es-final.png",
+      "public-selection-en-desktop.png",
+      "public-selection-en-844x390.png"
+    ]
+  }
+}

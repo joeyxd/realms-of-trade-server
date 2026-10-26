@@ -1,0 +1,31 @@
+{
+  "recordedAt": "2026-10-11T05:05:52.195042+00:00",
+  "revision": "ea982f8e5326308aed6ba0ab9a6bee447ee22a59",
+  "imageId": "sha256:a856c1f62408174ebe4b7c15e7c52a8fa68001a11e13a0a39e8119a0a52297e4",
+  "runtimeSha256": {
+    "server/groundHostAuthority.mjs": "adde16660820c0fa9abb27a2a5b42ac5e01aba5e381893181eb7793832861e53",
+    "server/groundCurrentHydration.mjs": "f3241f476c9748744508f73b2f46b3a426ca3dc3e24f65d3aafbf95137414d05",
+    "server/groundPearlLifecycle.mjs": "ec17c3dec850d6a7fe8f80cadb238aab109d3e8468d06c2ba5ed6a23f3d06632",
+    "server/groundPearlPickup.mjs": "8e2e3e51f16140dfa9c068133835e1dc44c94f71f5605f41c660aa672179cda1",
+    "server/groundPearlReturn.mjs": "60197ca8bb1ff42832509d8a0a806afb23315f6837601b6561593e3812fd293d",
+    "server/pearlGroundHydration.mjs": "73f36bc4bd82d939549ebf7884d2c6d9058cc2d0c7dd50e40d8ddd9b8c54c0b7",
+    "server/host.mjs": "9a13e4a17c9f66db7704c482c5ce7afe5eb514566808bf160008d41551681442",
+    "server/pearlStaging.mjs": "763e803789f7b9578e37e9f0ba26c9d6d583968163c646ca17469b754db3f666"
+  },
+  "counts": {
+    "tests": 31,
+    "pass": 31,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "tests": [
+    "tests/ground-current-hydration.test.mjs",
+    "tests/ground-pearl-pickup.test.mjs",
+    "tests/ground-pearl-return.test.mjs",
+    "tests/ground-family-boundary.test.mjs",
+    "tests/ground-host-authority.test.mjs"
+  ],
+  "scope": "Exact production image, no network or live credentials; Current hydration, pickup/return adapters and existing common-family boundary tests. Memory fixtures do not establish SQL durability."
+}

@@ -1,0 +1,31 @@
+{
+  "operationId": "24334f49-9688-5af7-ae7c-c95b2e16da48",
+  "createdAt": "2026-10-12T05:07:44.263382+00:00",
+  "commandId": "44f168e5-5707-45d2-b2ab-bfb8f3eb7d62",
+  "retainedEconomicReceipts": 1,
+  "profileAndAuthAbsent": true,
+  "beforeGoods": {
+    "ron": 1,
+    "agua": 1,
+    "pescado": 1
+  },
+  "afterGoods": {
+    "pescado": 1
+  },
+  "meal": {
+    "v": 1,
+    "kind": "grog",
+    "ticks": 54000
+  },
+  "ack": {
+    "ok": true,
+    "op": "meal",
+    "rev": 1,
+    "why": "",
+    "opId": "44f168e5-5707-45d2-b2ab-bfb8f3eb7d62",
+    "type": "freshwater"
+  },
+  "readOnly": true,
+  "explanation": "The first browser wait rejected a lawful immutable retry; its operation committed once. Original cleanup artifact counted zero because it had not yet recorded the dispatched ID. This read-only reconciliation corrects that count without editing the original artifact.",
+  "at": "2026-10-12T05:15:36.984156+00:00"
+}

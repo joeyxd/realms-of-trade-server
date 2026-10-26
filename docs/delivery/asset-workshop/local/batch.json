@@ -1,0 +1,20 @@
+{
+  "schema": "marea.asset-preparation-batch.v1",
+  "createdAt": "2026-10-14T16:56:06.106Z",
+  "jobs": [
+    {
+      "assetId": "aw-pilot-19",
+      "sourceRevision": "c854553398dfcd477d09fd8bc0517876f0029ace7232bd87e4e43c5e1f0eac16",
+      "variantId": "base",
+      "profiles": [
+        "desktop",
+        "mobile"
+      ],
+      "requested": [
+        "source-reference",
+        "interactive-preview"
+      ],
+      "use": ""
+    }
+  ]
+}

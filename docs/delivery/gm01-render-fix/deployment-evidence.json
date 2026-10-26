@@ -1,0 +1,36 @@
+{
+  "schema": "gm01-render-fix-deployment/v1",
+  "version": "0.6.0-alpha.23",
+  "hotfixRevision": "e78c2c362efe7844f3a2d98e5e57ca42d91ff223",
+  "activatedAt": "2026-10-10T18:43:12Z",
+  "verifiedAt": "2026-10-10T18:44:04.056886+00:00",
+  "codeRevision": "4c6743b87b71ba765e316cd1652d1e4f23991501",
+  "activeRelease": "/opt/marea-negra/releases/4c6743b87b71ba765e316cd1652d1e4f23991501",
+  "image": "marea-negra:alpha-4c6743b87b71",
+  "imageId": "sha256:1c820d826d214a5b810e4829ee7cd6bb398494512b3a37bfaa027eefed8d2882",
+  "running": true,
+  "health": "healthy",
+  "passed": 107,
+  "failed": 0,
+  "cancelled": 0,
+  "productionBrowser": {
+    "passed": 7,
+    "failed": 0,
+    "simulatedAuth": false,
+    "quality": "high",
+    "outlines": true,
+    "source": "public-evidence.json"
+  },
+  "visualReview": {
+    "inspectedByRoot": true,
+    "files": [
+      "production-gameplay.png",
+      "production-account-setup.png",
+      "production-gm-editor.png"
+    ]
+  },
+  "limits": [
+    "The owner's password was not changed during verification.",
+    "Drafts remain in browser IndexedDB; no base map or terrain editing and no shared map publication."
+  ]
+}

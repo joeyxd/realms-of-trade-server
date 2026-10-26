@@ -1,0 +1,672 @@
+{
+  "schema": "mn.delivery.v1",
+  "cut": "D08c.4",
+  "date": "2026-10-07",
+  "generatedAt": "2026-10-07T15:49:00.111Z",
+  "node": "v24.14.0",
+  "protocol": 19,
+  "mode": "ephemeral isolated coastal pilot trial; ordinary game remains off",
+  "archiveBase": "155390a06a2a0aeb428ff63de6d91713e8e039c0",
+  "committedDelta": [
+    {
+      "file": "server/host.mjs",
+      "commit": "14ede6d",
+      "normalizedSha256": "3cf43885abf237b128c67131e9f874c68a719121480c4e23bb79c09c443ac705"
+    },
+    {
+      "file": "server/index.mjs",
+      "commit": "14ede6d",
+      "normalizedSha256": "5f44dae77c89c4d54071d5216878c8d538439d283c68892f157264b2f426422f"
+    },
+    {
+      "file": "tests/pearl-host-mount.test.mjs",
+      "commit": "14ede6d",
+      "normalizedSha256": "94cbffe83484d4c68ce20ee4ed41e1db68a7ff7682cbe43de80815e352e13813"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "file": "src/sim/naval/coastGeometry.js",
+      "bytes": 7079,
+      "sha256": "dbd77a6c3de92cc606396c7c270a63b4610136fa0878287740cf6144c6c5c2c2",
+      "normalizedSha256": "dbd77a6c3de92cc606396c7c270a63b4610136fa0878287740cf6144c6c5c2c2",
+      "isolatedNormalizedSha256": "dbd77a6c3de92cc606396c7c270a63b4610136fa0878287740cf6144c6c5c2c2"
+    },
+    {
+      "file": "src/sim/naval/coastContact.js",
+      "bytes": 8073,
+      "sha256": "23f3e0bfa9d2a6b25c5c3b9e7bb4bd22c14dda92216f66639e7d70955ba2ece2",
+      "normalizedSha256": "23f3e0bfa9d2a6b25c5c3b9e7bb4bd22c14dda92216f66639e7d70955ba2ece2",
+      "isolatedNormalizedSha256": "23f3e0bfa9d2a6b25c5c3b9e7bb4bd22c14dda92216f66639e7d70955ba2ece2"
+    },
+    {
+      "file": "src/sim/naval/contact.js",
+      "bytes": 7387,
+      "sha256": "0be3a3106aa140880c93bcde076b4218f045493f4b670458ed40f7c480f70520",
+      "normalizedSha256": "0be3a3106aa140880c93bcde076b4218f045493f4b670458ed40f7c480f70520",
+      "isolatedNormalizedSha256": "0be3a3106aa140880c93bcde076b4218f045493f4b670458ed40f7c480f70520"
+    },
+    {
+      "file": "src/sim/naval/trialBody.js",
+      "bytes": 6711,
+      "sha256": "5aca0b7c79b14ab60b2ff616d678299b6c15480374e05cd2c684e34642a8858c",
+      "normalizedSha256": "5aca0b7c79b14ab60b2ff616d678299b6c15480374e05cd2c684e34642a8858c",
+      "isolatedNormalizedSha256": "5aca0b7c79b14ab60b2ff616d678299b6c15480374e05cd2c684e34642a8858c"
+    },
+    {
+      "file": "src/sim/naval/trial.js",
+      "bytes": 9972,
+      "sha256": "9623921505a36c14124da0da995baa41b1368885637aba890ef4c91b02bdd68b",
+      "normalizedSha256": "9623921505a36c14124da0da995baa41b1368885637aba890ef4c91b02bdd68b",
+      "isolatedNormalizedSha256": "9623921505a36c14124da0da995baa41b1368885637aba890ef4c91b02bdd68b"
+    },
+    {
+      "file": "src/sim/naval/pilot.js",
+      "bytes": 16584,
+      "sha256": "e06f2d7f930216f02ce9b625e1fdfe75c5a58445d0cff456fa003baf5442eecf",
+      "normalizedSha256": "e06f2d7f930216f02ce9b625e1fdfe75c5a58445d0cff456fa003baf5442eecf",
+      "isolatedNormalizedSha256": "e06f2d7f930216f02ce9b625e1fdfe75c5a58445d0cff456fa003baf5442eecf"
+    },
+    {
+      "file": "src/sim/world.js",
+      "bytes": 39566,
+      "sha256": "a745e088e66934d7ab2cd0c5de65012ab1046263068c79adc4c4b1637d15252d",
+      "normalizedSha256": "ff488844d01383f1cbe83375055f54f4d1ef154f4ae1e78c0bae4805b6a9cef0",
+      "isolatedNormalizedSha256": "ff488844d01383f1cbe83375055f54f4d1ef154f4ae1e78c0bae4805b6a9cef0"
+    },
+    {
+      "file": "src/client/gameClient.js",
+      "bytes": 39738,
+      "sha256": "6b4532642c769a53fd3f36b9abac0bfd78f720513a6fc579ee71299c0398ce1d",
+      "normalizedSha256": "6b4532642c769a53fd3f36b9abac0bfd78f720513a6fc579ee71299c0398ce1d",
+      "isolatedNormalizedSha256": "6b4532642c769a53fd3f36b9abac0bfd78f720513a6fc579ee71299c0398ce1d"
+    },
+    {
+      "file": "src/client/navalPilotPrediction.js",
+      "bytes": 7664,
+      "sha256": "7b2649da955f9f92256836e97cd138171c1ee2283f0d66c2447195c90c51198e",
+      "normalizedSha256": "7b2649da955f9f92256836e97cd138171c1ee2283f0d66c2447195c90c51198e",
+      "isolatedNormalizedSha256": "7b2649da955f9f92256836e97cd138171c1ee2283f0d66c2447195c90c51198e"
+    },
+    {
+      "file": "src/net/navalPilotServer.js",
+      "bytes": 3537,
+      "sha256": "7ab0a94fbd370f5be8676c6a07f0534c5c7f75829ba004563c29c47a5dcbe253",
+      "normalizedSha256": "7ab0a94fbd370f5be8676c6a07f0534c5c7f75829ba004563c29c47a5dcbe253",
+      "isolatedNormalizedSha256": "7ab0a94fbd370f5be8676c6a07f0534c5c7f75829ba004563c29c47a5dcbe253"
+    },
+    {
+      "file": "src/net/protocol.js",
+      "bytes": 4099,
+      "sha256": "a4764fcfb7229d1816e2eea6e804666c28222f5f410f678e3d1f47f4fc9cbfc3",
+      "normalizedSha256": "a4764fcfb7229d1816e2eea6e804666c28222f5f410f678e3d1f47f4fc9cbfc3",
+      "isolatedNormalizedSha256": "a4764fcfb7229d1816e2eea6e804666c28222f5f410f678e3d1f47f4fc9cbfc3"
+    },
+    {
+      "file": "tools/naval-lab/effects.js",
+      "bytes": 30680,
+      "sha256": "cf94a732ec68fbd85c0b704baeeb4d11eb4267966e097950b39214f09994c245",
+      "normalizedSha256": "cf94a732ec68fbd85c0b704baeeb4d11eb4267966e097950b39214f09994c245",
+      "isolatedNormalizedSha256": "cf94a732ec68fbd85c0b704baeeb4d11eb4267966e097950b39214f09994c245"
+    },
+    {
+      "file": "tools/naval-pilot/coastView.js",
+      "bytes": 9552,
+      "sha256": "7fccc6d0a98df70fec5849fcef95792f573922a3acf5bc9f50f21b3bec4ac63f",
+      "normalizedSha256": "7fccc6d0a98df70fec5849fcef95792f573922a3acf5bc9f50f21b3bec4ac63f",
+      "isolatedNormalizedSha256": "7fccc6d0a98df70fec5849fcef95792f573922a3acf5bc9f50f21b3bec4ac63f"
+    },
+    {
+      "file": "tools/naval-pilot/main.js",
+      "bytes": 37467,
+      "sha256": "4335fd75a6a617709150f1efc105ffeddb8bb998594b2b1e250a601f73f70a69",
+      "normalizedSha256": "4335fd75a6a617709150f1efc105ffeddb8bb998594b2b1e250a601f73f70a69",
+      "isolatedNormalizedSha256": "4335fd75a6a617709150f1efc105ffeddb8bb998594b2b1e250a601f73f70a69"
+    },
+    {
+      "file": "tools/naval-pilot/index.html",
+      "bytes": 4860,
+      "sha256": "6e413cf2043ec291017a23e68a39170d2613811fa271d60ed9d579aca1fd2765",
+      "normalizedSha256": "6e413cf2043ec291017a23e68a39170d2613811fa271d60ed9d579aca1fd2765",
+      "isolatedNormalizedSha256": "6e413cf2043ec291017a23e68a39170d2613811fa271d60ed9d579aca1fd2765"
+    },
+    {
+      "file": "tools/naval-pilot/style.css",
+      "bytes": 11037,
+      "sha256": "e976d5b5d15267efd7cfe84ec1a05ba50b6cb0444610e20352083e5828dc961c",
+      "normalizedSha256": "e976d5b5d15267efd7cfe84ec1a05ba50b6cb0444610e20352083e5828dc961c",
+      "isolatedNormalizedSha256": "e976d5b5d15267efd7cfe84ec1a05ba50b6cb0444610e20352083e5828dc961c"
+    },
+    {
+      "file": "tools/qa-naval-coast.mjs",
+      "bytes": 6931,
+      "sha256": "ecea5da903361fe9078d7b6e42593225806e65d00a7c8172aea1e046c6701942",
+      "normalizedSha256": "ecea5da903361fe9078d7b6e42593225806e65d00a7c8172aea1e046c6701942",
+      "isolatedNormalizedSha256": "ecea5da903361fe9078d7b6e42593225806e65d00a7c8172aea1e046c6701942"
+    },
+    {
+      "file": "tests/naval-contact.test.mjs",
+      "bytes": 5187,
+      "sha256": "df410a64b4adf5ebbacd9cdd83028b823b31edee36f5ae7a9d2530e81d501eb4",
+      "normalizedSha256": "df410a64b4adf5ebbacd9cdd83028b823b31edee36f5ae7a9d2530e81d501eb4",
+      "isolatedNormalizedSha256": "df410a64b4adf5ebbacd9cdd83028b823b31edee36f5ae7a9d2530e81d501eb4"
+    },
+    {
+      "file": "tests/naval-coast-geometry.test.mjs",
+      "bytes": 6949,
+      "sha256": "38eae33dbf032e48d769692bf46dce504f0736781af27f8d8a007ba90c110d15",
+      "normalizedSha256": "38eae33dbf032e48d769692bf46dce504f0736781af27f8d8a007ba90c110d15",
+      "isolatedNormalizedSha256": "38eae33dbf032e48d769692bf46dce504f0736781af27f8d8a007ba90c110d15"
+    },
+    {
+      "file": "tests/naval-coast-contact.test.mjs",
+      "bytes": 9127,
+      "sha256": "5cdfb5dd2f640d2af8009b83cf7c1b5455cc9da12fdc23f7388dff654c56ceee",
+      "normalizedSha256": "5cdfb5dd2f640d2af8009b83cf7c1b5455cc9da12fdc23f7388dff654c56ceee",
+      "isolatedNormalizedSha256": "5cdfb5dd2f640d2af8009b83cf7c1b5455cc9da12fdc23f7388dff654c56ceee"
+    },
+    {
+      "file": "tests/naval-coast-authority.test.mjs",
+      "bytes": 17224,
+      "sha256": "504a4e46e4d0de98a9d50459c3f887fc415df6a0a85c0ebdf1d2e02e472b01a7",
+      "normalizedSha256": "504a4e46e4d0de98a9d50459c3f887fc415df6a0a85c0ebdf1d2e02e472b01a7",
+      "isolatedNormalizedSha256": "504a4e46e4d0de98a9d50459c3f887fc415df6a0a85c0ebdf1d2e02e472b01a7"
+    },
+    {
+      "file": "tests/naval-coast-prediction.test.mjs",
+      "bytes": 3778,
+      "sha256": "37dc2272bff6b8039839be167a39b34c2a2589be268d742983444d99e4978aaa",
+      "normalizedSha256": "37dc2272bff6b8039839be167a39b34c2a2589be268d742983444d99e4978aaa",
+      "isolatedNormalizedSha256": "37dc2272bff6b8039839be167a39b34c2a2589be268d742983444d99e4978aaa"
+    },
+    {
+      "file": "tests/naval-pilot-impact-ui.test.mjs",
+      "bytes": 4402,
+      "sha256": "9a5569acb6ef2b8072720b3e7500975072edce72cf9bdf90d4543976b64aa32c",
+      "normalizedSha256": "9a5569acb6ef2b8072720b3e7500975072edce72cf9bdf90d4543976b64aa32c",
+      "isolatedNormalizedSha256": "9a5569acb6ef2b8072720b3e7500975072edce72cf9bdf90d4543976b64aa32c"
+    }
+  ],
+  "regression": {
+    "tests": 437,
+    "pass": 437,
+    "fail": 0,
+    "files": [
+      "tests/combat.test.mjs",
+      "tests/naval-contact.test.mjs",
+      "tests/naval-damage-integration.test.mjs",
+      "tests/naval-handling.test.mjs",
+      "tests/naval-lab-camera.test.mjs",
+      "tests/naval-lab-clock.test.mjs",
+      "tests/naval-lab-feedback.test.mjs",
+      "tests/naval-lab-hud-state.test.mjs",
+      "tests/naval-lab-input.test.mjs",
+      "tests/naval-lab-look.test.mjs",
+      "tests/naval-lab-raft-skin.test.mjs",
+      "tests/naval-lab-reference-fx.test.mjs",
+      "tests/naval-lab-scenery.test.mjs",
+      "tests/naval-lab-server.test.mjs",
+      "tests/naval-lab-speed-feel.test.mjs",
+      "tests/naval-navigation.test.mjs",
+      "tests/naval-operational.test.mjs",
+      "tests/naval-structure.test.mjs",
+      "tests/naval-trial-authority.test.mjs",
+      "tests/naval-trial-body.test.mjs",
+      "tests/pearl-tick-access.test.mjs",
+      "tests/pearl-tick-effects.test.mjs",
+      "tests/raft-editor.test.mjs",
+      "tests/raft-input.test.mjs",
+      "tests/raft-materials.test.mjs",
+      "tests/raft-movement.test.mjs",
+      "tests/raft-production.test.mjs",
+      "tests/raft-production-server.test.mjs",
+      "tests/raft-renderer.test.mjs",
+      "tests/rafts.test.mjs",
+      "tests/rafts-store.test.mjs",
+      "tests/tattoos.test.mjs",
+      "tests/tattoos2.test.mjs",
+      "tests/world-host.test.mjs",
+      "tests/world-state.test.mjs",
+      "tests/naval-pilot-authority.test.mjs",
+      "tests/naval-pilot-client.test.mjs",
+      "tests/naval-pilot-geometry.test.mjs",
+      "tests/naval-pilot-prediction.test.mjs",
+      "tests/pearl-tick-apply.test.mjs",
+      "tests/naval-deck-walk.test.mjs",
+      "tests/naval-deck-prediction.test.mjs",
+      "tests/naval-crew-authority.test.mjs",
+      "tests/naval-crew-client.test.mjs",
+      "tests/pearl-profile-snapshot.test.mjs",
+      "tests/pearl-input-boundary.test.mjs",
+      "tests/naval-coast-geometry.test.mjs",
+      "tests/naval-coast-contact.test.mjs",
+      "tests/naval-coast-authority.test.mjs",
+      "tests/naval-coast-prediction.test.mjs",
+      "tests/naval-pilot-impact-ui.test.mjs",
+      "tests/pearl-host-mount.test.mjs"
+    ],
+    "logSha256": "044aa28c9ece5dedc650b3c0c09d9c416a2c6c04a4aead51ff8782b303ae3f6a",
+    "concurrency": 1,
+    "command": "node --test --test-concurrency=1 tests/combat.test.mjs tests/naval-contact.test.mjs tests/naval-damage-integration.test.mjs tests/naval-handling.test.mjs tests/naval-lab-camera.test.mjs tests/naval-lab-clock.test.mjs tests/naval-lab-feedback.test.mjs tests/naval-lab-hud-state.test.mjs tests/naval-lab-input.test.mjs tests/naval-lab-look.test.mjs tests/naval-lab-raft-skin.test.mjs tests/naval-lab-reference-fx.test.mjs tests/naval-lab-scenery.test.mjs tests/naval-lab-server.test.mjs tests/naval-lab-speed-feel.test.mjs tests/naval-navigation.test.mjs tests/naval-operational.test.mjs tests/naval-structure.test.mjs tests/naval-trial-authority.test.mjs tests/naval-trial-body.test.mjs tests/pearl-tick-access.test.mjs tests/pearl-tick-effects.test.mjs tests/raft-editor.test.mjs tests/raft-input.test.mjs tests/raft-materials.test.mjs tests/raft-movement.test.mjs tests/raft-production.test.mjs tests/raft-production-server.test.mjs tests/raft-renderer.test.mjs tests/rafts.test.mjs tests/rafts-store.test.mjs tests/tattoos.test.mjs tests/tattoos2.test.mjs tests/world-host.test.mjs tests/world-state.test.mjs tests/naval-pilot-authority.test.mjs tests/naval-pilot-client.test.mjs tests/naval-pilot-geometry.test.mjs tests/naval-pilot-prediction.test.mjs tests/pearl-tick-apply.test.mjs tests/naval-deck-walk.test.mjs tests/naval-deck-prediction.test.mjs tests/naval-crew-authority.test.mjs tests/naval-crew-client.test.mjs tests/pearl-profile-snapshot.test.mjs tests/pearl-input-boundary.test.mjs tests/naval-coast-geometry.test.mjs tests/naval-coast-contact.test.mjs tests/naval-coast-authority.test.mjs tests/naval-coast-prediction.test.mjs tests/naval-pilot-impact-ui.test.mjs tests/pearl-host-mount.test.mjs",
+    "fileHashes": [
+      {
+        "file": "tests/combat.test.mjs",
+        "normalizedSha256": "f0a1664b4fda5f7d3ce9b6ddde7b9cc3866edbcc62c38dcbd9a2867ec26d122c"
+      },
+      {
+        "file": "tests/naval-contact.test.mjs",
+        "normalizedSha256": "df410a64b4adf5ebbacd9cdd83028b823b31edee36f5ae7a9d2530e81d501eb4"
+      },
+      {
+        "file": "tests/naval-damage-integration.test.mjs",
+        "normalizedSha256": "3e7dc7b6cedab9bfc182575453fa15b610a6bb2b7b1e4b540f2161c78afc6736"
+      },
+      {
+        "file": "tests/naval-handling.test.mjs",
+        "normalizedSha256": "feaeb161b8ff3040359deb03a9213e42db40f35d070612fbf8d681d985ac1cde"
+      },
+      {
+        "file": "tests/naval-lab-camera.test.mjs",
+        "normalizedSha256": "0e4f64de953fc58fc1910f23772cab33a31a480764c03fd8553cf09f97eaa4ee"
+      },
+      {
+        "file": "tests/naval-lab-clock.test.mjs",
+        "normalizedSha256": "ffe8a30009022204d99ba3a30a93be2ebac170702ffc7241efe83148909e97a2"
+      },
+      {
+        "file": "tests/naval-lab-feedback.test.mjs",
+        "normalizedSha256": "58775f54492fe13cdfd015107d0199dcff5088ffeca858bc4d3833f07f863d8e"
+      },
+      {
+        "file": "tests/naval-lab-hud-state.test.mjs",
+        "normalizedSha256": "1a5fcf3c4754411bc6a53387cbff8257a0b990901c5752157e37fa5cb237f615"
+      },
+      {
+        "file": "tests/naval-lab-input.test.mjs",
+        "normalizedSha256": "d0f9ac8a979897a33b47ed6043f52730a6f6fac73531847d5980a5e13cf160af"
+      },
+      {
+        "file": "tests/naval-lab-look.test.mjs",
+        "normalizedSha256": "5d807bdd21bfa94a8032a3a436cb4084f5d9c930485ccd22c0a937cf6c9fdd26"
+      },
+      {
+        "file": "tests/naval-lab-raft-skin.test.mjs",
+        "normalizedSha256": "e35c01d69556416b616dbfe6fbc1bdc2a8a57f4f83c8bac7c683584e4a1d00f3"
+      },
+      {
+        "file": "tests/naval-lab-reference-fx.test.mjs",
+        "normalizedSha256": "d128f0ee13bcb6e67940a8cddc9edd5e4fbe20963ece4a73e160acc84ce69c17"
+      },
+      {
+        "file": "tests/naval-lab-scenery.test.mjs",
+        "normalizedSha256": "aca6f1f919534ad6096951a55827674616f8baa76de48bd9515dccc4681b9ddf"
+      },
+      {
+        "file": "tests/naval-lab-server.test.mjs",
+        "normalizedSha256": "9843edb47fa631b68fc11d18e9a94f95dfc91621dc3fa4b3269d4e2399bb6749"
+      },
+      {
+        "file": "tests/naval-lab-speed-feel.test.mjs",
+        "normalizedSha256": "157da2baeb2b3e92d3954b046c0281d81bbdb30bae8aaa5bb184dffbedc4321f"
+      },
+      {
+        "file": "tests/naval-navigation.test.mjs",
+        "normalizedSha256": "19da8e31b90b4d6ffe8838ab7facf5c8064c5c90c4aadd21073a41bc0cb509f1"
+      },
+      {
+        "file": "tests/naval-operational.test.mjs",
+        "normalizedSha256": "b657dfddbab0f982f0fb40f776be1665672a49f77d8208738559f00a02a3b631"
+      },
+      {
+        "file": "tests/naval-structure.test.mjs",
+        "normalizedSha256": "fc9873794d7fd0542f26ea3ccfcc699547569eeb8cff83580336d7d8c462b16b"
+      },
+      {
+        "file": "tests/naval-trial-authority.test.mjs",
+        "normalizedSha256": "ce512bc45e748afb62d8a4f85fb48fdd0d82223372d5048af680c6372c0fa511"
+      },
+      {
+        "file": "tests/naval-trial-body.test.mjs",
+        "normalizedSha256": "13812c14408079294e856f8a712dbbb75284300a866d7a90469f83616220afca"
+      },
+      {
+        "file": "tests/pearl-tick-access.test.mjs",
+        "normalizedSha256": "d314845f8e41c9ca1c8faef192a0cdaf24935b03cfdb55c74624aabbabaaa2bd"
+      },
+      {
+        "file": "tests/pearl-tick-effects.test.mjs",
+        "normalizedSha256": "d47cd7d056fa0eb9052aff4d0c3008970686a99b92aa48e3cb59aa18c78ed9ac"
+      },
+      {
+        "file": "tests/raft-editor.test.mjs",
+        "normalizedSha256": "ebbfead9a26dc2ecebaa39d21e801ba535279cf7f3a91a54e18a7783971b3d66"
+      },
+      {
+        "file": "tests/raft-input.test.mjs",
+        "normalizedSha256": "f1849c4d84240b35d19d12f39244f26d743dd5b7c6abcebebc677648757d6b45"
+      },
+      {
+        "file": "tests/raft-materials.test.mjs",
+        "normalizedSha256": "c989eb9661e19d983957cbbd15d782f201e895227ddb8ef3ccdf637eccc6b75a"
+      },
+      {
+        "file": "tests/raft-movement.test.mjs",
+        "normalizedSha256": "e1397f7d3b9748c2d1786f42913da401f56ced62c233d9d21fd846603074aa7c"
+      },
+      {
+        "file": "tests/raft-production.test.mjs",
+        "normalizedSha256": "0af07711b8154b43fb8c2fd78915dfd44288f145a27a93088b40aa842d17d833"
+      },
+      {
+        "file": "tests/raft-production-server.test.mjs",
+        "normalizedSha256": "f8d10123e3da43d7a5358d94129d7d8498e03e4b6f97514e4bdcd6e9b5649c67"
+      },
+      {
+        "file": "tests/raft-renderer.test.mjs",
+        "normalizedSha256": "d36ca78190c27a61e3fa9f1011810d2e489d4801560512567d72a02903255957"
+      },
+      {
+        "file": "tests/rafts.test.mjs",
+        "normalizedSha256": "197402a739cbe2eeafa6999db5d3ceb25c84bfa72db9a5d408e0b29316d4c806"
+      },
+      {
+        "file": "tests/rafts-store.test.mjs",
+        "normalizedSha256": "0aee36ff460f6c90f6e7839ed3c14eec8f33d34ea9762cd284d59efca00d0393"
+      },
+      {
+        "file": "tests/tattoos.test.mjs",
+        "normalizedSha256": "8062940f03f60d0f6fc572b5c4757fb6bf28caef7e4027b0dac1187dc5bdefcb"
+      },
+      {
+        "file": "tests/tattoos2.test.mjs",
+        "normalizedSha256": "70a3ac2ffea3468a17e6beeee690024923c3a0399d7f0d4d5c3f4ea2d6e83ac7"
+      },
+      {
+        "file": "tests/world-host.test.mjs",
+        "normalizedSha256": "3411cba8f662cd8c933721304e4bc4a56ea6667645cb5ea702334adf4d56ecf0"
+      },
+      {
+        "file": "tests/world-state.test.mjs",
+        "normalizedSha256": "4badee946f206b1a50211808563d384c88955eeae495aea113cf45c1a85deb06"
+      },
+      {
+        "file": "tests/naval-pilot-authority.test.mjs",
+        "normalizedSha256": "4625882fdb04e7161e9f99dff15b93df03b55cdc46d4f69ff7c5b9ff79881c79"
+      },
+      {
+        "file": "tests/naval-pilot-client.test.mjs",
+        "normalizedSha256": "f15813ff90b6420412767983f910c6c775ddc18e2437b41b09ff2713de90e185"
+      },
+      {
+        "file": "tests/naval-pilot-geometry.test.mjs",
+        "normalizedSha256": "b777f6972c3acb3d0e4ffe9767b9d6ce74cbf26d43c3f92cdce3c6908ca9244f"
+      },
+      {
+        "file": "tests/naval-pilot-prediction.test.mjs",
+        "normalizedSha256": "9c81c0137feb1f74a559cd31a70c819c0fa904a173e2aa576ff9d1e476f4d095"
+      },
+      {
+        "file": "tests/pearl-tick-apply.test.mjs",
+        "normalizedSha256": "f9cfc48d80f8a1a602defa18c51b1e530267227bc0070b241de9dd7c0d61598d"
+      },
+      {
+        "file": "tests/naval-deck-walk.test.mjs",
+        "normalizedSha256": "2667c8f60a13e28dbf298838746386b28bc503a61d19ee5296f4c7dd5efe3296"
+      },
+      {
+        "file": "tests/naval-deck-prediction.test.mjs",
+        "normalizedSha256": "d9fea0e16c3167e8a867763d89d40a27dc51107baa8118305df28ce3b2ef7792"
+      },
+      {
+        "file": "tests/naval-crew-authority.test.mjs",
+        "normalizedSha256": "21a993109dd7af446c5684adab2ca09b5fae059f128713d1c221cb8f5fea1130"
+      },
+      {
+        "file": "tests/naval-crew-client.test.mjs",
+        "normalizedSha256": "91e0d09f7254df6f24bac6ba2a65de83c51c0a36fbe5ebd42f94b6ecc1ed300a"
+      },
+      {
+        "file": "tests/pearl-profile-snapshot.test.mjs",
+        "normalizedSha256": "c416e1eea539f00a65a8058e75446358ebd09c31fc097b3812fd5244f9f89fd6"
+      },
+      {
+        "file": "tests/pearl-input-boundary.test.mjs",
+        "normalizedSha256": "5e860b1ac5f4f6aaee04c7652238004f73789b19e66545beeb09884e74001a0f"
+      },
+      {
+        "file": "tests/naval-coast-geometry.test.mjs",
+        "normalizedSha256": "38eae33dbf032e48d769692bf46dce504f0736781af27f8d8a007ba90c110d15"
+      },
+      {
+        "file": "tests/naval-coast-contact.test.mjs",
+        "normalizedSha256": "5cdfb5dd2f640d2af8009b83cf7c1b5455cc9da12fdc23f7388dff654c56ceee"
+      },
+      {
+        "file": "tests/naval-coast-authority.test.mjs",
+        "normalizedSha256": "504a4e46e4d0de98a9d50459c3f887fc415df6a0a85c0ebdf1d2e02e472b01a7"
+      },
+      {
+        "file": "tests/naval-coast-prediction.test.mjs",
+        "normalizedSha256": "37dc2272bff6b8039839be167a39b34c2a2589be268d742983444d99e4978aaa"
+      },
+      {
+        "file": "tests/naval-pilot-impact-ui.test.mjs",
+        "normalizedSha256": "9a5569acb6ef2b8072720b3e7500975072edce72cf9bdf90d4543976b64aa32c"
+      },
+      {
+        "file": "tests/pearl-host-mount.test.mjs",
+        "normalizedSha256": "94cbffe83484d4c68ce20ee4ed41e1db68a7ff7682cbe43de80815e352e13813"
+      }
+    ]
+  },
+  "browser": {
+    "file": "docs/delivery/d08c4-coastal-hull/evidence.json",
+    "renderer": "Headless Chrome / SwiftShader",
+    "scenarios": [
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "house": false,
+        "pass": true,
+        "damage": 4,
+        "part": "foundation",
+        "hull": {
+          "hp": 236,
+          "maxHp": 240,
+          "fraction": 0.9833333333333333,
+          "destroyed": false,
+          "total": 4,
+          "disabled": false
+        },
+        "impacts": 1,
+        "splashes": 1,
+        "audio": 1,
+        "profilesConserved": true,
+        "sourcePoseConserved": true,
+        "bodiesAfter": 0,
+        "touchTarget": null
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "house": false,
+        "pass": true,
+        "damage": 4,
+        "part": "foundation",
+        "hull": {
+          "hp": 236,
+          "maxHp": 240,
+          "fraction": 0.9833333333333333,
+          "destroyed": false,
+          "total": 4,
+          "disabled": false
+        },
+        "impacts": 1,
+        "splashes": 1,
+        "audio": 1,
+        "profilesConserved": true,
+        "sourcePoseConserved": true,
+        "bodiesAfter": 0,
+        "touchTarget": {
+          "x": 261,
+          "y": 114.078125,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "house": false,
+        "pass": true,
+        "damage": 4,
+        "part": "foundation",
+        "hull": {
+          "hp": 236,
+          "maxHp": 240,
+          "fraction": 0.9833333333333333,
+          "destroyed": false,
+          "total": 4,
+          "disabled": false
+        },
+        "impacts": 1,
+        "splashes": 1,
+        "audio": 1,
+        "profilesConserved": true,
+        "sourcePoseConserved": true,
+        "bodiesAfter": 0,
+        "touchTarget": {
+          "x": 713,
+          "y": 173,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "house": true,
+        "pass": true,
+        "damage": 1,
+        "part": "foundation",
+        "hull": {
+          "hp": 959,
+          "maxHp": 960,
+          "fraction": 0.9989583333333333,
+          "destroyed": false,
+          "total": 16,
+          "disabled": false
+        },
+        "impacts": 1,
+        "splashes": 1,
+        "audio": 1,
+        "profilesConserved": true,
+        "sourcePoseConserved": true,
+        "bodiesAfter": 0,
+        "touchTarget": null
+      }
+    ]
+  },
+  "captures": [
+    {
+      "file": "docs/delivery/d08c4-coastal-hull/evidence.json",
+      "bytes": 129426,
+      "sha256": "6c87ad6b2356b0841f53feeb310690be4e2cbb4aa117e47f4c39003ec400405e"
+    },
+    {
+      "file": "docs/delivery/d08c4-coastal-hull/1280x800-impact-v1.png",
+      "bytes": 752860,
+      "sha256": "dea3ef3d1dad4921dfa845fe2c52eac02ea5ecf506c59db86aa82286fdd33a11"
+    },
+    {
+      "file": "docs/delivery/d08c4-coastal-hull/1280x800-impact-canvas-v1.png",
+      "bytes": 581422,
+      "sha256": "4483bdf82b639604ce5b88bfaa915a31ff9937c5a056ff04bb18985088118669"
+    },
+    {
+      "file": "docs/delivery/d08c4-coastal-hull/390x844-impact-v1.png",
+      "bytes": 257867,
+      "sha256": "9ee67af8ba4e40a04e971dfdf8f4f3d3efe787747afae6129e1531cc205b89bc"
+    },
+    {
+      "file": "docs/delivery/d08c4-coastal-hull/390x844-impact-canvas-v1.png",
+      "bytes": 157091,
+      "sha256": "350db2c0bf5f0e1710bdd5000c9e4b1f6725d3ce96bfa4c68947b85df20088b1"
+    },
+    {
+      "file": "docs/delivery/d08c4-coastal-hull/844x390-impact-v1.png",
+      "bytes": 360549,
+      "sha256": "9b5758a6353accb634fa325910f5d159ab6f0ac8ed7be18c63ce96fffd7d3f71"
+    },
+    {
+      "file": "docs/delivery/d08c4-coastal-hull/844x390-impact-canvas-v1.png",
+      "bytes": 244601,
+      "sha256": "3679ce46245abd6dc7359e19ad9bbbf4b48c5828ef0b9a4ed23f20be256c96f2"
+    },
+    {
+      "file": "docs/delivery/d08c4-coastal-hull/1280x800-house-impact-v1.png",
+      "bytes": 750645,
+      "sha256": "d954e207a24cba616dcd19c2cde3d34dd05ba348c97cabd0e93929d53d9d750e"
+    },
+    {
+      "file": "docs/delivery/d08c4-coastal-hull/1280x800-house-impact-canvas-v1.png",
+      "bytes": 566665,
+      "sha256": "bfc067918104d2ed6ed6ee947253883b4816b19fac18b737af354504230189f7"
+    }
+  ],
+  "resolvedQaIssues": [
+    "Isolated dependency copy initially lacked Three package metadata and dynamic glTF addons; repaired before acceptance.",
+    "Horizontal automation touched an offscreen sea control after opening audio; scroll and actual throttle assertion added.",
+    "House approach crossed the real dock before the shore; fixture now rejects dock-envelope intersections and tests natural terrain damage."
+  ],
+  "limits": [
+    "No hardware FPS, phone, WAN or physical audio acceptance.",
+    "No public naval activation or durable damage/cargo loss.",
+    "Conservative rotation/terrain envelopes and temporary tuning; coast mesh is an untextured fixture."
+  ],
+  "startupCompatibility": {
+    "commit": "6a56b3fb9bcc2a4ed2d864c13badf57c827ce304",
+    "tests": 67,
+    "pass": 67,
+    "fail": 0,
+    "durationMs": 45911.0962,
+    "concurrency": 1,
+    "files": [
+      "tests/naval-coast-authority.test.mjs",
+      "tests/pearl-host-mount.test.mjs",
+      "tests/pearl-host-startup.test.mjs"
+    ],
+    "overlays": [
+      {
+        "file": "server/host.mjs",
+        "commit": "6a56b3f",
+        "normalizedSha256": "bc5669d57516d8473e9ad09801cbb6c12196e116ca433b07346661535773815e"
+      },
+      {
+        "file": "server/index.mjs",
+        "commit": "6a56b3f",
+        "normalizedSha256": "35a19ecfe7df7a5be7540944085ceb1870c5a226b8f9b38625903b2e66a36022"
+      },
+      {
+        "file": "tests/helpers/pearl-batch-journal-sql.mjs",
+        "commit": "6a56b3f",
+        "normalizedSha256": "11c0e0aa8af594b2ed904648f4cfb42116ed7cc83ad757e84a93f495315e49bc"
+      },
+      {
+        "file": "tests/pearl-host-startup.test.mjs",
+        "commit": "6a56b3f",
+        "normalizedSha256": "75ed20701cafabdb0a9a335fd520be69f6d02fb41e9163b4322f00e7627031ca"
+      }
+    ],
+    "logSha256": "7ef4c6570f972de750da2e2c20e46e8406d437d80e7f3825c3d06d5002b146b0",
+    "note": "Separate final gate after the committed M5 startup arrived; the 437-test regression and browser run retain their original 14ede6d provenance."
+  }
+}

@@ -1,0 +1,353 @@
+{
+  "at": "2026-10-13T14:39:17.598Z",
+  "container": "3fc2d446b01f813ee8f119fd10484b528460dab1029f66a7c5c81da7cb7d9fa7",
+  "image": "sha256:1913155424ee2360d0cfe81036f62ab95c1c82c73138871cb5f7b344f863a497",
+  "revision": "676833a0d58899dd4d122baa99e31dd3a842ed89",
+  "health": "healthy",
+  "running": true,
+  "runtime": {
+    "version": "0.6.0-alpha.69",
+    "protocol": 61,
+    "status": {
+      "game": "MAREA NEGRA",
+      "version": "0.6.0-alpha.69",
+      "players": 0,
+      "max": 4,
+      "sockets": 0,
+      "tick": 3413,
+      "uptime": 69,
+      "stepMs": 1.121,
+      "bots": 3,
+      "names": [],
+      "errors": 0,
+      "content": {
+        "generation": 8,
+        "revisionId": null,
+        "switching": false
+      },
+      "storage": {
+        "kind": "supabase",
+        "durable": true,
+        "accounts": true,
+        "errors": 0,
+        "unsaved": 0,
+        "profileWrites": 0,
+        "worldWriting": false,
+        "economic": {
+          "enabled": true,
+          "pending": 0,
+          "failed": false,
+          "completed": 0,
+          "replays": 0
+        },
+        "groundTransactions": null,
+        "groundPearls": null,
+        "groundDeaths": null,
+        "groundPearlMints": null,
+        "tickBlocked": false,
+        "staging": null,
+        "deathStaging": null,
+        "deathDrops": null,
+        "pearlGround": null,
+        "combatDeaths": null,
+        "startup": null,
+        "resources": {
+          "enabled": true,
+          "ready": true,
+          "logging": true
+        },
+        "fire": {
+          "enabled": true,
+          "ready": true,
+          "torchRules": 2
+        },
+        "foraging": {
+          "enabled": true,
+          "ready": true
+        },
+        "freshwater": {
+          "enabled": true,
+          "ready": true,
+          "canteen": true,
+          "meals": true
+        },
+        "artisan": {
+          "enabled": true,
+          "ready": true
+        },
+        "workshop": {
+          "enabled": true,
+          "ready": true
+        },
+        "attributes": {
+          "enabled": true,
+          "ready": true
+        },
+        "companionCreation": {
+          "enabled": true,
+          "ready": true,
+          "pending": 0
+        },
+        "companionPairing": {
+          "enabled": true,
+          "ready": true
+        },
+        "companionPresence": {
+          "enabled": false,
+          "ready": false,
+          "bodies": 0,
+          "pending": 0
+        },
+        "world": {
+          "id": "marea-negra",
+          "ready": true,
+          "failed": false,
+          "version": 5780,
+          "errors": 0
+        }
+      },
+      "net": {
+        "fill": 0,
+        "late": 0,
+        "trimmed": 0,
+        "clamped": 0,
+        "kbOut": 0,
+        "kbIn": 0,
+        "dropped": 0
+      }
+    },
+    "hashes": {
+      "package.json": "01a607085fe1179a161ac7597e74da4650ba9599b98228e24eae3df83bffe163",
+      "src/data/meta.js": "990c5c2a99fa9c7fb34ea0c161dbaddd4b790361dde9cca45f15bd5457e0f231",
+      "src/net/protocol.js": "a10d8640111170c0d0ff1160076a909f7ff53b28ca6ef0aa6362602693f86379",
+      "assets/manifest.json": "e6f895f913413f0352f370fec37989dbd49977f1a38ad0412b7dc78361f9e04b",
+      "assets/editor/thumbnails.json": "b5b9d39340f7830d807de75c2ceb188ecf7081dbed167f736c2db58e29706e9f",
+      "server/gmPublicationAssets.mjs": "012efbfc436a1c470a679b2da4b80aa9a94792670372b69a584416e4433f02d5",
+      "src/main.js": "6640b7f75d7db9742addaec59f378895a2414029d1db31a4c15846caeae36772",
+      "src/render/scene.js": "6ee112bb667ed318dfc9c346ba3cde38e406dc879dcea1748b5e4983b4c0ec1b",
+      "src/render/characters.js": "f6ad177714c2f2355a10a658d5ee2f02121c9529e376f7032fd46f9ae35c8ce7",
+      "src/render/harvestGoods.js": "c5e56223d27e07e5c6f4297e1e46efb191ba5260b34c8c32e28ebbf580bd03b7",
+      "src/render/resourceNodes.js": "7a65b859a9145f8a41e836460d3c0b9caeeeb3d75b99c155821594d9219aa55d",
+      "src/render/assets/registry.js": "694912c662f10ce5adb404ca459499e4a7f1b1aced641b1cda90adda3d9ad47d",
+      "src/render/assets/manifest.js": "15e139ab09d94a76f595582e942ab5d42cff77377b67e7132ede8dec3a198fd3",
+      "src/render/assets/toonmat.js": "dc6fb86ca3fb77a99ebcb64956711cad841fae39d3410677f43cfc34ea486f1d",
+      "assets/models/items-v1/resina-desktop.glb": "ab5d0235ccbc9ab370be625c0a6ff447eb56eaf6bac3d179352a89e98851a8bd",
+      "assets/models/items-v1/resina-mobile.glb": "2d6a482b9da720a5fceb77c5c5aa1f5fb8f7accd1198e09963c579ae4470f4cc",
+      "assets/models/items-v1/antorcha-desktop.glb": "20bdb2816f062ec0308e139a94f3680643c90af1ab57f070865981a5fe512f40",
+      "assets/models/items-v1/antorcha-mobile.glb": "e4ef37493c1a1963c334dc0355644a3f85f864ce28bc78a8e43381c3585aa9fa",
+      "assets/models/items-v1/coco-desktop.glb": "df4bf3bbb2ce53f75def9e19dca4f850f569e0d7775629865acb561c75ddc5a0",
+      "assets/models/items-v1/coco-mobile.glb": "a439860deb43011036873a4b1d9f85c215c917693b23f4b2043b63b09856b2db",
+      "assets/models/items-v1/lima-desktop.glb": "3c53194cf4d69bcbb24fbbf8e584e6ca6424ee1c1f6bb6489de8f64c1afbc389",
+      "assets/models/items-v1/lima-mobile.glb": "1d738bc865308617e8584ecc1bc2bed064bd7e060123f5e8eeb9becfa76655e0",
+      "assets/models/items-v1/especias-desktop.glb": "b7d97a91f6696c067f3533d16406eaf12260553f5e76438717745dfe73cdc6b9",
+      "assets/models/items-v1/especias-mobile.glb": "4e7e0adc9fc18b177c43952b47dc73a0215aaf827d9f8158d0c17cd32ac7ed72",
+      "assets/models/items-v1/meal_grog-desktop.glb": "d2ce7b23178603edbb9729eb2aafbace4f696ae52bdd3b6382bced7f42daaf0a",
+      "assets/models/items-v1/meal_grog-mobile.glb": "08bb96511a834165270a117976c9ed396af2441d0b7f63271933ec90f5e55a4c",
+      "assets/models/items-v1/meal_roastFish-desktop.glb": "d18413e347530b19f35d56059d4577de4d8c1a24f7dd4229cc7a1a194a2b3908",
+      "assets/models/items-v1/meal_roastFish-mobile.glb": "d2a67f8fdc8d20fdb0baa7db768f4f04aa4d072fc1d75f5c52e7cb1dd6dbc249",
+      "assets/models/items-v1/cana-desktop.glb": "6ff6544c1b36af5df386aa40ca87a14095b4cd0f38f0b317bc519dc6382c2c35",
+      "assets/models/items-v1/cana-mobile.glb": "473c6fb7b91405c36fb04846080ef5cc3638014b71fe6469216c4ad1faf40da5",
+      "assets/models/items-v1/hierbas_aromaticas-desktop.glb": "5edec9953abbe9c1fc3a1ab180035a34208c9061b67c685931d65ca7a4f5d6dc",
+      "assets/models/items-v1/hierbas_aromaticas-mobile.glb": "eb76b5e051a877c48dcca5f7d9ddbf13b7d7ddcf7a4ba5f163d364c6c5b33f09",
+      "assets/models/items-v1/meal_heartyBiscuit-desktop.glb": "9d36b903d083f5ef507fac452d9739f020d9fa945e4c25b4c0a6a924e1fb4b62",
+      "assets/models/items-v1/meal_heartyBiscuit-mobile.glb": "fcd84c8eb765d88535189e016fee08f259fa31f76abf1e729867ee69e58d545d",
+      "assets/models/items-v1/agua-desktop.glb": "183029851e6c326343b96bec0b3c924f56968d4f515f69c52fb7fa9dedd39636",
+      "assets/models/items-v1/agua-mobile.glb": "37f573046d397e7170799e8e9ff008185fb64f85ca9a6bd78d16de6a1a28785d",
+      "assets/models/items-v1/harina-desktop.glb": "d2fa102d68e88e3b0ad697ad3db544479f8be87bd2b1ad94a3e4a16fc57ad4ff",
+      "assets/models/items-v1/harina-mobile.glb": "08086ebcd8bc2594561d4a45aa4cff58227d0dd78027aa32345e96543a3ea3eb"
+    }
+  },
+  "fileCount": 38,
+  "comparison": {
+    "package.json": {
+      "git": "01a607085fe1179a161ac7597e74da4650ba9599b98228e24eae3df83bffe163",
+      "container": "01a607085fe1179a161ac7597e74da4650ba9599b98228e24eae3df83bffe163",
+      "matches": true
+    },
+    "src/data/meta.js": {
+      "git": "990c5c2a99fa9c7fb34ea0c161dbaddd4b790361dde9cca45f15bd5457e0f231",
+      "container": "990c5c2a99fa9c7fb34ea0c161dbaddd4b790361dde9cca45f15bd5457e0f231",
+      "matches": true
+    },
+    "src/net/protocol.js": {
+      "git": "a10d8640111170c0d0ff1160076a909f7ff53b28ca6ef0aa6362602693f86379",
+      "container": "a10d8640111170c0d0ff1160076a909f7ff53b28ca6ef0aa6362602693f86379",
+      "matches": true
+    },
+    "assets/manifest.json": {
+      "git": "e6f895f913413f0352f370fec37989dbd49977f1a38ad0412b7dc78361f9e04b",
+      "container": "e6f895f913413f0352f370fec37989dbd49977f1a38ad0412b7dc78361f9e04b",
+      "matches": true
+    },
+    "assets/editor/thumbnails.json": {
+      "git": "b5b9d39340f7830d807de75c2ceb188ecf7081dbed167f736c2db58e29706e9f",
+      "container": "b5b9d39340f7830d807de75c2ceb188ecf7081dbed167f736c2db58e29706e9f",
+      "matches": true
+    },
+    "server/gmPublicationAssets.mjs": {
+      "git": "012efbfc436a1c470a679b2da4b80aa9a94792670372b69a584416e4433f02d5",
+      "container": "012efbfc436a1c470a679b2da4b80aa9a94792670372b69a584416e4433f02d5",
+      "matches": true
+    },
+    "src/main.js": {
+      "git": "6640b7f75d7db9742addaec59f378895a2414029d1db31a4c15846caeae36772",
+      "container": "6640b7f75d7db9742addaec59f378895a2414029d1db31a4c15846caeae36772",
+      "matches": true
+    },
+    "src/render/scene.js": {
+      "git": "6ee112bb667ed318dfc9c346ba3cde38e406dc879dcea1748b5e4983b4c0ec1b",
+      "container": "6ee112bb667ed318dfc9c346ba3cde38e406dc879dcea1748b5e4983b4c0ec1b",
+      "matches": true
+    },
+    "src/render/characters.js": {
+      "git": "f6ad177714c2f2355a10a658d5ee2f02121c9529e376f7032fd46f9ae35c8ce7",
+      "container": "f6ad177714c2f2355a10a658d5ee2f02121c9529e376f7032fd46f9ae35c8ce7",
+      "matches": true
+    },
+    "src/render/harvestGoods.js": {
+      "git": "c5e56223d27e07e5c6f4297e1e46efb191ba5260b34c8c32e28ebbf580bd03b7",
+      "container": "c5e56223d27e07e5c6f4297e1e46efb191ba5260b34c8c32e28ebbf580bd03b7",
+      "matches": true
+    },
+    "src/render/resourceNodes.js": {
+      "git": "7a65b859a9145f8a41e836460d3c0b9caeeeb3d75b99c155821594d9219aa55d",
+      "container": "7a65b859a9145f8a41e836460d3c0b9caeeeb3d75b99c155821594d9219aa55d",
+      "matches": true
+    },
+    "src/render/assets/registry.js": {
+      "git": "694912c662f10ce5adb404ca459499e4a7f1b1aced641b1cda90adda3d9ad47d",
+      "container": "694912c662f10ce5adb404ca459499e4a7f1b1aced641b1cda90adda3d9ad47d",
+      "matches": true
+    },
+    "src/render/assets/manifest.js": {
+      "git": "15e139ab09d94a76f595582e942ab5d42cff77377b67e7132ede8dec3a198fd3",
+      "container": "15e139ab09d94a76f595582e942ab5d42cff77377b67e7132ede8dec3a198fd3",
+      "matches": true
+    },
+    "src/render/assets/toonmat.js": {
+      "git": "dc6fb86ca3fb77a99ebcb64956711cad841fae39d3410677f43cfc34ea486f1d",
+      "container": "dc6fb86ca3fb77a99ebcb64956711cad841fae39d3410677f43cfc34ea486f1d",
+      "matches": true
+    },
+    "assets/models/items-v1/resina-desktop.glb": {
+      "git": "ab5d0235ccbc9ab370be625c0a6ff447eb56eaf6bac3d179352a89e98851a8bd",
+      "container": "ab5d0235ccbc9ab370be625c0a6ff447eb56eaf6bac3d179352a89e98851a8bd",
+      "matches": true
+    },
+    "assets/models/items-v1/resina-mobile.glb": {
+      "git": "2d6a482b9da720a5fceb77c5c5aa1f5fb8f7accd1198e09963c579ae4470f4cc",
+      "container": "2d6a482b9da720a5fceb77c5c5aa1f5fb8f7accd1198e09963c579ae4470f4cc",
+      "matches": true
+    },
+    "assets/models/items-v1/antorcha-desktop.glb": {
+      "git": "20bdb2816f062ec0308e139a94f3680643c90af1ab57f070865981a5fe512f40",
+      "container": "20bdb2816f062ec0308e139a94f3680643c90af1ab57f070865981a5fe512f40",
+      "matches": true
+    },
+    "assets/models/items-v1/antorcha-mobile.glb": {
+      "git": "e4ef37493c1a1963c334dc0355644a3f85f864ce28bc78a8e43381c3585aa9fa",
+      "container": "e4ef37493c1a1963c334dc0355644a3f85f864ce28bc78a8e43381c3585aa9fa",
+      "matches": true
+    },
+    "assets/models/items-v1/coco-desktop.glb": {
+      "git": "df4bf3bbb2ce53f75def9e19dca4f850f569e0d7775629865acb561c75ddc5a0",
+      "container": "df4bf3bbb2ce53f75def9e19dca4f850f569e0d7775629865acb561c75ddc5a0",
+      "matches": true
+    },
+    "assets/models/items-v1/coco-mobile.glb": {
+      "git": "a439860deb43011036873a4b1d9f85c215c917693b23f4b2043b63b09856b2db",
+      "container": "a439860deb43011036873a4b1d9f85c215c917693b23f4b2043b63b09856b2db",
+      "matches": true
+    },
+    "assets/models/items-v1/lima-desktop.glb": {
+      "git": "3c53194cf4d69bcbb24fbbf8e584e6ca6424ee1c1f6bb6489de8f64c1afbc389",
+      "container": "3c53194cf4d69bcbb24fbbf8e584e6ca6424ee1c1f6bb6489de8f64c1afbc389",
+      "matches": true
+    },
+    "assets/models/items-v1/lima-mobile.glb": {
+      "git": "1d738bc865308617e8584ecc1bc2bed064bd7e060123f5e8eeb9becfa76655e0",
+      "container": "1d738bc865308617e8584ecc1bc2bed064bd7e060123f5e8eeb9becfa76655e0",
+      "matches": true
+    },
+    "assets/models/items-v1/especias-desktop.glb": {
+      "git": "b7d97a91f6696c067f3533d16406eaf12260553f5e76438717745dfe73cdc6b9",
+      "container": "b7d97a91f6696c067f3533d16406eaf12260553f5e76438717745dfe73cdc6b9",
+      "matches": true
+    },
+    "assets/models/items-v1/especias-mobile.glb": {
+      "git": "4e7e0adc9fc18b177c43952b47dc73a0215aaf827d9f8158d0c17cd32ac7ed72",
+      "container": "4e7e0adc9fc18b177c43952b47dc73a0215aaf827d9f8158d0c17cd32ac7ed72",
+      "matches": true
+    },
+    "assets/models/items-v1/meal_grog-desktop.glb": {
+      "git": "d2ce7b23178603edbb9729eb2aafbace4f696ae52bdd3b6382bced7f42daaf0a",
+      "container": "d2ce7b23178603edbb9729eb2aafbace4f696ae52bdd3b6382bced7f42daaf0a",
+      "matches": true
+    },
+    "assets/models/items-v1/meal_grog-mobile.glb": {
+      "git": "08bb96511a834165270a117976c9ed396af2441d0b7f63271933ec90f5e55a4c",
+      "container": "08bb96511a834165270a117976c9ed396af2441d0b7f63271933ec90f5e55a4c",
+      "matches": true
+    },
+    "assets/models/items-v1/meal_roastFish-desktop.glb": {
+      "git": "d18413e347530b19f35d56059d4577de4d8c1a24f7dd4229cc7a1a194a2b3908",
+      "container": "d18413e347530b19f35d56059d4577de4d8c1a24f7dd4229cc7a1a194a2b3908",
+      "matches": true
+    },
+    "assets/models/items-v1/meal_roastFish-mobile.glb": {
+      "git": "d2a67f8fdc8d20fdb0baa7db768f4f04aa4d072fc1d75f5c52e7cb1dd6dbc249",
+      "container": "d2a67f8fdc8d20fdb0baa7db768f4f04aa4d072fc1d75f5c52e7cb1dd6dbc249",
+      "matches": true
+    },
+    "assets/models/items-v1/cana-desktop.glb": {
+      "git": "6ff6544c1b36af5df386aa40ca87a14095b4cd0f38f0b317bc519dc6382c2c35",
+      "container": "6ff6544c1b36af5df386aa40ca87a14095b4cd0f38f0b317bc519dc6382c2c35",
+      "matches": true
+    },
+    "assets/models/items-v1/cana-mobile.glb": {
+      "git": "473c6fb7b91405c36fb04846080ef5cc3638014b71fe6469216c4ad1faf40da5",
+      "container": "473c6fb7b91405c36fb04846080ef5cc3638014b71fe6469216c4ad1faf40da5",
+      "matches": true
+    },
+    "assets/models/items-v1/hierbas_aromaticas-desktop.glb": {
+      "git": "5edec9953abbe9c1fc3a1ab180035a34208c9061b67c685931d65ca7a4f5d6dc",
+      "container": "5edec9953abbe9c1fc3a1ab180035a34208c9061b67c685931d65ca7a4f5d6dc",
+      "matches": true
+    },
+    "assets/models/items-v1/hierbas_aromaticas-mobile.glb": {
+      "git": "eb76b5e051a877c48dcca5f7d9ddbf13b7d7ddcf7a4ba5f163d364c6c5b33f09",
+      "container": "eb76b5e051a877c48dcca5f7d9ddbf13b7d7ddcf7a4ba5f163d364c6c5b33f09",
+      "matches": true
+    },
+    "assets/models/items-v1/meal_heartyBiscuit-desktop.glb": {
+      "git": "9d36b903d083f5ef507fac452d9739f020d9fa945e4c25b4c0a6a924e1fb4b62",
+      "container": "9d36b903d083f5ef507fac452d9739f020d9fa945e4c25b4c0a6a924e1fb4b62",
+      "matches": true
+    },
+    "assets/models/items-v1/meal_heartyBiscuit-mobile.glb": {
+      "git": "fcd84c8eb765d88535189e016fee08f259fa31f76abf1e729867ee69e58d545d",
+      "container": "fcd84c8eb765d88535189e016fee08f259fa31f76abf1e729867ee69e58d545d",
+      "matches": true
+    },
+    "assets/models/items-v1/agua-desktop.glb": {
+      "git": "183029851e6c326343b96bec0b3c924f56968d4f515f69c52fb7fa9dedd39636",
+      "container": "183029851e6c326343b96bec0b3c924f56968d4f515f69c52fb7fa9dedd39636",
+      "matches": true
+    },
+    "assets/models/items-v1/agua-mobile.glb": {
+      "git": "37f573046d397e7170799e8e9ff008185fb64f85ca9a6bd78d16de6a1a28785d",
+      "container": "37f573046d397e7170799e8e9ff008185fb64f85ca9a6bd78d16de6a1a28785d",
+      "matches": true
+    },
+    "assets/models/items-v1/harina-desktop.glb": {
+      "git": "d2fa102d68e88e3b0ad697ad3db544479f8be87bd2b1ad94a3e4a16fc57ad4ff",
+      "container": "d2fa102d68e88e3b0ad697ad3db544479f8be87bd2b1ad94a3e4a16fc57ad4ff",
+      "matches": true
+    },
+    "assets/models/items-v1/harina-mobile.glb": {
+      "git": "08086ebcd8bc2594561d4a45aa4cff58227d0dd78027aa32345e96543a3ea3eb",
+      "container": "08086ebcd8bc2594561d4a45aa4cff58227d0dd78027aa32345e96543a3ea3eb",
+      "matches": true
+    }
+  }
+}

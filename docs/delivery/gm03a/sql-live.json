@@ -1,0 +1,83 @@
+{
+  "schema": "marea.gm-drafts-live.v1",
+  "at": "2026-10-10T20:56:47.968Z",
+  "mode": "canary",
+  "target": "configured-supabase",
+  "checks": [
+    {
+      "check": "readiness_before",
+      "pass": true
+    },
+    {
+      "check": "anonymous_rpc_denied",
+      "pass": true
+    },
+    {
+      "check": "authenticated_rpc_acl_denial",
+      "pass": true,
+      "source": "SQL readiness verifies anon and authenticated EXECUTE/table ACLs"
+    },
+    {
+      "check": "synthetic_head_starts_empty",
+      "pass": true
+    },
+    {
+      "check": "concurrent_cas_single_winner",
+      "pass": true
+    },
+    {
+      "check": "saved_document_base_and_revision",
+      "pass": true
+    },
+    {
+      "check": "load_returns_exact_head",
+      "pass": true
+    },
+    {
+      "check": "exact_replay_preserves_head_and_timestamp",
+      "pass": true
+    },
+    {
+      "check": "conflict_receipt_replays",
+      "pass": true
+    },
+    {
+      "check": "operation_uuid_reuse_rejected",
+      "pass": true
+    },
+    {
+      "check": "commit_reply_loss_is_reported_as_uncertain",
+      "pass": true
+    },
+    {
+      "check": "lost_reply_reconciles_exact_commit",
+      "pass": true
+    },
+    {
+      "check": "readiness_after",
+      "pass": true
+    },
+    {
+      "check": "only_gm_storage_rpcs_used",
+      "pass": true
+    }
+  ],
+  "counts": {
+    "gmRpcCalls": 11,
+    "successfulHeads": 1,
+    "operationReceipts": 3
+  },
+  "retainedRecords": {
+    "heads": 1,
+    "receipts": 3,
+    "reason": "synthetic UUID scope; service role has no direct delete privilege"
+  },
+  "scopeWorld": "gm03qa-3be8d32d-6a33-46d6-bff6-48d27e839d86",
+  "ownerFixture": "6b84a752-e19c-44d3-b682-4fd28a9ba0b1",
+  "readiness": {
+    "before": 1,
+    "after": 1
+  },
+  "finalRevision": 2,
+  "pass": true
+}

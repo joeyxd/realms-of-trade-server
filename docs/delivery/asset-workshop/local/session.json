@@ -1,0 +1,25 @@
+{
+  "schema": "marea.asset-review.v1",
+  "scope": {
+    "accountId": "77777777-7777-4777-8777-777777777777",
+    "serverId": "http://127.0.0.1:54662/"
+  },
+  "revision": 1,
+  "records": [
+    {
+      "assetId": "aw-pilot-01",
+      "sourceRevision": "cd847a9249b35f6321262b37cd4da4e73a77b3112cecb7561942217555060689",
+      "variantId": "base",
+      "decision": "adapt",
+      "tasks": [
+        "retexture"
+      ],
+      "use": "Estación de cocina",
+      "collection": "Crafting inicial",
+      "notes": "Revisar el metal a distancia de juego.",
+      "revision": 1,
+      "updatedAt": "2026-10-14T16:56:05.356Z",
+      "history": []
+    }
+  ]
+}

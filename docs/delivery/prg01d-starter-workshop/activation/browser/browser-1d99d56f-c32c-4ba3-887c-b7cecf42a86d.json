@@ -1,0 +1,142 @@
+{
+  "schema": "mn.starter-workshop.browser.v1",
+  "at": "2026-10-11T00:32:13.429Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "gameVersion": "0.6.0-alpha.36",
+  "protocolVersion": 45,
+  "checks": [
+    {
+      "name": "public_health_and_release",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.36",
+      "protocolVersion": 45,
+      "players": 0,
+      "durable": true,
+      "worldReady": true
+    },
+    {
+      "name": "ordinary_password_login_and_public_wss",
+      "pass": true,
+      "transport": "ws",
+      "initializedPlanks": 3,
+      "accountMarker": "redacted"
+    },
+    {
+      "name": "walked_to_bench_with_normal_client_input",
+      "pass": true,
+      "method": "held WASD through public client controls",
+      "distance": 1.81
+    },
+    {
+      "name": "workshop_panel_fits_es_1280x720",
+      "pass": true,
+      "bounds": {
+        "x": 425,
+        "y": 62.4609375,
+        "width": 430,
+        "height": 595.078125,
+        "top": 62.4609375,
+        "right": 855,
+        "bottom": 657.5390625,
+        "left": 425
+      },
+      "boards": "0 / 10",
+      "carryVisible": true
+    },
+    {
+      "name": "ui_delivered_three_boards_and_durable_profile",
+      "pass": true,
+      "boards": 3,
+      "profileVersion": 5
+    },
+    {
+      "name": "workshop_panel_fits_en_390x844",
+      "pass": true,
+      "bounds": {
+        "x": 8,
+        "y": 115.2109375,
+        "width": 374,
+        "height": 613.578125,
+        "top": 115.2109375,
+        "right": 382,
+        "bottom": 728.7890625,
+        "left": 8
+      },
+      "boards": "3 / 10",
+      "carryVisible": true
+    },
+    {
+      "name": "reload_and_ui_auth_restore_three_boards",
+      "pass": true,
+      "boards": 3,
+      "profileVersion": 5
+    },
+    {
+      "name": "browser_network_clean",
+      "pass": true,
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "requestFailures": 0,
+      "httpFailures": 0,
+      "expectedGmDenials": 5,
+      "expectedStaleGmCheckCancellations": 2,
+      "publicWss": true
+    }
+  ],
+  "screenshots": [
+    "01-workshop-desktop-es.png",
+    "02-workshop-portrait-en.png"
+  ],
+  "errors": [],
+  "network": {
+    "consoleErrors": [],
+    "requestFailures": [],
+    "httpFailures": [],
+    "expectedDenials": [
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "status": 403
+      },
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "status": 403
+      },
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "status": 403
+      },
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "status": 403
+      },
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "status": 403
+      }
+    ],
+    "expectedCancellations": [
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "error": "net::ERR_ABORTED",
+        "reason": "GmEntry permission checks can become stale during auth transitions; page navigation cancels outstanding fetches and its epoch guard ignores stale results."
+      },
+      {
+        "url": "https://marea.62.171.136.148.sslip.io/api/gm/session",
+        "error": "net::ERR_ABORTED",
+        "reason": "GmEntry permission checks can become stale during auth transitions; page navigation cancels outstanding fetches and its epoch guard ignores stale results."
+      }
+    ],
+    "websockets": [
+      "wss://marea.62.171.136.148.sslip.io/ws",
+      "wss://marea.62.171.136.148.sslip.io/ws"
+    ]
+  },
+  "pass": true,
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 1,
+    "receiptPolicy": "operation receipts intentionally retained"
+  },
+  "completedAt": "2026-10-11T00:32:51.614Z"
+}

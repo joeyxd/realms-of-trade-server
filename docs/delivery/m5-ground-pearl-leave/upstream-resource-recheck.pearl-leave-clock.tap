@@ -1,0 +1,23 @@
+✔ leave maps durable ground before IO and preserves local helper windows/events until one drain (68.122ms)
+✔ legacy leave keeps raw local ground and unmarked drop (15.5642ms)
+✔ clock option rejects wrong-world, forged and proxy authorities without callbacks (4.4669ms)
+✔ overflow rejects leave before generation/save/commit or reservation (13.5004ms)
+✔ future anchor rejects leave before generation/save/commit or reservation (12.6645ms)
+✔ rewinding after capture fences before IO dispatch (12.6494ms)
+✔ plan replacement fences local leave while retaining durable evidence (22.6669ms)
+✔ request replacement fences local leave while retaining durable evidence (17.7208ms)
+✔ false receipt fences local leave while retaining durable evidence (16.49ms)
+✔ wrong receipt ground fences local leave while retaining durable evidence (16.8483ms)
+✔ wrong receipt UID fences local leave while retaining durable evidence (19.023ms)
+✔ rewinding after durable receipt fences local publication (16.0965ms)
+✔ lost reply retries the exact UUID/ground and applies once (18.8008ms)
+✔ postreceipt save failure rolls back marker/drop/ledger/profile/events and retains durable leave (13.3648ms)
+✔ managed generation refresh after two gives preserves captured durable deadlines (25.0441ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 883.4535

@@ -1,0 +1,124 @@
+TAP version 13
+# Subtest: scatter is reproducible and uses only explicit seed and input data
+ok 1 - scatter is reproducible and uses only explicit seed and input data
+  ---
+  duration_ms: 15.398069
+  type: 'test'
+  ...
+# Subtest: circle, square, and rotated ellipse constrain candidates to their brush footprint
+ok 2 - circle, square, and rotated ellipse constrain candidates to their brush footprint
+  ---
+  duration_ms: 5.24872
+  type: 'test'
+  ...
+# Subtest: rotated square includes its corner footprint beyond the unrotated radius
+ok 3 - rotated square includes its corner footprint beyond the unrotated radius
+  ---
+  duration_ms: 7.700723
+  type: 'test'
+  ...
+# Subtest: rotated ellipse influence covers the union of resampled brush positions along a stroke
+ok 4 - rotated ellipse influence covers the union of resampled brush positions along a stroke
+  ---
+  duration_ms: 14.742836
+  type: 'test'
+  ...
+# Subtest: per-cell jitter, selection, rotation and scale stay fixed when the stroke footprint expands
+ok 5 - per-cell jitter, selection, rotation and scale stay fixed when the stroke footprint expands
+  ---
+  duration_ms: 54.459476
+  type: 'test'
+  ...
+# Subtest: spacing holds against every prior decoration and every accepted point
+ok 6 - spacing holds against every prior decoration and every accepted point
+  ---
+  duration_ms: 2.663596
+  type: 'test'
+  ...
+# Subtest: policy exclusions and unsupported heights are omitted deterministically and counted
+ok 7 - policy exclusions and unsupported heights are omitted deterministically and counted
+  ---
+  duration_ms: 3.58917
+  type: 'test'
+  ...
+# Subtest: model metrics and hard object, triangle, primitive, and candidate limits reject whole plans
+ok 8 - model metrics and hard object, triangle, primitive, and candidate limits reject whole plans
+  ---
+  duration_ms: 15.808271
+  type: 'test'
+  ...
+# Subtest: existing authored cost participates in cumulative triangle and primitive budgets
+ok 9 - existing authored cost participates in cumulative triangle and primitive budgets
+  ---
+  duration_ms: 3.5273
+  type: 'test'
+  ...
+# Subtest: dense strokes stop invoking spatial policy as soon as object budget is exceeded
+ok 10 - dense strokes stop invoking spatial policy as soon as object budget is exceeded
+  ---
+  duration_ms: 9.636573
+  type: 'test'
+  ...
+# Subtest: application creates one schema-preserving atomic history entry with stable IDs and roundtrips
+ok 11 - application creates one schema-preserving atomic history entry with stable IDs and roundtrips
+  ---
+  duration_ms: 46.537938
+  type: 'test'
+  ...
+# Subtest: zero placements are a no-op and invalid IDs cannot partially change the source document
+ok 12 - zero placements are a no-op and invalid IDs cannot partially change the source document
+  ---
+  duration_ms: 1.694795
+  type: 'test'
+  ...
+# Subtest: cosmetic scatter policy admits safe dry ground and rejects protected gameplay sites
+ok 13 - cosmetic scatter policy admits safe dry ground and rejects protected gameplay sites
+  ---
+  duration_ms: 2285.425611
+  type: 'test'
+  ...
+# Subtest: scatter rejects a footprint crossing the shoreline or a steep height break
+ok 14 - scatter rejects a footprint crossing the shoreline or a steep height break
+  ---
+  duration_ms: 1704.285493
+  type: 'test'
+  ...
+# Subtest: terrain v3 projects the movement sampler and resets to the exact v2 baseline
+ok 15 - terrain v3 projects the movement sampler and resets to the exact v2 baseline
+  ---
+  duration_ms: 2720.832762
+  type: 'test'
+  ...
+# Subtest: v2 documents retain their historical shape and projection without terrain fields
+ok 16 - v2 documents retain their historical shape and projection without terrain fields
+  ---
+  duration_ms: 1971.397197
+  type: 'test'
+  ...
+# Subtest: client publication and server save reject samples in protected ground
+ok 17 - client publication and server save reject samples in protected ground
+  ---
+  duration_ms: 2059.865304
+  type: 'test'
+  ...
+# Subtest: publication checks object support against the projected ground height
+ok 18 - publication checks object support against the projected ground height
+  ---
+  duration_ms: 1552.767068
+  type: 'test'
+  ...
+# Subtest: activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+ok 19 - activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+  ---
+  duration_ms: 1628.379259
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 14818.750796

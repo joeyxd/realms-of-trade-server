@@ -1,0 +1,361 @@
+{
+  "schema": "st01c-update-checkpoint/v1",
+  "date": "2026-10-13",
+  "sourceSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "scope": "Native UPDATE from 50 first-observed birth states. Not native spawning, not production integration, not final UE color or mobile acceptance.",
+  "sourcesRehashed": {
+    "originals": 51,
+    "copies": 51,
+    "allUnchanged": true
+  },
+  "codeSha256": {
+    "src/render/vfx/niagara/update-simulation.js": "5aa318aff8b217a1f2c6868f9525ed836078d31d8382b92bc095016c5da44f83",
+    "tools/niagara-native-lab/prepare-update-fixture.py": "cc7c31cbed87e512795ac89e8bbb0dad1f45b30ce53670c0bfc5fd1ec0b790c0",
+    "tools/niagara-native-lab/verify-update.mjs": "8b5e9ddd8171dd9ec587efe4328b3946fdb869966897c1693e9ae79fcbbae5c5",
+    "tools/niagara-native-lab/update-simulation.test.mjs": "8c9c6111122b316e17fd80f5aac5eecbfd97ee9e5f2580f13fcafb7348637882",
+    "tools/niagara-native-lab/qa-update.mjs": "9dfa5a850856ff4f76e2debc4cb3a7bfd5eee54b5b923e62b146e2d77f8a27ff",
+    "tools/niagara-native-lab/lab.js": "2018f3f524c4736f5fd992d09b8f4619d4128eeeca000d84df8a3971d3cce8da",
+    "tools/niagara-native-lab/index.html": "f72bf20f9e88b4ce5b76c759f4ee03f544430c368b7ebd994f791dddaa25010d",
+    "tools/niagara-native-lab/particles.js": "f7b862a96f383ad0fb0ddffb8e222cbf5255c33f95b64f7d26ec7715e641ac86",
+    "docs/delivery/st01c/effect-description.json": "70a36cd4a7d9a40b49d8fab4a5f6e9928f3cfb8a4edf988345ef2e5629ff66c7"
+  },
+  "validations": [
+    {
+      "schema": "st01c-update-validation/v1",
+      "run": "reference11",
+      "fixtureSha256": "f3d33925c860c172f4a7e6352979064495b3a9122d44b67d62b2a2b7a2969565",
+      "frameCount": 241,
+      "comparedParticles": 4140,
+      "births": 50,
+      "counts": [
+        {
+          "step": 0,
+          "particles": [
+            0,
+            0
+          ]
+        },
+        {
+          "step": 30,
+          "particles": [
+            1,
+            4
+          ]
+        },
+        {
+          "step": 60,
+          "particles": [
+            2,
+            9
+          ]
+        },
+        {
+          "step": 120,
+          "particles": [
+            3,
+            19
+          ]
+        },
+        {
+          "step": 180,
+          "particles": [
+            3,
+            20
+          ]
+        },
+        {
+          "step": 240,
+          "particles": [
+            3,
+            20
+          ]
+        }
+      ],
+      "maxErrors": {
+        "positionCm": 0,
+        "ageSeconds": 0,
+        "alpha": 8.940696716308594e-07,
+        "subImage": 0,
+        "sizeCm": 0,
+        "rgb": 0
+      },
+      "tolerance": {
+        "positionCm": 0.001,
+        "ageSeconds": 1e-05,
+        "alpha": 1e-05,
+        "subImage": 0.001,
+        "sizeCm": 0,
+        "rgb": 0
+      },
+      "orderDifferences": 0,
+      "numericPassed": true,
+      "scope": "Native update only; initial states and spawn timing remain observed fixtures. Not a native emitter or visual acceptance."
+    },
+    {
+      "schema": "st01c-update-validation/v1",
+      "run": "reference12",
+      "fixtureSha256": "707f1f788ccfb52c39a8822a2cd31cf98972cc8de02909baea4a1bc683ab7469",
+      "frameCount": 241,
+      "comparedParticles": 4140,
+      "births": 50,
+      "counts": [
+        {
+          "step": 0,
+          "particles": [
+            0,
+            0
+          ]
+        },
+        {
+          "step": 30,
+          "particles": [
+            1,
+            4
+          ]
+        },
+        {
+          "step": 60,
+          "particles": [
+            2,
+            9
+          ]
+        },
+        {
+          "step": 120,
+          "particles": [
+            3,
+            19
+          ]
+        },
+        {
+          "step": 180,
+          "particles": [
+            3,
+            20
+          ]
+        },
+        {
+          "step": 240,
+          "particles": [
+            3,
+            20
+          ]
+        }
+      ],
+      "maxErrors": {
+        "positionCm": 0,
+        "ageSeconds": 0,
+        "alpha": 8.940696716308594e-07,
+        "subImage": 0,
+        "sizeCm": 0,
+        "rgb": 0
+      },
+      "tolerance": {
+        "positionCm": 0.001,
+        "ageSeconds": 1e-05,
+        "alpha": 1e-05,
+        "subImage": 0.001,
+        "sizeCm": 0,
+        "rgb": 0
+      },
+      "orderDifferences": 0,
+      "numericPassed": true,
+      "scope": "Native update only; initial states and spawn timing remain observed fixtures. Not a native emitter or visual acceptance."
+    }
+  ],
+  "browser": {
+    "schema": "st01c-update-browser/v1",
+    "checks": [
+      "update starts with only 50 birth states; no particle-state frame requests",
+      "speed raises smoke with unchanged flame and counts",
+      "longer life keeps particles beyond source emission; reset restores drain",
+      "stop admission drains existing particles; backward seek and reset are repeatable",
+      "playback advances; controls fit 390px",
+      "observed mode remains usable and switching back preserves controls"
+    ],
+    "errors": [],
+    "memory": {
+      "geometries": 0,
+      "textures": 0
+    },
+    "updateOnlyRequestCount": 17,
+    "updateOnlyFrameRequests": 0,
+    "methods": [
+      "GET"
+    ],
+    "scope": "Local Chrome; mobile layout only, not physical mobile performance."
+  },
+  "tests": {
+    "command": "node --test tools/niagara-native-lab/lab.test.mjs tools/niagara-native-lab/update-simulation.test.mjs",
+    "pass": 5,
+    "fail": 0
+  },
+  "observedModeRegression": {
+    "initial": {
+      "ready": true,
+      "errors": [],
+      "count": 22,
+      "draws": 3,
+      "textures": 3
+    },
+    "results": [
+      {
+        "check": "orbit-changes-render",
+        "okay": true
+      },
+      {
+        "check": "smoke-only",
+        "count": 19
+      },
+      {
+        "check": "both-hidden",
+        "count": 0
+      },
+      {
+        "check": "play-advances",
+        "frame": 145
+      },
+      {
+        "check": "mobile-no-overflow",
+        "okay": true
+      },
+      {
+        "check": "disposed",
+        "memory": {
+          "geometries": 0,
+          "textures": 0
+        }
+      }
+    ],
+    "errors": []
+  },
+  "renderComparisons": [
+    {
+      "camera": "front",
+      "step": 120,
+      "comparison": "locally evolved vs observed attributes; same Three renderer",
+      "differentPixels": 0,
+      "maxChannelDifferenceRGB8": 0
+    },
+    {
+      "camera": "oblique",
+      "step": 120,
+      "comparison": "locally evolved vs observed attributes; same Three renderer",
+      "differentPixels": 1,
+      "maxChannelDifferenceRGB8": 1
+    },
+    {
+      "camera": "side",
+      "step": 120,
+      "comparison": "locally evolved vs observed attributes; same Three renderer",
+      "differentPixels": 0,
+      "maxChannelDifferenceRGB8": 0
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "update-front.png",
+      "sha256": "5034cfd23f3c0f60121b0fd9c8344e2de6daf5fc22a873b40f7f522786020c57"
+    },
+    {
+      "file": "update-oblique.png",
+      "sha256": "ad79cafaaa21ec141d91ae08927b8d64948b72f3f1e9e9eb3b58c1c158f40cf4"
+    },
+    {
+      "file": "update-side.png",
+      "sha256": "f8b711a498c9d4ad46d367a2ee38d414e21d6848042150f36f36a6ab6ce51bec"
+    },
+    {
+      "file": "update-fast.png",
+      "sha256": "047304ea62164f5b5e79a9dd471078b9e1ced1c0d2082092274b7799f3a7ce59"
+    },
+    {
+      "file": "update-mobile.png",
+      "sha256": "da6a7097eb1e2574dda75b54ef34b782693a4d2c646f5b9e27fdce15e0060126"
+    }
+  ],
+  "moduleExports": {
+    "module-defaults02": [
+      {
+        "path": "/Niagara/Modules/Spawn/Location/SphereLocation",
+        "file": "SphereLocation.t3d",
+        "bytes": 413237,
+        "sha256": "7ce858bed9c372fb088e873819623552ed5c6b51a54dda2576a4bd174c61ae70"
+      },
+      {
+        "path": "/Niagara/Modules/Spawn/Location/CylinderLocation",
+        "file": "CylinderLocation.t3d",
+        "bytes": 2397628,
+        "sha256": "57813fffa3cbabe6d38ee6bb4160e7eb3562c28f54bc5d58a7ceddf2653bd40c"
+      },
+      {
+        "path": "/Niagara/Modules/Spawn/Initialization/InitializeParticle",
+        "file": "InitializeParticle.t3d",
+        "bytes": 206453,
+        "sha256": "746714c4118f72592ef337db42bc2fed877a3bc01cfdfd6e6fc8aa6afbb8d577"
+      },
+      {
+        "path": "/Niagara/DynamicInputs/ValueFromCurve/FloatFromCurve",
+        "file": "FloatFromCurve.t3d",
+        "bytes": 55701,
+        "sha256": "8deae98d431bb86caa274a45a084a50fe29b259ed47cbf7a2a3b1e936f3e90c4"
+      },
+      {
+        "path": "/Niagara/Modules/Emitter/SpawnRate",
+        "file": "SpawnRate.t3d",
+        "bytes": 145878,
+        "sha256": "65a553ac6e3f7965c65a58fd59905425bed7e5843c4fa1fcf0f28e820f05abac"
+      }
+    ],
+    "module-functions01": [
+      {
+        "path": "/Niagara/Functions/RandomPointInSphere",
+        "file": "RandomPointInSphere.t3d",
+        "bytes": 91068,
+        "sha256": "b5c5ce664d714947530989ada3abe16be703353748cdf2945c302d19657b5853"
+      },
+      {
+        "path": "/Niagara/Functions/RandomUnitVector",
+        "file": "RandomUnitVector.t3d",
+        "bytes": 78504,
+        "sha256": "ee1c35a9f42beb87a273a3ad76f913fbd0e543bfb7915ec33d190d21083afe5f"
+      },
+      {
+        "path": "/Niagara/Functions/RandomVector",
+        "file": "RandomVector.t3d",
+        "bytes": 18185,
+        "sha256": "546d039e104575c63963598c4ee754ebf684789803ccefa68481ed1d8792457d"
+      },
+      {
+        "path": "/Niagara/Functions/PolarToCartesianCoordinates",
+        "file": "PolarToCartesianCoordinates.t3d",
+        "bytes": 45222,
+        "sha256": "eefefbc0496b62499aa399ecc02a76bc4009810c6207c0fc76b57450fbb49565"
+      }
+    ]
+  },
+  "sourceImplementation": [
+    {
+      "engineRelative": "Private/NiagaraDataInterfaceCurve.cpp",
+      "sha256": "c2d22110cf0b7928c2ce7f9994fa9babce9c9f718f507fe5705a10c01596d294"
+    },
+    {
+      "engineRelative": "Private/NiagaraDataInterfaceCurveBase.cpp",
+      "sha256": "7996d7272f31fe4f0013771df77fdd83958f8db0c4e603cc93f7c22f7b48ba90"
+    },
+    {
+      "engineRelative": "Classes/NiagaraDataInterfaceCurveBase.h",
+      "sha256": "7d3bd55b7172d99ce8196c4ee2bd50d88f17531abf823a93a1b42344f28a0041"
+    }
+  ],
+  "unresolved": [
+    "location distributions and effective wrapper branches",
+    "Lathe Profile coordinate mapping",
+    "native spawn timing/interpolation/RNG",
+    "world DepthFade",
+    "Unreal final tonemapping",
+    "physical mobile GPU budget",
+    "game catalog integration",
+    "agent composer (plan only)"
+  ]
+}

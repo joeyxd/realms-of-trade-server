@@ -1,0 +1,572 @@
+{
+  "schema": "st01c-native-checkpoint/v1",
+  "date": "2026-10-13",
+  "sourceSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "scope": "Native births and update from exact compiled CPU pilot plus LUT and fixed seeds; zero captured particle states as inputs. Private lab, not final UE color/DepthFade/mobile/game acceptance.",
+  "sourcesRehashed": {
+    "originals": 51,
+    "copies": 51,
+    "allUnchanged": true
+  },
+  "codeSha256": {
+    "src/render/vfx/niagara/native-simulation.js": "3f376c30bd64aa9d43c6cd3cdadad180aafdb7143d9d55f3764a1f35901734ae",
+    "src/render/vfx/niagara/source-identity.js": "e1f1db686cae0394b3038f95c1c0063d9abc8f75cc8ff93a32758ca7e424df4b",
+    "src/render/vfx/niagara/pilot-source.json": "85b251ab3c249aed61cd5fd6be16d0ace0229f88bbd7e03c45718d9e41e472a5",
+    "tools/niagara-native-lab/prepare-native-source.py": "c0db462889677f076e5f6da2aa714e72669bb450696aa1b6665b6e819cde1148",
+    "tools/niagara-native-lab/verify-native.mjs": "c37d716fb00d7fab2fb05edfcce44180972503d75a2dc7b3c09bd0afd182c693",
+    "tools/niagara-native-lab/native-simulation.test.mjs": "b483b598e890e822680182beec3cfb7a9356f1789212da05b8d555817a19a618",
+    "tools/niagara-native-lab/qa-native.mjs": "662189e8ab4b75e37635627e367426f02bda95fe868248575b585e56482dbd30",
+    "tools/niagara-native-lab/lab.js": "f7039edc381a3391fdce835e815b1c752684a264177f38f94652276574c9a770",
+    "tools/niagara-native-lab/index.html": "4d8b703391f4b13eb07b2273e2fad11c3a8d9fa11aa9b28463b77043a80f1c75",
+    "tools/niagara-native-lab/particles.js": "8d7af7b16d68297d89b19b31da99be9b572aa6a7ba19af58c4814285ddf51d70",
+    "tools/unreal-niagara-probe/probe_compiled.py": "7e2b23fe34a12f32808dd79ae51d7e4c39679fc7d396587383dc0c26b54a1072",
+    "tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/Public/ST01cRuntimeProbe.h": "4d852619da6856903bab053c33daee6d2bf1ac9036f1476f22a0edc3c5751b95",
+    "tools/unreal-niagara-probe/ST01cProbe/Source/ST01cProbe/Private/ST01cRuntimeProbe.cpp": "6bf1b730e02e4034ad016b74e71053cbe241c211129a42095c2951ec919339f0",
+    "docs/delivery/st01c/effect-description.json": "ae81360d9c2d899b615ba8e3529ea9ca630bab2550bb708cc71fb56f17d74699"
+  },
+  "validations": [
+    {
+      "run": "reference11",
+      "frames": 241,
+      "particleStates": 4140,
+      "sourcePresetSha256": "85b251ab3c249aed61cd5fd6be16d0ace0229f88bbd7e03c45718d9e41e472a5",
+      "capturedStatesUsedAsInputs": 0,
+      "liveIdsAndOrderMatch": true,
+      "maxErrors": {
+        "positionCm": 1.9073486328125e-06,
+        "velocityCmPerSecond": 0,
+        "ageSeconds": 0,
+        "alpha": 8.940696716308594e-07,
+        "rgb": 0,
+        "subImage": 0,
+        "sizeCm": 0
+      },
+      "tolerances": {
+        "positionCm": 0.002,
+        "velocityCmPerSecond": 0.001,
+        "ageSeconds": 1e-05,
+        "alpha": 1e-05,
+        "rgb": 1e-05,
+        "subImage": 0.001,
+        "sizeCm": 0.001
+      },
+      "passed": true
+    },
+    {
+      "run": "reference12",
+      "frames": 241,
+      "particleStates": 4140,
+      "sourcePresetSha256": "85b251ab3c249aed61cd5fd6be16d0ace0229f88bbd7e03c45718d9e41e472a5",
+      "capturedStatesUsedAsInputs": 0,
+      "liveIdsAndOrderMatch": true,
+      "maxErrors": {
+        "positionCm": 1.9073486328125e-06,
+        "velocityCmPerSecond": 0,
+        "ageSeconds": 0,
+        "alpha": 8.940696716308594e-07,
+        "rgb": 0,
+        "subImage": 0,
+        "sizeCm": 0
+      },
+      "tolerances": {
+        "positionCm": 0.002,
+        "velocityCmPerSecond": 0.001,
+        "ageSeconds": 1e-05,
+        "alpha": 1e-05,
+        "rgb": 1e-05,
+        "subImage": 0.001,
+        "sizeCm": 0.001
+      },
+      "passed": true
+    }
+  ],
+  "browser": {
+    "checks": [
+      "native starts with source preset; no particle states or births fetched",
+      "seed changes appearance repeatably; reset restores exact default snapshot",
+      "new source-only births at 7 s beyond recorded 4 s window",
+      "stop drains; speed preserves flame; long life delays death; backward seek resets",
+      "layers, camera orbit and playback operate on native particles",
+      "all controls fit 390px; physical mobile performance not measured",
+      "all three modes switch and retain independent configuration"
+    ],
+    "errors": [],
+    "nativeOnlyRequests": [
+      {
+        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/index.html?run=reference11&mode=native",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/lab.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/node_modules/three/build/three.module.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/node_modules/three/examples/jsm/loaders/RGBELoader.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/tools/niagara-native-lab/particles.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/src/render/vfx/niagara/update-simulation.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/src/render/vfx/niagara/native-simulation.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/src/render/vfx/niagara/source-identity.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/capture-report.json",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/src/render/vfx/niagara/pilot-source.json",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/textures/T_FlameUV_2.png",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/textures/T_Smoke_1.png",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/frames/t0120_front_linear.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/frames/t0120_oblique_linear.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/frames/t0120_side_linear.hdr",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/frames/t0120_front.png",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/frames/t0120_side.png",
+        "method": "GET"
+      },
+      {
+        "url": "http://127.0.0.1:5197/.scratch/unreal/reference11/frames/t0240_side.png",
+        "method": "GET"
+      }
+    ],
+    "allRequestsLocalGetOnly": true,
+    "stats": {
+      "count": 22,
+      "drawCalls": 3,
+      "textures": 6
+    },
+    "resourcesAfterDispose": {
+      "geometries": 0,
+      "textures": 0
+    }
+  },
+  "tests": {
+    "command": "node --test tools/niagara-native-lab/lab.test.mjs tools/niagara-native-lab/update-simulation.test.mjs tools/niagara-native-lab/native-simulation.test.mjs",
+    "pass": 9,
+    "fail": 0
+  },
+  "previousModeRegression": {
+    "update": {
+      "schema": "st01c-update-browser/v1",
+      "checks": [
+        "update starts with only 50 birth states; no particle-state frame requests",
+        "speed raises smoke with unchanged flame and counts",
+        "longer life keeps particles beyond source emission; reset restores drain",
+        "stop admission drains existing particles; backward seek and reset are repeatable",
+        "playback advances; controls fit 390px",
+        "observed mode remains usable and switching back preserves controls"
+      ],
+      "errors": [],
+      "memory": {
+        "geometries": 0,
+        "textures": 0
+      },
+      "updateOnlyRequestCount": 18,
+      "updateOnlyFrameRequests": 0,
+      "methods": [
+        "GET"
+      ],
+      "scope": "Local Chrome; mobile layout only, not physical mobile performance."
+    },
+    "observed": {
+      "initial": {
+        "ready": true,
+        "errors": [],
+        "count": 22,
+        "draws": 3,
+        "textures": 3
+      },
+      "results": [
+        {
+          "check": "orbit-changes-render",
+          "okay": true
+        },
+        {
+          "check": "smoke-only",
+          "count": 19
+        },
+        {
+          "check": "both-hidden",
+          "count": 0
+        },
+        {
+          "check": "play-advances",
+          "frame": 145
+        },
+        {
+          "check": "mobile-no-overflow",
+          "okay": true
+        },
+        {
+          "check": "disposed",
+          "memory": {
+            "geometries": 0,
+            "textures": 0
+          }
+        }
+      ],
+      "errors": []
+    }
+  },
+  "compiledSourceReport": {
+    "schema": "st01c-compiled-pilot/v1",
+    "system": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single",
+    "settings": {
+      "system": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single",
+      "overrideScope": "in-memory comparison fixture only; originals not saved",
+      "warmupTime": 0,
+      "warmupTicks": 0,
+      "sourceEnums": [
+        {
+          "path": "/Niagara/Enums/ENiagaraSUbUVAnimationMode.ENiagaraSUbUVAnimationMode",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "Linear"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "Random"
+            },
+            {
+              "token": "ENiagaraSUbUVAnimationMode_MAX",
+              "label": "ENiagara SUb UVAnimation Mode MAX"
+            }
+          ]
+        },
+        {
+          "path": "/Niagara/Enums/ENiagaraEmitterLifeCycleMode.ENiagaraEmitterLifeCycleMode",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "System"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "Self"
+            },
+            {
+              "token": "ENiagaraEmitterLifeCycleMode_MAX",
+              "label": "ENiagara Emitter Life Cycle Mode MAX"
+            }
+          ]
+        },
+        {
+          "path": "/Niagara/Enums/ENiagara_EmitterStateOptions.ENiagara_EmitterStateOptions",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "Infinite"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "Once"
+            },
+            {
+              "token": "NewEnumerator2",
+              "label": "Multiple"
+            },
+            {
+              "token": "ENiagara_MAX",
+              "label": "ENiagara MAX"
+            }
+          ]
+        },
+        {
+          "path": "/Niagara/Enums/ENiagara_InfiniteLoopDuration.ENiagara_InfiniteLoopDuration",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "Fixed"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "Infinite"
+            },
+            {
+              "token": "ENiagara_MAX",
+              "label": "ENiagara MAX"
+            }
+          ]
+        },
+        {
+          "path": "/Niagara/Enums/ENiagaraEmitterScalabilityMode_Limited.ENiagaraEmitterScalabilityMode_Limited",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "System"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "Self"
+            },
+            {
+              "token": "ENiagaraEmitterScalabilityMode_MAX",
+              "label": "ENiagara Emitter Scalability Mode MAX"
+            }
+          ]
+        },
+        {
+          "path": "/Niagara/Enums/ENiagaraScaleColorMode.ENiagaraScaleColorMode",
+          "entries": [
+            {
+              "token": "NewEnumerator0",
+              "label": "RGB and Alpha Separately"
+            },
+            {
+              "token": "NewEnumerator1",
+              "label": "RGBA Together"
+            },
+            {
+              "token": "NewEnumerator2",
+              "label": "RGBA Linear Color Curve"
+            },
+            {
+              "token": "ENiagaraScaleColorMode_MAX",
+              "label": "ENiagara Scale Color Mode MAX"
+            }
+          ]
+        }
+      ],
+      "emitters": [
+        {
+          "name": "NE_Flame_Basic_001",
+          "originalDeterminism": false,
+          "originalSeed": 0,
+          "fixtureSeed": 6371
+        },
+        {
+          "name": "NE_Smoke_Basic",
+          "originalDeterminism": false,
+          "originalSeed": 0,
+          "fixtureSeed": 6372
+        }
+      ]
+    },
+    "scripts": [
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:SystemSpawnScript",
+        "usage": "SystemSpawnScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "00-SystemSpawnScript.hlsl",
+        "bytes": 14464,
+        "sha256": "9f8aa5b9865dae9819b326f22590c04f58cdc14efed8c0c1e6dde0607d4b903e"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:SystemUpdateScript",
+        "usage": "SystemUpdateScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "01-SystemUpdateScript.hlsl",
+        "bytes": 49767,
+        "sha256": "d6c2dd7f75f6bb409ca865ba57436dfacc2cc6cfa699da3e18365deb8647e122"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.SpawnScript",
+        "usage": "ParticleSpawnScriptInterpolated",
+        "compileStatus": "NCS_UpToDate",
+        "file": "02-ParticleSpawnScriptInterpolated.hlsl",
+        "bytes": 64900,
+        "sha256": "119c4e8f54f674bee26f76ea456cd7f7f8260a265442144240f39c4872e51e3b"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.UpdateScript",
+        "usage": "ParticleUpdateScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "03-ParticleUpdateScript.hlsl",
+        "bytes": 22759,
+        "sha256": "589f4990b07aff86aa179f74bf9d7254ed0abfe62eec64806ad6989836e5a7ce"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.EmitterSpawnScript",
+        "usage": "EmitterSpawnScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "04-EmitterSpawnScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Flame_Basic_001.EmitterUpdateScript",
+        "usage": "EmitterUpdateScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "05-EmitterUpdateScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.SpawnScript",
+        "usage": "ParticleSpawnScriptInterpolated",
+        "compileStatus": "NCS_UpToDate",
+        "file": "06-ParticleSpawnScriptInterpolated.hlsl",
+        "bytes": 79450,
+        "sha256": "a625fb6ce173a2d9fe4713a2a475b0c8b1cac813f5c569fc848d3a6191ec4ce1"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.UpdateScript",
+        "usage": "ParticleUpdateScript",
+        "compileStatus": "NCS_UpToDate",
+        "file": "07-ParticleUpdateScript.hlsl",
+        "bytes": 25782,
+        "sha256": "92865d3b88ac31426adf4b5eaf57857c94e5d837a4ebd44ebb8a5c4a25a69a0d"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.EmitterSpawnScript",
+        "usage": "EmitterSpawnScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "08-EmitterSpawnScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.EmitterUpdateScript",
+        "usage": "EmitterUpdateScript",
+        "compileStatus": "NCS_Unknown",
+        "file": "09-EmitterUpdateScript.hlsl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "vmReciprocalEstimates": [
+      {
+        "rate": 3,
+        "estimate": 0.333251953125
+      },
+      {
+        "rate": 10,
+        "estimate": 0.0999755859375
+      }
+    ],
+    "scope": "Effective CPU compiler output with in-memory fixture seeds; source assets never saved."
+  },
+  "compiledReportSha256": "842837800b88ab940f644ffa1323dd1d2aecd3db3073bd88c05368a9ab527a58",
+  "nativeHelperBuild": {
+    "succeeded": true,
+    "engine": "5.8.0-55116800+++UE5+Release-5.8",
+    "target": "UnrealEditor Win64 Development",
+    "assetSaves": 0,
+    "scope": "scratch plugin only"
+  },
+  "renderComparisons": [
+    {
+      "camera": "front",
+      "step": 120,
+      "comparison": "native generator vs recorded attributes in same Three renderer; not UE final-color parity",
+      "differentPixels": 0,
+      "maxChannelDifferenceRGB8": 0,
+      "nativeCanvasSha256": "8b66ec28a98d1a8c35e8a613822f437cfb4aa7df8c935d86c69ef627aa173fc7",
+      "observedCanvasSha256": "8b66ec28a98d1a8c35e8a613822f437cfb4aa7df8c935d86c69ef627aa173fc7"
+    },
+    {
+      "camera": "oblique",
+      "step": 120,
+      "comparison": "native generator vs recorded attributes in same Three renderer; not UE final-color parity",
+      "differentPixels": 1,
+      "maxChannelDifferenceRGB8": 1,
+      "nativeCanvasSha256": "e2de6372792853c789de4f94cb3534f16ecd5e8ff2bf3a4a5607ff9ec2d7ad68",
+      "observedCanvasSha256": "345c1877ee4caa5dc165a5d80aed4a0fb8932ca8a587e3597d0f7a41d02ab232"
+    },
+    {
+      "camera": "side",
+      "step": 120,
+      "comparison": "native generator vs recorded attributes in same Three renderer; not UE final-color parity",
+      "differentPixels": 0,
+      "maxChannelDifferenceRGB8": 0,
+      "nativeCanvasSha256": "a3e98fc2f28aa8024790fd949f0f0a0364227ca3dada96561e4f644e9acfeafa",
+      "observedCanvasSha256": "a3e98fc2f28aa8024790fd949f0f0a0364227ca3dada96561e4f644e9acfeafa"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "native-front.png",
+      "sha256": "5191a702db5d947a1b3d9a386225d0cb432d8cfb01a1bf30ac6e80bd855665d3",
+      "visuallyInspected": true
+    },
+    {
+      "file": "native-oblique.png",
+      "sha256": "2a06eff9ccc45bdf03392220e049b93a015ef2c26563ba5e3ba04e45526b4b01",
+      "visuallyInspected": true
+    },
+    {
+      "file": "native-side.png",
+      "sha256": "433ef05e04208770449bd58dd85ec7d1930f51ae584dd7d7ab60472dbb4f81da",
+      "visuallyInspected": true
+    },
+    {
+      "file": "native-seed42.png",
+      "sha256": "6bf3ea48a666e0796ecb785f6bdf3a2056cfaf444da9d604fe5d6e4e36e68c1c",
+      "visuallyInspected": true
+    },
+    {
+      "file": "native-continuous.png",
+      "sha256": "da872a0035a41a55154833254c4dbcc54a9497d0e1423bde9ff7f7590f569b82",
+      "visuallyInspected": true
+    },
+    {
+      "file": "native-mobile.png",
+      "sha256": "2df51faa9f752d10780aa71477a512526bdf8edefe8d745a14a35247d1334386",
+      "visuallyInspected": true
+    }
+  ],
+  "engineImplementation": [
+    {
+      "engineRelative": "Plugins/FX/Niagara/Shaders/Private/NiagaraEmitterInstanceShader.usf",
+      "sha256": "b6e2ba0c67516567d24c15c40db56976ac3bee8173cf99e9f988a6df6c011144"
+    },
+    {
+      "engineRelative": "Plugins/FX/Niagara/Source/Niagara/Private/NiagaraSystemSimulation.cpp",
+      "sha256": "599f4223700bc3fdaba8cbba6be1ef2edf87bb4551616760917ca285549b1e7a"
+    },
+    {
+      "engineRelative": "Plugins/FX/Niagara/Source/Niagara/Private/NiagaraEmitterInstanceImpl.cpp",
+      "sha256": "c752a7b098edce39c486d783d936b1e9f98b2df5e06f7ba9471c778d1b5bb875"
+    },
+    {
+      "engineRelative": "Source/Runtime/VectorVM/Private/VectorVMRuntime.cpp",
+      "sha256": "2e48b97a5c2a380f661cca0074c003ee535af3758f97f856864c8448810a2ca6"
+    }
+  ],
+  "unresolved": [
+    "alternate seeds independently captured in Unreal",
+    "world DepthFade",
+    "Unreal final tonemapping",
+    "physical mobile GPU budget and optimized texture variants",
+    "game Workshop/catalog integration",
+    "other Niagara systems",
+    "agent composer (plan only)"
+  ]
+}

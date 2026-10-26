@@ -1,0 +1,45 @@
+✔ guest handshake waits for a valid own snapshot and reports the real protocol identity (501.7938ms)
+✔ fixture and server sources stay partitioned and a lab cannot opt into server receipts (1.3672ms)
+✔ normal input uses sequence and projectile tick; prediction and ACK cannot confirm movement (405.935ms)
+✔ zero displacement and full ACK remain unknown until timeout without inventing a cause (285.033ms)
+✔ a failed flush preserves submitted uncertainty and stops without replaying an attack (289.1954ms)
+✔ invalid, unsupported, forbidden and wrong session orders emit no privileged command (249.453ms)
+✔ wrong protocol and missing or malformed own snapshots cannot become ready (887.8967ms)
+✔ old and malformed snapshots do not replace confirmed state or freshness (385.3101ms)
+✔ raw swing confirms only correlated attack execution, ignoring unrelated events (373.2626ms)
+✔ despawn and numeric entity reuse retire an old target without another attack (361.4869ms)
+✔ raw despawn and reused spawn cancel attack before any replacement snapshot arrives (740.6892ms)
+✔ nearby human safety rejects PvE attack locally without claiming server policy (318.2328ms)
+✔ a nearby human omitted by the visible entity cap still prevents PvE attack (290.4728ms)
+✔ duplicate attacks do not pulse twice and cloning getters cannot alter live orders (352.0947ms)
+✔ owner stop and unexpected close neutralize the runner and preserve sent uncertainty (486.5058ms)
+✔ stop closes and retains uncertainty even if the final neutral flush throws (223.2283ms)
+✔ agent without a verified map projection is refused by an active GM content identity (309.7202ms)
+✔ real guests occupy normal slots and another normal client observes confirmed movement (1378.4614ms)
+✔ real guest walks with bounded inputs to the normal practice dummy and receives a server swing (1551.9601ms)
+✔ IndexedDB pending activation survives lost response and retries the exact operation after client restart (75.229ms)
+✔ account identity mismatch stops before network and preserves the durable pending operation (30.8538ms)
+✔ local CAS loss prevents sending an operation that was not durably recorded (15.0101ms)
+✔ identity change while session identity is resolving keeps the recorded operation for recovery (47.4487ms)
+▶ cancel and sign-out after a durable commit preserve the exact attempt for later retry
+  ✔ cancel (60.8686ms)
+  ✔ signout (62.9146ms)
+✔ cancel and sign-out after a durable commit preserve the exact attempt for later retry (124.3703ms)
+✔ active world content verifies canonical revision, base fingerprints and collision hash before use (479.9693ms)
+✔ server baseline absorbs tiny cross-runtime geometry drift and preserves its exact base identities (472.0412ms)
+✔ fresh-client verification rejects significant baseline geometry drift before installation (338.2581ms)
+✔ a near baseline with a mismatched server fingerprint is rejected (348.352ms)
+▶ strict base fingerprints reject props, collider and resource drift before changing the active map
+  ✔ fingerprint-0 (12.0483ms)
+  ✔ fingerprint-1 (15.6139ms)
+  ✔ fingerprint-2 (13.3403ms)
+✔ strict base fingerprints reject props, collider and resource drift before changing the active map (334.8719ms)
+✔ server-selected base identity accepts only null revision bodies and exact runtime version (311.8682ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10085.493

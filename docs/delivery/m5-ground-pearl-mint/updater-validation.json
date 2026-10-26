@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-11T17:48:45.269302+00:00",
+  "revision": "056d275bc858d1d29a758f218d301a0f9f75f786",
+  "source": "/opt/marea-negra/ops/update-056d275bc858d1d29a758f218d301a0f9f75f786.log",
+  "recordedAtMeaning": "Time of later read-only log extraction, not the test execution time. The installed updater ran these checks before replacing the authority.",
+  "counts": {
+    "tests": 176,
+    "pass": 176,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "scope": "Updater offline checks in the exact production Docker image before replacement."
+}

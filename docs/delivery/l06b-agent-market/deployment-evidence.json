@@ -1,0 +1,124 @@
+{
+  "schema": "mn.l06b.market.deployment.v1",
+  "at": "2026-10-10T18:45:35.810Z",
+  "localTime": "2026-10-10 12:45:35",
+  "timezone": "America/Mexico_City",
+  "url": "https://marea.62.171.136.148.sslip.io",
+  "revision": "4c6743b87b71ba765e316cd1652d1e4f23991501",
+  "featureCommit": "fc3c38a60a283a82faadae4956fb442662c412c7",
+  "featureIsAncestor": true,
+  "protocol": 36,
+  "runtime": {
+    "at": "2026-10-10T18:45:30.248528+00:00",
+    "container": "marea-negra-alpha-marea-negra-alpha-1",
+    "revision": "4c6743b87b71ba765e316cd1652d1e4f23991501",
+    "version": "0.6.0-alpha.23",
+    "image": "marea-negra:alpha-4c6743b87b71",
+    "imageId": "sha256:1c820d826d214a5b810e4829ee7cd6bb398494512b3a37bfaa027eefed8d2882",
+    "containerId": "f789f28aa883ad0eda1c7c1357e674e9ca1e63e3e9068be6a0d495541a60c410",
+    "running": true,
+    "health": "healthy",
+    "startedAt": "2026-10-10T18:43:25.420204884Z",
+    "oomKilled": false,
+    "currentRelease": "/opt/marea-negra/releases/4c6743b87b71ba765e316cd1652d1e4f23991501",
+    "updateState": {}
+  },
+  "releaseValidation": {
+    "marker": {
+      "revision": "4c6743b87b71ba765e316cd1652d1e4f23991501",
+      "image_id": "sha256:1c820d826d214a5b810e4829ee7cd6bb398494512b3a37bfaa027eefed8d2882",
+      "tests_passed": true
+    },
+    "tests": 107,
+    "pass": 107,
+    "fail": 0,
+    "skipped": 0,
+    "network": "none",
+    "cpus": 1,
+    "memory": "1g",
+    "logTail": "vps-release-tests.txt"
+  },
+  "integratedDelta": {
+    "revision": "4c6743b87b71ba765e316cd1652d1e4f23991501",
+    "tests": 46,
+    "pass": 46,
+    "fail": 0,
+    "skipped": 0,
+    "node": "v24.14.0",
+    "command": [
+      "node",
+      "--test",
+      "--test-concurrency=1",
+      "--test-reporter=tap",
+      "tests/agent-inventory-client.test.mjs",
+      "tests/agent-inventory-host.test.mjs",
+      "tests/agent-inventory-projection.test.mjs",
+      "tests/agent-market-cli.test.mjs",
+      "tests/agent-market-client.test.mjs",
+      "tests/agent-market-host.test.mjs",
+      "tests/agent-market-runner.test.mjs",
+      "tests/agent-read-context.test.mjs",
+      "tests/commerce-read.test.mjs"
+    ],
+    "tap": "integrated-public-release.tap",
+    "sha256": "918e391337212f14baafcc0cf90c85198549949dd975e0de356e10d9321e5c23",
+    "rawCaptureSha256": "306b50c398c79656ca5bee68f100bd437bd0bcb002954904342356f07a306cd6",
+    "artifactNormalization": "UTF-8 without BOM; CRLF changed to LF. Test content and results unchanged."
+  },
+  "publicSmoke": {
+    "at": "2026-10-10T18:44:11.155Z",
+    "pass": true,
+    "checks": 8,
+    "report": "public-smoke.json"
+  },
+  "postSmokeStatus": {
+    "at": "2026-10-10T18:45:35.810Z",
+    "httpStatus": 200,
+    "version": "0.6.0-alpha.23",
+    "players": 0,
+    "sockets": 1,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 7,
+        "replays": 0
+      },
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1369,
+        "errors": 0
+      }
+    }
+  },
+  "limits": [
+    "Public WSS entry verified as a guest; no authenticated economic transaction repeated in this check.",
+    "Public agent admission rejected; private authorized agent behavior covered by isolated integration tests.",
+    "No provider or inference connected; no agent purchases, sales, SQL or secrets changed by AREA17.",
+    "Resource authority reports enabled and ready from the concurrent AREA15 release; observed only, not activated or accepted by AREA17.",
+    "deployment-pending.json is historical: its earlier connection deferral is superseded by this successful deployment."
+  ],
+  "supersedes": "deployment-pending.json"
+}

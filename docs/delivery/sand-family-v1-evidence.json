@@ -1,0 +1,318 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07T02:01:35.579Z",
+  "scope": "Actual local game, unchanged heightfield, desktop 1280x720 high and mobile 844x390 medium. Mobile is emulated; no physical-device FPS claim.",
+  "desktop": {
+    "focus": {
+      "x": 110.53048327204941,
+      "z": 99.04520189781083,
+      "h": 0.2697517378012128,
+      "d": 89
+    },
+    "textures": [
+      {
+        "id": "tex:sand-dry-albedo-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/dry-albedo-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/dry-albedo-desktop.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 1024,
+        "height": 1024,
+        "colorSpace": "srgb"
+      },
+      {
+        "id": "tex:sand-dry-normal-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/dry-normal-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/dry-normal-desktop.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 1024,
+        "height": 1024,
+        "colorSpace": ""
+      },
+      {
+        "id": "tex:sand-wet-albedo-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/wet-albedo-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/wet-albedo-desktop.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 1024,
+        "height": 1024,
+        "colorSpace": "srgb"
+      },
+      {
+        "id": "tex:sand-ripple-albedo-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/ripple-albedo-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/ripple-albedo-desktop.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 1024,
+        "height": 1024,
+        "colorSpace": "srgb"
+      },
+      {
+        "id": "tex:sand-ripple-normal-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/ripple-normal-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/ripple-normal-desktop.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 1024,
+        "height": 1024,
+        "colorSpace": ""
+      },
+      {
+        "id": "tex:sand-footprints-albedo-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/footprints-albedo-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/footprints-albedo-desktop.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 1024,
+        "height": 1024,
+        "colorSpace": "srgb"
+      },
+      {
+        "id": "tex:sand-footprints-normal-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/footprints-normal-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/footprints-normal-desktop.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 1024,
+        "height": 1024,
+        "colorSpace": ""
+      },
+      {
+        "id": "tex:sand-shore-sand-albedo-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/shore-sand-albedo-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/shore-sand-albedo-desktop.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 1024,
+        "height": 1024,
+        "colorSpace": "srgb"
+      },
+      {
+        "id": "tex:sand-shore-sand-normal-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/shore-sand-normal-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/shore-sand-normal-desktop.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 1024,
+        "height": 1024,
+        "colorSpace": ""
+      }
+    ],
+    "requests": [
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/dry-albedo-desktop.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/dry-normal-desktop.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/wet-albedo-desktop.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/ripple-albedo-desktop.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/ripple-normal-desktop.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/footprints-albedo-desktop.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/footprints-normal-desktop.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/shore-sand-albedo-desktop.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/shore-sand-normal-desktop.webp"
+    ],
+    "errors": [],
+    "webgl2": true,
+    "samplers": 16,
+    "renderer": "WebKit WebGL",
+    "draw": {
+      "frame": 30175,
+      "calls": 133,
+      "triangles": 266694,
+      "points": 1800,
+      "lines": 0
+    }
+  },
+  "mobile": {
+    "coarse": true,
+    "textures": [
+      {
+        "id": "tex:sand-dry-albedo-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/dry-albedo-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/dry-albedo-mobile.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 512,
+        "height": 512,
+        "colorSpace": "srgb"
+      },
+      {
+        "id": "tex:sand-dry-normal-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/dry-normal-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/dry-normal-mobile.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 512,
+        "height": 512,
+        "colorSpace": ""
+      },
+      {
+        "id": "tex:sand-wet-albedo-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/wet-albedo-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/wet-albedo-mobile.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 512,
+        "height": 512,
+        "colorSpace": "srgb"
+      },
+      {
+        "id": "tex:sand-ripple-albedo-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/ripple-albedo-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/ripple-albedo-mobile.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 512,
+        "height": 512,
+        "colorSpace": "srgb"
+      },
+      {
+        "id": "tex:sand-ripple-normal-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/ripple-normal-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/ripple-normal-mobile.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 512,
+        "height": 512,
+        "colorSpace": ""
+      },
+      {
+        "id": "tex:sand-footprints-albedo-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/footprints-albedo-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/footprints-albedo-mobile.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 512,
+        "height": 512,
+        "colorSpace": "srgb"
+      },
+      {
+        "id": "tex:sand-footprints-normal-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/footprints-normal-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/footprints-normal-mobile.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 512,
+        "height": 512,
+        "colorSpace": ""
+      },
+      {
+        "id": "tex:sand-shore-sand-albedo-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/shore-sand-albedo-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/shore-sand-albedo-mobile.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 512,
+        "height": 512,
+        "colorSpace": "srgb"
+      },
+      {
+        "id": "tex:sand-shore-sand-normal-v1",
+        "kind": "tex",
+        "src": "textures/sand-family-v1/shore-sand-normal-desktop.webp",
+        "selectedSrc": "textures/sand-family-v1/shore-sand-normal-mobile.webp",
+        "state": "ok",
+        "error": "",
+        "tris": 0,
+        "notes": [],
+        "width": 512,
+        "height": 512,
+        "colorSpace": ""
+      }
+    ],
+    "requests": [
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/dry-albedo-mobile.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/dry-normal-mobile.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/wet-albedo-mobile.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/ripple-albedo-mobile.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/ripple-normal-mobile.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/footprints-albedo-mobile.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/footprints-normal-mobile.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/shore-sand-albedo-mobile.webp",
+      "http://127.0.0.1:5192/assets/textures/sand-family-v1/shore-sand-normal-mobile.webp"
+    ],
+    "errors": [],
+    "webgl2": true,
+    "samplers": 16,
+    "quality": "medium",
+    "draw": {
+      "frame": 44329,
+      "calls": 141,
+      "triangles": 272768,
+      "points": 1800,
+      "lines": 0
+    }
+  },
+  "normalComparison": {
+    "sameCamera": true,
+    "normalStrength": 0.22,
+    "psnrAgainstZero": 51.410263,
+    "note": "Finite screenshot PSNR; direct synchronous WebGL framebuffer comparison separately confirms a subtle normal-lighting effect.",
+    "framebufferComparison": {"changedPixels":111086,"totalPixels":2073600,"rms":0.7910516820231706,"strength":0.22,"errors":[]}
+  },
+  "consoleNote": "Desktop console contained two favicon.ico 404s, no shader compile or game errors.",
+  "screenshots": [
+    "docs/art/sand/map-desktop-before-v1.png",
+    "docs/art/sand/map-desktop-spawn-v1.png",
+    "docs/art/sand/map-desktop-coast-v1.png",
+    "docs/art/sand/map-desktop-coast-normal-off-v1.png",
+    "docs/art/sand/map-mobile-spawn-v1.png",
+    "docs/art/sand/map-mobile-coast-v1.png"
+  ],
+  "visualReview": {
+    "inspected": true,
+    "observed": "Dry grains/shells and broad ripples read at game camera. Footprints remain a localized static pattern. Wet/shore blending follows real coast; painted full-shore water excluded. Repeating bands and baked highlights remain visible in the authored artwork; final art tuning awaits author review."
+  }
+}

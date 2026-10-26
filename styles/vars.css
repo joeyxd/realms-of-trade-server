@@ -1,0 +1,159 @@
+/* Single committed look: painted navy plates, steel hairlines and an orange brush accent over the sea (UI kit,
+   styles/kit.css). One theme on purpose; every colour is still a token so all panels stay consistent. The legacy
+   token names (wood, brass, parch) keep their roles: plate, accent and light text. */
+:root {
+  color-scheme: dark;
+  --ink: #07111c;
+  --sea-deep: #0b1630;
+  --sea: #0f5f8c;
+  --wood: #12253a;
+  --wood-l: #1c3652;
+  --wood-d: #0a1622;
+  --brass: #f6a623;
+  --brass-l: #ffc35a;
+  --brass-d: #b86f0c;
+  --parch: #eef3f7;
+  --parch-d: #c9d6e2;
+  --text: #eef3f7;
+  --text-dim: #9fb4c8;
+  --accent: #7fc4f2;
+  --hp: #e2453c;
+  --hp-d: #8e1d1d;
+  --en: #4fb4ec;
+  --xp: #f6a623;
+  --good: #8fe06b;
+  --warn: #ffb02e;
+  --r-common: #9aa3ad;
+  --r-uncommon: #4cd964;
+  --r-rare: #3fa9ff;
+  --r-epic: #b36bff;
+  --r-legend: #ffc23d;
+  --shadow: rgba(2, 8, 16, 0.6);
+  --glass: rgba(9, 21, 34, 0.74);
+
+  --font-display: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+  --font-ui: 'Barlow Semi Condensed', 'Barlow Condensed', 'Trebuchet MS', system-ui, sans-serif;
+  --ui-scale: 1;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+}
+/* Rotated stage (M4.6): its top is the physical right edge, its left the physical top, and so on. */
+body.rotated {
+  --safe-l: env(safe-area-inset-top, 0px);
+  --safe-t: env(safe-area-inset-right, 0px);
+  --safe-r: env(safe-area-inset-bottom, 0px);
+  --safe-b: env(safe-area-inset-left, 0px);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; overflow: hidden; }
+body {
+  background: var(--sea-deep);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior: none;
+}
+/* The stage holds the canvas, the UI and the fade; stage.js sizes it in px and rotates it 90° on an upright phone.
+   Layout containment makes it the containing block of the fixed children either way; @container stage / cqw / cqh
+   replace the viewport media queries and units. */
+#stage { position: fixed; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; container-type: size; container-name: stage; }
+/* Opaque backing: three.js always asks for an alpha drawing buffer, and FX blends that lower the alpha (the glow
+   mask on medium/high) would let the page show through on low, where they draw straight to the canvas. */
+canvas#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; background: #000; }
+#ui { position: fixed; inset: 0; pointer-events: none; font-size: calc(15px * var(--ui-scale)); }
+#ui .interactive, #ui button, #ui input, #ui select, #ui label { pointer-events: auto; }
+[hidden] { display: none !important; }
+
+/* Shared plate: the kit's worn navy 9-slice frame. */
+.frame {
+  background: none;
+  border: 14px solid transparent;
+  border-image: var(--kit-frame) 48 fill / 14px round;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6));
+}
+@media (pointer: coarse), (max-width: 760px) { .frame { border-image-slice: 24 fill; } }
+.frame-dark {
+  background: linear-gradient(180deg, rgba(13, 27, 43, 0.9), rgba(9, 20, 32, 0.92));
+  border: 1px solid #5f80a07a;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.45), inset 0 0 22px rgba(0, 0, 0, 0.45), 0 6px 16px var(--shadow);
+}
+/* Primary action: dark condensed caps on the orange brush stroke. */
+.btn {
+  position: relative;
+  isolation: isolate;
+  font: italic 800 1.15em / 1.05 var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #111a24;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0.55em 1.4em 0.5em;
+  box-shadow: none;
+  cursor: pointer;
+  transition: transform 0.08s ease, filter 0.15s ease;
+  text-shadow: none;
+}
+.btn::before {
+  content: ''; position: absolute; inset: -0.15em -0.55em; z-index: -1;
+  border-style: solid; border-width: 0 1.5em;
+  border-image: var(--kit-brush-clean) 0 150 fill / 0 1.5em stretch;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.55));
+}
+.btn:hover:not(:disabled)::before { filter: brightness(1.1) drop-shadow(0 3px 3px rgba(0, 0, 0, 0.55)); }
+.btn:active:not(:disabled) { transform: translateY(2px); }
+.btn:disabled { color: #26313d; cursor: default; }
+.btn:disabled::before { filter: grayscale(0.85) brightness(0.62); }
+.btn:focus-visible, .icon-btn:focus-visible, .skin-dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* Secondary action: a steel-lined navy plate. */
+.btn.secondary {
+  color: var(--text);
+  background: linear-gradient(180deg, #16304a, #0b1826);
+  border: 1px solid #6f8fae;
+  border-radius: 4px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.45), 0 3px 8px rgba(0, 0, 0, 0.45);
+}
+.btn.secondary::before { display: none; }
+.btn.secondary:hover:not(:disabled) { border-color: var(--brass); filter: brightness(1.12); }
+.icon-btn {
+  width: 2.6em; height: 2.6em;
+  display: grid; place-items: center;
+  color: #dfe8f0;
+  background: linear-gradient(180deg, #16304a, #0b1826);
+  border: 1px solid #6f8fae;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5), 0 3px 8px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  padding: 0;
+}
+.icon-btn:hover { border-color: var(--brass); color: #fff; }
+.icon-btn svg { width: 1.3em; height: 1.3em; }
+.display { font-family: var(--font-display); letter-spacing: 0.02em; }
+.outlined {
+  color: var(--parch);
+  text-shadow: 0 2px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink), 0 -1px 0 var(--ink),
+    1px 1px 0 var(--ink), -1px 1px 0 var(--ink), 1px -1px 0 var(--ink), -1px -1px 0 var(--ink), 0 3px 4px rgba(0, 0, 0, 0.7);
+}
+/* Keycap. */
+.kbd {
+  display: inline-grid; place-items: center;
+  min-width: 1.8em; height: 1.6em; padding: 0 0.35em;
+  font: 700 0.78em / 1 var(--font-display); letter-spacing: 0.04em;
+  color: #fff;
+  background: #121c26;
+  border: 1.5px solid #cfd9e2;
+  border-radius: 4px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+}
+#fade { position: fixed; inset: 0; background: #000; pointer-events: none; z-index: 50; }

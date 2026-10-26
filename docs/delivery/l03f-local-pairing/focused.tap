@@ -1,0 +1,100 @@
+TAP version 13
+# Subtest: pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+ok 1 - pairing is account scoped, requires durable resume, and consumes code and bootstrap token once
+  ---
+  duration_ms: 771.2949
+  type: 'test'
+  ...
+# Subtest: new code rotates pending code and active controller; owner disconnect invalidates pending code
+ok 2 - new code rotates pending code and active controller; owner disconnect invalidates pending code
+  ---
+  duration_ms: 534.9786
+  type: 'test'
+  ...
+# Subtest: expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+ok 3 - expired codes, unauthenticated local claims, disabled pairing, and restart fail closed
+  ---
+  duration_ms: 983.5717
+  type: 'test'
+  ...
+# Subtest: durable owner stop invalidates a pending code and active paired session immediately
+ok 4 - durable owner stop invalidates a pending code and active paired session immediately
+  ---
+  duration_ms: 622.4375
+  type: 'test'
+  ...
+# Subtest: owner disconnect during paired profile I/O prevents late admission and welcome
+ok 5 - owner disconnect during paired profile I/O prevents late admission and welcome
+  ---
+  duration_ms: 487.026
+  type: 'test'
+  ...
+# Subtest: missing durable prerequisites keep pairing unavailable without blocking creation
+ok 6 - missing durable prerequisites keep pairing unavailable without blocking creation
+  ---
+  duration_ms: 435.8873
+  type: 'test'
+  ...
+# Subtest: issue reports a missing creation and content changes invalidate claims and admitted sessions
+ok 7 - issue reports a missing creation and content changes invalidate claims and admitted sessions
+  ---
+  duration_ms: 581.3669
+  type: 'test'
+  ...
+# Subtest: pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+ok 8 - pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+  ---
+  duration_ms: 53.2706
+  type: 'test'
+  ...
+# Subtest: remote stop settles the runner and permits the same controller to pair again
+ok 9 - remote stop settles the runner and permits the same controller to pair again
+  ---
+  duration_ms: 35.9281
+  type: 'test'
+  ...
+# Subtest: stop during asynchronous document loading cancels setup before runner connect
+ok 10 - stop during asynchronous document loading cancels setup before runner connect
+  ---
+  duration_ms: 26.5949
+  type: 'test'
+  ...
+# Subtest: pairing fails closed for reused companion files with a different model policy
+ok 11 - pairing fails closed for reused companion files with a different model policy
+  ---
+  duration_ms: 26.8929
+  type: 'test'
+  ...
+# Subtest: claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+ok 12 - claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+  ---
+  duration_ms: 3.2282
+  type: 'test'
+  ...
+# Subtest: live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+ok 13 - live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+  ---
+  duration_ms: 1294.9604
+  type: 'test'
+  ...
+# Subtest: stop during a local model request fences its late response and does not capture an exchange
+ok 14 - stop during a local model request fences its late response and does not capture an exchange
+  ---
+  duration_ms: 763.0591
+  type: 'test'
+  ...
+# Subtest: the CLI validates options before prompting and accepts a pasted multi-character hex code
+ok 15 - the CLI validates options before prompting and accepts a pasted multi-character hex code
+  ---
+  duration_ms: 1.0565
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7900.6635

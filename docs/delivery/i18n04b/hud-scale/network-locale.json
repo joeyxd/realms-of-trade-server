@@ -1,0 +1,27 @@
+{
+  "pass": true,
+  "browser": "Chrome via Playwright",
+  "fixture": "real Hud + initI18n/setLocale; setNet once at 1 pirate, locale flip without setNet/RAF; setNet updates count to 2; flip back without update",
+  "esOne": {
+    "text": "· 1 pirata",
+    "title": "Latencia con el servidor: 42 ms (ida y vuelta)",
+    "ms": "42 ms"
+  },
+  "enOneNoUpdate": {
+    "text": "· 1 pirate",
+    "title": "Server latency: 42 ms (round trip)",
+    "ms": "42 ms"
+  },
+  "enTwo": {
+    "text": "· 2 pirates",
+    "title": "Server latency: 42 ms (round trip)",
+    "ms": "42 ms"
+  },
+  "esTwoNoUpdate": {
+    "text": "· 2 piratas",
+    "title": "Latencia con el servidor: 42 ms (ida y vuelta)",
+    "ms": "42 ms"
+  },
+  "visible": true,
+  "errors": []
+}

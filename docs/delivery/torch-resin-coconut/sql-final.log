@@ -1,0 +1,17 @@
+✔ SQL037 is rerunnable, reports readiness only to service_role, and preserves old migration capabilities (2492.0905ms)
+✔ SQL037 derives final palm loot, strips only verified awards, and preserves pre-existing goods and beneficiaries (19250.1231ms)
+✔ SQL037 commits marked final palm loot atomically, replays exactly, and preserves historical unmarked receipts (49732.5702ms)
+✔ SQL037 rejects deterministic palm loot on a nonfinal marked hit through the composed RPC (18703.094ms)
+✔ coconut eating consumes exactly one unit and restores 25 hydration through the existing survival receipt (40039.7004ms)
+✔ versioned hand torch costs two logs and resin while historic torch and raft fuel keep the plank rule (2862.7867ms)
+✔ ordinary commerce and raft transfers retain pre-existing resin and coconut through durable profile writes (16822.0813ms)
+✔ resin and coconut transfer to and from raft holds, while market sales remain persisted denials (137875.5406ms)
+✔ attribute allocation and freshwater vessel-aware hold validation retain exact new goods (13745.2566ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 310272.8384

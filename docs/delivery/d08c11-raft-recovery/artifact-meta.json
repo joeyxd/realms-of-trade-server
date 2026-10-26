@@ -1,0 +1,18 @@
+{
+    "slice":  "D08c.11",
+    "version":  "0.6.0-alpha.11",
+    "protocol":  26,
+    "generatedAt":  "2026-10-08T06:48:52.7052358Z",
+    "page":  "artifact.html",
+    "bytes":  160930,
+    "sha256":  "056917eb49107dd9b59f419d0cce4ec8205b907071b13d8b5a19e2c307f0a858",
+    "companionFileCount":  279,
+    "source":  "Current shared checkout, including unrelated local visual/chat/agent changes",
+    "scope":  "Page and inline styles; companion JS/models/textures listed in build.log",
+    "published":  false,
+    "verification":  {
+                         "browser":  "3/3 emulated views, 0 errors",
+                         "evidence":  "raft-recovery-evidence-2026-10-08T06-45-02-474Z.json",
+                         "regression":  "617/617 selected tests"
+                     }
+}

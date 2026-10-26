@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: SQL021 learns raft storage once, retains the exact before/profile/world receipt and replays it
+ok 1 - SQL021 learns raft storage once, retains the exact before/profile/world receipt and replays it
+  ---
+  duration_ms: 1295.7711
+  type: 'test'
+  ...
+# Subtest: SQL021 rejects forged learning deltas and leaves profile, world, and receipt unchanged
+ok 2 - SQL021 rejects forged learning deltas and leaves profile, world, and receipt unchanged
+  ---
+  duration_ms: 939.7038
+  type: 'test'
+  ...
+# Subtest: SQL021 rejects incomplete carpentry, ineligible practice, wrong project revision, and already learned state
+ok 3 - SQL021 rejects incomplete carpentry, ineligible practice, wrong project revision, and already learned state
+  ---
+  duration_ms: 927.1427
+  type: 'test'
+  ...
+# Subtest: SQL021 keeps old economic receipts valid and the new readiness RPC service-only
+ok 4 - SQL021 keeps old economic receipts valid and the new readiness RPC service-only
+  ---
+  duration_ms: 893.4949
+  type: 'test'
+  ...
+# Subtest: SQL021 accepts and replays exact storage placement deltas, rejects unrelated ship edits
+ok 5 - SQL021 accepts and replays exact storage placement deltas, rejects unrelated ship edits
+  ---
+  duration_ms: 967.4083
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5568.5354

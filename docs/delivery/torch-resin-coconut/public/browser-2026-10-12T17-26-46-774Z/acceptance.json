@@ -1,0 +1,189 @@
+{
+  "schema": "mn.torch-resin-coconut.public-browser.v1",
+  "startedAt": "2026-10-12T17:26:47.390Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "gameVersion": "0.6.0-alpha.65",
+  "protocolVersion": 60,
+  "identity": "separate random disposable Supabase user per viewport; credentials redacted",
+  "scope": "normal Auth login and public WSS, exact hand-torch cost, localized responsive UI, coconut hydration, icon variants, durable profile reentry; no palm harvesting action",
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop-es",
+        "width": 1280,
+        "height": 720,
+        "touch": false,
+        "locale": "es"
+      },
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 567.625,
+          "actionTop": 580.859375,
+          "detailBottom": 660.71875,
+          "detailRight": 822.5625,
+          "mainRight": 841.84375,
+          "scrollHeight": 486,
+          "clientHeight": 486,
+          "viewportWidth": 1280,
+          "documentWidth": 1280,
+          "button": {
+            "x": 411.078125,
+            "y": 587.421875,
+            "right": 781.9375,
+            "bottom": 638.28125,
+            "width": 370.859375,
+            "height": 50.859375,
+            "disabled": false
+          }
+        }
+      },
+      "screenshots": [
+        "desktop-es-axe-layout.png"
+      ],
+      "status": "failed",
+      "error": "fire panel language mismatch",
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 0,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      }
+    },
+    {
+      "viewport": {
+        "name": "desktop-en",
+        "width": 1280,
+        "height": 720,
+        "touch": false,
+        "locale": "en"
+      },
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 567.625,
+          "actionTop": 580.859375,
+          "detailBottom": 660.71875,
+          "detailRight": 822.5625,
+          "mainRight": 841.84375,
+          "scrollHeight": 486,
+          "clientHeight": 486,
+          "viewportWidth": 1280,
+          "documentWidth": 1280,
+          "button": {
+            "x": 411.078125,
+            "y": 587.421875,
+            "right": 781.9375,
+            "bottom": 638.28125,
+            "width": 370.859375,
+            "height": 50.859375,
+            "disabled": false
+          }
+        }
+      },
+      "screenshots": [
+        "desktop-en-axe-layout.png"
+      ],
+      "status": "failed",
+      "error": "fire panel language mismatch",
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 0,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      }
+    },
+    {
+      "viewport": {
+        "name": "phone-landscape-en",
+        "width": 844,
+        "height": 390,
+        "touch": true,
+        "locale": "en"
+      },
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 316.375,
+          "actionTop": 316.6875,
+          "detailBottom": 372,
+          "detailRight": 822,
+          "mainRight": 838,
+          "scrollHeight": 278,
+          "clientHeight": 278,
+          "viewportWidth": 844,
+          "documentWidth": 844,
+          "button": {
+            "x": 348.828125,
+            "y": 320.6875,
+            "right": 668.828125,
+            "bottom": 360.6875,
+            "width": 320,
+            "height": 40,
+            "disabled": false
+          }
+        }
+      },
+      "screenshots": [
+        "phone-landscape-en-axe-layout.png"
+      ],
+      "status": "failed",
+      "error": "fire panel language mismatch",
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 0,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      }
+    },
+    {
+      "viewport": {
+        "name": "phone-portrait-es",
+        "width": 390,
+        "height": 844,
+        "touch": true,
+        "locale": "es"
+      },
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 811,
+          "actionTop": 196.65625,
+          "detailBottom": 822,
+          "detailRight": 298,
+          "mainRight": 386,
+          "scrollHeight": 278,
+          "clientHeight": 278,
+          "viewportWidth": 390,
+          "documentWidth": 390,
+          "button": {
+            "x": 29.3125,
+            "y": 348.828125,
+            "right": 69.3125,
+            "bottom": 668.828125,
+            "width": 40,
+            "height": 320,
+            "disabled": false
+          }
+        }
+      },
+      "screenshots": [
+        "phone-portrait-es-axe-layout.png"
+      ],
+      "status": "failed",
+      "error": "fire panel language mismatch",
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 0,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      }
+    }
+  ],
+  "pass": false,
+  "preflight": {
+    "pass": true,
+    "gameVersion": "0.6.0-alpha.65",
+    "protocolVersion": 60,
+    "players": 0,
+    "sockets": 0,
+    "worldId": "marea-negra",
+    "foragingReady": true,
+    "fireRules": 2,
+    "economicPending": 0
+  },
+  "failure": "fire panel language mismatch",
+  "completedAt": "2026-10-12T17:28:37.164Z"
+}

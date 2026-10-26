@@ -1,0 +1,229 @@
+{
+  "v": 1,
+  "cut": "W02i",
+  "generatedAt": "2026-10-08T23:39:49.210Z",
+  "status": "implemented-and-locally-tested-not-publicly-deployed",
+  "runtime": {
+    "node": "v24.14.0",
+    "platform": "win32"
+  },
+  "local": {
+    "command": "node --test tools/web3-evm-lab/amoy-pilot.test.mjs tools/web3-evm-lab/reader-evm.test.mjs tests/web3-amoy-check.test.mjs tests/web3-erc1155-reader.test.mjs tests/web3-edition-read-cli.test.mjs tests/web3-erc721-reader.test.mjs tests/web3-token-read-cli.test.mjs tests/web3-wallet-preflight.test.mjs",
+    "tests": 68,
+    "pass": 68,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "newTests": 10,
+    "regressionTests": 58,
+    "durationMs": 12329.2509,
+    "syntaxPassed": true,
+    "utf8NoBomWhitespacePassed": true,
+    "localLinksChecked": 389,
+    "sourceHashesVerified": 27
+  },
+  "build": {
+    "artifact": "tools/web3-evm-lab/artifacts/amoy-reader-721.json",
+    "check": {
+      "ok": true,
+      "mode": "check",
+      "targetChainId": 80002,
+      "contractName": "AmoyReader721Pilot",
+      "compilerVersion": "0.8.37+commit.f401782d.Emscripten.clang",
+      "creationBytes": 4591,
+      "runtimeTemplateBytes": 3904,
+      "deployed": false
+    },
+    "deterministicFileComparison": true,
+    "completeInputRecompiled": true,
+    "sourceCount": 16,
+    "allEmbeddedSourceHashesVerified": true,
+    "immutableReferences": {
+      "7354": [
+        {
+          "length": 32,
+          "start": 494
+        },
+        {
+          "length": 32,
+          "start": 1090
+        }
+      ]
+    },
+    "runtimeTemplateComparedAfterFillingLocalOperator": true,
+    "compilerVersion": "0.8.37+commit.f401782d.Emscripten.clang",
+    "openzeppelinVersion": "5.6.1",
+    "evmVersion": "cancun",
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "creationBytecodeSha256": "73a77cf8a42cf4be3f2364ed03ca4fe956124fec2d6794acd951640616af4ddf",
+    "runtimeTemplateSha256": "113c80bef0adc06051a1b24f6a19c6eefcc6c42556047709461ceb6624bdcbfb"
+  },
+  "simulation": {
+    "simulated": true,
+    "chainId": 80002,
+    "legacyDefaultChainId": 31337,
+    "blocksAndCanonicality": "synthetic",
+    "messageExecution": "EthereumJS runCall, unsigned local messages",
+    "stateRoots": "EVM Merkle state snapshots",
+    "receiverFixtures": "inline tests only, excluded from delivered artifact",
+    "readerCliLocalRequests": 24
+  },
+  "independentReview": {
+    "workerModelConfigured": "gpt-6-luna",
+    "initialTests": 9,
+    "principalReviewedAndExpanded": true,
+    "finalReadOnlyScopeReview": true,
+    "simulatedMarker": "structural fixture output, not an input gate"
+  },
+  "limits": {
+    "experimentalOnly": true,
+    "commercialRulesClosed": false,
+    "realChainCompatibilityVerified": false,
+    "consensusFinalityVerified": false,
+    "contractAudited": false,
+    "publicRpcRequests": 0,
+    "signedTransactions": 0,
+    "broadcastTransactions": 0,
+    "gasPaid": 0,
+    "publicContractDeploy": false,
+    "publicTokenMint": false,
+    "operatorPublicAddressProvided": false,
+    "realEnvRead": false,
+    "realEnvModified": false,
+    "newDependencies": false,
+    "rootPackageModifiedByCut": false,
+    "sqlApplied": false,
+    "supabaseLive": false,
+    "hostStarted": false,
+    "gamePermissions": false,
+    "walletExtension": false,
+    "tokenAssetBinding": false,
+    "escrow": false,
+    "payments": false,
+    "openSeaVerified": false,
+    "newUI": false,
+    "gitCommitPush": false,
+    "deployed": false
+  },
+  "sources": {
+    "tools/web3-evm-lab/contracts/AmoyReader721Pilot.sol": {
+      "bytes": 1403,
+      "sha256": "2b510196e10235b05530fc508e4fe93dc381476a439d3225aad7255fb6dd7c0a"
+    },
+    "tools/web3-evm-lab/amoyPilotBuild.mjs": {
+      "bytes": 3059,
+      "sha256": "07f40e7c4f062d2c0cf70ee861f5b2b0241d08911f83e8d2f9a9cef708ae8320"
+    },
+    "tools/web3-evm-lab/build-amoy-pilot.mjs": {
+      "bytes": 1668,
+      "sha256": "db7b407a0d966d8868df6684d45503efaa4d6d036a8443d1e65c644aa2987a64"
+    },
+    "tools/web3-evm-lab/amoy-pilot.test.mjs": {
+      "bytes": 22272,
+      "sha256": "0175dcb085933b0277e84be696e4c0e164416c927558c71f7e69f7db90547e83"
+    },
+    "tools/web3-evm-lab/evmFixture.mjs": {
+      "bytes": 11610,
+      "sha256": "0e403935988930890154ad3d0395a28e99f96784d8274386539f178e73a90240"
+    },
+    "tools/web3-evm-lab/artifacts/amoy-reader-721.json": {
+      "bytes": 199573,
+      "sha256": "88f69094b6b0958e44c74f0b200a9f647394ef066be385f7200036f5826356e3"
+    },
+    "tools/web3-evm-lab/package.json": {
+      "bytes": 689,
+      "sha256": "75a51750ac167b6e5c1647e833a863d38186a245407e8e08a730e17e1bfc426f"
+    },
+    "tools/web3-evm-lab/package-lock.json": {
+      "bytes": 22423,
+      "sha256": "cabb6ac555871bfdb094efe9f5f41d714c14dc74bbec717052ae32743d7ce373"
+    },
+    "tools/web3-evm-lab/README.md": {
+      "bytes": 4386,
+      "sha256": "738d0e5dd7b4b398a319652a72a7a73df139140432d2e3cc727264cddf3e2385"
+    },
+    "docs/briefs/w02i-amoy-erc721-pilot.md": {
+      "bytes": 2718,
+      "sha256": "1feadfbe1444e774349255c26914947099eb8c77ee2d7da6541c4cede43ccca4"
+    },
+    "docs/delivery/w02i-amoy-erc721-pilot.md": {
+      "bytes": 7584,
+      "sha256": "f1c5d38a16e6ea1307cf794a3038534c540067e1e66534cfd20751fc230af6cf"
+    },
+    "PLAN-WEB3.md": {
+      "bytes": 26993,
+      "sha256": "60a6c226d49eab00353392c09bf07423432622de5b2a312d78d2bc48ac086d89"
+    },
+    "DESIGN.md": {
+      "bytes": 77324,
+      "sha256": "68a264eca91a6208a6f04d4cb142ef28150bcbefdbe657d3017b1a7f3fede74f"
+    },
+    "PLAN-DELIVERY.md": {
+      "bytes": 75207,
+      "sha256": "967c2772ed35a18d5bc1018914c3d285cc30c31f6592065a20755d26e0111fb8"
+    },
+    "docs/HANDOFF.md": {
+      "bytes": 115163,
+      "sha256": "5d444392eb5027cf4a4fe61e08dc16bcd42ed17cacfb2042b21d9d07e5c4dd62"
+    },
+    "tools/web3-evm-lab/reader-evm.test.mjs": {
+      "bytes": 18798,
+      "sha256": "ba3df718d11959a236b768835a59450b562b17081ac4d95521c4ddb2ccca5aad"
+    },
+    "tests/web3-amoy-check.test.mjs": {
+      "bytes": 13307,
+      "sha256": "c30c10e1c051929460a1bea598eab6ef5006bfebe6b4670bb693c06c8cb724eb"
+    },
+    "tests/web3-erc1155-reader.test.mjs": {
+      "bytes": 15936,
+      "sha256": "f77f81a62987ff3d44df6f70e6c9aafc971b0ba9dc71ef0510adcdd7c3874d7a"
+    },
+    "tests/web3-edition-read-cli.test.mjs": {
+      "bytes": 8269,
+      "sha256": "902dad4295892c2f4f3f5b32a07d2f56a5460a1027cebc6a1d5fc0290e7f7beb"
+    },
+    "tests/web3-erc721-reader.test.mjs": {
+      "bytes": 16263,
+      "sha256": "64bc760592af7f6742685a5132d2bfcc89e4a65445948c64687eb7d8c512ee3d"
+    },
+    "tests/web3-token-read-cli.test.mjs": {
+      "bytes": 7346,
+      "sha256": "8e784f20917751fd4ab128876cfef02bf7df67dcc5842cacc9a2a05ab0f7223b"
+    },
+    "tests/web3-wallet-preflight.test.mjs": {
+      "bytes": 15733,
+      "sha256": "0c072a4fa94f872fc2d23ef9b38b4fdde8fb0c04bff928f682454fc64e00097d"
+    },
+    "server/web3/erc721Reader.mjs": {
+      "bytes": 3875,
+      "sha256": "1e81265f3a4a0253267308452c51702e8213ea2e88c616a409ed31ceb733b1c9"
+    },
+    "server/web3/erc1155Reader.mjs": {
+      "bytes": 4141,
+      "sha256": "538b2dd31bdad1d0471a5b2dacbb7c850d41bf6030c03d7a99c068b6e21983cd"
+    },
+    "server/web3/rpcTransport.mjs": {
+      "bytes": 4667,
+      "sha256": "b43c4f24da50d2e958c6c7e89c7ca70e41fb984330daa05b24bdd80c82076458"
+    },
+    "tools/web3-token-read.mjs": {
+      "bytes": 1556,
+      "sha256": "140aa767e133028f406dd244579624db87e3181417202b9a6ed5e616754502f3"
+    },
+    "tools/web3-edition-read.mjs": {
+      "bytes": 1643,
+      "sha256": "b6173deb16f8580c5b4a99e6b427978a06e1a59b5ee6218489a1820bfa99218b"
+    }
+  },
+  "primarySources": [
+    "https://docs.openzeppelin.com/contracts/5.x/erc721",
+    "https://docs.openzeppelin.com/contracts/5.x/access-control",
+    "https://eips.ethereum.org/EIPS/eip-721",
+    "https://docs.polygon.technology/pos/reference/rpc-endpoints",
+    "https://forum.polygon.technology/t/pip-31-cancun-eips/13406"
+  ]
+}

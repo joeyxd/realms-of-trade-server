@@ -1,0 +1,278 @@
+{
+  "schema": "gm00-visual/v1",
+  "at": "2026-10-10T15:44:52.553Z",
+  "sourceIntact": true,
+  "actualGameLoader": true,
+  "physicalMobilePerformance": false,
+  "captures": [
+    "model-gm-source-rock-0.7.png",
+    "model-gm-rock-2k-0.7.png",
+    "model-gm-rock-1k-0.7.png",
+    "model-gm-source-coral-0.7.png",
+    "model-gm-coral-200k-0.7.png",
+    "model-gm-coral-50k-0.7.png",
+    "model-gm-source-rock-2.5.png",
+    "model-gm-rock-2k-2.5.png",
+    "model-gm-rock-1k-2.5.png",
+    "model-gm-source-coral-2.5.png",
+    "model-gm-coral-200k-2.5.png",
+    "model-gm-coral-50k-2.5.png",
+    "model-gm-source-rock-pbr.png",
+    "model-gm-source-coral-pbr.png"
+  ],
+  "models": [
+    {
+      "id": "model:gm-source-rock",
+      "triangles": 19469,
+      "size": [
+        4,
+        2.333333333333333,
+        3
+      ],
+      "camera": [
+        6.44217687237691,
+        5.666666666666666,
+        7.648421872844885
+      ],
+      "lookAt": [
+        0,
+        1.1666666666666665,
+        0
+      ],
+      "angle": 0.7,
+      "filename": "model-gm-source-rock-0.7.png"
+    },
+    {
+      "id": "model:gm-rock-2k",
+      "triangles": 19469,
+      "size": [
+        4,
+        2.333333333333333,
+        3
+      ],
+      "camera": [
+        6.44217687237691,
+        5.666666666666666,
+        7.648421872844885
+      ],
+      "lookAt": [
+        0,
+        1.1666666666666665,
+        0
+      ],
+      "angle": 0.7,
+      "filename": "model-gm-rock-2k-0.7.png"
+    },
+    {
+      "id": "model:gm-rock-1k",
+      "triangles": 19469,
+      "size": [
+        4,
+        2.333333333333333,
+        3
+      ],
+      "camera": [
+        6.44217687237691,
+        5.666666666666666,
+        7.648421872844885
+      ],
+      "lookAt": [
+        0,
+        1.1666666666666665,
+        0
+      ],
+      "angle": 0.7,
+      "filename": "model-gm-rock-1k-0.7.png"
+    },
+    {
+      "id": "model:gm-source-coral",
+      "triangles": 2000696,
+      "size": [
+        3.9999999999999996,
+        4.36835088654846,
+        2.7136381815757895
+      ],
+      "camera": [
+        7.035422262937415,
+        7.098570190641247,
+        8.352747617234646
+      ],
+      "lookAt": [
+        0,
+        2.18417544327423,
+        0
+      ],
+      "angle": 0.7,
+      "filename": "model-gm-source-coral-0.7.png"
+    },
+    {
+      "id": "model:gm-coral-200k",
+      "triangles": 199999,
+      "size": [
+        4,
+        4.367296603672966,
+        2.712795387127954
+      ],
+      "camera": [
+        7.035422262937415,
+        7.098570190641247,
+        8.352747617234646
+      ],
+      "lookAt": [
+        0,
+        2.18417544327423,
+        0
+      ],
+      "angle": 0.7,
+      "filename": "model-gm-coral-200k-0.7.png"
+    },
+    {
+      "id": "model:gm-coral-50k",
+      "triangles": 49999,
+      "size": [
+        4,
+        4.368038417928366,
+        2.710464883612352
+      ],
+      "camera": [
+        7.035422262937415,
+        7.098570190641247,
+        8.352747617234646
+      ],
+      "lookAt": [
+        0,
+        2.18417544327423,
+        0
+      ],
+      "angle": 0.7,
+      "filename": "model-gm-coral-50k-0.7.png"
+    },
+    {
+      "id": "model:gm-source-rock",
+      "triangles": 19469,
+      "size": [
+        4,
+        2.333333333333333,
+        3
+      ],
+      "camera": [
+        5.984721441039565,
+        5.666666666666666,
+        -8.011436155469337
+      ],
+      "lookAt": [
+        0,
+        1.1666666666666665,
+        0
+      ],
+      "angle": 2.5,
+      "filename": "model-gm-source-rock-2.5.png"
+    },
+    {
+      "id": "model:gm-rock-2k",
+      "triangles": 19469,
+      "size": [
+        4,
+        2.333333333333333,
+        3
+      ],
+      "camera": [
+        5.984721441039565,
+        5.666666666666666,
+        -8.011436155469337
+      ],
+      "lookAt": [
+        0,
+        1.1666666666666665,
+        0
+      ],
+      "angle": 2.5,
+      "filename": "model-gm-rock-2k-2.5.png"
+    },
+    {
+      "id": "model:gm-rock-1k",
+      "triangles": 19469,
+      "size": [
+        4,
+        2.333333333333333,
+        3
+      ],
+      "camera": [
+        5.984721441039565,
+        5.666666666666666,
+        -8.011436155469337
+      ],
+      "lookAt": [
+        0,
+        1.1666666666666665,
+        0
+      ],
+      "angle": 2.5,
+      "filename": "model-gm-rock-1k-2.5.png"
+    },
+    {
+      "id": "model:gm-source-coral",
+      "triangles": 2000696,
+      "size": [
+        3.9999999999999996,
+        4.36835088654846,
+        2.7136381815757895
+      ],
+      "camera": [
+        6.53584080317769,
+        7.098570190641247,
+        -8.749191058067716
+      ],
+      "lookAt": [
+        0,
+        2.18417544327423,
+        0
+      ],
+      "angle": 2.5,
+      "filename": "model-gm-source-coral-2.5.png"
+    },
+    {
+      "id": "model:gm-coral-200k",
+      "triangles": 199999,
+      "size": [
+        4,
+        4.367296603672966,
+        2.712795387127954
+      ],
+      "camera": [
+        6.53584080317769,
+        7.098570190641247,
+        -8.749191058067716
+      ],
+      "lookAt": [
+        0,
+        2.18417544327423,
+        0
+      ],
+      "angle": 2.5,
+      "filename": "model-gm-coral-200k-2.5.png"
+    },
+    {
+      "id": "model:gm-coral-50k",
+      "triangles": 49999,
+      "size": [
+        4,
+        4.368038417928366,
+        2.710464883612352
+      ],
+      "camera": [
+        6.53584080317769,
+        7.098570190641247,
+        -8.749191058067716
+      ],
+      "lookAt": [
+        0,
+        2.18417544327423,
+        0
+      ],
+      "angle": 2.5,
+      "filename": "model-gm-coral-50k-2.5.png"
+    }
+  ],
+  "errors": []
+}

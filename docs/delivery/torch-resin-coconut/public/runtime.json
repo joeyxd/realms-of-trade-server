@@ -1,0 +1,335 @@
+{
+  "at": "2026-10-12T17:34:36.704Z",
+  "featureEnabled": true,
+  "container": "4a44f96497cd48fa2df9863096f3fca1536d0b662116442f75b340530449740c",
+  "image": "sha256:054d043151a733867e87a84af5ca53c1cf7750418d81c785823480d85382a723",
+  "revision": "fcd5160fc1ce97b7d18883a5bd99c59723d2211d",
+  "health": "healthy",
+  "running": true,
+  "runtime": {
+    "version": "0.6.0-alpha.65",
+    "protocol": 60,
+    "status": {
+      "game": "MAREA NEGRA",
+      "version": "0.6.0-alpha.65",
+      "players": 0,
+      "max": 4,
+      "sockets": 1,
+      "tick": 2183,
+      "uptime": 47,
+      "stepMs": 1.32,
+      "bots": 3,
+      "names": [],
+      "errors": 0,
+      "content": {
+        "generation": 8,
+        "revisionId": null,
+        "switching": false
+      },
+      "storage": {
+        "kind": "supabase",
+        "durable": true,
+        "accounts": true,
+        "errors": 0,
+        "unsaved": 0,
+        "profileWrites": 0,
+        "worldWriting": false,
+        "economic": {
+          "enabled": true,
+          "pending": 0,
+          "failed": false,
+          "completed": 0,
+          "replays": 0
+        },
+        "groundTransactions": null,
+        "groundPearls": null,
+        "groundDeaths": null,
+        "groundPearlMints": null,
+        "tickBlocked": false,
+        "staging": null,
+        "deathStaging": null,
+        "deathDrops": null,
+        "pearlGround": null,
+        "combatDeaths": null,
+        "startup": null,
+        "resources": {
+          "enabled": true,
+          "ready": true,
+          "logging": true
+        },
+        "fire": {
+          "enabled": true,
+          "ready": true,
+          "torchRules": 2
+        },
+        "foraging": {
+          "enabled": true,
+          "ready": true
+        },
+        "freshwater": {
+          "enabled": true,
+          "ready": true,
+          "canteen": true,
+          "meals": true
+        },
+        "artisan": {
+          "enabled": true,
+          "ready": true
+        },
+        "workshop": {
+          "enabled": true,
+          "ready": true
+        },
+        "attributes": {
+          "enabled": true,
+          "ready": true
+        },
+        "companionCreation": {
+          "enabled": true,
+          "ready": true,
+          "pending": 0
+        },
+        "companionPairing": {
+          "enabled": true,
+          "ready": true
+        },
+        "world": {
+          "id": "marea-negra",
+          "ready": true,
+          "failed": false,
+          "version": 4466,
+          "errors": 0
+        }
+      },
+      "net": {
+        "fill": 0,
+        "late": 0,
+        "trimmed": 0,
+        "clamped": 0,
+        "kbOut": 0.2,
+        "kbIn": 1.3,
+        "dropped": 0
+      }
+    },
+    "hashes": {
+      "src/data/meta.js": "46a9fc884bf67865be8feb105dce13a28d31c34853a0acd360b638a632abba1a",
+      "src/net/protocol.js": "074cf0a5b6d80c7c685994c121e6e592ea29b3f822dd8c7bb4a14f39f625f319",
+      "src/data/fire.js": "785928122307af6271f5189ae03a3f66b04858e661e7d8b8e1c35a41af2257ea",
+      "src/data/goods.js": "f2a20224f0c0263b1518b4e160b928eb900e6fe288ef294085a7dab2ff2ec5f9",
+      "src/data/harvestLoot.js": "a56072df40c851cf30d2d4192a349cdc5eb1d943d0f9e4396023344b2192ccd8",
+      "src/data/survival.js": "3cecd0c93d03f09e5352133f8de2290379179b456ab74009e78a7bc0cd46a3e5",
+      "src/main.js": "e08d777819e28718ec2cdde278bc31bf73aa10cc942a85b37025ae1af2e4b9a9",
+      "src/ui/kit.js": "57d072201617c6441beec2aca6a78a536e281b5bf12a8e983dc9fcd64deea96c",
+      "src/ui/firePanel.js": "4eb6b077be6afbe5624aaa32a1768d5ad4a258c65eb6045e9d703a8062cdf428",
+      "src/ui/workbench.js": "8efdcfd7c8713deedfe3eebbcde5a07b3b32488dba1eb2dd34446196625295b8",
+      "src/ui/freshwaterPanel.js": "1cbac06cc7e6b39f18b5e7a30e80e4a37fe68eaa3d579c3c48acfabcf7e2478f",
+      "src/ui/resourceActions.js": "f19a748cf5230582b3aaed95b823f1cb09c12032cfcb781d53a4ad2fc1d1694d",
+      "styles/workbench.css": "d8e8411666ab30143eb8a7c579a047bffd2fa36e980090bcc4bf5e89395dbd03",
+      "styles/kit.css": "6a9091f6bb374431d0e0d038c48fb6a04bb691dd850cfa2a183c0eb9e852b6d8",
+      "styles/fire.css": "3871e97461865fbd4d8a23220a2881973a84d87b740841f593eb8c24e317fa05",
+      "styles/freshwater.css": "365c9b371712553bdaae95a3781f24489cb5d35cc7eb4aa5ec5cced91480e4ef",
+      "src/sim/systems/resources.js": "c9b65b05226b273799a666454e42e62b330c486ea1625c4ca845e70a4b28ad7f",
+      "src/sim/systems/fire.js": "8dbcb9b4392be786e8e2120105ad0586c40c820d334c1bd33d8cb4879bc64280",
+      "src/sim/systems/fireProfile.js": "cd7c347451cd12890dde4339cf3ae2a87714edc842a948abc091c1010a331008",
+      "server/index.mjs": "af79f3aa017adaca26f934c5ec7d2a4ff97b3929ea70f7ed8d041b03a17e4558",
+      "server/host.mjs": "059de3b23d2ee826b93f58e179df6d2e472112690a01352ab5cda73bd7618c28",
+      "server/store.mjs": "6f24d0d026e3319034cd10864fefd966af8a3f9dab3b1c6e9c5e9cbc8352592b",
+      "server/economicAuthority.mjs": "5c95e74dc537793603f9acc6fe6dc840e7bf0f138d65e996048d4ceaa2e05dd1",
+      "server/economicOperation.mjs": "fd040a137410a507abe5f4d36593e7046a1047dc6f431307a79bae6c3be92351",
+      "server/loggingOperation.mjs": "4251309401a36351021fe017ad8f6f504a0a4d93584f28917474d3948f449df2",
+      "assets/ui/kit/resina-v1.webp": "e15b082fbd94be25e5462ac8ee7d543c6f3fceb24a3e6d2bd7a3f786cf693a9c",
+      "assets/ui/kit/resina-v1-mobile.webp": "56b52476c0cccf9b9b7ae0ff450605349a9f38c646f6d4810b3bb22d9f6887f3",
+      "assets/ui/kit/coco-v1.webp": "f2f66c074907ef4eeb02f4185f42d562438159d6c4d1e3b3b914943e5efc4583",
+      "assets/ui/kit/coco-v1-mobile.webp": "ffbf4d7c8e411464a22919c712aadcfc01c9ac0fd36014c207910261674c19d2",
+      "assets/ui/kit/foods-v1.webp": "a2da6ce226f44977b9d51f6824ea5ae7d416d90ecb14a7876bceb87697d3e960",
+      "assets/ui/kit/foods-v1-mobile.webp": "c404f06b7c4c53ce1b8dbba7d0e903711aa00406fe00b7ae905f653daca06278"
+    }
+  },
+  "sourceFileCount": 31,
+  "matchedFiles": 31,
+  "files": {
+    "src/data/meta.js": {
+      "git": "46a9fc884bf67865be8feb105dce13a28d31c34853a0acd360b638a632abba1a",
+      "container": "46a9fc884bf67865be8feb105dce13a28d31c34853a0acd360b638a632abba1a",
+      "matches": true
+    },
+    "src/net/protocol.js": {
+      "git": "074cf0a5b6d80c7c685994c121e6e592ea29b3f822dd8c7bb4a14f39f625f319",
+      "container": "074cf0a5b6d80c7c685994c121e6e592ea29b3f822dd8c7bb4a14f39f625f319",
+      "matches": true
+    },
+    "src/data/fire.js": {
+      "git": "785928122307af6271f5189ae03a3f66b04858e661e7d8b8e1c35a41af2257ea",
+      "container": "785928122307af6271f5189ae03a3f66b04858e661e7d8b8e1c35a41af2257ea",
+      "matches": true
+    },
+    "src/data/goods.js": {
+      "git": "f2a20224f0c0263b1518b4e160b928eb900e6fe288ef294085a7dab2ff2ec5f9",
+      "container": "f2a20224f0c0263b1518b4e160b928eb900e6fe288ef294085a7dab2ff2ec5f9",
+      "matches": true
+    },
+    "src/data/harvestLoot.js": {
+      "git": "a56072df40c851cf30d2d4192a349cdc5eb1d943d0f9e4396023344b2192ccd8",
+      "container": "a56072df40c851cf30d2d4192a349cdc5eb1d943d0f9e4396023344b2192ccd8",
+      "matches": true
+    },
+    "src/data/survival.js": {
+      "git": "3cecd0c93d03f09e5352133f8de2290379179b456ab74009e78a7bc0cd46a3e5",
+      "container": "3cecd0c93d03f09e5352133f8de2290379179b456ab74009e78a7bc0cd46a3e5",
+      "matches": true
+    },
+    "src/main.js": {
+      "git": "e08d777819e28718ec2cdde278bc31bf73aa10cc942a85b37025ae1af2e4b9a9",
+      "container": "e08d777819e28718ec2cdde278bc31bf73aa10cc942a85b37025ae1af2e4b9a9",
+      "matches": true
+    },
+    "src/ui/kit.js": {
+      "git": "57d072201617c6441beec2aca6a78a536e281b5bf12a8e983dc9fcd64deea96c",
+      "container": "57d072201617c6441beec2aca6a78a536e281b5bf12a8e983dc9fcd64deea96c",
+      "matches": true
+    },
+    "src/ui/firePanel.js": {
+      "git": "4eb6b077be6afbe5624aaa32a1768d5ad4a258c65eb6045e9d703a8062cdf428",
+      "container": "4eb6b077be6afbe5624aaa32a1768d5ad4a258c65eb6045e9d703a8062cdf428",
+      "matches": true
+    },
+    "src/ui/workbench.js": {
+      "git": "8efdcfd7c8713deedfe3eebbcde5a07b3b32488dba1eb2dd34446196625295b8",
+      "container": "8efdcfd7c8713deedfe3eebbcde5a07b3b32488dba1eb2dd34446196625295b8",
+      "matches": true
+    },
+    "src/ui/freshwaterPanel.js": {
+      "git": "1cbac06cc7e6b39f18b5e7a30e80e4a37fe68eaa3d579c3c48acfabcf7e2478f",
+      "container": "1cbac06cc7e6b39f18b5e7a30e80e4a37fe68eaa3d579c3c48acfabcf7e2478f",
+      "matches": true
+    },
+    "src/ui/resourceActions.js": {
+      "git": "f19a748cf5230582b3aaed95b823f1cb09c12032cfcb781d53a4ad2fc1d1694d",
+      "container": "f19a748cf5230582b3aaed95b823f1cb09c12032cfcb781d53a4ad2fc1d1694d",
+      "matches": true
+    },
+    "styles/workbench.css": {
+      "git": "d8e8411666ab30143eb8a7c579a047bffd2fa36e980090bcc4bf5e89395dbd03",
+      "container": "d8e8411666ab30143eb8a7c579a047bffd2fa36e980090bcc4bf5e89395dbd03",
+      "matches": true
+    },
+    "styles/kit.css": {
+      "git": "6a9091f6bb374431d0e0d038c48fb6a04bb691dd850cfa2a183c0eb9e852b6d8",
+      "container": "6a9091f6bb374431d0e0d038c48fb6a04bb691dd850cfa2a183c0eb9e852b6d8",
+      "matches": true
+    },
+    "styles/fire.css": {
+      "git": "3871e97461865fbd4d8a23220a2881973a84d87b740841f593eb8c24e317fa05",
+      "container": "3871e97461865fbd4d8a23220a2881973a84d87b740841f593eb8c24e317fa05",
+      "matches": true
+    },
+    "styles/freshwater.css": {
+      "git": "365c9b371712553bdaae95a3781f24489cb5d35cc7eb4aa5ec5cced91480e4ef",
+      "container": "365c9b371712553bdaae95a3781f24489cb5d35cc7eb4aa5ec5cced91480e4ef",
+      "matches": true
+    },
+    "src/sim/systems/resources.js": {
+      "git": "c9b65b05226b273799a666454e42e62b330c486ea1625c4ca845e70a4b28ad7f",
+      "container": "c9b65b05226b273799a666454e42e62b330c486ea1625c4ca845e70a4b28ad7f",
+      "matches": true
+    },
+    "src/sim/systems/fire.js": {
+      "git": "8dbcb9b4392be786e8e2120105ad0586c40c820d334c1bd33d8cb4879bc64280",
+      "container": "8dbcb9b4392be786e8e2120105ad0586c40c820d334c1bd33d8cb4879bc64280",
+      "matches": true
+    },
+    "src/sim/systems/fireProfile.js": {
+      "git": "cd7c347451cd12890dde4339cf3ae2a87714edc842a948abc091c1010a331008",
+      "container": "cd7c347451cd12890dde4339cf3ae2a87714edc842a948abc091c1010a331008",
+      "matches": true
+    },
+    "server/index.mjs": {
+      "git": "af79f3aa017adaca26f934c5ec7d2a4ff97b3929ea70f7ed8d041b03a17e4558",
+      "container": "af79f3aa017adaca26f934c5ec7d2a4ff97b3929ea70f7ed8d041b03a17e4558",
+      "matches": true
+    },
+    "server/host.mjs": {
+      "git": "059de3b23d2ee826b93f58e179df6d2e472112690a01352ab5cda73bd7618c28",
+      "container": "059de3b23d2ee826b93f58e179df6d2e472112690a01352ab5cda73bd7618c28",
+      "matches": true
+    },
+    "server/store.mjs": {
+      "git": "6f24d0d026e3319034cd10864fefd966af8a3f9dab3b1c6e9c5e9cbc8352592b",
+      "container": "6f24d0d026e3319034cd10864fefd966af8a3f9dab3b1c6e9c5e9cbc8352592b",
+      "matches": true
+    },
+    "server/economicAuthority.mjs": {
+      "git": "5c95e74dc537793603f9acc6fe6dc840e7bf0f138d65e996048d4ceaa2e05dd1",
+      "container": "5c95e74dc537793603f9acc6fe6dc840e7bf0f138d65e996048d4ceaa2e05dd1",
+      "matches": true
+    },
+    "server/economicOperation.mjs": {
+      "git": "fd040a137410a507abe5f4d36593e7046a1047dc6f431307a79bae6c3be92351",
+      "container": "fd040a137410a507abe5f4d36593e7046a1047dc6f431307a79bae6c3be92351",
+      "matches": true
+    },
+    "server/loggingOperation.mjs": {
+      "git": "4251309401a36351021fe017ad8f6f504a0a4d93584f28917474d3948f449df2",
+      "container": "4251309401a36351021fe017ad8f6f504a0a4d93584f28917474d3948f449df2",
+      "matches": true
+    },
+    "assets/ui/kit/resina-v1.webp": {
+      "git": "e15b082fbd94be25e5462ac8ee7d543c6f3fceb24a3e6d2bd7a3f786cf693a9c",
+      "container": "e15b082fbd94be25e5462ac8ee7d543c6f3fceb24a3e6d2bd7a3f786cf693a9c",
+      "matches": true
+    },
+    "assets/ui/kit/resina-v1-mobile.webp": {
+      "git": "56b52476c0cccf9b9b7ae0ff450605349a9f38c646f6d4810b3bb22d9f6887f3",
+      "container": "56b52476c0cccf9b9b7ae0ff450605349a9f38c646f6d4810b3bb22d9f6887f3",
+      "matches": true
+    },
+    "assets/ui/kit/coco-v1.webp": {
+      "git": "f2f66c074907ef4eeb02f4185f42d562438159d6c4d1e3b3b914943e5efc4583",
+      "container": "f2f66c074907ef4eeb02f4185f42d562438159d6c4d1e3b3b914943e5efc4583",
+      "matches": true
+    },
+    "assets/ui/kit/coco-v1-mobile.webp": {
+      "git": "ffbf4d7c8e411464a22919c712aadcfc01c9ac0fd36014c207910261674c19d2",
+      "container": "ffbf4d7c8e411464a22919c712aadcfc01c9ac0fd36014c207910261674c19d2",
+      "matches": true
+    },
+    "assets/ui/kit/foods-v1.webp": {
+      "git": "a2da6ce226f44977b9d51f6824ea5ae7d416d90ecb14a7876bceb87697d3e960",
+      "container": "a2da6ce226f44977b9d51f6824ea5ae7d416d90ecb14a7876bceb87697d3e960",
+      "matches": true
+    },
+    "assets/ui/kit/foods-v1-mobile.webp": {
+      "git": "c404f06b7c4c53ce1b8dbba7d0e903711aa00406fe00b7ae905f653daca06278",
+      "container": "c404f06b7c4c53ce1b8dbba7d0e903711aa00406fe00b7ae905f653daca06278",
+      "matches": true
+    }
+  },
+  "publicFileCount": 25,
+  "publicHashes": {
+    "src/data/meta.js": "46a9fc884bf67865be8feb105dce13a28d31c34853a0acd360b638a632abba1a",
+    "src/net/protocol.js": "074cf0a5b6d80c7c685994c121e6e592ea29b3f822dd8c7bb4a14f39f625f319",
+    "src/data/fire.js": "785928122307af6271f5189ae03a3f66b04858e661e7d8b8e1c35a41af2257ea",
+    "src/data/goods.js": "f2a20224f0c0263b1518b4e160b928eb900e6fe288ef294085a7dab2ff2ec5f9",
+    "src/data/harvestLoot.js": "a56072df40c851cf30d2d4192a349cdc5eb1d943d0f9e4396023344b2192ccd8",
+    "src/data/survival.js": "3cecd0c93d03f09e5352133f8de2290379179b456ab74009e78a7bc0cd46a3e5",
+    "src/main.js": "e08d777819e28718ec2cdde278bc31bf73aa10cc942a85b37025ae1af2e4b9a9",
+    "src/ui/kit.js": "57d072201617c6441beec2aca6a78a536e281b5bf12a8e983dc9fcd64deea96c",
+    "src/ui/firePanel.js": "4eb6b077be6afbe5624aaa32a1768d5ad4a258c65eb6045e9d703a8062cdf428",
+    "src/ui/workbench.js": "8efdcfd7c8713deedfe3eebbcde5a07b3b32488dba1eb2dd34446196625295b8",
+    "src/ui/freshwaterPanel.js": "1cbac06cc7e6b39f18b5e7a30e80e4a37fe68eaa3d579c3c48acfabcf7e2478f",
+    "src/ui/resourceActions.js": "f19a748cf5230582b3aaed95b823f1cb09c12032cfcb781d53a4ad2fc1d1694d",
+    "styles/workbench.css": "d8e8411666ab30143eb8a7c579a047bffd2fa36e980090bcc4bf5e89395dbd03",
+    "styles/kit.css": "6a9091f6bb374431d0e0d038c48fb6a04bb691dd850cfa2a183c0eb9e852b6d8",
+    "styles/fire.css": "3871e97461865fbd4d8a23220a2881973a84d87b740841f593eb8c24e317fa05",
+    "styles/freshwater.css": "365c9b371712553bdaae95a3781f24489cb5d35cc7eb4aa5ec5cced91480e4ef",
+    "src/sim/systems/resources.js": "c9b65b05226b273799a666454e42e62b330c486ea1625c4ca845e70a4b28ad7f",
+    "src/sim/systems/fire.js": "8dbcb9b4392be786e8e2120105ad0586c40c820d334c1bd33d8cb4879bc64280",
+    "src/sim/systems/fireProfile.js": "cd7c347451cd12890dde4339cf3ae2a87714edc842a948abc091c1010a331008",
+    "assets/ui/kit/resina-v1.webp": "e15b082fbd94be25e5462ac8ee7d543c6f3fceb24a3e6d2bd7a3f786cf693a9c",
+    "assets/ui/kit/resina-v1-mobile.webp": "56b52476c0cccf9b9b7ae0ff450605349a9f38c646f6d4810b3bb22d9f6887f3",
+    "assets/ui/kit/coco-v1.webp": "f2f66c074907ef4eeb02f4185f42d562438159d6c4d1e3b3b914943e5efc4583",
+    "assets/ui/kit/coco-v1-mobile.webp": "ffbf4d7c8e411464a22919c712aadcfc01c9ac0fd36014c207910261674c19d2",
+    "assets/ui/kit/foods-v1.webp": "a2da6ce226f44977b9d51f6824ea5ae7d416d90ecb14a7876bceb87697d3e960",
+    "assets/ui/kit/foods-v1-mobile.webp": "c404f06b7c4c53ce1b8dbba7d0e903711aa00406fe00b7ae905f653daca06278"
+  }
+}

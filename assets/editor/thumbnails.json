@@ -1,0 +1,408 @@
+{
+  "version": 1,
+  "assets": {
+    "prop:storage-crate": {
+      "thumbnail": "assets/editor/thumbnails/prop-storage-crate.webp",
+      "label": {
+        "es": "Caja de almacenaje",
+        "en": "Storage crate"
+      },
+      "stats": {
+        "triangles": 204,
+        "bytes": 51684
+      }
+    },
+    "model:coast-rock-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-coast-rock-v1.webp",
+      "label": {
+        "es": "Roca costera",
+        "en": "Coastal rock"
+      },
+      "stats": {
+        "triangles": 64,
+        "bytes": 7964
+      }
+    },
+    "model:beach-shell-fan-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-shell-fan-v1.webp",
+      "label": {
+        "es": "Concha abanico",
+        "en": "Fan shell"
+      },
+      "stats": {
+        "triangles": 80,
+        "bytes": 9700
+      }
+    },
+    "model:beach-shell-oval-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-shell-oval-v1.webp",
+      "label": {
+        "es": "Concha ovalada",
+        "en": "Oval shell"
+      },
+      "stats": {
+        "triangles": 96,
+        "bytes": 11432
+      }
+    },
+    "model:beach-shell-chip-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-shell-chip-v1.webp",
+      "label": {
+        "es": "Fragmento de concha",
+        "en": "Shell fragment"
+      },
+      "stats": {
+        "triangles": 48,
+        "bytes": 6248
+      }
+    },
+    "model:beach-pebbles-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-pebbles-v1.webp",
+      "label": {
+        "es": "Piedras de playa",
+        "en": "Beach pebbles"
+      },
+      "stats": {
+        "triangles": 192,
+        "bytes": 21796
+      }
+    },
+    "model:palm-tall-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-palm-tall-v1.webp",
+      "label": {
+        "es": "Palmera alta",
+        "en": "Tall palm"
+      },
+      "stats": {
+        "triangles": 1016,
+        "bytes": 123256
+      }
+    },
+    "model:palm-curved-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-palm-curved-v1.webp",
+      "label": {
+        "es": "Palmera curva",
+        "en": "Curved palm"
+      },
+      "stats": {
+        "triangles": 1064,
+        "bytes": 125740
+      }
+    },
+    "model:palm-short-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-palm-short-v1.webp",
+      "label": {
+        "es": "Palmera baja",
+        "en": "Short palm"
+      },
+      "stats": {
+        "triangles": 1112,
+        "bytes": 128208
+      }
+    },
+    "model:palm-base-open-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-palm-base-open-v1.webp",
+      "label": {
+        "es": "Base de palmera abierta",
+        "en": "Open palm base"
+      },
+      "stats": {
+        "triangles": 410,
+        "bytes": 54728
+      }
+    },
+    "model:palm-base-lush-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-palm-base-lush-v1.webp",
+      "label": {
+        "es": "Base de palmera frondosa",
+        "en": "Lush palm base"
+      },
+      "stats": {
+        "triangles": 540,
+        "bytes": 70952
+      }
+    },
+    "model:shrub-round-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-shrub-round-v1.webp",
+      "label": {
+        "es": "Arbusto redondo",
+        "en": "Round shrub"
+      },
+      "stats": {
+        "triangles": 424,
+        "bytes": 24720
+      }
+    },
+    "model:shrub-low-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-shrub-low-v1.webp",
+      "label": {
+        "es": "Arbusto bajo",
+        "en": "Low shrub"
+      },
+      "stats": {
+        "triangles": 512,
+        "bytes": 28832
+      }
+    },
+    "model:shrub-tall-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-shrub-tall-v1.webp",
+      "label": {
+        "es": "Arbusto alto",
+        "en": "Tall shrub"
+      },
+      "stats": {
+        "triangles": 440,
+        "bytes": 25656
+      }
+    },
+    "model:beach-debris-branch-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-debris-branch-v1.webp",
+      "label": {
+        "es": "Rama de playa",
+        "en": "Beach branch"
+      },
+      "stats": {
+        "triangles": 208,
+        "bytes": 6612
+      }
+    },
+    "model:beach-debris-log-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-debris-log-v1.webp",
+      "label": {
+        "es": "Tronco de playa",
+        "en": "Beach log"
+      },
+      "stats": {
+        "triangles": 96,
+        "bytes": 3696
+      }
+    },
+    "model:beach-debris-planks-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-debris-planks-v1.webp",
+      "label": {
+        "es": "Tablas de playa",
+        "en": "Beach planks"
+      },
+      "stats": {
+        "triangles": 132,
+        "bytes": 8432
+      }
+    },
+    "model:gm-rock-2k": {
+      "thumbnail": "assets/editor/thumbnails/model-gm-rock-2k.webp",
+      "stats": {
+        "triangles": 19469,
+        "bytes": 3271288
+      }
+    },
+    "model:gm-rock-1k": {
+      "thumbnail": "assets/editor/thumbnails/model-gm-rock-1k.webp",
+      "stats": {
+        "triangles": 19469,
+        "bytes": 1546948
+      }
+    },
+    "model:gm-coral-200k": {
+      "thumbnail": "assets/editor/thumbnails/model-gm-coral-200k.webp",
+      "stats": {
+        "triangles": 199999,
+        "bytes": 8596920
+      }
+    },
+    "model:gm-coral-50k": {
+      "thumbnail": "assets/editor/thumbnails/model-gm-coral-50k.webp",
+      "stats": {
+        "triangles": 49999,
+        "bytes": 3482648
+      }
+    },
+    "model:item-resina-v1": {
+      "label": {
+        "es": "Resina",
+        "en": "Resin"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-resina-v1.webp",
+      "stats": {
+        "triangles": 472,
+        "bytes": 59732
+      },
+      "model": true
+    },
+    "model:item-antorcha-v1": {
+      "label": {
+        "es": "Antorcha apagada",
+        "en": "Unlit torch"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-antorcha-v1.webp",
+      "stats": {
+        "triangles": 498,
+        "bytes": 78028
+      },
+      "model": true
+    },
+    "model:item-coco-v1": {
+      "label": {
+        "es": "Coco entero",
+        "en": "Coconut"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-coco-v1.webp",
+      "stats": {
+        "triangles": 402,
+        "bytes": 61348
+      },
+      "model": true
+    },
+    "model:item-lima-v1": {
+      "label": {
+        "es": "Lima",
+        "en": "Lime (concept)"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-lima-v1.webp",
+      "stats": {
+        "triangles": 664,
+        "bytes": 55916
+      },
+      "model": true
+    },
+    "model:item-especias-v1": {
+      "label": {
+        "es": "Especias",
+        "en": "Spices"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-especias-v1.webp",
+      "stats": {
+        "triangles": 635,
+        "bytes": 69432
+      },
+      "model": true
+    },
+    "model:item-meal_grog-v1": {
+      "label": {
+        "es": "Grog",
+        "en": "Grog"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-meal_grog-v1.webp",
+      "stats": {
+        "triangles": 692,
+        "bytes": 73064
+      },
+      "model": true
+    },
+    "model:item-meal_roastFish-v1": {
+      "label": {
+        "es": "Pescado asado",
+        "en": "Roast fish"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-meal_roastFish-v1.webp",
+      "stats": {
+        "triangles": 670,
+        "bytes": 107340
+      },
+      "model": true
+    },
+    "model:item-cana-v1": {
+      "label": {
+        "es": "Caña de azúcar",
+        "en": "Sugar cane"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-cana-v1.webp",
+      "stats": {
+        "triangles": 684,
+        "bytes": 71932
+      },
+      "model": true
+    },
+    "model:item-hierbas_aromaticas-v1": {
+      "label": {
+        "es": "Hierbas aromáticas",
+        "en": "Herbs (concept)"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-hierbas_aromaticas-v1.webp",
+      "stats": {
+        "triangles": 547,
+        "bytes": 74272
+      },
+      "model": true
+    },
+    "model:item-meal_heartyBiscuit-v1": {
+      "label": {
+        "es": "Galleta reforzada",
+        "en": "Hearty biscuit"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-meal_heartyBiscuit-v1.webp",
+      "stats": {
+        "triangles": 628,
+        "bytes": 83336
+      },
+      "model": true
+    },
+    "model:item-agua-v1": {
+      "label": {
+        "es": "Frasco de agua",
+        "en": "Water"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-agua-v1.webp",
+      "stats": {
+        "triangles": 628,
+        "bytes": 55208
+      },
+      "model": true
+    },
+    "model:item-harina-v1": {
+      "label": {
+        "es": "Saco de harina",
+        "en": "Flour"
+      },
+      "thumbnail": "assets/editor/thumbnails/item-harina-v1.webp",
+      "stats": {
+        "triangles": 658,
+        "bytes": 90248
+      },
+      "model": true
+    },
+    "model:aw-pilot-01": {
+      "thumbnail": "assets/workshop/thumbnails/aw-pilot-01.webp",
+      "label": {
+        "es": "Caldero nuevo",
+        "en": "New cauldron"
+      },
+      "stats": {
+        "bytes": 23440,
+        "triangles": 398
+      }
+    },
+    "model:aw-pilot-05": {
+      "thumbnail": "assets/workshop/thumbnails/aw-pilot-05.webp",
+      "label": {
+        "es": "Palma Kobo",
+        "en": "Kobo palm"
+      },
+      "stats": {
+        "bytes": 571416,
+        "triangles": 6656
+      }
+    },
+    "model:aw-pilot-06": {
+      "thumbnail": "assets/workshop/thumbnails/aw-pilot-06.webp",
+      "label": {
+        "es": "Puerta",
+        "en": "Door"
+      },
+      "stats": {
+        "bytes": 4267972,
+        "triangles": 876
+      }
+    },
+    "model:aw-pilot-07": {
+      "thumbnail": "assets/workshop/thumbnails/aw-pilot-07.webp",
+      "label": {
+        "es": "Barco de referencia",
+        "en": "Reference boat"
+      },
+      "stats": {
+        "bytes": 3308964,
+        "triangles": 7786
+      }
+    }
+  }
+}

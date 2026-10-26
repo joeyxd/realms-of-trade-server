@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-13T14:29:59.800Z",
+  "scope": "isolated memory host; cosmetic geometry only",
+  "cases": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "initial": {
+        "atlas": true,
+        "flipY": true,
+        "image": [
+          1024,
+          1024
+        ],
+        "vertices": 288,
+        "loaded": [
+          "model:coast-rock-v1",
+          "model:beach-debris-log-v1",
+          "model:beach-debris-planks-v1"
+        ],
+        "rect": {
+          "u0": 0.1611328125,
+          "u1": 0.2978515625,
+          "v0": 0.630859375,
+          "v1": 0.6748046875
+        },
+        "topVertices": 132,
+        "aligned": true,
+        "inside": true
+      },
+      "errors": [],
+      "screenshots": [
+        "desktop-before.png",
+        "desktop-after.png"
+      ]
+    },
+    {
+      "name": "mobile",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "initial": {
+        "atlas": true,
+        "flipY": true,
+        "image": [
+          512,
+          512
+        ],
+        "vertices": 288,
+        "loaded": [
+          "model:coast-rock-v1",
+          "model:beach-debris-log-v1",
+          "model:beach-debris-planks-v1"
+        ],
+        "rect": {
+          "u0": 0.1611328125,
+          "u1": 0.2978515625,
+          "v0": 0.630859375,
+          "v1": 0.6748046875
+        },
+        "topVertices": 132,
+        "aligned": true,
+        "inside": true
+      },
+      "errors": [],
+      "screenshots": [
+        "mobile-before.png",
+        "mobile-after.png"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,215 @@
+{
+  "at": "2026-10-12T05:49:52.711Z",
+  "container": "7d1982979d92a6b69ab2ef9bda891c1d5b64c1571f4ecbd43c9154e40335e672",
+  "image": "sha256:b0e1b7818ce139657f3f722e1e90430cdaf94bcd5a1380e03702b8dc7f7013e4",
+  "revision": "c146b08675d56870ddc9e579861cd9902c48c999",
+  "health": "healthy",
+  "running": true,
+  "runtime": {
+    "version": "0.6.0-alpha.63",
+    "protocol": 59,
+    "hashes": {
+      "src/editor/editor.js": "b07de092f36d1d7f2087f6d886ee9c4dc1edf1326e1b51fe5fa5f89c5a777be5",
+      "src/editor/editor.css": "24b15c3d474552171230ef88e47f968d4058c5ed4db126e9f6fb4d32f04fff7e",
+      "src/editor/resourcePanel.js": "daf1ad846c88192367dc0246b9c9e8ff33c5827881fac01b715b8ec6f4d9e237",
+      "src/editor/resourceAdapters.js": "a102fa7de01c4ecf0bf70b6cd0483b3ce5f50b3e32817d370d6b97a1e3b58379",
+      "src/editor/activeContent.js": "176e5ab6c88a7fec0cfd883a77b56032c38b3e6d52cec2727eb695d1ebafdf11",
+      "src/editor/contentProjection.js": "65863d11fe7699fcd3808bd6bf3e7dac75e0a576bf409a56028bc01b3244442b",
+      "src/editor/modelFactory.js": "1208bae58302a232b8b339ef83e3b6b4be9a5cd6b804b6a20c596b647aa9e543",
+      "src/editor/publicationValidation.js": "cfead42638bc24f78b8cdc74ce923adf3254398e4bfe21f26557591b7b582bd7",
+      "src/editor/remotePanel.js": "cfa4cdbf074c87964b2f9e92e414fc75e624d0986105940b25dfd10f041d86d0",
+      "src/editor/templates.js": "a981d92e3670e4ff0e5f1736fbec198012b50a311ba430463d5fff93d07d6ae8",
+      "src/data/resources.js": "48822e58b702bc04f1f15f5b1ef87a444520577e040466fb188bf75e1372767f",
+      "src/data/meta.js": "283e6557445506f22506edff829094e263265854ff3aa39ed880440f64a07983",
+      "src/sim/systems/resources.js": "51dc09ece16c40d26ada7d22e8f6a7a69d7b539354bf43db31a9df87cc592196",
+      "src/render/gmContent.js": "2cdbbcf6bf25706020183f4c9db0d55bfb523f257d224978b5ac7f634aefbe49",
+      "src/render/resourceNodes.js": "2348d1f36b05304cfff4603d35a557885d9df9609f4802ce919ec3faf0728468",
+      "src/render/palmGeometry.js": "d45a3b35310dc17121669c7f1991750518481474137cf78dbcdbda9f52a828e5",
+      "src/render/scene.js": "35e25e63901d710678b945ee42b66c2d440a2d7343c50a59f81097c1d2547359",
+      "src/net/protocol.js": "1595accb85ea5f9c43cfa671932523006deb7fb7c2d09cfc84659ba0633cc860",
+      "server/gmResourceRoster.mjs": "192c726443a637f68369d6834e4b4a54341e7f70e3d1cfd82cb3996d1784d840",
+      "server/resourceState.mjs": "35ce8df7e5e746de9b1321633011a320afb511e45e6ea6401a9be5e461618e22",
+      "server/store.mjs": "7e8181b0f587f748318ad410e79f047b5fc28988deeb6e8dec9e206637f5e2b8",
+      "server/host.mjs": "30a1b727c020b07959cef399b4e6b62f73ecb7996918c873b86fc078953142a1",
+      "server/gmContent.mjs": "8063dbc4fa86f45dce76f07c464509da4d71337d2c29250ab41c44ecf2e85413",
+      "server/gmPublication.mjs": "bef95d323ed45582fb67bd4d733eeaecb6098b2b4ae115b32e5f14c50975747a",
+      "server/gmPublicationAssets.mjs": "62f67e6a980e6890fc3b65b2bcfa4feeeeadeabd2961072f31cfbf2e309fce1c",
+      "server/gmDraftValidation.mjs": "da1d6a4ac1bf5c704be2e018f2461824a83f3b907413db13184ab500d180d95c",
+      "server/index.mjs": "ff1372ede96dbb2ffbd309b2c004ee013774f11c27f93a1ea31b0e496552c3b8",
+      "src/main.js": "0f4f5d9f5b80d9ec89bf237a56acb1c01b20da629cefc8baf3f491cecb2508ee",
+      "assets/manifest.json": "65895835467d40c3a21ef04ba5be1d28c38cacaa29a363dbe05cdfc5b12b48d1"
+    }
+  },
+  "sourceFileCount": 29,
+  "matchedFiles": 29,
+  "files": {
+    "src/editor/editor.js": {
+      "git": "b07de092f36d1d7f2087f6d886ee9c4dc1edf1326e1b51fe5fa5f89c5a777be5",
+      "container": "b07de092f36d1d7f2087f6d886ee9c4dc1edf1326e1b51fe5fa5f89c5a777be5",
+      "matches": true
+    },
+    "src/editor/editor.css": {
+      "git": "24b15c3d474552171230ef88e47f968d4058c5ed4db126e9f6fb4d32f04fff7e",
+      "container": "24b15c3d474552171230ef88e47f968d4058c5ed4db126e9f6fb4d32f04fff7e",
+      "matches": true
+    },
+    "src/editor/resourcePanel.js": {
+      "git": "daf1ad846c88192367dc0246b9c9e8ff33c5827881fac01b715b8ec6f4d9e237",
+      "container": "daf1ad846c88192367dc0246b9c9e8ff33c5827881fac01b715b8ec6f4d9e237",
+      "matches": true
+    },
+    "src/editor/resourceAdapters.js": {
+      "git": "a102fa7de01c4ecf0bf70b6cd0483b3ce5f50b3e32817d370d6b97a1e3b58379",
+      "container": "a102fa7de01c4ecf0bf70b6cd0483b3ce5f50b3e32817d370d6b97a1e3b58379",
+      "matches": true
+    },
+    "src/editor/activeContent.js": {
+      "git": "176e5ab6c88a7fec0cfd883a77b56032c38b3e6d52cec2727eb695d1ebafdf11",
+      "container": "176e5ab6c88a7fec0cfd883a77b56032c38b3e6d52cec2727eb695d1ebafdf11",
+      "matches": true
+    },
+    "src/editor/contentProjection.js": {
+      "git": "65863d11fe7699fcd3808bd6bf3e7dac75e0a576bf409a56028bc01b3244442b",
+      "container": "65863d11fe7699fcd3808bd6bf3e7dac75e0a576bf409a56028bc01b3244442b",
+      "matches": true
+    },
+    "src/editor/modelFactory.js": {
+      "git": "1208bae58302a232b8b339ef83e3b6b4be9a5cd6b804b6a20c596b647aa9e543",
+      "container": "1208bae58302a232b8b339ef83e3b6b4be9a5cd6b804b6a20c596b647aa9e543",
+      "matches": true
+    },
+    "src/editor/publicationValidation.js": {
+      "git": "cfead42638bc24f78b8cdc74ce923adf3254398e4bfe21f26557591b7b582bd7",
+      "container": "cfead42638bc24f78b8cdc74ce923adf3254398e4bfe21f26557591b7b582bd7",
+      "matches": true
+    },
+    "src/editor/remotePanel.js": {
+      "git": "cfa4cdbf074c87964b2f9e92e414fc75e624d0986105940b25dfd10f041d86d0",
+      "container": "cfa4cdbf074c87964b2f9e92e414fc75e624d0986105940b25dfd10f041d86d0",
+      "matches": true
+    },
+    "src/editor/templates.js": {
+      "git": "a981d92e3670e4ff0e5f1736fbec198012b50a311ba430463d5fff93d07d6ae8",
+      "container": "a981d92e3670e4ff0e5f1736fbec198012b50a311ba430463d5fff93d07d6ae8",
+      "matches": true
+    },
+    "src/data/resources.js": {
+      "git": "48822e58b702bc04f1f15f5b1ef87a444520577e040466fb188bf75e1372767f",
+      "container": "48822e58b702bc04f1f15f5b1ef87a444520577e040466fb188bf75e1372767f",
+      "matches": true
+    },
+    "src/data/meta.js": {
+      "git": "283e6557445506f22506edff829094e263265854ff3aa39ed880440f64a07983",
+      "container": "283e6557445506f22506edff829094e263265854ff3aa39ed880440f64a07983",
+      "matches": true
+    },
+    "src/sim/systems/resources.js": {
+      "git": "51dc09ece16c40d26ada7d22e8f6a7a69d7b539354bf43db31a9df87cc592196",
+      "container": "51dc09ece16c40d26ada7d22e8f6a7a69d7b539354bf43db31a9df87cc592196",
+      "matches": true
+    },
+    "src/render/gmContent.js": {
+      "git": "2cdbbcf6bf25706020183f4c9db0d55bfb523f257d224978b5ac7f634aefbe49",
+      "container": "2cdbbcf6bf25706020183f4c9db0d55bfb523f257d224978b5ac7f634aefbe49",
+      "matches": true
+    },
+    "src/render/resourceNodes.js": {
+      "git": "2348d1f36b05304cfff4603d35a557885d9df9609f4802ce919ec3faf0728468",
+      "container": "2348d1f36b05304cfff4603d35a557885d9df9609f4802ce919ec3faf0728468",
+      "matches": true
+    },
+    "src/render/palmGeometry.js": {
+      "git": "d45a3b35310dc17121669c7f1991750518481474137cf78dbcdbda9f52a828e5",
+      "container": "d45a3b35310dc17121669c7f1991750518481474137cf78dbcdbda9f52a828e5",
+      "matches": true
+    },
+    "src/render/scene.js": {
+      "git": "35e25e63901d710678b945ee42b66c2d440a2d7343c50a59f81097c1d2547359",
+      "container": "35e25e63901d710678b945ee42b66c2d440a2d7343c50a59f81097c1d2547359",
+      "matches": true
+    },
+    "src/net/protocol.js": {
+      "git": "1595accb85ea5f9c43cfa671932523006deb7fb7c2d09cfc84659ba0633cc860",
+      "container": "1595accb85ea5f9c43cfa671932523006deb7fb7c2d09cfc84659ba0633cc860",
+      "matches": true
+    },
+    "server/gmResourceRoster.mjs": {
+      "git": "192c726443a637f68369d6834e4b4a54341e7f70e3d1cfd82cb3996d1784d840",
+      "container": "192c726443a637f68369d6834e4b4a54341e7f70e3d1cfd82cb3996d1784d840",
+      "matches": true
+    },
+    "server/resourceState.mjs": {
+      "git": "35ce8df7e5e746de9b1321633011a320afb511e45e6ea6401a9be5e461618e22",
+      "container": "35ce8df7e5e746de9b1321633011a320afb511e45e6ea6401a9be5e461618e22",
+      "matches": true
+    },
+    "server/store.mjs": {
+      "git": "7e8181b0f587f748318ad410e79f047b5fc28988deeb6e8dec9e206637f5e2b8",
+      "container": "7e8181b0f587f748318ad410e79f047b5fc28988deeb6e8dec9e206637f5e2b8",
+      "matches": true
+    },
+    "server/host.mjs": {
+      "git": "30a1b727c020b07959cef399b4e6b62f73ecb7996918c873b86fc078953142a1",
+      "container": "30a1b727c020b07959cef399b4e6b62f73ecb7996918c873b86fc078953142a1",
+      "matches": true
+    },
+    "server/gmContent.mjs": {
+      "git": "8063dbc4fa86f45dce76f07c464509da4d71337d2c29250ab41c44ecf2e85413",
+      "container": "8063dbc4fa86f45dce76f07c464509da4d71337d2c29250ab41c44ecf2e85413",
+      "matches": true
+    },
+    "server/gmPublication.mjs": {
+      "git": "bef95d323ed45582fb67bd4d733eeaecb6098b2b4ae115b32e5f14c50975747a",
+      "container": "bef95d323ed45582fb67bd4d733eeaecb6098b2b4ae115b32e5f14c50975747a",
+      "matches": true
+    },
+    "server/gmPublicationAssets.mjs": {
+      "git": "62f67e6a980e6890fc3b65b2bcfa4feeeeadeabd2961072f31cfbf2e309fce1c",
+      "container": "62f67e6a980e6890fc3b65b2bcfa4feeeeadeabd2961072f31cfbf2e309fce1c",
+      "matches": true
+    },
+    "server/gmDraftValidation.mjs": {
+      "git": "da1d6a4ac1bf5c704be2e018f2461824a83f3b907413db13184ab500d180d95c",
+      "container": "da1d6a4ac1bf5c704be2e018f2461824a83f3b907413db13184ab500d180d95c",
+      "matches": true
+    },
+    "server/index.mjs": {
+      "git": "ff1372ede96dbb2ffbd309b2c004ee013774f11c27f93a1ea31b0e496552c3b8",
+      "container": "ff1372ede96dbb2ffbd309b2c004ee013774f11c27f93a1ea31b0e496552c3b8",
+      "matches": true
+    },
+    "src/main.js": {
+      "git": "0f4f5d9f5b80d9ec89bf237a56acb1c01b20da629cefc8baf3f491cecb2508ee",
+      "container": "0f4f5d9f5b80d9ec89bf237a56acb1c01b20da629cefc8baf3f491cecb2508ee",
+      "matches": true
+    },
+    "assets/manifest.json": {
+      "git": "65895835467d40c3a21ef04ba5be1d28c38cacaa29a363dbe05cdfc5b12b48d1",
+      "container": "65895835467d40c3a21ef04ba5be1d28c38cacaa29a363dbe05cdfc5b12b48d1",
+      "matches": true
+    }
+  },
+  "publicFileCount": 20,
+  "publicHashes": {
+    "src/editor/editor.js": "b07de092f36d1d7f2087f6d886ee9c4dc1edf1326e1b51fe5fa5f89c5a777be5",
+    "src/editor/editor.css": "24b15c3d474552171230ef88e47f968d4058c5ed4db126e9f6fb4d32f04fff7e",
+    "src/editor/resourcePanel.js": "daf1ad846c88192367dc0246b9c9e8ff33c5827881fac01b715b8ec6f4d9e237",
+    "src/editor/resourceAdapters.js": "a102fa7de01c4ecf0bf70b6cd0483b3ce5f50b3e32817d370d6b97a1e3b58379",
+    "src/editor/activeContent.js": "176e5ab6c88a7fec0cfd883a77b56032c38b3e6d52cec2727eb695d1ebafdf11",
+    "src/editor/contentProjection.js": "65863d11fe7699fcd3808bd6bf3e7dac75e0a576bf409a56028bc01b3244442b",
+    "src/editor/modelFactory.js": "1208bae58302a232b8b339ef83e3b6b4be9a5cd6b804b6a20c596b647aa9e543",
+    "src/editor/publicationValidation.js": "cfead42638bc24f78b8cdc74ce923adf3254398e4bfe21f26557591b7b582bd7",
+    "src/editor/remotePanel.js": "cfa4cdbf074c87964b2f9e92e414fc75e624d0986105940b25dfd10f041d86d0",
+    "src/editor/templates.js": "a981d92e3670e4ff0e5f1736fbec198012b50a311ba430463d5fff93d07d6ae8",
+    "src/data/resources.js": "48822e58b702bc04f1f15f5b1ef87a444520577e040466fb188bf75e1372767f",
+    "src/data/meta.js": "283e6557445506f22506edff829094e263265854ff3aa39ed880440f64a07983",
+    "src/sim/systems/resources.js": "51dc09ece16c40d26ada7d22e8f6a7a69d7b539354bf43db31a9df87cc592196",
+    "src/render/gmContent.js": "2cdbbcf6bf25706020183f4c9db0d55bfb523f257d224978b5ac7f634aefbe49",
+    "src/render/resourceNodes.js": "2348d1f36b05304cfff4603d35a557885d9df9609f4802ce919ec3faf0728468",
+    "src/render/palmGeometry.js": "d45a3b35310dc17121669c7f1991750518481474137cf78dbcdbda9f52a828e5",
+    "src/render/scene.js": "35e25e63901d710678b945ee42b66c2d440a2d7343c50a59f81097c1d2547359",
+    "src/net/protocol.js": "1595accb85ea5f9c43cfa671932523006deb7fb7c2d09cfc84659ba0633cc860",
+    "src/main.js": "0f4f5d9f5b80d9ec89bf237a56acb1c01b20da629cefc8baf3f491cecb2508ee",
+    "assets/manifest.json": "65895835467d40c3a21ef04ba5be1d28c38cacaa29a363dbe05cdfc5b12b48d1"
+  }
+}

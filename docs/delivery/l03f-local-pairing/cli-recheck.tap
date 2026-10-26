@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+ok 1 - pairing keeps the one-use credential in memory and reuses the scoped durable journal and allowance
+  ---
+  duration_ms: 59.1315
+  type: 'test'
+  ...
+# Subtest: remote stop settles the runner and permits the same controller to pair again
+ok 2 - remote stop settles the runner and permits the same controller to pair again
+  ---
+  duration_ms: 34.148
+  type: 'test'
+  ...
+# Subtest: stop during asynchronous document loading cancels setup before runner connect
+ok 3 - stop during asynchronous document loading cancels setup before runner connect
+  ---
+  duration_ms: 27.4359
+  type: 'test'
+  ...
+# Subtest: pairing fails closed for reused companion files with a different model policy
+ok 4 - pairing fails closed for reused companion files with a different model policy
+  ---
+  duration_ms: 28.2861
+  type: 'test'
+  ...
+# Subtest: claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+ok 5 - claim transport sends only the pairing envelope and rejects malformed bootstrap without exposing credentials
+  ---
+  duration_ms: 3.4501
+  type: 'test'
+  ...
+# Subtest: live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+ok 6 - live owner C01 delivery gets one local-model reply and a durable scoped memory episode
+  ---
+  duration_ms: 1529.5877
+  type: 'test'
+  ...
+# Subtest: stop during a local model request fences its late response and does not capture an exchange
+ok 7 - stop during a local model request fences its late response and does not capture an exchange
+  ---
+  duration_ms: 1327.7193
+  type: 'test'
+  ...
+# Subtest: the CLI validates options before prompting and accepts a pasted multi-character hex code
+ok 8 - the CLI validates options before prompting and accepts a pasted multi-character hex code
+  ---
+  duration_ms: 1.7617
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3664.209

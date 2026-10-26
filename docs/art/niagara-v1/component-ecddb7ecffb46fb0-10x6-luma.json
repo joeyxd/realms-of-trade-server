@@ -1,0 +1,270 @@
+{
+  "schema": "marea.niagara-web-derivative",
+  "version": 1,
+  "id": "niagara-985a431dc6c0d1ca",
+  "atlasId": "component-ecddb7ecffb46fb0-10x6-luma",
+  "sourceSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "sourceFrames": [
+    "cf4975e71155e9eb9a5ed735941ec3c7ae719514d4ae1d9baad0e5d66ec15966",
+    "9370d17bc9f17f6294dc76e400d506db25a6afd36b9b9e65de2c85a49b449127",
+    "1b5c09b28418deb6355bb2ad0fba2295a62e5820383c16e98b0a8f63b25962fe",
+    "ef28bbd12ac3c12ab268cc77d8f3fc0e68789b3bdafd438338d9b8e3f1725b14",
+    "3836e7c3c9f8f741fc22e40fd6d882437733245c6d5d4fc6addb0bd498c38ea2",
+    "2fff42edadb93a18957057bb3015c329a5bbbdead2ca638186f77fb6b73d41b4",
+    "82b266deb22b5076a54bf95c5f236372c88cabf9ae44b725e7a49ca87c9c3dca",
+    "64cc80a1882a7625281a0431397db653fd3ae283e74c6868e6551743b95cc7f9",
+    "0311e762db23f622bdf3025b3dd7e5b6f8c6a23396b7f00e34f136c35bfd7ca9",
+    "b25c9936d62fc52fec87129a4bdc426904f55761549274c0af0cf960bf70de80",
+    "b3cd83d49de2d20aea97f1fdbe86dd5770150c683e97de71375d8d4ed78ee6bf",
+    "d724db9f3ecf4c6467c916ba0c26c45b841b56a1f17ab7ae4fae09af29890af0",
+    "783f869890b3251beebfd81571339992bdfbf179ab3729994e00801204920e55",
+    "634534f7ad3573b37b0f9aee3e98d0a29049acb134a91cbd511e3972ed757f31",
+    "2bc80fee2c24b246a3541d0eca4aa66fd5f58d630ba31ea27b15320d1f859969",
+    "1f0a3889e881cfe593b34fb79410e61dfb10452dbae9e1ff4e5ec4b8bc2f9e1a",
+    "a6cdf5a765acc85cccac65467d2ab86f424aec93cb3af1b0ef9a6da8051d96d8",
+    "a5f0be160ff4bb75139e04d1309093962e2aa9422e2c0101c4283b0bd4dd8793",
+    "c639046d2cbcfe38ec34712ba3e1fa4a535fca41eaae7691079050b744240826",
+    "78eefc7dc0e98ebecc68fe0f69faddfa7557327665e7648e142b03fdbcaa7ed5",
+    "1b7f18228076bb9831380c3a691481e5f9acb704dc8e7c590efaf002969e6320",
+    "465453d061bb970f9e3722eee27b621a66e737b015cf036a6ee78bf6646971f5",
+    "74fc96c3dc2ab2d8b57184e4551d1ae69b4a0f3ee8928312ae71bf2b9368bc85",
+    "15611865e521a4fc45eb16207ef3ece8057ae4be8e1d312e62f327b9bee917a0",
+    "d45f08a70797be291bb3798376396ea3187a61484d01b900de0f65f8b604aa9d",
+    "910305fa971e1207330326a86a780be1be5c298ffd1c57aa455cbdb3d2f1a2cd",
+    "5fcaaaff0751ff961897d9ca6adfd55eb5e42f7e3d43ab6c38caf723579e36ed",
+    "8ec011b80e8eec777a48a736462c274a097406ad1be64a25cad9be2d0ef0e0d4",
+    "9f5502c576ffb61734ea0275aa05946e4c8e6cc18d20a6f22c8af4908775836c",
+    "57a00e6fb0a0987da3c435b49c8687789eb632295a85a33c498e6c8335547061",
+    "8607a0e0464efd21a5eae03ee533e4baa006a1d0018bb6c9de4cabcd33568662",
+    "c4b5c4fb0553a6f7f7d74d3306946d125904017858d82b986d21d0c630cde6dd",
+    "ead7300b9280d2fb2a2450c73425d13686fe0e43a7b479c75996c7a9d28eaad0",
+    "a105246547d4da457988b36da378e2041b9e58a018febfb7b4132a5491621361",
+    "7f56b4bcbec78eafe932c277c9f08922f32aa470109c23962ce14465d2c9f393",
+    "af0a5fe9e6a9f9b78903da863f0830e51c8a48c690779730959f0db613a3cfcd",
+    "2f20e12ef4f109b7c6fdefc6a8ef85ee301e0df45bd10d5c9d242191081edfcf",
+    "be8710ee8f0bf27a347edcc486768e55b77424c66e57454bb09bde16efc7da3f",
+    "8ce4ed3a241f197a1aee5d17a5a450be8b31ed8d237ab42d6833c27723700e70",
+    "06f43b419e2d214e343b4134d861d8c1a4ef5e76f7b4660ee3cf819e7153a612",
+    "89950186326035520edb6f4c5dbf2b0da79ce4f215bd41bb1a11bf10c885c2b4",
+    "6246929c32b7028e5f637255b4161e2ee0058558ffca612228f7c4a7e89efeba",
+    "96adad37af52851e748d65fe1779ccf3149d615f047b6907a33d8f13d959a737",
+    "52461946c3204da1e704bd34a417659022c96ce511275967d87cd663708c7f58",
+    "adaa4f87852ff4a0bbf9744a6765224102255a90dbec25c42184d5c9332a7cea",
+    "fa5094b41115541f7a8a2ac24dadee29f3e837db377c2c53ad2b4f043cceff1c",
+    "c7e7491ac60d2c61c4f0ca17ca77fa14c9ae0632ada8af6224824da24e2a50f4",
+    "15ea96072ac5654cacd89190a0154233cc3efb731a812e4c2e25892ff6066321",
+    "80d6e038ff09c15ba7fbed31dfd843c3e31d5a387bbc085c6a7a9ea88a714c12",
+    "704a7fb27ac1f193b609be08431a83b128ac233bbe59b72af187f745fafcbcb9",
+    "c7f769138b5358a4dac69993733146b7bb52078ab87ce39e422477939645d776",
+    "94188f9ab0bce8d42d685a0ee67e26d245c946c7cc107db3a8bb9a50b862565c",
+    "16b98de366982692ccf9db9ea2b1f6a2b26e07796078e104cef33b62f1165532",
+    "f071bbec46d05c1124995603ce4d60fef688be9284ccc755490fc4eb773d2f76",
+    "56a8bfd4bb0731d4905c431a8257de870b636fccca138ded17b9946a199d4c5c",
+    "6302d37311adfce8fb885113894078fac88fdaf09a820d8ab9bdb3dc3b621da7",
+    "3bdc0804b9ab6f8bca9c8bba4b9d4cd9b06b8d40903dab921831a4017ce9f666",
+    "a4792be64c51c2b85c1e95c244b3d086df9ec4ad1f568578c1f09c636c2866a0",
+    "917ddb198eecd21c6e8f4e9e29ccf1655f371d753559793351fc86374b34f46b",
+    "262cef3d98a7aa02a20b41447da3313ad944cac149264dca19a1b876117deabe"
+  ],
+  "files": {
+    "desktop": {
+      "url": "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-desktop.webp",
+      "bytes": 184012,
+      "sha256": "9967b5f53045e8fc986ce446c15b56e50311c6ea018dda2f71b27812bfa72602",
+      "width": 2048,
+      "height": 2048
+    },
+    "mobile": {
+      "url": "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-mobile.webp",
+      "bytes": 67026,
+      "sha256": "0788b907bc7170d5ee52b2e39e091591c4ba05d849de30d9dcad71167b5b5ff6",
+      "width": 1024,
+      "height": 1024
+    }
+  },
+  "derivative": {
+    "adapter": "flipbook-v1",
+    "role": "source-texture",
+    "atlas": {
+      "desktop": "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-desktop.webp",
+      "mobile": "/assets/vfx/niagara/component-ecddb7ecffb46fb0-10x6-luma-mobile.webp"
+    },
+    "columns": 8,
+    "rows": 8,
+    "frames": 60,
+    "duration": 2,
+    "width": 6,
+    "height": 6,
+    "blend": "alpha",
+    "atlasId": "component-ecddb7ecffb46fb0-10x6-luma",
+    "component": {
+      "textureSha256": "ecddb7ecffb46fb0c61d5c0bf9d8e0f7d74f8b25cd614cd1e7ddc2df0468f0ce",
+      "columns": 10,
+      "rows": 6,
+      "mapping": "luminance-to-white-alpha",
+      "name": "T_Smoke_1"
+    },
+    "sourceBinding": {
+      "systemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+      "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NE_Smoke_Basic.NiagaraSpriteRendererProperties_0",
+      "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1",
+      "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1"
+    }
+  },
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-df3dfa2ce32b38da",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\Textures\\T_Smoke_1.uasset",
+      "sha256": "ecddb7ecffb46fb0c61d5c0bf9d8e0f7d74f8b25cd614cd1e7ddc2df0468f0ce",
+      "bytes": 527011
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\sA_Megapack_v1\\sA_StylizedAttacksPack\\Materials\\Textures\\T_Smoke_1.png",
+      "sha256": "6e6020de9e807fc9fd96bae1f8c376b4c6793a08644512e77bf6c79e44e99442",
+      "bytes": 714657,
+      "format": "PNG",
+      "width": 2560,
+      "height": 1536,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 10,
+      "rows": 6,
+      "cells": 60,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "luminance-to-white-alpha",
+    "mappingFormula": "RGB=white; A=0.299R+0.587G+0.114B in source channel domain",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-985a431dc6c0d1ca",
+        "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single",
+        "sourceBinding": {
+          "systemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+          "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NE_Smoke_Basic.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1",
+          "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:",
+          "matched": true
+        },
+        "parameterName": "SUBUV"
+      },
+      {
+        "effectId": "niagara-985a431dc6c0d1ca",
+        "systemPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single",
+        "sourceBinding": {
+          "systemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+          "rendererPath": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:NE_Smoke_Basic.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/MI_Smoke_1",
+          "texturePackage": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Smoke_1"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/sA_Megapack_v1/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_Flame_Single.NS_Flame_Single:",
+          "matched": true
+        },
+        "parameterName": "SUBUV"
+      }
+    ]
+  },
+  "packing": {
+    "desktopTile": 256,
+    "mobileTile": 128,
+    "gutter": 2,
+    "oneAtlasVariantLoaded": true
+  },
+  "limitations": [
+    "Original SubUV texture only; the complete Niagara system is pending.",
+    "Playback duration is an editor default, not verified Niagara emitter timing.",
+    "Presentation controls do not modify Niagara emitter particle counts."
+  ]
+}

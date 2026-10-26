@@ -1,0 +1,278 @@
+{
+  "schema": "marea.niagara-web-derivative",
+  "version": 1,
+  "id": "niagara-3591c44b3dd94faa",
+  "atlasId": "component-eb5fe0f905f673b8-8x8-alpha",
+  "sourceSha256": "3591c44b3dd94faa75f7c46bcc331829222471f481c491cf2653529bb6f8314d",
+  "sourceFrames": [
+    "d2422b3030db7dd64a2a1f62d9ca1d61fc359fd3a8d2bdcc4685c3a484c7a885",
+    "de40beb5cdcdcad6e0775c2231e0d185a68ef61f821c4ad749d68b11a7d25a07",
+    "119a2fefe8697b6760417117653aeeba0be8357ad06438860031a7e73e00ca34",
+    "b616d8045de72fea0fe6f6ce3fdf92c4e975958d13d76ef010fa233fd28bab9e",
+    "6f0e9e8b9d9ec6ac7d69df6e6223322f6e503634c6ced4d3f44a3904f5434daf",
+    "71ad48cb061930867dea4d678ee1dbcbeba1c4b18bc473249a558c691585e905",
+    "c8541ec7a2ef62c2443354a7a35116a63ec5fec079bcb39c3d839cedbdc5c449",
+    "bca99995b47ba59c0389a56468739b41277e929a8bb8f28724c306e56e82fc64",
+    "73711b2134da23d6303953e14f0df367dbd23e1ad8c7c1520a64eb3c2bfb2054",
+    "ba346036a805652ad781ad5b2662801c44dfd357d50e6115612d1270f22b0584",
+    "34cc9d5c3379f77a481b8f13ada70c1d48de960d5f9c82ddb38c25d1a7daedf1",
+    "efc2afd222d624c8dc2868e0e24bba383050ac404cede1e122a23081a01116de",
+    "317be8fe83933c110c8bb4b853387781b26d5bd72c1548a78627f90e032034ed",
+    "6c7cbe2faa6552fa62f88e6127b8fe5f1bf4ee23a61fc5734d9ba81088c35b66",
+    "559f71c76f3bad4c5a9a3e187c21b100a5ebda60f5319bf10f5a750b938586ce",
+    "c782597ede33e5553a4bddad8874577cc0d72f7ecd6abe91d69d3111b4018800",
+    "eb8b5e11fc15caac2dd8c94ef84798accfb90ca121715e1a72e4efbe12cb73ff",
+    "17cd0d9c8fedc6921fa86393ce4d54f7d7a025ef0008aaac504efb4f874c33b7",
+    "2714b6a3bed4dd371c39d15da64cba9b0e2c747faa88090c57a2460172a1e465",
+    "cbff3d758a4df0a0a4c70a6b765e399d4953cefb8e192b2f49b831330c79d1ad",
+    "8c7db0f5daba75bb5c3982e89ae5b6a00d7e1a421bad2910d9a33f668f0fecae",
+    "b3e735bfdb8cafda778f15f336c393aa3d912e8819393339abc83789c704393c",
+    "0b564c3a29367fccd1430dd6258db431f4802f834765bc7413a487da31011d09",
+    "7cf1db36162f39714076e937ae86b1850ccfc7ea6ebf9b49d998a732abbc2dd3",
+    "0edeafb0cdc6415871464eec6da2e62dea2bf62b282cc5e2d59534fb1e817d46",
+    "d45ea62915f16560493a7437c07565286f8969f6215470ba38ffee86e3c9bd2f",
+    "0cfc3419f2e12cf34f7bdda01847d09198a47023f809bed30a85c8bd83a981bc",
+    "a779e0c5941b33a11669ba47f2d7fdda40a9ee10486621bdbfebff2a316456d4",
+    "e44bbe96a284062f5d2e0e2760e67d303cc1e86fcfd13057665ae2ec69704fa6",
+    "5af6b7f61d87bf7f903bb3098ddd2012ac3a01f7719c143ca60b1b82027d9dd7",
+    "be2895749cd34bb2df74bcc8339c6fa05ee12bc165b69207ce4eba7c1f31f50b",
+    "e78d3cf6710c8e8478bd9d771d1334abec8a3614e84dcd0364931fa6509d8824",
+    "1249197468781d8b6de5439fa8e18dbe050e5fbca6397e8876d47a610de06989",
+    "5aee37ce34441b999910d10cf21e4da2f98074230e8e0df2c3c3f141eb22e906",
+    "6a4b3548d7bee1a928f5d981490ae7ad484a588e405e5915b9b8f06534019a8a",
+    "5b906af2d634890e2dcdc700d4376749a3e346aa886e77138ce246203e3b8d93",
+    "9ee19b5c7098e756820ce58fa54aa06030a5aa8c72b84695962605afc3067059",
+    "2d3b06b45d211132ca9f68d7ae518e33294bea33cff3a68c881f142f808fffb9",
+    "cb34c105689db8ad859380564c7c32a5d3bc4fbad1d43b50f77641ab75a7408f",
+    "ee953d8f6853cafaea025da5be3e0aed0f744219e4f391fff9670377de722924",
+    "ab13245e2f5d4d27d6eb36397f2c6ed69b2e1c9a70d9b70b23196ba7efe262e6",
+    "d54969bbbd0329d7f6b6212949d0f4322523862a91340625cbe005c2a76a65e0",
+    "09daaa4445a7e70d993e3382c9cf17873985cd75d3adaf93bced4d5f44a4b52e",
+    "644bc378202eb4b76e7a0c9f9986e80bc99fc0889ee2f8544f51c5c4ddf52a32",
+    "157624621141d806d898d3570096d20cadcbf783c37a769df3cbe705b9b5373c",
+    "c73657c8b7eece53fc552d13b6d4aee063d71f9296720ab97dd290a8a49713e0",
+    "f755c6746c6f5cded9fd411b6679ed57693326f19f949eef90baf515e6430deb",
+    "3eca00b4f396ce3403e648d8977ff26aed8fa2fa021c47fd43589779cdd20302",
+    "fac12738dbc5513dd202865efb6fdec2b59c764ee9e986e2efab51b46e74d26a",
+    "ce8b4c733d91ac9c1c00f7f34532a43d859d7fb0fc6b175ce51d0a14d0c05ea4",
+    "2ebec2485e2bc2ff4fe5df95d7a62809ca89ae0c8900f78922e3f851b30b385b",
+    "f71b9e9950b1b40939a38f3f0b66a9011b08c4477cebc432b6d14fc2c2893f55",
+    "613157a66528ee2839354c9ac210e695f43e41e37001796af8321716fd80e9ed",
+    "4c7897760e41cfe443b1078369eb1a8f1c00cf193445cbf2e7e8422b5ac38675",
+    "6b41e8944f2bd64d6e783fc23d9a24d2018a13c7f7683affeaf797a3f78eb4ea",
+    "8d4768021320b069caabeeaaf1c7884b027b73c42e1ee4901eb0a45b6786043d",
+    "d9d4bad565f6494465cb92f3486397cc0af3bb28b8cd55f38f3da2638c0931f7",
+    "4cbd918a41f632bd307a0176c88900fca1c8c7c8c2cd4392f470ba985d23d088",
+    "ab3e9204bb257c01afdf6f2d42d4cf6c3c34c2d5f5f0b997dbac5805d79f0248",
+    "789bcb60ab9eaba292b9fb4b97bc6a45849892f9e7be61fec03e30d05c46966c",
+    "c63e02e28b2c3d503922be079ce23f664c8b18776f568647efc04f6a6c0616d0",
+    "b66ea599a34dcbe76d4ec5e3d985796e5210a7bc4f556d52aa4f4a368d3a1343",
+    "16f33aafd45e3fbae8e09e219a42dcf6e9fc75aad3e5d07ff6b6c746c4f76b45",
+    "d009c361e0fd700f00c8b2620238eee6dc8e881b5ad97a4b49fa428c1597e526"
+  ],
+  "files": {
+    "desktop": {
+      "url": "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-desktop.webp",
+      "bytes": 1019962,
+      "sha256": "aff85a92afc4ad7673ac4f5be763811855c17894b11977b1a6ed9adadbf888d3",
+      "width": 2048,
+      "height": 2048
+    },
+    "mobile": {
+      "url": "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-mobile.webp",
+      "bytes": 294898,
+      "sha256": "2dd4ccf9c2166a53d8bfcad4d5669b046be9be08dd07afc7513a70ee14067aa7",
+      "width": 1024,
+      "height": 1024
+    }
+  },
+  "derivative": {
+    "adapter": "flipbook-v1",
+    "role": "source-texture",
+    "atlas": {
+      "desktop": "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-desktop.webp",
+      "mobile": "/assets/vfx/niagara/component-eb5fe0f905f673b8-8x8-alpha-mobile.webp"
+    },
+    "columns": 8,
+    "rows": 8,
+    "frames": 64,
+    "duration": 2,
+    "width": 6,
+    "height": 6,
+    "blend": "alpha",
+    "atlasId": "component-eb5fe0f905f673b8-8x8-alpha",
+    "component": {
+      "textureSha256": "eb5fe0f905f673b83fca336bc1e2145fd2c08f11501b3abbe9013f6a7afa43ff",
+      "columns": 8,
+      "rows": 8,
+      "mapping": "original-alpha-to-white",
+      "name": "T_ThinSmoke_FX"
+    },
+    "sourceBinding": {
+      "systemSha256": "3591c44b3dd94faa75f7c46bcc331829222471f481c491cf2653529bb6f8314d",
+      "rendererPath": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:Muzzle_Smoke_4.NE_MuzzleFlash_Smoke.NiagaraSpriteRendererProperties_0",
+      "materialPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Materials/Instances/MI_Flipbook_Smoke_Muzzle",
+      "texturePackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Textures/T_ThinSmoke_FX"
+    }
+  },
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-0a5e1890731459ba",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\NiagaraExamples\\FX_Weapons\\MuzzleFlashes\\Textures\\T_ThinSmoke_FX.uasset",
+      "sha256": "eb5fe0f905f673b83fca336bc1e2145fd2c08f11501b3abbe9013f6a7afa43ff",
+      "bytes": 4610468
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\NiagaraExamples\\FX_Weapons\\MuzzleFlashes\\Textures\\T_ThinSmoke_FX.png",
+      "sha256": "138c25b7051bc04090d8db53d93c2df7e5bc2054c01772d325f1f481c23c193d",
+      "bytes": 6129777,
+      "format": "PNG",
+      "width": 2048,
+      "height": 2048,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 8,
+      "rows": 8,
+      "cells": 64,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "original-alpha-to-white",
+    "mappingFormula": "RGB=white; A=native source alpha without remapping",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-3591c44b3dd94faa",
+        "systemPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash",
+        "sourceBinding": {
+          "systemSha256": "3591c44b3dd94faa75f7c46bcc331829222471f481c491cf2653529bb6f8314d",
+          "rendererPath": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:Muzzle_Smoke_4.NE_MuzzleFlash_Smoke.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Materials/Instances/MI_Flipbook_Smoke_Muzzle",
+          "texturePackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Textures/T_ThinSmoke_FX"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:",
+          "matched": true
+        },
+        "parameterName": "Emission/Occlusion/Opacity Texture"
+      },
+      {
+        "effectId": "niagara-3591c44b3dd94faa",
+        "systemPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash",
+        "sourceBinding": {
+          "systemSha256": "3591c44b3dd94faa75f7c46bcc331829222471f481c491cf2653529bb6f8314d",
+          "rendererPath": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:Muzzle_Smoke_4.NiagaraSpriteRendererProperties_1",
+          "materialPackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Materials/Instances/MI_Flipbook_Smoke_Muzzle",
+          "texturePackage": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/Textures/T_ThinSmoke_FX"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/NiagaraExamples/FX_Weapons/MuzzleFlashes/NS_MuzzleFlash.NS_MuzzleFlash:",
+          "matched": true
+        },
+        "parameterName": "Emission/Occlusion/Opacity Texture"
+      }
+    ]
+  },
+  "packing": {
+    "desktopTile": 256,
+    "mobileTile": 128,
+    "gutter": 2,
+    "oneAtlasVariantLoaded": true
+  },
+  "limitations": [
+    "Original SubUV texture only; the complete Niagara system is pending.",
+    "Playback duration is an editor default, not verified Niagara emitter timing.",
+    "Presentation controls do not modify Niagara emitter particle counts."
+  ]
+}

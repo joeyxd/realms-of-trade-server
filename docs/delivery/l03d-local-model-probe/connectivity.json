@@ -1,0 +1,39 @@
+{
+  "schema": "mn.local-inference.probe.v1",
+  "at": "2026-10-11T04:03:02.593Z",
+  "base": "http://127.0.0.1:8080/v1",
+  "model": "qwen3.8-flash-next-coder-iq1_m",
+  "apiKeyUsed": false,
+  "limits": {
+    "generationCalls": 1,
+    "maxOutputTokens": 96,
+    "timeoutMs": 30000
+  },
+  "scope": "Synthetic local transport probe only; no gameplay, owner data, memory, or production activation",
+  "catalog": {
+    "status": 200,
+    "latencyMs": 32,
+    "listed": true,
+    "count": 1
+  },
+  "generation": {
+    "status": 200,
+    "latencyMs": 2815,
+    "bytes": 773,
+    "responseId": "chatcmpl-23068a4c968c4284bd7613dd",
+    "reportedModel": "qwen3.8-flash-next-coder-iq1_m",
+    "finishReason": "stop",
+    "content": "MAREA_OK",
+    "reasoningPresent": true,
+    "toolCallsPresent": false,
+    "usage": {
+      "prompt_tokens": 78,
+      "completion_tokens": 33,
+      "total_tokens": 111,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    }
+  },
+  "pass": true
+}

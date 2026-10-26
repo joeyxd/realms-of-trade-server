@@ -1,0 +1,17 @@
+﻿✔ PC launcher keeps its control private, reuses one host, and preserves its save secret across restarts (6574.2979ms)
+✔ HTTP listener and simulation wait for initial world load and creation CAS (380.5424ms)
+✔ world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure (384.3496ms)
+✔ ambiguous save failure fences the host and preserves the last confirmed world generation (277.8796ms)
+✔ autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot (328.8917ms)
+✔ load failure never opens the HTTP listener or manufactures a replacement world (272.9913ms)
+✔ shutdown aborts a stuck startup load and late null result cannot write a world (327.8519ms)
+✔ createGameServer.close during a blocked pre-listen load leaves no listener or late world write (556.9423ms)
+✔ createGameServer can close cleanly before listen begins (523.9939ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10999.2906

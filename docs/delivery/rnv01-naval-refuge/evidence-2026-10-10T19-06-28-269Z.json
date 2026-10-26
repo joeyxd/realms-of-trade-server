@@ -1,0 +1,1337 @@
+{
+  "generatedAt": "2026-10-10T19:06:28.269Z",
+  "purpose": "Verify the naval refuge visual slice through real raft-editor placement, server-owned door open/blocked-close/close, and roof cutaway/restore.",
+  "harness": "Fresh ephemeral GameHost per viewport; browser WebSocket and DOM; in-memory profile store; local Three.js/GSAP/font routes. No production server, durable save, or device-performance claim.",
+  "fixture": "QA seeds starting wood/iron/tarp into the disposable owner profile and relocates the owner through server ECS snapshots. Foundations, walls, door, roof, rejected support preview, and door open/close are exercised via the actual UI and server commands. The fixture supplies materials and coordinates; this is not free-economy proof and direct relocations do not prove unaided walking through a doorway.",
+  "assertions": [],
+  "viewports": [
+    {
+      "name": "refuge-pc-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:61724/ws"
+        }
+      ],
+      "screenshots": [
+        "refuge-pc-1280x720-2026-10-10T19-06-28-269Z-01-editor-support-refusal.jpg",
+        "refuge-pc-1280x720-2026-10-10T19-06-28-269Z-02-editor-cabin-built.jpg",
+        "refuge-pc-1280x720-2026-10-10T19-06-28-269Z-03-cabin-exterior.jpg",
+        "refuge-pc-1280x720-2026-10-10T19-06-28-269Z-04-cabin-door-open.jpg",
+        "refuge-pc-1280x720-2026-10-10T19-06-28-269Z-05-cabin-interior-cutaway.jpg",
+        "refuge-pc-1280x720-2026-10-10T19-06-28-269Z-06-cabin-exterior-roof-restored.jpg"
+      ],
+      "editAcks": [
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 6
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 6
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 7
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 7
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 8
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 8
+        }
+      ],
+      "doorAcks": [
+        {
+          "ok": true,
+          "why": "",
+          "open": true
+        },
+        {
+          "ok": false,
+          "why": "occupied"
+        },
+        {
+          "ok": true,
+          "why": "",
+          "open": false
+        },
+        {
+          "ok": true,
+          "why": "",
+          "open": true
+        }
+      ],
+      "overflow": [
+        {
+          "width": 1280,
+          "height": 720,
+          "documentWidth": 1280,
+          "overflow": false,
+          "editorVisible": false,
+          "websocketReady": true,
+          "gameMode": "playing"
+        }
+      ],
+      "fixture": {
+        "materials": {
+          "madera": 40,
+          "hierro": 4,
+          "lona": 4
+        },
+        "playerStart": {
+          "x": 126.22533596468982,
+          "y": 0.72,
+          "z": 101.01970834003356
+        },
+        "raftId": "c5725191-918b-4201-bcd9-4fcace4c83f9:r1",
+        "initialBlueprint": [
+          [
+            "foundation",
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            1,
+            1,
+            0,
+            0
+          ],
+          [
+            "sail",
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "crate",
+            1,
+            1,
+            0,
+            0
+          ]
+        ],
+        "directMovement": true
+      },
+      "supportRefusal": {
+        "disabled": true,
+        "status": "Casilla 1, 1 · nivel 0 · Norte · La pieza necesita soporte."
+      },
+      "placements": [
+        {
+          "piece": [
+            "foundation",
+            0,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 1,
+          "rev": 2,
+          "materialsRemaining": {
+            "madera": 36,
+            "hierro": 4,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "foundation",
+            1,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 2,
+          "rev": 3,
+          "materialsRemaining": {
+            "madera": 32,
+            "hierro": 4,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "door",
+            0,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 3,
+          "rev": 4,
+          "materialsRemaining": {
+            "madera": 29,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "wall",
+            0,
+            2,
+            0,
+            1
+          ],
+          "previousRev": 4,
+          "rev": 5,
+          "materialsRemaining": {
+            "madera": 26,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "wall",
+            0,
+            2,
+            0,
+            2
+          ],
+          "previousRev": 5,
+          "rev": 6,
+          "materialsRemaining": {
+            "madera": 23,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "wall",
+            0,
+            2,
+            0,
+            3
+          ],
+          "previousRev": 6,
+          "rev": 7,
+          "materialsRemaining": {
+            "madera": 20,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "roof",
+            0,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 7,
+          "rev": 8,
+          "materialsRemaining": {
+            "madera": 18,
+            "hierro": 3,
+            "lona": 3
+          }
+        }
+      ],
+      "doorPrompts": [
+        {
+          "verb": "Open door",
+          "actions": [
+            {
+              "verb": "Open door",
+              "key": "V"
+            }
+          ]
+        },
+        {
+          "verb": "Close door",
+          "actions": [
+            {
+              "verb": "Close door",
+              "key": "V"
+            }
+          ]
+        },
+        {
+          "verb": "Close door",
+          "actions": [
+            {
+              "verb": "Close door",
+              "key": "V"
+            }
+          ]
+        },
+        {
+          "verb": "Open door",
+          "actions": [
+            {
+              "verb": "Open door",
+              "key": "V"
+            }
+          ]
+        }
+      ],
+      "openDoor": {
+        "publicTuple": [
+          "door",
+          0,
+          2,
+          0,
+          0
+        ],
+        "ack": {
+          "ok": true,
+          "why": "",
+          "open": true
+        },
+        "blueprintRev": 8
+      },
+      "blockedClose": {
+        "playerAtThreshold": {
+          "x": 128.5933926168188,
+          "y": 0.72,
+          "z": 102.86153018057831
+        },
+        "ack": {
+          "ok": false,
+          "why": "occupied"
+        },
+        "remainsOpen": true
+      },
+      "clearClose": {
+        "playerMovedAside": {
+          "x": 127.44883190162312,
+          "y": 0.72,
+          "z": 101.97131629098168
+        },
+        "ack": {
+          "ok": true,
+          "why": "",
+          "open": false
+        },
+        "remainsClosed": true
+      },
+      "interior": {
+        "playerFixturePosition": {
+          "x": 129.3827448341951,
+          "y": 0.72,
+          "z": 103.47547079409324
+        },
+        "shelterId": "c5725191-918b-4201-bcd9-4fcace4c83f9:r1",
+        "roofHidden": true,
+        "unaidedWalkClaim": false
+      },
+      "roofRestore": {
+        "playerFixturePosition": {
+          "x": 130.61062606122496,
+          "y": 0.72,
+          "z": 101.89676635934059
+        },
+        "roofVisible": true
+      },
+      "viewportCheck": {
+        "width": 1280,
+        "height": 720,
+        "documentWidth": 1280,
+        "overflow": false,
+        "editorVisible": false,
+        "websocketReady": true,
+        "gameMode": "playing"
+      },
+      "assertions": {
+        "supportRefusal": true,
+        "realEditorPlacement": true,
+        "visibleDoorPrompt": true,
+        "doorInput": "keyboard-V",
+        "blockedClose": true,
+        "closeAfterMovingClear": true,
+        "roofCutaway": true,
+        "roofRestore": true,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "refuge-touch-844x390",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:60881/ws"
+        }
+      ],
+      "screenshots": [
+        "refuge-touch-844x390-2026-10-10T19-06-28-269Z-01-editor-support-refusal.jpg",
+        "refuge-touch-844x390-2026-10-10T19-06-28-269Z-02-editor-cabin-built.jpg",
+        "refuge-touch-844x390-2026-10-10T19-06-28-269Z-03-cabin-exterior.jpg",
+        "refuge-touch-844x390-2026-10-10T19-06-28-269Z-04-cabin-door-open.jpg",
+        "refuge-touch-844x390-2026-10-10T19-06-28-269Z-05-cabin-interior-cutaway.jpg",
+        "refuge-touch-844x390-2026-10-10T19-06-28-269Z-06-cabin-exterior-roof-restored.jpg"
+      ],
+      "editAcks": [
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 6
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 6
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 7
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 7
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 8
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 8
+        }
+      ],
+      "doorAcks": [
+        {
+          "ok": true,
+          "why": "",
+          "open": true
+        },
+        {
+          "ok": false,
+          "why": "occupied"
+        },
+        {
+          "ok": true,
+          "why": "",
+          "open": false
+        },
+        {
+          "ok": true,
+          "why": "",
+          "open": true
+        }
+      ],
+      "overflow": [
+        {
+          "width": 844,
+          "height": 390,
+          "documentWidth": 844,
+          "overflow": false,
+          "editorVisible": false,
+          "websocketReady": true,
+          "gameMode": "playing"
+        }
+      ],
+      "fixture": {
+        "materials": {
+          "madera": 40,
+          "hierro": 4,
+          "lona": 4
+        },
+        "playerStart": {
+          "x": 126.22533596468982,
+          "y": 0.72,
+          "z": 101.01970834003356
+        },
+        "raftId": "352cbe2e-b142-4034-8a47-fd43c4b06172:r1",
+        "initialBlueprint": [
+          [
+            "foundation",
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            1,
+            1,
+            0,
+            0
+          ],
+          [
+            "sail",
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "crate",
+            1,
+            1,
+            0,
+            0
+          ]
+        ],
+        "directMovement": true
+      },
+      "supportRefusal": {
+        "disabled": true,
+        "status": "Casilla 1, 1 · nivel 0 · Norte · La pieza necesita soporte."
+      },
+      "placements": [
+        {
+          "piece": [
+            "foundation",
+            0,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 1,
+          "rev": 2,
+          "materialsRemaining": {
+            "madera": 36,
+            "hierro": 4,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "foundation",
+            1,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 2,
+          "rev": 3,
+          "materialsRemaining": {
+            "madera": 32,
+            "hierro": 4,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "door",
+            0,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 3,
+          "rev": 4,
+          "materialsRemaining": {
+            "madera": 29,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "wall",
+            0,
+            2,
+            0,
+            1
+          ],
+          "previousRev": 4,
+          "rev": 5,
+          "materialsRemaining": {
+            "madera": 26,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "wall",
+            0,
+            2,
+            0,
+            2
+          ],
+          "previousRev": 5,
+          "rev": 6,
+          "materialsRemaining": {
+            "madera": 23,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "wall",
+            0,
+            2,
+            0,
+            3
+          ],
+          "previousRev": 6,
+          "rev": 7,
+          "materialsRemaining": {
+            "madera": 20,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "roof",
+            0,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 7,
+          "rev": 8,
+          "materialsRemaining": {
+            "madera": 18,
+            "hierro": 3,
+            "lona": 3
+          }
+        }
+      ],
+      "doorPrompts": [
+        {
+          "verb": "Open door",
+          "actions": [
+            {
+              "verb": "Open door",
+              "key": "V"
+            }
+          ]
+        },
+        {
+          "verb": "Close door",
+          "actions": [
+            {
+              "verb": "Close door",
+              "key": "V"
+            }
+          ]
+        },
+        {
+          "verb": "Close door",
+          "actions": [
+            {
+              "verb": "Close door",
+              "key": "V"
+            }
+          ]
+        },
+        {
+          "verb": "Open door",
+          "actions": [
+            {
+              "verb": "Open door",
+              "key": "V"
+            }
+          ]
+        }
+      ],
+      "openDoor": {
+        "publicTuple": [
+          "door",
+          0,
+          2,
+          0,
+          0
+        ],
+        "ack": {
+          "ok": true,
+          "why": "",
+          "open": true
+        },
+        "blueprintRev": 8
+      },
+      "blockedClose": {
+        "playerAtThreshold": {
+          "x": 128.5933926168188,
+          "y": 0.72,
+          "z": 102.86153018057831
+        },
+        "ack": {
+          "ok": false,
+          "why": "occupied"
+        },
+        "remainsOpen": true
+      },
+      "clearClose": {
+        "playerMovedAside": {
+          "x": 127.44883190162312,
+          "y": 0.72,
+          "z": 101.97131629098168
+        },
+        "ack": {
+          "ok": true,
+          "why": "",
+          "open": false
+        },
+        "remainsClosed": true
+      },
+      "interior": {
+        "playerFixturePosition": {
+          "x": 129.3827448341951,
+          "y": 0.72,
+          "z": 103.47547079409324
+        },
+        "shelterId": "352cbe2e-b142-4034-8a47-fd43c4b06172:r1",
+        "roofHidden": true,
+        "unaidedWalkClaim": false
+      },
+      "roofRestore": {
+        "playerFixturePosition": {
+          "x": 130.61062606122496,
+          "y": 0.72,
+          "z": 101.89676635934059
+        },
+        "roofVisible": true
+      },
+      "viewportCheck": {
+        "width": 844,
+        "height": 390,
+        "documentWidth": 844,
+        "overflow": false,
+        "editorVisible": false,
+        "websocketReady": true,
+        "gameMode": "playing"
+      },
+      "assertions": {
+        "supportRefusal": true,
+        "realEditorPlacement": true,
+        "visibleDoorPrompt": true,
+        "doorInput": "context-button-tap",
+        "blockedClose": true,
+        "closeAfterMovingClear": true,
+        "roofCutaway": true,
+        "roofRestore": true,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "refuge-portrait-390x844",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:54234/ws"
+        }
+      ],
+      "screenshots": [
+        "refuge-portrait-390x844-2026-10-10T19-06-28-269Z-01-editor-support-refusal.jpg",
+        "refuge-portrait-390x844-2026-10-10T19-06-28-269Z-02-editor-cabin-built.jpg",
+        "refuge-portrait-390x844-2026-10-10T19-06-28-269Z-03-cabin-exterior.jpg",
+        "refuge-portrait-390x844-2026-10-10T19-06-28-269Z-04-cabin-door-open.jpg",
+        "refuge-portrait-390x844-2026-10-10T19-06-28-269Z-05-cabin-interior-cutaway.jpg",
+        "refuge-portrait-390x844-2026-10-10T19-06-28-269Z-06-cabin-exterior-roof-restored.jpg"
+      ],
+      "editAcks": [
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 6
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 6
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 7
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 7
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 8
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 8
+        }
+      ],
+      "doorAcks": [
+        {
+          "ok": true,
+          "why": "",
+          "open": true
+        },
+        {
+          "ok": false,
+          "why": "occupied"
+        },
+        {
+          "ok": true,
+          "why": "",
+          "open": false
+        },
+        {
+          "ok": true,
+          "why": "",
+          "open": true
+        }
+      ],
+      "overflow": [
+        {
+          "width": 390,
+          "height": 844,
+          "documentWidth": 390,
+          "overflow": false,
+          "editorVisible": false,
+          "websocketReady": true,
+          "gameMode": "playing"
+        }
+      ],
+      "fixture": {
+        "materials": {
+          "madera": 40,
+          "hierro": 4,
+          "lona": 4
+        },
+        "playerStart": {
+          "x": 126.22533596468982,
+          "y": 0.72,
+          "z": 101.01970834003356
+        },
+        "raftId": "df85dc0f-084a-498a-bd82-97364783a526:r1",
+        "initialBlueprint": [
+          [
+            "foundation",
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            1,
+            1,
+            0,
+            0
+          ],
+          [
+            "sail",
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "crate",
+            1,
+            1,
+            0,
+            0
+          ]
+        ],
+        "directMovement": true
+      },
+      "supportRefusal": {
+        "disabled": true,
+        "status": "Casilla 1, 1 · nivel 0 · Norte · La pieza necesita soporte."
+      },
+      "placements": [
+        {
+          "piece": [
+            "foundation",
+            0,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 1,
+          "rev": 2,
+          "materialsRemaining": {
+            "madera": 36,
+            "hierro": 4,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "foundation",
+            1,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 2,
+          "rev": 3,
+          "materialsRemaining": {
+            "madera": 32,
+            "hierro": 4,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "door",
+            0,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 3,
+          "rev": 4,
+          "materialsRemaining": {
+            "madera": 29,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "wall",
+            0,
+            2,
+            0,
+            1
+          ],
+          "previousRev": 4,
+          "rev": 5,
+          "materialsRemaining": {
+            "madera": 26,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "wall",
+            0,
+            2,
+            0,
+            2
+          ],
+          "previousRev": 5,
+          "rev": 6,
+          "materialsRemaining": {
+            "madera": 23,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "wall",
+            0,
+            2,
+            0,
+            3
+          ],
+          "previousRev": 6,
+          "rev": 7,
+          "materialsRemaining": {
+            "madera": 20,
+            "hierro": 3,
+            "lona": 4
+          }
+        },
+        {
+          "piece": [
+            "roof",
+            0,
+            2,
+            0,
+            0
+          ],
+          "previousRev": 7,
+          "rev": 8,
+          "materialsRemaining": {
+            "madera": 18,
+            "hierro": 3,
+            "lona": 3
+          }
+        }
+      ],
+      "doorPrompts": [
+        {
+          "verb": "Open door",
+          "actions": [
+            {
+              "verb": "Open door",
+              "key": "V"
+            }
+          ]
+        },
+        {
+          "verb": "Close door",
+          "actions": [
+            {
+              "verb": "Close door",
+              "key": "V"
+            }
+          ]
+        },
+        {
+          "verb": "Close door",
+          "actions": [
+            {
+              "verb": "Close door",
+              "key": "V"
+            }
+          ]
+        },
+        {
+          "verb": "Open door",
+          "actions": [
+            {
+              "verb": "Open door",
+              "key": "V"
+            }
+          ]
+        }
+      ],
+      "openDoor": {
+        "publicTuple": [
+          "door",
+          0,
+          2,
+          0,
+          0
+        ],
+        "ack": {
+          "ok": true,
+          "why": "",
+          "open": true
+        },
+        "blueprintRev": 8
+      },
+      "blockedClose": {
+        "playerAtThreshold": {
+          "x": 128.5933926168188,
+          "y": 0.72,
+          "z": 102.86153018057831
+        },
+        "ack": {
+          "ok": false,
+          "why": "occupied"
+        },
+        "remainsOpen": true
+      },
+      "clearClose": {
+        "playerMovedAside": {
+          "x": 127.44883190162312,
+          "y": 0.72,
+          "z": 101.97131629098168
+        },
+        "ack": {
+          "ok": true,
+          "why": "",
+          "open": false
+        },
+        "remainsClosed": true
+      },
+      "interior": {
+        "playerFixturePosition": {
+          "x": 129.3827448341951,
+          "y": 0.72,
+          "z": 103.47547079409324
+        },
+        "shelterId": "df85dc0f-084a-498a-bd82-97364783a526:r1",
+        "roofHidden": true,
+        "unaidedWalkClaim": false
+      },
+      "roofRestore": {
+        "playerFixturePosition": {
+          "x": 130.61062606122496,
+          "y": 0.72,
+          "z": 101.89676635934059
+        },
+        "roofVisible": true
+      },
+      "viewportCheck": {
+        "width": 390,
+        "height": 844,
+        "documentWidth": 390,
+        "overflow": false,
+        "editorVisible": false,
+        "websocketReady": true,
+        "gameMode": "playing"
+      },
+      "assertions": {
+        "supportRefusal": true,
+        "realEditorPlacement": true,
+        "visibleDoorPrompt": true,
+        "doorInput": "context-button-tap",
+        "blockedClose": true,
+        "closeAfterMovingClear": true,
+        "roofCutaway": true,
+        "roofRestore": true,
+        "horizontalOverflow": false
+      }
+    }
+  ],
+  "failures": [],
+  "performanceClaim": false
+}

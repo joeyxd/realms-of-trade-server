@@ -1,0 +1,71 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+if (!process.argv[2]) throw new Error('Pass local Playwright index.mjs path');
+const { chromium } = await import(pathToFileURL(process.argv[2]).href);
+const root = new URL('../../.scratch/native-update/', import.meta.url);
+await fs.mkdir(root, { recursive: true });
+const browser = await chromium.launch({ headless: true, channel: 'chrome' });
+try {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 1150 } });
+  const errors = [], requests = [], checks = [];
+  page.on('pageerror', e => errors.push(String(e)));
+  page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  page.on('request', r => requests.push({ url: r.url(), method: r.method() }));
+  await page.goto('http://127.0.0.1:5197/tools/niagara-native-lab/index.html?run=reference11&mode=update');
+  await page.waitForFunction(() => window.pilot?.ready || window.pilot?.errors.length);
+  assert.ok(await page.evaluate(() => pilot.ready));
+  assert.equal(await page.evaluate(() => pilot.count), 22);
+  assert.ok(!requests.some(r => r.url.includes('/particles/step_')));
+  checks.push('update starts with only 50 birth states; no particle-state frame requests');
+  const original = await page.evaluate(() => pilot.particleSnapshot);
+  await page.locator('#tone').selectOption('aces'); await page.locator('#tone').dispatchEvent('input');
+  await page.locator('#linear-reference').check();
+  for (const view of ['front', 'oblique', 'side']) {
+    await page.evaluate(v => pilot.setCamera(v), view);
+    await page.screenshot({ path: fileURLToPath(new URL(`update-${view}.png`, root)), fullPage: true });
+    await fs.writeFile(new URL(`update-canvas-${view}.png`, root), Buffer.from(await page.locator('#preview').evaluate(c => c.toDataURL().split(',')[1]), 'base64'));
+  }
+  await page.locator('#linear-reference').uncheck();
+  await page.locator('#smokeSpeed').fill('2'); await page.locator('#smokeSpeed').dispatchEvent('input');
+  const fast = await page.evaluate(() => pilot.particleSnapshot);
+  assert.equal(fast.emitters[1].particles.length, original.emitters[1].particles.length);
+  assert.ok(fast.emitters[1].particles[0].position[2] > original.emitters[1].particles[0].position[2]);
+  assert.deepEqual(fast.emitters[0], original.emitters[0]);
+  await page.screenshot({ path: fileURLToPath(new URL('update-fast.png', root)), fullPage: true });
+  checks.push('speed raises smoke with unchanged flame and counts');
+  await page.locator('#smokeLife').fill('4'); await page.locator('#smokeLife').dispatchEvent('input');
+  await page.evaluate(() => pilot.seek(360));
+  assert.ok(await page.evaluate(() => pilot.count > 0));
+  await page.locator('#reset-update').click();
+  assert.equal(await page.evaluate(() => pilot.count), 0);
+  checks.push('longer life keeps particles beyond source emission; reset restores drain');
+  await page.locator('#stopAt').fill('1'); await page.locator('#stopAt').dispatchEvent('input');
+  await page.evaluate(() => pilot.seek(210));
+  assert.equal(await page.evaluate(() => pilot.count), 0);
+  await page.locator('#reset-update').click(); await page.evaluate(() => pilot.seek(120));
+  assert.deepEqual(await page.evaluate(() => pilot.particleSnapshot), original);
+  checks.push('stop admission drains existing particles; backward seek and reset are repeatable');
+  await page.locator('#play').click(); await page.waitForTimeout(400); await page.locator('#play').click();
+  assert.ok(await page.evaluate(() => pilot.frame > 120));
+  await page.setViewportSize({ width: 390, height: 844 }); await page.evaluate(() => pilot.seek(120));
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  await page.screenshot({ path: fileURLToPath(new URL('update-mobile.png', root)), fullPage: true });
+  checks.push('playback advances; controls fit 390px');
+  const updateOnlyRequestCount = requests.length;
+  await page.locator('#mode').selectOption('observed');
+  await page.waitForFunction(() => pilot.mode === 'observed');
+  assert.equal(await page.evaluate(() => pilot.count), 22);
+  await page.locator('#mode').selectOption('update'); await page.waitForFunction(() => pilot.mode === 'update');
+  assert.deepEqual(await page.evaluate(() => pilot.particleSnapshot), original);
+  checks.push('observed mode remains usable and switching back preserves controls');
+  await page.evaluate(() => pilot.dispose());
+  const memory = await page.evaluate(() => pilot.resourcesAfterDispose);
+  assert.deepEqual(memory, { geometries: 0, textures: 0 });
+  assert.deepEqual(errors, []); assert.ok(requests.every(r => r.method === 'GET' && new URL(r.url).hostname === '127.0.0.1'));
+  const report = { schema: 'st01c-update-browser/v1', checks, errors, memory, updateOnlyRequestCount,
+    updateOnlyFrameRequests: requests.slice(0, updateOnlyRequestCount).filter(r => r.url.includes('/particles/step_')).length,
+    methods: [...new Set(requests.map(r => r.method))], scope: 'Local Chrome; mobile layout only, not physical mobile performance.' };
+  await fs.writeFile(new URL('browser.json', root), JSON.stringify(report, null, 2) + '\n');
+  console.log(JSON.stringify(report));
+} finally { await browser.close(); }

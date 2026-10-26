@@ -1,0 +1,33 @@
+{
+  "verifiedAtUTC": "2026-10-11 16:49:14 UTC",
+  "revision": "f26aae2090d0a9edd8ed7229714db89192d52f80",
+  "version": "0.6.0-alpha.52",
+  "protocol": 55,
+  "url": "https://marea.62.171.136.148.sslip.io",
+  "activeRelease": "/opt/marea-negra/releases/f26aae2090d0a9edd8ed7229714db89192d52f80",
+  "container": "59321f3ca1e7",
+  "image": "sha256:c062203ff4130bf592d1a4f794dedae7a076571fb385b9f0a7f428706ce72e86",
+  "health": "healthy",
+  "updaterTimer": "active",
+  "offlineReleaseTestsPassed": true,
+  "localFocusedTests": 36,
+  "localBrowserChecks": 19,
+  "publicSourcesMatchGit": 10,
+  "publicBrowserSessions": {
+    "desktop": "passed",
+    "mobileLandscape": "passed",
+    "mode": "guest",
+    "storageActions": "none"
+  },
+  "acceptance": "public/acceptance.json",
+  "finalStatus": {
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storageErrors": 0,
+    "unsaved": 0,
+    "economicPending": 0
+  },
+  "sqlChanges": false,
+  "notes": "Public acceptance verifies the live imported look and both device variants. Physical mobile FPS and modular clothing remain pending. This receipt is local post-deployment evidence."
+}

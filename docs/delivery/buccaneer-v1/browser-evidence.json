@@ -1,0 +1,331 @@
+{
+  "generatedAt": "2026-10-11T16:36:04.218Z",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900,
+      "touch": false,
+      "errors": [],
+      "requests": [
+        "http://127.0.0.1:57719/assets/models/buccaneer-v1-desktop.glb",
+        "http://127.0.0.1:57719/assets/ui/portraits/buccaneer-v1-desktop.webp",
+        "http://127.0.0.1:57719/assets/models/buccaneer-v1-mobile.glb",
+        "http://127.0.0.1:57719/assets/models/buccaneer-v1-desktop.glb",
+        "http://127.0.0.1:57719/assets/ui/portraits/buccaneer-v1-desktop.webp"
+      ],
+      "checks": [
+        "asset load",
+        "single GLB variant",
+        "actual albedo resolution",
+        "actual portrait resolution",
+        "join as Bucanero",
+        "character sheet ES/EN",
+        "nine armed/harvest action poses on imported 15-bone rig",
+        "finite deformed vertices",
+        "same-pose source/desktop/mobile comparison",
+        "death debris",
+        "actual character/portrait 404 fallback",
+        "noassets fallback"
+      ],
+      "assets": {
+        "list": [
+          {
+            "id": "char:buccaneer-v1",
+            "kind": "char",
+            "src": "models/buccaneer-v1-desktop.glb",
+            "selectedSrc": "models/buccaneer-v1-desktop.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 9164,
+            "notes": []
+          },
+          {
+            "id": "tex:portrait-buccaneer-v1",
+            "kind": "tex",
+            "src": "ui/portraits/buccaneer-v1-desktop.webp",
+            "selectedSrc": "ui/portraits/buccaneer-v1-desktop.webp",
+            "state": "ok",
+            "error": "",
+            "tris": 0,
+            "notes": []
+          }
+        ],
+        "errors": [],
+        "albedo": [
+          {
+            "width": 1024,
+            "height": 1024
+          }
+        ],
+        "portrait": {
+          "width": 512
+        }
+      },
+      "player": {
+        "skin": 2,
+        "imported": "char:buccaneer-v1",
+        "settings": 2
+      },
+      "poses": [
+        {
+          "name": "idle",
+          "min": [
+            -0.28688737726582525,
+            -0.02282072427789157,
+            -0.16564024520343967
+          ],
+          "max": [
+            0.2753760433986564,
+            1.880543887063075,
+            0.5823188155082513
+          ],
+          "imported": "char:buccaneer-v1",
+          "bones": 15
+        },
+        {
+          "name": "run",
+          "min": [
+            -0.4280673667381066,
+            0.020371235996342763,
+            -0.36211240793372623
+          ],
+          "max": [
+            0.3038655820648641,
+            1.9000150916763374,
+            0.7257726194823741
+          ],
+          "imported": "char:buccaneer-v1",
+          "bones": 15
+        },
+        {
+          "name": "guard",
+          "min": [
+            -0.2673284621372717,
+            -0.0676287032193548,
+            -0.23640234605654822
+          ],
+          "max": [
+            0.5038130299629751,
+            2.344765366951065,
+            0.36627832720459885
+          ],
+          "imported": "char:buccaneer-v1",
+          "bones": 15
+        },
+        {
+          "name": "dash",
+          "min": [
+            -0.29103421480522595,
+            -0.01764616337417635,
+            -0.7337216855905808
+          ],
+          "max": [
+            0.3997683254611411,
+            1.665092086272855,
+            0.9271289053682771
+          ],
+          "imported": "char:buccaneer-v1",
+          "bones": 15
+        },
+        {
+          "name": "swim",
+          "min": [
+            -0.34811787801203425,
+            -0.0375826404731715,
+            -0.3048266304567361
+          ],
+          "max": [
+            0.34834911639105104,
+            1.8764995601641095,
+            0.8319119229398128
+          ],
+          "imported": "char:buccaneer-v1",
+          "bones": 15
+        },
+        {
+          "name": "swing",
+          "min": [
+            -0.2827742007226691,
+            -0.016454840335719367,
+            -0.5490258773024043
+          ],
+          "max": [
+            0.870169323929292,
+            1.9813307327700782,
+            0.5015317522641222
+          ],
+          "imported": "char:buccaneer-v1",
+          "bones": 15
+        },
+        {
+          "name": "pistols",
+          "min": [
+            -0.2815968116038319,
+            -0.019524880539572863,
+            -0.16595022211117477
+          ],
+          "max": [
+            0.25083360917177017,
+            1.8821816528093136,
+            0.7029855298131881
+          ],
+          "imported": "char:buccaneer-v1",
+          "bones": 15
+        },
+        {
+          "name": "hit",
+          "min": [
+            -0.2791855395832549,
+            -0.017621342051765892,
+            -0.1643658883666534
+          ],
+          "max": [
+            0.25112356637858335,
+            1.8820973076612564,
+            1.0385938493349751
+          ],
+          "imported": "char:buccaneer-v1",
+          "bones": 15
+        },
+        {
+          "name": "harvest",
+          "min": [
+            -0.39501886364174044,
+            -0.01563918048647455,
+            -0.15836199992118577
+          ],
+          "max": [
+            0.2491696567974725,
+            1.8722668706483296,
+            0.5289093396728896
+          ],
+          "imported": "char:buccaneer-v1",
+          "bones": 15
+        },
+        {
+          "name": "debris",
+          "pieces": 12,
+          "imported": "char:buccaneer-v1",
+          "bones": 15
+        }
+      ],
+      "fallback": {
+        "imported": false,
+        "portrait": true,
+        "assets": [
+          {
+            "id": "char:buccaneer-v1",
+            "kind": "char",
+            "src": "models/buccaneer-v1-desktop.glb",
+            "selectedSrc": "models/buccaneer-v1-desktop.glb",
+            "state": "error",
+            "error": "char:buccaneer-v1: fetch for \"http://127.0.0.1:57719/assets/models/buccaneer-v1-desktop.glb\" responded with 404: Not Found",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "tex:portrait-buccaneer-v1",
+            "kind": "tex",
+            "src": "ui/portraits/buccaneer-v1-desktop.webp",
+            "selectedSrc": "ui/portraits/buccaneer-v1-desktop.webp",
+            "state": "error",
+            "error": "tex:portrait-buccaneer-v1: [object Event]",
+            "tris": 0,
+            "notes": []
+          }
+        ]
+      },
+      "status": "passed"
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "errors": [],
+      "requests": [
+        "http://127.0.0.1:57719/assets/models/buccaneer-v1-mobile.glb",
+        "http://127.0.0.1:57719/assets/ui/portraits/buccaneer-v1-mobile.webp",
+        "http://127.0.0.1:57719/assets/models/buccaneer-v1-mobile.glb",
+        "http://127.0.0.1:57719/assets/ui/portraits/buccaneer-v1-mobile.webp"
+      ],
+      "checks": [
+        "asset load",
+        "single GLB variant",
+        "actual albedo resolution",
+        "actual portrait resolution",
+        "join as Bucanero",
+        "character sheet ES/EN",
+        "actual character/portrait 404 fallback"
+      ],
+      "assets": {
+        "list": [
+          {
+            "id": "char:buccaneer-v1",
+            "kind": "char",
+            "src": "models/buccaneer-v1-desktop.glb",
+            "selectedSrc": "models/buccaneer-v1-mobile.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 9164,
+            "notes": []
+          },
+          {
+            "id": "tex:portrait-buccaneer-v1",
+            "kind": "tex",
+            "src": "ui/portraits/buccaneer-v1-desktop.webp",
+            "selectedSrc": "ui/portraits/buccaneer-v1-mobile.webp",
+            "state": "ok",
+            "error": "",
+            "tris": 0,
+            "notes": []
+          }
+        ],
+        "errors": [],
+        "albedo": [
+          {
+            "width": 512,
+            "height": 512
+          }
+        ],
+        "portrait": {
+          "width": 256
+        }
+      },
+      "player": {
+        "skin": 2,
+        "imported": "char:buccaneer-v1",
+        "settings": 2
+      },
+      "fallback": {
+        "imported": false,
+        "portrait": true,
+        "assets": [
+          {
+            "id": "char:buccaneer-v1",
+            "kind": "char",
+            "src": "models/buccaneer-v1-desktop.glb",
+            "selectedSrc": "models/buccaneer-v1-mobile.glb",
+            "state": "error",
+            "error": "char:buccaneer-v1: fetch for \"http://127.0.0.1:57719/assets/models/buccaneer-v1-mobile.glb\" responded with 404: Not Found",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "tex:portrait-buccaneer-v1",
+            "kind": "tex",
+            "src": "ui/portraits/buccaneer-v1-desktop.webp",
+            "selectedSrc": "ui/portraits/buccaneer-v1-mobile.webp",
+            "state": "error",
+            "error": "tex:portrait-buccaneer-v1: [object Event]",
+            "tris": 0,
+            "notes": []
+          }
+        ]
+      },
+      "status": "passed"
+    }
+  ],
+  "failures": []
+}

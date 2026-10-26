@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-11T03:33:58.778Z",
+  "revision": "8a779b5584d268cb7927fb68b7ffd23bd41cf276",
+  "testedSourceCommit": "9206ec4058045d3a9347d5ecd2de8e29011b2dc7",
+  "testCounts": {
+    "tests": 97,
+    "pass": 97,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "comparedFiles": 49,
+  "hashNormalization": "UTF-8 LF",
+  "pass": true,
+  "scope": "Accepted local source and test hashes match the published Git revision; active image hashes are recorded separately."
+}

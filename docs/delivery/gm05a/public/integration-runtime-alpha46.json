@@ -1,0 +1,278 @@
+{
+  "schema": "gm05a-integration-runtime-alpha46/v1",
+  "capturedAt": "2026-10-11T05:24:59.094Z",
+  "acceptedRevision": "ea982f8e5326308aed6ba0ab9a6bee447ee22a59",
+  "acceptedImageId": "sha256:a856c1f62408174ebe4b7c15e7c52a8fa68001a11e13a0a39e8119a0a52297e4",
+  "activeRevision": "2a51c8d90c8ffcd75f81c749d82f5ec8e1cdae4e",
+  "activeContainerId": "6327b047439e74b0185120095dc4b159fda34e815b27f382a98e5ca4bdd6b09b",
+  "activeImageId": "sha256:87934ad36f3b603d5554663ffc6767a4cb5d66d5dce79b801d82281bf38f45d6",
+  "activeImageTag": "marea-negra:alpha-2a51c8d90c8f",
+  "state": "running",
+  "health": "healthy",
+  "version": "0.6.0-alpha.46",
+  "protocolVersion": 52,
+  "gmRuntimeFiles": 28,
+  "gmRuntimeMatchesActiveGit": 28,
+  "addedInvocationFiles": 3,
+  "addedInvocationFilesMatchActiveGit": 3,
+  "acceptedAlpha45ChangedCount": 4,
+  "acceptedAlpha45UnchangedCount": 24,
+  "expectedChangedFiles": [
+    "server/host.mjs",
+    "src/data/meta.js",
+    "src/main.js",
+    "src/net/protocol.js"
+  ],
+  "changedFromAccepted": [
+    "server/host.mjs",
+    "src/data/meta.js",
+    "src/main.js",
+    "src/net/protocol.js"
+  ],
+  "unchangedFromAccepted": [
+    "server/attributeOperation.mjs",
+    "server/gmContentObstacles.mjs",
+    "server/gmContentRegistry.mjs",
+    "server/gmDraftHttp.mjs",
+    "server/gmDraftValidation.mjs",
+    "server/gmPublication.mjs",
+    "server/gmPublicationAssets.mjs",
+    "server/index.mjs",
+    "server/migrations/031_gm_terrain_drafts.sql",
+    "server/store.mjs",
+    "src/data/freshwater.js",
+    "src/editor/activeContent.js",
+    "src/editor/contentProjection.js",
+    "src/editor/document.js",
+    "src/editor/editor.css",
+    "src/editor/editor.js",
+    "src/editor/publicationValidation.js",
+    "src/editor/terrainData.js",
+    "src/editor/terrainInteraction.js",
+    "src/editor/terrainPanel.js",
+    "src/editor/terrainPreview.js",
+    "src/editor/terrainSculpt.js",
+    "src/render/scene.js",
+    "src/render/terrain.js"
+  ],
+  "expectedChangedSetExact": true,
+  "metadataExpected": true,
+  "allGmPathsMatchActiveGit": true,
+  "allAddedPathsMatchActiveGit": true,
+  "gmFiles": {
+    "server/attributeOperation.mjs": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "dce6807ca4c24762d8b239c858a1c2a053abfd85f6408899270f9835ca666f25",
+      "activeGitSha256": "dce6807ca4c24762d8b239c858a1c2a053abfd85f6408899270f9835ca666f25",
+      "acceptedAlpha45Sha256": "dce6807ca4c24762d8b239c858a1c2a053abfd85f6408899270f9835ca666f25"
+    },
+    "server/gmContentObstacles.mjs": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "d710939e2baf2b3cf6d705657090ca8a1e0a2204d7d276c5957b0d1b42ec2474",
+      "activeGitSha256": "d710939e2baf2b3cf6d705657090ca8a1e0a2204d7d276c5957b0d1b42ec2474",
+      "acceptedAlpha45Sha256": "d710939e2baf2b3cf6d705657090ca8a1e0a2204d7d276c5957b0d1b42ec2474"
+    },
+    "server/gmContentRegistry.mjs": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "496565003e40bb5011c1a31c5f0ec0863224313bbfa7f4f1853555ebd4aee80c",
+      "activeGitSha256": "496565003e40bb5011c1a31c5f0ec0863224313bbfa7f4f1853555ebd4aee80c",
+      "acceptedAlpha45Sha256": "496565003e40bb5011c1a31c5f0ec0863224313bbfa7f4f1853555ebd4aee80c"
+    },
+    "server/gmDraftHttp.mjs": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "45d2c970df5b10464f1a6d007786d2b05ba2c2f8a7795dd3cbf8e1cec3c6e9ad",
+      "activeGitSha256": "45d2c970df5b10464f1a6d007786d2b05ba2c2f8a7795dd3cbf8e1cec3c6e9ad",
+      "acceptedAlpha45Sha256": "45d2c970df5b10464f1a6d007786d2b05ba2c2f8a7795dd3cbf8e1cec3c6e9ad"
+    },
+    "server/gmDraftValidation.mjs": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "7a36fb9e09890d235580da0893f26ab6174fb1f53ec10da3c9bbe99c86d070df",
+      "activeGitSha256": "7a36fb9e09890d235580da0893f26ab6174fb1f53ec10da3c9bbe99c86d070df",
+      "acceptedAlpha45Sha256": "7a36fb9e09890d235580da0893f26ab6174fb1f53ec10da3c9bbe99c86d070df"
+    },
+    "server/gmPublication.mjs": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "a31f16cc32934c57afb7232fd070280966d26eacc9920d3d8925467fdcdc0e03",
+      "activeGitSha256": "a31f16cc32934c57afb7232fd070280966d26eacc9920d3d8925467fdcdc0e03",
+      "acceptedAlpha45Sha256": "a31f16cc32934c57afb7232fd070280966d26eacc9920d3d8925467fdcdc0e03"
+    },
+    "server/gmPublicationAssets.mjs": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "87933c36f8a964dc8d769df63086a214c0a46a29c9678bd581cf8f9783fcdfd7",
+      "activeGitSha256": "87933c36f8a964dc8d769df63086a214c0a46a29c9678bd581cf8f9783fcdfd7",
+      "acceptedAlpha45Sha256": "87933c36f8a964dc8d769df63086a214c0a46a29c9678bd581cf8f9783fcdfd7"
+    },
+    "server/host.mjs": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": false,
+      "activeContainerSha256": "ae53a5d14b334f7a6471115f5f4831e849bca5e35fb4e5dc458ff1a3faa43994",
+      "activeGitSha256": "ae53a5d14b334f7a6471115f5f4831e849bca5e35fb4e5dc458ff1a3faa43994",
+      "acceptedAlpha45Sha256": "9a13e4a17c9f66db7704c482c5ce7afe5eb514566808bf160008d41551681442"
+    },
+    "server/index.mjs": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "4bea787f9454480efe6fb45a96884fb5b68d1d0683bdf7683df1c1b1c086b6bc",
+      "activeGitSha256": "4bea787f9454480efe6fb45a96884fb5b68d1d0683bdf7683df1c1b1c086b6bc",
+      "acceptedAlpha45Sha256": "4bea787f9454480efe6fb45a96884fb5b68d1d0683bdf7683df1c1b1c086b6bc"
+    },
+    "server/migrations/031_gm_terrain_drafts.sql": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "7993c50485952065917e372804bfdb6d9cf572a08e790dc8d47a7c7227d5ea1a",
+      "activeGitSha256": "7993c50485952065917e372804bfdb6d9cf572a08e790dc8d47a7c7227d5ea1a",
+      "acceptedAlpha45Sha256": "7993c50485952065917e372804bfdb6d9cf572a08e790dc8d47a7c7227d5ea1a"
+    },
+    "server/store.mjs": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "3816021cf5179265226ab904302e15fb0d22503b21fd54951f1dd1bd2ca0ab88",
+      "activeGitSha256": "3816021cf5179265226ab904302e15fb0d22503b21fd54951f1dd1bd2ca0ab88",
+      "acceptedAlpha45Sha256": "3816021cf5179265226ab904302e15fb0d22503b21fd54951f1dd1bd2ca0ab88"
+    },
+    "src/data/freshwater.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "89bb64b17082449ecddb550fc12f84ef6d89f20b007ea83f71a5c6102e7139c4",
+      "activeGitSha256": "89bb64b17082449ecddb550fc12f84ef6d89f20b007ea83f71a5c6102e7139c4",
+      "acceptedAlpha45Sha256": "89bb64b17082449ecddb550fc12f84ef6d89f20b007ea83f71a5c6102e7139c4"
+    },
+    "src/data/meta.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": false,
+      "activeContainerSha256": "df8b198b00ae6858ca727e95a9b867d33ba041f78cac57ed0d6b2d5bc21a53db",
+      "activeGitSha256": "df8b198b00ae6858ca727e95a9b867d33ba041f78cac57ed0d6b2d5bc21a53db",
+      "acceptedAlpha45Sha256": "1b2b2bbd65948db891f364acfd6a750cb628dcc136f9fc831e8b1d19cf6fea27"
+    },
+    "src/editor/activeContent.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "423f5343371ea09dc45bf1aeb2a804d544ac67bbe795028a45e08e35b589e325",
+      "activeGitSha256": "423f5343371ea09dc45bf1aeb2a804d544ac67bbe795028a45e08e35b589e325",
+      "acceptedAlpha45Sha256": "423f5343371ea09dc45bf1aeb2a804d544ac67bbe795028a45e08e35b589e325"
+    },
+    "src/editor/contentProjection.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "9465cfd76dcf197ee6651c39f52ea3c501b57f26d19364d58911e9905a64d572",
+      "activeGitSha256": "9465cfd76dcf197ee6651c39f52ea3c501b57f26d19364d58911e9905a64d572",
+      "acceptedAlpha45Sha256": "9465cfd76dcf197ee6651c39f52ea3c501b57f26d19364d58911e9905a64d572"
+    },
+    "src/editor/document.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "7d2d0ae9b744b51cf1942618b4e4c71880310966a7fac7508f531656948cff41",
+      "activeGitSha256": "7d2d0ae9b744b51cf1942618b4e4c71880310966a7fac7508f531656948cff41",
+      "acceptedAlpha45Sha256": "7d2d0ae9b744b51cf1942618b4e4c71880310966a7fac7508f531656948cff41"
+    },
+    "src/editor/editor.css": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "776363cd6508f5acc4a336a734695d6757f5f736447bd88fd166418b995f34b6",
+      "activeGitSha256": "776363cd6508f5acc4a336a734695d6757f5f736447bd88fd166418b995f34b6",
+      "acceptedAlpha45Sha256": "776363cd6508f5acc4a336a734695d6757f5f736447bd88fd166418b995f34b6"
+    },
+    "src/editor/editor.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "7bd5ed94da574cb215032262fa06f8443a98f47447041b777bcd0b53ad601d47",
+      "activeGitSha256": "7bd5ed94da574cb215032262fa06f8443a98f47447041b777bcd0b53ad601d47",
+      "acceptedAlpha45Sha256": "7bd5ed94da574cb215032262fa06f8443a98f47447041b777bcd0b53ad601d47"
+    },
+    "src/editor/publicationValidation.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "a92e819b004e95ab90541aea47df201558ce3e9f0e78b091764def566573763b",
+      "activeGitSha256": "a92e819b004e95ab90541aea47df201558ce3e9f0e78b091764def566573763b",
+      "acceptedAlpha45Sha256": "a92e819b004e95ab90541aea47df201558ce3e9f0e78b091764def566573763b"
+    },
+    "src/editor/terrainData.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "9cb28ed338be033c715da9ec9dd10a8dfc505162f1b8bb242bf717e068f9c919",
+      "activeGitSha256": "9cb28ed338be033c715da9ec9dd10a8dfc505162f1b8bb242bf717e068f9c919",
+      "acceptedAlpha45Sha256": "9cb28ed338be033c715da9ec9dd10a8dfc505162f1b8bb242bf717e068f9c919"
+    },
+    "src/editor/terrainInteraction.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "b712281be00420a37080070ac516d13e92702f31c59acadff52f9179df3f5794",
+      "activeGitSha256": "b712281be00420a37080070ac516d13e92702f31c59acadff52f9179df3f5794",
+      "acceptedAlpha45Sha256": "b712281be00420a37080070ac516d13e92702f31c59acadff52f9179df3f5794"
+    },
+    "src/editor/terrainPanel.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "18876fe2a00ef0ad30434d40d4e5107bfc68abc0ef095d09b3abec0d75f7b4a7",
+      "activeGitSha256": "18876fe2a00ef0ad30434d40d4e5107bfc68abc0ef095d09b3abec0d75f7b4a7",
+      "acceptedAlpha45Sha256": "18876fe2a00ef0ad30434d40d4e5107bfc68abc0ef095d09b3abec0d75f7b4a7"
+    },
+    "src/editor/terrainPreview.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "8a0c9cedfd3c7aa70e52320993ed307f1538b1fb5c23a3d9b84c8f97c3506b4e",
+      "activeGitSha256": "8a0c9cedfd3c7aa70e52320993ed307f1538b1fb5c23a3d9b84c8f97c3506b4e",
+      "acceptedAlpha45Sha256": "8a0c9cedfd3c7aa70e52320993ed307f1538b1fb5c23a3d9b84c8f97c3506b4e"
+    },
+    "src/editor/terrainSculpt.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "8db8ad5b94bb0e28571081751ec77dc1a89278826e2584b94acc7ba40ead4b28",
+      "activeGitSha256": "8db8ad5b94bb0e28571081751ec77dc1a89278826e2584b94acc7ba40ead4b28",
+      "acceptedAlpha45Sha256": "8db8ad5b94bb0e28571081751ec77dc1a89278826e2584b94acc7ba40ead4b28"
+    },
+    "src/main.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": false,
+      "activeContainerSha256": "b98decaf587bbdde766579d565387d9b177a04bac965b988b4328e7103da810f",
+      "activeGitSha256": "b98decaf587bbdde766579d565387d9b177a04bac965b988b4328e7103da810f",
+      "acceptedAlpha45Sha256": "9292698dda2173fc66878251afa275efc75a2230204cf9afa53c99da9414e7fe"
+    },
+    "src/net/protocol.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": false,
+      "activeContainerSha256": "3966f835607f9cab5ce1161f8ff75a3cd4de15d418252d09c451df30c332f2f9",
+      "activeGitSha256": "3966f835607f9cab5ce1161f8ff75a3cd4de15d418252d09c451df30c332f2f9",
+      "acceptedAlpha45Sha256": "49521063e7ab260788e59d3a9fddca6e74f7a9ae58c26c4eaa0c21ecb438d34f"
+    },
+    "src/render/scene.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "032d251a9b2f01714a7c88b3d057a65f5d1234c103c6ee4b2d1c830b6991aa8e",
+      "activeGitSha256": "032d251a9b2f01714a7c88b3d057a65f5d1234c103c6ee4b2d1c830b6991aa8e",
+      "acceptedAlpha45Sha256": "032d251a9b2f01714a7c88b3d057a65f5d1234c103c6ee4b2d1c830b6991aa8e"
+    },
+    "src/render/terrain.js": {
+      "matchesActiveGit": true,
+      "matchesAcceptedAlpha45": true,
+      "activeContainerSha256": "c320d68d98843d2138e9116abc59c841bdcf5d40480ec1bbbd2c2803904c0be9",
+      "activeGitSha256": "c320d68d98843d2138e9116abc59c841bdcf5d40480ec1bbbd2c2803904c0be9",
+      "acceptedAlpha45Sha256": "c320d68d98843d2138e9116abc59c841bdcf5d40480ec1bbbd2c2803904c0be9"
+    }
+  },
+  "addedFiles": {
+    "src/client/gameClient.js": {
+      "matchesActiveGit": true,
+      "activeContainerSha256": "94c18fac6a97f09bb08bed5dfc3bde9adbba8ee3429ac202b32f696317b5ea5d",
+      "activeGitSha256": "94c18fac6a97f09bb08bed5dfc3bde9adbba8ee3429ac202b32f696317b5ea5d"
+    },
+    "src/sim/systems/attributePlan.js": {
+      "matchesActiveGit": true,
+      "activeContainerSha256": "bb944ecabe02b9e34b84d884eb2d5e6eedfb864488eb5a617b9114f4e1ad7be6",
+      "activeGitSha256": "bb944ecabe02b9e34b84d884eb2d5e6eedfb864488eb5a617b9114f4e1ad7be6"
+    },
+    "src/ui/attributeControls.js": {
+      "matchesActiveGit": true,
+      "activeContainerSha256": "b2928a6242e2b833b618410c06e0fbc9bcbc7993ab9c2428492b99dfc08c5233",
+      "activeGitSha256": "b2928a6242e2b833b618410c06e0fbc9bcbc7993ab9c2428492b99dfc08c5233"
+    }
+  },
+  "method": "Read-only docker inspect and docker exec against the single running marea-negra-alpha container; canonical blobs via git show activeRevision:path."
+}

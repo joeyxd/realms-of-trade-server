@@ -1,0 +1,45 @@
+✔ memory: slow receipt keeps actions until apply, then movement/ACK survive and fresh G works (376.5559ms)
+✔ SDK/SQL006: slow receipt keeps actions until apply, then movement/ACK survive and fresh G works (1779.7457ms)
+✔ memory: retired replacement leaves inputs and owner progress untouched (248.2253ms)
+✔ SDK/SQL008: retired replacement leaves inputs and owner progress untouched (1259.979ms)
+✔ give does not change active power and never prepares or filters either endpoint (246.1861ms)
+✔ a carried potion remains usable exactly once while old combat presses are removed (249.1311ms)
+✔ without adapter the accepted queue and non-G buffer behavior stays unchanged (273.7421ms)
+✔ trim/late carry cannot resurrect filtered actions; remaining movement and filler ACK are normal (310.456ms)
+✔ local save failure after filtering restores transport references and ECS buffers; SQL stays committed (258.647ms)
+▶ builtin effect refuses preparation outside apply and detects changed queue or identity before its writes
+  ✔ queue (259.9394ms)
+  ✔ command (267.8443ms)
+  ✔ carry (422.2527ms)
+  ✔ last (261.3687ms)
+  ✔ ack (231.9555ms)
+  ✔ identity (239.9763ms)
+✔ builtin effect refuses preparation outside apply and detects changed queue or identity before its writes (1684.3023ms)
+▶ invalid, async and caught reentrant input adapters fence before local writes
+  ✔ throw (252.8737ms)
+  ✔ Promise (252.5109ms)
+  ✔ rejected Promise (288.9178ms)
+  ✔ missing method (369.5979ms)
+  ✔ reentry (234.8575ms)
+  ✔ getter reentry (240.9045ms)
+✔ invalid, async and caught reentrant input adapters fence before local writes (1640.7512ms)
+▶ failed input apply/assert and rollback callback cannot leave staging-owned ECS/profile writes applied
+  ✔ apply throw (243.5483ms)
+  ✔ apply Promise (256.7766ms)
+  ✔ assert reentry (253.3023ms)
+  ✔ rollback throw (227.7643ms)
+✔ failed input apply/assert and rollback callback cannot leave staging-owned ECS/profile writes applied (982.0596ms)
+▶ invalidated death/revival, closed session and recycled profile never prepare an input effect
+  ✔ death/revival (245.9255ms)
+  ✔ closed (216.3833ms)
+  ✔ recycled (208.2453ms)
+✔ invalidated death/revival, closed session and recycled profile never prepare an input effect (671.0664ms)
+✔ adapter configuration and selector validation fail closed without transport changes (225.922ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12172.3119

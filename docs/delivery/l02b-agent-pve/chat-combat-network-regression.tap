@@ -1,0 +1,388 @@
+TAP version 13
+# Subtest: only live local chat creates a nearby bubble with state-derived identity and radius
+ok 1 - only live local chat creates a nearby bubble with state-derived identity and radius
+  ---
+  duration_ms: 1.3928
+  type: 'test'
+  ...
+# Subtest: world and unrelated channels never create bubbles
+ok 2 - world and unrelated channels never create bubbles
+  ---
+  duration_ms: 0.7902
+  type: 'test'
+  ...
+# Subtest: empty and non-string text is ignored before deduplication or display
+ok 3 - empty and non-string text is ignored before deduplication or display
+  ---
+  duration_ms: 0.2099
+  type: 'test'
+  ...
+# Subtest: whispers are limited to the sender or current target and use trusted labels
+ok 4 - whispers are limited to the sender or current target and use trusted labels
+  ---
+  duration_ms: 0.2216
+  type: 'test'
+  ...
+# Subtest: sender and whisper target must match current opaque token and entity mapping
+ok 5 - sender and whisper target must match current opaque token and entity mapping
+  ---
+  duration_ms: 0.2316
+  type: 'test'
+  ...
+# Subtest: leave and entity remap remove the old bubble; disable, self change, and disconnect clear all
+ok 6 - leave and entity remap remove the old bubble; disable, self change, and disconnect clear all
+  ---
+  duration_ms: 0.3261
+  type: 'test'
+  ...
+# Subtest: state updates never replay prior history and duplicate live IDs are suppressed
+ok 7 - state updates never replay prior history and duplicate live IDs are suppressed
+  ---
+  duration_ms: 0.1813
+  type: 'test'
+  ...
+# Subtest: Unicode text is truncated by code point and lifetime stays within five to eight seconds
+ok 8 - Unicode text is truncated by code point and lifetime stays within five to eight seconds
+  ---
+  duration_ms: 0.2113
+  type: 'test'
+  ...
+# Subtest: chat state gives joined peers opaque whisper tokens and excludes spectators
+ok 9 - chat state gives joined peers opaque whisper tokens and excludes spectators
+  ---
+  duration_ms: 134.1455
+  type: 'test'
+  ...
+# Subtest: world chat trusts server identity, preserves text literally, and delivers only to joined peers
+ok 10 - world chat trusts server identity, preserves text literally, and delivers only to joined peers
+  ---
+  duration_ms: 112.5617
+  type: 'test'
+  ...
+# Subtest: local chat uses current server x/y/z distance and includes the sender
+ok 11 - local chat uses current server x/y/z distance and includes the sender
+  ---
+  duration_ms: 112.6182
+  type: 'test'
+  ...
+# Subtest: whisper is private to the opaque recipient token and rejects stale tokens
+ok 12 - whisper is private to the opaque recipient token and rejects stale tokens
+  ---
+  duration_ms: 107.5451
+  type: 'test'
+  ...
+# Subtest: chat request receipts are idempotent per peer and conflicting reuse is rejected
+ok 13 - chat request receipts are idempotent per peer and conflicting reuse is rejected
+  ---
+  duration_ms: 95.7211
+  type: 'test'
+  ...
+# Subtest: chat validates channel, target and bounded text before delivery
+ok 14 - chat validates channel, target and bounded text before delivery
+  ---
+  duration_ms: 90.4198
+  type: 'test'
+  ...
+# Subtest: chat history is bounded per session and state refresh after a newcomer preserves whisper privacy
+ok 15 - chat history is bounded per session and state refresh after a newcomer preserves whisper privacy
+  ---
+  duration_ms: 98.1818
+  type: 'test'
+  ...
+# Subtest: disabled chat returns a result and leaves simulation events untouched
+ok 16 - disabled chat returns a result and leaves simulation events untouched
+  ---
+  duration_ms: 96.0257
+  type: 'test'
+  ...
+# Subtest: chat rejects prejoin requests and applies a per-peer token bucket using injected time
+ok 17 - chat rejects prejoin requests and applies a per-peer token bucket using injected time
+  ---
+  duration_ms: 117.9725
+  type: 'test'
+  ...
+# Subtest: real WebSocket chat works through WsTransport and GameClient without leaking messages or receipts
+ok 18 - real WebSocket chat works through WsTransport and GameClient without leaking messages or receipts
+  ---
+  duration_ms: 352.4144
+  type: 'test'
+  ...
+# Subtest: the timed sword reflect: EXCELENTE, BUENO and POBRE by how close the bullet was
+ok 19 - the timed sword reflect: EXCELENTE, BUENO and POBRE by how close the bullet was
+  ---
+  duration_ms: 22.4985
+  type: 'test'
+  ...
+# Subtest: the spread of BUENO / POBRE reflects is the same on every machine (hash of id and seq)
+ok 20 - the spread of BUENO / POBRE reflects is the same on every machine (hash of id and seq)
+  ---
+  duration_ms: 4.6918
+  type: 'test'
+  ...
+# Subtest: a slow bullet hit early is destroyed, not reflected; mashing LMB mostly destroys
+ok 21 - a slow bullet hit early is destroyed, not reflected; mashing LMB mostly destroys
+  ---
+  duration_ms: 15.3967
+  type: 'test'
+  ...
+# Subtest: heavy orbs: only an EXCELENTE swing sends them back; earlier swings clunk
+ok 22 - heavy orbs: only an EXCELENTE swing sends them back; earlier swings clunk
+  ---
+  duration_ms: 7.0051
+  type: 'test'
+  ...
+# Subtest: guard: blocks × 0.25 from the front for stamina; nothing from behind
+ok 23 - guard: blocks × 0.25 from the front for stamina; nothing from behind
+  ---
+  duration_ms: 7.8938
+  type: 'test'
+  ...
+# Subtest: perfect guard catches the bullet and the next swing throws it back; mashing RMB does not re-arm
+ok 24 - perfect guard catches the bullet and the next swing throws it back; mashing RMB does not re-arm
+  ---
+  duration_ms: 7.8306
+  type: 'test'
+  ...
+# Subtest: guard stamina runs out: GUARDIA ROTA stuns you
+ok 25 - guard stamina runs out: GUARDIA ROTA stuns you
+  ---
+  duration_ms: 2.7327
+  type: 'test'
+  ...
+# Subtest: heavy orb on the guard: × 0.4 and a push; a perfect guard catches it and throws back a heavy shot
+ok 26 - heavy orb on the guard: × 0.4 and a push; a perfect guard catches it and throws back a heavy shot
+  ---
+  duration_ms: 4.745
+  type: 'test'
+  ...
+# Subtest: unstoppable spikes pierce the guard and stun; dashing through them is FANTASMA
+ok 27 - unstoppable spikes pierce the guard and stun; dashing through them is FANTASMA
+  ---
+  duration_ms: 6.9523
+  type: 'test'
+  ...
+# Subtest: coyote: LMB within 60 ms of a parryable touching you is a POBRE reflect, RMB a block
+ok 28 - coyote: LMB within 60 ms of a parryable touching you is a POBRE reflect, RMB a block
+  ---
+  duration_ms: 8.5063
+  type: 'test'
+  ...
+# Subtest: a guarded melee circle from in front; a mortar shell from the sky is not guarded
+ok 29 - a guarded melee circle from in front; a mortar shell from the sky is not guarded
+  ---
+  duration_ms: 8.3269
+  type: 'test'
+  ...
+# Subtest: the active frames of a swing destroy parryables and clunk on heavy orbs
+ok 30 - the active frames of a swing destroy parryables and clunk on heavy orbs
+  ---
+  duration_ms: 6.5218
+  type: 'test'
+  ...
+# Subtest: the combo chains 3 stages with buffered presses, and restarts after the gap
+ok 31 - the combo chains 3 stages with buffered presses, and restarts after the gap
+  ---
+  duration_ms: 6.2749
+  type: 'test'
+  ...
+# Subtest: a projectile brushing past is a graze, once
+ok 32 - a projectile brushing past is a graze, once
+  ---
+  duration_ms: 3.8098
+  type: 'test'
+  ...
+# Subtest: lag compensation: the server judges a swing at the projectile tick the client saw
+ok 33 - lag compensation: the server judges a swing at the projectile tick the client saw
+  ---
+  duration_ms: 2.132
+  type: 'test'
+  ...
+# Subtest: the archer fires aimed bursts of 3 that hit an idle player
+ok 34 - the archer fires aimed bursts of 3 that hit an idle player
+  ---
+  duration_ms: 93.0975
+  type: 'test'
+  ...
+# Subtest: reflected arrows kill an archer, XP goes to the player and levels them up
+ok 35 - reflected arrows kill an archer, XP goes to the player and levels them up
+  ---
+  duration_ms: 6.2969
+  type: 'test'
+  ...
+# Subtest: melee hits enemies where the attacker saw them (interp delay rewind)
+ok 36 - melee hits enemies where the attacker saw them (interp delay rewind)
+  ---
+  duration_ms: 3.2372
+  type: 'test'
+  ...
+# Subtest: client prediction with projectiles, sword reflects, guards and the combo matches the server exactly
+ok 37 - client prediction with projectiles, sword reflects, guards and the combo matches the server exactly
+  ---
+  duration_ms: 401.3137
+  type: 'test'
+  ...
+# Subtest: a client running at half the server rate keeps its projectile clock, pool and prediction
+ok 38 - a client running at half the server rate keeps its projectile clock, pool and prediction
+  ---
+  duration_ms: 602.2035
+  type: 'test'
+  ...
+# Subtest: rarities follow their weights; the Mareas bonus and a floor shift them
+ok 39 - rarities follow their weights; the Mareas bonus and a floor shift them
+  ---
+  duration_ms: 21.6016
+  type: 'test'
+  ...
+# Subtest: items: deterministic, every slot as likely, bases by level, affixes by rarity within the budget
+ok 40 - items: deterministic, every slot as likely, bases by level, affixes by rarity within the budget
+  ---
+  duration_ms: 28.2093
+  type: 'test'
+  ...
+# Subtest: item stats, names and value
+ok 41 - item stats, names and value
+  ---
+  duration_ms: 0.6782
+  type: 'test'
+  ...
+# Subtest: sanitizeItem keeps good items and refuses forged ones
+ok 42 - sanitizeItem keeps good items and refuses forged ones
+  ---
+  duration_ms: 0.3354
+  type: 'test'
+  ...
+# Subtest: refreshStats: level + gear + mastery; caps; HP keeps its fraction; no profile is the old game
+ok 43 - refreshStats: level + gear + mastery; caps; HP keeps its fraction; no profile is the old game
+  ---
+  duration_ms: 2.9277
+  type: 'test'
+  ...
+# Subtest: the Cala on the map: inside the ring of skulls is lawless, its door is a checkpoint outside, nothing random grows there
+ok 44 - the Cala on the map: inside the ring of skulls is lawless, its door is a checkpoint outside, nothing random grows there
+  ---
+  duration_ms: 1.2791
+  type: 'test'
+  ...
+# Subtest: outside the Cala there is no friendly fire
+ok 45 - outside the Cala there is no friendly fire
+  ---
+  duration_ms: 153.1386
+  type: 'test'
+  ...
+# Subtest: inside, the cutlass, the pistols and the storm hurt the other pirate (× pvpDmg, after their DEF), lag-compensated
+ok 46 - inside, the cutlass, the pistols and the storm hurt the other pirate (× pvpDmg, after their DEF), lag-compensated
+  ---
+  duration_ms: 448.6929
+  type: 'test'
+  ...
+# Subtest: a blade lands through the mercy window after a hit (the whole combo lands); bullets pass through it
+ok 47 - a blade lands through the mercy window after a hit (the whole combo lands); bullets pass through it
+  ---
+  duration_ms: 221.8147
+  type: 'test'
+  ...
+# Subtest: inside, a raised guard blocks a pirate's cutlass, a perfect one stops it and staggers the attacker; the dash dodges it
+ok 48 - inside, a raised guard blocks a pirate's cutlass, a perfect one stops it and staggers the attacker; the dash dodges it
+  ---
+  duration_ms: 361.8416
+  type: 'test'
+  ...
+# Subtest: falling inside spills everything you wear and carry (a starter weapon aside) and your potions, for anyone; the gold stays
+ok 49 - falling inside spills everything you wear and carry (a starter weapon aside) and your potions, for anyone; the gold stays
+  ---
+  duration_ms: 141.2029
+  type: 'test'
+  ...
+# Subtest: outside the Cala equipment stays; a pirate who arrives later sees public Cala loot
+ok 50 - outside the Cala equipment stays; a pirate who arrives later sees public Cala loot
+  ---
+  duration_ms: 143.9391
+  type: 'test'
+  ...
+# Subtest: a mob killed inside drops public loot, rolled once (quest items stay personal)
+ok 51 - a mob killed inside drops public loot, rolled once (quest items stay personal)
+  ---
+  duration_ms: 112.5571
+  type: 'test'
+  ...
+# Subtest: inside the Cala a mob's bullet lands on another mob, which turns on it; outside it flies through
+ok 52 - inside the Cala a mob's bullet lands on another mob, which turns on it; outside it flies through
+  ---
+  duration_ms: 12.7303
+  type: 'test'
+  ...
+# Subtest: a mob another mob finishes off is the kill of the pirate who hurt it lately; with none, nobody earns XP for watching
+ok 53 - a mob another mob finishes off is the kill of the pirate who hurt it lately; with none, nobody earns XP for watching
+  ---
+  duration_ms: 15.6984
+  type: 'test'
+  ...
+# Subtest: the Desalmados go for a pirate in reach before any mob, and never hurt each other
+ok 54 - the Desalmados go for a pirate in reach before any mob, and never hurt each other
+  ---
+  duration_ms: 18.4419
+  type: 'test'
+  ...
+# Subtest: the Cala's mobs are harder (Sin ley); the Desalmados have names and hunt the mobs while a pirate is around
+ok 55 - the Cala's mobs are harder (Sin ley); the Desalmados have names and hunt the mobs while a pirate is around
+  ---
+  duration_ms: 438.5805
+  type: 'test'
+  ...
+# Subtest: a Desalmado falls: its gear (2 items, one at least Uncommon), gold and maybe a potion, all public
+ok 56 - a Desalmado falls: its gear (2 items, one at least Uncommon), gold and maybe a potion, all public
+  ---
+  duration_ms: 1.7374
+  type: 'test'
+  ...
+# Subtest: two players at 100 ms RTT: prediction holds, they see each other walk and swing
+ok 57 - two players at 100 ms RTT: prediction holds, they see each other walk and swing
+  ---
+  duration_ms: 6269.1533
+  type: 'test'
+  ...
+# Subtest: a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+ok 58 - a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+  ---
+  duration_ms: 11.614
+  type: 'test'
+  ...
+# Subtest: the island has racks, clear of colliders, and the weapons are indexed
+ok 59 - the island has racks, clear of colliders, and the weapons are indexed
+  ---
+  duration_ms: 1.4233
+  type: 'test'
+  ...
+# Subtest: the weapon only changes next to a rack (w = weapon + 1), with one equip event
+ok 60 - the weapon only changes next to a rack (w = weapon + 1), with one equip event
+  ---
+  duration_ms: 5.2403
+  type: 'test'
+  ...
+# Subtest: HELLO picks the starting weapon; describe and the snapshot carry it
+ok 61 - HELLO picks the starting weapon; describe and the snapshot carry it
+  ---
+  duration_ms: 124.3219
+  type: 'test'
+  ...
+# Subtest: client prediction stays exact through weapon swaps at a rack; the equip is shown once
+ok 62 - client prediction stays exact through weapon swaps at a rack; the equip is shown once
+  ---
+  duration_ms: 171.1904
+  type: 'test'
+  ...
+# Subtest: shots are judged against the enemies as the shooter saw them (lag compensation)
+ok 63 - shots are judged against the enemies as the shooter saw them (lag compensation)
+  ---
+  duration_ms: 20.7025
+  type: 'test'
+  ...
+1..63
+# tests 63
+# suites 0
+# pass 63
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13754.0145

@@ -1,0 +1,129 @@
+{
+  "schema": "marea-negra.agent-l00-evidence.v1",
+  "date": "2026-10-07",
+  "baseGitAtStart": "14510ff5c7eb80c24b90415067b503a4ac979022",
+  "scope": "local_fixture_only",
+  "tests": {
+    "command": "node --test tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs",
+    "total": 46,
+    "pass": 46,
+    "fail": 0
+  },
+  "lab": [
+    {
+      "type": "owner_files",
+      "source": "fixture",
+      "files": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\tools\\agent\\fixtures\\personality.md",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\tools\\agent\\fixtures\\objectives.json",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\tools\\agent\\fixtures\\memory.jsonl"
+      ],
+      "contentSha256": {
+        "personality.md": "4db50469016235d52b7f443c7db15f97f4cca149990c604982d42b1ce6910e5c",
+        "objectives.json": "e39fbe60b4039620c67d7eabc7f894b995587ce7bcac0f00eb9e711fd66d272f",
+        "memory.jsonl": "dd89fc94ec058a90d492d3e86a9e8a118b109184b40929152a2be71e01ca038a"
+      },
+      "goalRevision": 1
+    },
+    {
+      "type": "input",
+      "source": "fixture",
+      "actionId": "action-1",
+      "input": {
+        "mx": 1,
+        "mz": 0,
+        "ax": 0,
+        "az": 0,
+        "btn": 0,
+        "prs": 0
+      }
+    },
+    {
+      "type": "input_ack",
+      "source": "fixture",
+      "actionId": "action-1",
+      "state": "sent",
+      "effectConfirmed": false
+    },
+    {
+      "type": "action_result",
+      "source": "fixture",
+      "actionId": "action-1",
+      "state": "confirmed",
+      "effect": "Posición confirmada en la fixture: x=0.4, z=0.",
+      "durability": "not_applicable"
+    },
+    {
+      "type": "stop",
+      "source": "fixture",
+      "state": "stopped",
+      "input": {
+        "mx": 0,
+        "mz": 0,
+        "ax": 0,
+        "az": 0,
+        "btn": 0,
+        "prs": 0
+      },
+      "pending": [
+        {
+          "actionId": "action-2",
+          "state": "uncertain",
+          "why": "stop"
+        }
+      ]
+    },
+    {
+      "type": "bounded_context",
+      "source": "fixture",
+      "originalRecords": 50000,
+      "rawHistoryBytes": 14755561,
+      "countMode": "estimated_utf8_bytes",
+      "requiredUnits": 1613,
+      "requiredBytes": 1613,
+      "usableContextUnits": 3328,
+      "outputReserveUnits": 512,
+      "marginUnits": 256,
+      "selectedIds": [
+        "compact:48e92a468ecce8d659d24a1aff640c318138cf234fd2cb273be1915888566f6a:1"
+      ],
+      "skipped": {
+        "candidate_limit": 48000,
+        "duplicate_content": 1997,
+        "optional_over_budget": 125
+      },
+      "invalidCount": 0,
+      "scopeMismatchCount": 0,
+      "expiredCount": 0,
+      "futureCount": 0,
+      "duplicateIdCount": 0,
+      "duplicateContentCount": 1997,
+      "scannedCandidates": 2000,
+      "truncatedCandidates": 48000,
+      "missingHistory": true,
+      "selectedMemoryUnits": 908,
+      "selectedContextUnits": 2519,
+      "selectedInputBytes": 2519,
+      "requiredOverBudget": false
+    },
+    {
+      "type": "complete",
+      "source": "fixture",
+      "ok": true,
+      "gameConnected": false,
+      "inferenceCalls": 0
+    }
+  ],
+  "sourceSha256": {
+    "tools/agent/contract.mjs": "4530f29dabc0717ea62b841cf0a9acefb7f0774e5dd684397252a478fbdaea0f",
+    "tools/agent/session.mjs": "3eba3bb07dcfb7cea32d0a95990efed6ae9be4295695586d33ea3757972f4b13",
+    "tools/agent/context.mjs": "394cb32ba9a05ffccb555537e925084bfd8bb66b844d9780690046c1f0fa5b78",
+    "tools/agent/fixtures.mjs": "32bdd6533afc799c21143d8a9b2f858fcac7e37cb77c72002a91791aaf25aa29",
+    "tools/agent/lab.mjs": "7ba6aac34920cd5aee8e8543d7e142d6ecf7f28a412c0ac2a0e73c8f5358d56c",
+    "tests/agent-interface.test.mjs": "8ad61a915ed6687997a00dd87548131b1f7283d903dce3b43176fef2127d6593",
+    "tests/agent-context.test.mjs": "405a38044854bf48b50f9674a49c24701a9c1f96edeb1c88490934fc1d379d99",
+    "tests/agent-lab.test.mjs": "55c65b4c42b9e23a3d03b98997ae6184cc8cdff061831d7c1f8d65f6fef415c1"
+  },
+  "gameConnected": false,
+  "inferenceCalls": 0
+}

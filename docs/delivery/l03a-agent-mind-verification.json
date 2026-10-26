@@ -1,0 +1,166 @@
+{
+  "schema": "l03a-agent-mind-verification/v1",
+  "status": "local_software_verified_with_simulated_models",
+  "generatedAt": "2026-10-08T21:50:08.994Z",
+  "checkout": {
+    "head": "95fc29192321fd83a4db33c77536e8f56761371a",
+    "branch": "claude/loving-lovelace-ptbif7",
+    "sharedDirty": true,
+    "missionCommit": null,
+    "hashBasis": "Root-run TAP with core gameplay/auth/storage/agent and relative test import fingerprints; shared checkout is not immutable"
+  },
+  "protocol": {
+    "version": 29,
+    "changedByMission": false,
+    "agentOrderVersion": 1
+  },
+  "agentTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs tests/agent-movement.test.mjs tests/agent-movement-network.test.mjs tests/agent-movement-runner.test.mjs tests/agent-pve.test.mjs tests/agent-pve-network.test.mjs tests/agent-pve-runner.test.mjs tests/agent-authority.test.mjs tests/agent-authority-network.test.mjs tests/agent-authority-runner.test.mjs tests/agent-inference-budget.test.mjs tests/agent-mind.test.mjs tests/agent-mind-context.test.mjs tests/agent-mind-network.test.mjs",
+    "hashScope": "core gameplay/auth/storage/agent modules plus relative test import graph and package lock",
+    "headBefore": "ee435fabb1b1f73b9e1470e2a89a60c216d979d4",
+    "headAfter": "95fc29192321fd83a4db33c77536e8f56761371a",
+    "startedAt": "2026-10-08T21:45:41.948Z",
+    "finishedAt": "2026-10-08T21:46:32.431Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 212,
+    "pass": 211,
+    "fail": 0,
+    "skipped": 1,
+    "cancelled": 0,
+    "durationMs": 50388.8882,
+    "stderr": "",
+    "log": "agents-tests.tap",
+    "changedDuringSuite": [],
+    "dependencyCount": 246,
+    "dependencyHashes": "docs/delivery/l03a-agent-mind/agents-tests.json"
+  },
+  "regressionTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/server.test.mjs tests/accounts-server.test.mjs tests/account-auth.test.mjs tests/account-import.test.mjs tests/naval-pilot-authority.test.mjs tests/naval-crew-authority.test.mjs tests/pearl-input-boundary.test.mjs tests/pearl-host-mount.test.mjs tests/death-host-mount.test.mjs tests/combat-death-host.test.mjs tests/death-drop-host.test.mjs tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs tests/combat.test.mjs tests/weapons.test.mjs tests/lawless.test.mjs tests/items.test.mjs",
+    "hashScope": "core gameplay/auth/storage/agent modules plus relative test import graph and package lock",
+    "headBefore": "ee435fabb1b1f73b9e1470e2a89a60c216d979d4",
+    "headAfter": "95fc29192321fd83a4db33c77536e8f56761371a",
+    "startedAt": "2026-10-08T21:45:41.945Z",
+    "finishedAt": "2026-10-08T21:46:44.444Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 206,
+    "pass": 206,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "durationMs": 62407.6556,
+    "stderr": "",
+    "log": "regression-tests.tap",
+    "changedDuringSuite": [],
+    "dependencyCount": 243,
+    "dependencyHashes": "docs/delivery/l03a-agent-mind/regression-tests.json"
+  },
+  "newMissionTests": {
+    "tests": 48,
+    "pass": 48
+  },
+  "dependencyStability": {
+    "status": "verified",
+    "finalDrift": [],
+    "noRuntimeEditsAfterAcceptance": true,
+    "provisionalCapture": "Passing tests, excluded from acceptance because unrelated UI/render files changed during broad source capture"
+  },
+  "planIntegrity": {
+    "agreedDirectionRows": 22,
+    "agreementAndDemonstrationUnchanged": true,
+    "da3Unchanged": true,
+    "da3State": "Propuesto; por acordar",
+    "baseline": "docs/delivery/l03a-agent-mind/baseline.json"
+  },
+  "localProof": {
+    "realWebSocket": true,
+    "realChildCli": true,
+    "authenticatedResolver": "injected local fixture",
+    "models": "simulated and injected contract fixtures only",
+    "realProviderCalls": 0,
+    "realBillingVerified": false,
+    "countModes": [
+      "simulated_tokens",
+      "estimated_tokens",
+      "measured_tokens"
+    ],
+    "measuredModeNativeTokenizerVerified": false,
+    "secrets": "account token excluded from adapter projection and CLI stdout; no inference credentials configured",
+    "existingEmbeddedSqlRegressionRan": true,
+    "externalMigrationApplied": false,
+    "deployment": false,
+    "externalServiceTouched": false
+  },
+  "guarantees": [
+    "one provider query in flight including abort-ignoring adapters",
+    "timeout and cancellation invalidate decisions without stopping body",
+    "complete serialized request, instructions, schema, context, output reserve and margin admission",
+    "mechanical traceable compaction without additional inference calls or source deletion",
+    "owner-scoped call/token/cost reservation before I/O",
+    "confirmed, held and unresolved usage separated",
+    "late usage can reconcile without applying a late decision",
+    "provider reservation overrun is recorded and blocks future calls",
+    "strict structured proposals revalidated against original and current game state",
+    "owner priority, epoch/session/task/file/freshness/death fences",
+    "CLI remains responsive while inference is pending"
+  ],
+  "limits": [
+    "No selected real provider/model, tokenizer, rate or billing verification",
+    "Adapter is trusted: prepare must count exact payload and complete must enforce I/O and output bounds without hidden paid calls",
+    "Abort-ignoring adapter retains slot until settlement; a never-settling transport requires repair/stop",
+    "Process-scoped ledger without durable owner/account budget, periods or restart continuity",
+    "No autonomous decision cadence, intelligent conversation or goal mutation yet",
+    "No memory persistence/export/delete, BYOK/custody workflow or owner panel",
+    "No perception/occlusion/PvP, tactical utility, hit or physical performance claims",
+    "Windows symlink escape case skipped due to EPERM"
+  ],
+  "unrealReuse": {
+    "sourceReadOnly": true,
+    "candidates": [
+      {
+        "path": "C:/Unreal/ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/AI/Behavior/AIBehaviorTree.uasset",
+        "bytes": 111879
+      },
+      {
+        "path": "C:/Unreal/ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/AI/Behavior/AIBlackboard.uasset",
+        "bytes": 10661
+      }
+    ],
+    "decision": "Conceptual AI references, not portable Node/provider code; no export or source modification"
+  },
+  "sourceFiles": {
+    "tools/agent/mind.mjs": "1e953213874df42dd17a10b6ecf9a8e131c3c01a5465053683ebe91f09f60bcf",
+    "tools/agent/mind-context.mjs": "a598ebcc5c4713ccb2400dc3b09cc4df7d5a51fa17aa988e3a78059db0e7b4ac",
+    "tools/agent/mind-contract.mjs": "6b98c0eb3c0cd9ea0e8deda3b69aef09799c304c4a3847c38abdc65886f41c6c",
+    "tools/agent/mind-snapshot.mjs": "30c235d47562b0d7f25b8452e3b340ba2d808798517ffb6972d1983c035c80fe",
+    "tools/agent/inference-budget.mjs": "28f82e032718c33b841a710f43327802d39e81a29f0f89f1d7b7cd897eb0ee58",
+    "tools/agent/simulated-mind.mjs": "706bea616beb237414cac79c8d73cfef38c07173db45cca9712aec1fa8c11d1d",
+    "tools/agent/run.mjs": "95858c54977387ae66391e29ddec04fd56b14e073070999a0769b2787da96091",
+    "tools/qa-agent-mind.mjs": "eda59b5896a51df1b60127735179582b051fb5e9f2480140e3b8688a05118c7d",
+    "tools/qa-agent-mind-evidence.mjs": "b1cdccfa9ea650fac73a9b504168e9f0f2208480a3b7b815cdab2df4915e2904",
+    "tests/agent-mind.test.mjs": "6cd3b110f7bbdb9fb3ad68daaa240882b965add0396862d1086604275b70c44b",
+    "tests/agent-mind-context.test.mjs": "b81754931da2c0214ba921236ab27d8755e859082885f3d8383512cfb42c462f",
+    "tests/agent-mind-network.test.mjs": "8757cbf790a0046942b977b9bb2112792d7034224f8dae71ba18e6e168478dc3",
+    "tests/agent-inference-budget.test.mjs": "e3d63ff90c81b88a985224bd9a0dbf54980e85d115dad2bacd04e702df4ad6d9",
+    "docs/agents/mind-runner.md": "71ae18cd236afcf6e9839f797d601a985d3213212ca176d6a9f26d78f903f3ae",
+    "docs/briefs/l03a-agent-mind.md": "3c3329d7c55063638ce0822b31610d08eb494d362ebb3e3cc8aaf8f012e4f0e3",
+    "docs/delivery/l03a-agent-mind.md": "8bcabcecb1c01aaaf91000abe37a953924174ac529f6ed27c8cb9970b0f51240",
+    "PLAN-EXTRA-LLM.md": "674ea7d467e81e5ac8208eb1a9b6bc583a0246fa8b9c367579bc5b80c2c8ab37",
+    "PLAN-DELIVERY.md": "3ce65a5496e959a7fd9fc59c898379595457976e0ddb1b97ba92b5294f80f84d",
+    "DESIGN.md": "f9b1479e62f0010d522bb98560661ffca1f1ac500d0f55d1970c2775d5e0b0a8",
+    "docs/HANDOFF.md": "b252995c9452a430fb5f1ad7af4d7140f78bd0516c36047422f5a9571b0ecfa9"
+  },
+  "evidenceFiles": {
+    "docs/delivery/l03a-agent-mind/baseline.json": "9cc21da9af09a6838d7b8144fa01f3975c54966bb5474589b90cd9c711057d36",
+    "docs/delivery/l03a-agent-mind/agents-tests.tap": "fa31559bd446176d811b16507e28cb20d796ebff62fed9a0b8be7c9bcd1947fa",
+    "docs/delivery/l03a-agent-mind/agents-tests.json": "711e96145c49c1154ed57895b0d5c8b532718f59c2fb9a9e8c91eb4de14fa58f",
+    "docs/delivery/l03a-agent-mind/regression-tests.tap": "fc79d73f267a409d777609cf2f0db8e19f629d4fb4ed9ea139a61bdb8dfde54a",
+    "docs/delivery/l03a-agent-mind/regression-tests.json": "bbace68b71865f3a7bb4c7f9280b57275b7c01fd0691878a2b2d15a64a3cfbcc",
+    "docs/delivery/l03a-agent-mind/provisional-agents-tests.tap": "ef334157bbff8217770d70d3045ed104c4e102b33403e13e224b3815a289d505",
+    "docs/delivery/l03a-agent-mind/provisional-agents-tests.json": "9becff540303e4faa6ce9a01b2e66f17718b77c0d6bdfd020373968bb8705fd5",
+    "docs/delivery/l03a-agent-mind/provisional-regression-tests.tap": "6f773565a5ed9dffee595ae11b615301f1b2c4efc05bee94ebdf2b11932fcd22",
+    "docs/delivery/l03a-agent-mind/provisional-regression-tests.json": "f83421cd4b73ee86992bd8eb31615ab40b612b7f56028d280767b000ba7d06c5"
+  },
+  "nextSlice": "L03b: personality-aware C01 conversation; real provider/tokenizer/billing acceptance remains separate"
+}

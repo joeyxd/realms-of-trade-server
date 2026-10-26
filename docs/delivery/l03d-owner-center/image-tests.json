@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "expectedRevision": "ee886903066016dee9752d8571aea382d717e073",
+  "imageId": "sha256:208bc57038efbb8341811df48804a9266c59a417702b25b756bbce8b904856a5",
+  "counts": {
+    "tests": 22,
+    "pass": 22,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "tap": {
+    "fixtureOnly": true,
+    "output": "TAP version 13\n# Subtest: refresh projects a validated owner response and stop uses the displayed epoch\nok 1 - refresh projects a validated owner response and stop uses the displayed epoch\n  ---\n  duration_ms: 28.018525\n  type: 'test'\n  ...\n# Subtest: logout/account switch clears rows and late response cannot restore them\nok 2 - logout/account switch clears rows and late response cannot restore them\n  ---\n  duration_ms: 4.377686\n  type: 'test'\n  ...\n# Subtest: logout and relogin to the same account cannot reuse the old gameplay binding\nok 3 - logout and relogin to the same account cannot reuse the old gameplay binding\n  ---\n  duration_ms: 0.905274\n  type: 'test'\n  ...\n# Subtest: timeout is bounded and does not retry; transport close clears projection\nok 4 - timeout is bounded and does not retry; transport close clears projection\n  ---\n  duration_ms: 38.208206\n  type: 'test'\n  ...\n# Subtest: account session mismatch and loss of joined state reject requests and late results\nok 5 - account session mismatch and loss of joined state reject requests and late results\n  ---\n  duration_ms: 1.31403\n  type: 'test'\n  ...\n# Subtest: server errors use fixed safe copy and malformed projections are ignored\nok 6 - server errors use fixed safe copy and malformed projections are ignored\n  ---\n  duration_ms: 5.414263\n  type: 'test'\n  ...\n# Subtest: stale stop retains a valid safe projection then deliberately refreshes\nok 7 - stale stop retains a valid safe projection then deliberately refreshes\n  ---\n  duration_ms: 1.543125\n  type: 'test'\n  ...\n# Subtest: stale-control refresh queued before logout cannot target a later session\nok 8 - stale-control refresh queued before logout cannot target a later session\n  ---\n  duration_ms: 6.427269\n  type: 'test'\n  ...\n# Subtest: offline provisioned companion can still be stopped with nullable baseline epoch\nok 9 - offline provisioned companion can still be stopped with nullable baseline epoch\n  ---\n  duration_ms: 1.513014\n  type: 'test'\n  ...\n# Subtest: owner list is private, bounded and available as an honest empty state when controls are off\nok 10 - owner list is private, bounded and available as an honest empty state when controls are off\n  ---\n  duration_ms: 3116.218022\n  type: 'test'\n  ...\n# Subtest: two authenticated owners see only their configured characters, never grants/tasks or another account\nok 11 - two authenticated owners see only their configured characters, never grants/tasks or another account\n  ---\n  duration_ms: 2727.281258\n  type: 'test'\n  ...\n# Subtest: stop fences queued input and old epoch, stays idempotent, and refuses to stop a new session from stale UI\nok 12 - stop fences queued input and old epoch, stays idempotent, and refuses to stop a new session from stale UI\n  ---\n  duration_ms: 2498.627051\n  type: 'test'\n  ...\n# Subtest: a null baseline cannot stop a newly connected character\nok 13 - a null baseline cannot stop a newly connected character\n  ---\n  duration_ms: 2049.14209\n  type: 'test'\n  ...\n# Subtest: owner can stop a configured character that has never been admitted with its null baseline\nok 14 - owner can stop a configured character that has never been admitted with its null baseline\n  ---\n  duration_ms: 2424.800837\n  type: 'test'\n  ...\n# Subtest: signed-out and offline snapshots discard companion rows and language changes update labels\nok 15 - signed-out and offline snapshots discard companion rows and language changes update labels\n  ---\n  duration_ms: 8.909909\n  type: 'test'\n  ...\n# Subtest: stop is single-flight, keeps rows visible while pending, and never renders callback errors\nok 16 - stop is single-flight, keeps rows visible while pending, and never renders callback errors\n  ---\n  duration_ms: 3.235998\n  type: 'test'\n  ...\n# Subtest: unconfigured or inactive rows have no stop action and refresh errors use fixed copy\nok 17 - unconfigured or inactive rows have no stop action and refresh errors use fixed copy\n  ---\n  duration_ms: 1.440705\n  type: 'test'\n  ...\n# Subtest: panel visibility callback fires only on transitions and stopped is distinct from offline\nok 18 - panel visibility callback fires only on transitions and stopped is distinct from offline\n  ---\n  duration_ms: 1.037833\n  type: 'test'\n  ...\n# Subtest: ready has a truthful label, setup note persists, and known error codes use fixed localized copy\nok 19 - ready has a truthful label, setup note persists, and known error codes use fixed localized copy\n  ---\n  duration_ms: 0.977605\n  type: 'test'\n  ...\n# Subtest: modal keyboard flow traps Tab at both ends while native traversal and Escape remain available\nok 20 - modal keyboard flow traps Tab at both ends while native traversal and Escape remain available\n  ---\n  duration_ms: 1.346774\n  type: 'test'\n  ...\n# Subtest: dialog portals to the stage UI and the HUD toggle opens and closes it\nok 21 - dialog portals to the stage UI and the HUD toggle opens and closes it\n  ---\n  duration_ms: 0.538538\n  type: 'test'\n  ...\n# Subtest: refresh focus moves to close before the refresh button becomes disabled\nok 22 - refresh focus moves to close before the refresh button becomes disabled\n  ---\n  duration_ms: 0.772709\n  type: 'test'\n  ...\n1..22\n# tests 22\n# suites 0\n# pass 22\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 15751.790804\n"
+  },
+  "hashes": {
+    "runtime": {
+      "server/agentControl.mjs": "b0d19d013645a6bbc208581b08bf762cbb7a6c51baa6673f6cd5a7d448e69818",
+      "server/host.mjs": "ccfd8a3f56c828cdcfb1f13741b2904bf68dceee3e58a62f7378f41956ec417d",
+      "src/client/companions.js": "ff535423761225e1e2b16329a1fa8c5b615f31a3084cabf5b51500d28f93b981",
+      "src/ui/companions.js": "3a5540819f161db3f8a12be216d6fde49406ee7027503d005d1ddd370fbfade7",
+      "src/main.js": "0d400c70aa191a1e235ecec4b37af3b96e3603f38e7067d799c8e59823cc381e",
+      "src/client/gameClient.js": "020d1031e99515f0a8f6b6810d5f0868564d60873a550b0f7af366eeed87128c",
+      "src/net/protocol.js": "f34bbbbf12d1526850996afd62de174f090fce563a357a5ff93f698c014d5fd9"
+    },
+    "tests": {
+      "companions-client.test.mjs": "e6e635aeb617040e9e434f8e2ec51f3f65e006a086b9604ff6d340c2524fee0d",
+      "companions-network.test.mjs": "0fa900efb076d943cc07a26dad2e9e72cbef6b4c3360413a69c65329450c96e9",
+      "companions-ui.test.mjs": "928956ef845321934d15a2a6cf9083badecf3bb84ce404a1fccc93d54f429846"
+    }
+  },
+  "authorityCountBefore": 1,
+  "authorityCountAfter": 1,
+  "authoritiesAfter": [
+    "marea-negra-alpha-marea-negra-alpha-1"
+  ],
+  "runnerNetwork": "none",
+  "runnerLabels": [],
+  "exitCode": 0,
+  "recordedAt": "2026-10-10T23:04:16.351Z",
+  "sourceHashesMatch": true
+}

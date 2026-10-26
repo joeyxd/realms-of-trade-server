@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bases de personaje · Marea Negra</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/tools/character-lab/style.css">
+  <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head>
+<body>
+  <header><a class="wordmark" href="/">MAREA NEGRA<span>Personajes</span></a><span class="badge">ESTUDIO 01 / BASES</span></header>
+  <main>
+    <aside class="controls">
+      <p class="eyebrow">TU PERSONAJE EMPIEZA AQUÍ</p>
+      <h1>Una base.<br> Mil historias.</h1>
+      <p class="intro">Dos cuerpos para construir una tripulación propia. Gira la base y comprueba cómo se mueve.</p>
+      <fieldset><legend>Comparar avances</legend><div class="segmented" id="versions"><button data-version="v0" aria-pressed="false">Base v0</button><button data-version="v1" aria-pressed="false">Anatomía v1</button><button data-version="v2" aria-pressed="false">Superficie v2</button><button data-version="v3" aria-pressed="true">Detalle v3</button></div></fieldset>
+      <fieldset><legend>Cuerpo</legend><div class="segmented" id="bodies"><button data-body="male" aria-pressed="true">Masculino</button><button data-body="female" aria-pressed="false">Femenino</button></div></fieldset>
+      <fieldset id="appearance-mode"><legend>Montaje</legend><div class="segmented"><button data-customize="false" aria-pressed="true">Base</button><button data-customize="true" aria-pressed="false">Personalizar</button></div></fieldset>
+      <div id="appearance-controls" hidden>
+        <fieldset><legend>Cabello</legend><div class="option-grid" id="hair-options"></div></fieldset>
+        <fieldset><legend>Barba</legend><div class="option-grid" id="beard-options"></div></fieldset>
+        <fieldset><legend>Ojos</legend><div class="option-grid" id="eye-options"></div></fieldset>
+        <fieldset><legend>Cejas</legend><div class="option-grid" id="brow-options"></div></fieldset>
+        <fieldset><legend>Color de iris</legend><div class="option-grid" id="iris-options"></div></fieldset>
+        <div class="color-selects">
+          <label>Cabello<select data-appearance-select="hairPaletteId" aria-label="Color de cabello"></select></label>
+          <label>Barba<select data-appearance-select="beardPaletteId" aria-label="Color de barba"></select></label>
+          <label>Cejas<select data-appearance-select="browPaletteId" aria-label="Color de cejas"></select></label>
+        </div>
+        <div class="actions appearance-actions"><button id="reset-appearance">Restablecer apariencia ↺</button><button id="download-appearance" disabled>Descargar personaje GLB ↓</button></div>
+      </div>
+      <fieldset><legend>Tono de piel</legend><div class="swatches" id="palettes">
+        <button data-color="#E2B996" style="--swatch:#E2B996" aria-label="Piel clara cálida" aria-pressed="false"></button>
+        <button data-color="#C89476" style="--swatch:#C89476" aria-label="Piel cálida" aria-pressed="true"></button>
+        <button data-color="#AA7658" style="--swatch:#AA7658" aria-label="Piel cobriza" aria-pressed="false"></button>
+        <button data-color="#825139" style="--swatch:#825139" aria-label="Piel morena" aria-pressed="false"></button>
+        <button data-color="#593829" style="--swatch:#593829" aria-label="Piel oscura" aria-pressed="false"></button>
+      </div></fieldset>
+      <fieldset><legend>Movimiento</legend><div class="segmented" id="poses"><button data-pose="a" aria-pressed="true">Pose A</button><button data-pose="idle" aria-pressed="false">Reposo</button><button data-pose="run" aria-pressed="false">Carrera</button><button data-pose="joints" aria-pressed="false">Articulación</button></div></fieldset>
+      <fieldset id="surface-controls"><legend>Superficie</legend><div class="segmented" id="surfaces"><button data-surface="paint" aria-pressed="true">Material</button><button data-surface="uv" aria-pressed="false">Cuadrícula UV</button></div></fieldset>
+      <fieldset><legend>Acercamientos</legend><div class="segmented"><button data-view="hands">Mano</button><button data-view="feet">Pie</button></div></fieldset>
+      <div class="actions"><button id="concept">Ver referencia pintada <span>↗</span></button><button id="head-guide">Guía de cabezas <span>↗</span></button><a id="download" href="/docs/art/source/characters-base-v3/male-base-v3.glb" download>Descargar base GLB <span>↓</span></a></div>
+      <p class="scope">Prueba cabello, barba, ojos y cejas en «Personalizar». El acabado pintado, prendas del explorador y guardado siguen en los próximos cortes.</p>
+    </aside>
+    <section class="stage" aria-label="Vista 3D del personaje">
+      <div class="stage-top"><span id="model-label">BASE MASCULINA</span><span class="stage-version">V3 / ROSTRO Y MANOS</span></div>
+      <div id="viewport"></div>
+      <p id="status" role="status">Cargando base…</p>
+      <nav class="views" aria-label="Ángulo del personaje"><button data-view="front">Frente</button><button data-view="side">Perfil</button><button data-view="back">Espalda</button><button data-view="face">Rostro</button><button data-view="game">Juego</button></nav>
+      <p class="gesture">Arrastra para girar · rueda o pellizca para acercar</p>
+    </section>
+  </main>
+  <dialog id="reference"><div class="dialog-head"><h2 id="reference-title">Referencia de la base</h2><button id="close-reference" aria-label="Cerrar referencia">Cerrar ✕</button></div><img id="reference-image" alt="Referencia pintada del personaje, con vistas frontal, lateral, trasera y rostro"><p>Dirección artística del modelo. El acabado de esta lámina sigue siendo el objetivo del modelado.</p></dialog>
+  <script type="module" src="/tools/character-lab/main.js"></script>
+</body>
+</html>

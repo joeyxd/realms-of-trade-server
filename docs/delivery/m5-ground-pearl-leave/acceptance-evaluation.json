@@ -1,0 +1,33 @@
+{
+  "baseCommit": "e625a5c79cb8529b4f735ec4c1a40ee18a9a841b",
+  "counts": {
+    "tests": 636,
+    "pass": 625,
+    "fail": 11,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "testFiles": 73,
+  "sourcesUnchanged": true,
+  "failures": [
+    "commandDenied reaches only the player as the fixed Rewards toast without profile or UID data",
+    "invalid, async and caught reentrant input adapters fence before local writes",
+    "SQL001-013 leave writes durable ground and restores exact local projections across checkpoint",
+    "overflow rejects leave before generation/save/commit or reservation",
+    "future anchor rejects leave before generation/save/commit or reservation",
+    "rewinding after capture fences before IO dispatch",
+    "plan replacement fences local leave while retaining durable evidence",
+    "request replacement fences local leave while retaining durable evidence",
+    "Cometa cannot rush through a collider or enter deep water"
+  ],
+  "newCases": 28,
+  "newFailures": [],
+  "serialRetry": "resource-recheck.json",
+  "unresolvedFailures": [
+    "commandDenied reaches only the player as the fixed Rewards toast without profile or UID data",
+    "Cometa cannot rush through a collider or enter deep water"
+  ],
+  "assessment": "Bounded leave slice accepted; full cohort is not green. Allocation/cloning failures in three files disappeared on an unchanged-source 49/49 serial retry. Two behavioral/assertion failures independently reproduced in clean upstream remain.",
+  "upstreamEvidence": "upstream-check-manifest.json"
+}

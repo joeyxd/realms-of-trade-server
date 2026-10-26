@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: the opt-in composes one ready ground owner while defaults keep the legacy host
+ok 1 - the opt-in composes one ready ground owner while defaults keep the legacy host
+  ---
+  duration_ms: 607.7081
+  type: 'test'
+  ...
+# Subtest: opt-in fails closed for an absent clock or a resource tick outside that clock
+ok 2 - opt-in fails closed for an absent clock or a resource tick outside that clock
+  ---
+  duration_ms: 410.3309
+  type: 'test'
+  ...
+# Subtest: a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+ok 3 - a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+  ---
+  duration_ms: 274.4584
+  type: 'test'
+  ...
+# Subtest: coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+ok 4 - coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+  ---
+  duration_ms: 243.8957
+  type: 'test'
+  ...
+# Subtest: shutdown settles and drains a pending checkpoint before the final world flush
+ok 5 - shutdown settles and drains a pending checkpoint before the final world flush
+  ---
+  duration_ms: 250.4656
+  type: 'test'
+  ...
+# Subtest: the trusted opt-in rejects accessors and the separate agent-trade lane
+ok 6 - the trusted opt-in rejects accessors and the separate agent-trade lane
+  ---
+  duration_ms: 0.4062
+  type: 'test'
+  ...
+# Subtest: accounts-only ground hosts reject guest admission
+ok 7 - accounts-only ground hosts reject guest admission
+  ---
+  duration_ms: 223.9336
+  type: 'test'
+  ...
+# Subtest: replacing the installed beforeTick owner fences the world
+ok 8 - replacing the installed beforeTick owner fences the world
+  ---
+  duration_ms: 313.2196
+  type: 'test'
+  ...
+# Subtest: the common ground host keeps companion presence disabled and rejects pairing/presence composition
+ok 9 - the common ground host keeps companion presence disabled and rejects pairing/presence composition
+  ---
+  duration_ms: 233.8954
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2821.4776

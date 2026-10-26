@@ -1,0 +1,31 @@
+{
+  "schema": "gm03b2-browser/v1",
+  "production": false,
+  "simulatedAuth": true,
+  "simulatedGameplayStorage": true,
+  "version": "0.6.0-alpha.34",
+  "at": "2026-10-10T22:50:10.121Z",
+  "checks": [
+    "saved_draft_prepared_and_registered_by_exact_hash",
+    "activation_review_es_en_and_empty_world_switch",
+    "two_real_clients_load_same_visible_document_and_collision_then_join",
+    "activation_rejected_while_players_are_present",
+    "rollback_restores_previous_content_without_replacing_private_draft",
+    "old_generation_cannot_replace_rollback"
+  ],
+  "errors": [],
+  "placement": {
+    "x": 52.60984444386616,
+    "y": 10.34122963817173,
+    "z": 69.2130673202977
+  },
+  "revisionId": "cde7d84cda0e1709625351f0b01ce7c2d2c8b1b8036660404f2814a12aeae342",
+  "activation": {
+    "generation": 1,
+    "revisionId": "cde7d84cda0e1709625351f0b01ce7c2d2c8b1b8036660404f2814a12aeae342"
+  },
+  "finalContent": {
+    "generation": 2,
+    "revisionId": null
+  }
+}

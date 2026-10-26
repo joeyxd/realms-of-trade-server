@@ -1,0 +1,207 @@
+{
+  "at": "2026-10-11T05:54:20.013Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "revision": "ef59c5c3bc4eee209f3d67fb5a17784476473e70",
+  "hashes": [
+    {
+      "path": "src/data/meta.js",
+      "sha256": "6f79c3a29f7769628f7452c81098c2dd4a97bd2bf29e37c0372c1409ff1e29ea",
+      "expectedSha256": "6f79c3a29f7769628f7452c81098c2dd4a97bd2bf29e37c0372c1409ff1e29ea",
+      "matches": true
+    },
+    {
+      "path": "src/net/protocol.js",
+      "sha256": "463fc5e6157e145f111df993e043c9c6920ce48efd8e6ed5732f8d475506228d",
+      "expectedSha256": "463fc5e6157e145f111df993e043c9c6920ce48efd8e6ed5732f8d475506228d",
+      "matches": true
+    },
+    {
+      "path": "src/data/survival.js",
+      "sha256": "f8989de674fd234a47318603d32882fb73cf9030b334eace70f6b1960cbb1536",
+      "expectedSha256": "f8989de674fd234a47318603d32882fb73cf9030b334eace70f6b1960cbb1536",
+      "matches": true
+    },
+    {
+      "path": "src/data/freshwater.js",
+      "sha256": "1626c2dabee9524c1cb3069a45bcf154bb8ea63aa1d85ec74631119a654abee7",
+      "expectedSha256": "1626c2dabee9524c1cb3069a45bcf154bb8ea63aa1d85ec74631119a654abee7",
+      "matches": true
+    },
+    {
+      "path": "src/sim/systems/survival.js",
+      "sha256": "caf24fd997f4714c4e3d5384a3aeb1a6daec6ff1340076fab8dc1b3c2b45bbe3",
+      "expectedSha256": "caf24fd997f4714c4e3d5384a3aeb1a6daec6ff1340076fab8dc1b3c2b45bbe3",
+      "matches": true
+    },
+    {
+      "path": "src/sim/systems/freshwater.js",
+      "sha256": "8ea16b7e6b7d44d70608fb65e9085299759876d1c30d772e38ac42bb467c1641",
+      "expectedSha256": "8ea16b7e6b7d44d70608fb65e9085299759876d1c30d772e38ac42bb467c1641",
+      "matches": true
+    },
+    {
+      "path": "src/sim/economy/waterContainers.js",
+      "sha256": "3ded36dc64e25ddbba1b434704fd9dd3a15366f13dd99839985d7f0463a22593",
+      "expectedSha256": "3ded36dc64e25ddbba1b434704fd9dd3a15366f13dd99839985d7f0463a22593",
+      "matches": true
+    },
+    {
+      "path": "src/client/gameClient.js",
+      "sha256": "03ce816322bdcd26a6931d8802b4405418967aae5e7af64fac39f390c5dca87e",
+      "expectedSha256": "03ce816322bdcd26a6931d8802b4405418967aae5e7af64fac39f390c5dca87e",
+      "matches": true
+    },
+    {
+      "path": "src/ui/freshwaterPanel.js",
+      "sha256": "a324344a76f71b61c35466190cf9a73db1330323039d39fe33452917bd0d5070",
+      "expectedSha256": "a324344a76f71b61c35466190cf9a73db1330323039d39fe33452917bd0d5070",
+      "matches": true
+    },
+    {
+      "path": "src/ui/packInventory.js",
+      "sha256": "845229239a85ce56aac6e3baaa0cea698ea7cb1a8b8982e7a402f73b1067f4d8",
+      "expectedSha256": "845229239a85ce56aac6e3baaa0cea698ea7cb1a8b8982e7a402f73b1067f4d8",
+      "matches": true
+    },
+    {
+      "path": "src/ui/hud.js",
+      "sha256": "21977fc9e48d0efb4326311492bbc432f982de20ce05ced1eed19d54439f9793",
+      "expectedSha256": "21977fc9e48d0efb4326311492bbc432f982de20ce05ced1eed19d54439f9793",
+      "matches": true
+    },
+    {
+      "path": "src/sim/systems/stats.js",
+      "sha256": "87f3819612130885b5b38a2764e7442ced9f9c0ad65d08e6d46e5f97446ef5ef",
+      "expectedSha256": "87f3819612130885b5b38a2764e7442ced9f9c0ad65d08e6d46e5f97446ef5ef",
+      "matches": true
+    },
+    {
+      "path": "src/sim/systems/combat.js",
+      "sha256": "536a75ca229dc2ca2ac39633ca1a93ef48a889c02c8ceeb388ff169d765bd6ba",
+      "expectedSha256": "536a75ca229dc2ca2ac39633ca1a93ef48a889c02c8ceeb388ff169d765bd6ba",
+      "matches": true
+    },
+    {
+      "path": "src/sim/systems/inventory.js",
+      "sha256": "0241b81bb39e0ff217ad2778362866a82759904a3085fc1a9a2f3801b7de3828",
+      "expectedSha256": "0241b81bb39e0ff217ad2778362866a82759904a3085fc1a9a2f3801b7de3828",
+      "matches": true
+    },
+    {
+      "path": "src/sim/world.js",
+      "sha256": "60c78941339766ff4aac349ad953d3239e2f2089fe98dff65a462d2902767324",
+      "expectedSha256": "60c78941339766ff4aac349ad953d3239e2f2089fe98dff65a462d2902767324",
+      "matches": true
+    },
+    {
+      "path": "src/sim/ecs.js",
+      "sha256": "9b25e9997c5f457596cdab0304289cdd5a8a5ae7278c7c42e9cef60863ad5a85",
+      "expectedSha256": "9b25e9997c5f457596cdab0304289cdd5a8a5ae7278c7c42e9cef60863ad5a85",
+      "matches": true
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "5df3bd56f2e2f1644fc9e613c4f1367378ccb8355d1e9e30965901d0cc22ad3d",
+      "expectedSha256": "5df3bd56f2e2f1644fc9e613c4f1367378ccb8355d1e9e30965901d0cc22ad3d",
+      "matches": true
+    },
+    {
+      "path": "styles/freshwater.css",
+      "sha256": "dbdbc9077dbcb9472daecb296d4692690f3c64a1559787883072d1791b1f9da0",
+      "expectedSha256": "dbdbc9077dbcb9472daecb296d4692690f3c64a1559787883072d1791b1f9da0",
+      "matches": true
+    },
+    {
+      "path": "styles/hud.css",
+      "sha256": "111f311927398ab8dc698e3a45c6ae871a2eba5d139b495fb8180ea8f0187ed5",
+      "expectedSha256": "111f311927398ab8dc698e3a45c6ae871a2eba5d139b495fb8180ea8f0187ed5",
+      "matches": true
+    }
+  ],
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.47",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 4605,
+    "uptime": 93,
+    "stepMs": 1.374,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 6,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 5,
+        "replays": 1
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2301,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 103,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 4503.6,
+      "kbIn": 3.3,
+      "dropped": 0
+    }
+  },
+  "pass": true
+}

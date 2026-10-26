@@ -1,0 +1,23 @@
+﻿✔ a real input-driven raft crosses the optional circuit and docks without hull relocation fixtures (978.3845ms)
+✔ route target replaces only active outbound sailing guidance (2.2813ms)
+✔ route status reports the actual bounded run counters and outcome (0.6196ms)
+✔ route action sends only the scoped start or abort command (0.3292ms)
+✔ returning route makes the normal Amarrar command primary over Caminar (0.8841ms)
+✔ new or cleared route sessions reset shot presentation IDs without phantom impacts (1.0192ms)
+✔ route start is opt-in for the live owner helm and fences epochs and forged fields at LocalServer (364.1065ms)
+✔ start eligibility matches the four-run authority cap and abort records its committed tick (350.7293ms)
+✔ a permitted deck guest can observe route guidance but cannot abort the owner’s route (343.6932ms)
+✔ only the ordered three server buoys and a returning dock complete the circuit (294.1915ms)
+✔ early dock, explicit abort, and shore each terminate an active route with the matching outcome (733.6555ms)
+✔ corsair publishes 120 tick warnings at a fixed mark, then a rotated hull can be hit and evade by moving (1025.3707ms)
+✔ route damage is fixed at 6 HP, capped at 24 and 50 percent per part, and conserves cargo/economy/blueprint (770.4018ms)
+✔ client snapshots cannot edit HP, a blocked fixed tick preserves warning and damage state, and non-live contexts cannot start (653.9965ms)
+✔ a failed later route candidate does not commit earlier route plans or consume the fixed tick (287.0068ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5564.0593

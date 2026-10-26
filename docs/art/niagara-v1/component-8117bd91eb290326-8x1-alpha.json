@@ -1,0 +1,150 @@
+{
+  "schema": "marea.niagara-web-derivative",
+  "version": 1,
+  "id": "niagara-7970b1ee9b5555d3",
+  "atlasId": "component-8117bd91eb290326-8x1-alpha",
+  "sourceSha256": "7970b1ee9b5555d324f690f61c2819fae7de0f01e0a54b840ab8f56d8a315f0f",
+  "sourceFrames": [
+    "aef2e51ef76f315cd431a9675f1a79975b135f9c2220a7305174720c5869485b",
+    "70cedc66d8aa70c831ca073e959d6ad4359974b10892351852b9c5e2b9b34028",
+    "5313c31a376a2168bee3d144329904f4cd9f015a703533eb3f0105fdbd3d5040",
+    "5f369c4d72908fa06b315d129aea97fbba465f50c5ec53c05a084d756794a260",
+    "c7e07ea63577f44a2b8db548134dec92f6e8f9bc9c3406dfd8a2e067607fe2f9",
+    "98885844067711661108a5f336bfd5dc4256ba30aa53f4735499927422c2885e",
+    "f85cff9ca6712682c0b3d3fbf24f71cd1e84aaceef71a28366582586a8ecf3be",
+    "0941f42e123490ee62a38e1697a32cbb2dbb886d4cdffb223ab2faf89a4779c3"
+  ],
+  "files": {
+    "desktop": {
+      "url": "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-desktop.webp",
+      "bytes": 33480,
+      "sha256": "8c6a783f3570c44e4134329a8fb7ba16657e7821e8f83f0f9650c7f9dc211717",
+      "width": 1024,
+      "height": 512
+    },
+    "mobile": {
+      "url": "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-mobile.webp",
+      "bytes": 11898,
+      "sha256": "69a55f1777dcf951c7d07ef52033c96f49da2a7e30c89fb5c42e08ac3832085b",
+      "width": 512,
+      "height": 256
+    }
+  },
+  "derivative": {
+    "adapter": "flipbook-v1",
+    "role": "source-texture",
+    "atlas": {
+      "desktop": "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-desktop.webp",
+      "mobile": "/assets/vfx/niagara/component-8117bd91eb290326-8x1-alpha-mobile.webp"
+    },
+    "columns": 4,
+    "rows": 2,
+    "frames": 8,
+    "duration": 2,
+    "width": 3,
+    "height": 6,
+    "blend": "alpha",
+    "atlasId": "component-8117bd91eb290326-8x1-alpha",
+    "component": {
+      "textureSha256": "8117bd91eb290326d1c8dcfb4bb2d219e053ab23ac920304464f38db91e59cf4",
+      "columns": 8,
+      "rows": 1,
+      "mapping": "original-alpha-to-white",
+      "name": "T_Vfx_Stamp_Lightbeam_81"
+    },
+    "sourceBinding": {
+      "systemSha256": "7970b1ee9b5555d324f690f61c2819fae7de0f01e0a54b840ab8f56d8a315f0f",
+      "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Holy.NS_Spline_Holy:Detail001_3.NiagaraSpriteRendererProperties_0",
+      "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_ParticleSubUVAdd_stamp_lightbeam_81",
+      "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Lightbeam_81"
+    }
+  },
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-110287b7f03f7498",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_Lightbeam_81.uasset",
+      "sha256": "8117bd91eb290326d1c8dcfb4bb2d219e053ab23ac920304464f38db91e59cf4",
+      "bytes": 26040
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_Stamp_Lightbeam_81.png",
+      "sha256": "72c7b9f73de3abd6cbea127bf4b15ff7e52f1600e636c8b410a720ddb6ed8d0b",
+      "bytes": 19197,
+      "format": "PNG",
+      "width": 512,
+      "height": 128,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 8,
+      "rows": 1,
+      "cells": 8,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "original-alpha-to-white",
+    "mappingFormula": "RGB=white; A=native source alpha without remapping",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-7970b1ee9b5555d3",
+        "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_Holy",
+        "sourceBinding": {
+          "systemSha256": "7970b1ee9b5555d324f690f61c2819fae7de0f01e0a54b840ab8f56d8a315f0f",
+          "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Holy.NS_Spline_Holy:Detail001_3.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_ParticleSubUVAdd_stamp_lightbeam_81",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_Stamp_Lightbeam_81"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_Holy.NS_Spline_Holy:",
+          "matched": true
+        },
+        "parameterName": "baseTex"
+      }
+    ]
+  },
+  "packing": {
+    "desktopTile": 256,
+    "mobileTile": 128,
+    "gutter": 2,
+    "oneAtlasVariantLoaded": true
+  },
+  "limitations": [
+    "Original SubUV texture only; the complete Niagara system is pending.",
+    "Playback duration is an editor default, not verified Niagara emitter timing.",
+    "Presentation controls do not modify Niagara emitter particle counts."
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "family": "dock-wood-v1",
+  "policy": "Exact props.js copied before S13; exact final after sources. --check verifies historical files only.",
+  "files": [
+    {
+      "phase": "before",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/dock-wood-v1/before/props.source.js",
+      "bytes": 33913,
+      "sha256": "4f47d66ce40536d456dad85b75650a5c506e9cdd20d32bdaac38af404fcf5592"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/dockWood.js",
+      "snapshot": "docs/art/source/dock-wood-v1/final/after/dockWood.js",
+      "bytes": 2398,
+      "sha256": "fe7f1749c429a2ce487b0a61ee0b7c6c6ccdd81953b9c97c7325953e603d4cac"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/dock-wood-v1/final/after/props.js",
+      "bytes": 34492,
+      "sha256": "df043adbac620deb806cff791a0f7ad7e3fd540cc915ebc04af4da118eaf3567"
+    },
+    {
+      "phase": "after",
+      "source": "tools/qa-dock-wood.playwright.js",
+      "snapshot": "docs/art/source/dock-wood-v1/final/after/qa-dock-wood.playwright.js",
+      "bytes": 6739,
+      "sha256": "679b2a82b32e4c82bfd365f1b88920db44b348f6b8e2ac77da40cb1187fec94c"
+    },
+    {
+      "phase": "after",
+      "source": "tests/dock-wood.test.mjs",
+      "snapshot": "docs/art/source/dock-wood-v1/final/after/dock-wood.test.mjs",
+      "bytes": 8698,
+      "sha256": "a8393f1620e18d0825a7b4da020091efb8d6f3748aa66d90d02ee4c9d7450c74"
+    },
+    {
+      "phase": "after",
+      "source": "tools/prepare-dock-wood-sources.mjs",
+      "snapshot": "docs/art/source/dock-wood-v1/final/after/prepare-dock-wood-sources.mjs",
+      "bytes": 2840,
+      "sha256": "0b835c7c4ecb7e680efbb3ae4451050c94e11c94ca219ba4122436f639b24fb8"
+    },
+    {
+      "phase": "after",
+      "source": "tools/register-dock-wood-catalog.mjs",
+      "snapshot": "docs/art/source/dock-wood-v1/final/after/register-dock-wood-catalog.mjs",
+      "bytes": 15585,
+      "sha256": "adc4986c9c7ae05c2dfb9438a519f58fd3a243bd045412dba195c911c4f29e12"
+    },
+    {
+      "phase": "after",
+      "source": "tools/verify-dock-wood-catalog.mjs",
+      "snapshot": "docs/art/source/dock-wood-v1/final/after/verify-dock-wood-catalog.mjs",
+      "bytes": 4134,
+      "sha256": "7e06afdfda0822ad2bf2c190c022def3ce01d85ac82d4294a98150e1f2f198ab"
+    }
+  ]
+}

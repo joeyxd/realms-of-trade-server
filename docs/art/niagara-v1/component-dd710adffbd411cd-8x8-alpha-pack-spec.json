@@ -1,0 +1,288 @@
+{
+  "id": "niagara-9781d6141b4a6cc6",
+  "atlasId": "component-dd710adffbd411cd-8x8-alpha",
+  "role": "source-texture",
+  "sourcePath": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\NS\\NS_Spline_Fire.uasset",
+  "sourceSha256": "9781d6141b4a6cc65c3e020283d71fa056982d93d8a55d6dd6fdca7c90a4255c",
+  "component": {
+    "textureSha256": "dd710adffbd411cd04757b30db840fbd9e4db02cb5e9d40e649c4457d825bb4c",
+    "columns": 8,
+    "rows": 8,
+    "mapping": "original-alpha-to-white",
+    "name": "T_Vfx_stamp_fog3_88"
+  },
+  "sourceBinding": {
+    "systemSha256": "9781d6141b4a6cc65c3e020283d71fa056982d93d8a55d6dd6fdca7c90a4255c",
+    "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Fire.NS_Spline_Fire:Smoke_3.NiagaraSpriteRendererProperties_0",
+    "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+    "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88"
+  },
+  "frames": [
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_000_source_0000.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_001_source_0001.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_002_source_0002.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_003_source_0003.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_004_source_0004.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_005_source_0005.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_006_source_0006.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_007_source_0007.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_008_source_0008.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_009_source_0009.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_010_source_0010.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_011_source_0011.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_012_source_0012.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_013_source_0013.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_014_source_0014.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_015_source_0015.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_016_source_0016.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_017_source_0017.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_018_source_0018.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_019_source_0019.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_020_source_0020.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_021_source_0021.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_022_source_0022.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_023_source_0023.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_024_source_0024.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_025_source_0025.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_026_source_0026.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_027_source_0027.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_028_source_0028.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_029_source_0029.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_030_source_0030.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_031_source_0031.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_032_source_0032.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_033_source_0033.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_034_source_0034.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_035_source_0035.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_036_source_0036.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_037_source_0037.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_038_source_0038.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_039_source_0039.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_040_source_0040.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_041_source_0041.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_042_source_0042.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_043_source_0043.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_044_source_0044.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_045_source_0045.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_046_source_0046.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_047_source_0047.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_048_source_0048.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_049_source_0049.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_050_source_0050.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_051_source_0051.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_052_source_0052.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_053_source_0053.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_054_source_0054.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_055_source_0055.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_056_source_0056.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_057_source_0057.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_058_source_0058.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_059_source_0059.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_060_source_0060.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_061_source_0061.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_062_source_0062.png",
+    "C:\\DEV\\real of trade\\st01b-niagara\\.scratch\\st01b-candidateframes-v2\\source-component-recipe-e4b40c9ac3eef002\\frame_063_source_0063.png"
+  ],
+  "duration": 2,
+  "worldWidth": 6,
+  "worldHeight": 6,
+  "desktopTile": 256,
+  "blend": "alpha",
+  "review": {
+    "accepted": true,
+    "reviewer": "root",
+    "date": "2026-10-12",
+    "scope": "Reviewed source SubUV component only. Full system colors, materials, layers, movement and timing remain pending.",
+    "evidence": "docs/research/unreal-assets/st01b/source-component-candidate-contact-sheet.png",
+    "basis": "Source grid, complete ordered cells, transparency and contact sheet reviewed. Cell filter clamps taps within exact UV bounds."
+  },
+  "camera": {
+    "mode": "source texture cells; no camera capture"
+  },
+  "provenance": {
+    "recipeId": "recipe-e4b40c9ac3eef002",
+    "texture": {
+      "path": "C:\\Unreal\\MyProject\\Content\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_stamp_fog3_88.uasset",
+      "sha256": "dd710adffbd411cd04757b30db840fbd9e4db02cb5e9d40e649c4457d825bb4c",
+      "bytes": 309507
+    },
+    "imageExport": {
+      "path": "C:\\DEV\\real of trade\\gm-editor-first\\.scratch\\st01b-census\\grid-texture-export\\_SplineVFX\\_GenericSource\\Texture\\T_Vfx_stamp_fog3_88.png",
+      "sha256": "e6ec9793c571bce5e2473fbc644880d5446d0c97643c95575211ac8248f9e091",
+      "bytes": 287619,
+      "format": "PNG",
+      "width": 1024,
+      "height": 1024,
+      "nativeAlpha": true,
+      "sourceMode": "RGBA",
+      "colorMetadata": {},
+      "pixelMethod": "Pillow PNG RGBA8; PNG sRGB-encoded RGB and linear alpha values preserved"
+    },
+    "grid": {
+      "columns": 8,
+      "rows": 8,
+      "cells": 64,
+      "evidence": "UE 5.8 NiagaraSpriteRendererProperties.SubImageSize; exact system-owned renderer subobject; joined MaterialInstanceConstant TextureParameterValues"
+    },
+    "sourceIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "resample": {
+      "method": "separable Catmull-Rom bicubic (a=-0.5)",
+      "bounds": "exact fractional source-pixel intervals; bicubic taps clamp to native pixel centers inside each cell",
+      "coordinates": "pixel centers: L+(outputIndex+0.5)*cellSize/outputSize-0.5",
+      "outputSize": [
+        256,
+        256
+      ]
+    },
+    "mapping": "original-alpha-to-white",
+    "mappingFormula": "RGB=white; A=native source alpha without remapping",
+    "timing": "2-second editorial component preview, not Niagara timing",
+    "systemBindings": [
+      {
+        "effectId": "niagara-9781d6141b4a6cc6",
+        "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_Fire",
+        "sourceBinding": {
+          "systemSha256": "9781d6141b4a6cc65c3e020283d71fa056982d93d8a55d6dd6fdca7c90a4255c",
+          "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Fire.NS_Spline_Fire:Smoke_3.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_Fire.NS_Spline_Fire:",
+          "matched": true
+        },
+        "parameterName": "baseTex"
+      },
+      {
+        "effectId": "niagara-50d49867d962ab57",
+        "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_Frost",
+        "sourceBinding": {
+          "systemSha256": "50d49867d962ab57981fff52aca666d185371746f34b64b6ccbd09c4c582867e",
+          "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Frost.NS_Spline_Frost:Steam_11.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_Frost.NS_Spline_Frost:",
+          "matched": true
+        },
+        "parameterName": "baseTex"
+      },
+      {
+        "effectId": "niagara-1973010a33db29b3",
+        "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_Magic",
+        "sourceBinding": {
+          "systemSha256": "1973010a33db29b3fdf4422a7ad645b740fccb7825ebe7faabb7b40e17c7bac6",
+          "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_Magic.NS_Spline_Magic:Smoke_3.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_Magic.NS_Spline_Magic:",
+          "matched": true
+        },
+        "parameterName": "baseTex"
+      },
+      {
+        "effectId": "niagara-453738c67c74eb2e",
+        "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_MiasmaBoil",
+        "sourceBinding": {
+          "systemSha256": "453738c67c74eb2e2f1a1bc6ca00fb709a44110aba79106abf74b03a775a7d3c",
+          "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_MiasmaBoil.NS_Spline_MiasmaBoil:Steam_11.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_MiasmaBoil.NS_Spline_MiasmaBoil:",
+          "matched": true
+        },
+        "parameterName": "baseTex"
+      },
+      {
+        "effectId": "niagara-104efce88caa3644",
+        "systemPackage": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash",
+        "sourceBinding": {
+          "systemSha256": "104efce88caa364413cf5592f284bbbe51c497751f21d6c304bb181bab46b287",
+          "rendererPath": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:Steam_11.NiagaraSpriteRendererProperties_0",
+          "materialPackage": "/Game/_SplineVFX/_GenericSource/Material/MI/MI_Vfx_ParticleSubUV_fog03_88_fade",
+          "texturePackage": "/Game/_SplineVFX/_GenericSource/Texture/T_Vfx_stamp_fog3_88"
+        },
+        "rendererOwnerEvidence": {
+          "method": "rendererPath starts with systemPackage + \".\" + basename(systemPackage) + \":\"",
+          "exactPrefix": "/Game/_SplineVFX/NS/NS_Spline_WaterSplash.NS_Spline_WaterSplash:",
+          "matched": true
+        },
+        "parameterName": "baseTex"
+      }
+    ]
+  }
+}

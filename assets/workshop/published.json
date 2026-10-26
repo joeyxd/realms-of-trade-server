@@ -1,0 +1,58 @@
+{
+  "schema": "marea.asset-published.v1",
+  "revision": 1,
+  "entries": [
+    {
+      "id": "aw-pilot-01",
+      "sourceRevision": "cd847a9249b35f6321262b37cd4da4e73a77b3112cecb7561942217555060689",
+      "editorId": "model:aw-pilot-01",
+      "decision": "Usar",
+      "publishedAt": "2026-10-20",
+      "fit": "size",
+      "size": 0.9,
+      "label": { "es": "Caldero nuevo", "en": "New cauldron" },
+      "category": "utensilio",
+      "status": "ready",
+      "note": "Geometría derivada sin texturas; tamaño decidido por Joi, pendiente de verificar en pantalla."
+    },
+    {
+      "id": "aw-pilot-05",
+      "sourceRevision": "47fae71524ea6a181b1b3c10724069329f0b44b82925d743b2c68c23e26c0627",
+      "editorId": "model:aw-pilot-05",
+      "decision": "Usar",
+      "publishedAt": "2026-10-20",
+      "fit": "height",
+      "height": 7,
+      "label": { "es": "Palma Kobo", "en": "Kobo palm" },
+      "category": "vegetacion",
+      "status": "ready",
+      "note": "Altura decidida por Joi, pendiente de verificar en pantalla."
+    },
+    {
+      "id": "aw-pilot-06",
+      "sourceRevision": "a2ff76e9bb6cd50f45f2649cac902f0363777922864fed7de2b331271c0922dd",
+      "editorId": "model:aw-pilot-06",
+      "decision": "Usar",
+      "publishedAt": "2026-10-20",
+      "fit": "height",
+      "height": 2.2,
+      "label": { "es": "Puerta", "en": "Door" },
+      "category": "construccion",
+      "status": "ready",
+      "note": "Altura decidida por Joi, pendiente de verificar en pantalla."
+    },
+    {
+      "id": "aw-pilot-07",
+      "sourceRevision": "bb085dcd518e6335d7f69d9c63531e355ee74d128f65a4bc0808fb3fc2b94782",
+      "editorId": "model:aw-pilot-07",
+      "decision": "Usar",
+      "publishedAt": "2026-10-20",
+      "fit": "size",
+      "size": 6,
+      "label": { "es": "Barco de referencia", "en": "Reference boat" },
+      "category": "embarcacion",
+      "status": "ready",
+      "note": "Tamaño decidido por Joi, pendiente de verificar en pantalla."
+    }
+  ]
+}

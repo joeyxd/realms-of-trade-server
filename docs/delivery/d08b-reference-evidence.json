@@ -1,0 +1,129 @@
+{
+  "date": "2026-10-06",
+  "sourceCommit": "32a866ea6bf711b0dd05cd54c0c7376ceba1fe53",
+  "scope": "isolated naval lab B1: chase camera, cold ocean/sky and rocky horizon",
+  "url": "http://127.0.0.1:5180/",
+  "tests": {
+    "node": "v24.14.0",
+    "files": 10,
+    "total": 60,
+    "pass": 60,
+    "fail": 0,
+    "exitCode": 0,
+    "testedSourcePathsVerifiedUnchangedAfterCommit": true,
+    "tap": ".scratch/naval-reference-tests-32a866e.tap",
+    "summary": ".scratch/naval-reference-tests-32a866e.json",
+    "globalSuiteRepeated": false
+  },
+  "scenery": {
+    "meshes": 1,
+    "formations": 9,
+    "vertices": 2835,
+    "triangles": 945,
+    "newTextures": 0
+  },
+  "browserReview": {
+    "surface": "Chrome",
+    "viewports": [
+      [
+        1280,
+        800
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ]
+    ],
+    "fixtures": [
+      "empty",
+      "house"
+    ],
+    "checked": [
+      "hull and sail framing",
+      "skyline and water palette",
+      "HUD separation",
+      "mobile atlas URL",
+      "no horizontal overflow",
+      "zero console errors"
+    ],
+    "finalCommitScreenshotsPersisted": false,
+    "finalCommitVisualAcceptance": "pending",
+    "reason": "Chrome disconnected during final capture; tab recovery failed and browser list was empty",
+    "lastTemporaryViewport": [
+      844,
+      390
+    ],
+    "viewportResetConfirmed": false,
+    "unreviewedFinalDeltas": [
+      "header line height",
+      "spray projected size tracks actual FOV"
+    ],
+    "recordScope": "historical B1 session; see continuation for current observations"
+  },
+  "humanAcceptance": {
+    "priorHandlingAndWeight": "confirmed by author",
+    "newLook": "pending",
+    "physicalMobilePerformance": "pending"
+  },
+  "next": "B4 real navigation HUD; physical phone and human visual acceptance pending",
+  "continuation": {
+    "date": "2026-10-06",
+    "sourceCommit": "f6da8dc8b0d044c0cd85beb938c3bf8239ba5a60",
+    "evidence": "docs/delivery/d08b3-foam-current-ink-evidence.json",
+    "currentCompositionScreenshotsPersisted": true,
+    "captureScope": "B1 composition with B2 material and B3 effects",
+    "checkedFinalDeltas": [
+      "header line height",
+      "spray projected size at actual FOV"
+    ],
+    "viewportResetConfirmed": true,
+    "deliverableTabMarked": true,
+    "fixtureCorrection": {
+      "fixture": "house",
+      "wallsFromLevel": 0,
+      "wallsToLevel": 1,
+      "acceptedParts": 29,
+      "mass": 143,
+      "inertia": 951.2634032634035,
+      "beforeHeight": 0.3342657342657343,
+      "afterHeight": 0.44335664335664343,
+      "beforeStability": 0.9398162779111849,
+      "afterStability": 0.9227866433451634,
+      "formulasChanged": false,
+      "mainGameBlueprintsChanged": false,
+      "screenshots": [
+        {
+          "path": "shots/naval-reference-20261006/b2-desktop-house-corrected.jpg",
+          "format": "jpeg",
+          "width": 1280,
+          "height": 800,
+          "bytes": 114218,
+          "sha256": "f91c05f7d16d2775c06dc0d4dd5f4651a12d9588fb60ae870328d2ee78216314",
+          "inspected": true
+        },
+        {
+          "path": "shots/naval-reference-20261006/b2-mobile-portrait-house-corrected.jpg",
+          "format": "jpeg",
+          "width": 390,
+          "height": 844,
+          "bytes": 49758,
+          "sha256": "c8cea81ac85725284bda1baec1cf9133c602b5a33cb22acba6741d936c4fe030",
+          "inspected": true
+        },
+        {
+          "path": "shots/naval-reference-20261006/b2-mobile-landscape-house-corrected.jpg",
+          "format": "jpeg",
+          "width": 844,
+          "height": 390,
+          "bytes": 54281,
+          "sha256": "36a3766367d57ac7db40a8f02738a6bbb028277700734a476965d1a4d70b9344",
+          "inspected": true
+        }
+      ]
+    }
+  }
+}

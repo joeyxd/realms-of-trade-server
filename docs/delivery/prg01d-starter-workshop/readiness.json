@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-10T23:06:47.689Z",
+  "scope": "Live read-only RPC readiness; no migrations or activation",
+  "checks": [
+    { "function": "mn_ground_world_adoption_ready", "ready": false, "code": "PGRST202" },
+    { "function": "mn_starter_workshop_ready", "ready": false, "code": "PGRST202" }
+  ]
+}

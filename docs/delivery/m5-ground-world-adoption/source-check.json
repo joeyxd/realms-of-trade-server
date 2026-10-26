@@ -1,0 +1,25 @@
+{
+  "coreBase": "c9d3bbfeb3c32408cc7af7f850d87209d78d4971",
+  "finalIntegrationBase": "fe50ab19831a4e885474663aa1c4857a696210ff",
+  "coreCounts": {
+    "tests": 213,
+    "pass": 213,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "finalCounts": {
+    "tests": 22,
+    "pass": 22,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "backendSimNetDeployUnchanged": true,
+  "selected31TestsUnchanged": true,
+  "packageDependenciesAndScriptsUnchanged": true,
+  "finalSourceHashesMatch": true,
+  "scope": "The final 22 cases repeat the adoption subset of the 213 core cases; not additive unique coverage."
+}

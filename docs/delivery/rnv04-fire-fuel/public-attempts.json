@@ -1,0 +1,126 @@
+{
+  "schema": "mn.fire.public.attempts.v1",
+  "note": "Earlier failed attempts retained honestly. No attempt is reclassified as a fully accepted run. Screenshots remain local.",
+  "records": [
+    {
+      "at": "2026-10-10T22:26:33.622Z",
+      "completedAt": "2026-10-10T22:27:56.345Z",
+      "sourceRun": "public-c7c6daa4-b1ef-4dd1-9fa8-3018e14c1fda.json",
+      "pass": false,
+      "passedChecks": [
+        "public_health_and_release"
+      ],
+      "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.account-open')\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"account-open\" aria-haspopup=\"dialog\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <button id=\"btn-go-solo\" class=\"btn secondary interactive\">Jugar solo</button> from <div class=\"net-lost\" role=\"alertdialog\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    6 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <button id=\"btn-go-solo\" class=\"btn secondary interactive\">Jugar solo</button> from <div class=\"net-lost\" role=\"alertdialog\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 500ms\u001b[22m\n",
+      "cleanup": {
+        "temporaryAuthAndProfileRemoved": true,
+        "retainedReceiptCount": 0,
+        "receiptPolicy": "operation receipts intentionally retained"
+      }
+    },
+    {
+      "at": "2026-10-10T22:28:52.585Z",
+      "completedAt": "2026-10-10T22:31:57.092Z",
+      "sourceRun": "public-fdcb5775-99eb-4232-aeb8-1c17314870f1.json",
+      "pass": false,
+      "passedChecks": [
+        "public_health_and_release",
+        "rendered_public_minimap",
+        "normal_login_and_wss_admission",
+        "paid_hand_torch",
+        "extinguish_and_relight_reuse_paid_fuel",
+        "paid_fuel_and_exact_wood_after_reload"
+      ],
+      "failure": "bounded wait expired: hand torch relight after reload",
+      "diagnostic": {
+        "closes": [],
+        "netLost": false,
+        "transport": "ws",
+        "closed": false,
+        "mode": "playing",
+        "errors": {}
+      },
+      "cleanup": {
+        "temporaryAuthAndProfileRemoved": true,
+        "retainedReceiptCount": 3,
+        "receiptPolicy": "operation receipts intentionally retained"
+      }
+    },
+    {
+      "at": "2026-10-10T22:33:10.063Z",
+      "completedAt": "2026-10-10T22:37:13.356Z",
+      "sourceRun": "public-5c0fd775-2e9b-4f88-87ad-92b55eabd85a.json",
+      "pass": false,
+      "passedChecks": [
+        "public_health_and_release"
+      ],
+      "failure": "page.goto: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://marea.62.171.136.148.sslip.io/?q=low\", waiting until \"domcontentloaded\"\u001b[22m\n",
+      "diagnostic": {
+        "unavailable": true
+      },
+      "cleanup": {
+        "temporaryAuthAndProfileRemoved": true,
+        "retainedReceiptCount": 0,
+        "receiptPolicy": "operation receipts intentionally retained"
+      }
+    },
+    {
+      "at": "2026-10-10T22:37:57.257Z",
+      "completedAt": "2026-10-10T22:39:18.105Z",
+      "sourceRun": "public-6fe917f8-e290-4b12-905a-ed53234c714f.json",
+      "pass": false,
+      "passedChecks": [
+        "public_health_and_release",
+        "rendered_public_minimap",
+        "normal_login_and_wss_admission",
+        "paid_hand_torch",
+        "extinguish_and_relight_reuse_paid_fuel"
+      ],
+      "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.account-submit')\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"submit\" data-action=\"login\" class=\"account-submit\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    54 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+      "diagnostic": {
+        "closes": [],
+        "netLost": false,
+        "transport": "ws",
+        "closed": false,
+        "mode": "title",
+        "errors": {}
+      },
+      "cleanup": {
+        "temporaryAuthAndProfileRemoved": true,
+        "retainedReceiptCount": 3,
+        "receiptPolicy": "operation receipts intentionally retained"
+      }
+    },
+    {
+      "at": "2026-10-10T22:41:58.207Z",
+      "completedAt": "2026-10-10T22:42:40.907Z",
+      "sourceRun": "public-31de55bc-3a1e-4279-a1de-256c9ea3b5e9.json",
+      "pass": false,
+      "passedChecks": [
+        "public_health_and_release",
+        "rendered_public_minimap",
+        "normal_login_and_wss_admission",
+        "paid_hand_torch",
+        "extinguish_and_relight_reuse_paid_fuel",
+        "paid_fuel_and_exact_wood_after_reload",
+        "reload_relight_reuses_saved_fuel",
+        "public_mapview_visible"
+      ],
+      "failure": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   {\n+     source: 'https://marea.62.171.136.148.sslip.io/favicon.ico',\n+     text: 'Failed to load resource: the server responded with a status of 404 ()'\n+   },\n+   {\n+     source: 'https://marea.62.171.136.148.sslip.io/favicon.ico',\n+     text: 'Failed to load resource: the server responded with a status of 404 ()'\n+   },\n+   {\n+     source: 'https://marea.62.171.136.148.sslip.io/favicon.ico',\n+     text: 'Failed to load resource: the server responded with a status of 404 ()'\n+   }\n+ ]\n- []\n",
+      "diagnostic": {
+        "closes": [],
+        "netLost": false,
+        "transport": "ws",
+        "closed": false,
+        "mode": "playing",
+        "errors": [],
+        "readyState": "complete",
+        "loadingText": ""
+      },
+      "cleanup": {
+        "temporaryAuthAndProfileRemoved": true,
+        "retainedReceiptCount": 4,
+        "receiptPolicy": "operation receipts intentionally retained"
+      }
+    }
+  ]
+}

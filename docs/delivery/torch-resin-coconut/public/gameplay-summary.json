@@ -1,0 +1,413 @@
+{
+  "at": "2026-10-12T17:49:38.975Z",
+  "sources": [
+    "browser-2026-10-12T17-34-01-354Z/acceptance.json",
+    "browser-2026-10-12T17-48-18-478Z/acceptance.json"
+  ],
+  "pass": true,
+  "gameplayViewportCount": 4,
+  "views": [
+    {
+      "name": "desktop-es",
+      "gameplayAndReentryVerified": true,
+      "strictHarnessStatus": "passed",
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 575.40625,
+          "actionTop": 584.75,
+          "detailBottom": 660.71875,
+          "detailRight": 822.5625,
+          "mainRight": 841.84375,
+          "scrollHeight": 486,
+          "clientHeight": 486,
+          "viewportWidth": 1280,
+          "documentWidth": 1280,
+          "button": {
+            "x": 411.078125,
+            "y": 587.421875,
+            "right": 781.9375,
+            "bottom": 638.28125,
+            "width": 370.859375,
+            "height": 50.859375,
+            "disabled": false
+          }
+        },
+        "torch": {
+          "cost": {
+            "tronco": 2,
+            "resina": 1
+          },
+          "goodsAfter": {
+            "coco": 1,
+            "piedra": 2,
+            "tronco": 1
+          },
+          "fireRules": 2,
+          "durableReceipt": true,
+          "panelBounds": {
+            "x": 445,
+            "y": 140.1171875,
+            "right": 835,
+            "bottom": 579.8828125,
+            "width": 390,
+            "height": 439.765625,
+            "buttonWidth": 270,
+            "buttonHeight": 55.875,
+            "viewportWidth": 1280,
+            "viewportHeight": 720,
+            "documentWidth": 1280
+          }
+        },
+        "coconut": {
+          "hydBefore": 19.835416666666536,
+          "hydAfter": 44.761111111111276,
+          "hydGain": 24.92569444444474,
+          "durableReceipt": true
+        },
+        "icons": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1.webp",
+            "status": 200
+          }
+        ],
+        "rejoin": {
+          "goods": {
+            "piedra": 2,
+            "tronco": 1
+          },
+          "torchSeconds": 1200,
+          "torchLit": false,
+          "hyd": 44.74,
+          "profileVersion": 7
+        }
+      },
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 2,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      },
+      "gmProbeAborts": []
+    },
+    {
+      "name": "desktop-en",
+      "gameplayAndReentryVerified": true,
+      "strictHarnessStatus": "passed",
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 567.625,
+          "actionTop": 580.859375,
+          "detailBottom": 660.71875,
+          "detailRight": 822.5625,
+          "mainRight": 841.84375,
+          "scrollHeight": 486,
+          "clientHeight": 486,
+          "viewportWidth": 1280,
+          "documentWidth": 1280,
+          "button": {
+            "x": 411.078125,
+            "y": 587.421875,
+            "right": 781.9375,
+            "bottom": 638.28125,
+            "width": 370.859375,
+            "height": 50.859375,
+            "disabled": false
+          }
+        },
+        "torch": {
+          "cost": {
+            "tronco": 2,
+            "resina": 1
+          },
+          "goodsAfter": {
+            "coco": 1,
+            "piedra": 2,
+            "tronco": 1
+          },
+          "fireRules": 2,
+          "durableReceipt": true,
+          "panelBounds": {
+            "x": 445,
+            "y": 144.0546875,
+            "right": 835,
+            "bottom": 575.9453125,
+            "width": 390,
+            "height": 431.890625,
+            "buttonWidth": 270,
+            "buttonHeight": 48,
+            "viewportWidth": 1280,
+            "viewportHeight": 720,
+            "documentWidth": 1280
+          }
+        },
+        "coconut": {
+          "hydBefore": 19.831249999999866,
+          "hydAfter": 44.76625000000019,
+          "hydGain": 24.935000000000326,
+          "durableReceipt": true
+        },
+        "icons": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1.webp",
+            "status": 200
+          }
+        ],
+        "rejoin": {
+          "goods": {
+            "piedra": 2,
+            "tronco": 1
+          },
+          "torchSeconds": 1195,
+          "torchLit": false,
+          "hyd": 44.75,
+          "profileVersion": 7
+        }
+      },
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 2,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      },
+      "gmProbeAborts": []
+    },
+    {
+      "name": "phone-landscape-en",
+      "gameplayAndReentryVerified": true,
+      "strictHarnessStatus": "passed",
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 316.375,
+          "actionTop": 316.6875,
+          "detailBottom": 372,
+          "detailRight": 822,
+          "mainRight": 838,
+          "scrollHeight": 278,
+          "clientHeight": 278,
+          "viewportWidth": 844,
+          "documentWidth": 844,
+          "button": {
+            "x": 348.828125,
+            "y": 320.6875,
+            "right": 668.828125,
+            "bottom": 360.6875,
+            "width": 320,
+            "height": 40,
+            "disabled": false
+          }
+        },
+        "torch": {
+          "cost": {
+            "tronco": 2,
+            "resina": 1
+          },
+          "goodsAfter": {
+            "coco": 1,
+            "piedra": 2,
+            "tronco": 1
+          },
+          "fireRules": 2,
+          "durableReceipt": true,
+          "panelBounds": {
+            "x": 187,
+            "y": 46.75,
+            "right": 657,
+            "bottom": 343.25,
+            "width": 470,
+            "height": 296.5,
+            "buttonWidth": 358,
+            "buttonHeight": 48,
+            "viewportWidth": 844,
+            "viewportHeight": 390,
+            "documentWidth": 844
+          }
+        },
+        "coconut": {
+          "hydBefore": 19.853472222222106,
+          "hydAfter": 44.789722222222395,
+          "hydGain": 24.93625000000029,
+          "durableReceipt": true
+        },
+        "icons": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1-mobile.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1-mobile.webp",
+            "status": 200
+          }
+        ],
+        "rejoin": {
+          "goods": {
+            "piedra": 2,
+            "tronco": 1
+          },
+          "torchSeconds": 1195,
+          "torchLit": false,
+          "hyd": 44.77,
+          "profileVersion": 7
+        }
+      },
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 2,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      },
+      "gmProbeAborts": []
+    },
+    {
+      "name": "phone-portrait-es",
+      "gameplayAndReentryVerified": true,
+      "strictHarnessStatus": "passed",
+      "checks": {
+        "axeLayout": {
+          "statsBottom": 811,
+          "actionTop": 196.65625,
+          "detailBottom": 822,
+          "detailRight": 298,
+          "mainRight": 386,
+          "scrollHeight": 278,
+          "clientHeight": 278,
+          "viewportWidth": 390,
+          "documentWidth": 390,
+          "button": {
+            "x": 29.3125,
+            "y": 348.828125,
+            "right": 69.3125,
+            "bottom": 668.828125,
+            "width": 40,
+            "height": 320,
+            "disabled": false
+          }
+        },
+        "torch": {
+          "cost": {
+            "tronco": 2,
+            "resina": 1
+          },
+          "goodsAfter": {
+            "coco": 1,
+            "piedra": 2,
+            "tronco": 1
+          },
+          "fireRules": 2,
+          "durableReceipt": true,
+          "panelBounds": {
+            "x": 46.75,
+            "y": 187,
+            "right": 343.25,
+            "bottom": 657,
+            "width": 296.5,
+            "height": 470,
+            "buttonWidth": 48,
+            "buttonHeight": 358,
+            "viewportWidth": 390,
+            "viewportHeight": 844,
+            "documentWidth": 390
+          }
+        },
+        "coconut": {
+          "hydBefore": 19.839583333333206,
+          "hydAfter": 44.77625000000019,
+          "hydGain": 24.936666666666984,
+          "durableReceipt": true
+        },
+        "icons": [
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/resina-v1-mobile.webp",
+            "status": 200
+          },
+          {
+            "url": "https://marea.62.171.136.148.sslip.io/assets/ui/kit/coco-v1-mobile.webp",
+            "status": 200
+          }
+        ],
+        "rejoin": {
+          "goods": {
+            "piedra": 2,
+            "tronco": 1
+          },
+          "torchSeconds": 1200,
+          "torchLit": false,
+          "hyd": 44.76,
+          "profileVersion": 7
+        }
+      },
+      "cleanup": {
+        "markedAuthAndExactProfileRemoved": true,
+        "retainedEconomicReceipts": 2,
+        "receiptPolicy": "immutable gameplay receipts retained; no receipt deletion"
+      },
+      "gmProbeAborts": []
+    }
+  ],
+  "palmLoot": {
+    "source": "loot-2026-10-12T17-47-30-391Z/public-bfd40f80-7528-444d-a9ce-39c7bb8e6ec2.json",
+    "pass": true,
+    "checks": 5,
+    "yield": {
+      "palmId": "palm-98",
+      "finalNodeRevision": 4,
+      "qualities": [
+        0,
+        0,
+        0
+      ],
+      "logs": 3,
+      "loot": {
+        "resina": 1
+      },
+      "goods": {
+        "tronco": 3,
+        "resina": 1
+      }
+    },
+    "replay": {
+      "historical": true,
+      "sameAcknowledgement": true,
+      "unchangedGoods": true,
+      "tradeRevision": 1
+    },
+    "cleanup": {
+      "deferred": false,
+      "temporaryAuthAndProfileRemoved": true,
+      "retainedReceiptCount": 3,
+      "completedContributorPalmIds": [
+        "palm-98"
+      ],
+      "receiptPolicy": "economic receipts intentionally retained",
+      "receipts": [
+        {
+          "operationId": "e8968302-07e9-5cd0-ab6f-5333e6e0d0ce",
+          "opId": "torch_loot_3b12ab46-c2cd-4230-b29a-33341415e958",
+          "acknowledged": true,
+          "result": "accepted"
+        },
+        {
+          "operationId": "39f49001-bc67-595e-ae83-bf60ba7cff20",
+          "opId": "torch_loot_6be237f9-b357-4cd1-a153-fb7cf10e2e40",
+          "acknowledged": true,
+          "result": "accepted"
+        },
+        {
+          "operationId": "4f5e3cc7-0a1d-5842-a895-5bced080d938",
+          "opId": "torch_loot_c8506e51-7fe4-4269-b235-e96c72bc85cf",
+          "acknowledged": true,
+          "result": "accepted"
+        }
+      ]
+    }
+  },
+  "limits": [
+    "The original browser report was 3/4 because desktop ES recorded cancelled GM admission probes; the final isolated repetition passed. GM probe cancellations remain visible in evidence and ordinary QA GM admission must stay false; separate GM endpoint availability is not certified.",
+    "Intermediate attempts encountered a mobile browser boot timeout, harness navigation/replay-comparison issues, and Docker environment-read timeouts during observed shared host load 250.81. Final gameplay checks passed; sustained VPS and physical-phone performance are not certified.",
+    "All disposable identities and profiles were removed; immutable receipts and completed public palm harvests remain."
+  ]
+}

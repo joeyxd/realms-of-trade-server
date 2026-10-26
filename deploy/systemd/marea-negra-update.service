@@ -1,0 +1,16 @@
+[Unit]
+Description=Poll and safely update the MAREA NEGRA alpha server
+Wants=network-online.target
+After=network-online.target docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+ExecStart=/usr/bin/python3 /opt/marea-negra/ops/vps-update.py
+TimeoutStartSec=20min
+Nice=10
+CPUQuota=100%
+MemoryMax=1G

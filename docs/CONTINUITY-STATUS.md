@@ -1,0 +1,445 @@
+# Continuidad de servidor — AREA15
+
+**AREA15, 2026-10-13 — swallow con recibo común; piloto público apagado:**
+[Entrega/evidencia](delivery/m5-ground-pearl-swallow.md), [contrato](briefs/m5-ground-pearl-swallow.md).
+Cuenta autenticada, bolsa → ranura tragada vacía; misma cuenta/UID, un perfil CAS,
+generación/tombstone y mundo/reloj confirmados por SQL006/018/019 antes de apply.
+Efecto de los cuatro poderes y filtrado reversible de inputs antiguos; ligado hasta morir, sin reemplazo/escupir.
+45/45 aceptación en cuatro archivos, incluidas dos recuperaciones SIGKILL locales;
+266/267 regresión pertinente en 24 archivos; único fallo de expectativa de swallow ya habilitado,
+corregida para rechazar reemplazo. 13/13 seguimiento focal en dos archivos, sin delta runtime.
+Fuentes congeladas; conteos solapados, sin reetiquetar la cohorte amplia.
+Sin SQL/flag/protocolo nuevos. Código publicado en `46902fe`, alpha.67/protocolo 60:
+actualizador 197/197, imagen 100/100 y 27 hashes; entrada 6/6,
+saludable y cero errores/pendientes. Montajes comunes públicos nulos.
+Sigue candidato completo kill/cofre y luego composición GM/compañeros/control/bots/antorchas,
+adopción detenida y canario VPS; montaje común público apagado.
+Integración posterior alpha.68/protocolo 61: presencia/swallow 78/78 y guard 9/9; VPS `5ad1029` verificado, imagen 38/38, entrada 6/6. Presencia y Ground siguen apagados.
+
+**AREA15, 2026-10-12 — give gratuito con recibo común; piloto público apagado:**
+[Entrega/evidencia](delivery/m5-ground-pearl-give.md), [contrato](briefs/m5-ground-pearl-give.md). Dos cuentas autenticadas, bolsa → bolsa;
+reserva de ambas cuentas/UIDs antes de IO, progreso/autosaves previos, dos CAS y generación durable.
+Apply conjunto o rollback/cerco, reintento exacto y dos SIGKILL locales sin efectos históricos.
+38/38 aceptación en 4 archivos. Cohorte pertinente 400/401 en 51 archivos congelados;
+único fallo HTML localizado reproducido en upstream. Expectativa corregida; 27/27 repetidos en 2 archivos, sin cambios de runtime.
+Sin SQL/flag/protocolo nuevos. Montaje común apagado; venta con pago y perla tragada no entran en give.
+Integración posterior de antorchas/resina/coco: 60/60 en siete archivos, fuentes congeladas; conserva su exclusión con el montaje común.
+Código publicado en `e237768`, alpha.65/protocolo 60: actualizador 197/197, imagen 74/74 y 23 hashes; entrada pública 6/6, cero errores/pendientes. Montajes comunes y flag nuevo de antorchas apagados.
+Siguen swallow/kill-cofre, composición GM/compañeros/control/bots/antorchas, adopción detenida y canario VPS.
+
+**AREA15, 2026-10-12 — cobertura y cola vigentes:**
+[Matriz por sistema](CONTINUITY-MATRIX.md), [revisión/evidencia](delivery/m5-continuity-review.md).
+Alpha.63 observado sano; piloto común apagado, sin reloj adoptado. Los checkpoints siguientes conservan sus bases históricas.
+El contrato give preparado en esta revisión tiene aceptación posterior en la entrega enlazada arriba; sigue swallow/kill-cofre.
+Después swallow/kill-cofre, composición de GM/compañeros/control, transición detenida/adopción y canario VPS.
+
+**AREA15, 2026-10-11 — soltar perlas con recibo; piloto común apagado:**
+[Entrega/evidencia](delivery/m5-ground-pearl-leave.md), [contrato](briefs/m5-ground-pearl-leave.md).
+`leave` autenticado reserva cuenta/UIDs antes de IO, conserva progreso ECS y resuelve generación durable;
+confirma perfil/ubicación/mundo/reloj antes de aplicar juntos sesión, suelo, ledger e índices.
+Rollback y cerco ante deriva/cierre/desconexión, incluso callback nulo antes del comando.
+28/28 nuevos; cohorte 625/636 en 73 archivos congelados, base e625a5c.
+Tres archivos con fallos de asignación/clonación repiten 49/49 sin cambios; quedan dos fallos heredados
+HTML localizado y Cometa/agua reproducidos en upstream limpio. Cohorte completa no verde. Dos SIGKILL nuevos
+con recuperación/recogida únicas y cero efectos históricos. Conteos solapados.
+Integración de compañeros alpha.60: 122/122 en 17 archivos seriales; GM036 alpha.61: 83/83 en 12 archivos.
+VPS verificado en `6b713d2`, alpha.60/protocolo 59: actualizador 194/194, entrada pública 6/6 y
+16 módulos iguales a Git; montajes comunes nulos, sin adopción ni SQL nuevo para `leave`.
+Los recursos GM activos aún excluyen el piloto común: esa composición queda pendiente.
+Sigue `give` transaccional, después `swallow` y sobre completo kill/cofre; luego transición/adopción y canario VPS.
+Regla del autor: `give` solo entrega sin pago un UID en la bolsa del dueño. Tragada no se entrega ni vende.
+Compraventa entre jugadores aprobada como dirección; requiere su propio corte y confirmar juntos perla y pago.
+
+**AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
+[Entrega/evidencia](delivery/m5-ground-pearl-mint.md), [contrato](briefs/m5-ground-pearl-mint.md).
+Captura antes del suelo/evento, UID `mint:<UUID>` y recibo SQL004/018/019 bajo el mismo dueño;
+muerte primero, mints en orden y publicación al terminar todos. Aplicación síncrona reversible,
+filas actuales y pausa offline. 16/16 nuevos; 1063/1064 en 106 archivos congelados, base ff45e49;
+único fallo Cometa/agua reproducido en upstream sin cambios, registrado en la entrega.
+Dos SIGKILL nuevos con recuperación y recogida únicas, sin efectos históricos. Conteos solapados.
+Integración alpha.56/protocolo 56: 137/137 en 24 archivos congelados (base c535e5d), conteos solapados.
+Alpha.57/protocolo 56: 28/28 en 6 archivos (base b89a2d9); core de servidor/suelo sin cambios.
+VPS verificado en 056d275, alpha.57/protocolo 56: actualizador 176/176, imagen 78/78,
+14 módulos idénticos a Git y entrada pública 6/6. Sin SQL AREA15 nuevo ni activación/adopción pública.
+El sobre completo de kill/cofre y candidatos sin intención durable no están aceptados.
+Siguen comandos restantes de perlas y loot completo; después transición detenida/adopción y canario VPS.
+
+**AREA03 INV02d, revisión 2026-10-11 — existente; corrección legacy enviada, alpha.54/protocolo 55:**
+[Revisión y evidencia](delivery/inv02d-existing-audit.md). La otra sesión ya implementó sobrepeso,
+70 %/40 %, bloqueo de nuevos dash, HUD/ficha ES/EN y predicción; no volver a empezar desde INV02c.
+Corregida una discrepancia: sin Carga adoptada, una mochila antigua por encima del techo conserva
+su movimiento normal; capacidad sigue impidiendo añadir mercancías. 83/83 en 14 archivos y 14/14
+tras integrar el Bucanero concurrente (conteos solapados). Código `e874bed` enviado, sin SQL nuevo.
+VPS último comprobado: `f26aae2`, alpha.52, dos jugadores/dos sockets, cero errores o pendientes;
+el actualizador espera mundo vacío. Despliegue de la corrección y aceptación pública pendientes.
+Siguen SRV02/comidas especiales y bolsas INV03 conservando volumen, como cortes separados.
+
+**Antorcha y luz de proyectiles, 2026-10-11 — alpha.51, protocolo 55 sin cambios, sin SQL:**
+[Entrega](delivery/torch-light.md). La antorcha (N) siempre pidió 1 tabla básica (`madera`, SQL022), no troncos;
+el panel de fuego ahora lo muestra (tarjeta de material, aviso «2 troncos por tabla» y botón a fabricación) y pasa al
+kit azul. La antorcha entra como receta a mano en el menú de fabricación (TAB y banco) con la misma intención `fire`
+del panel, sin tocar `resource craft`. Balas, perdigones y proyectiles enemigos son luces móviles en los huecos libres
+de `LocalLights` (hasta 4, sin quitar faroles) más destello de boca. Suite completa 4721/4743; los 17 fallos también fallan en origin `5da58e9` (18 allí).
+
+**AREA15, 2026-10-11 — muerte y botín compuestos; código publicado, montaje común apagado:**
+[Entrega/evidencia](delivery/m5-ground-death-lifecycle.md), [contrato](briefs/m5-ground-death-lifecycle.md).
+Captura fatal real, pérdidas/XP/PK y fuentes en el recibo común; recogida/expiración automática,
+hidratar filas actuales y pausa offline. Aplica perfiles/ECS/sesión/eventos juntos tras SQL confirmado.
+1015/1015 en 100 archivos congelados (base 97d32a1), cuatro SIGKILL nuevos;
+SQL001–032, Carga/agua/terreno y supervivencia/respawn conservados. Conteos solapados.
+Integración final 278/278 en 43 archivos congelados (base 58a097b):
+INV02d/carga, SQL033/materiales GM y exclusión de activación, cantimplora y Companion Studio.
+RNV08a/costa 74/74 en 14 archivos congelados (base cd2a97b), conteos solapados.
+VPS `cd2a97b` sano, 0.6.0-alpha.50/protocolo 55: 176/176 del actualizador,
+63/63 sin red en la imagen exacta, diez módulos iguales a Git y entrada pública 6/6.
+Una autoridad/timer activo; sin SQL nuevo, adopción ni montaje público. Sigue mint y comandos
+restantes de perlas; después transición detenida/adopción y canario autenticado de caída/reinicio VPS.
+
+**AREA07 RNV08a, 2026-10-11 — publicada y desplegada; alpha.50/protocolo 55:**
+[Brief](briefs/RNV08a-shore-resupply.md) y [entrega](delivery/rnv08a-shore-resupply.md).
+Parada seca autoritativa: mercado físico y agua/comida de mochila disponibles; bodega, barriles y
+construcción bloqueados. Reembarque conserva el mismo viaje y recalcula masa de recipientes/agua.
+M5/SQL030/032 existentes, sin nueva migración o flag; referencias estables en commits y rechazos.
+Runtime `cd2a97b`, una instancia sana, 176/176 en Docker y 21/21 hashes públicos iguales a Git.
+WSS autenticado 5/5: consumo, replay y reconexión durables; cuenta temporal retirada, cero errores/pendientes.
+Navegador local ES/EN con fixture de ubicación: comercio, agua/comida y el mismo viaje tras reembarcar.
+Puerto Sol aún necesita geografía/anclas físicas; este corte no acepta la ruta completa ni descarga.
+
+**INV02d, 2026-10-11 — sobrepeso, ficha de personaje y fabricación a mano, alpha.49/protocolo 54, sin SQL:**
+[Entrega](delivery/inv02-survival.md). Sobre INV02a–c y RNV07b sin tocar sus operaciones M5, SQL029/032 ni contratos.
+Con Carga adoptada, cómodo = techo / 1,25 (40 + 4 por punto): entre cómodo y techo 70 % de velocidad y sin dash,
+por encima del techo 40 %; nunca inmoviliza ni borra. Sin Carga adoptada no cambia nada. Nivel de carga calculado
+por la autoridad y predicho (columna `load`); natación intacta. Ficha de personaje del kit UI con los controles INV02c
+y medidores SRV01; los alimentos abren el panel de agua y provisiones (consumo durable RNV07b). Menú de fabricación
+(TAB/HUD) y hacha/pico a mano con 3 troncos + 2 piedras. Paleta del kit en HUD y paneles. Retirado el borrador
+SQL028/`attr`/`eat`. Pendiente: comidas especiales SRV02 como operación `freshwater` + ampliación SQL032.
+Suite completa **4598/4659**; los 55 fallos también fallan en origin `c33ed9c` (68 allí) salvo uno de red que pasa
+aislado. HUD vertical **36/36** (origin 28 solapes; corregido el bloque del jugador con barras) y ficha en 4 viewports.
+
+**AREA07 RNV07b, 2026-10-11 — publicada y activada, alpha.47/protocolo 53:**
+[Brief](briefs/RNV07b-canteen-survival.md) y [entrega](delivery/rnv07b-canteen.md).
+Cantimplora reutilizable de tres dosis, relleno desde manantial/cubeta/barril/provisiones y comer/beber;
+HUD ES/EN y SRV01 en el mismo perfil/recibo M5, pausa offline y penalizaciones sin muerte por hambre/sed.
+SQL032 aplicada por el autor; readiness 1 y MN_CANTEEN_OPERATIONS=1 comprobados en el VPS.
+Runtime ef59c5c, una instancia sana, 153/153 en la imagen y 19/19 fuentes públicas iguales a Git.
+WSS autenticado: fabricación pagada, relleno, bebida/comida, replay sin doble gasto, colisión y reconnect;
+cinco controles correctos, cinco recibos conservados y cuenta temporal retirada; cero errores/pendientes.
+Navegador local ES/EN aprobado en dos viewports con 14 capturas; fixture sin enemigos, encuentro pendiente.
+Sigue ruta Salty Shore–Puerto Sol; después purificador avanzado con componente de Bahía Ceniza.
+
+**AREA01 GM05a, 2026-10-11 — escultura publicada, alpha.45/protocolo 51:**
+[Entrega](delivery/gm05a/DELIVERY.md), [navegador público](delivery/gm05a/public/final/public-browser-evidence.json),
+[cadena autenticada](delivery/gm05a/public/final/public-chain-evidence.json) y [despliegue](delivery/gm05a/deployment.json).
+Cinco herramientas de altura sobre suelo seco, preview/undo y prueba caminando. SQL031 aplicado por el autor
+como 029, bytes idénticos; readiness confirmado y v3 guardado/replay/recargado en Supabase real.
+309/309 en 56 archivos estables; imagen 20/20, actualizador 127/127 y 28 hashes del runtime activo iguales a Git.
+Público: 11 controles, activación gen5, navegador nuevo con alturas/hash antes de HELLO y WELCOME correcto,
+rollback verificado a gen6/base, borrador original restaurado por CAS en r25. Release `839393a` sana;
+Carga y agua continúan enabled/ready; piloto del suelo sin montar. Capturas originales nocturnas separadas
+de la revisión con luz privada del renderer. Sigue GM05b pintura; GM06 nueva tierra/costa. Sin texturas 2K/4K nuevas.
+Integración posterior alpha.46/protocolo 52: 336/336 en 58 archivos estables y editor público 11/11,
+sin errores; 31 hashes públicos coinciden con Git. No repite el canario ni modifica el borrador online.
+
+**AREA03 INV02c, 2026-10-11 — ficha de Carga ES/EN publicada, alpha.46/protocolo 52:**
+[Contrato](briefs/inv02c-attribute-controls.md) y [entrega/evidencia](delivery/inv02c-attribute-controls.md).
+Adopción explícita, asignación de un punto y confirmación de la única reasignación gratuita en C/Atributos;
+puntos/peso/volumen y límites visibles. ACK privado más perfil canónico; retry exacto y consulta sin acciones
+para invitados/solo. Cubeta/agua SQL030 conservadas. Runtime `2a51c8d`, imagen y 21 hashes fijos:
+navegador público autenticado **6/6**, recarga/reconexión conservan mochila, tres tablas y agua.
+Cuenta QA retirada, tres recibos conservados; Supabase durable y cero errores/pendientes al cerrar.
+Pruebas locales **67/67**, integración concurrente **32/32**, imagen VPS **127/127** (conteos solapados);
+fixture ES/EN **24 casos, 10 comprobaciones**, desktop/portrait/landscape y capturas inspeccionadas.
+No requiere otro SQL. Sigue INV02d: sobrepeso/movimiento y mochila, preservando natación/predicción;
+70 % sobre el cómodo, 40 % por encima del techo, nunca inmovilizar. Efectos todavía pendientes.
+
+**AREA15, 2026-10-10 — arranque y circulación de perlas implementados; montaje público apagado:**
+[entrega](delivery/m5-ground-pearl-lifecycle.md), [contrato](briefs/m5-ground-pearl-lifecycle.md).
+Recuperación de filas actuales después del diario común, pausa offline y recogida/devolución
+bajo el único `beforeTick`; perfil y metadatos de sesión se aplican juntos tras SQL confirmado.
+Base 4edbf30: 594/594 en 58 archivos congelados, dos SIGKILL locales de pickup; devolución con commit/aplicación/reinicio de host;
+compatibilidad SQL001–029 con recursos v3/taller/Carga/atributos alpha.43/protocolo 49.
+SQL023 confirmado; no añade ni ejecuta SQL. Sigue componer muerte, botín ordinario, mint y comandos
+restantes; después transición detenida/adopción y canario autenticado de caída/reinicio VPS.
+Integración RNV07 alpha.44/protocolo 50: 226/226 en 25 archivos congelados (base 95595b0);
+reserva de llenado revalidada tras la lectura del recibo. Conteos solapados con la base 594.
+Integración GM05 alpha.45/protocolo 51: 246/246 en 29 archivos congelados (base 52665ea);
+conserva exclusión de activación GM con piloto montado. Conteos solapados.
+Código verificado en VPS `ea982f8` sano, 0.6.0-alpha.45/protocolo 51: 127/127 del actualizador,
+31/31 sin red en la imagen exacta y entrada pública 6/6. Una autoridad, timer activo; montaje apagado.
+
+**AREA07 RNV07a, 2026-10-11 — publicado y activado, alpha.44/protocolo 50:**
+[Entrega](delivery/rnv07-freshwater.md), [dirección](briefs/RNV07-freshwater-progression.md), [WSS público](delivery/rnv07-freshwater/public/acceptance.json), [health/fuentes](delivery/rnv07-freshwater/public-readonly.json) y [activación SQL030](delivery/rnv07-freshwater/activation.json). Runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53`, desplegado 04:47Z; imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`. SQL030 aplicado por el autor, readiness RPC 1; `MN_FRESHWATER_OPERATIONS` enabled/ready y atributos siguen enabled/ready. WSS público 6/6, anónimo denegado; lectura pública 7 hashes fuente y health 200. Evidencia de agua visual/recogida completa sigue siendo fixture local sin enemigos; no se afirma recolección/transporte completo live y el encuentro en navegador queda pendiente para RNV07b.
+Sigue RNV07b: cantimplora y consumo coordinados con supervivencia; el purificador avanzado después.
+
+
+**AREA03 INV02b, 2026-10-10 — Carga durable activa y comprobada en público:**
+[Contrato](briefs/inv02b-durable-attributes.md) y [entrega](delivery/inv02b-durable-attributes.md).
+SQL029 aplicado por el autor; readiness comprobado desde el contenedor. Activación inicial
+en `024610b`, alpha.43/protocolo 49; `MN_ATTRIBUTE_OPERATIONS=1` y una autoridad en reposo.
+Tras integrar la entrega paralela de agua, el actualizador instaló `80e46df`, alpha.44/protocolo 50.
+[Canario activo repetido](delivery/inv02b-public/20261011T044746Z-active/README.md) **5/5**:
+adopción, asignación, reset, replay sin rollback, conflicto durable y reconexión. Masa 50 → 60 → 50,
+volumen 18 constante. 14 hashes de imagen iguales a Git; Supabase durable, cero errores/pendientes.
+Cuenta QA retirada y cuatro recibos conservados por corrida; evidencia inicial/flag apagado separada.
+Regresión integrada repetida 20/20; pruebas locales previas: atributos 19/19, composición SQL023/029
+1/1 con reapertura, UI existente ES/EN 6/6 y regresión 106/106 (conteos solapados).
+Taller y crédito de Tala offline conservan Carga. Sigue ficha ES/EN INV02c para administrar puntos;
+después movimiento/sobrepeso. La pantalla de atributos todavía no está montada. No requiere otro SQL
+para comenzar INV02c; el flag permanece apagado por defecto en instalaciones nuevas.
+
+**AREA03 HUD/INV02a, 2026-10-10 — HUD público verificado; Carga sin montar:**
+[HUD y evidencia](delivery/hud-portrait/README.md), [contrato de Carga](briefs/inv02a-durable-carry.md)
+y [entrega INV02a](delivery/inv02a-carry-contract.md). Pantalla vertical con filas separadas para jugador,
+controles, minimapa y avisos; horizontal compacto conserva espacio de combate. 36/36 casos locales,
+ES/EN, ratón/toque emulado, escala 100/130 %; capturas inspeccionadas. WSS público 36/36 en
+`6c42e84`, alpha.41/protocolo 47, revisión/imagen fijas y autoridad sana antes/después.
+Carga: asignación/reasignación pura, 11/11 propias y 21/21 con carry/taller/Tala (solapadas).
+Código publicado sin imports de gameplay: no cambia capacidad, movimiento ni perfiles públicos.
+Sigue recibo M5 y adopción explícita, después UI ES/EN y sobrepeso; conservar crédito offline de Tala.
+Sin SQL nuevo. El borrador anterior de supervivencia sigue separado.
+
+**AREA01 GM04b, 2026-10-10 — plantillas publicadas, alpha.41/protocolo 47:**
+[Entrega](delivery/gm04b/DELIVERY.md), [navegador público](delivery/gm04b/public-browser-evidence.json)
+y [despliegue](delivery/gm04b/deployment.json). Conjuntos de 1–120 decoraciones, fantasma completo,
+copias independientes y undo/redo por colocación. Biblioteca local por cuenta–servidor–mundo, 32 plantillas,
+CAS e import/export de 2 MiB; misma semilla/revisión base. Regresión GM 199/199 en 35 archivos;
+navegador local 17/17 y público autenticado 19/19, sin errores ni mutaciones remotas.
+Release `6c42e84` sana, Supabase durable y timer activo; mapa base generación 4 conservado.
+Capturas ES/EN/844×390 inspeccionadas; luz de referencia solo del renderer cliente, sin escrituras al reloj.
+Documento v2, protocolo y autoridad M5 conservados; sin SQL/arte nuevo. Siguen materiales/dispersión y GM05.
+
+**AREA17 L03d-e1, 2026-10-10 — centro de inferencia configurado y publicado, alpha.42/protocolo 48:**
+[Entrega](delivery/l03d-inference-config.md) y [contrato](briefs/l03d-inference-config.md).
+Configuración privada por mundo/cuenta: techo conjunto, una fila de límite por conexión y modelo por
+compañero existente. SQL028 CAS/replay, aislamiento, stop obligatorio y borrador ante conflicto/incertidumbre.
+Integración final 97/97 en 17 archivos y navegador local 12/12 con seis capturas; conserva GM04b/HUD
+y frontera de suelo/Carga sin activar. Regresión anterior 54/54 solapada; autenticación local simulada.
+Publicado y comprobado en `8a779b5`: una autoridad sana, timer activo, 109/109 del actualizador,
+32 hashes de imagen iguales a Git y WSS público 21/21 con entrada real y denegaciones privadas.
+SQL028 aplicado/readiness 1, canario de servicio revertido; M5 sin errores/pendientes/bloqueo en la captura.
+Catálogo VPS vacío, sin importe/modelo preseleccionados ni proveedor/generación. Los techos son metadata,
+todavía no ledger. Guardado de dueño autenticado público y canario de proveedor conservan aceptación propia.
+Sigue ledger central, endpoint/modelo local y límites elegidos; después mente/memoria con fuentes.
+
+**AREA15, 2026-10-10 — frontera común de familias implementada y probada, montaje apagado:**
+[entrega](delivery/m5-ground-family-boundary.md), [contrato](briefs/m5-ground-family-boundary.md).
+Suelo de perlas, lotes, muerte y botín usan una entrada de confianza al mismo dueño de tick/SQL018/019;
+SQL preparado no aplica efectos. Reservas hasta el drain síncrono; cierre sin callbacks históricos.
+206/206 en 34 archivos, incluidas las cuatro familias SQL, compatibilidad SQL001–027 con
+recursos v3/taller/balsa y dos SIGKILL nuevos. Integración final GM04b/HUD/Carga sin montar: 58/58 en diez archivos, solapada con la anterior.
+Integración concurrente posterior alpha.42/protocolo 48: 83/83 en doce archivos, solapada;
+frontera de familias sin cambios. SQL028 pertenece al frente independiente de inferencia.
+SQL023 instalado/readiness confirmado en VPS;
+mundo público todavía sin reloj común ni adopción. No requiere SQL nuevo ni cambia flags/protocolo.
+Código `e4c5f0d` verificado en VPS alpha.41/protocolo 47: 109/109 del actualizador, 13/13
+focales sin red en la imagen exacta y entrada pública 6/6; una autoridad sana y timer activo.
+Sigue conectar selectores, hidratación y coordinadores autónomos al mismo dueño, después transición
+detenida con exclusión del actualizador y canario autenticado de reinicio/caída VPS.
+
+**AREA01 GM04a, 2026-10-10 — multiselección publicada, alpha.40/protocolo 47:**
+[Entrega](delivery/gm04a/DELIVERY.md), [navegador público](delivery/gm04a/public-browser-evidence.json)
+y [despliegue](delivery/gm04a/deployment.json). Shift/casillas, pivote común y movimiento/giro/escala,
+duplicar/eliminar y undo atómicos de decoración base/añadida, hasta 120 elementos. Documento v2;
+colisiones individuales y selección temporal. Integración final 331/331 en 53 archivos (329+2),
+navegador local alpha.39/46 17/17 y público autenticado alpha.40/47 19/19, sin errores.
+Runtime `c4ffc62` sano y timer activo; mapa base generación 4 conservado.
+Canario solo en borrador local nuevo, sin mutaciones remotas ni SQL. Capturas diurnas finales con luz
+solo del renderer cliente; captura nocturna real conservada. Siguen plantillas GM04 y terreno GM05.
+
+**AREA17 L03d-d, 2026-10-10 — detención durable publicada, alpha.38/protocolo 46:**
+[Entrega](delivery/l03d-companion-control.md). Aceptación alpha.38 `d962055`, una autoridad sana, timer activo y M5
+sin escrituras pendientes/errores en la captura. SQL027 aplicado, readiness 1 y canario de servicio
+revertido; stop inmediato, CAS privado y permiso explícito para una conexión nueva, sin autoarranque.
+109/109 del actualizador y 28/28 focales de alpha.38 con hashes Git. Integración posterior
+alpha.39/protocolo 47: 30/30 locales y WSS público 17/17; selecciones solapadas.
+Las 65/65 focales y navegador invitado 7/7 son de alpha.37; la UI no cambió.
+[Baseline de Tala](delivery/prg01d-timing-baseline.md) corregido; alfa recuperado y Tala pública 6/6.
+Local 190/190 y navegador 14/14 con auth simulada/base en disco; dueño autenticado público pendiente.
+No provisiona vínculos ni activa inferencia. Sigue conexión/modelo y límites conjuntos antes de memoria/canario completo.
+
+**AREA01 GM03b2, 2026-10-10 — publicado alpha.35/protocolo 44, canario aceptado:**
+[entrega](delivery/gm03b2/DELIVERY.md), [evidencia pública](delivery/gm03b2/public-evidence.json) y [despliegue](delivery/gm03b2/deployment.json).
+Online registra revisiones y activa o vuelve atrás con mundo vacío, CAS y exclusión del actualizador.
+Dos clientes nuevos verificaron el mismo modelo/colisiones antes de entrar; canario real 6/6 sin errores,
+incluidos rechazo con jugadores, rollback y generación antigua. Borrador restaurado por CAS r19→r21.
+Runtime `2006667` sano; gen3 canaria → gen4/mapa base, volumen durable y timer activo.
+Integración alpha.35 175/175; regresión histórica alpha.34 308/308; actualizador Linux 22/22 independiente.
+Solo decoraciones y colisiones estáticas; terreno, objetos funcionales y migración entre runtimes siguen
+para cortes posteriores. GM03b2 no requiere otra migración SQL ni cambia la autoridad de gameplay M5.
+
+**AREA03 PRG01d, 2026-10-10 — SQL026 confirmado; taller y Tala públicos verificados:**
+[contrato](briefs/prg01d-starter-workshop.md) y [entrega/evidencia](delivery/prg01d-starter-workshop.md).
+Encargo personal de diez tablas, crédito único, caja por kit en banco, tabla 2:1, palmera 3–6
+y mochila con volumen/masa; sin barrera de Tala 60 ni comunidad.
+Construcción/capacidad/reconexión: 33 comprobaciones públicas en alpha.37, antes de que el recorrido
+fallara al navegar a la palmera. Tala aislada: 6/6 en alpha.38/protocolo 46, con desafíos reales,
+rechazos sin mutar, recompensa durable, replay y tabla en banco. La repetición combinada posterior
+alpha.39/protocolo 47 pasó 36/36 por WSS autenticado; perfil/Auth QA retirados y veinte recibos conservados.
+SQL026 corrigió el ID real de balsa; alpha.38 `d962055` alineó el baseline económico antes de Tala.
+Ambas recuperaciones conservaron perfil/mundo; sus cuentas QA se eliminaron y recibos se conservaron.
+[Verificación independiente VPS](delivery/prg01d-starter-workshop/activation/timing-deployment-independent.json):
+revisión/imagen y hashes Git confirmados, salud pública 200, una autoridad, timer activo,
+cero errores, pendientes o datos sin guardar. Local final 20/20; imagen 28/28. Conteos solapados.
+[Navegador autenticado alpha.40/protocolo 47](delivery/prg01d-starter-workshop/activation/browser-alpha40-20261011-0247/README.md): 8/8,
+entrega UI durable y progreso tras recargar; perfil/Auth QA retirados y un recibo conservado.
+Capturas ES escritorio/EN portrait inspeccionadas: panel legible; el solapamiento de fondo
+observado entonces quedó corregido en el [corte HUD posterior](delivery/hud-portrait/README.md).
+Revisión `88f61ea` e imagen fijadas antes/después, cero errores/pendientes y una autoridad.
+Entrada pública histórica 14/14 conserva su alcance anterior.
+[Checkpoint](delivery/prg01d-starter-workshop/activation/README.md). No requiere otro SQL.
+Mundo común suelo/perlas/muerte sin adoptar/activar; SIGKILL propio, pausa offline nueva,
+balance y teléfono físico pendientes. INV01–03 (huecos/pilas, Carga y sobrepeso) continúa aparte.
+
+**AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
+[entrega](delivery/m5-ground-world-adoption.md), [contrato](briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
+tick de recursos y recibo inmutable sin reescribir mundo; cerco persistente de escritores legacy.
+V1 rechaza perlas/suelo/botín previo. Regresión 235/235 en 34 archivos y final GM 74/74 en doce,
+solapadas; 22 casos propios y dos SIGKILL de adopción. Integra GM03b2, I18N04b, L03d y SQL022.
+VPS `9266c40` sano alpha.34/protocolo 43: 107/107 de imagen, 11/11 focales sin red y entrada
+pública 6/6. SQL023 instalado y readiness confirmado durante PRG01d; no se adopta el mundo real ni se activa el montaje común.
+Sigue composición perlas/muerte/botín, transición detenida con exclusión del writer anterior,
+recuperación y canario autenticado VPS.
+
+
+**AREA15, 2026-10-10 — GameHost común publicado, montaje apagado:**
+[economía y checkpoints](delivery/m5-ground-host-authority.md). Un dueño de tick/época y sesión
+SQL018/019, con I/O separado del drain síncrono/ACK; WorldState escribe mundo/reloj juntos.
+355/355 en 44 archivos, doce casos nuevos y dos SIGKILL nuevos de GameHost. Readiness SQL018–021
+real confirmada; el dominio actual tiene recursos v2 y aún carece de reloj común. El montaje exige
+filas coherentes existentes y queda sin activar. Sigue adopción atómica legacy y perlas/muerte/botín,
+sin otro writer ni creación de reloj a cero. Artesano continúa apagado; SQL021 ya está disponible.
+VPS `cf5857f` sano a 22:04:34 UTC, alpha.30/protocolo 41: 107/107 de imagen, 8/8 del montaje
+sin red en Node 22.23.3 y entrada pública 6/6; pruebas solapadas, sin canario durable del nuevo montaje.
+
+**GM03b1, 2026-10-10 — publicado alpha.30/protocolo 41, release `6e6f421` sana:**
+[preparar revisión](delivery/gm03b1/DELIVERY.md), [contrato](briefs/gm03b1-prepared-revision.md).
+Online valida el head privado exacto y descarga documento/dependencias/base/colisiones por hash.
+Errores enfocan objetos; cambios invalidan el paquete y conflictos conservan diseños. Proyección de
+colisiones compartida con caminar, todos los assets base y variantes móviles fijados, sin escrituras
+de gameplay/SQL/flags. 183/183 regresión, navegador local simulado 41/41, actualizador 107/107 y
+navegador público Supabase real 23/23. 57 dependencias base; ES/EN inspeccionados y borrador previo
+restaurado por CAS r6→r13. [Evidencia pública](delivery/gm03b1/public-evidence.json).
+Sigue GM03b2: registro durable, activación/rollback con admisión exacta y exclusión del actualizador.
+
+**AREA03 PRG01c, código publicado, mecánica apagada:** [enseñanza y Bodega](delivery/prg01c-artisan.md), alpha.29/protocolo 41.
+Recibo económico con baseline de perfil exacto para aprender/colocar/retirar storage; coste, cargo,
+condición e IDs conservados. 114/114 integradas y 32 checks de navegador. Nueva migración SQL021
+después de 001–020; `MN_ARTISAN_OPERATIONS` sigue apagado hasta verificar SQL y aceptar canario
+autenticado. No amplía la aceptación a todas las piezas del editor, perlas/muerte/botín o persistencia
+global. VPS `67e307e` sano a 2026-10-10 21:12 UTC: una autoridad, imagen 107/107 y entrada pública 8/8.
+Entrega separa pruebas, publicación y activación. Precio de enseñanza dos maderas provisional.
+
+**GM03a publicado, 2026-10-10 — alpha.28 / protocolo 40 integrado:** [borradores remotos privados](delivery/gm03a/DELIVERY.md).
+Online permite guardar/cargar explícitamente por cuenta/mundo, CAS, recuperación exacta y exportación de
+ambas copias; conflictos conservan el diseño local. SQL020 aplicada y canario real 14/14. Suites locales
+102/102 y regresión 113/113 (solapadas), navegador local 35/35, imagen 107/107 y navegador Supabase real
+17/17, cero errores. Runtime `9f23be3` sano; copia remota previa restaurada por CAS. No activa mapas ni
+escribe gameplay; sigue GM03b publicación/activación/rollback bajo M5.
+
+2026-10-10, hora de México. M5/GameHost mantiene una sola autoridad de persistencia.
+
+**AREA07 RNV03 observado, 2026-10-10 20:56:35 UTC:** alpha.28/protocolo 40, `9f23be3`.
+[Noche y farol portátil](delivery/rnv03-dark-night.md), reloj compartido y N/toque público.
+Sesión solamente, apagado en muerte/reentrada; sin SQL/perfil/writer nuevo. Una imagen sana, 107/107 de imagen,
+entrada real WSS/reloj/mapa, cero errores/pendientes y timer activo. SQL018/019 siguen sin montar;
+GM03a y L03d-a preservados. No prueba persistencia autenticada del farol ni activa coordinadores opcionales.
+
+**AREA17 L03d-a, herramienta publicada 2026-10-10:** [ledger de inferencia nativa](delivery/l03d-native-metering.md),
+separado de M5 y de la factura externa. `agent-inference-budget/v2` persiste `metering` con IDs
+de proveedor/modelo declarados, unidad nano USD, tarifas/referencia/fecha fijadas y hash por reserva/
+liquidación. V1 sigue simulado, sin migración automática. Contadores `adapter_native` o manuales
+`owner_supplied`, cargo derivado y `invoiceCostUnits:null` quedan diferenciados. Uso desconocido
+retiene reserva tras reinicio; configure no renueva saldo ni tarifa. No añade campos de gameplay,
+SQL, flags ni activación de proveedor; canario y calidad de memoria siguen pendientes. Fuente
+`e614ca4` integrada con alpha.28/protocolo 40; `tools/agent` no entra en la imagen VPS.
+
+**AREA15, diario SQL019:** [petición exacta y recuperación](delivery/m5-ground-transaction-journal.md).
+Dueño M5, scope mundo y una intención pending; confirmación con operación/mundo/reloj/recibos en un commit.
+Sin campos de perfil ni defaults nuevos; migración SQL001–019 y opt-in de GroundTransactionSession.
+Startup resuelve pending y carga filas actuales; no emite ACK ni instala snapshots históricos.
+266/266 pruebas y tres SIGKILL locales cubren preparación/commit/confirmación. No montado en GameHost ni aplicado live.
+Sigue dueño de tick/época/adopción legacy; preparación no es ACK ni lease frente a otros writers.
+Publicado/verificado en `6748f9a`, alpha.27/protocolo 39: imagen sana con APIs Node 22, 107/107 offline
+y entrada pública 6/6. Coordinadores opcionales siguen `null`; este corte no activa SQL018/019.
+
+**AREA07 RNV02 observado, 2026-10-10 20:12:06 UTC:** `e648d1b`, alpha.27/protocolo 39.
+Farol por instancia en el perfil del dueño y CAS ordinario, sin SQL ni diario nuevo. Una imagen sana,
+107/107 offline, recursos/economía listos, `logging:true` ya presente antes de este despliegue,
+cero errores/guardados pendientes y timer activo. [Revisión/imagen/status](delivery/rnv02-naval-lantern/deployment.json).
+Este corte no aplica SQL016/017/018 ni activa flags. El status de Tala no sustituye su aceptación autenticada.
+El ACK del interruptor no demuestra commit durable; la prueba de reentrada del farol usa store de memoria.
+[Alcance, navegador y evidencia](delivery/rnv02-naval-lantern.md).
+Entrada pública real WSS, mapa/minimapa y catálogo doce piezas comprobados; status posterior
+20:15:21 UTC conserva revisión/imagen y cero jugadores/errores/pendientes tras cerrar QA.
+
+**Siguiente corte implementado localmente:** [SQL018: gameplay, mundo y reloj juntos](delivery/m5-ground-transactions.md),
+con sesión detenida/recibos/reconciliación y pruebas de proceso. No montado ni aplicado live. SQL017
+conserva su función de presupuesto de agentes; continúa integración de un dueño de tick/diario/legacy.
+Código publicado, presente en imagen sana `e648d1b`/alpha.27/protocolo 39: 107/107 de imagen, import
+Node 22 y entrada pública 6/6. Coordinadores opcionales `null`; sin activación SQL018 por este corte.
+
+| Recorrido | Cobertura | Próximo cierre |
+|---|---|---|
+| Comercio, materiales de balsa, carga y aportes | SQL014, perfil/mundo/recibo y aceptación publicada | Caída VPS y nuevas operaciones |
+| Comercio autorizado de agentes | [L06b-2b/SQL017](delivery/l06b-agent-trade.md), código publicado inerte en alpha.26: mandato + consumo + vínculo al recibo SQL014/015/016 | SQL017 y canario autenticado live; agentes/comercio públicos apagados |
+| Recolección, golpes parciales, crafting y herramientas | [SQL015/alpha.23](delivery/m5-resource-authority.md), activa en Supabase; 57/57 runtime, 107/107 offline VPS, 8 acciones confirmadas y 23 replays tras dos reinicios ordenados y SIGKILL | Otras operaciones/features M5; la durabilidad de recursos no acredita cortes eléctricos ni restauración de disco |
+| Reloj de recursos | Tick lógico en commit/checkpoint; reinicio ordenado con pausa offline real de 12 918 ms y espera recalculada exacta de 43,9 s | El tiempo de simulación sin checkpoint puede retroceder ante caída abrupta |
+| Aprendizaje y otros campos del perfil | [PRG01b2/SQL016](delivery/prg01b2-logging.md) activa: reparto 7/3 y beneficiario offline, hito/cadencia, perfiles/nodos/ledger tras reinicio y nueve replays sin duplicación; cleanup conserva nueve recibos | Enseñanza personal del artesano PRG01c; scope por personaje/mundo/época pendiente |
+| Mercados y producción autónoma | Snapshot periódico y operaciones económicas cubiertas | Ventana desde último checkpoint |
+| Construcción, pose y custodia de balsa | Perfil; carga y compra de materiales con recibo | Nuevas operaciones durables y custodia offline |
+| Puertas y faroles operativos | RNV01/RNV02: identidad/condición y estado en perfil del dueño por CAS; visitantes reciben ACK privado y snapshot público | Ventana antes del save confirmado y aceptación autenticada específica; no aportan presencia offline ni nuevo recibo económico |
+| Perlas/muerte/botín | SQL018/019/023 y entrada común GameHost de familias probados; montaje público apagado | Selectores/hidratación/coordinadores, transición detenida, adopción y canario de caída VPS |
+| Operación y respaldo | Updater de una autoridad, perfiles y mundo en Supabase | Ensayo de restauración y pérdida de disco |
+| Borrador del editor GM | [GM03a](delivery/gm03a/DELIVERY.md): SQL020 remoto privado por cuenta/mundo, CAS y recibos/retry exactos; UI explícita, local 35/35, público real 17/17, canario 14/14 | GM03b publicación/activación/rollback coordinados con M5; preview caminando descartable, sin bienes ni progreso |
+
+**Runtime actual observado, 2026-10-10 19:58:30 UTC:** `cafff18208235b7149682e5ce6de34c3fc0704b5`,
+alpha.26/protocolo 38 con [L06b-2b inerte](delivery/l06b-agent-trade.md), conservando GM02/refugio/Tala.
+Imagen sana, una autoridad, 107/107 offline y smoke público 10/10 con entrada normal WSS; M5 económico
+y recursos habilitados/listos. Tala figura activa en status por el otro frente: su aceptación específica
+se registra en [PRG01b2](delivery/prg01b2-logging.md). AREA17 no cambió flags, SQL ni secretos.
+SQL017 y canario económico de agentes pendientes; piloto/comercio/proveedor públicos apagados.
+
+**Checkpoint específico Tala, 2026-10-10 20:08:38 UTC:** `454e2dabf44a1f97b1f7d514fda3844b980c8348`,
+alpha.26/protocolo 38; una instancia sana, Tala activa, timer activo y cero errores/pendientes.
+[Activación](delivery/prg01b2-logging/activation.json), [reinicio](delivery/prg01b2-logging/restart.json)
+y [canario/cleanup](delivery/prg01b2-logging/logging-live-acceptance.json) verifican SQL016 y nueve replays.
+El plazo de la palmera ya había vencido al apagar: este corte verifica consistencia del plazo, sin una
+nueva medición de pausa offline v2. La pausa medida anteriormente en AREA15 conserva su alcance.
+
+La aceptación anterior de recursos usó `a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98`, alpha.23/protocolo 36; la
+activación inicial fue en `4c6743b87b71ba765e316cd1652d1e4f23991501`. El status de esa aceptación confirma `/health` 200, un
+contenedor sano, timer activo, tick avanzando, ambos flags habilitados y cero errores, jugadores,
+sockets, operaciones pendientes o guardados sin confirmar. La imagen pasa 107/107 offline.
+Los ocho gathers/crafts
+se confirmaron mediante commit/recibo; el checkpoint periódico registra el reloj/mundo, no sustituye
+esa confirmación. Los recibos se reprodujeron 7+8+8 veces tras dos reinicios ordenados y SIGKILL
+después del ACK. La prueba local cubre cuatro ventanas antes/después de commit. En VPS, el contenedor
+terminó con exit 137 y se inició manualmente; no se demuestra autoreinicio Docker. El corte no prueba
+tolerancia a pérdida eléctrica, disco perdido/restauración ni durabilidad de otras features M5.
+
+El [status final](delivery/m5-resource-authority/final-live-status.json), [SIGKILL](delivery/m5-resource-authority/crash-restart.json)
+y [cleanup](delivery/m5-resource-authority/cleanup-verification.json) registran el estado desplegado,
+la recuperación y la eliminación de la cuenta QA: Auth/perfil ausentes y ocho recibos/recursos conservados.
+
+El aprendizaje `pilot_coastal` de AREA07 es una concesión de progresión distinta; no es un grant de
+recursos ni amplía el alcance de aceptación de AREA15.
+
+Cada feature que concede progreso debe declarar dato/dueño/scope, defaults/migración, confirmación,
+ID estable, recibo/replay y recuperación. Material, práctica y recompensa derivados de una acción
+pertenecen a su misma transacción; no concederlos luego de confirmar por un autosave independiente.
+Registrar por separado implementación, pruebas, SQL, publicación y activación. Ver el
+[contrato de recursos](briefs/m5-resource-authority.md) y [PLAN-M5](../PLAN-M5.md).
+
+PRG01b2 declara `progression` como dato del perfil de cuenta en el único mundo alfa. M5 reserva
+cuentas/UIDs conectados; SQL016 compara los perfiles actuales de todos los contribuyentes y confirma
+su práctica con nodo/reloj/recibo. Ausencia legacy sigue representando cero sin reescribir recibos;
+recursos v1 se adoptan una vez sin inventar autoría en ciclos parciales. Replay histórico no instala
+estado antiguo y la recuperación local se comprueba terminando el proceso antes/después del commit.
+Scope por personaje/mundo/época y aceptación de una caída real del VPS permanecen pendientes.
+
+L06b-2b registra `buyGoldUsed` y `sellUnitsUsed` en SQL017, con defaults cero y scope
+mundo/dueño/personaje. `budgetId` no cambia y los límites no se renuevan; revocar es definitivo.
+`economicOperationId(world,character,opId)` conserva la identidad existente: el mismo commit confirma
+perfil, mercado y consumo, y un vínculo inmutable añade dueño/presupuesto. Replay no concede bienes
+ni hidrata perfiles históricos. La reapertura PGlite prueba almacenamiento local; SQL017 live y caída
+de proceso/disco de esta nueva política requieren evidencia aparte. Publicación inerte no activa grants.

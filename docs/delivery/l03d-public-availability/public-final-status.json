@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-11T16:35:03.8584170Z",
+  "healthHttp": 200,
+  "version": "0.6.0-alpha.51",
+  "players": 0,
+  "sockets": 0,
+  "errors": 0,
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "errors": 0,
+    "unsaved": 0,
+    "profileWrites": 0,
+    "tickBlocked": false,
+    "economic": {
+      "enabled": true,
+      "pending": 0,
+      "failed": false,
+      "completed": 0,
+      "replays": 0
+    }
+  }
+}

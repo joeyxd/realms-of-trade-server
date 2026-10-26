@@ -1,0 +1,203 @@
+import { insideMapBounds } from '../sim/mapBounds.js';
+import { validateDocument } from './document.js';
+import { compileTerrainMap, terrainGridOf, TERRAIN_GRID_MAX_HEIGHT, TERRAIN_MAX_DELTA_MM, TERRAIN_MIN_HEIGHT,
+  terrainEditWeights, validateTerrainForMap } from './terrainData.js';
+import { gmEditableBaseProps } from './baseIdentity.js';
+import { airbrushInfluence, BRUSH_FLOWS, brushParameters, brushWeight, strokeInfluence, strokePath, strokeSpacing,
+  TERRAIN_BRUSH_MAX_RADIUS } from './terrainBrush.js';
+import { fbmNoise, validNoise } from './terrainNoise.js';
+
+const fail = code => { const error = new TypeError(`Terrain sculpt failed: ${code}`); error.code = code; throw error; };
+const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
+// GM08: grid strokes stop 2 mm inside the 0.75 m floor and the +200 m ceiling (millimetre rounding stays inside).
+export const GRID_FLOOR = TERRAIN_MIN_HEIGHT + .002, GRID_CEILING = TERRAIN_GRID_MAX_HEIGHT - .002;
+
+function checkedInput({ map, document, baseRevision, tool, points, radius = 6, strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4,
+  noise = null }, maxRadius = 24) {
+  const doc = validateDocument(document);
+  if (!map || !Number.isSafeInteger(map.seed) || doc.base.seed !== (map.seed >>> 0) ||
+      doc.base.revision !== baseRevision || typeof baseRevision !== 'string') fail('base_mismatch');
+  // GM08c: the noise tool exists on the grid path only (the caller passes its parameters).
+  if (!['raise', 'lower', 'flatten', 'smooth', 'ramp'].includes(tool) && !(tool === 'noise' && noise)) fail('tool');
+  if (tool === 'noise' && !validNoise(noise)) fail('parameters');
+  if (!Array.isArray(points) || points.length < (tool === 'ramp' ? 2 : 1) ||
+      (tool === 'ramp' && points.length !== 2) ||
+      points.some(p => !p || !Number.isFinite(p.x) || !Number.isFinite(p.z) || !insideMapBounds(map, p.x, p.z))) fail('points');
+  try { brushParameters({ radius, strength, falloff, shape, aspect, rotation }, { maxRadius }); }
+  catch { fail('parameters'); }
+  // GM07 D4: flatten reaches the [-40, +200] m range; the 0.75 m floor stays.
+  if (!Number.isFinite(level) || level < TERRAIN_MIN_HEIGHT || level > TERRAIN_GRID_MAX_HEIGHT) fail('parameters');
+  if (tool === 'ramp' && dist(points[0], points[1]) < .25) fail('ramp_length');
+  return { doc, tool, points, radius, strength, falloff, shape, aspect, rotation, level, noise };
+}
+
+function weight(distance, radius, falloff) {
+  if (distance > radius) return 0;
+  const t = distance / radius;
+  const hard = t <= falloff ? 1 : 1 - (t - falloff) / Math.max(1e-9, 1 - falloff);
+  return hard * hard * (3 - 2 * hard);
+}
+
+function rampHeight(point, a, b, hA, hB) {
+  const dx = b.x - a.x, dz = b.z - a.z, length2 = dx * dx + dz * dz;
+  const t = clamp(((point.x - a.x) * dx + (point.z - a.z) * dz) / length2, 0, 1);
+  return hA + (hB - hA) * t;
+}
+
+function rampDistance(point, a, b) {
+  const dx = b.x - a.x, dz = b.z - a.z, length2 = dx * dx + dz * dz;
+  const t = clamp(((point.x - a.x) * dx + (point.z - a.z) * dz) / length2, 0, 1);
+  return Math.hypot(point.x - (a.x + dx * t), point.z - (a.z + dz * t));
+}
+
+function originalHeight(map, index) {
+  return map.heights[index];
+}
+
+// The per-vertex rule of every sculpt tool, shared by the sparse document and the grid entry points.
+function strokeTarget({ tool, strength, level, points, noise }, sampleHeight, i, j, x, z, influence, rampEndpoints, Nx, Nz) {
+  const current = sampleHeight(i, j);
+  if (tool === 'noise') return current + strength * noise.amplitude * fbmNoise(x, z, noise) * influence;
+  if (tool === 'raise') return current + strength * influence;
+  if (tool === 'lower') return current - strength * influence;
+  if (tool === 'flatten') return current + (level - current) * strength * influence;
+  if (tool === 'smooth') {
+    let sum = 0, n = 0;
+    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+      const xx = clamp(i + dx, 0, Nx - 1), zz = clamp(j + dz, 0, Nz - 1); sum += sampleHeight(xx, zz); n++;
+    }
+    return current + (sum / n - current) * strength * influence;
+  }
+  const ramp = rampHeight({ x, z }, points[0], points[1], rampEndpoints[0], rampEndpoints[1]);
+  return current + (ramp - current) * influence;
+}
+
+const squareReach = (shape, radius, rotation) => shape === 'square'
+  ? radius * (Math.abs(Math.cos(rotation * Math.PI / 180)) + Math.abs(Math.sin(rotation * Math.PI / 180))) : radius;
+
+/**
+ * Editor decorations and editable base props keep their height above ground across a terrain change: each moves by
+ * the ground difference at its position between beforeMap and afterMap. Returns { baseOverrides, objects }.
+ */
+export function followGround(doc, map, baseRevision, beforeMap, afterMap) {
+  const baseRevisionProps = gmEditableBaseProps(map, baseRevision);
+  const baseById = new Map(baseRevisionProps.map(entry => [entry.id, entry.prop]));
+  const baseOverrideById = new Map(doc.baseOverrides.map((item, index) => [item.id, index]));
+  const baseOverrides = doc.baseOverrides.map(item => {
+    const prop = baseById.get(item.id);
+    if (!prop || item.hidden) return item;
+    const x = item.transform.position.x, z = item.transform.position.z;
+    return { ...item, transform: { ...item.transform, position: { ...item.transform.position,
+      y: item.transform.position.y + afterMap.groundAt(x, z) - beforeMap.groundAt(x, z) } } };
+  });
+  for (const { id, prop } of baseRevisionProps) {
+    if (baseOverrideById.has(id)) continue;
+    const dy = afterMap.groundAt(prop.x, prop.z) - beforeMap.groundAt(prop.x, prop.z);
+    if (Math.abs(dy) < 1e-9) continue;
+    baseOverrides.push({ id, hidden: false, transform: {
+      position: { x: prop.x, y: prop.y + dy, z: prop.z },
+      rotation: { x: 0, y: prop.rot, z: 0 }, scale: prop.scale,
+    } });
+  }
+  const objects = doc.objects.map(item => {
+    const x = item.transform.position.x, z = item.transform.position.z;
+    return { ...item, transform: { ...item.transform, position: { ...item.transform.position,
+      y: item.transform.position.y + afterMap.groundAt(x, z) - beforeMap.groundAt(x, z) } } };
+  });
+  return { baseOverrides, objects };
+}
+
+export function sculptTerrainDocument({ map, document, baseRevision, tool, points, radius = 6,
+  strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4 } = {}) {
+  const input = checkedInput({ map, document, baseRevision, tool, points, radius, strength, falloff, shape, aspect, rotation, level });
+  const { doc } = input;
+  const { minX, minZ, Nx, Nz } = terrainGridOf(map);
+  const prior = doc.terrain || { version: 1, samples: [] };
+  const beforeMap = compileTerrainMap(map, prior);
+  const path = tool === 'ramp' ? [] : strokePath(points);
+  const brush = brushParameters({ radius, strength, falloff, shape, aspect, rotation });
+  const footprint = squareReach(shape, radius, rotation);
+  const rampEndpoints = tool === 'ramp' ? [beforeMap.groundAt(points[0].x, points[0].z), beforeMap.groundAt(points[1].x, points[1].z)] : null;
+  const minI = clamp(Math.floor(Math.min(...points.map(p => p.x)) - minX - footprint - 1), 0, Nx - 1);
+  const maxI = clamp(Math.ceil(Math.max(...points.map(p => p.x)) - minX + footprint + 1), 0, Nx - 1);
+  const minJ = clamp(Math.floor(Math.min(...points.map(p => p.z)) - minZ - footprint - 1), 0, Nz - 1);
+  const maxJ = clamp(Math.ceil(Math.max(...points.map(p => p.z)) - minZ + footprint + 1), 0, Nz - 1);
+  const smoothSource = beforeMap.heights;
+  const newHeights = new Float32Array(smoothSource);
+  const sampleHeight = (i, j) => smoothSource[j * Nx + i];
+  for (let j = minJ; j <= maxJ; j++) for (let i = minI; i <= maxI; i++) {
+    const x = minX + i, z = minZ + j, index = j * Nx + i;
+    let influence = 0;
+    // Ramps retain their legacy circular corridor, independent of brush shape.
+    if (tool === 'ramp') influence = weight(rampDistance({ x, z }, points[0], points[1]), radius, falloff);
+    else for (const center of path) influence = Math.max(influence, brushWeight(x - center.x, z - center.z, brush));
+    if (influence <= 0) continue;
+    newHeights[index] = strokeTarget(input, sampleHeight, i, j, x, z, influence, rampEndpoints, Nx, Nz);
+  }
+  const samples = [];
+  for (let index = 0; index < newHeights.length; index++) {
+    const delta = Math.round((newHeights[index] - originalHeight(map, index)) * 1000);
+    if (delta) {
+      if (Math.abs(delta) > TERRAIN_MAX_DELTA_MM) fail('delta_limit');
+      samples.push([index, delta]);
+    }
+  }
+  const terrain = { ...prior, version: prior.version === 2 ? 2 : 1, samples };
+  if (samples.length > 20000) fail('sample_limit');
+  const checkedTerrain = validateTerrainForMap(map, terrain);
+  const afterMap = compileTerrainMap(map, checkedTerrain);
+
+  // Preserve vertical offsets for editor decorations while the sample edits stay atomic.
+  const { baseOverrides, objects } = followGround(doc, map, baseRevision, beforeMap, afterMap);
+  return validateDocument({ ...doc, version: prior.version === 2 ? 4 : 3, terrain: checkedTerrain, baseOverrides, objects });
+}
+
+/**
+ * GM07 grid entry point beside sculptTerrainDocument: the same tools and per-vertex rule over a dense grid
+ * (terrainData.js createTerrainGrid). `map` is the base map, `surface` the compiled map of `grid` (the heights the
+ * stroke starts from). The grid is not modified: the result is the patch of every vertex whose delta changes,
+ * { indices, deltasMm } in ascending vertex order. GM08: radius up to TERRAIN_BRUSH_MAX_RADIUS, a dab every
+ * strokeSpacing(radius), flow 'stroke' or 'airbrush'; each vertex takes its terrainEditWeights share, so protected
+ * places, the shore and the outer ring stay untouched instead of refusing the stroke, and no vertex is moved below the
+ * 0.75 m floor or above +200 m (one already beyond stays where it is). No 12 m or 20,000-sample cap applies here; the
+ * caller validates the patched grid (validateTerrainGridForMap) and owns tiles and history (terrainSession.js).
+ * GM08c: the noise tool adds strength x `amplitude` metres of fbmNoise({ octaves, scale, seed }) per unit of influence.
+ */
+export function sculptTerrainGrid({ map, surface, grid, document, baseRevision, tool, points, radius = 6,
+  strength = .5, falloff = .5, shape = 'circle', aspect = .5, rotation = 0, level = 2.4, flow = 'stroke',
+  amplitude = 2, octaves = 4, scale = 32, seed = 1 } = {}) {
+  const input = checkedInput({ map, document, baseRevision, tool, points, radius, strength, falloff, shape, aspect, rotation, level,
+    noise: { amplitude, octaves, scale, seed } }, TERRAIN_BRUSH_MAX_RADIUS);
+  const shapeGrid = terrainGridOf(map), { minX, minZ, Nx, Nz } = shapeGrid;
+  if (!BRUSH_FLOWS.includes(flow)) fail('parameters');
+  if (!(grid?.deltasMm instanceof Int32Array) || grid.deltasMm.length !== map.heights?.length ||
+      surface?.heights?.length !== map.heights.length) fail('grid');
+  const brush = brushParameters({ radius, strength, falloff, shape, aspect, rotation }, { maxRadius: TERRAIN_BRUSH_MAX_RADIUS });
+  const rampEndpoints = tool === 'ramp' ? [surface.groundAt(points[0].x, points[0].z), surface.groundAt(points[1].x, points[1].z)] : null;
+  let field;
+  if (tool === 'ramp') {
+    const footprint = squareReach(shape, radius, rotation);
+    const i0 = clamp(Math.floor(Math.min(points[0].x, points[1].x) - minX - footprint - 1), 0, Nx - 1);
+    const i1 = clamp(Math.ceil(Math.max(points[0].x, points[1].x) - minX + footprint + 1), 0, Nx - 1);
+    const j0 = clamp(Math.floor(Math.min(points[0].z, points[1].z) - minZ - footprint - 1), 0, Nz - 1);
+    const j1 = clamp(Math.ceil(Math.max(points[0].z, points[1].z) - minZ + footprint + 1), 0, Nz - 1);
+    const width = i1 - i0 + 1, values = new Float64Array(width * (j1 - j0 + 1));
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++)
+      values[(j - j0) * width + i - i0] = weight(rampDistance({ x: minX + i, z: minZ + j }, points[0], points[1]), radius, falloff);
+    field = { i0, j0, i1, j1, width, values };
+  } else field = strokeInfluence(strokePath(points, strokeSpacing(radius)), brush, { half: shapeGrid, flow });
+  const share = terrainEditWeights(map), airbrush = flow === 'airbrush' && tool !== 'ramp', blend = !['raise', 'lower', 'noise'].includes(tool);
+  const heights = surface.heights, sampleHeight = (i, j) => heights[j * Nx + i];
+  const indices = [], deltas = [];
+  for (let j = field.j0; j <= field.j1; j++) for (let i = field.i0, n = (j - field.j0) * field.width; i <= field.i1; i++, n++) {
+    const index = j * Nx + i, value = field.values[n];
+    if (value <= 0 || share[index] <= 0) continue;
+    const amount = (airbrush ? airbrushInfluence(value, strength, blend) : value) * share[index], current = heights[index];
+    const target = clamp(strokeTarget(input, sampleHeight, i, j, minX + i, minZ + j, amount, rampEndpoints, Nx, Nz),
+      Math.min(current, GRID_FLOOR), Math.max(current, GRID_CEILING));
+    const delta = Math.round((Math.fround(target) - originalHeight(map, index)) * 1000);
+    if (delta !== grid.deltasMm[index]) { indices.push(index); deltas.push(delta); }
+  }
+  return { indices: Int32Array.from(indices), deltasMm: Int32Array.from(deltas) };
+}

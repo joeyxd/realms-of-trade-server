@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-12T02:09:18.879142+00:00",
+  "revision": "62490c819b7ac2cfd1559fcf23c0604f606c648d",
+  "image": "marea-negra:alpha-62490c819b7a",
+  "imageId": "sha256:f0deb2bf569a9252df78be6949b64daf5230151fb9c193d89c61e7491968e62a",
+  "version": "0.6.0-alpha.59",
+  "players": 0,
+  "sockets": 0,
+  "errors": 0,
+  "unsaved": 0,
+  "storageErrors": 0,
+  "freshwater": {
+    "enabled": true,
+    "ready": true,
+    "canteen": true,
+    "meals": false
+  },
+  "economic": {
+    "enabled": true,
+    "pending": 0,
+    "failed": false,
+    "completed": 0,
+    "replays": 0
+  },
+  "idleAndDurable": true,
+  "publicHealth": 200,
+  "singleAuthority": true,
+  "updater": "inactive",
+  "sql035": {
+    "installed": true,
+    "version": 1,
+    "errorCode": null
+  },
+  "flag": false,
+  "sourceHashes": {
+    "server/host.mjs": "77d7a38e0b33b8cc863ddb39768be45e477ca13631347e1c91a9c9ba50b87659",
+    "server/economicAuthority.mjs": "910317910278b1bf3a26d79014dd214f49cc5de9687ac1436b5794ca4acca7e4",
+    "server/store.mjs": "245fd88b4d7d0f4234c68ee7f3affb06bb4197cecdcce29258238cf868df2c4e",
+    "server/freshwaterOperation.mjs": "bf64250803a9dd34cb141e400b05482ee202dae8e1cc61450aaab6d21f812eec",
+    "src/data/meals.js": "7d12d6a79c557466e31d9f1d15708be42ab461bebf423b24936a852250633fbd",
+    "src/sim/systems/survival.js": "aa03d4319ab0d2962fdede4d64e9b35e0d6fe48e128bc9d882ed9c7668778c9a",
+    "src/sim/systems/combat.js": "54970e41dadfe8a4b95e1d89ee905ef57a3157966f718295996e34d645268ba1",
+    "src/sim/world.js": "d312b010ef8ea1f788ea3bea13f69917bca91afe6a494e93c51c40acdcced8bb",
+    "src/ui/freshwaterPanel.js": "fc8a0b8736f711fd6322b38b0d29fa7a58d13a0e0fa86b515acc0cb2d401433f",
+    "src/i18n/runtime.js": "bebc84d6e259ca3fa0c31929240f826199039c47739fb5194f8b17f86f55f3ed",
+    "styles/freshwater.css": "b41726de9438d0bf994296a0657ea0c68aa8ed04d4fdb3a1eafcfede973943e0",
+    "src/net/protocol.js": "0e5079af5c82badde11992dc0dba17b006dbdba599cfc464cd72a684f5f5c493",
+    "src/data/meta.js": "048f33fe15f865445c1d601ab77eac19315411ffecd44cd52868f5090be6b0fd"
+  },
+  "sourceHashesMatchLocal": true
+}

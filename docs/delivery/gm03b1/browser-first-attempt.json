@@ -1,0 +1,122 @@
+{
+  "schema": "gm03a-browser/v1",
+  "version": "0.6.0-alpha.29",
+  "at": "2026-10-10T21:33:25.773Z",
+  "simulatedAuth": true,
+  "production": false,
+  "checks": [
+    "account_setup_consumes_link_removes_token_checks_confirmation_and_clears_fields",
+    "editor_model_downloads_absent_during_game_boot",
+    "authorized_entry_has_no_gameplay_body_or_commands",
+    "editor_first_frames_render_without_caught_errors",
+    "free_camera_moves_and_blur_releases_keys",
+    "terrain_placement_fetches_only_selected_pilot",
+    "numeric_transform_and_undo_redo_round_trip",
+    "gizmo_renders_in_every_quality_and_transform_mode",
+    "pointer_drag_of_gizmo_moves_object_and_undo_restores_it",
+    "gm02_scene_list_numeric_edit_creates_base_override_without_mutating_map",
+    "gm02_hide_detaches_gizmo_and_undo_restores_base_instance",
+    "gm02_restore_base_removes_override_and_restores_exact_instance_matrix",
+    "gm02_projected_scene_click_selects_registered_base_rock",
+    "gm02_duplicate_base_uses_logical_world_pose_once",
+    "gm02_saved_base_override_survives_close_and_reopen",
+    "gm02_export_import_preserves_overrides_and_stale_target_import_is_rejected",
+    "gm02_original_circle_proxy_has_scaled_visible_footprint",
+    "gm02_walk_preview_uses_private_circle_collision_and_blur_releases_keys",
+    "gm02_escape_returns_to_editor_and_restores_camera_without_document_edits",
+    "gm02_repeated_walk_cycles_release_preview_view_and_gpu_textures",
+    "gm02_helper_leaves_original_one_object_draft_selected_for_existing_acceptance",
+    "gm03_online_panel_is_private_and_does_not_join_gameplay",
+    "gm03_save_requires_review_and_reports_memory_durability",
+    "gm03_cross_browser_load_is_explicit_and_undoable",
+    "gm03_stale_browser_conflicts_preserve_local_doc_and_refreshes_before_replace",
+    "gm03_committed_lost_response_reopens_as_exact_retry_without_double_increment",
+    "gm03_logout_during_put_closes_editor_without_accepting_or_erasing_attempt",
+    "gm03_old_base_copy_can_be_exported_and_changed_runtime_cannot_overwrite",
+    "preparation_guest_denied_and_unsaved_design_requires_online_save",
+    "preparation_reports_spawn_obstruction_and_focuses_the_object",
+    "preparation_download_is_verified_and_does_not_activate_or_modify_drafts",
+    "preparation_is_repeatable_and_local_changes_invalidate_the_result",
+    "preparation_stale_remote_revision_conflicts_without_losing_local_work"
+  ],
+  "screenshots": [
+    "account-setup.png",
+    "editor-es.png",
+    "editor-low.png",
+    "editor-medium.png",
+    "editor-high.png",
+    "editor-ultra.png",
+    "gm02-base-edit-es.png",
+    "gm02-walk-preview-en.png",
+    "gm03-online-es.png",
+    "gm03-online-en.png",
+    "gm03b1-problems-es.png",
+    "gm03b1-prepared-es.png",
+    "gm03b1-prepared-en.png"
+  ],
+  "errors": [
+    "page.waitForFunction: Timeout 20000ms exceeded.\n    at ready (C:\\DEV\\real of trade\\gm-editor-first\\tools\\qa-gm-preparation-checks.mjs:9:28)\n    at runGmPreparationChecks (C:\\DEV\\real of trade\\gm-editor-first\\tools\\qa-gm-preparation-checks.mjs:92:50)\n    at async file:///C:/DEV/real%20of%20trade/gm-editor-first/tools/qa-gm-editor.mjs:188:3"
+  ],
+  "rendering": [
+    {
+      "quality": "low",
+      "mode": "translate",
+      "frames": 6
+    },
+    {
+      "quality": "low",
+      "mode": "rotate",
+      "frames": 6
+    },
+    {
+      "quality": "low",
+      "mode": "scale",
+      "frames": 6
+    },
+    {
+      "quality": "medium",
+      "mode": "translate",
+      "frames": 6
+    },
+    {
+      "quality": "medium",
+      "mode": "rotate",
+      "frames": 6
+    },
+    {
+      "quality": "medium",
+      "mode": "scale",
+      "frames": 6
+    },
+    {
+      "quality": "high",
+      "mode": "translate",
+      "frames": 6
+    },
+    {
+      "quality": "high",
+      "mode": "rotate",
+      "frames": 6
+    },
+    {
+      "quality": "high",
+      "mode": "scale",
+      "frames": 6
+    },
+    {
+      "quality": "ultra",
+      "mode": "translate",
+      "frames": 6
+    },
+    {
+      "quality": "ultra",
+      "mode": "rotate",
+      "frames": 6
+    },
+    {
+      "quality": "ultra",
+      "mode": "scale",
+      "frames": 6
+    }
+  ]
+}

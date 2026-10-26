@@ -1,0 +1,475 @@
+{
+  "schema": "st01c-atlas-gpu-checkpoint/v1",
+  "date": "2026-10-19",
+  "sourceSystemSha256": "985a431dc6c0d1ca1c43a31765754bae7cc78b853ca1fcadc1fa3fd093ec2165",
+  "status": "gpu-compression-measured-fidelity-gate-failed-author-decision-pending",
+  "implementation": "private lab only; no new game effect, SQL or protocol",
+  "variant": "ktx2-uastc",
+  "encoder": {
+    "name": "toktx",
+    "version": "toktx v4.4.2",
+    "commandLine": "toktx --t2 --encode uastc --uastc_quality 4 --zcmp 3 --genmipmap --lower_left_maps_to_s0t0 --assign_oetf srgb --assign_primaries srgb ktx2-uastc-flame.ktx2 .scratch/unreal/reference11/textures/T_FlameUV_2.png",
+    "note": "second input uses the same options with ktx2-uastc-smoke.ktx2 and T_Smoke_1.png; no RDO; default thread count (output byte identical across encodes)"
+  },
+  "atlasManifestSha256": "befcf4f9279d2a82df5a9624b528ad924d07d0fad908932a41b261b14a8b3fb2",
+  "fileBytes": {
+    "sourcePng": {
+      "flame": 654386,
+      "smoke": 714657
+    },
+    "sourcePngPair": 1369043,
+    "losslessWebp": {
+      "bytes": {
+        "flame": 277976,
+        "smoke": 274538
+      },
+      "pairBytes": 552514
+    },
+    "ktx2Uastc": {
+      "bytes": {
+        "flame": 688923,
+        "smoke": 705900
+      },
+      "pairBytes": 1394823
+    }
+  },
+  "browser": {
+    "launch": {
+      "headless": true,
+      "channel": "chrome"
+    },
+    "version": "155.0.8059.85",
+    "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "extensions": {
+      "bptc": true,
+      "s3tc": true,
+      "astc": false,
+      "etc": false
+    },
+    "extensionsRun04": {
+      "bptc": true,
+      "s3tc": true,
+      "astc": false,
+      "etc": false
+    },
+    "originalLaunchUsedForAllVariants": true
+  },
+  "gpu": {
+    "full": {
+      "format": "RGBAFormat",
+      "bitsPerPixel": 32,
+      "bytes": 32156324,
+      "mib": 30.6667,
+      "mipCount": [
+        12,
+        12
+      ],
+      "supercompression": "none",
+      "loader": "TextureLoader",
+      "colorSpace": "srgb",
+      "perTexture": [
+        {
+          "id": "flame",
+          "format": "RGBAFormat",
+          "bytes": 11184812,
+          "uploadedBytes": null,
+          "mipCount": 12,
+          "width": 2048,
+          "height": 1024
+        },
+        {
+          "id": "smoke",
+          "format": "RGBAFormat",
+          "bytes": 20971512,
+          "uploadedBytes": null,
+          "mipCount": 12,
+          "width": 2560,
+          "height": 1536
+        }
+      ]
+    },
+    "ktx2-uastc": {
+      "format": "RGBA_BPTC_Format",
+      "bitsPerPixel": 8,
+      "bytes": 8039200,
+      "mib": 7.6668,
+      "mipCount": [
+        12,
+        12
+      ],
+      "supercompression": "zstd",
+      "loader": "KTX2Loader",
+      "colorSpace": "srgb",
+      "perTexture": [
+        {
+          "id": "flame",
+          "format": "RGBA_BPTC_Format",
+          "bytes": 2796240,
+          "uploadedBytes": 2796240,
+          "mipCount": 12,
+          "width": 2048,
+          "height": 1024
+        },
+        {
+          "id": "smoke",
+          "format": "RGBA_BPTC_Format",
+          "bytes": 5242960,
+          "uploadedBytes": 5242960,
+          "mipCount": 12,
+          "width": 2560,
+          "height": 1536
+        }
+      ]
+    },
+    "ktx2-uastcRun04": {
+      "format": "RGBA_BPTC_Format",
+      "bitsPerPixel": 8,
+      "bytes": 8039200,
+      "mib": 7.6668,
+      "mipCount": [
+        12,
+        12
+      ],
+      "supercompression": "zstd",
+      "loader": "KTX2Loader",
+      "colorSpace": "srgb",
+      "perTexture": [
+        {
+          "id": "flame",
+          "format": "RGBA_BPTC_Format",
+          "bytes": 2796240,
+          "uploadedBytes": 2796240,
+          "mipCount": 12,
+          "width": 2048,
+          "height": 1024
+        },
+        {
+          "id": "smoke",
+          "format": "RGBA_BPTC_Format",
+          "bytes": 5242960,
+          "uploadedBytes": 5242960,
+          "mipCount": 12,
+          "width": 2560,
+          "height": 1536
+        }
+      ]
+    }
+  },
+  "eightMiBBytes": 8388608,
+  "gate": {
+    "run": "budget03",
+    "repeatRun": "budget04",
+    "thresholdsBeforeReview": {
+      "mae255": 2,
+      "p95Channel255": 6,
+      "maskIoU32": 0.98,
+      "ueMae255": 10,
+      "ueIoU32": 0.94
+    },
+    "full": {
+      "accepted": true,
+      "failures": 0,
+      "originalCaseFailures": 0,
+      "originalCases": 268,
+      "ueFailures": 0,
+      "ueCases": 6,
+      "maxMae255": 0.0,
+      "maxP95Channel255": 0.0,
+      "minMaskIoU32": 1.0,
+      "ueMaxMae255": 7.837088204038257,
+      "ueMinMaskIoU32": 0.9801756885090218,
+      "worstCase": {
+        "maxMae255": {
+          "kind": "pilot",
+          "tick": 0,
+          "view": "front",
+          "bias": 0,
+          "layer": "both",
+          "surface": "none",
+          "cell": false,
+          "frame": 0,
+          "file": "case-000.png"
+        },
+        "minIoU": {
+          "kind": "pilot",
+          "tick": 0,
+          "view": "front",
+          "bias": 0,
+          "layer": "both",
+          "surface": "none",
+          "cell": false,
+          "frame": 0,
+          "file": "case-000.png"
+        },
+        "maxP95": {
+          "kind": "pilot",
+          "tick": 0,
+          "view": "front",
+          "bias": 0,
+          "layer": "both",
+          "surface": "none",
+          "cell": false,
+          "frame": 0,
+          "file": "case-000.png"
+        }
+      }
+    },
+    "ktx2-uastc": {
+      "accepted": false,
+      "failures": 37,
+      "originalCaseFailures": 37,
+      "originalCases": 268,
+      "ueFailures": 0,
+      "ueCases": 6,
+      "maxMae255": 0.6647943701982052,
+      "maxP95Channel255": 3.0,
+      "minMaskIoU32": 0.8529411764705882,
+      "ueMaxMae255": 7.854058263424304,
+      "ueMinMaskIoU32": 0.9818376068376068,
+      "worstCase": {
+        "maxMae255": {
+          "kind": "cell",
+          "tick": 120,
+          "view": "front",
+          "bias": 1,
+          "layer": "flame",
+          "surface": "none",
+          "cell": true,
+          "frame": 17,
+          "file": "case-119.png"
+        },
+        "minIoU": {
+          "kind": "cell",
+          "tick": 120,
+          "view": "front",
+          "bias": 0,
+          "layer": "smoke",
+          "surface": "none",
+          "cell": true,
+          "frame": 12,
+          "file": "case-172.png"
+        },
+        "maxP95": {
+          "kind": "pilot",
+          "tick": 30,
+          "view": "front",
+          "bias": 0,
+          "layer": "both",
+          "surface": "none",
+          "cell": false,
+          "frame": 0,
+          "file": "case-012.png"
+        }
+      }
+    },
+    "ktx2-uastcRun04": {
+      "accepted": false,
+      "failures": 37,
+      "originalCaseFailures": 37,
+      "originalCases": 268,
+      "ueFailures": 0,
+      "ueCases": 6,
+      "maxMae255": 0.6647943701982052,
+      "maxP95Channel255": 3.0,
+      "minMaskIoU32": 0.8529411764705882,
+      "ueMaxMae255": 7.854058263424304,
+      "ueMinMaskIoU32": 0.9818376068376068,
+      "worstCase": {
+        "maxMae255": {
+          "kind": "cell",
+          "tick": 120,
+          "view": "front",
+          "bias": 1,
+          "layer": "flame",
+          "surface": "none",
+          "cell": true,
+          "frame": 17,
+          "file": "case-119.png"
+        },
+        "minIoU": {
+          "kind": "cell",
+          "tick": 120,
+          "view": "front",
+          "bias": 0,
+          "layer": "smoke",
+          "surface": "none",
+          "cell": true,
+          "frame": 12,
+          "file": "case-172.png"
+        },
+        "maxP95": {
+          "kind": "pilot",
+          "tick": 30,
+          "view": "front",
+          "bias": 0,
+          "layer": "both",
+          "surface": "none",
+          "cell": false,
+          "frame": 0,
+          "file": "case-012.png"
+        }
+      }
+    },
+    "legacyHalf": {
+      "accepted": false,
+      "failures": 49,
+      "originalCaseFailures": 49,
+      "originalCases": 268,
+      "ueFailures": 0,
+      "ueCases": 6,
+      "maxMae255": 0.8817857891427374,
+      "maxP95Channel255": 3.0,
+      "minMaskIoU32": 0.7333333333333333,
+      "ueMaxMae255": 7.827936440528011,
+      "ueMinMaskIoU32": 0.9796015180265655,
+      "worstCase": {
+        "maxMae255": {
+          "kind": "cell",
+          "tick": 120,
+          "view": "front",
+          "bias": 1,
+          "layer": "flame",
+          "surface": "none",
+          "cell": true,
+          "frame": 23,
+          "file": "case-131.png"
+        },
+        "minIoU": {
+          "kind": "cell",
+          "tick": 120,
+          "view": "front",
+          "bias": 0,
+          "layer": "smoke",
+          "surface": "none",
+          "cell": true,
+          "frame": 33,
+          "file": "case-214.png"
+        },
+        "maxP95": {
+          "kind": "cell",
+          "tick": 120,
+          "view": "front",
+          "bias": 1,
+          "layer": "flame",
+          "surface": "none",
+          "cell": true,
+          "frame": 23,
+          "file": "case-131.png"
+        }
+      }
+    },
+    "legacyQuarter": {
+      "accepted": false,
+      "failures": 230,
+      "originalCaseFailures": 230,
+      "originalCases": 268,
+      "ueFailures": 0,
+      "ueCases": 6,
+      "maxMae255": 6.402760777913777,
+      "maxP95Channel255": 20.0,
+      "minMaskIoU32": 0.0,
+      "ueMaxMae255": 9.102228732865962,
+      "ueMinMaskIoU32": 0.9642607683352735,
+      "worstCase": {
+        "maxMae255": {
+          "kind": "cell",
+          "tick": 120,
+          "view": "front",
+          "bias": 1,
+          "layer": "flame",
+          "surface": "none",
+          "cell": true,
+          "frame": 23,
+          "file": "case-131.png"
+        },
+        "minIoU": {
+          "kind": "cell",
+          "tick": 120,
+          "view": "front",
+          "bias": 0,
+          "layer": "smoke",
+          "surface": "none",
+          "cell": true,
+          "frame": 33,
+          "file": "case-214.png"
+        },
+        "maxP95": {
+          "kind": "layer",
+          "tick": 120,
+          "view": "front",
+          "bias": 1,
+          "layer": "flame",
+          "surface": "none",
+          "cell": false,
+          "frame": 0,
+          "file": "case-061.png"
+        }
+      }
+    }
+  },
+  "repeat": {
+    "runs": [
+      "budget03",
+      "budget04"
+    ],
+    "variants": [
+      "source",
+      "full",
+      "half",
+      "quarter",
+      "ktx2-uastc"
+    ],
+    "comparedImages": 1340,
+    "allDecodedPixelsEqual": true
+  },
+  "faults": [
+    {
+      "fault": "corrupt-texture",
+      "errors": [
+        "Error: Asset hash mismatch: /.scratch/atlas-build/v1/full-smoke.webp"
+      ],
+      "resourcesAfterDispose": {
+        "geometries": 0,
+        "textures": 0
+      }
+    },
+    {
+      "fault": "corrupt-ktx2",
+      "errors": [
+        "Error: Asset hash mismatch: /.scratch/atlas-build/v1/ktx2-uastc-smoke.ktx2"
+      ],
+      "resourcesAfterDispose": {
+        "geometries": 0,
+        "textures": 0
+      }
+    },
+    {
+      "fault": "corrupt-ktx2-loader",
+      "errors": [
+        "Error: Missing KTX 2.0 identifier."
+      ],
+      "resourcesAfterDispose": {
+        "geometries": 0,
+        "textures": 0
+      }
+    },
+    {
+      "fault": "late-startup",
+      "errors": [
+        "Error: injected late startup"
+      ],
+      "resourcesAfterDispose": {
+        "geometries": 0,
+        "textures": 0
+      }
+    }
+  ],
+  "mobileMemoryAccepted": false,
+  "physicalPhoneFps": null,
+  "limitations": [
+    "Desktop Chrome/ANGLE D3D11 uploads BC7; ASTC and ETC2 were not exposed here, their 8 bpp byte count is computed, not measured.",
+    "The RGBA8 estimate counts atlases only; LUT 256 KiB and about 5 MiB of render targets are separate.",
+    "KTX2 mips use the encoder filter; the WebP path uses driver-generated mips, so mip-filter and codec error are not separated.",
+    "Gate failures are mask IoU at the 32/255 threshold on faint smoke contours; MAE and P95 pass in every case."
+  ]
+}
