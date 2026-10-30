@@ -129,4 +129,7 @@ export const MELEE_GRAB = {
   cut: 29, external: 0.5, free: 6, flinch: 20, // Melee ground release and external hit, SmashWiki Grab (06 A5)
   speed: 1.2, // Ultimate capture_cut_speed_x; Melee uses the same common release speed for both bodies (03 4.4)
   immune: 60, // Ultimate invalid_capture_frame (misc.cpp FighterStatusCapture_set_invalid_capture)
+  // Ours (Joi 2026-10-30, the old beat 'em ups): LMB grabs instead of striking when the stick (at least `stick`, within
+  // `cone` degrees) pushes into a body whose edge is at most `gap` u from yours. Replaces Melee's shield + attack.
+  contact: { gap: 0.35, stick: 0.5, cone: 50 },
 };

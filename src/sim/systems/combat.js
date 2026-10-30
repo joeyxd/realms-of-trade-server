@@ -107,16 +107,38 @@ function grabPose(ecs, e, st) {
   cancelCast(ecs, e);
 }
 
+// The nearest grabbable body touching e's (MELEE_GRAB.contact) that the stick pushes into, where it stands now or
+// where e saw it (the grab's own frames 7-8 judge the catch where e saw it).
+function contactTarget(world, e, cmd) {
+  const ecs = world.ecs, K = MELEE_GRAB.contact, mx = cmd.mx || 0, mz = cmd.mz || 0, m = Math.hypot(mx, mz);
+  if (m < K.stick) return null;
+  const lag = world.isServer ? world.tick - world.cmdTick(e, cmd) + tuning.combat.interpTicks : 0, p = {};
+  const touch = (o, x, z) => {
+    const dx = x - ecs.x[e], dz = z - ecs.z[e], d = Math.hypot(dx, dz);
+    return d > 1e-6 && d - ecs.radius[e] - ecs.radius[o] <= K.gap && (dx * mx + dz * mz) / (d * m) >= Math.cos(K.cone * D2R) ? { d, dx, dz } : null;
+  };
+  let best = null;
+  for (let o = 1; o < ecs.cap; o++) {
+    if (!world.canHit(e, o) || ((ecs.mask[o] & COMP.ENEMY) && !world.isSandbag(o))) continue;
+    const t = touch(o, ecs.x[o], ecs.z[o]) || (lag > 0 && touch(o, world.lagPos(o, lag, p).x, p.z));
+    if (t && (!best || t.d < best.d)) best = t;
+  }
+  return best;
+}
+
+// Ours (Joi 2026-10-30): LMB pressed while pushing into a touching body grabs instead of striking. The shield and the
+// defense button no longer grab (shield + LMB throws a powershield catch, Shift + stick dashes or rolls).
 export function beginGrab(world, e, cmd) {
   const ecs = world.ecs;
   if (world.meleeVersion !== 1) return;
-  const shield = (skillOf(ecs, e, 'basic') !== 'pistol' && ((cmd.btn | cmd.prs) & BTN.GUARD))
-    || (((cmd.btn | cmd.prs) & BTN.DASH) && (ecs.guardT[e] >= 0 || Math.hypot(cmd.mx || 0, cmd.mz || 0) < MELEE_ROLL.stick));
-  if (ecs.rollT[e] || ecs.grabSt[e] || !(cmd.prs & BTN.ATTACK) || !shield
+  const shield = (skillOf(ecs, e, 'basic') !== 'pistol' && ((cmd.btn | cmd.prs) & BTN.GUARD)) || ((cmd.btn | cmd.prs) & BTN.DASH);
+  if (ecs.rollT[e] || ecs.grabSt[e] || !(cmd.prs & BTN.ATTACK) || shield || ecs.guardT[e] >= 0
     || ecs.dead[e] || ecs.swim[e] || airborne(ecs, e) || ecs.dashT[e] >= 0
     || ecs.hitlag[e] || ecs.stagger[e] > 0 || ecs.guardLag[e] || ecs.guardStun[e] || ecs.dizzy[e] || ecs.brk[e]
     || ecs.atkStage[e] || castBusy(ecs, e)) return;
-  faceAim(ecs, e, cmd); grabPose(ecs, e, ACT.GRAB);
+  const t = contactTarget(world, e, cmd);
+  if (!t) return;
+  ecs.facing[e] = Math.atan2(t.dx, t.dz); grabPose(ecs, e, ACT.GRAB);
 }
 
 export function endGrab(world, e, interrupted = false) {
@@ -365,7 +387,8 @@ export function hurtByPlayer(world, e, raw, o) {
       const r = shieldTake(world, e, meleePercent(raw, ecs.maxHp[e], LAWLESS.meleeStamina), { x: o.x, z: o.z, seq: 0, by, proj: !!move.proj, dx: o.dx, dz: o.dz, ev: { pvp: 1 } });
       duel.hl = r.hl; duel.sd = Math.round(r.sd * 10) / 10; duel.ss = r.ss;
       if (r.dz) duel.dz = r.dz;
-      if (r.ps && move.proj && o.shot) o.reflected = true; // stepShots sends the pirate's shot back
+      // A powershielded shot is caught (catchShot); past catchMax stepShots sends it back at its shooter.
+      if (r.ps && move.proj && o.shot && !catchShot(ecs, e, raw, !!o.heavy)) o.reflected = true;
       return finish(r.ps ? 'perfect' : 'block', 0);
     }
     if (guardPerfect(ecs, e)) {
@@ -544,6 +567,17 @@ function swordReflect(world, e, s, pt, seq, tier, o = {}) {
   world.feel(e, seq, T.hitstop, T.slowmo);
 }
 
+// Joi 2026-10-30, under MN_MELEE: a powershield catches the projectile instead of reflecting it; it circles the pirate
+// (weaponfx) until LMB throws it. False at catchMax (the caller reflects it as before).
+function catchShot(ecs, e, raw, heavy) {
+  if (ecs.catchN[e] >= tuning.guard.catchMax) return false;
+  ecs.catchN[e] += 1;
+  if (heavy) ecs.catchHv[e] += 1;
+  ecs.catchDmg[e] = Math.max(ecs.catchDmg[e], raw);
+  ecs.catchT[e] = 0;
+  return true;
+}
+
 // The next basic attack after a perfect guard: every caught bullet goes back at the cursor in a fan.
 function releaseCaught(world, e, seq) {
   const ecs = world.ecs, RL = tuning.guard.release, R = tuning.parry.reflect;
@@ -585,7 +619,7 @@ function breakGuard(world, e, seq) {
 function guardTake(world, e, raw, x, z, seq, o) {
   const ecs = world.ecs, G = tuning.guard;
   if (world.meleeVersion === 1) {
-    const ev = { pid: o.pid || 0, aoe: o.aoe || 0 };
+    const ev = { pid: o.pid || 0, aoe: o.aoe || 0, n: ecs.catchN[e] };
     if (o.coyote) ev.coyote = 1;
     shieldTake(world, e, meleePercent(raw, ecs.maxHp[e], LAWLESS.meleeStamina), { x, z, seq, proj: !o.aoe, dx: o.dx, dz: o.dz, owner: o.owner, noPower: o.noPower, ev });
     return;
@@ -845,8 +879,9 @@ function contacts(world, e, prev, pt, seq) {
       if (type !== PTYPE.UNSTOP && guardUp(ecs, e) && (shield || inGuardArc(ecs, e, hx, hz))) {
         // The guard takes it (a block, or a catch when it was just raised).
         const pid = H.id[s], raw = H.dmg[s], v = shield ? H.velocityAt(s, pt) : null;
-        // A powershield sends the bullet back as the pirate's own shot.
-        if (shield && shieldAge(ecs, e) <= MELEE_GUARD.powerProjFrames) swordReflect(world, e, s, pt, seq, 1, { dmg: Math.max(1, Math.round(raw * MELEE_GUARD.reflectMul)), straight: true });
+        // A powershield catches the bullet (catchShot); past catchMax it sends it back as the pirate's own shot.
+        const ps = shield && shieldAge(ecs, e) <= MELEE_GUARD.powerProjFrames;
+        if (ps && !catchShot(ecs, e, raw, type === PTYPE.HEAVY)) swordReflect(world, e, s, pt, seq, 1, { dmg: Math.max(1, Math.round(raw * MELEE_GUARD.reflectMul)), straight: true });
         else H.remove(s, pt, KILL.BLOCK, e, seq);
         guardTake(world, e, raw, hx, hz, seq, { pid, heavy: type === PTYPE.HEAVY, fire: H.fire[s], ...(shield ? { dx: v.x, dz: v.z } : {}) });
         if (ecs.dead[e] > 0) return;
@@ -1123,6 +1158,11 @@ export function stepPlayerCombat(world, e, cmd, dt) {
     }
     // Melee drains a held shield, not one in shieldstun.
     if (ecs.guardT[e] >= 0 && !stunned) { ecs.guardSt[e] -= MELEE_GUARD.drain; if (ecs.guardSt[e] <= 0) shieldBreak(world, e, seq, ecs.x[e], ecs.z[e]); }
+    // Ours (Joi 2026-10-30): LMB in the shield throws the powershield catch at the cursor and drops the shield.
+    if (ecs.guardT[e] >= 0 && atkPress && ecs.catchN[e] > 0 && canAct && !stunned) {
+      faceAim(ecs, e, cmd); releaseCaught(world, e, seq);
+      ecs.guardT[e] = -1; ecs.guardLag[e] = ecs.guardP[e] > 0 ? 0 : MELEE_GUARD.dropLag - 1; ecs.guardP[e] = 0;
+    }
   } else if (guardOk) {
     if (ecs.atkStage[e] > 0) { ecs.lastStage[e] = ecs.atkStage[e]; ecs.atkStage[e] = 0; ecs.comboT[e] = 0; }
     if (ecs.guardT[e] < 0 && ecs.guardSt[e] >= G.minRaise) {

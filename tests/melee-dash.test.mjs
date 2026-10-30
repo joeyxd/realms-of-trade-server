@@ -74,7 +74,7 @@ test('attack and guard presses cannot act during endlag frame 25', () => {
 test('a grab connecting on endlag frame 25 ends the victim dash immediately', () => {
   const S = setup(), { w, ecs, a, b } = S; frame(S, 19);
   ecs.x[a] = ecs.x[b] - 0.95; ecs.z[a] = ecs.z[b]; ecs.facing[a] = Math.PI / 2;
-  step(S, { btn: BTN.GUARD, prs: BTN.ATTACK }, a);
+  step(S, { mx: 1, prs: BTN.ATTACK }, a);
   // Advance history through stationary endlag so the grab's rewind sees the victim there.
   for (let i = 0; i < 6; i++) {
     step(S); step(S, { pt: w.tick + tuning.combat.interpTicks }, a);

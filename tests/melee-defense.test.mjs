@@ -71,14 +71,17 @@ test('pistol body shield blocks a sabre and both triggers, while GUARD alone sti
   assert.ok(Q.ecs.shotAltCd[Q.b] > 0); assert.ok(Q.ecs.guardT[Q.b] < 0);
 });
 
-test('shield plus attack grabs with pistols, without firing, and preserves the blocked-start gates', () => {
+test('attack pushing into a touching body grabs with pistols, without firing; the shield no longer grabs; blocked-start gates hold', () => {
+  const touch = (S) => { S.ecs.x[S.a] = S.ecs.x[S.b] + 0.95; S.ecs.z[S.a] = S.ecs.z[S.b]; return S; };
   for (const pistol of [false, true]) {
-    const S = setup(1, pistol); step(S, RAISE); step(S, { ...HOLD, prs: BTN.ATTACK });
+    const S = touch(setup(1, pistol)); step(S, { mx: 1, prs: BTN.ATTACK });
     assert.equal(S.ecs.grabSt[S.b], ACT.GRAB); assert.equal(S.ecs.shotN[S.b], 0);
+    const Q = touch(setup(1, pistol)); step(Q, RAISE); step(Q, { ...HOLD, prs: BTN.ATTACK });
+    assert.equal(Q.ecs.grabSt[Q.b], 0); assert.equal(Q.ecs.shotN[Q.b], 0);
   }
   for (const key of ['guardStun', 'guardLag', 'stagger', 'dizzy', 'brk']) {
-    const S = setup(1, true); step(S, RAISE); S.ecs[key][S.b] = 10;
-    step(S, { ...HOLD, prs: BTN.ATTACK }); assert.equal(S.ecs.grabSt[S.b], 0, key);
+    const S = touch(setup(1, true)); S.ecs[key][S.b] = 10;
+    step(S, { mx: 1, prs: BTN.ATTACK }); assert.equal(S.ecs.grabSt[S.b], 0, key);
   }
 });
 

@@ -271,20 +271,33 @@ test('mob clank: a boss circle never clanks, and with the flag off nobody does',
   assert.equal(O.w.events.filter((ev) => ev.type === 'clank').length, 0); assert.ok(!O.c.cancel); assert.ok(O.ecs.hp[O.a] < O.hp); void w;
 });
 
-test('a mob bullet powershielded within 2 frames comes back as the pirate shot at half damage', () => {
+test('a mob bullet powershielded within 2 frames is caught, circles the pirate and LMB in the shield throws it', () => {
   const { w, e: a } = arena(), ecs = w.ecs;
   w.meleeVersion = 1; ecs.needs[a] = 0;
   incoming(w, a, PTYPE.PARRY, 0.4, 0, 14); w.tick = 10;
   const hp = ecs.hp[a], st = ecs.guardSt[a];
   w.applyCommand(a, cmd(w, a, RAISE));
   assert.equal(ecs.hp[a], hp); assert.ok(!w.events.some((ev) => ev.type === 'hurt'));
-  const g = w.events.find((ev) => ev.type === 'guard' && ev.st === 'perfect'); assert.equal(g.ps, 1);
-  assert.ok(w.events.some((ev) => ev.type === 'parry'));
+  const g = w.events.find((ev) => ev.type === 'guard' && ev.st === 'perfect'); assert.equal(g.ps, 1); assert.equal(g.n, 1);
+  assert.ok(!w.events.some((ev) => ev.type === 'parry'), 'caught, not reflected');
   near(ecs.guardSt[a], st - MG.drain);
-  const S = w.shots; let found = 0;
-  for (let s = 0; s < S.cap; s++) if (S.id[s] && S.owner[s] === a) { found++; assert.equal(S.dmg[s], 7); }
-  assert.equal(found, 1);
+  assert.equal(ecs.catchN[a], 1); assert.equal(ecs.catchDmg[a], 14);
+  const S = w.shots, owned = () => { let n = 0; for (let s = 0; s < S.cap; s++) if (S.id[s] && S.owner[s] === a) n++; return n; };
+  assert.equal(owned(), 0);
   assert.ok(ecs.hitlag[a] > 0 && ecs.guardStun[a] === 0, 'a projectile gives hitlag to the defender and no shieldstun');
+  while (ecs.hitlag[a] > 0) w.applyCommand(a, cmd(w, a, HOLD));
+  assert.ok(ecs.guardT[a] >= 0, 'the shield is still up');
+  w.events.length = 0; w.applyCommand(a, cmd(w, a, { ...HOLD, prs: BTN.ATTACK }));
+  assert.equal(ecs.catchN[a], 0); assert.equal(owned(), 1); assert.ok(ecs.guardT[a] < 0, 'the throw drops the shield');
+  assert.equal(w.events.find((ev) => ev.type === 'release').n, 1);
+  // past catchMax the powershield reflects it as the pirate's own shot at half damage
+  const F = arena(); F.w.meleeVersion = 1; F.w.ecs.needs[F.e] = 0; F.w.ecs.catchN[F.e] = tuning.guard.catchMax;
+  incoming(F.w, F.e, PTYPE.PARRY, 0.4, 0, 14); F.w.tick = 10;
+  F.w.applyCommand(F.e, cmd(F.w, F.e, RAISE));
+  assert.ok(F.w.events.some((ev) => ev.type === 'parry'));
+  const FS = F.w.shots; let found = 0;
+  for (let s = 0; s < FS.cap; s++) if (FS.id[s] && FS.owner[s] === F.e) { found++; assert.equal(FS.dmg[s], 7); }
+  assert.equal(found, 1); assert.equal(F.w.ecs.catchN[F.e], tuning.guard.catchMax);
   // a later bullet (age 6) is a plain block: shield damage, shieldstun, no reflect
   const B = arena(); B.w.meleeVersion = 1; B.w.ecs.needs[B.e] = 0;
   B.step(RAISE); for (let i = 0; i < 5; i++) B.step(HOLD);
@@ -295,18 +308,21 @@ test('a mob bullet powershielded within 2 frames comes back as the pirate shot a
   assert.ok(B.w.ecs.guardStun[B.e] > 0 && B.w.ecs.hitlag[B.e] > 0); assert.equal(B.w.ecs.hp[B.e], B.w.ecs.maxHp[B.e]);
 });
 
-test('a powershielded pirate shot flies back, owned by the defender, at half damage', () => {
-  const S = duel(), { w, ecs, a, b } = S;
-  step(S, b, RAISE); // age 1
-  const hp = ecs.hp[b];
-  w.spawnShot(a, { key: -9, pid: 0, type: PTYPE.PARRY, x: ecs.x[b] - 0.5, y: ecs.y[b] + 1.1, z: ecs.z[b], dx: 1, dz: 0, speed: 12, dmg: 20,
-    life: 2, r: 0.25, heavy: false, seq: 1, bounce: 0, homing: 0, cone: 0, kind: SHOT.BULLET, pt: w.tick });
-  w.events.length = 0;
-  w.stepShots(DT);
-  assert.equal(ecs.hp[b], hp); assert.equal(evs(S, 'guard')[0].ps, 1);
-  let back = 0; const sh = w.shots;
-  for (let s = 0; s < sh.cap; s++) if (sh.id[s]) { back++; assert.equal(sh.owner[s], b); assert.equal(sh.dmg[s], 10); assert.ok(sh.vx[s] < 0); }
-  assert.equal(back, 1);
+test('a powershielded pirate shot is caught; past catchMax it flies back, owned by the defender, at half damage', () => {
+  for (const full of [false, true]) {
+    const S = duel(), { w, ecs, a, b } = S;
+    if (full) ecs.catchN[b] = tuning.guard.catchMax;
+    step(S, b, RAISE); // age 1
+    const hp = ecs.hp[b];
+    w.spawnShot(a, { key: -9, pid: 0, type: PTYPE.PARRY, x: ecs.x[b] - 0.5, y: ecs.y[b] + 1.1, z: ecs.z[b], dx: 1, dz: 0, speed: 12, dmg: 20,
+      life: 2, r: 0.25, heavy: false, seq: 1, bounce: 0, homing: 0, cone: 0, kind: SHOT.BULLET, pt: w.tick });
+    w.events.length = 0;
+    w.stepShots(DT);
+    assert.equal(ecs.hp[b], hp); assert.equal(evs(S, 'guard')[0].ps, 1);
+    let back = 0; const sh = w.shots;
+    for (let s = 0; s < sh.cap; s++) if (sh.id[s]) { back++; assert.equal(sh.owner[s], b); assert.equal(sh.dmg[s], 10); assert.ok(sh.vx[s] < 0); }
+    assert.equal(back, full ? 1 : 0); assert.equal(ecs.catchN[b], full ? tuning.guard.catchMax : 1);
+  }
 });
 
 test('flag off: a block still lets blockMult through and nothing of the shield rules applies', () => {

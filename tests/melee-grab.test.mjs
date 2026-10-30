@@ -9,7 +9,7 @@ import { LAWLESS, MELEE_GRAB as G } from '../src/data/lawless.js';
 import { hurtPlayer, killPlayer } from '../src/sim/systems/combat.js';
 import { World } from '../src/sim/world.js';
 
-const INPUT = { btn: BTN.GUARD, prs: BTN.ATTACK };
+const INPUT = { prs: BTN.ATTACK, mx: 1 }; // LMB pushing into the touching body (ours, 2026-10-30)
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-8, `${a} != ${b}`);
 function setup(version = 1) {
   const { w, e: a } = arena({ x: OPEN.x, z: OPEN.z }), ecs = w.ecs;
@@ -35,13 +35,13 @@ function connect(S = setup(), shield = false) {
 const damage = (S, e, raw = 4, by = 0) => hurtPlayer(S.w, e, raw,
   { x: S.ecs.x[e] - 1, z: S.ecs.z[e], kind: 'proj', by, pierce: true, noInv: true, seq: 0 });
 
-test('guard plus attack starts Catch; active only 7-8, whiff lasts 30 and locks movement/facing', () => {
+test('attack pushing into a touching body starts Catch; active only 7-8, whiff lasts 30 and locks movement/facing', () => {
   const S = setup(), { ecs, a, b } = S;
   tick(S, INPUT); assert.equal(ecs.grabT[a], 1); assert.equal(ecs.grabSt[a], ACT.GRAB);
   run(S, 5, { mx: -1, prs: BTN.DASH | BTN.Q, ax: ecs.x[a] - 10 });
   assert.equal(ecs.grabSt[b], 0); assert.equal(ecs.grabT[a], 6); near(ecs.facing[a], Math.PI / 2);
   tick(S); assert.equal(ecs.grabSt[b], ACT.CAPTURE);
-  const W = setup(); W.ecs.x[W.b] += 10; tick(W, INPUT); run(W, 28, { mx: 1, prs: BTN.ATTACK });
+  const W = setup(); W.ecs.iframes[W.b] = 99; tick(W, INPUT); run(W, 28, { mx: 1, prs: BTN.ATTACK });
   assert.equal(W.ecs.grabSt[W.a], ACT.GRAB); assert.equal(W.ecs.grabT[W.a], 29);
   tick(W); assert.equal(W.ecs.grabSt[W.a], 0); near(W.ecs.x[W.a], OPEN.x);
   for (const f of [8, 9]) {
@@ -71,7 +71,7 @@ test('grab wins over the same-frame jab in either command order; simultaneous gr
     const hp = ecs.hp[a]; tick(S, {}, {}, reverse);
     assert.equal(ecs.grabSt[b], ACT.CAPTURE); assert.equal(ecs.atkStage[b], 0); assert.equal(ecs.hp[a], hp);
   }
-  const S = setup(); tick(S, INPUT, INPUT, true); run(S, 6);
+  const S = setup(); tick(S, INPUT, { ...INPUT, mx: -1 }, true); run(S, 6);
   assert.equal(S.ecs.grabWho[S.a], S.b); assert.equal(S.ecs.grabSt[S.b], ACT.CAPTURE);
   assert.equal(S.w.events.filter((e) => e.type === 'duel' && e.skill === 'grab' && e.out === 'grab').length, 1);
 });
@@ -134,13 +134,18 @@ test('death, despawn and a reused partner slot break the pair; all grab fields r
   assert.equal(n, R.b); tick(R); assert.equal(R.ecs.grabSt[R.a], ACT.GRAB_CUT); assert.equal(R.ecs.grabSt[n], 0);
 });
 
-test('blocked starts, pistol exclusion, flag off, predicted Catch and reconciled capture', () => {
+test('blocked starts, pistols grab too, the shield and a neutral or away stick strike, flag off, predicted Catch and reconciled capture', () => {
   for (const key of ['guardLag', 'guardStun', 'hitlag', 'dizzy', 'brk', 'stagger']) {
     const S = setup(); S.ecs[key][S.a] = 10; tick(S, INPUT); assert.equal(S.ecs.grabSt[S.a], 0, key);
   }
-  const P = setup(); P.ecs.weapon[P.a] = 1; tick(P, INPUT); assert.equal(P.ecs.grabSt[P.a], 0);
+  const P = setup(); P.ecs.weapon[P.a] = 1; tick(P, INPUT); assert.equal(P.ecs.grabSt[P.a], ACT.GRAB); assert.equal(P.ecs.shotN[P.a], 0);
+  for (const c of [{ btn: BTN.GUARD, prs: BTN.ATTACK, mx: 1 }, { prs: BTN.ATTACK }, { prs: BTN.ATTACK, mx: -1 }, { prs: BTN.ATTACK, mz: 1 }]) {
+    const N = setup(); tick(N, c); assert.equal(N.ecs.grabSt[N.a], 0, JSON.stringify(c));
+  }
+  const F = setup(); F.ecs.x[F.b] += 0.8; tick(F, INPUT); assert.equal(F.ecs.grabSt[F.a], 0, 'a body 0.95 u off is not touching'); assert.equal(F.ecs.atkStage[F.a], 1);
   const off = setup(0); tick(off, INPUT); assert.equal(off.ecs.grabSt[off.a], 0); assert.equal(off.ecs.atkStage[off.a], 1);
   const S = setup(), client = new World(S.w.seed, { map: S.w.map }), e = client.spawnPlayer({ x: OPEN.x, z: OPEN.z });
+  client.spawnPlayer({ x: OPEN.x + 0.95, z: OPEN.z }); // the victim, as the client holds it
   client.meleeVersion = 1; client.setPlayerState(e, S.w.playerState(S.a));
   client.applyCommand(e, command(S, S.a, INPUT)); assert.equal(client.ecs.grabSt[e], ACT.GRAB);
   connect(S); client.setPlayerState(e, S.w.playerState(S.a)); assert.equal(client.ecs.grabSt[e], ACT.GRAB_WAIT);

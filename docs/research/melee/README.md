@@ -36,6 +36,7 @@ then gets adapted; the adaptations are listed under "Ours" below.
 | [07-cpu-ai.md](07-cpu-ai.md) | T-1024-22 | how the CPU fighters think (levels 0-9 change only reaction, attention and stick precision, never stats), weighted attack choice by predicted reach, defend before attack, Master Hand's category draw, our habit memory proposal and the AI level knob |
 | [08-hit-feel.md](08-hit-feel.md) | T-1024-23 | the feel of a hit: the victim's shake during hitlag, camera quake on strong airborne hits, rumble on both pads, sparks and sounds by element and tier, ColAnim flashes, our client inventory and the juice slices J1..J8 |
 | [09-ssbu-reference.md](09-ssbu-reference.md) | T-1024-36 | Smash Ultimate as a local reference (Joi's own dump, `C:/DEV/_refs/ssbu-nintendo`): Marth's frame data next to Melee's, shield and parry and grab numbers from the game's bytes, the decompiled grab state machine, 340 animations and rendered poses |
+| [10-terry.md](10-terry.md) | T-1030-09 | Terry Bogard (Ultimate `dolly`) as the unarmed brawler reference: params, ground normals, grab, specials, Power Wave, super specials and the GO rule, with NO ENCONTRADO where the dump tool could not decompile |
 
 Citations in 01, 02, 03 and 05 resolve inside `C:/DEV/_refs/melee-pc`. `DATA` marks a value that lives in game
 data; 06 fills most of them from community sources (SmashWiki, libmelee). It does not read raw bytes, so it is medium

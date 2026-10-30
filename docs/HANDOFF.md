@@ -1,5 +1,13 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**CMB agarre por contacto y catch con el powershield, 2026-10-30, versión 0.6.0-alpha.126, protocolo 77 (sin cambio), sin SQL:**
+Área combate (claude/combate; T-1030-10 del chef, directo; ficha de Terry T-1030-09). Todo bajo MN_MELEE, que ya está encendido en alpha.env.
+- Por qué (Joi 2026-10-30): el agarre era escudo + click, pero Shift con el stick hace dash, así que no se podía agarrar mientras te movías. Y la defensa a tiempo tenía que atrapar el proyectil, no reflejarlo.
+- Agarre: click mientras empujas el stick hacia un cuerpo pegado al tuyo (MELEE_GRAB.contact en src/data/lawless.js: hueco 0.35 u entre bordes, stick 0.5, cono 50 grados; nuestro, estilo beat 'em up), con cualquier arma, pistolas incluidas. Cuenta donde está ahora o donde lo vio el atacante; se gira hacia él; los frames 7-8 del agarre siguen juzgando la captura. El escudo ya no agarra. Solo piratas y el Sandbag (los mobs no tienen estado de captura).
+- Catch: un powershield (escudo subido en los 2 frames antes del impacto) atrapa la bala de un mob o el disparo de un pirata (catchShot en src/sim/systems/combat.js), que gira alrededor del pirata (weaponfx ya lo dibujaba). Click en el escudo la lanza al cursor y baja el escudo; un golpe o un disparo también la lanzan. Máximo 3 (tuning.guard.catchMax); con 3 guardadas vuelve el reflejo a 0.5x. Se desvanecen a los 6 s.
+- Pruebas: melee-grab, melee-throw, melee-dash, melee-defense y melee-shield reescritas para el input nuevo (los dos tests de reflejo pasan a ser de catch, con el caso de catchMax). Gate local 95 archivos, 677/677. Sin ver en navegador.
+- Terry: docs/research/melee/10-terry.md (normales, smashes, agarre, Power Wave, supers, peso 108, GO 100); faltan Burn Knuckle, Crack Shoot, Rising Tackle, Power Dunk y los lanzamientos (NO ENCONTRADO). Joi decidió: Puños es el kit base de todo personaje sin arma. Siguiente: `combate, continue`.
+
 **TA04+TA05 Tala: la tala nueva (mantener F) siempre encendida en el servidor, recogida del montón durable por M5, hachas de hierro y acero en el SQL, 2026-10-26, versión 0.6.0-alpha.125, protocolo 77, SQL045:**
 Área TA tala (claude/tala; T-1026-15 en el carril codex:sol, dos reworks: alcance corto del brief y la regla nueva de Joi; parche, revisión y push del chef en la misma sesión). Diseño TA01-TA03 en tala/context/spec-tala-v1.md.
 - Por qué: Joi entró a alpha.124 y la tala seguía siendo la vieja (/status `chop.enabled:false`). El host rechazaba MN_CHOP con las operaciones de recursos encendidas, porque el SQL de prod congela `resources.nodes` en cada guardado del mundo (015:131-147, 196-201) y el derribo cambiaba `node.rev`/`readyTick`.

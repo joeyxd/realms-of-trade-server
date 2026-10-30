@@ -11,7 +11,7 @@ import { World } from '../src/sim/world.js';
 import { swimmingAt } from '../src/sim/systems/swimming.js';
 
 // P3a setup/tick/connect fixture, with a persistent stick and selectable command order.
-const INPUT = { btn: BTN.GUARD, prs: BTN.ATTACK };
+const INPUT = { prs: BTN.ATTACK, mx: 1 }; // LMB pushing into the touching body (ours, 2026-10-30)
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-8, `${a} != ${b}`);
 function setup(version = 1) {
   const { w, e: a } = arena({ x: OPEN.x, z: OPEN.z }), ecs = w.ecs;
