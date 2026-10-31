@@ -27,7 +27,7 @@ import { skillSheetState, skillListHtml, skillCenterHtml, skillRightHtml } from 
 import { sfx } from '../audio/sfx.js';
 import { goodName } from './craftingCatalog.js';
 import { provisionsGuideHtml } from './provisionInfo.js';
-import { translateData } from '../core/i18n.js';
+import { translateData, text as ltext } from '../core/i18n.js';
 import { LINE_ICONS as I, atlasIcon, escHtml as esc, fmtNum, onLocaleChange, uiLang } from './kit.js';
 
 const TEXT = {
@@ -267,11 +267,12 @@ export class CharacterScreen extends CharPanel {
   // The existing tattoo card (Poner en Q / E, forms) for an active node whose art or tattoo can be used now.
   skillTattooBlock(p, node) {
     if (node.kind !== 'active' || !node.skill) return '';
+    if (WEAPON_KINDS[this.stats().weapon | 0] === 'punos') return `<p class="cp-hint">${ltext('adventure.fistsNoArts')}</p>`;
     const w = this.stats().weapon | 0, kind = WEAPON_KINDS[w], sk = p.sk || { has: {}, lo: [], free: 1 };
     const has = (id) => sk.has?.[id], art = Object.hasOwn(ARTS, node.skill) ? ARTS[node.skill] : null;
     if (!has(node.skill) && !(art && art.weapon === kind)) return '';
     this.ttSel = node.skill; // tattooClick reads it for data-put and data-form
-    const lo = sk.lo?.[w] || DEFAULT_LOADOUT[kind], mlvl = (p.mast?.[w] || [1])[0];
+    const lo = sk.lo?.[w] || DEFAULT_LOADOUT[kind] || [], mlvl = (p.mast?.[w] || [1])[0];
     return `<div class="sk-tt">${this.tattooDetail(p, node.skill, { lo, has, mlvl, kind, price: '' })}</div>`;
   }
   // Replaces one region only when its markup changed (profiles arrive often; the pointer must not lose its cell).
@@ -449,11 +450,11 @@ export class CharacterScreen extends CharPanel {
     const st = this.stats();
     let ids = {};
     try { ids = this.slots?.() || {}; } catch { ids = {}; }
-    const w = p.eq.weapon, pistols = WEAPON_KINDS[this.weapon() | 0] === 'pistolas';
+    const w = p.eq.weapon, kind = WEAPON_KINDS[this.weapon() | 0], pistols = kind === 'pistolas', fists = kind === 'punos';
     const cell = (key, icon, label, count = '') => `<div class="ch-q" title="${esc(label)}"><span class="ch-q-key">${esc(key)}</span><span class="ch-q-ico">${icon}</span>${count !== '' ? `<b>${count}</b>` : ''}</div>`;
-    const svgIcon = (id) => (id ? skillIcon(id) : '');
+    const svgIcon = (id) => (id && !(fists && ['q', 'e', 'r'].some(slot => ids[slot] === id)) ? skillIcon(id) : '');
     return `<span class="ch-sub">${esc(T.quick)}</span><div class="ch-q-row">
-      ${cell('LMB', pistols ? svgIcon('pistol') : w ? atlasIcon(w.b, 'ch-q-art') : I.sword, pistols ? T.quick8.lmbPistol : T.quick8.lmb)}
+      ${cell('LMB', fists ? svgIcon('fists') : pistols ? svgIcon('pistol') : w ? atlasIcon(w.b, 'ch-q-art') : I.sword, fists ? ltext('hud.fistTip') : pistols ? T.quick8.lmbPistol : T.quick8.lmb)}
       ${cell('RMB', pistols ? svgIcon('pistolLong') : svgIcon('shield'), pistols ? T.quick8.rmbPistol : T.quick8.rmb)}
       ${cell('ESP', svgIcon('dash'), T.quick8.dash)}
       ${cell('Q', svgIcon(ids.q), ids.q || 'Q')}${cell('E', svgIcon(ids.e), ids.e || 'E')}${cell('G', svgIcon(ids.g), ids.g || 'G')}

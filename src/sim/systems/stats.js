@@ -4,7 +4,7 @@
 // tests, tools) this is the M3.6 game: level stats only, mastery 0 = the whole kit and no bonuses.
 import { tuning } from '../../data/tuning.js';
 import { STATS, SLOTS } from '../../data/items.js';
-import { MASTERY, WEAPON_KINDS } from '../../data/weapons.js';
+import { MASTERY, WEAPON_KINDS, NO_LOADOUT } from '../../data/weapons.js';
 import { ARTS, DEFAULT_LOADOUT, LOADOUT_SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, skillIndex, slotSkill } from '../../data/tattoos.js';
 import { PEARLS } from '../../data/pearls.js';
 import { needPenalty } from '../../data/survival.js';
@@ -45,9 +45,9 @@ export function applyLoadout(world, e) {
   const ecs = world.ecs, prof = world.profiles ? world.profiles.get(e) : null, k = Math.max(0, ecs.weapon[e] | 0);
   const kind = WEAPON_KINDS[k] || WEAPON_KINDS[0], sk = prof && prof.sk && prof.sk.lo ? prof.sk : null;
   if (sk) pruneLentLoadouts(sk, grantedSkills(prof.eq)); // a lent art whose item left reverts here, whatever the path
-  const lo = (sk && sk.lo[k]) || DEFAULT_LOADOUT[kind];
+  const base = DEFAULT_LOADOUT[kind] || NO_LOADOUT, lo = (sk && sk.lo[k]) || base;
   SKILL_SLOTS.forEach((slot, i) => {
-    const c = SLOT_COLS[slot], id = lo[i] || DEFAULT_LOADOUT[kind][i], has = sk && sk.has ? sk.has[id] : null;
+    const c = SLOT_COLS[slot], id = lo[i] || base[i], has = sk && sk.has ? sk.has[id] : null;
     ecs[c.sk][e] = skillIndex(id);
     ecs[c.fm][e] = has ? has[2] | 0 : 0;
     ecs[c.rk][e] = has ? has[0] | 0 : 1;

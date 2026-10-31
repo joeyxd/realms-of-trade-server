@@ -207,6 +207,9 @@ export class Input {
     const select = down(8);
     if (select && !P.prev[8]) { const hk = this.hotkeys.get('PadSelect'); if (hk) hk({ code: 'PadSelect' }); }
     P.prev[8] = select;
+    const holster = down(14);
+    if (holster && !P.prev[14]) { const hk = this.hotkeys.get('PadHolster'); if (hk) hk({ code: 'PadHolster' }); }
+    P.prev[14] = holster;
     for (const [i, slot] of PAD_SLOTS) {
       const d = down(i);
       if (d) any = true;

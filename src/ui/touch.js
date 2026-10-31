@@ -17,6 +17,7 @@ import { touchLayout, SLOTS } from './touchLayout.js';
 // background. Styled in hud.css (`#touch .tbtn svg`).
 const ico = (p) => `<svg viewBox="0 0 24 24" aria-hidden="true"><g class="u">${p}</g><g class="f">${p}</g></svg>`;
 export const ICONS = {
+  fist: ico('<path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M7 13V6a2 2 0 0 1 4 0v5-7a2 2 0 0 1 4 0v7-6a2 2 0 0 1 4 0v6-3a2 2 0 0 1 3 0v7l-4 6H9l-5-7a2 2 0 0 1 3-2l4 3M9 21v-3h9v3"/>'),
   comet: ico('<circle cx="16" cy="16" r="6"/><path d="M2 3l12 5M3 8l6 4M8 2l6 6"/><circle cx="16" cy="16" r="2"/>'),
   iceanchor: ico('<path d="M12 2.5v19M4 7l16 11M20 7L4 18"/><path d="M5 18l-2 3 5-.5M19 18l2 3-5-.5M12 2.5L9.5 6h5z"/>'),
   mastbolt: ico('<path d="M14.5 2.5L5.5 14h6l-1 8 8-12h-6z"/><path d="M3 6l2 1M20 4l1-2M20 20l2 1"/>'),
@@ -49,11 +50,13 @@ export const ICONS = {
 
 // What a skill in Q / E looks like on its button: [icon, label] (the arts as in KITS; the tattoos, M4.7).
 const SKILL_FACE = {
+  none: ['', ''],
   lunge: ['thrust', 'touch.lunge'], wave: ['crescent', 'touch.blade'], blast: ['burst', 'touch.blast'], blink: ['cloud', 'touch.smoke'],
   tromba: ['spout', 'touch.spout'], leap: ['leap', 'touch.board'], wheel: ['helm', 'touch.wheel'],
 };
 // What each weapon puts on the ATK / Q / E / R buttons: [icon, label].
 const KITS = {
+  punos: { atk: ['fist', 'touch.quick.fists'], parry: ['shield', 'touch.guardFace'], q: ['', ''], e: ['', ''], r: ['', ''] },
   sable: { atk: ['sword', 'ATK'], parry: ['shield', 'touch.guardFace'], q: ['thrust', 'touch.lunge'], e: ['crescent', 'touch.blade'], r: ['spiral', 'touch.storm'] },
   pistolas: { atk: ['pistol', 'touch.quickShotFace'], parry: ['pistolLong', 'touch.strongShotFace'], q: ['burst', 'touch.blast'], e: ['cloud', 'touch.smoke'], r: ['rain', 'touch.rain'] },
 };
@@ -269,7 +272,7 @@ export class TouchControls {
     const b = this.btns[key];
     if (this.lbls[key] === getLocale() + icon + label) return;
     this.lbls[key] = getLocale() + icon + label;
-    b.querySelector('.ico').innerHTML = ICONS[icon];
+    b.querySelector('.ico').innerHTML = ICONS[icon] || '';
     b.querySelector('.lbl').innerHTML = this.locked[key] ? ICONS.lock : label.startsWith('touch.') ? ltext(label) : label;
     b.querySelector('.lbl').dataset.t = label;
   }
@@ -278,6 +281,12 @@ export class TouchControls {
     if (kind + getLocale() === this.weapon) return;
     this.weapon = kind + getLocale();
     const K = KITS[kind] || KITS.sable;
+    this.noArts = kind === 'punos';
+    for (const k of ['q', 'e', 'r']) {
+      this.btns[k].style.opacity = this.noArts ? '0.35' : '';
+      this.btns[k].disabled = this.noArts;
+      this.btns[k].title = this.noArts ? t('hud.noArt') : '';
+    }
     for (const k of ['atk', 'parry', 'r']) this.setFace(k, K[k]);
     const labels = kind === 'pistolas'
       ? ['touch.quickShot', 'touch.secondaryShot']
@@ -334,7 +343,7 @@ export class TouchControls {
       b.querySelector('.sweep').style.background = k > 0 ? cone(Math.round((1 - k / 40) * 360)) : '';
       if (was > 0 && k === 0) this.flash(b);
     }
-    this.rBtn.classList.toggle('ready', !!rReady);
+    this.rBtn.classList.toggle('ready', !!rReady && !this.noArts);
   }
 
   setDash(charges, max, recharge01) {

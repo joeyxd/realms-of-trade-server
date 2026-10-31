@@ -161,7 +161,7 @@ export default {
   'pause.rotate': ['Rotar cámara con Z / X', 'Rotate camera with Z / X'], 'pause.uiSize': ['Tamaño de la interfaz', 'Interface size'],
   'pause.contrast': ['Alto contraste (proyectiles con patrón)', 'High contrast (patterned projectiles)'],
   'pause.landscape': ['Forzar horizontal (móvil)', 'Force landscape (mobile)'], 'pause.buttonSize': ['Tamaño de los botones', 'Button size'],
-  'pause.small': ['Pequeño', 'Small'], 'pause.large': ['Grande', 'Large'], 'pause.haptics': ['Vibración (móvil)', 'Vibration (mobile)'],
+  'pause.small': ['Pequeño', 'Small'], 'pause.large': ['Grande', 'Large'], 'pause.haptics': ['Vibración (mando y móvil)', 'Vibration (controller and phone)'],
   'pause.comicFx': ['Efectos de cómic (impactos, onomatopeyas)', 'Comic effects (impacts, sound words)'],
   'pause.launch': ['Lanzamiento de áreas', 'Area targeting'], 'pause.indicator': ['Con indicador (mantén y suelta)', 'With indicator (hold and release)'],
   'pause.quick': ['Rápido (al pulsar)', 'Quick (on press)'],

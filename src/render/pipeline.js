@@ -291,7 +291,8 @@ uniform sampler2D tInput;
 uniform vec2 uTexel;
 uniform float uFxaa;
 uniform float uVignette, uSat, uChroma, uDanger, uFlash, uContrast, uSplit, uBloom;
-uniform vec3 uFlashColor, uSplitShadow, uSplitHigh;
+uniform vec3 uFlashColor, uSplitShadow, uSplitHigh, uDimColor;
+uniform float uDim;
 uniform float uComic, uImpact, uLines, uSeed;
 uniform vec2 uImpactPos, uLinesPos;
 uniform vec3 uImpactCol;
@@ -348,6 +349,7 @@ void main() {
   float vig = uVignette * smoothstep(0.42, 0.95, r);
   col = comic > 0.5 ? mix(col, INK, vig) : col * (1.0 - vig);
   col = mix(col, col * vec3(1.0, 0.35, 0.3) + vec3(0.25, 0.0, 0.0), uDanger * smoothstep(0.35, 0.9, r));
+  col = mix(col, col * uDimColor, uDim); // the ultimate's dark fill (feedback.js), under the flash
   col = 1.0 - (1.0 - col) * (1.0 - min(uFlash, 0.8) * uFlashColor);
   if (uComic > 0.5) {
     // Paper grain: static, in screen pixels (2 px blocks), +-1.25 %.
@@ -413,7 +415,7 @@ export class Pipeline {
     this.filmWorld = true; this.filmWorldExposure = 0.927; // Preserve linear 0.18 after the LUT display gain (1.05).
     this.water = null; // { setMode(ssr) } provided by the scene
     this.grading = {
-      vignette: 0.22, sat: 1.07, chroma: 0, danger: 0, flash: 0, flashColor: new THREE.Color(1, 1, 1),
+      vignette: 0.22, sat: 1.07, chroma: 0, danger: 0, flash: 0, flashColor: new THREE.Color(1, 1, 1), dim: 0, dimColor: new THREE.Color(1, 1, 1),
       contrast: 0, split: 0, splitShadow: new THREE.Color(0x5a4aa0), splitHigh: new THREE.Color(0xffd9a0), bloom: 0,
     };
     this.view = 0; // debug: 1 = bloom only, 2 = glow mask, 3 = depth-of-field CoC
@@ -445,7 +447,7 @@ export class Pipeline {
       uniforms: {
         tInput: { value: this.rtPost.texture }, uTexel: { value: new THREE.Vector2() }, uFxaa: { value: 1 },
         uVignette: { value: 0.22 }, uSat: { value: 1.07 }, uChroma: { value: 0 }, uDanger: { value: 0 },
-        uFlash: { value: 0 }, uFlashColor: { value: new THREE.Color(1, 1, 1) },
+        uFlash: { value: 0 }, uFlashColor: { value: new THREE.Color(1, 1, 1) }, uDim: { value: 0 }, uDimColor: { value: new THREE.Color(1, 1, 1) },
         uContrast: { value: 0 }, uSplit: { value: 0 }, uSplitShadow: { value: new THREE.Color() }, uSplitHigh: { value: new THREE.Color() },
         tBloom: { value: null }, uBloom: { value: 0 }, uView: { value: 0 },
         uComic: { value: 0 }, uImpact: { value: 0 }, uImpactPos: { value: new THREE.Vector2(0.5, 0.5) }, uImpactCol: { value: new THREE.Color(1, 1, 1) },
@@ -715,6 +717,7 @@ export class Pipeline {
     const fu = this.final.uniforms;
     fu.uVignette.value = g.vignette; fu.uSat.value = g.sat; fu.uChroma.value = g.chroma;
     fu.uDanger.value = g.danger; fu.uFlash.value = g.flash; fu.uFlashColor.value.copy(g.flashColor);
+    fu.uDim.value = g.dim; fu.uDimColor.value.copy(g.dimColor);
     fu.uContrast.value = g.contrast; fu.uSplit.value = g.split;
     fu.uSplitShadow.value.copy(g.splitShadow); fu.uSplitHigh.value.copy(g.splitHigh);
     fu.uBloom.value = bloomOn ? Math.max(g.bloom, this.view === 1 ? 1 : 0) : 0;

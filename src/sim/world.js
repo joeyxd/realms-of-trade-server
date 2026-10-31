@@ -15,7 +15,7 @@ import { jumpOn } from './systems/jump.js';
 import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf, newHistory } from './systems/enemies.js';
 import { Hazards, Shots, emitPattern, patternCount, PTYPE, KILL, NEVER, SHOT } from './projectiles.js';
 import { firstRelativeSphereContact, firstSegmentCircleContact2D, firstSegmentCylinderContact, pointOnSegment } from './projectileClash.js';
-import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
+import { WEAPON_KINDS, WEAPON, SKILLS } from '../data/weapons.js';
 import { skillSegDist, rainR, cancelCast } from './systems/skills.js';
 import { applyLoadout } from './systems/stats.js';
 import { createEncounter, stepEncounter, encounterKilled } from './systems/encounter.js';
@@ -626,8 +626,9 @@ export class World {
       if (st.arc < 360 && d > 0.6 && (dx * fx + dz * fz) / d < half) continue;
       if (this.meleeVersion === 1 && (ecs.mask[o] & C.PLAYER) && this.clank(e, o, st) && !ecs.atkStage[e]) return;
       b.hitBy.set(e, key);
+      const fist = st.fist ? { kit: WEAPON.PUNOS, far: st.near > 0 && d - ecs.hurtR[o] > st.near ? 1 : 0 } : null; // fists: near or far box's row
       const stage = ecs.atkStage[e], emp = ecs.empK[e]; // empowered: the first swing after a Parpadeo (× empK, a crit)
-      this.strike(o, ecs.atk[e] * st.mult * (emp > 0 ? emp : 1), { by: e, kind: 'melee', stage, ...(st.smash ? { smash: 1, charge: st.charge } : {}), seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, crit: emp > 0, elem: ecs.elem[e], pt });
+      this.strike(o, ecs.atk[e] * st.mult * (emp > 0 ? emp : 1), { by: e, kind: 'melee', stage, ...(st.smash ? { smash: 1, charge: st.charge } : {}), ...fist, seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, crit: emp > 0, elem: ecs.elem[e], pt });
       if (this.meleeVersion !== 1) this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
   }
@@ -650,7 +651,7 @@ export class World {
     // x's blow (stage s, damage d) is cancelled against y.
     const cancel = (x, y, s, d) => {
       const stage = ecs.atkStage[x];
-      this.emit({ type: 'duel', e: y, by: x, skill: swingKey(stage, ecs.atkSmash[x]), heavy: stage === 3 ? 1 : 0, tele: Math.round(s.windup * 1000) / 1000, win: Math.round(ecs.atkT[x] * 1000) / 1000, x: mx, z: mz, out: 'clank', dmg: 0, hp: ecs.hp[y] });
+      this.emit({ type: 'duel', e: y, by: x, skill: swingKey(stage, ecs.atkSmash[x], ecs.weapon[x]), heavy: stage === 3 ? 1 : 0, tele: Math.round(s.windup * 1000) / 1000, win: Math.round(ecs.atkT[x] * 1000) / 1000, x: mx, z: mz, out: 'clank', dmg: 0, hp: ecs.hp[y] });
       ecs.atkStage[x] = 0; ecs.atkBuf[x] = ecs.atkLatch[x] = 0;
       this.hitState(y).hitBy.set(x, x * 65536 + ecs.swingId[x]);
       return this.rebound(x, d, ecs.x[y], ecs.z[y]);

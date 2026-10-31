@@ -207,7 +207,7 @@ export class Rewards {
         sfx.mastery();
         this.over(rich('reward.mastery_float', { level: formatNumber(ev.level) }), 'level', { life: 1.6, rise: 60 });
         let what = rich('reward.mastery_damage', { percent: formatNumber(Math.round(MASTERY.dmg * 100)), weapon: dataParam(W.short, 'lower') });
-        if (ev.opens) { const id = W[SLOT_SKILL[ev.opens]]; what = rich('reward.mastery_open', { slot: ev.opens.toUpperCase(), skill: dataParam(SKILLS[id].name), hint: dataParam(SKILLS[id].hint, 'lower') }); }
+        if (ev.opens && W[SLOT_SKILL[ev.opens]] !== 'none') { const id = W[SLOT_SKILL[ev.opens]]; what = rich('reward.mastery_open', { slot: ev.opens.toUpperCase(), skill: dataParam(SKILLS[id].name), hint: dataParam(SKILLS[id].hint, 'lower') }); }
         else if (ev.passive) { const p = MASTERY.passives[kind].find((q) => q.id === ev.passive); if (p) what = rich('reward.mastery_passive', { name: dataParam(p.name), hint: dataParam(p.hint) }); }
         H.toast(`${rich('reward.mastery_title', { weapon: dataParam(W.name), level: formatNumber(ev.level) })}<br>${what}`, 5600);
         break;
@@ -242,6 +242,7 @@ export class Rewards {
         this.lockT = now;
         if (ev.slot === 'g') { sfx.locked(); H.denySlot('g'); H.toast(rich('reward.g_needs_pearl'), 3400); break; }
         const kind = WEAPON_KINDS[this.ps.weapon] || 'sable', W = WEAPONS[kind], id = W[SLOT_SKILL[ev.slot]];
+        if (id === 'none' || !SKILLS[id]) break;
         sfx.locked();
         H.denySlot(ev.slot);
         H.toast(rich('reward.skill_locked', { skill: dataParam(SKILLS[id].name), level: formatNumber(MASTERY.unlock[ev.slot]), weapon: dataParam(W.short, 'lower') }), 3400);

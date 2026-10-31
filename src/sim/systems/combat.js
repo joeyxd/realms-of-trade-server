@@ -24,7 +24,7 @@ import { PTYPE, KILL, NEVER, SHOT, beamSeg, segDist, lavaR } from '../projectile
 import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf, firePistol, firePistolSecondary, callRain, stepRain, stepTromba, stepWheel, takeEmpower, phases, skillNum } from './skills.js';
 import { STATE, ACT, C as COMP, airborne, intangible, resetJump, resetGrab } from '../ecs.js';
 import { hash01 } from '../../core/rng.js';
-import { SKILLS } from '../../data/weapons.js';
+import { SKILLS, WEAPON } from '../../data/weapons.js';
 import { CONSUMABLES } from '../../data/items.js';
 import { LAWLESS, MELEE, MELEE_GUARD, MELEE_GRAB, MELEE_ROLL, MELEE_SMASH } from '../../data/lawless.js';
 import { swingFrame, swingBusy, swingDescriptor, swingBlow, swingKey } from '../../data/meleeFrames.js';
@@ -356,9 +356,9 @@ export function killPlayer(world, e, seq, by = 0) {
 // {by, kind, seq (the attacker's), x, z, heavy, knock, pierce, above}.
 function duelBlow(world, e, o) {
   const ecs = world.ecs, by = o.by, melee = o.kind === 'melee', cast = o.kind === 'skill';
-  const skill = melee ? swingKey(o.stage, world.meleeVersion === 1 && o.smash) : o.kind === 'wave' ? 'storm' : o.skill || o.kind;
+  const skill = melee ? swingKey(o.stage, world.meleeVersion === 1 && o.smash, o.kit, o.far) : o.kind === 'wave' ? 'storm' : o.skill || o.kind;
   const slot = ['q', 'e', 'g'][ecs.castK[by] - 1];
-  const tele = melee ? swingBlow(world.meleeVersion, o.stage, o.smash, o.charge).windup : cast ? phases(skill, slot && skillOf(ecs, by, slot) === skill ? skillNum(ecs, by, slot) : SKILLS[skill])[0] : 0;
+  const tele = melee ? swingBlow(world.meleeVersion, o.stage, o.smash, o.charge, o.kit).windup : cast ? phases(skill, slot && skillOf(ecs, by, slot) === skill ? skillNum(ecs, by, slot) : SKILLS[skill])[0] : 0;
   const win = melee ? ecs.atkT[by] : o.age ?? (cast && slot ? ecs.castT[by] : 0);
   return { type: 'duel', e, by, skill, heavy: o.heavy ? 1 : 0, tele: Math.round(tele * 1000) / 1000, win: Math.round(win * 1000) / 1000, x: o.x, z: o.z };
 }
@@ -423,7 +423,7 @@ export function hurtByPlayer(world, e, raw, o) {
       const L = LAWLESS, damage = meleePercent(hp - Math.max(0, ecs.hp[e]), ecs.maxHp[e], L.meleeStamina);
       const percent = meleePercent(ecs.maxHp[e] - Math.max(0, ecs.hp[e]), ecs.maxHp[e], L.meleeStamina);
       const kb = knockback(percent, damage, move.weight ?? 87, move.bkb, move.kbg);
-      const hl = move.throw ? 0 : hitlagFrames(damage), hs = hitstunFrames(kb); // ordinary Melee release sets no hitlag (03 4.5-4.6)
+      const hl = move.throw ? 0 : hitlagFrames(damage), hs = hitstunFrames(kb) + (move.react || 0); // ordinary Melee release sets no hitlag (03 4.5-4.6); react: Ultimate add_reaction_frame
       duel.kb = Math.round(kb * 10) / 10; duel.hl = hl; duel.hs = hs;
       if (!move.proj) ecs.hitlag[by] = hl;
       if (ecs.dead[e] <= 0) {
@@ -432,6 +432,7 @@ export function hurtByPlayer(world, e, raw, o) {
         // A spin (hit 3 is 360 deg) sends a pirate behind the attacker backwards, not through them.
         if (!move.proj && !move.throw && dx * (ecs.x[e] - o.x) + dz * (ecs.z[e] - o.z) < 0) { dx = -dx; dz = -dz; }
         if (Math.hypot(dx, dz) < 1e-6) { dx = ecs.x[e] - o.x; dz = ecs.z[e] - o.z; }
+        if (move.pull) { dx = -dx; dz = -dz; } // Ultimate angle 180: toward the attacker
         const len = Math.hypot(dx, dz), speed = launchSpeed(kb, L.meleeUnit);
         ecs.lvx[e] = len > 0 ? dx / len * speed : 0; ecs.lvz[e] = len > 0 ? dz / len * speed : 0;
         launched(ecs, e); ecs.grabDown[e] = kb >= L.meleeTumble ? 1 : 0;
@@ -738,9 +739,9 @@ function swingStage(world, e, stage, cmd) {
   const ecs = world.ecs;
   if (world.meleeVersion === 1) {
     ecs.atkRej[e] = ecs.atkLink[e] = ecs.chgN[e] = ecs.chgStop[e] = 0;
-    ecs.atkSmash[e] = stage === 3 && (cmd.btn & BTN.ATTACK) ? 1 : 0;
+    ecs.atkSmash[e] = stage === 3 && (cmd.btn & BTN.ATTACK) && ecs.weapon[e] !== WEAPON.PUNOS ? 1 : 0; // fists: no smash yet
   }
-  const st = swingBlow(world.meleeVersion, stage, ecs.atkSmash[e]);
+  const st = swingBlow(world.meleeVersion, stage, ecs.atkSmash[e], 0, ecs.weapon[e]);
   ecs.atkStage[e] = stage; ecs.atkT[e] = 0; ecs.atkBuf[e] = 0; ecs.atkLatch[e] = 0; ecs.swingId[e] += 1;
   ecs.guardT[e] = -1;
   ecs.empK[e] = takeEmpower(ecs, e); // the first swing after a Parpadeo hits harder, as a crit (world.meleeHits)

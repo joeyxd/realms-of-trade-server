@@ -4,6 +4,7 @@ import { part, merge } from './geo.js';
 import { toon } from './toon.js';
 import { assets } from './assets/registry.js';
 import { buildLook } from './charlooks.js';
+import { lookWeapon } from './characters.js';
 import { tierFromCadence } from './chopVisuals.js';
 
 let axeGeometry, axeMaterial, pickGeometry, pickMaterial;
@@ -46,7 +47,7 @@ function pickaxe() {
 function restore(view) {
   if (view.harvestTool) view.harvestTool.visible = false;
   if (view.harvestPose?.unarmed) {
-    const weapon = view.armed ? (view.weaponKind === 'pistolas' ? 'pistols' : true) : false;
+    const weapon = view.armed ? lookWeapon(view.weaponKind) : false;
     view.mesh.geometry = (assets.charLook(view.skin, weapon) || buildLook(view.skin, weapon)).geo;
   }
   view.harvestPose = null;

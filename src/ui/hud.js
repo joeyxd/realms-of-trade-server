@@ -6,6 +6,7 @@ import { gsap } from 'gsap';
 import { SKINS } from '../render/characters.js';
 import { WEAPONS, SKILLS, formed } from '../data/weapons.js';
 import { TATTOOS } from '../data/tattoos.js';
+import { ICONS as TOUCH_ICONS } from './touch.js';
 import { GAME } from '../data/meta.js';
 
 // The tracker steps the player closed with its X (PT11); under the save key, so "reset save" clears it too.
@@ -49,7 +50,7 @@ const ICONS = {
 };
 
 // The HUD icon of a skill (the slots, the Tatuajes tab).
-export const skillIcon = (id) => ICONS[SLOT_ICON[id] || id] || ICONS.sword;
+export const skillIcon = (id) => id === 'none' ? '' : id === 'fists' ? TOUCH_ICONS.fist : ICONS[SLOT_ICON[id] || id] || ICONS.sword;
 
 // Portrait: the real 3D model rendered by PortraitStudio when available, else a flat silhouette.
 export function drawPortrait(canvas, skinIdx, image) {
@@ -346,6 +347,12 @@ export class Hud {
     this.last.slots = key;
     for (const [el, d] of [[this.qSlot, q], [this.eSlot, e]]) {
       const T = TATTOOS[d.id], S = SKILLS[d.id];
+      el.style.opacity = d.id === 'none' ? '0.35' : '';
+      if (d.id === 'none') {
+        el.querySelector('.ico').innerHTML = ''; el.title = t('hud.noArt');
+        el.querySelector('.rk').hidden = el.querySelector('.fm').hidden = true;
+        el.classList.remove('tattoo'); continue;
+      }
       el.querySelector('.ico').innerHTML = ICONS[SLOT_ICON[d.id] || d.id] || ICONS.sword;
       el.classList.toggle('tattoo', !!T);
       const rk = el.querySelector('.rk'), fm = el.querySelector('.fm');
@@ -501,9 +508,9 @@ export class Hud {
     if (kind + getLocale() === this.last.weapon) return;
     this.last.weapon = kind + getLocale();
     const W = WEAPONS[kind] || WEAPONS.sable, pist = W.basic === 'pistol';
-    const icon = { combo: ICONS.sword, pistol: ICONS.pistol, lunge: ICONS.lunge, wave: ICONS.crescent, storm: ICONS.storm, blast: ICONS.blast, blink: ICONS.blink, rain: ICONS.rain };
+    const icon = { fists: TOUCH_ICONS.fist, combo: ICONS.sword, pistol: ICONS.pistol, lunge: ICONS.lunge, wave: ICONS.crescent, storm: ICONS.storm, blast: ICONS.blast, blink: ICONS.blink, rain: ICONS.rain };
     this.lmbSlot.querySelector('.ico').innerHTML = icon[W.basic];
-    const lmbTip = pist ? 'hud.pistolTip' : 'hud.swordTip';
+    const lmbTip = kind === 'punos' ? 'hud.fistTip' : pist ? 'hud.pistolTip' : 'hud.swordTip';
     this.lmbSlot.title = t(lmbTip); this.lmbSlot.dataset.l10nTitle = lmbTip; this.lmbSlot.dataset.l10nAriaLabel = lmbTip;
     this.lmbSlot.setAttribute('aria-label', t(lmbTip));
     this.lmbSlot.querySelector('.combo').hidden = pist;
@@ -516,8 +523,10 @@ export class Hud {
     this.rmbSweep.style.background = '';
     this.last.gs = undefined; this.last.alt = undefined; this.last.ck = undefined;
     this.rmbSlot.classList.remove('low', 'caught');
-    this.rSlot.querySelector('.ico').innerHTML = icon[W.r];
-    this.rSlot.title = W.r === 'rain' ? t('hud.rainTip') : t('hud.stormTip');
+    this.rSlot.querySelector('.ico').innerHTML = icon[W.r] || '';
+    this.rSlot.style.opacity = W.r === 'none' ? '0.35' : '';
+    const rTip = W.r === 'none' ? 'hud.noArt' : W.r === 'rain' ? 'hud.rainTip' : 'hud.stormTip';
+    this.rSlot.title = t(rTip); this.rSlot.dataset.l10nTitle = rTip;
     setDataText(this.wname, W.name);
     gsap.fromTo(this.wname, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
   }
@@ -571,7 +580,7 @@ export class Hud {
     (this.root.parentElement || this.root).style.setProperty('--party-n', Math.min(3, list.length)); // on #ui: the toasts and the touch Chat row start under the crew
     this.partyEl.innerHTML = list.slice(0, 3).map((p) => {
       const f = Math.max(0, Math.min(1, p.hp / Math.max(1, p.maxHp)));
-      const icon = p.weapon === 1 ? ICONS.pistol : ICONS.sword;
+      const icon = p.weapon === 2 ? TOUCH_ICONS.fist : p.weapon === 1 ? ICONS.pistol : ICONS.sword;
       const c = hex((SKINS[p.skin] || SKINS[0]).accent ?? 0x3bf0ff);
       return `<div class="pm${p.dead ? ' dead' : ''}" style="--pc:${c}"><span class="pw">${icon}</span><div class="pb"><div class="pn"><span class="lv">${p.level}</span>${esc(p.name)}</div><div class="bar hp thin"><div class="fill" style="width:${(f * 100).toFixed(0)}%"></div></div></div></div>`;
     }).join('');

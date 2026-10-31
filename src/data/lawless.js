@@ -50,6 +50,13 @@ export const MELEE = {
   melee3: { bkb: 30, kbg: 70 },
   melee3s: { bkb: 60, kbg: 70 }, // Melee forward smash non-tip, ficha 06:154
   lunge: { bkb: 35, kbg: 60 },
+  // Puños (Terry's jabs; Ultimate dolly game.cpp ATTACK numbers, docs/research/melee/10-terry.md). pull: sends the victim toward the attacker (angle 180);
+  // react: frames added to the hitstun (set_add_reaction_frame). A blow's far row is for a target past its `near` (data/meleeFrames.js).
+  fist1: { bkb: 10, kbg: 10 }, // jab 1 box 0, angle 361
+  fist1f: { bkb: 30, kbg: 10, pull: true, react: 1 }, // jab 1 box 1, angle 180
+  fist2: { bkb: 25, kbg: 15, react: 1 }, // jab 2 box 0, angle 361
+  fist2f: { bkb: 38, kbg: 15, pull: true, react: 1 }, // jab 2 box 2, angle 180
+  fist3: { bkb: 70, kbg: 60 }, // jab 3, angle 47 (away on our ground plane)
   gun_r: { bkb: 30, kbg: 70, proj: true },
   gun_l: { noKb: true, proj: true },
   rain: { noKb: true, proj: true },

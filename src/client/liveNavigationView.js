@@ -11,6 +11,7 @@ import { currentAt, gustAt } from '../sim/naval/navigation.js';
 import { pilotPoint } from '../sim/naval/pilotGeometry.js';
 import { poseNavalHelm } from '../render/navalHelmPose.js';
 import { buildLook } from '../render/charlooks.js';
+import { lookWeapon } from '../render/characters.js';
 import { assets } from '../render/assets/registry.js';
 import { NavalRouteRenderer, routePresentation, routeTarget, routeCommand } from '../render/naval/route.js';
 import { lessonPresentation, lessonCommand } from '../ui/navalLessonState.js';
@@ -364,7 +365,10 @@ export class LiveNavigationView {
     if (!ridden) layer?.unride?.(view.root);
     if (view.navalWeaponGeometry) {
       // A weapon change can already have restored the correct armed geometry this frame.
-      if (view.mesh.geometry === view.navalBareGeometry) view.mesh.geometry = view.navalWeaponGeometry;
+      if (view.mesh.geometry === view.navalBareGeometry) {
+        const weapon = view.armed ? lookWeapon(view.weaponKind) : false;
+        view.mesh.geometry = (view.ext && assets.charLook(view.skin, weapon) || buildLook(view.skin, weapon)).geo;
+      }
       view.navalWeaponGeometry = null;
     }
     return view.navalPose = { active: false, handsWorld: null };

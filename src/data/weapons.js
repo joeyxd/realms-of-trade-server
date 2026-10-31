@@ -5,9 +5,15 @@
 export const WEAPONS = {
   sable: { name: 'Sable de cubierta', short: 'Sable', basic: 'combo', q: 'lunge', e: 'wave', r: 'storm' },
   pistolas: { name: 'Pistolas de chispa', short: 'Pistolas', basic: 'pistol', q: 'blast', e: 'blink', r: 'rain' },
+  // The base kit of a pirate who carries no weapon item (Terry's jabs, data/meleeFrames.js). Q, E and R are 'none'; racks never hand it out.
+  punos: { name: 'Puños', short: 'Puños', basic: 'fists', q: 'none', e: 'none', r: 'none' },
 };
 export const WEAPON_KINDS = Object.keys(WEAPONS);
-export const WEAPON = { SABLE: 0, PISTOLAS: 1 };
+export const WEAPON = { SABLE: 0, PISTOLAS: 1, PUNOS: 2 };
+// The kits that come from a weapon item: the only ones a profile keeps mastery and a Q / E loadout for (Puños have neither yet).
+export const ARMED_KINDS = WEAPON_KINDS.filter((k) => WEAPONS[k].basic !== 'fists');
+// The Q / E loadout of a kit that has no arts (Puños): both slots empty.
+export const NO_LOADOUT = Object.freeze(['none', 'none']);
 export const weaponIndex = (kind) => Math.max(0, WEAPON_KINDS.indexOf(kind));
 export const weaponOf = (i) => WEAPONS[WEAPON_KINDS[i]] || WEAPONS.sable;
 export const RACK_R = 2.4;
@@ -101,5 +107,6 @@ export const MASTERY = {
       { at: 5, id: 'trigger', name: 'Gatillo fácil', hint: 'Disparas un 15 % más rápido', fire: 0.85 },
       { at: 10, id: 'deluge', name: 'Diluvio', hint: 'La Lluvia de plomo dura 2,25 s y crece 0,8 u', rainDur: 0.75, rainR: 0.8 },
     ],
+    punos: [], // no passives yet
   },
 };

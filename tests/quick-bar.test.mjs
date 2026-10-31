@@ -43,7 +43,7 @@ test('sanitizeSlots rejects malformed storage and returns independent defaults',
 });
 test('picker options follow goods, canteen presence and pearl availability', () => {
   const empty = quickOptions({ canteen: null, goods: { pescado: 0, fruta: 0.5, ron: -2 }, pearl: false });
-  assert.deepEqual(empty, [{ k: 'potion' }, ...['q', 'e', 'r'].map(slot => ({ k: 'skill', slot }))]);
+  assert.deepEqual(empty, [{ k: 'potion' }, { k: 'fists' }, ...['q', 'e', 'r'].map(slot => ({ k: 'skill', slot }))]);
   const all = quickOptions({ canteen: 0, goods: { pescado: 1, galleta: 2, fruta: 1, agua: 1, ron: 1, coco: 1, madera: 3 }, pearl: true,
     weapons: [{ uid: 3, worn: true }, { uid: 9, worn: false }] });
   assert.ok(all.some(e => e.k === 'drink'));

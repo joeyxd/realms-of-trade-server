@@ -22,7 +22,7 @@ import { canStand } from './sim/systems/movement.js';
 import { castKind, isArt, ARTS, skillId } from './data/tattoos.js';
 import { AimCast } from './client/aimcast.js';
 import { autoAimPoint } from './client/autoAim.js';
-import { WEAPONS, WEAPON_KINDS, SKILLS, weaponIndex, weaponOf } from './data/weapons.js';
+import { WEAPONS, WEAPON_KINDS, ARMED_KINDS, SKILLS, weaponIndex, weaponOf } from './data/weapons.js';
 import { createTransport, probeServer, servedByGameServer, httpUrlFor } from './net/transport.js';
 import { GameClient } from './client/gameClient.js';
 import { AccountAuth } from './client/accountAuth.js';
@@ -443,9 +443,15 @@ async function boot() {
   const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { companionsPanel?.close(); artisan.close(); freshwaterPanel.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); fn(); } };
   input.onHotkey('KeyI', panelKey(() => charPanel.toggle('gear')));
   input.onHotkey('KeyB', () => { if (st.mode === 'playing' && !pause.open) raftEditor.toggle(); });
+  const holsterWeapon = () => {
+    if (st.mode !== 'playing' || pause.open || !input.enabled || ps.dead || !client.joined
+      || document.body.classList.contains('is-naval')) return false;
+    sendCmd({ type: 'holster' }); return true;
+  };
+  input.onHotkey('PadHolster', holsterWeapon);
   input.onHotkey('KeyH', () => {
     if (st.mode !== 'playing' || pause.open) return false;
-    if (!(commercePanel.active && ['cargo', 'production'].includes(commercePanel.view)) && !commercePanel.context()) return false;
+    if (!(commercePanel.active && ['cargo', 'production'].includes(commercePanel.view)) && !commercePanel.context()) return holsterWeapon();
     commercePanel.toggleCargo(); return true;
   });
   input.onHotkey('KeyR', () => { if (!raftEditor.active) return false; raftEditor.rotate(); return true; });
@@ -500,7 +506,7 @@ async function boot() {
     return [...(p.eq?.weapon ? [{ uid: p.eq.weapon.u, item: p.eq.weapon, worn: true }] : []),
       ...(p.bag || []).filter((it) => BASES[it.b]?.slot === 'weapon').map((it) => ({ uid: it.u, item: it, worn: false }))];
   };
-  const quickBar = isTouch ? new QuickBar(touch.root, { input, touch, freshwater: freshwaterPanel, equip: (uid) => sendCmd({ type: 'equip', uid }),
+  const quickBar = isTouch ? new QuickBar(touch.root, { input, touch, freshwater: freshwaterPanel, equip: (uid) => sendCmd({ type: 'equip', uid }), holster: holsterWeapon,
     enabled: () => st.mode === 'playing' && !pause.open && input.enabled && !ps.dead && client.joined
       && !document.body.classList.contains('is-naval'),
   }) : null;
@@ -998,8 +1004,8 @@ async function boot() {
   // The weapon you carry: remembered for the next session, the kit shown in a toast.
   function onEquip(w) {
     const kind = WEAPON_KINDS[w] || 'sable', W = WEAPONS[kind];
-    if (settings.weapon !== kind) { settings.weapon = kind; saveSettings(); }
-    const kitLine = kind === 'pistolas'
+    if (kind !== 'punos' && settings.weapon !== kind) { settings.weapon = kind; saveSettings(); }
+    const kitLine = kind === 'punos' ? rich('runtime.kitFists') : kind === 'pistolas'
       ? rich('runtime.kitPistol')
       : t('runtime.kitSword');
     hud.toast(`<b>${dataText(W.name)}</b><br>${kitLine}`, 4600);
@@ -1368,7 +1374,7 @@ async function boot() {
       d.range = S.range || 0; d.min = S.min || 0; d.r = d.id === 'leap' && S.blink ? 0.7 : S.r || 0;
     }
     const R = slotD.r, rid = weaponOf(ps.weapon).r;
-    R.id = rid; R.S = SKILLS[rid];
+    R.id = rid; R.S = rid === 'none' ? null : SKILLS[rid];
     // The rain aims like an area only when the meter is full (otherwise the press just says why it cannot).
     R.kind = rid === 'rain' && ps.riposte >= tuning.parry.riposte.max ? 'ground' : 'self';
     R.range = rid === 'rain' ? SKILLS.rain.range : 0; R.min = 0; R.r = rid === 'rain' ? rainR(ecs, e) : 0;
@@ -1508,6 +1514,9 @@ async function boot() {
       // The slot keys through the aim controller: an area's press goes out on release, aimed at its marker.
       readSlots();
       input.consumeSlots(slotIn);
+      for (const slot of ['q', 'e', 'r']) if (slotD[slot].id === 'none') {
+        slotIn.down[slot] = slotIn.up[slot] = slotIn.held[slot] = false;
+      }
       // TA03: while a chop swing runs, G is the crit key and never reaches the skill slot (with no swing it stays the skill).
       if (slotIn.down.g && chop.crit()) st.chopG = true;
       if (st.chopG) { slotIn.down.g = slotIn.held.g = slotIn.up.g = false; if (!input.slotHeld('g')) st.chopG = false; }
@@ -1685,7 +1694,7 @@ async function boot() {
         const runes = !npc && !chest && prof && prof.flags.tier > 1 && (!E0 || E0[1] === 'idle') && Math.hypot(ps.x - AR.x, ps.z - AR.z) < ENCOUNTERS.caldera.tierR;
         const tierSel = prof ? prof.flags.tierSel || 1 : 1, tierNext = prof ? (tierSel % prof.flags.tier) + 1 : 1;
         const rack = !npc && !chest && !runes && !ps.dead ? rackNear(map, ps.x, ps.z) : null;
-        const other = (ps.weapon + 1) % WEAPON_KINDS.length;
+        const other = (ps.weapon + 1) % ARMED_KINDS.length; // racks hold weapons, never Puños
         const resourceInteraction = !workbench.active && !navalInteraction && !npc && !chest && !runes && !rack ? resources.interaction() : null;
         st.chopPrompt = !!resourceInteraction?.chop; // holding F chops only while F shows the chop prompt (no NPC, chest, rack or nearer rock)
         const bench = client.resources?.bench;

@@ -29,7 +29,7 @@ test('a body drawn 6 frames late flies on time with the led offset, and the offs
     if (!r) break;
     frame++; last = r;
     const f = frame - hl;
-    if (f <= 0) { assert.equal(r.lift, 0); assert.ok(Math.abs(r.ox) <= 0.06 && r.oz === 0); continue; }
+    if (f <= 0) { assert.equal(r.lift, 0); assert.ok(Math.abs(r.ox) <= 2 * LAWLESS.meleeUnit + 1e-12 && r.oz === 0); continue; } // Ultimate's damage shake, 2 units
     const drawn = path[Math.max(0, f - lead)]; // what interpolation shows: the sim 6 frames ago
     assert.ok(Math.abs(drawn + r.ox - path[f]) < 1e-9, `frame ${f}`);
   }

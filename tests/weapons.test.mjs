@@ -14,7 +14,7 @@ const besideRack = () => [rack.x + 1.5, rack.z];
 
 test('the island has racks, clear of colliders, and the weapons are indexed', () => {
   assert.ok(map.racks.length >= 2);
-  assert.deepEqual(WEAPON_KINDS, ['sable', 'pistolas']);
+  assert.deepEqual(WEAPON_KINDS, ['sable', 'pistolas', 'punos']);
   for (const k of map.racks) {
     assert.ok(map.groundAt(k.x, k.z) > 0.3, 'on dry land');
     const others = map.colliders.filter((c) => Math.hypot(c.x - k.x, c.z - k.z) < 2.6 && !(c.x === k.x && c.z === k.z));
@@ -53,7 +53,7 @@ test('HELLO picks the starting weapon; describe and the snapshot carry it', () =
   server.receive(2, { t: MSG.HELLO, v: PROTOCOL_VERSION, name: 'B', skin: 0, weapon: 77 });
   const a = server.clients.get(1).entity, b = server.clients.get(2).entity, ecs = server.world.ecs;
   assert.equal(ecs.weapon[a], WEAPON.PISTOLAS);
-  assert.equal(ecs.weapon[b], WEAPON_KINDS.length - 1, 'clamped');
+  assert.equal(ecs.weapon[b], WEAPON.SABLE, 'clamped to Puños, which start as the sabre starter (a new profile always has its item)');
   assert.equal(server.world.describe(a).weapon, WEAPON.PISTOLAS);
   out.length = 0;
   for (let i = 0; i < 4; i++) server.step();

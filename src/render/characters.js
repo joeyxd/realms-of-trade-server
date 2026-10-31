@@ -17,7 +17,7 @@ import { stepHarvestPose } from './harvestPose.js';
 import { applySwimPose } from './swimPose.js';
 import { reactionEligible } from './assets/characterReaction.js';
 import { createPistolRecoil, kickPistolRecoil, stepPistolRecoil } from './pistolRecoil.js';
-import { startLaunch, stepLaunch, tiltAxis } from './launchPose.js';
+import { startLaunch, stepLaunch, startAtkShake, stepAtkShake, tiltAxis } from './launchPose.js';
 import { seaSurfaceY } from './naval/seaSwell.js';
 import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
@@ -25,9 +25,10 @@ import { MELEE_SMASH_STAGE, swingStages } from '../data/meleeFrames.js';
 import { MELEE_GRAB, MELEE_ROLL } from '../data/lawless.js';
 import { ACT } from '../sim/ecs.js';
 import { JUMP_STAGE, airStage } from '../sim/systems/jump.js';
-import { SKILLS } from '../data/weapons.js';
+import { SKILLS, WEAPON } from '../data/weapons.js';
 
 export const SKINS = LOOKS;
+export function lookWeapon(kind) { return kind === 'punos' ? false : kind === 'pistolas' ? 'pistols' : true; }
 // P1b: the server's swing rule (WELCOME melee), so a swing's pose is keyed to the frames it runs on.
 let meleeRule = 0;
 export const setMeleeView = (v) => { meleeRule = v === 1 ? 1 : 0; };
@@ -215,7 +216,7 @@ export class CharacterView {
   setWeapon(kind) {
     if (!this.armed || kind === this.weaponKind) return;
     this.weaponKind = kind;
-    const w = kind === 'pistolas' ? 'pistols' : true;
+    const w = lookWeapon(kind);
     this.mesh.geometry = (this.ext && assets.charLook(this.skin, w) || buildLook(this.skin, w)).geo;
   }
   // A pistol shot kicks its own arm up (hand +1 = fast left, -1 = powerful right).
@@ -240,6 +241,8 @@ export class CharacterView {
 
   // A Melee hit (MN_MELEE): the event's kb, hl, la and kd; lead: s this body is drawn late (launchPose.js).
   launch(ev, lead = 0) { this.launchL = startLaunch(ev, lead); }
+  // The same hit seen from the blade: this body landed it and shakes through its hitlag (launchPose.js SHAKE.attack).
+  atkShake(hl) { this.atkS = startAtkShake(hl); }
 
   // Short white (or tinted) flash: hits taken, perfect parries.
   flash(color = 0xffffff, amount = 1) { this.flashCol.set(color); this.flashA = Math.max(this.flashA, amount); }
@@ -315,6 +318,9 @@ export class CharacterView {
     const lo = this.launchL && !s.dead ? stepLaunch(this.launchL, dt, this.launchO || (this.launchO = {})) : null;
     if (!lo) this.launchL = null;
     else { this.root.position.x += lo.ox; this.root.position.z += lo.oz; }
+    const as = this.atkS ? stepAtkShake(this.atkS, dt) : null;
+    if (as === null) this.atkS = null;
+    else { this.root.position.x += Math.sin(s.f) * as; this.root.position.z += Math.cos(s.f) * as; }
     // Abordaje (ACT.LEAP, M4.7): the body rides the jump's parabola h · 4u(1 − u), render only; the shadow stays down.
     const lift = ((s.act | 0) === ACT.LEAP ? this.leapLift(s.actT || 0) : 0) + (lo ? lo.lift : 0);
     this.root.position.y += lift;
@@ -459,7 +465,25 @@ export class CharacterView {
     let w = 0, spin = 0, lunge = 0;
     const set = (name, x, z, y) => { limbs[name] = [x, z, y]; };
 
-    if ((act >= ACT.SWING1 && act <= ACT.SWING3) || act === ACT.SMASH) {
+    if (this.weaponKind === 'punos' && act >= ACT.SWING1 && act <= ACT.SWING3) {
+      const stage = act - ACT.SWING1 + 1, st = swingStages(meleeRule, WEAPON.PUNOS)[stage - 1];
+      const tw = st.windup, ta = st.active, tr = st.recover;
+      let p;
+      if (t < tw) { p = 0; w = sm(t / tw); }
+      else if (t < tw + ta) { p = easeOutCubic((t - tw) / ta); w = 1; }
+      else { p = 1; w = 1 - sm((t - tw - ta) / tr); }
+      lunge = w;
+      const hand = stage === 1 ? 'L' : 'R', guard = stage === 1 ? 'R' : 'L';
+      set('arm' + guard, -1.2, guard === 'L' ? 0.18 : -0.18); set('fore' + guard, -1.6);
+      if (stage === 3) {
+        T.cy = -0.3 + 0.8 * p; T.cx = 0.15;
+        set('armR', -1.35, -0.8 + 1.5 * p); set('foreR', -0.9);
+      } else {
+        T.cy = (stage === 1 ? -1 : 1) * (0.2 - 0.35 * p); T.cx = 0.06;
+        set('arm' + hand, -1.2 - 0.38 * p, hand === 'L' ? 0.08 : -0.08);
+        set('fore' + hand, -1.6 + 1.55 * p);
+      }
+    } else if ((act >= ACT.SWING1 && act <= ACT.SWING3) || act === ACT.SMASH) {
       const stage = act === ACT.SMASH ? 3 : act - ACT.SWING1 + 1;
       const st = act === ACT.SMASH ? MELEE_SMASH_STAGE : swingStages(meleeRule)[stage - 1];
       const tw = st.windup, ta = st.active, tr = st.recover;

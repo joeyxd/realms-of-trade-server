@@ -15,7 +15,7 @@ import { C, KIND } from '../sim/ecs.js';
 import { BTN } from '../sim/systems/movement.js';
 import { BOT_NAMES } from '../sim/systems/bots.js';
 import { encounterState, encounterDev } from '../sim/systems/encounter.js';
-import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, salvageItem, openChest, giveItem, setMastery, spawnDrop, publicDrops, setLoadout, setForm, learnTattoo, devTattoos, devTattoo, devLoadout } from '../sim/systems/inventory.js';
+import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, holsterWeapon, salvageItem, openChest, giveItem, setMastery, spawnDrop, publicDrops, setLoadout, setForm, learnTattoo, devTattoos, devTattoo, devLoadout } from '../sim/systems/inventory.js';
 import { rollItem } from '../sim/items.js';
 import { startQuests, questEvent, questWants, talkTo, acceptQuest, turnInQuest, buy, sell, setTutorial, setTier } from '../sim/systems/quests.js';
 import { DROPS } from '../data/loot.js';
@@ -316,6 +316,8 @@ export class LocalServer {
       return ack.ok;
     }
     if (msg?.type === 'navalPilot') return this.navalCommand(c, msg);
+    // Puños: no profile change, so no economic preflight beyond the ordinary command access.
+    if (msg?.type === 'holster') return !c.paused && !this.tickBlocked && this.commandAllowed(c, { world: false, target: null }) && holsterWeapon(this.world, c.entity);
     if (msg?.type === 'raftDoor') return this.doorCommand(c, msg);
     if (msg?.type === 'raftLantern') return this.lanternCommand(c, msg);
     if (msg?.type === 'personalLantern') return this.personalLanternCommand(c, msg);

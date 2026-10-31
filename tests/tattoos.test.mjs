@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { tuning } from '../src/data/tuning.js';
-import { WEAPONS, WEAPON_KINDS, WEAPON, MASTERY } from '../src/data/weapons.js';
+import { WEAPONS, WEAPON_KINDS, ARMED_KINDS, WEAPON, MASTERY } from '../src/data/weapons.js';
 import { SKILL_IDS, ARTS, TATTOOS, TATTOO, DEFAULT_LOADOUT, SLOTS, SLOT_COLS, skillIndex, skillId, castKind } from '../src/data/tattoos.js';
 import { DROPS } from '../src/data/loot.js';
 import { ECS, PLAYER_FIELDS } from '../src/sim/ecs.js';
@@ -59,7 +59,7 @@ test('tattoo data: a fixed skill order, the arts of each weapon, three tattoos w
   assert.deepEqual([...Object.keys(ARTS), ...Object.keys(TATTOOS)], SKILL_IDS.slice(0, 7), 'the first seven ids are arts/tattoos; pearl skills follow');
   assert.deepEqual(Object.entries(ARTS).map(([id, a]) => [id, a.weapon, a.mastery]),
     [['lunge', 'sable', 1], ['wave', 'sable', 2], ['blast', 'pistolas', 1], ['blink', 'pistolas', 2]]);
-  for (const k of WEAPON_KINDS) {
+  for (const k of ARMED_KINDS) { // Puños have no arts or loadout yet
     assert.deepEqual(DEFAULT_LOADOUT[k], [WEAPONS[k].q, WEAPONS[k].e], `${k}: the M4.6 kit`);
     assert.ok(DEFAULT_LOADOUT[k].every((id) => ARTS[id].weapon === k));
     // Today's mastery gates are the arts' (q 1, e 2).

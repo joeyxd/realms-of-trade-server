@@ -88,7 +88,7 @@ test('ctxFor reads the weapon in hand, both masteries, the knowledge and the swa
   const state = skillSheetState(profile, 1);
   const ctx = state.ctxFor(nodeById('tromba'));
   assert.equal(ctx.weapon, 'pistolas');
-  assert.deepEqual(ctx.mastery, { sable: 4, pistolas: 7 });
+  assert.deepEqual(ctx.mastery, { sable: 4, pistolas: 7, punos: 0 }); // Puños have no mastery row yet
   assert.deepEqual(ctx.knowledge, ['tattoo']);
   assert.equal(ctx.pearl, true);
   assert.deepEqual(state.ctxFor(nodeById('leap')).knowledge, []);

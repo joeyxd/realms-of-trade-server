@@ -11,7 +11,10 @@ import { audio } from '../audio/engine.js';
 import { SKINS } from '../render/characters.js';
 import { patternSpan } from '../sim/projectiles.js';
 import { comic } from './comic.js';
-import { formed } from '../data/weapons.js';
+import { formed, SKILLS, WEAPON, WEAPON_KINDS } from '../data/weapons.js';
+import { LAWLESS } from '../data/lawless.js';
+import { SHAPE } from '../render/vfx/particles.js';
+import { rumble, rumbleStop, hitRumble, patternRumble } from './rumble.js';
 import { skillId } from '../data/tattoos.js';
 import { elementVisual } from '../data/elements.js';
 import { rich, t, setText } from '../core/i18n.js';
@@ -23,12 +26,17 @@ const BONE = [1, 0.95, 0.85], BONE1 = [0.9, 0.7, 0.4];
 const FROST = [0.64, 0.96, 1], FROST1 = [0.2, 0.76, 1];
 const STORM = [1, 0.9, 0.28], STORM1 = [1, 0.48, 0.06];
 const NEUTRAL_ELEMENT = { c0: CYAN, c1: CYAN1 };
+const rgbOf = (hex) => [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255];
+
+export const swingHasSlash = (kind) => kind !== 'punos';
 
 export class Feedback {
   constructor({ world, client, hud, worldUI, loop, settings, map, ps, onTutorial }) {
     Object.assign(this, { world, client, hud, worldUI, loop, settings, map, ps, onTutorial });
     this.flash = 0;
     this.flashColor = [1, 1, 1];
+    this.dim = 0; this.dimMax = 0; this.dimHold = 0; this.dimFade = 1; this.dimColor = [1, 1, 1]; // the ultimate's dark fill
+    this.timers = []; // {t: real s left, fn}: the beats of an ultimate
     this.aoes = new Map(); // aoe id → {src, tAct, x, z, r, done, keep, fall}
     this.fallers = []; // meteors and mortar shells in the air, landing on their circle at tAct
     this.taught = new Set();
@@ -64,6 +72,67 @@ export class Feedback {
   vol(x, z) { const d = Math.hypot(x - this.ps.x, z - this.ps.z); return Math.max(0, Math.min(1, 1 - (d - 6) / 30)); }
   shake(a) { this.world.rig.addTrauma(a); }
   screen(amount, rgb = [1, 1, 1]) { if (amount > this.flash) { this.flash = amount; this.flashColor = rgb; } }
+  // The dark fill behind an ultimate: `amount` held `hold` s, then gone over `fade` s (update).
+  darken(amount, rgb, hold, fade) { this.dim = this.dimMax = amount; this.dimColor = rgb; this.dimHold = hold; this.dimFade = fade; }
+  // Ultimate's camera quake sizes S / M / L; k scales it down with distance.
+  quake(kind, k = 1) { this.shake(tuning.feel.quake[kind] * k); }
+  later(s, fn) { if (s > 0) this.timers.push({ t: s, fn }); else fn(); }
+
+  // CMB hit feel (docs/research/melee/11-ultimate-feel.md) of a Melee hit (kb > 0) of `by` on `victim`, once per hit: the
+  // attacker's hitlag shake (the victim's is in its launch), the rumble of the pirate you play, the quake of a strong blow.
+  hitFeel(ev, victim, by) {
+    if (!(ev.kb > 0)) return;
+    const you = this.client.youServer, hl = ev.hl | 0, Q = tuning.feel.quakeKb;
+    if (by && hl > 0) this.viewOf(by)?.atkShake?.(hl);
+    if (victim === you) rumble(this.settings, hitRumble(hl, 'victim'));
+    else if (by === you) rumble(this.settings, hitRumble(hl, 'attacker'));
+    const near = victim === you || by === you ? 1 : this.vol(ev.x, ev.z);
+    if (ev.kb >= LAWLESS.meleeTumble && near > 0) this.quake(ev.kb < Q[0] ? 's' : ev.kb < Q[1] ? 'm' : 'l', near);
+  }
+
+  // The glint on the first frame of an art or an ultimate (Ultimate's sys_smash_flash and START_INFO_FLASH_EYE): a star
+  // at the head.
+  glint(v, size = 1) {
+    const p = v.root.position, y = p.y + (v.height || 1.8) * 0.92, E = this.world.effects.add, life = tuning.feel.power.glint;
+    E.spawn(p.x, y, p.z, 0, 0, 0, { life, size: 1.7 * size, size1: 0.1, color: [1, 0.97, 0.88], alpha: 1, drag: 0, shape: SHAPE.STAR });
+    E.spawn(p.x, y, p.z, 0, 0, 0, { life: life * 0.7, size: 0.9 * size, size1: 0.2, color: [1, 0.9, 0.7], alpha: 0.8, drag: 0, shape: SHAPE.GLOW });
+  }
+  // The ultimate's aura (sys_final_aura on the limbs, 28 frames): motes in the pirate's colour rising off the whole body.
+  aura(v, hex) {
+    const p = v.root.position, h = v.height || 1.8, color = rgbOf(hex), life = tuning.feel.ult.aura;
+    for (let i = 0; i < 18; i++) {
+      const a = Math.random() * Math.PI * 2, r = 0.25 + Math.random() * 0.3;
+      this.world.effects.add.spawn(p.x + Math.cos(a) * r, p.y + Math.random() * h, p.z + Math.sin(a) * r, Math.cos(a) * 0.5, 1.4 + Math.random(), Math.sin(a) * 0.5,
+        { life, size: 0.55, size1: 0.1, color, alpha: 0.9, drag: 1, shape: SHAPE.GLOW });
+    }
+  }
+  // A Q / E art starts: the glint; yours also pushes the camera in a little and ticks the rumble.
+  powerCue(ev, me) {
+    const v = me ? this.me() : this.viewOf(ev.e);
+    if (!v || (!me && this.vol(ev.x, ev.z) <= 0)) return;
+    this.glint(v);
+    if (!me) return;
+    this.world.rig.punchIn(tuning.feel.power.punch);
+    rumble(this.settings, patternRumble('power'));
+  }
+  // The ultimate (R) starts; it lands `land` s later. Yours: a freeze, the screen fills warm white, turns dark and clears,
+  // the glint, the aura, the camera pushed onto you, a rumble that gathers, cuts and explodes with a large quake when it
+  // lands. Another pirate's in sight: the glint, the aura, a soft flash and a medium quake by distance.
+  ultCue(ev, me, land = 0) {
+    const U = tuning.feel.ult, v = me ? this.me() : this.viewOf(ev.e), color = this.colorOf(ev.e, ev.elem);
+    const p = v ? v.root.position : { x: ev.x, y: this.y(ev.x, ev.z), z: ev.z }, near = me ? 1 : this.vol(p.x, p.z); // the caster, not the aim
+    if (near <= 0) return;
+    if (v) { this.glint(v, me ? 1.4 : 1); this.aura(v, color); v.flash(color, 1); }
+    this.world.lights.flash(p.x, p.y + 1.5, p.z, color, 10, 6, U.aura + 0.2);
+    if (!me) { this.screen(0.25 * near, U.flashColor); this.later(land, () => this.quake('m', near)); return; }
+    this.loop.addHitstop(this.client.humans > 1 ? Math.min(U.freeze, tuning.combat.coopHitstop) : U.freeze);
+    this.screen(U.flash, U.flashColor);
+    this.darken(U.dim, U.dimColor, U.dimHold + land, U.dimFade);
+    this.world.rig.punchIn(U.punch);
+    const R = tuning.feel.rumble, cut = R.charge.cut / 60;
+    if (land > cut) rumble(this.settings, { ms: Math.round((land - cut) * 1000), strong: R.charge.strong, weak: R.charge.weak });
+    this.later(land, () => { rumbleStop(); rumble(this.settings, patternRumble('explosion')); this.quake('l'); });
+  }
   y(x, z) { return this.map.groundAt(x, z); }
   teach(key, html, ms = 5200) { if (this.taught.has(key)) return; this.taught.add(key); this.hud.toast(html, ms); }
 
@@ -106,16 +175,18 @@ export class Feedback {
         break;
       }
       case 'swing': {
-        const st = swingStages(this.client.pred.meleeVersion)[ev.stage - 1];
+        const view = me ? this.me() : this.viewOf(ev.e);
+        const kind = me ? WEAPON_KINDS[ps.weapon] : view?.weaponKind;
+        const st = swingStages(this.client.pred.meleeVersion, kind === 'punos' ? WEAPON.PUNOS : WEAPON.SABLE)[ev.stage - 1];
         if (!me) {
           // Another pirate's cutlass (humans and bots): the same arc in their colour, sound by distance.
           // (Drawn 100 ms late like their body, so the arc waits for the wind-up as they show it.)
           const v = this.viewOf(ev.e), vol = v ? this.vol(v.root.position.x, v.root.position.z) : 0;
-          if (vol > 0) { W.combatFx.slash(v, ev.stage, this.colorOf(ev.e, ev.elem), st.active, st.windup + INTERP_DELAY); sfx.swing(ev.stage, vol * 0.5); sfx.elemental(ev.elem, vol * 0.28); }
+          if (vol > 0) { if (swingHasSlash(kind)) W.combatFx.slash(v, ev.stage, this.colorOf(ev.e, ev.elem), st.active, st.windup + INTERP_DELAY); sfx.swing(ev.stage, vol * 0.5); sfx.elemental(ev.elem, vol * 0.28); }
           break;
         }
         const v = this.me();
-        if (v) W.combatFx.slash(v, ev.stage, this.colorOf(ev.e, ev.elem), st.active, st.windup);
+        if (v && swingHasSlash(kind)) W.combatFx.slash(v, ev.stage, this.colorOf(ev.e, ev.elem), st.active, st.windup);
         sfx.swing(ev.stage);
         sfx.elemental(ev.elem, 0.28);
         break;
@@ -131,8 +202,8 @@ export class Feedback {
         if (v) { v.flash(0xffffff, 1); this.flinch(v, ev.x, ev.z); }
         sfx.hit(this.material(rec), false);
         if (ev.stage === 3) comic.hit(ev.x, y + 0.5, ev.z, { word: t('feedback.comic.zas'), color: 0xfff1c8 });
-        if (this.client.pred.meleeVersion !== 1) this.loop.addHitstop(F.hitstopMelee);
-        this.shake(ev.stage === 3 ? 0.22 : 0.12);
+        // MN_MELEE: the hitlag is per fighter and the camera quakes only on a strong blow (hitFeel, on the server's event).
+        if (this.client.pred.meleeVersion !== 1) { this.loop.addHitstop(F.hitstopMelee); this.shake(ev.stage === 3 ? 0.22 : 0.12); }
         W.rig.punchIn(ev.stage === 3 ? 0.4 : 0.2);
         break;
       }
@@ -159,6 +230,7 @@ export class Feedback {
         const hitPalette = this.palette(ev.elem);
         if (v) { v.flash(elementVisual(ev.elem)?.accent ?? 0xffffff, 1); if (!ev.predictedHit) this.flinch(v, ps.x, ps.z, ev.heavy ? 1.4 : 1); }
         if (ev.kb > 0) v?.launch?.(ev, INTERP_DELAY); // MN_MELEE: shake, led launch, tumble (drawn 100 ms late)
+        this.hitFeel(ev, ev.id, ev.by);
         if (!ev.predictedHit) {
           sfx.hit(this.material(rec), !!ev.crit, this.vol(x, z));
           if (ev.elem === 4) sfx.inkHit(this.vol(x, z));
@@ -329,6 +401,7 @@ export class Feedback {
         break;
       }
       case 'cast': {
+        this.powerCue(ev, me);
         const v = me ? this.me() : this.viewOf(ev.e), vol = me ? 1 : this.vol(ev.x, ev.z);
         let elementalOnset = false;
         if (ev.skill === 'lunge' && v) W.after.dash(v, this.colorOf(ev.e, ev.elem), [0.08, 0.13, 0.18], 0.24);
@@ -455,6 +528,7 @@ export class Feedback {
       case 'wheelDrop': W.skillFx.wheelEnd(ev, false); break;
       case 'wave': W.weaponFx.wave(ev, this.colorOf(ev.e, ev.elem)); sfx.crescent(me ? 1 : this.vol(ev.x, ev.z)); sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.3); break;
       case 'rain':
+        this.ultCue(ev, me, SKILLS.rain.delay); // the pistolas' R: it lands when the lead starts to fall
         W.weaponFx.rain(ev, this.colorOf(ev.e, ev.elem));
         sfx.rainCall(me ? 1 : this.vol(ev.x, ev.z));
         sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.3);
@@ -487,6 +561,7 @@ export class Feedback {
           const v = this.viewOf(ev.e);
           if (v) { v.flash(0xff4d5e, 1); v.hit(0.8); }
           if (ev.kb > 0) v?.launch?.(ev, INTERP_DELAY);
+          this.hitFeel(ev, ev.e, ev.by);
           // Your blow on another pirate (the Cala Calavera, M4.5): its number, like an enemy's.
           if (ev.by === this.client.youServer && ev.dmg > 0) {
             const rec = this.client.entities.get(ev.e), x = rec && rec.ready ? rec.r.x : ev.x, z = rec && rec.ready ? rec.r.z : ev.z;
@@ -510,6 +585,7 @@ export class Feedback {
         this.overMe(ev.crit ? `${rich('feedback.call.critical')} -${ev.dmg}` : `-${ev.dmg}`, 'hurt', { life: 0.9, spread: 24 });
         if (v) { v.flash(0xff4d5e, 1); v.hit(1); }
         if (ev.kb > 0) v?.launch?.(ev, 0); // predicted body: no lead
+        this.hitFeel(ev, ev.e, ev.by);
         this.shake(Math.min(0.55, 0.22 + ev.dmg / 60));
         this.screen(0.28, [1, 0.25, 0.25]);
         if (ev.kind === 'punish') {
@@ -554,6 +630,7 @@ export class Feedback {
         break;
       }
       case 'riposte': {
+        this.ultCue(ev, me); // the cutlass's R, the Tormenta: it lands at once (the server's freeze holds that frame)
         if (!me) break;
         sfx.riposte();
         const R = tuning.parry.riposte.radius;
@@ -562,9 +639,6 @@ export class Feedback {
         W.combatFx.ring(ps.x, ps.y + 0.14, ps.z, R * 0.6, this.accent, 0.35, 0.14, 0.8);
         this.overMe(rich('feedback.call.storm'), 'perfect', { life: 1.2 });
         comic.hit(ps.x, ps.y + 1.4, ps.z, { word: t('feedback.comic.fuaaa'), big: true, frame: true, lines: true, color: this.accent });
-        this.screen(0.55);
-        this.shake(0.6);
-        W.rig.punchIn(0.8);
         W.lights.flash(ps.x, ps.y + 1.5, ps.z, this.accent, 10, 6, 0.5);
         this.sparks(ps.x, ps.y + 1, ps.z, 30, CYAN, CYAN1, { up: 4, spread: 8, life: 0.5 });
         break;
@@ -759,6 +833,14 @@ export class Feedback {
     this.flash = Math.max(0, this.flash - dt * 3.2);
     g.flash = this.flash * (this.settings.reducedMotion ? 0.5 : 1);
     g.flashColor.setRGB(this.flashColor[0], this.flashColor[1], this.flashColor[2]);
+    if (this.dimHold > 0) this.dimHold -= dt;
+    else if (this.dim > 0) this.dim = Math.max(0, this.dim - (dt * this.dimMax) / Math.max(1e-3, this.dimFade));
+    g.dim = this.dim * (this.settings.reducedMotion ? 0.5 : 1);
+    g.dimColor.setRGB(this.dimColor[0], this.dimColor[1], this.dimColor[2]);
+    for (let i = this.timers.length - 1; i >= 0; i--) {
+      const T = this.timers[i];
+      if ((T.t -= dt) <= 0) { this.timers.splice(i, 1); T.fn(); }
+    }
     g.chroma = (1 - this.loop.timeScale) * 0.006;
     const fr = this.ps.maxHp > 0 ? this.ps.hp / this.ps.maxHp : 1;
     const low = this.ps.dead ? 0.7 : fr < 0.3 ? ((0.3 - fr) / 0.3) * (0.45 + 0.15 * Math.sin(performance.now() / 180)) : 0;

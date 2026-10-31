@@ -442,7 +442,7 @@ export function damageEnemy(world, e, raw, o) {
   }
   let meleeData;
   if (world.meleeVersion === 1 && (ecs.mask[o.by] & C.PLAYER)) {
-    const skill = o.kind === 'melee' ? swingKey(o.stage, o.smash) : o.kind === 'wave' ? 'storm' : o.skill || o.kind;
+    const skill = o.kind === 'melee' ? swingKey(o.stage, o.smash, o.kit, o.far) : o.kind === 'wave' ? 'storm' : o.skill || o.kind;
     const row = MELEE[skill] || MELEE.default;
     const S = LAWLESS.meleeStamina, mhp = def.meleeHp ?? ecs.maxHp[e];
     const percent = meleePercent(ecs.maxHp[e] - Math.max(0, ecs.hp[e]), mhp, S);
@@ -453,7 +453,7 @@ export function damageEnemy(world, e, raw, o) {
     } else if (!row.noKb) {
       const damage = meleePercent(dmg, mhp, S), weight = row.weight ?? def.weight ?? Math.round(87 / (def.light || 1));
       const kb = meleeKnockback(percent, damage, weight, row.bkb, row.kbg) * (armor ? 0.3 : 1);
-      const hl = row.throw ? 0 : hitlagFrames(damage), hs = hitstunFrames(kb); // Melee ordinary throw release: no hitlag
+      const hl = row.throw ? 0 : hitlagFrames(damage), hs = hitstunFrames(kb) + (row.react || 0); // Melee ordinary throw release: no hitlag; react: Ultimate add_reaction_frame
       meleeData.kb = Math.round(kb * 10) / 10; meleeData.hl = hl; meleeData.hs = hs;
       ecs.hitlag[e] = hl;
       if (!row.proj) ecs.hitlag[o.by] = hl;
@@ -464,6 +464,7 @@ export function damageEnemy(world, e, raw, o) {
           let dz = row.proj || row.throw ? o.dz || 0 : Math.cos(ecs.facing[o.by]);
           if (!row.proj && !row.throw && dx * (ecs.x[e] - o.x) + dz * (ecs.z[e] - o.z) < 0) { dx = -dx; dz = -dz; }
           if (Math.hypot(dx, dz) < 1e-6) { dx = ecs.x[e] - o.x; dz = ecs.z[e] - o.z; }
+          if (row.pull) { dx = -dx; dz = -dz; } // Ultimate angle 180: toward the attacker
           const len = Math.hypot(dx, dz), speed = launchSpeed(kb, LAWLESS.meleeUnit);
           ecs.lvx[e] = len > 0 ? dx / len * speed : 0; ecs.lvz[e] = len > 0 ? dz / len * speed : 0;
           if (len > 0) {

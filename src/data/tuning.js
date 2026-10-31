@@ -159,6 +159,24 @@ export const tuning = {
     hitstopRiposte: 0.14,
     perfectSlowmoTime: 0.25, // how long a slow-mo (EXCELENTE, perfect guard) lasts
     flashMax: 0.8,
+    // CMB hit feel and the ultimate's drama (docs/research/melee/11-ultimate-feel.md): Ultimate's structure; a number is
+    // Ultimate's where cited, ours otherwise. quake: camera trauma for CAMERA_QUAKE_KIND_S / M / L (sizes are game data).
+    quake: { s: 0.3, m: 0.45, l: 0.65 },
+    quakeKb: [120, 160], // a Melee hit quakes only from the tumble KB up (Melee ftCo_Damage.c:453-467): S, M from 120, L from 160 (ours)
+    // Rumble, frames and motor strengths 0-1 (ui/rumble.js). Hits: Melee's shape, linear in the blow (ftcommon.c:1213-1231),
+    // here in its hitlag frames. The rest is named after the rbkind Ultimate plays at that moment.
+    rumble: {
+      victim: { base: 6, perHl: 1.5, strong: 0.8, weak: 0.5 },
+      attacker: { base: 2, perHl: 1, strong: 0.3, weak: 0.55 },
+      power: { frames: 4, strong: 0, weak: 0.45 }, // a Q / E art starts (rbkind_nohitll on a super's swing)
+      charge: { cut: 4, strong: 0.15, weak: 0.45 }, // the ultimate gathers, cut `cut` frames before it lands (rbkind_erase_sp 26, boom 30)
+      explosion: { frames: 30, strong: 1, weak: 1 }, // the ultimate lands (rbkind_explosion with QUAKE L)
+    },
+    // The ultimate (R) starts: the screen fills warm white, then dark, then clears in 30 frames (Terry's final,
+    // FILL_SCREEN_MODEL_COLOR and CANCEL_FILL_SCREEN); an aura for 28 frames (sys_final_aura); a glint (sys_smash_flash).
+    ult: { flash: 0.75, flashColor: [1, 0.95, 0.9], dim: 0.55, dimColor: [0.18, 0.16, 0.14], dimHold: 0.2, dimFade: 0.5,
+      aura: 28 / 60, freeze: 0.1, punch: 1, near: 14 },
+    power: { punch: 0.3, glint: 0.3 }, // a Q / E art starts: the glint and a small push of the camera
   },
 
   // ---- PT06 jump: the Super Mario 64 jump, ported exactly (systems/jump.js; switch MN_JUMP off | lab | game) -------

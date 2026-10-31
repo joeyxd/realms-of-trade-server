@@ -6,7 +6,7 @@
 // redraws from it.
 import { gsap } from 'gsap';
 import { SLOTS, SLOT_NAMES, BASES, ITEMS, CONSUMABLES, CRATES, STATS } from '../data/items.js';
-import { WEAPONS, WEAPON_KINDS, SKILLS, MASTERY, formed } from '../data/weapons.js';
+import { WEAPONS, WEAPON_KINDS, ARMED_KINDS, SKILLS, MASTERY, formed } from '../data/weapons.js';
 import { ARTS, TATTOOS, TATTOO_IDS, TATTOO, DEFAULT_LOADOUT, castKind, formRank, tattooXpToNext } from '../data/tattoos.js';
 import { skillIcon, ROMAN } from './hud.js';
 import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from '../data/quests.js';
@@ -257,7 +257,7 @@ export class CharPanel {
       ['adventure.stat_gold', `+${Math.round(g.gold * 100)} %`, '', true],
       ['Vida al matar', `${Math.round(g.kill)}`, ''],
     ];
-    const mast = WEAPON_KINDS.map((k, i) => {
+    const mast = ARMED_KINDS.map((k, i) => { // Puños have no mastery yet
       const W = WEAPONS[k], m = p.mast[i] || [1, 0], lvl = m[0], next = MASTERY.xp[Math.min(MASTERY.xp.length - 1, lvl - 1)];
       const steps = [['q', MASTERY.unlock.q], ['e', MASTERY.unlock.e], ['r', MASTERY.unlock.r]].map(([s, at]) => `<li class="${lvl >= at ? 'ok' : ''}"><b>M${at}</b> ${s.toUpperCase()} ${dataText(SKILLS[W[s]].name)}</li>`);
       for (const ps of MASTERY.passives[k]) steps.push(`<li class="${lvl >= ps.at ? 'ok' : ''}"><b>M${ps.at}</b> ${dataText(ps.name)}: ${dataText(ps.hint)}</li>`);
@@ -293,7 +293,8 @@ export class CharPanel {
   // still to learn); the card you pick shows its numbers, its forms and what you can do with it.
   tattooHtml(p) {
     const w = this.stats().weapon | 0, kind = WEAPON_KINDS[w], W = WEAPONS[kind];
-    const sk = p.sk || { has: {}, lo: [], free: 1 }, lo = sk.lo[w] || DEFAULT_LOADOUT[kind];
+    if (kind === 'punos') return `<p class="cp-hint">${ltext('adventure.fistsNoArts')}</p>`;
+    const sk = p.sk || { has: {}, lo: [], free: 1 }, lo = sk.lo[w] || DEFAULT_LOADOUT[kind] || [];
     const mlvl = (p.mast[w] || [1])[0], sel = this.ttSel || lo[0];
     const has = (id) => sk.has[id];
     const nameOf = (id) => (TATTOOS[id] || SKILLS[id]).name;

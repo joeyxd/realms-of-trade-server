@@ -1,5 +1,10 @@
 // Runtime UI copy. Keys never enter gameplay commands.
 export default {
+  'touch.quick.fists': ['Puños', 'Fists'],
+  'hud.fistTip': ['Puños: LMB golpea; tres golpes seguidos encadenan un combo.', 'Fists: LMB strikes; three hits in a row link into a combo.'],
+  'hud.noArt': ['Los puños aún no tienen artes', 'Fists have no arts yet'],
+  'runtime.kitFists': ['Puños: golpea con LMB; H vuelve a tu arma.', 'Fists: strike with LMB; H takes your weapon back.'],
+  'adventure.fistsNoArts': ['Los puños aún no tienen artes ni tatuajes.', 'Fists have no arts or tattoos yet.'],
   'touch.quick.bar': ['Accesos rápidos', 'Quick bar'],
   'touch.quick.picker': ['Asignar ranura', 'Assign slot'],
   'touch.quick.empty': ['Ranura vacía', 'Empty slot'],

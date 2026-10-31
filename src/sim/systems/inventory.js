@@ -7,7 +7,7 @@
 import { DT, tuning } from '../../data/tuning.js';
 import { ITEMS, BASES, SLOTS, STARTER, CONSUMABLES, QUEST_ITEMS, slotFits, RARITIES } from '../../data/items.js';
 import { LOOT, DROPS } from '../../data/loot.js';
-import { MASTERY, WEAPON_KINDS, weaponIndex } from '../../data/weapons.js';
+import { MASTERY, WEAPON, WEAPON_KINDS, ARMED_KINDS, NO_LOADOUT, weaponIndex } from '../../data/weapons.js';
 import { ARTS, TATTOO_IDS, TATTOO, DEFAULT_LOADOUT, LOADOUT_SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, isTattoo, formRank, tattooXpToNext } from '../../data/tattoos.js';
 import { grantedSkills, isLentArt } from '../../data/grants.js';
 import { PEARL, newPearls, sanitizePearls } from '../../data/pearls.js';
@@ -38,12 +38,12 @@ const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
 // ---- Profiles -------------------------------------------------------------------------------------------------
 // Tattoos (M4.7): has[id] = [rank, xp (tinta), form] for what you learned; lo = the Q / E loadout of each weapon
 // (ids, SLOTS order); free = 1 while your first tattoo is still free.
-const newSk = () => ({ has: {}, lo: WEAPON_KINDS.map((k) => [...DEFAULT_LOADOUT[k]]), free: 1 });
+const newSk = () => ({ has: {}, lo: ARMED_KINDS.map((k) => [...DEFAULT_LOADOUT[k]]), free: 1 });
 export function newProfile({ weapon = 0, starter = true } = {}) {
   const starterEnabled = starter === true;
   const p = {
     v: PROFILE_VERSION, lvl: 1, xp: 0, gold: 0, pot: CONSUMABLES.potion.start, uid: 1, bag: [], eq: {},
-    mast: WEAPON_KINDS.map(() => [1, 0]), sk: newSk(), quests: {}, flags: { tut: 0, tier: 1, tierSel: 1 }, items: {}, cp: 'spawn',
+    mast: ARMED_KINDS.map(() => [1, 0]), sk: newSk(), quests: {}, flags: { tut: 0, tier: 1, tierSel: 1 }, items: {}, cp: 'spawn',
     stats: { kills: 0, wins: 0, gold: 0, items: 0, pk: 0, deaths: 0 },
     ...(starterEnabled ? { carry: { v: 1, backpack: 0 } } : {}),
     eco: starterEnabled
@@ -129,8 +129,9 @@ export function sanitizeProfile(raw) {
   }
   p.uid = Math.max(int(raw.uid, 1, 2 ** 31, 1), ...[...used].map((u) => u + 1));
   for (const it of [...p.bag, ...SLOTS.map((s) => p.eq[s])]) if (it && it.u === 0) it.u = p.uid++;
+  // Never an empty weapon slot in a save: SQL009 mn_valid_death_delta wants an object there. Puños come from holsterWeapon.
   if (!p.eq.weapon) p.eq.weapon = starterItem(p, 'sable');
-  p.mast = WEAPON_KINDS.map((_, i) => {
+  p.mast = ARMED_KINDS.map((_, i) => {
     const m = Array.isArray(raw.mast) && Array.isArray(raw.mast[i]) ? raw.mast[i] : [1, 0];
     return [int(m[0], 1, MASTERY.max, 1), num(m[1], 0, 1e6, 0)];
   });
@@ -179,7 +180,7 @@ function sanitizeSk(raw, int, num, granted = {}) {
       has[id] = [rank, rank >= TATTOO.maxRank ? 0 : num(t[1], 0, 1e6, 0), formRank(id, form) <= rank ? form : 0];
     }
   }
-  const lo = WEAPON_KINDS.map((kind, k) => {
+  const lo = ARMED_KINDS.map((kind, k) => {
     const row = Array.isArray(r.lo) && Array.isArray(r.lo[k]) ? r.lo[k] : [], out = [];
     const arts = Object.keys(ARTS).filter((a) => ARTS[a].weapon === kind);
     SKILL_SLOTS.forEach((_, i) => {
@@ -194,7 +195,8 @@ function sanitizeSk(raw, int, num, granted = {}) {
 
 // A kit's common level-1 weapon (from a fresh profile or a rack). Starters are worth nothing.
 const starterItem = (p, kit) => ({ u: p.uid++, b: STARTER[kit] || STARTER.sable, r: 0, l: 1, a: [], s: 1 });
-export const kitOf = (item) => (item && BASES[item.b] && BASES[item.b].weapon) || 'sable';
+// No weapon item: Puños, the base kit of a pirate who carries none. An item of an unknown base is still the sabre.
+export const kitOf = (item) => item ? (BASES[item.b] && BASES[item.b].weapon) || 'sable' : 'punos';
 
 export function installInventory(world, pearlNamespace) {
   world.profiles = new Map();
@@ -264,7 +266,9 @@ export function detachProfile(world, e, { sync = true } = {}) {
 export function masteryXp(world, e, n) {
   const p = profileOf(world, e), ecs = world.ecs;
   if (!p || !(n > 0)) return;
-  const k = ecs.weapon[e] | 0, m = p.mast[k] || (p.mast[k] = [1, 0]);
+  const k = ecs.weapon[e] | 0;
+  if (!ARMED_KINDS.includes(WEAPON_KINDS[k])) return; // Puños have no mastery yet
+  const m = p.mast[k] || (p.mast[k] = [1, 0]);
   if (m[0] >= MASTERY.max) return;
   m[1] = Math.round((m[1] + n) * 100) / 100;
   while (m[0] < MASTERY.max && m[1] >= masteryXpToNext(m[0])) {
@@ -288,6 +292,7 @@ const denied = (world, e, why) => { world.emit({ type: 'skillDenied', to: e, e, 
 // The weapon e carries: its loadout row (made if the profile has none).
 const loadoutOf = (world, e) => {
   const sk = skOf(profileOf(world, e)), k = world.ecs.weapon[e] | 0;
+  if (!ARMED_KINDS.includes(WEAPON_KINDS[k])) return [...NO_LOADOUT]; // Puños keep no loadout in the profile: a throwaway row
   return sk.lo[k] || (sk.lo[k] = [...DEFAULT_LOADOUT[WEAPON_KINDS[k] || WEAPON_KINDS[0]]]);
 };
 // Changing anything needs calm: not in the lawless Cala, no damage taken for TATTOO.calm s, not casting.
@@ -322,6 +327,7 @@ function putInSlot(world, e, si, id, cd) {
 export function setLoadout(world, e, slot, id) {
   const p = profileOf(world, e), si = SKILL_SLOTS.indexOf(slot);
   if (!p || si < 0 || (!isArt(id) && !isTattoo(id))) return denied(world, e, 'unknown');
+  if (!ARMED_KINDS.includes(WEAPON_KINDS[world.ecs.weapon[e] | 0])) return denied(world, e, 'weapon'); // Puños have no Q / E to set yet
   if (isArt(id) && ARTS[id].weapon !== WEAPON_KINDS[world.ecs.weapon[e] | 0] && !isLentArt(grantedSkills(p.eq), id)) return denied(world, e, 'weapon'); // unless a worn item lends it (SK05a)
   if (isTattoo(id) && !skOf(p).has[id]) return denied(world, e, 'unknown');
   const why = calmDenial(world, e);
@@ -499,7 +505,11 @@ export function spillOnDeath(world, e, by = 0) {
   }
   items.push(...p.bag);
   p.bag = [];
-  if (!p.eq.weapon) p.eq.weapon = starterItem(p, kit); // same kit: the mastery you earned stays usable
+  if (!p.eq.weapon) {
+    p.eq.weapon = starterItem(p, kit); // same kit: the mastery you earned stays usable
+    const w = weaponIndex(kitOf(p.eq.weapon)); // a holstered pirate (Puños) gets back up armed
+    if (w !== ecs.weapon[e]) setWeapon(world, e, w, 0);
+  }
   const pots = lawless ? Math.max(0, ecs.potions[e] | 0) : 0;
   if (lawless) ecs.potions[e] = 0;
   const list = [], o = { scatter: LAWLESS.spill.scatter, life: LAWLESS.spill.life }, from = { fromName: ecs.names[e], from: e };
@@ -648,7 +658,7 @@ export function equipItem(world, e, uid, slot) {
   return true;
 }
 
-// Take off into the bag (the weapon always stays: you need one).
+// Take off into the bag (the weapon always stays: you need one; holsterWeapon frees the hands).
 export function unequipItem(world, e, slot) {
   const p = profileOf(world, e);
   if (!p || slot === 'weapon' || !SLOTS.includes(slot) || !p.eq[slot] || p.bag.length >= ITEMS.bag) return false;
@@ -656,6 +666,16 @@ export function unequipItem(world, e, slot) {
   p.bag.push(p.eq[slot]);
   p.eq[slot] = null;
   gear(world, e, slot, uid);
+  return true;
+}
+
+// Puños: the weapon goes to the belt and the pirate fights with the fists. The item stays in its slot, so a save and a
+// death see the profile they always did. Holstering again draws the item's kit; a reconnect draws it too (attachProfile).
+export function holsterWeapon(world, e) {
+  const p = profileOf(world, e), ecs = world.ecs;
+  if (!p || ecs.dead[e] > 0) return false;
+  if (ecs.atkStage[e] > 0 || castBusy(ecs, e)) return denied(world, e, 'busy'); // as equipItem
+  setWeapon(world, e, ecs.weapon[e] === WEAPON.PUNOS ? weaponIndex(kitOf(p.eq.weapon)) : WEAPON.PUNOS, 0);
   return true;
 }
 
@@ -680,12 +700,12 @@ export function rackWeapon(world, e, kit) {
   if (!p || kitOf(p.eq.weapon) === kit) return;
   let best = -1, bs = -Infinity;
   p.bag.forEach((it, i) => { if (BASES[it.b].weapon === kit && itemScore(it) > bs) { bs = itemScore(it); best = i; } });
-  const old = p.eq.weapon;
-  if (best >= 0) { p.eq.weapon = p.bag[best]; p.bag[best] = old; }
+  const old = p.eq.weapon; // null: the pirate was unarmed (Puños), there is nothing to put back
+  if (best >= 0) { p.eq.weapon = p.bag[best]; if (old) p.bag[best] = old; else p.bag.splice(best, 1); }
   else {
     p.eq.weapon = starterItem(p, kit);
-    if (p.bag.length < ITEMS.bag) p.bag.push(old);
-    else announce(world, e, [addDrop(world, e, 'item', ecs.x[e], ecs.z[e], { item: old })], ecs.x[e], ecs.z[e]);
+    if (old && p.bag.length < ITEMS.bag) p.bag.push(old);
+    else if (old) announce(world, e, [addDrop(world, e, 'item', ecs.x[e], ecs.z[e], { item: old })], ecs.x[e], ecs.z[e]);
   }
   gear(world, e, 'weapon', p.eq.weapon.u);
 }

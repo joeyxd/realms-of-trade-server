@@ -3,6 +3,7 @@ import { BTN } from '../sim/systems/movement.js';
 import { BASES } from '../data/items.js';
 import { atlasIcon, escHtml } from './kit.js';
 import { itemIcon } from './itemui.js';
+import { ICONS } from './touch.js';
 
 const GOODS = ['pescado', 'galleta', 'fruta', 'agua', 'ron', 'coco'];
 const SKILLS = ['q', 'e', 'r', 'g'];
@@ -14,7 +15,7 @@ export function sanitizeSlots(raw) {
     if (!Array.isArray(slots) || slots.length !== 8) return defaults();
     return Array.from(slots, entry => {
       if (entry === null) return null;
-      if (entry?.k === 'potion' || entry?.k === 'drink') return { k: entry.k };
+      if (entry?.k === 'potion' || entry?.k === 'drink' || entry?.k === 'fists') return { k: entry.k };
       if (entry?.k === 'eat' && GOODS.includes(entry.good)) return { k: 'eat', good: entry.good };
       if (entry?.k === 'skill' && SKILLS.includes(entry.slot)) return { k: 'skill', slot: entry.slot };
       // PT13: a weapon slot holds a bag weapon by its uid; the profile resolves it again on every update.
@@ -26,14 +27,14 @@ export function sanitizeSlots(raw) {
 export function quickOptions(state = {}) {
   return [{ k: 'potion' }, ...(state.canteen != null ? [{ k: 'drink' }] : []),
     ...GOODS.filter(good => state.goods?.[good] >= 1).map(good => ({ k: 'eat', good })),
-    ...(state.weapons || []).map(w => ({ k: 'weapon', uid: w.uid })),
+    { k: 'fists' }, ...(state.weapons || []).map(w => ({ k: 'weapon', uid: w.uid })),
     ...SKILLS.filter(slot => slot !== 'g' || state.pearl).map(slot => ({ k: 'skill', slot }))];
 }
 const entryKey = entry => entry ? entry.good || entry.slot || entry.k : 'empty';
 
 export class QuickBar {
-  constructor(root, { input, touch, freshwater, equip, enabled = () => true }) {
-    Object.assign(this, { input, touch, freshwater, equip, enabled, state: {}, picking: null });
+  constructor(root, { input, touch, freshwater, equip, holster, enabled = () => true }) {
+    Object.assign(this, { input, touch, freshwater, equip, holster, enabled, state: {}, picking: null });
     this.doc = root.ownerDocument;
     this.root = this.doc.createElement('div'); this.root.className = 'touch-quick';
     this.root.innerHTML = '<div class="quick-row"></div><div class="quick-picker" hidden></div>';
@@ -76,6 +77,7 @@ export class QuickBar {
     return w ? translateData(BASES[w.item.b].name) + (w.worn ? ' · ' + t('touch.quick.worn') : '') : t('touch.quick.weaponGone');
   }
   icon(entry) {
+    if (entry?.k === 'fists') return ICONS.fist;
     if (entry?.k === 'weapon') { const w = this.weapon(entry); return w ? itemIcon(w.item) : ''; }
     return entry?.k === 'skill' ? this.skill(entry).icon : entry ? atlasIcon(entry.k === 'eat' ? entry.good : entry.k === 'drink' ? 'agua' : 'potion') : '';
   }
@@ -106,6 +108,7 @@ export class QuickBar {
         if (g.held) { this.input.slotUp(g.held, 'touch'); g.held = null; }
         else if (!g.entry) this.openPicker(i);
         else if (g.entry.k === 'potion') this.input.press(BTN.POTION);
+        else if (g.entry.k === 'fists') this.holster?.();
         else if (g.entry.k === 'drink') this.freshwater.quickDrink();
         else if (g.entry.k === 'eat') this.freshwater.quickEat(g.entry.good);
         else if (g.entry.k === 'weapon') { const w = this.weapon(g.entry); if (w && !w.worn && this.equip) this.equip(g.entry.uid); }
@@ -145,8 +148,8 @@ export class QuickBar {
     if (!this.enabled()) { this.cancel(); if (this.picking != null) this.closePicker(); }
     const views = this.slots.map(entry => {
       const skill = this.skill(entry), w = this.weapon(entry), weapon = entry?.k === 'weapon';
-      const count = !entry || skill || weapon ? null : entry.k === 'potion' ? state.potions || 0 : entry.k === 'drink' ? state.canteen || 0 : state.goods?.[entry.good] || 0;
-      return { icon: this.icon(entry), count, dim: skill ? skill.locked : weapon ? !w : entry && count < 1, worn: !!w?.worn, label: this.label(entry) };
+      const count = !entry || skill || weapon || entry.k === 'fists' ? null : entry.k === 'potion' ? state.potions || 0 : entry.k === 'drink' ? state.canteen || 0 : state.goods?.[entry.good] || 0;
+      return { icon: this.icon(entry), count, dim: !this.enabled() || (skill ? skill.locked : weapon ? !w : entry?.k === 'fists' ? false : entry && count < 1), worn: !!w?.worn, label: this.label(entry) };
     });
     const key = JSON.stringify([getLocale(), this.open, views]);
     if (key !== this.renderKey) {

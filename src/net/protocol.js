@@ -1,7 +1,7 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
 import { jumpStage } from '../sim/systems/jump.js';
-export const PROTOCOL_VERSION = 77; // CMB P4 PLAYER_FIELDS atkRej, atkLink, atkSmash, chgN, chgStop and ACT 34 smash (76: SHIP_INPUT may carry canto:0|1; 75: CMB P3c roll and shield-stick player fields, ACT 32-33; 74: SHIP_INPUT may carry jump:0|1; 73: CMB Melee port behind MN_MELEE, grab and shield player fields, ACT 22-31; 72: deck walkers on land INPUTS)
+export const PROTOCOL_VERSION = 78; // CMB Punos: player weapon 2 (fists) and the holster command (77: CMB P4 PLAYER_FIELDS atkRej, atkLink, atkSmash, chgN, chgStop and ACT 34 smash; 76: SHIP_INPUT may carry canto:0|1; 75: CMB P3c roll and shield-stick player fields, ACT 32-33; 74: SHIP_INPUT may carry jump:0|1; 73: CMB Melee port behind MN_MELEE, grab and shield player fields, ACT 22-31; 72: deck walkers on land INPUTS)
 
 export const MSG = {
   // client -> server

@@ -34,7 +34,7 @@
 //          Their effects in flight (stepTromba, stepWheel) keep running whatever you do, like the crescent and the
 //          rain: everything that touches hostile bullets is here at the command's tick; hits are the server's.
 import { tuning, DT } from '../../data/tuning.js';
-import { WEAPON_KINDS, RACK_R, SKILLS, weaponOf, formed } from '../../data/weapons.js';
+import { WEAPON_KINDS, WEAPON, RACK_R, SKILLS, weaponOf, formed } from '../../data/weapons.js';
 import { PTYPE, KILL, SHOT, clipDistance } from '../projectiles.js';
 import { hash01 } from '../../core/rng.js';
 import { BTN, moveWithCollision, canStand, standingHeight } from './movement.js';
@@ -54,7 +54,7 @@ export function rackNear(map, x, z, r = RACK_R) {
 
 export function stepEquip(world, e, cmd) {
   const ecs = world.ecs, want = (cmd.w | 0) - 1;
-  if (want < 0 || want >= WEAPON_KINDS.length || want === ecs.weapon[e] || ecs.dead[e] > 0) return false;
+  if (want < 0 || want >= WEAPON_KINDS.length || want === WEAPON.PUNOS || want === ecs.weapon[e] || ecs.dead[e] > 0) return false; // racks never hand out fists
   if (!rackNear(world.map, ecs.x[e], ecs.z[e])) return false;
   setWeapon(world, e, want, cmd.seq >>> 0);
   if (world.onRack) world.onRack(e, want); // the server swaps the weapon item too (systems/inventory.js)
